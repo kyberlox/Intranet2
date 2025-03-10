@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: "pdb"
+      POSTGRES_USER: ${user}
+      POSTGRES_PASSWORD: ${pswd}
+    volumes:
+      - ./pSQL/data:/var/lib/postgresql/data
+      #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    networks:
+        - app-network
+
+  fastapi:
+    build:
+      context: ./code
+      dockerfile: Dockerfile
+    image: app/fastapi
+    container_name: fastapi
+    volumes:
+      - ./code:/data/app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    depends_on:
+      # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
+      - fastapi
+      #- frontend
+    ports:
+      - "80:80"
+      #- "443:443"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

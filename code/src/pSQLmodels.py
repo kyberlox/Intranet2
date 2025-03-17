@@ -151,7 +151,7 @@ class UserModel:
 
                 #если есть изменения - внести
                 if need_update:
-                    self.db.commit() #
+                    self.db.commit() #НЕ СРАБАТЫВАЕТ! (
 
             #если нет - добавить
             else:
@@ -191,6 +191,23 @@ class UserModel:
         except SQLAlchemyError as e:
             db.rollback()
             print(f"An error occurred: {e}")
+
+    def find_by_id(self):
+        user = self.db.query(self.user).get(self.id)
+        result = dict()
+        DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
+        if user in not None:
+            for key in DB_columns:
+                result[key] = user.__dict__[key]
+
+            result['indirect_data'] = user.indirect_data
+
+            return result
+
+        else:
+            return {'err' : "Invalid user id"}
+
+
 
 
 

@@ -57,6 +57,10 @@ class User:
 
         return {"status" : True}
 
+    def search_by_id(self, id):
+        return UserModel(id).find_by_id(id)
+
+
     '''
     def variant_users(self, key):
         return B24().variant_key_user(key)

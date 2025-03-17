@@ -47,4 +47,5 @@ def get_user():
 #Пользователя можно найти
 @app.post("/api/user/search", tags=["Пользователь"])
 def get_user(jsn=Body()):
+    #будет работать через elasticsearch
     pass

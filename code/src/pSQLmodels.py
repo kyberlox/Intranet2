@@ -195,8 +195,8 @@ class UserModel:
     def find_by_id(self):
         user = self.db.query(self.user).get(self.id)
         result = dict()
-        DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
-        if user in not None:
+        DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
+        if user is not None:
             for key in DB_columns:
                 result[key] = user.__dict__[key]
 

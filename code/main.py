@@ -41,8 +41,8 @@ def get_user():
 
 #Пользователя можно выгрузить
 @app.get("/api/user/{id}", tags=["Пользователь"])
-def get_user():
-    pass
+def get_user(id):
+    return User(id).search_by_id()
 
 #Пользователя можно найти
 @app.post("/api/user/search", tags=["Пользователь"])

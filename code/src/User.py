@@ -7,7 +7,8 @@ import json
 
 
 class User:
-    def __init__(self, uuid=""):
+    def __init__(self, id=0, uuid=""):
+        self.id = id
         self.uuid = uuid
         #self.UserSQL = UserSQL()
 
@@ -52,21 +53,19 @@ class User:
 
         #отправить записи
         for usr_data in data:
-            if usr_data['ID'] == '2375':
-                UserSQL.upsert_user(usr_data)
+            #if usr_data['ID'] == '2375':
+            UserSQL.upsert_user(usr_data)
 
         return {"status" : True}
 
-    def search_by_id(self, id):
-        return UserModel(id).find_by_id(id)
+    def search_by_id(self):
+        return UserModel(self.id).find_by_id()
 
 
     '''
     def variant_users(self, key):
         return B24().variant_key_user(key)
-    '''
 
-    '''
     def get_dep_usrs(self):
         b24 = B24()
         users_data = b24.getUsers()

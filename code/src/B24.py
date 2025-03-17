@@ -1,0 +1,80 @@
+from bitrix24 import Bitrix24
+#import asyncio
+
+class B24:
+    def __init__(self):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
+
+
+
+    def getUsers(self):
+        result = self.bx24.callMethod('user.get')
+        return result
+
+    def getDeps(self):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        result = self.bx24.callMethod('department.get')
+        return result
+
+    def getInfoBlock(self):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+        result = self.bx24.callMethod('lists.get.json?IBLOCK_TYPE_ID=lists')
+        return result
+
+    #async def getUsers(self):
+        #result = await self.bx24.callMethod('user.get')
+        #return result
+
+    '''
+    def getUserKeys(self):
+        result = self.bx24.callMethod('user.get')
+        Keys = []
+        for usr_dt in result:
+            for key in usr_dt.keys():
+                if key not in Keys:
+                    Keys.append(key)
+        return Keys
+    '''
+
+'''
+    #функция выводит все возможные варианты значения параметра пользователя:
+    def variant_key_user(self, key = "WORK_POSITION"):
+        usrs = self.getUsers()
+        i = 0
+        variants = []
+        for usr in usrs:
+            if key in usr and (usr[key] != "") and  ('LAST_NAME' in usr and 'NAME' in usr and 'SECOND_NAME' in usr):
+                val = usr[key]
+                fio = f"{usr['LAST_NAME']} {usr['NAME']} {usr['SECOND_NAME']}"
+                if val[-1:] == " ":
+                    val = val[:-1]
+
+                if not variants:
+                    i += 1
+                    print("###", i)
+                    variants = [{
+                        "Номер": i,
+                        "Должность": val,
+                        "ФИО сотрудников": [fio]
+                    }]
+                else:
+                    need_add = True
+                    for sotr in variants:
+                        if sotr["Должность"] == val:
+                            sotr["ФИО сотрудников"].append(fio)
+                            need_add = False
+
+                    if need_add:
+                        i += 1
+                        print(i, val)
+                        sotr = {
+                            "Номер": i,
+                            "Должность": val,
+                            "ФИО сотрудников": [fio]
+                        }
+                        variants.append(sotr)
+
+
+
+        return variants
+'''

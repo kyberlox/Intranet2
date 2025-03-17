@@ -3,6 +3,7 @@ from fastapi import FastAPI, APIRouter, Body#, Cookie, Header, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.User import User
+
 app = FastAPI()
 router = APIRouter()
 
@@ -23,6 +24,10 @@ app.add_middleware(
 
 
 
+@app.get("/test/{key}")
+def test(key):
+    return User().get_dep_usrs()
+
 #Заглушка фронта
 @app.get("/api/view/user", tags=["Пользователь", "View"])
 def get_user():
@@ -34,8 +39,8 @@ def get_user():
     usr = User()
     return usr.fetch_users_data()
 
-#Пользователя можно загрузить
-@app.get("/api/user/{uuid}", tags=["Пользователь"])
+#Пользователя можно выгрузить
+@app.get("/api/user/{id}", tags=["Пользователь"])
 def get_user():
     pass
 

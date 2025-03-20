@@ -53,8 +53,8 @@ class User:
 
         #отправить записи
         for usr_data in data:
-            #if usr_data['ID'] == '2375':
-            UserSQL.upsert_user(usr_data)
+            if usr_data['ID'] == '2375':
+                UserSQL.upsert_user(usr_data)
 
         return {"status" : True}
 

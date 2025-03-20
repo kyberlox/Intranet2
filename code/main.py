@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.User import User
 
+from src.Department import Department
+
 app = FastAPI()
 router = APIRouter()
 
@@ -28,10 +30,20 @@ app.add_middleware(
 def test(key):
     return User().get_dep_usrs()
 
-#Заглушка фронта
-@app.get("/api/view/user", tags=["Пользователь", "View"])
+#Заглушки фронта
+@app.get("/api/view/menu", tags=["Меню", "View"])
 def get_user():
     pass
+
+@app.get("/api/view/department", tags=["Департамент", "View"])
+def get_user():
+    pass
+
+@app.get("/api/view/user", tags=["Департамент", "View"])
+def get_user():
+    pass
+
+
 
 #Пользоваетелей можно обновить
 @app.put("/api/users", tags=["Пользователь"])
@@ -46,6 +58,25 @@ def get_user(id):
 
 #Пользователя можно найти
 @app.post("/api/user/search", tags=["Пользователь"])
+def get_user(jsn=Body()):
+    #будет работать через elasticsearch
+    pass
+
+
+
+# Департаменты можно обновить
+@app.put("/api/departments", tags=["Департамент"])
+def get_department():
+    depart = Department()
+    return depart.fetch_departments_data()
+
+# Департамент можно выгрузить
+@app.get("/api/department/{id}", tags=["Департамент"])
+def get_department(id):
+    return Department(id).search_dep_by_id()
+
+#Пользователя можно найти
+@app.post("/api/department/search", tags=["Департамент"])
 def get_user(jsn=Body()):
     #будет работать через elasticsearch
     pass

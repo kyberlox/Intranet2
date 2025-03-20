@@ -5,7 +5,7 @@ import requests
 import json
 
 class Department:
-    def __init__(self, id, name, father_id, data):
+    def __init__(self, id=0, name="", father_id="", data=""): #убрать = после каждой переменной в будущем
         self.id = id
         self.name = name
         self.father_id = father_id
@@ -20,5 +20,9 @@ class Department:
         for dep in data:
             #if dep['ID'] == '420':
             DepSQL.upsert_dep(dep)
+            
 
         return {"status" : True}
+    
+    def search_dep_by_id(self):
+        return DepartmentModel(self.id).find_dep_by_id()

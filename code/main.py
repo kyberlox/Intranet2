@@ -44,7 +44,7 @@ def get_user(request: Request):
 
 @app.get("/api/view/department", tags=["Департамент", "View"])
 def get_user(request: Request):
-    
+    #
     return templates.TemplateResponse(name="depart.html", context={"request": request})
 
 @app.get("/api/view/user", tags=["Пользователь", "View"])

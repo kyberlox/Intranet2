@@ -34,9 +34,7 @@ class B24:
                 if key not in Keys:
                     Keys.append(key)
         return Keys
-    '''
 
-'''
     #функция выводит все возможные варианты значения параметра пользователя:
     def variant_key_user(self, key = "WORK_POSITION"):
         usrs = self.getUsers()

@@ -1,3 +1,4 @@
 /pSQL/data
 /.env
 /code/__pycache__
+/push.sh

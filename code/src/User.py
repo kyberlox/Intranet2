@@ -61,6 +61,20 @@ class User:
     def search_by_id(self):
         return UserModel(self.id).find_by_id()
 
+    def get_dep_usrs(self):
+        b24 = B24()
+        users_data = sorted(b24.getUsers(), key=lambda d: int(d['ID']))
+        #dep_data = b24.getDeps()
+        result = [["id", "ФИО", "Должность", "Подразделение (по иерархии)"]]
+        for usr in users_data:
+            if usr["ACTIVE"] and ('WORK_POSITION' in usr and usr['WORK_POSITION'] != "") and ('UF_USR_1705744824758' in usr and usr['UF_USR_1705744824758'] != [] and usr['UF_USR_1705744824758'] != False) and ('LAST_NAME' in usr and 'NAME' in usr and 'SECOND_NAME' in usr):
+                line = [usr['ID'], f"{usr['LAST_NAME']} {usr['NAME']} {usr['SECOND_NAME']}", usr['WORK_POSITION']]
+                for dep in usr['UF_USR_1705744824758']:
+                    line.append(dep)
+
+                result.append(line)
+        return result
+
 
     '''
     def variant_users(self, key):
@@ -88,19 +102,7 @@ class User:
         return result
     '''
 
-    def get_dep_usrs(self):
-        b24 = B24()
-        users_data = sorted(b24.getUsers(), key=lambda d: int(d['ID']))
-        #dep_data = b24.getDeps()
-        result = [["id", "ФИО", "Должность", "Подразделение (по иерархии)"]]
-        for usr in users_data:
-            if usr["ACTIVE"] and ('WORK_POSITION' in usr and usr['WORK_POSITION'] != "") and ('UF_USR_1705744824758' in usr and usr['UF_USR_1705744824758'] != [] and usr['UF_USR_1705744824758'] != False) and ('LAST_NAME' in usr and 'NAME' in usr and 'SECOND_NAME' in usr):
-                line = [usr['ID'], f"{usr['LAST_NAME']} {usr['NAME']} {usr['SECOND_NAME']}", usr['WORK_POSITION']]
-                for dep in usr['UF_USR_1705744824758']:
-                    line.append(dep)
 
-                result.append(line)
-        return result
 
 
 

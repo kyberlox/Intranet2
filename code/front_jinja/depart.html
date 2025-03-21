@@ -25,28 +25,28 @@
     <div class="depart-container">
         <h1>Департаменты</h1>
         <!-- Блок обновления департамента -->
-        <div class="update-section">
-            <form action="/api/view/department" method="get" class="update-form">
-                <button type="button" class="menu-button" onclick="fetch_put_deps()">Обновить данные</button>
-                
-            </form>
-            <div id="result-box" class="status-box">
-                <p>Статус: <span id="status-text"></span></p>
-            </div>
-        </div>
+        
+        <form action="/api/view/department" method="get" class="menu-button-id">
+            <button type="button" class="menu-button" onclick="fetch_put_deps()">Обновить данные</button>
+            
+        </form>
+            
+        
         <!-- Блок поиска по id -->
-        <div class="update-section">
-            <div class="search-container">
-                <div class="menu-button">Введите ID департамента</div>
-                <form onsubmit="fetchDepartmentById(event)" class="search-form">
-                    <input type="text" id="department_id" name="department_id" required>
-                    <button type="submit" class="menu-button">Найти</button>
-                </form>
-            </div>
+        
+        <div class="menu-button-id">Поиск департамента по ID</div>
+        
+                
+        <form onsubmit="fetchDepartmentById(event)" class="search-form">
+            <input type="text" id="department_id" name="department_id" required>
+            <button type="submit" class="menu-button-id">Найти</button>
+        </form>
+            
             <!-- Блок для вывода результата поиска -->
-            <div id="search-result" class="status-box">
-                <p>Результат: <span id="search-result-text"></span></p>
-            </div>
+            
+        </div>
+        <div id="search-result" class="status-box">
+            <p>Результат: <span id="search-result-text"></span></p>
         </div>
     </div>
     <script>

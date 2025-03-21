@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.expression import exists, select
 from sqlalchemy import inspect, text
+from sqlalchemy import update
 
 import json
 import datetime
@@ -112,12 +113,13 @@ class UserModel:
             #если есть - проверить необходимость обновления
             if usr:
                 #user = db.query(self.user).filter(User.id == user_data["id"]).first()
-                user = db.query(self.user).get(user_data['id'])
+                user = self.db.query(User).get(user_data['id'])
 
                 #проверить есть ли изменения
                 need_update = False
 
                 #проверка основных параметров
+                new_params = []
                 for column in DB_columns:
                     if user_data.get(column) != user.__dict__[column]:
                         if column == 'personal_birthday':
@@ -126,32 +128,45 @@ class UserModel:
                             dt_old = user.personal_birthday.date()
                             if dt_new != dt_old:
                                 need_update = True
+                                new_params.append(column)
                                 user.__dict__[column] = user_data.get(column)
                                 print(column, user_data.get(column))
                         else:
                             need_update = True
+                            new_params.append(column)
                             user.__dict__[column] = user_data.get(column)
                             print(column, user_data.get(column))
 
-                        #print(column, user_data.get(column), user.__dict__[column])
+                # если есть изменения - внести
+                if need_update:
+                    for cls in new_params:
+                        sql = text(f"UPDATE {User.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
+                        with engine.connect() as connection:
+                            connection.execute(sql, user_data)
+                            connection.commit()
 
+
+
+                # проверить есть ли изменения
+                need_update_indirect_data = False
                 #проверка доп. параметров
                 for key in user_data.keys():
                     if key not in DB_columns:
-                        if key not in user.indirect_data:
-                            #добавить, если нет
-                            user.indirect_data[key] = user_data[key]
-                            need_update = True
-                            print(key, user_data.get(key))
-                        elif user_data[key] != user.indirect_data[key]:
+                        if (user_data[key] != user.indirect_data[key]) or (key not in user.indirect_data):
                             #изменить, если требуется
+                            need_update_indirect_data = True
                             user.indirect_data[key] = user_data[key]
-                            need_update = True
-                            print(key, user_data.get(key))
+                            print(key, user.indirect_data[key])
 
-                #если есть изменения - внести
-                if need_update:
-                    self.db.commit() #НЕ СРАБАТЫВАЕТ! (
+                # если есть изменения - внести
+                if need_update_indirect_data:
+                    indirect_jsnb = json.dumps(user.indirect_data)
+                    sql = text(f"UPDATE {User.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
+                    with engine.connect() as connection:
+                        connection.execute(sql, user_data)
+                        connection.commit()
+
+
 
             #если нет - добавить
             else:
@@ -167,6 +182,10 @@ class UserModel:
                         if key == 'active':
                             columns += f", active"
                             values += f", {user_data[key]}"
+                        #если дата - пустая строка
+                        elif key == 'personal_birthday' and user_data[key] == "":
+                            columns += f", {key}"
+                            values += f", NULL"
                         #потом остальные
                         else:
                             columns += f", {key}"
@@ -188,11 +207,15 @@ class UserModel:
                     connection.execute(sql, user_data)
                     connection.commit()
 
+
         except SQLAlchemyError as e:
             db.rollback()
             print(f"An error occurred: {e}")
 
     def find_by_id(self):
+        """
+        Ищет пользователя по id
+        """
         user = self.db.query(self.user).get(self.id)
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']

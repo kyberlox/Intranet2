@@ -1,6 +1,9 @@
-from fastapi import FastAPI, APIRouter, Body#, Cookie, Header, Response
+from fastapi import FastAPI, APIRouter, Body, Request#, Cookie, Header, Response
 #from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.User import User
 
@@ -8,6 +11,10 @@ from src.Department import Department
 
 app = FastAPI()
 router = APIRouter()
+
+app.mount("/api/view/static", StaticFiles(directory="./front_jinja/static"), name="static")
+
+templates = Jinja2Templates(directory="./front_jinja")
 
 origins = [
     "http://localhost:8000",
@@ -32,16 +39,16 @@ def test(key):
 
 #Заглушки фронта
 @app.get("/api/view/menu", tags=["Меню", "View"])
-def get_user():
-    pass
+def get_user(request: Request):
+    return templates.TemplateResponse(name="index.html", context={"request": request})
 
 @app.get("/api/view/department", tags=["Департамент", "View"])
-def get_user():
-    pass
+def get_user(request: Request):
+    return templates.TemplateResponse(name="depart.html", context={"request": request})
 
-@app.get("/api/view/user", tags=["Департамент", "View"])
-def get_user():
-    pass
+@app.get("/api/view/user", tags=["Пользователь", "View"])
+def get_user(request: Request):
+    return templates.TemplateResponse(name="user.html", context={"request": request})
 
 
 

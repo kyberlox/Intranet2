@@ -14,21 +14,27 @@ body {
 .depart-body {
     display: flex;
     flex-direction: column;
-    /*align-items: center;*/
+    align-items: center;
+    width: 100%;
 }
 
 .base-div {
-    height: 15%;
-    width: 75%;
+    display: flex;
+    justify-content: space-between;
+    width: auto;
+    margin-bottom: 20px;
 }
 
 .title-div {
-    height: 30%;
-    width: 30%;
+    width: 45%;
 }
 
-.title-div + .title-div {
-    margin-left: 50%;
+.title-div.left {
+    text-align: left;
+}
+
+.title-div.right {
+    text-align: right;
 }
 
 .menu-container {
@@ -37,6 +43,16 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: auto;
+}
+
+.depart-container {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 50px;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: auto;
 }
 
 h1 {
@@ -68,14 +84,69 @@ h1 {
 }
 
 .menu-button:hover {
-    background-color: #e4b95c;
+    background-color: #ff9900;
+}
+
+.search-label {
+    background-color: #ff9900;
+    border-radius: 10px;
+    padding: 15px;
+    width: 200px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.search-form {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.search-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 200px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    background-color: #ff9900;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #ff9900;
+}
+
+/* Стили для блока результата */
+.status-box {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+#search-result-text {
+    font-weight: bold;
+    color: #333;
 }
 
 /* Стили для изображения внутри кнопки */
 .button-image {
     width: auto;
     height: auto;
-    background-color: transparent; 
+    background-color: #f5b24e; 
+    color:#ffffff;
     border-radius: 10px;
     margin-bottom: 10px;
     display: flex;
@@ -87,4 +158,55 @@ h1 {
 .menu-button span {
     font-size: 16px;
     font-weight: bold;
+}
+
+
+.update-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.status-box {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+    width: 200px;
+    flex-grow: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для поиска и результата */
+.search-section {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.search-box, .result-box {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+    flex: 1;
+}
+
+.search-box input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 80%;
+}
+
+.search-box button {
+    padding: 10px 20px;
+    background-color: #ff9900;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background-color: #e4b95c;
 }

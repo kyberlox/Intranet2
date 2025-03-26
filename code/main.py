@@ -6,8 +6,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.User import User
-
 from src.Department import Department
+from src.UsDep import UsDep
 
 app = FastAPI()
 router = APIRouter()
@@ -35,7 +35,7 @@ app.add_middleware(
 
 @app.get("/test/{key}")
 def test(key):
-    return User().get_dep_usrs()
+    return UsDep().get_usr_dep()
 
 #Заглушки фронта
 @app.get("/api/view/menu", tags=["Меню", "View"])
@@ -87,3 +87,15 @@ def get_department(id):
 def get_user(jsn=Body()):
     #будет работать через elasticsearch
     pass
+
+
+
+#Таблицу пользователей и департаментов можно обновить
+@app.put("/api/users_depart", tags=["Пользователь-Департамент"])
+def get_user():
+    return UsDep().get_usr_dep()
+
+#Пользователя и его департамент можно выгрузить
+@app.get("/api/users_depart/{id}", tags=["Пользователь-Департамент"])
+def get_usdepart(id):
+    return UsDep(id).search_usdep_by_id()

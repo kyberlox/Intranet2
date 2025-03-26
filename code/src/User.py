@@ -41,6 +41,8 @@ class User:
                 result.append(line)
         return result
 
+    def get_uf_depart(self):
+        return UserModel().find_uf_depart()
 
     '''
     def variant_users(self, key):

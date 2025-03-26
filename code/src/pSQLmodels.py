@@ -54,12 +54,31 @@ class Department(Base):
     user_head_id = Column(Integer, nullable=True)
     sort = Column(Integer, nullable=True)
 
-
 class UsDep(Base):
     __tablename__ = 'usdep'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, nullable=True)
     dep_id = Column(Integer, nullable=True)
+
+
+
+class SectionDB(Base):
+    __tablename__ = 'section'
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, nullable=True)
+    parent_id = Column(Integer, nullable=True)
+
+class ArticleDB(Base):
+    __tablename__ = 'article'
+    id = Column(Integer, primary_key=True)
+    section_id = Column(Integer, nullable=True)
+    name = Column(Text, nullable=True)
+    preview_text = Column(Text, nullable=True)
+    content_text = Column(Text, nullable=True)
+    content_type = Column(String, nullable=True)
+    date_publiction = Column(DateTime, nullable=True)
+    date_creation = Column(DateTime, nullable=True)
+    indirect_data = Column(JSONB, nullable=True)
 
 
 
@@ -232,8 +251,6 @@ class UserModel:
 
 
 
-
-
 class DepartmentModel():
     def __init__(self, Id=None): #убрать None в будущем
         self.id = Id
@@ -329,7 +346,6 @@ class DepartmentModel():
 
         except SQLAlchemyError as e:
             print(f'An error: {e}')
-
 
     def find_dep_by_id(self):
         """

@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.User import User
+from src.Article import Article
 
 from src.Department import Department
 
@@ -33,9 +34,9 @@ app.add_middleware(
 
 
 
-@app.get("/test/{key}")
-def test(key):
-    return User().get_dep_usrs()
+@app.get("/test/{id}")
+def test(id):
+    return Article(id=id).get_all()
 
 #Заглушки фронта
 @app.get("/api/view/menu", tags=["Меню", "View"])

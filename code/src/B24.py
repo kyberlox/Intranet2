@@ -16,9 +16,9 @@ class B24:
         result = self.bx24.callMethod('department.get')
         return result
 
-    def getInfoBlock(self):
+    def getInfoBlock(self, id):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
-        result = self.bx24.callMethod('lists.get.json?IBLOCK_TYPE_ID=lists')
+        result = self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
         return result
 
     #async def getUsers(self):

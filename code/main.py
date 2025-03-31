@@ -2,15 +2,14 @@ from fastapi import FastAPI, APIRouter, Body, Request#, Cookie, Header, Response
 #from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-from src.User import User
-from src.Department import Department
-from src.UsDep import UsDep
+from src.model.User import User
+from src.model.Department import Department
+from src.model.UsDep import UsDep
 
-from src.Section import Section
-from src.Article import Article
+from src.model.Section import Section
+from src.model.Article import Article
 
 import time
 
@@ -87,7 +86,7 @@ def total_update():
     time_end = time.time()
     total_time_sec = time_end - time_start
 
-    return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
+    return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 #Заглушки фронта
 @app.get("/api/view/menu", tags=["Меню", "View"])

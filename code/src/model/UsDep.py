@@ -1,5 +1,5 @@
-from src.pSQLmodels import UsDepModel
-from src.B24 import B24
+from src.base.pSQLmodels import UsDepModel
+from src.base.B24 import B24
 
 
 

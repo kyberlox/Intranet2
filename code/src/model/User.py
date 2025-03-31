@@ -1,5 +1,5 @@
-from src.pSQLmodels import UserModel
-from src.B24 import B24
+from src.base.pSQLmodels import UserModel
+from src.base.B24 import B24
 
 import requests
 import json

@@ -11,7 +11,6 @@ import json
 import datetime
 from datetime import datetime
 
-
 import os
 from dotenv import load_dotenv
 
@@ -62,17 +61,18 @@ class UsDep(Base):
 
 
 
-class SectionDB(Base):
+class Section(Base):
     __tablename__ = 'section'
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=True)
     parent_id = Column(Integer, nullable=True)
 
-class ArticleDB(Base):
+class Article(Base):
     __tablename__ = 'article'
     id = Column(Integer, primary_key=True)
     section_id = Column(Integer, nullable=True)
     name = Column(Text, nullable=True)
+    active = Column(Boolean, nullable=True, default=True)
     preview_text = Column(Text, nullable=True)
     content_text = Column(Text, nullable=True)
     content_type = Column(String, nullable=True)
@@ -98,8 +98,6 @@ class UserModel:
         Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autoflush=True, bind=engine)
         self.db = SessionLocal()
-
-
 
     def upsert_user(self, user_data):
         """
@@ -143,18 +141,30 @@ class UserModel:
                     if user_data.get(column) != user.__dict__[column]:
                         if column == 'personal_birthday':
                             # обработка дат
-                            dt_new = datetime.strptime(user_data.get('personal_birthday').split('T')[0], '%Y-%m-%d').date()
-                            dt_old = user.personal_birthday.date()
+                            if user_data.get('personal_birthday') != "":
+                                dt_new = datetime.strptime(user_data.get('personal_birthday').split('T')[0], '%Y-%m-%d').date()
+                                cur_dt = f"\'{datetime.strptime(user_data.get('personal_birthday').split('T')[0], '%Y-%m-%d').date()}  04:00:00\'"
+                            else:
+                                dt_new = None
+
+                            if user.personal_birthday is not None:
+                                dt_old = user.personal_birthday.date()
+                            else:
+                                dt_old = user.personal_birthday
+
                             if dt_new != dt_old:
                                 need_update = True
                                 new_params.append(column)
-                                user.__dict__[column] = user_data.get(column)
-                                print(column, user_data.get(column))
+                                user.__dict__[column] = dt_new
+                                print(user.id , column, dt_new)
                         else:
                             need_update = True
                             new_params.append(column)
-                            user.__dict__[column] = user_data.get(column)
-                            print(column, user_data.get(column))
+                            if user_data.get(column) == "":
+                                user.__dict__[column] = "NULL"
+                            else:
+                                user.__dict__[column] = f"\'{user_data.get(column)}\'"
+                            print(user.id, column, user_data.get(column))
 
                 # если есть изменения - внести
                 if need_update:
@@ -171,7 +181,7 @@ class UserModel:
                 #проверка доп. параметров
                 for key in user_data.keys():
                     if key not in DB_columns:
-                        if (user_data[key] != user.indirect_data[key]) or (key not in user.indirect_data):
+                        if (key not in user.indirect_data) or (user_data[key] != user.indirect_data[key]):
                             #изменить, если требуется
                             need_update_indirect_data = True
                             user.indirect_data[key] = user_data[key]
@@ -213,6 +223,7 @@ class UserModel:
                     #оставшиеся - в метаданные
                     else:
                         meta[key] = user_data[key]
+
 
 
                 columns += f", indirect_data"
@@ -592,7 +603,7 @@ class UsDepModel:
                                         self.db.add(tbl)
                                     self.db.commit()                         
         
-        return {'status' : True}   
+        return True
 
     def find_dep_by_user_id(self):
         """
@@ -606,16 +617,74 @@ class UsDepModel:
             return {'err' : "Invalid user id"}
 
                 
-                
-            
-                
+
+class SectionModel():
+
+    def __init__(self, id=0, name="", parent_id=0):
+        self.id = id
+        self.name = name
+        self.parent_id = parent_id
+
+    def upload(self, section_data):
+        for section in section_data:
+            sec = db.query(Section).filter(Section.id == section["id"]).first()
+
+            if sec is not None:
+                #надо ли обновить?
+                if sec.name != section["name"]:
+                   sec.name = section["name"]
+                if sec.parent_id != section["parent_id"]:
+                    sec.parent_id = section["parent_id"]
+            else:
+                sec = Section(id=section["id"], name=section["name"], parent_id=section["parent_id"])
+            db.add(sec)
+            db.commit()
+
+        return section_data
+
+    def search_by_id(self):
+        return db.query(Section).filter(Section.id == self.id).first()
+
+    def search_by_parent_id(self):
+        return db.query(Section).filter(Section.parent_id == self.parent_id).all()
 
 
 
-        
+class ArticleModel():
 
+    def __init__(self, id=0, section_id=0):
+        self.id = id
+        self.section_id = section_id
 
+    def add_article(self, article_data):
+        article = Article(**article_data)
+        db.add(article)
+        db.commit()
 
+        return article_data
 
+    def need_add(self):
+
+        db_art = db.query(Article).filter(Article.section_id == self.section_id).all()
+        # если в таблице есть раздел
+        if db_art != []:
+            need = True
+            for art in db_art:
+                # добавить статью в таблицу, если её там нет
+                if int(art.id) == int(self.id):
+                    need = False
+                    print("Такой раздел уже есть", self.id)
+                #если статья есть - обновить данные о ней
+            return need
+
+        # если в таблице нет статей раздела
+        else:
+            return True
+
+    def find_by_id(self):
+        return db.query(Article).get(self.id)
+
+    def find_by_section_id(self):
+        return db.query(Article).filter(Article.section_id == self.section_id).all()
 
 

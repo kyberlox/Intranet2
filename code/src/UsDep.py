@@ -1,6 +1,8 @@
 from src.pSQLmodels import UsDepModel
 from src.B24 import B24
 
+
+
 class UsDep:
     def __init__(self, ID=0, usr_id=0, dep_id=0):
         self.ID = ID
@@ -17,7 +19,7 @@ class UsDep:
             if usr['ID'] is not None:
                 result[int(usr['ID'])] = usr['UF_DEPARTMENT']
         
-        return UserSQL.put_uf_depart(result)
+        return {"status" : UserSQL.put_uf_depart(result)}
         
     def search_usdep_by_id(self):
         return UsDepModel(self.ID).find_dep_by_user_id()

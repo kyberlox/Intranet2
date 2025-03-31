@@ -1,5 +1,5 @@
-from src.B24 import B24
-from src.pSQLmodels import SectionModel
+from src.base.B24 import B24
+from src.base.pSQLmodels import SectionModel
 
 import json
 

@@ -13,7 +13,7 @@ class Section:
 
     def load(self):
         #загрузить из JSON
-        section_data_file = open("./src/sections.json", "r")
+        section_data_file = open("./src/base/sections.json", "r")
         section_data = json.load(section_data_file)
         section_data_file.close()
 
@@ -22,7 +22,7 @@ class Section:
 
 
     def get_all(self):
-        section_data_file = open("./src/sections.json", "r")
+        section_data_file = open("./src/base/sections.json", "r")
         section_data = json.load(section_data_file)
         section_data_file.close()
 

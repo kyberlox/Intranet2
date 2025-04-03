@@ -79,6 +79,7 @@ class Article(Base):
     date_publiction = Column(DateTime, nullable=True)
     date_creation = Column(DateTime, nullable=True)
     indirect_data = Column(JSONB, nullable=True)
+    #preview_image_url = Column(Text, nullable=True)
 
 
 
@@ -673,13 +674,35 @@ class ArticleModel():
                 # добавить статью в таблицу, если её там нет
                 if int(art.id) == int(self.id):
                     need = False
-                    print("Такой раздел уже есть", self.id)
-                #если статья есть - обновить данные о ней
+                    #print("Такой раздел уже есть", self.id)
             return need
 
         # если в таблице нет статей раздела
         else:
             return True
+
+    def reassembly(self, article_data):
+        #удалить статью
+        db.query(Article).get(self.id).delete()
+        #залить заново
+        self.add_article(article_data)
+
+    def update(self, article_data):
+        db_art = db.query(Article).get(self.id).__dict__
+        for key in article_data:
+            if key not in ["ID", "_sa_instance_state"]:
+                if key not in db_art:
+                    self.reassembly(article_data)
+                    print(db_art['id'], "добавить", key, "=", article_data[key])
+                    return True
+                elif article_data[key] != db_art[key]:
+                    self.reassembly(article_data)
+                    print(db_art['id'], key, db_art[key], "-->", article_data[key])
+                    return True
+                else:
+                    return False
+
+
 
     def find_by_id(self):
         return db.query(Article).get(self.id)

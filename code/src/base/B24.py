@@ -21,6 +21,27 @@ class B24:
         result = self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
         return result
 
+    def get_file(self, inf_id, art_id, property):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+        payload = {
+            "IBLOCK_TYPE_ID" : "lists",
+            "IBLOCK_ID" : int(inf_id),
+            "ELEMENT_ID" : int(art_id),
+            "FIELD_ID" : int(property)
+        }
+        #result = self.bx24.callMethod(f"lists.element.get.file.url.json?IBLOCK_TYPE_ID=lists&IBLOCK_ID={inf_id}&ELEMENT_ID={art_id}&FIELD_ID={property}")
+        result = self.bx24.callMethod(f"lists.element.get.file.url", payload)
+        return result
+
+    def get_picture(self, inf_id, art_id, picture_type, property):
+        link = f"https://portal.emk.ru/company/lists/{inf_id}/file/0/{art_id}/{picture_type}/{property}/"
+        return link
+
+    '''def find(self, inf_id, art_id, property):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+        result = self.bx24.callMethod(f"lists.field.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={inf_id}&FIELD_ID={property}")
+        return result'''
+
     #async def getUsers(self):
         #result = await self.bx24.callMethod('user.get')
         #return result

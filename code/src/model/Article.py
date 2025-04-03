@@ -1,5 +1,6 @@
 from src.base.B24 import B24
 from src.base.pSQLmodels import ArticleModel
+from src.base.mongodb import FileModel
 
 import json
 import datetime
@@ -22,10 +23,13 @@ class Article:
         self.id = id
         self.section_id = section_id
 
+    def find(self, inf_id, art_id, property):
+        return B24().find(inf_id, art_id, property)
+
     def get_inf(self):
         return B24().getInfoBlock(self.section_id)
 
-    def add(self, data):
+    def make_valid_article(self, data):
         '''
         ! Добавить статью и стандартизировать данные
         '''
@@ -115,9 +119,15 @@ class Article:
         if content_type is not None:
             article_data['content_type'] = content_type
 
+        return article_data
 
+    def add(self, article_data):
+        #закидываем файлы к статье
 
-        return ArticleModel().add_article(article_data)
+        #если файл ещё не в статье - добавить
+        #File().add(file_data)
+        # определить превью
+        return ArticleModel().add_article(self.make_valid_article(article_data))
 
 
 
@@ -152,9 +162,15 @@ class Article:
                 for inf in infs:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
+
+                    files_property = ["PREVIEW_PICTURE", "DETAIL_PICTURE"]
+                    # находим файлы статьи
+
                     if artDB.need_add():
                         print("Добавил стаью", inf["ID"])
                         self.add(inf)
+                    elif artDB.update(self.make_valid_article(inf)):
+                        pass
 
 
 
@@ -199,6 +215,8 @@ class Article:
                     artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
                     if artDB.need_add():
                         self.add(data)
+                    elif artDB.update(self.make_valid_article(data)):
+                        pass
 
         #Памятка
         # пройти по инфоблоку заголовков
@@ -217,7 +235,7 @@ class Article:
                 else:
                     print("##################", data_inf["ID"])
 
-                # если эта статья принадлежит иинфоблоку
+                # если эта статья принадлежит инфоблоку
                 if data_title_id == title_id:
                     data = dict()
 
@@ -237,6 +255,8 @@ class Article:
                     artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
                     if artDB.need_add():
                         self.add(data)
+                    elif artDB.update(self.make_valid_article(data)):
+                        pass
 
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
@@ -273,6 +293,8 @@ class Article:
                     artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
                     if artDB.need_add():
                         self.add(data)
+                    elif artDB.update(self.make_valid_article(data)):
+                        pass
 
 
 
@@ -292,8 +314,12 @@ class Article:
                 pre_section_id = list(art["PROPERTY_1066"].values())[0]
 
                 if pre_section_id == "661":
-                    art["section_id"] = 31 # Актуальные новости
-                    self.section_id = 31
+                    if "PROPERTY_5044" in art and list(art["PROPERTY_5044"].values())[0] == "1":
+                        art["section_id"] = 33  # Видеорепортажи
+                        self.section_id = 33
+                    else:
+                        art["section_id"] = 31 # Актуальные новости
+                        self.section_id = 31
                 elif pre_section_id == "663":
                     art["section_id"] = 51  # Корпоративные события
                     self.section_id = 51
@@ -301,9 +327,17 @@ class Article:
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
             else:
-                # че делапть с уже не актуальными новостями?
-                print("Статья", art["NAME"], art["ID"], "не загружена")
+                # че делать с уже не актуальными новостями?
+                self.section_id = 6
+                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                if artDB.need_add():
+                    self.add(art)
+                    print("Статья", art["NAME"], art["ID"], "уже не актуальна")
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
 
 
 
@@ -332,11 +366,18 @@ class Article:
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
 
             else:
-                # че делапть с уже не актуальными новостями?
-                print("Запись в фотогалерею", art["NAME"], art["ID"], "не загружена")
-
+                self.section_id = 6
+                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                if artDB.need_add():
+                    self.add(art)
+                    # че делапть с уже не актуальными новостями?
+                    print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
 
 
         # Видеогалерея
@@ -358,10 +399,19 @@ class Article:
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
 
             else:
-                # че делапть с уже не актуальными новостями?
-                print("Запись в фотогалерею", art["NAME"], art["ID"], "не загружена")
+                # че делать с уже не актуальными новостями?
+                self.section_id = 6
+                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                if artDB.need_add():
+                    art["active"] = False
+                    self.add(art)
+                    print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
 
 
 

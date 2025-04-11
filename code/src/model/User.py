@@ -44,6 +44,18 @@ class User:
     def get_uf_depart(self):
         return UserModel().find_uf_depart()
 
+    def set_users_photo(self):
+        #найдем фото пользователя по uuid
+        #если у пользователя есть аватарка
+        #проверим url первоисточника текущей аватарки
+        #если есть изменение - скачать новую
+        #обновить данные в pSQL
+        #в mongodb
+        #вывести отчет по изменениям
+        pass
+
+
+
     '''
     def variant_users(self, key):
         return B24().variant_key_user(key)

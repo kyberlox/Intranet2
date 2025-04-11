@@ -21,19 +21,23 @@ class B24:
         result = self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
         return result
 
-    def get_file(self, inf_id, art_id, property):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
-        payload = {
-            "IBLOCK_TYPE_ID" : "lists",
-            "IBLOCK_ID" : int(inf_id),
-            "ELEMENT_ID" : int(art_id),
-            "FIELD_ID" : int(property)
-        }
-        #result = self.bx24.callMethod(f"lists.element.get.file.url.json?IBLOCK_TYPE_ID=lists&IBLOCK_ID={inf_id}&ELEMENT_ID={art_id}&FIELD_ID={property}")
-        result = self.bx24.callMethod(f"lists.element.get.file.url", payload)
+
+
+    def get_file(self, id, inf_id):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/j6122m0ystded5ag/")
+        result = self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID=50&id=170877')
         return result
 
-    def get_picture(self, inf_id, art_id, picture_type, property):
+
+
+
+
+
+
+
+
+
+    def get_picture_link(self, inf_id, art_id, picture_type, property):
         link = f"https://portal.emk.ru/company/lists/{inf_id}/file/0/{art_id}/{picture_type}/{property}/"
         return link
 

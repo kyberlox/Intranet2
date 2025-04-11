@@ -1,10 +1,9 @@
 /pSQL/data
 /mongodb/data
-/.env
+.env
 /code/__pycache__/
 /code/src/__pycache__/
-<<<<<<< HEAD
-/push.sh
-=======
-/push.sh
->>>>>>> dcd6904be76cd85e082c31ec5d74b4f23ecb1610
+/code/src/base/__pycache__/
+/code/src/model/__pycache__/
+push.sh
+

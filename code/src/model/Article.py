@@ -1,6 +1,7 @@
 from src.base.B24 import B24
 from src.base.pSQLmodels import ArticleModel
 from src.base.mongodb import FileModel
+from src.model.File import File
 
 import json
 import datetime
@@ -98,6 +99,12 @@ class Article:
         else:
             date_creation = None
 
+        # записываем файлы в БД
+        self.search_files(data["IBLOCK_ID"], self.id, data)
+        # article_data["indirect_data"]["files"]
+
+        # определяем превью
+
         #тут, по необходимости, можно форматировать data (заменить числовой ключ на значение или что-то вроде того)
 
         indirect_data = json.dumps(data)
@@ -121,12 +128,67 @@ class Article:
 
         return article_data
 
-    def add(self, article_data):
-        #закидываем файлы к статье
+    def search_files(self, inf_id, art_id, data):
+        files_property = [
+            "PREVIEW_PICTURE",
+            "DETAIL_PICTURE",
+            "PROPERTY_372",
+            "PROPERTY_337",
+            "PROPERTY_338",
+            "PROPERTY_342",
+            "PROPERTY_343",
+            "PROPERTY_1023",
+            "PROPERTY_1020",
+            "PROPERTY_476",
+            "PROPERTY_670",
+            "PROPERTY_669",
+            "PROPERTY_463",
+            "PROPERTY_498",
+            "PROPERTY_289",
+            "PROPERTY_399",
+            "PROPERTY_400",
+            "PROPERTY_407",
+            "PROPERTY_409"
+        ]
 
-        #если файл ещё не в статье - добавить
-        #File().add(file_data)
-        # определить превью
+        # находим файлы статьи
+        files = []
+        # preview_image_url = ""
+        for file_property in files_property.keys():
+            if file_property in data:
+                try:
+                    # выцепить id файла
+                    if type(data[file_property]) == type(dict()):
+                        for file_id in data[file_property].values():
+                            if type(file_id) == type(str()):
+                                files.append(file_id)
+                            elif type(file_id) == type(list()):
+                                for f_id in file_id:
+                                    files.append(f_id)
+                    elif type(data[file_property]) == type(list()):
+                        for dct in data[file_property]:
+                            for file_id in dct.values():
+                                if type(file_id) == type(str()):
+                                    files.append(file_id)
+                                elif type(file_id) == type(list()):
+                                    for f_id in file_id:
+                                        files.append(f_id)
+                    else:
+                        print("Некорректные данные в поле ", file_property)
+                except:
+                    pass
+                    # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_propertyin)
+
+            files_data = []
+            for f_id in files:
+                file_data = File(id=f_id).upload_inf_art(inf_id, art_id)
+                files_data.append(file_data)
+
+            return files_data
+
+
+
+    def add(self, article_data):
         return ArticleModel().add_article(self.make_valid_article(article_data))
 
 
@@ -134,6 +196,7 @@ class Article:
     def uplod(self):
         '''
         ! Не повредить имеющиеся записи и структуру
+        ! Выгрузка файлов из инфоблоков
         '''
 
         '''
@@ -150,6 +213,7 @@ class Article:
             55 : "56" # Благотворительные проекты
         }
 
+
         #проходимся по инфоблокам
         for i in sec_inf:
 
@@ -163,13 +227,11 @@ class Article:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
 
-                    files_property = ["PREVIEW_PICTURE", "DETAIL_PICTURE"]
-                    # находим файлы статьи
-
                     if artDB.need_add():
                         print("Добавил стаью", inf["ID"])
                         self.add(inf)
                     elif artDB.update(self.make_valid_article(inf)):
+                        #проверить апдейт файлов
                         pass
 
 

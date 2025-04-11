@@ -38,6 +38,7 @@ class User(Base):
     last_name = Column(Text, nullable=True)
     second_name = Column(Text, nullable=True)
     email = Column(Text, nullable=True)
+    phone = Column(Text, nullable=True)
     personal_mobile = Column(Text, nullable=True)
     uf_phone_inner = Column(Text, nullable=True)
     personal_city = Column(Text, nullable=True)

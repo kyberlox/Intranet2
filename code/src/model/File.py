@@ -11,15 +11,20 @@ class File:
     def __init__(self, id=None):
         self.id = id
 
+    def download_by_URL(self, url, path):
+        response = requests.get(url)
+        with open(path, 'wb') as file:
+            file.write(response.context)
+        return response.headers.get('Content-Type', 'unknown')
 
 
-    def download_file(self, url):
+
+    def upload_inf_art(self, inf_id, art_id=None):
         try:
-            # Отправляем GET-запрос к URL
-            response = requests.get(f"https://portal.emk.ru{url}", stream=True)
-            response.raise_for_status()  # Проверяем, нет ли ошибок
+            b24 = B24()
+            file_data = b24.get_file(self.id, inf_id)
 
-            filename = response.headers#["content-disposition"]
+            filename = file_data["NAME"]
             print(filename)
 
             filename_parts = filename.split('.')
@@ -29,41 +34,36 @@ class File:
             unique_name = str(ObjectId()) + file_ext
             file_path = os.path.join(STORAGE_PATH, unique_name)
 
+            #Проверяем нет ли такого файла уже в БД
+
             # Сохраняем файл
-            with open(file_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
+            content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
 
-            content_type = response.headers.get('Content-Type', 'unknown')
-
-            return {
+            result = {
                 "original_name": filename,
                 "stored_name": unique_name,
                 "content_type": content_type,
+                "article_id": art_id,
+                "b24_id": self.id,
                 "file_url": f"/api/files/{unique_name}"  # Прямой URL
+            }
+
+            #записать в mongodb
+            inserted_id = FileModel().add(result)
+
+            return {
+                "id": str(inserted_id),
+                "original_name": filename,
+                "stored_name": unique_name,
+                "content_type": content_type,
+                "article_id": art_id,
+                "b24_id": self.id,
+                "file_url": f"/api/files/{unique_name}"
             }
 
         except requests.exceptions.RequestException as e:
             print(f"Ошибка при скачивании файла: {e}")
             return None
 
-    def download(self, inf_id, art_id, property):
-        #получить ссылку с битрикса
-        download_links = B24().get_file(inf_id, art_id, property)
-
-        result = []
-        #скачать
-        for download_link in download_links:
-            print(download_link)
-            file_data = self.download_file(download_link)
-
-            #загрузить в mongo
-            result.append( FileModel().add(file_data) )
-
-        #вывести данные
-        return result
 
 
-
-    def getURl(self):
-        pass

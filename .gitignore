@@ -1,9 +1,5 @@
 /pSQL/data
 /mongodb/data
+**/__pycache__/
 .env
-/code/__pycache__/
-/code/src/__pycache__/
-/code/src/base/__pycache__/
-/code/src/model/__pycache__/
 push.sh
-

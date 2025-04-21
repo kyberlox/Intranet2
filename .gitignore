@@ -4,4 +4,5 @@
 .env
 push.sh
 /code/files_db
-docker-compose.yaml
+./docker-compose.yaml
+

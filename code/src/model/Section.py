@@ -12,6 +12,153 @@ from fastapi import APIRouter
 
 section_router = APIRouter(prefix="/section", tags=["Разделы"])
 
+class MainPage:
+    """
+    Класс для организации данных по секциям на главной странице
+    """
+    def __init__(self, page=0, sorted_list=[]):
+        self.page = page
+        self.sorted_list = sorted_list
+
+    def page_32(self):
+        second_page = {
+            'id': self.page, 
+            'type': 'singleBlock', 
+            'title': 'Организационное развитие', 
+            "href": "corpnews", 
+            'images': [{'id': self.sorted_list[0][0], 'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg"}]
+            }
+        return second_page
+
+    def page_31(self):
+        second_page = {
+            'id': self.page,
+            'type': 'fullRowBlock',
+            'title': 'Бизнес-новости',
+            'href': 'actualnews',
+            'images': []
+        }
+
+        business_news = []
+        
+        image_url = ''
+        for i, row in enumerate(self.sorted_list):
+            if i < 5:
+                news = {}
+                preview_pict = Section().get_preview(row[0])
+
+                if preview_pict is None:
+                    image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
+                else:
+                    image_url = preview_pict
+                
+                news['id'] = row[0]
+                news['title'] = row[1]
+                news['description'] = row[2]
+                news['image'] = image_url
+                # сюда реакции
+                business_news.append(news)
+        second_page['images'] = business_news
+        return second_page
+
+    def page_16(self):
+        second_page = {
+            'id': self.page,
+            'type': 'fullRowBlock',
+            'title': 'Интервью',
+            'href': 'interview',
+            'images': []
+        }
+
+        interview_news = []
+        
+        image_url = ''
+        for i, row in enumerate(self.sorted_list):
+            if i < 5:
+                news = {}
+                preview_pict = Section().get_preview(row[0])
+
+                if preview_pict is None:
+                    image_url = 'отсутствует превью'
+                else:
+                    image_url = preview_pict
+                
+                news['id'] = row[0]
+                news['title'] = row[1]
+                news['description'] = row[2]
+                news['image'] = image_url
+                # сюда реакции
+                interview_news.append(news)
+        second_page['images'] = interview_news
+        return second_page
+    
+    def page_33(self):
+        second_page = {
+            'id': self.page,
+            'type': 'fullRowBlock',
+            'title': 'Видеорепортажи',
+            'href': 'videonews',
+            'images': []
+        }
+
+        video_news = []
+        
+        image_url = ''
+        for i, row in enumerate(self.sorted_list):
+            if i < 5:
+                news = {}
+                preview_pict = Section().get_preview(row[0])
+
+                if preview_pict is None:
+                    image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
+                else:
+                    image_url = preview_pict
+                
+                news['id'] = row[0]
+                news['title'] = row[1]
+                news['description'] = row[2]
+                news['image'] = image_url
+                # сюда реакции
+                video_news.append(news)
+        second_page['images'] = video_news
+        return second_page
+
+    def page_51(self, afisha):
+        second_page = {
+            'id': 9,
+            'type': 'mixedRowBlock',
+            'content': []
+        }
+        corpevents = {
+            'id': self.page,
+            'type': "fullRowBlock",
+            'title': "Корпоративные события",
+            'href': "corpevents",
+            'images': []
+        }
+        image_url = ''
+        corpevents_news = []
+        for i, row in enumerate(self.sorted_list):
+            if i < 5:
+                news = {}
+                preview_pict = Section().get_preview(row[0])
+
+                if preview_pict is None:
+                    image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
+                else:
+                    image_url = preview_pict
+                
+                news['id'] = row[0]
+                news['title'] = row[1]
+                news['description'] = row[2]
+                news['image'] = image_url
+                # сюда реакции
+                corpevents_news.append(news)
+
+        corpevents['images'] = corpevents_news
+        second_page['content'] = [afisha, corpevents]
+        return second_page
+
 class Section:
     def __init__(self, id=0, name="", parent_id=0):
         self.id = id
@@ -25,8 +172,6 @@ class Section:
         section_data_file.close()
 
         return SectionModel().upload(section_data)
-
-
 
     def get_all(self):
         section_data_file = open("./src/base/sections.json", "r")
@@ -133,8 +278,8 @@ class Section:
             } # словарь-заглушка для будущей секции "Афиша"
         
 
-            page_view.append(new_workers)    
-            page_view.append(birthday) 
+            page_view.append(new_workers) # заглушка (в будущем дописать функцию в класс MainPage) 
+            page_view.append(birthday) # заглушка (в будущем дописать функцию в класс MainPage)
 
             for page in main_page: # проходимся по каждой секции
                 second_page = {} # словарь для секций и ее статей
@@ -155,145 +300,26 @@ class Section:
                 
 
                 if page == 32:
-                    second_page = {
-                        'id': page, 
-                        'type': 'singleBlock', 
-                        'title': 'Организационное развитие', 
-                        "href": "corpnews", 
-                        'images': [{'id': sorted_list[0][0], 'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg"}]
-                        }
+                    second_page = MainPage(page, sorted_list).page_32()
                     page_view.append(second_page)
 
-                    page_view.append(idea_block)
-                    page_view.append(emk_competition)
+                    page_view.append(idea_block) # заглушка (в будущем дописать функцию в класс MainPage)
+                    page_view.append(emk_competition) # заглушка (в будущем дописать функцию в класс MainPage)
 
                 elif page == 31:
-                    second_page = {
-                        'id': page,
-                        'type': 'fullRowBlock',
-                        'title': 'Бизнес-новости',
-                        'href': 'actualnews',
-                        'images': []
-                    }
-        
-                    business_news = []
-                    
-                    image_url = ''
-                    for i, row in enumerate(sorted_list):
-                        if i < 5:
-                            news = {}
-                            preview_pict = self.get_preview(row[0])
-
-                            if preview_pict is None:
-                                image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
-                            else:
-                                image_url = preview_pict
-                            
-                            news['id'] = row[0]
-                            news['title'] = row[1]
-                            news['description'] = row[2]
-                            news['image'] = image_url
-                            # сюда реакции
-                            business_news.append(news)
-                    second_page['images'] = business_news
+                    second_page = MainPage(page, sorted_list).page_31()
                     page_view.append(second_page)
                 
                 elif page == 16: 
-                    second_page = {
-                        'id': page,
-                        'type': 'fullRowBlock',
-                        'title': 'Интервью',
-                        'href': 'interview',
-                        'images': []
-                    }
-
-                    interview_news = []
-                    
-                    image_url = ''
-                    for i, row in enumerate(sorted_list):
-                        if i < 5:
-                            news = {}
-                            preview_pict = self.get_preview(row[0])
-
-                            if preview_pict is None:
-                                image_url = 'отсутствует превью'
-                            else:
-                                image_url = preview_pict
-                            
-                            news['id'] = row[0]
-                            news['title'] = row[1]
-                            news['description'] = row[2]
-                            news['image'] = image_url
-                            # сюда реакции
-                            interview_news.append(news)
-                    second_page['images'] = interview_news
+                    second_page = MainPage(page, sorted_list).page_16()
                     page_view.append(second_page)
 
                 elif page == 33:
-                    second_page = {
-                        'id': page,
-                        'type': 'fullRowBlock',
-                        'title': 'Видеорепортажи',
-                        'href': 'videonews',
-                        'images': []
-                    }
-        
-                    video_news = []
-                    
-                    image_url = ''
-                    for i, row in enumerate(sorted_list):
-                        if i < 5:
-                            news = {}
-                            preview_pict = self.get_preview(row[0])
-
-                            if preview_pict is None:
-                                image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
-                            else:
-                                image_url = preview_pict
-                            
-                            news['id'] = row[0]
-                            news['title'] = row[1]
-                            news['description'] = row[2]
-                            news['image'] = image_url
-                            # сюда реакции
-                            video_news.append(news)
-                    second_page['images'] = video_news
+                    second_page = MainPage(page, sorted_list).page_33()
                     page_view.append(second_page)
 
                 elif page == 51:
-                    second_page = {
-                        'id': 9,
-                        'type': 'mixedRowBlock',
-                        'content': []
-                    }
-                    corpevents = {
-                        'id': page,
-                        'type': "fullRowBlock",
-                        'title': "Корпоративные события",
-                        'href': "corpevents",
-                        'images': []
-                    }
-                    image_url = ''
-                    corpevents_news = []
-                    for i, row in enumerate(sorted_list):
-                        if i < 5:
-                            news = {}
-                            preview_pict = self.get_preview(row[0])
-
-                            if preview_pict is None:
-                                image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
-                            else:
-                                image_url = preview_pict
-                            
-                            news['id'] = row[0]
-                            news['title'] = row[1]
-                            news['description'] = row[2]
-                            news['image'] = image_url
-                            # сюда реакции
-                            corpevents_news.append(news)
-
-                    corpevents['images'] = corpevents_news
-                    second_page['content'] = [afisha, corpevents]
+                    second_page = MainPage(page, sorted_list).page_51(afisha) # afisha - заглушка (в будущем дописать функцию в класс MainPage)
                     page_view.append(second_page)
 
             return page_view

@@ -4,6 +4,13 @@ from src.base.B24 import B24
 import requests
 import json
 
+from fastapi import APIRouter, Body, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
+templates = Jinja2Templates(directory="./front_jinja")
+
+users_router = APIRouter(prefix="/users", tags=["Пользователь"])
 
 
 class User:
@@ -110,3 +117,29 @@ class User:
 
         return (keys, result)
     '''
+
+
+#Пользоваетелей можно обновить
+@users_router.put("")
+def get_user():
+    usr = User()
+    return usr.fetch_users_data()
+
+# фронт
+@users_router.get("/view")
+def get_user(request: Request):
+    return templates.TemplateResponse(name="user.html", context={"request": request})
+
+#Пользователя можно выгрузить
+@users_router.get("/find_by/{id}")
+def get_user(id):
+    return User(id).search_by_id()
+
+#Пользователя можно найти
+@users_router.post("/search")
+def get_user(jsn=Body()):
+    #будет работать через elasticsearch
+    pass
+
+
+

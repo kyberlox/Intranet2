@@ -1,6 +1,10 @@
 from src.base.pSQLmodels import UsDepModel
 from src.base.B24 import B24
 
+from fastapi import APIRouter
+
+usdep_router = APIRouter(prefix="/users_depart", tags=["Пользователь-Департамент"])
+
 
 
 class UsDep:
@@ -23,3 +27,14 @@ class UsDep:
         
     def search_usdep_by_id(self):
         return UsDepModel(self.ID).find_dep_by_user_id()
+
+
+#Таблицу пользователей и департаментов можно обновить
+@usdep_router.put("")
+def get_user():
+    return UsDep().get_usr_dep()
+
+#Пользователя и его департамент можно выгрузить
+@usdep_router.get("/{id}")
+def get_usdepart(id):
+    return UsDep(id).search_usdep_by_id()

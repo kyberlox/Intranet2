@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Меню сайта</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/api/view/app/dep_style.css">
 </head>
 <body class="depart-body">
 
@@ -16,7 +16,7 @@
             </a>
         </div>
         <div class="title-div right">
-            <a href="/api/view/user" class="menu-button">
+            <a href="/users/view" class="menu-button">
                 Пользователи
             </a>
         </div>
@@ -26,7 +26,7 @@
         <h1>Департаменты</h1>
         <!-- Блок обновления департамента -->
         
-        <form action="/api/view/department" method="get" class="menu-button-id">
+        <form action="/departments/view" method="get" class="menu-button-id">
             <button type="button" class="menu-button" onclick="fetch_put_deps()">Обновить данные</button>
             
         </form>
@@ -52,7 +52,7 @@
     <script>
         function fetch_put_deps() {
             console.log("Функция fetch_put_deps вызвана");
-            fetch('http://127.0.0.1:8000/api/departments', {
+            fetch('http://127.0.0.1:8000/departments', {
                 method: 'PUT', 
                 headers: {"Content-type": "application/json; charset=UTF-8",
                     "Accept": "application/json"
@@ -77,7 +77,7 @@
             const departmentId = document.getElementById('department_id').value;
             console.log("Поиск департамента по ID:", departmentId);
 
-            fetch(`http://127.0.0.1:8000/api/department/${departmentId}`, {
+            fetch(`http://127.0.0.1:8000/departments/${departmentId}`, {
                 method: 'GET',
                 headers: {
                     "Accept": "application/json"

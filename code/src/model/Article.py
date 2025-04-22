@@ -6,7 +6,9 @@ from src.model.File import File
 import json
 import datetime
 
+from fastapi import APIRouter, Body
 
+article_router = APIRouter(prefix="/article", tags=["Статьи"])
 
 def make_date_valid(date):
     if date is not None:
@@ -129,10 +131,11 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
-        files_property = [
+        files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
             "PROPERTY_372",
+            "PROPERTY_373",
             "PROPERTY_337",
             "PROPERTY_338",
             "PROPERTY_342",
@@ -154,10 +157,13 @@ class Article:
         # находим файлы статьи
         files = []
         # preview_image_url = ""
-        for file_property in files_property.keys():
+        for file_property in files_propertys:
+            
             if file_property in data:
                 try:
                     # выцепить id файла
+                    # "PREVIEW_PICTURE" не обрабатывается, тип - строка
+                    # "DETAIL_PICTURE" тоже не обработается если строка
                     if type(data[file_property]) == type(dict()):
                         for file_id in data[file_property].values():
                             if type(file_id) == type(str()):
@@ -175,17 +181,29 @@ class Article:
                                         files.append(f_id)
                     else:
                         print("Некорректные данные в поле ", file_property)
+                        
                 except:
                     pass
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_propertyin)
 
+        if files == []:
+            return []
+        else:
             files_data = []
-            for f_id in files:
-                file_data = File(id=f_id).upload_inf_art(inf_id, art_id)
-                files_data.append(file_data)
+            files_to_add = File().need_update_file(art_id, files)
+            if files_to_add != []:
+                
+                for f_id in files:
+                    try:
+                        file_data = File(id=f_id).upload_inf_art(inf_id, art_id)
+                        print(f'{f_id}файл добавлен в монго', art_id, inf_id)
+                        files_data.append(file_data)
+                    except:
+                        pass
+            else:
+                print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
 
-            return files_data
-
+                return files_data
 
 
     def add(self, article_data):
@@ -371,7 +389,6 @@ class Article:
         art_inf = self.get_inf()
         for art in art_inf:
             art_id = art["ID"]
-
             if "PROPERTY_1066" in art:
                 pre_section_id = list(art["PROPERTY_1066"].values())[0]
 
@@ -393,13 +410,18 @@ class Article:
                     pass
             else:
                 # че делать с уже не актуальными новостями?
+                
                 self.section_id = 6
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
                     print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
+                    
+                    # сюда надо что-то дописать
                     pass
+                
+                
 
 
 
@@ -517,3 +539,27 @@ class Article:
         return ArticleModel(section_id = self.section_id).find_by_section_id()
 
 
+#Получить данные инфоблока из Б24
+@article_router.get("/infoblock/{ID}")
+def test(ID):
+    return Article(section_id=ID).get_inf()
+
+#загрузить статьи из иноблоков Битрикса
+@article_router.put("")
+def upload_articles():
+    return Article().uplod()
+
+#найти статью по id
+@article_router.get("/find_by_ID/{ID}")
+def get_article(ID):
+    return Article(id = ID).search_by_id()
+
+#найти статьи раздела
+@article_router.get("/find_by/{section_id}")
+def get_articles(section_id):
+    return Article(section_id = section_id).search_by_section_id()
+
+#найти статьи раздела
+@article_router.post("/search")
+def search_articles(data = Body()):
+    pass

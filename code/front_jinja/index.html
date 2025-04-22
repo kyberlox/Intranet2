@@ -7,13 +7,13 @@
     <title>Меню сайта</title>
     <link rel="stylesheet" href="static/style.css">
 </head>
-<body>
+<body> 
     <div class="menu-container">
         <h1>Меню сайта</h1>
         <form action="/api/view/menu" method="get">
             <div class="button-container">
                 <!-- Кнопка "Пользователи" -->
-                <button type="submit" formaction="/api/view/user" class="menu-button">
+                <button type="submit" formaction="/users/view" class="menu-button">
                     <div class="button-image">
                         <img src="static/user.png" alt="Пользователи">
                     </div>
@@ -21,7 +21,7 @@
                 </button>
 
                 <!-- Кнопка "Департаменты" -->
-                <a href="/api/view/department" class="menu-button">
+                <a href="/departments/view" class="menu-button">
                     <div class="button-image">
                         <img src="static/depart.png" alt="Департаменты">
                     </div>

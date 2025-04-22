@@ -666,7 +666,6 @@ class ArticleModel():
         return article_data
 
     def need_add(self):
-
         db_art = db.query(Article).filter(Article.section_id == self.section_id).all()
         # если в таблице есть раздел
         if db_art != []:
@@ -675,7 +674,7 @@ class ArticleModel():
                 # добавить статью в таблицу, если её там нет
                 if int(art.id) == int(self.id):
                     need = False
-                    #print("Такой раздел уже есть", self.id)
+                    # print("Такой раздел уже есть", self.id)
             return need
 
         # если в таблице нет статей раздела

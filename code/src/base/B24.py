@@ -25,7 +25,20 @@ class B24:
 
     def get_file(self, id, inf_id):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/j6122m0ystded5ag/")
-        result = self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID=50&id=170877')
+        result = self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID={inf_id}&id={id}')
+        return result
+
+    # функции vcard
+    def getUsersByUuid(self, uuid):
+        filter = {
+                "XML_ID" : uuid
+        }
+        result = self.bx24.callMethod('user.search', filter=filter)
+        return result
+
+    def getDepartByID(self, id):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        result = self.bx24.callMethod('department.get', ID=id)
         return result
 
 

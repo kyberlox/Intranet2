@@ -21,12 +21,15 @@ class MainPage:
         self.sorted_list = sorted_list
 
     def page_32(self):
+        # print(self.sorted_list[0])
+        # print(self.sorted_list[0][0])
+        news_id = self.sorted_list[0][0]
         second_page = {
             'id': self.page, 
             'type': 'singleBlock', 
             'title': 'Организационное развитие', 
             "href": "corpnews", 
-            'images': [{'id': self.sorted_list[0][0], 'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg"}]
+            'images': [{'id': news_id, 'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg"}]
             }
         return second_page
 

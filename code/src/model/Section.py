@@ -21,8 +21,8 @@ class MainPage:
         self.sorted_list = sorted_list
 
     def page_32(self):
-        # print(self.sorted_list[0])
-        # print(self.sorted_list[0][0])
+        print(self.sorted_list)
+        print(self.sorted_list[0][0])
         news_id = self.sorted_list[0][0]
         second_page = {
             'id': self.page, 

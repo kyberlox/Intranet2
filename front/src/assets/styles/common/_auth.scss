@@ -1,0 +1,136 @@
+.portal__auth {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    width: 100%;
+
+    &__bg {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        width: 50%;
+        height: 100vh;
+        background: url('https://portal.emk.ru/local/templates/intranet/components/bitrix/system.auth.authorize/.default/bg_auth.jpg') 50% no-repeat;
+        background-size: cover;
+    }
+
+    &__content {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        width: 50%;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__form {
+        &__remember {
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+            align-items: center;
+            border: none;
+            font-size: 14px;
+            color: #666;
+        }
+
+        &__auth {
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+
+            &-control {
+                display: block;
+                width: 100%;
+                padding: .375rem .75rem;
+                font-size: 1rem;
+                font-weight: 400;
+                line-height: 1.5;
+                color: #212529;
+                background-color: #fff;
+                background-clip: padding-box;
+                border: 1px solid #ced4da;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                border-radius: .25rem;
+                transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+            }
+
+            &__submit {
+                box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px 0px, rgba(0, 0, 0, 0.12) 0px 2px 4px 0px;
+                transition: 0.4s;
+                font-size: 14px;
+                color: #303030;
+                height: 40px;
+                line-height: 40px;
+                display: inline-block;
+                padding: 0 34px;
+                border: 1px solid #ef7f1b;
+                border-radius: 20px;
+                text-decoration: none;
+                font-weight: 600;
+                background: white;
+
+                width: 165px;
+                margin: 25px 0;
+            }
+        }
+
+        &__input {
+            height: 50px;
+            width: 100%;
+            box-sizing: border-box;
+
+            &__block {
+                width: 40%;
+                margin-bottom: 25px;
+            }
+        }
+
+    }
+}
+
+@media screen and (max-width: 760px) {
+    .portal__auth {
+        display: block;
+        position: relative;
+    }
+
+    .portal__auth__bg {
+        width: 100%;
+    }
+
+    .portal__auth__content {
+        position: absolute;
+        width: 100%;
+        top: 0px;
+        bottom: 0px;
+        left: 0;
+        right: 0;
+    }
+
+    .portal__auth__form__auth {
+        padding-top: 120px;
+        background-color: rgba(255, 255, 255, .85);
+    }
+}

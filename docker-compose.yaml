@@ -15,10 +15,10 @@ services:
     ports:
       - "5432:5432"
     networks:
-        - app-network
+      - app-network
 
   mongodb:
-    image: mongo:4.4.3
+    image: mongo:latest
     container_name: mongodb
     volumes:
       - ./mongodb/data:/data/db

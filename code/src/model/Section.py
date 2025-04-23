@@ -21,8 +21,6 @@ class MainPage:
         self.sorted_list = sorted_list
 
     def page_32(self):
-        print(self.sorted_list)
-        print(self.sorted_list[0][0])
         news_id = self.sorted_list[0][0]
         second_page = {
             'id': self.page, 
@@ -57,9 +55,13 @@ class MainPage:
                 
                 news['id'] = row[0]
                 news['title'] = row[1]
-                news['description'] = row[2]
+                # news['description'] = row[2]
                 news['image'] = image_url
                 # сюда реакции
+                news['reactions'] = {
+                    'views': 12,
+                    'likes': { 'count': 13, 'likedByMe': 1 },
+                }
                 business_news.append(news)
         second_page['images'] = business_news
         return second_page
@@ -91,6 +93,10 @@ class MainPage:
                 news['description'] = row[2]
                 news['image'] = image_url
                 # сюда реакции
+                news['reactions'] = {
+                    'views': 12,
+                    'likes': { 'count': 13, 'likedByMe': 1 },
+                }
                 interview_news.append(news)
         second_page['images'] = interview_news
         return second_page
@@ -122,6 +128,10 @@ class MainPage:
                 news['description'] = row[2]
                 news['image'] = image_url
                 # сюда реакции
+                news['reactions'] = {
+                    'views': 12,
+                    'likes': { 'count': 13, 'likedByMe': 1 },
+                }
                 video_news.append(news)
         second_page['images'] = video_news
         return second_page
@@ -156,6 +166,10 @@ class MainPage:
                 news['description'] = row[2]
                 news['image'] = image_url
                 # сюда реакции
+                news['reactions'] = {
+                    'views': 12,
+                    'likes': { 'count': 13, 'likedByMe': 1 },
+                }
                 corpevents_news.append(news)
 
         corpevents['images'] = corpevents_news

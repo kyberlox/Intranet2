@@ -29,7 +29,7 @@ class MainPage:
             'type': 'singleBlock', 
             'title': 'Организационное развитие', 
             "href": "corpnews", 
-            'images': [{'id': news_id, 'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg"}]
+            'images': [{'id': news_id, 'image': None}]
             }
         return second_page
 
@@ -51,9 +51,9 @@ class MainPage:
                 preview_pict = Section().get_preview(row[0])
 
                 if preview_pict is None:
-                    image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
+                    image_url = None
                 else:
-                    image_url = preview_pict
+                    image_url = None #preview_pict
                 
                 news['id'] = row[0]
                 news['title'] = row[1]
@@ -82,9 +82,9 @@ class MainPage:
                 preview_pict = Section().get_preview(row[0])
 
                 if preview_pict is None:
-                    image_url = 'отсутствует превью'
+                    image_url = None
                 else:
-                    image_url = preview_pict
+                    image_url = None #preview_pict
                 
                 news['id'] = row[0]
                 news['title'] = row[1]
@@ -113,9 +113,9 @@ class MainPage:
                 preview_pict = Section().get_preview(row[0])
 
                 if preview_pict is None:
-                    image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
+                    image_url = None
                 else:
-                    image_url = preview_pict
+                    image_url = None #preview_pict
                 
                 news['id'] = row[0]
                 news['title'] = row[1]
@@ -147,9 +147,9 @@ class MainPage:
                 preview_pict = Section().get_preview(row[0])
 
                 if preview_pict is None:
-                    image_url = 'https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg'
+                    image_url = None
                 else:
-                    image_url = preview_pict
+                    image_url = None #preview_pict
                 
                 news['id'] = row[0]
                 news['title'] = row[1]
@@ -221,7 +221,7 @@ class Section:
                 'title': 'Новые сотрудники',
                 'images': [{
                     "id": 1,
-                    "image": "фотки чела нет",
+                    "image": None,
                 }],
                 'href': 'newWorkers',
             } # словарь-заглушка для будущей секции "новые сотрудники"
@@ -232,7 +232,7 @@ class Section:
                 'title': 'С днем рождения!',
                 'images': [{
                     "id": 1,
-                    "image": "фотки именниника нет",
+                    "image": None,
                     "href": "/"
                 }],
                 'href': 'birthdays',
@@ -244,7 +244,7 @@ class Section:
                 'title': 'Предложить идею',
                 'images': [{
                     "id": 1,
-                    "image": "ноль идей",
+                    "image": None,
                     "href": "/"
                 }],
                 'modifiers': ['outline'],
@@ -257,7 +257,7 @@ class Section:
                 'title': 'Конкурсы ЭМК',
                 'images': [{
                     "id": 1,
-                    "image": "нет конкурсов",
+                    "image": None,
                     "href": "vacancies"
                 }],
                 '// href': '/'
@@ -269,12 +269,12 @@ class Section:
                 'images': [
                     {
                         'id': 1,
-                        'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg",
+                        'image': None,
                         'href': "home"
                     },
                     {
                         'id': 2,
-                        'image': "https://portal.emk.ru/upload/resize_cache/iblock/897/gry7fcbpqktpb9jorq1di2sxcftvi7ql/360_206_2/referer-a-friend.jpg",
+                        'image': None,
                         'href': "home"
                     }
                 ]

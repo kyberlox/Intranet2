@@ -5,8 +5,9 @@
 <script lang="ts">
 import Interview from "@/components/about/ourPeople/Interview.vue";
 import { interviewFromOurPeople } from "@/assets/staticJsons/ourPeopleSampleInterview";
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import type { IInterviewFromOurPeople } from "@/interfaces/IInterviewFromOurPeople";
+import Api from "@/utils/Api";
 
 export default defineComponent({
     components: {
@@ -19,8 +20,16 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const currentPost = ref();
+        onMounted(() => {
+            Api.get(API_URL + `article/find_by_ID/${props.id}`)
+                .then((data) => {
+                    currentPost.value = data
+                })
+        })
         return {
-            interviewFromOurPeople: interviewFromOurPeople.find((item: IInterviewFromOurPeople) => props.id == item.id),
+            // interviewFromOurPeople: interviewFromOurPeople.find((item: IInterviewFromOurPeople) => props.id == item.id),
+            interviewFromOurPeople: currentPost
         };
     },
 });

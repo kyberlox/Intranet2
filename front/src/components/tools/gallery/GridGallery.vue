@@ -5,18 +5,20 @@
                  :key="'homeCard' + card.id"
                  class="home__view__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
                 <div class="home__view__grid__card_group-title">{{ card.name }}</div>
-                <RouterLink :to="{ name: type !== 'video' ? card.href : 'videoInterview', params: { id: card.id } }"
+                <RouterLink :to="{ name: type !== 'video' ? blockRouteTips[card.IBLOCK_ID] : 'videoInterview', params: { id: card.ID } }"
                             class="home__view__grid__card__link">
                     <div class="home__view__grid__card__image"
-                         :style="{ backgroundImage: `url(${card.image})` }"></div>
+                         :style="{ backgroundImage: `url(${card.PREVIEW_PICTURE.includes('https') ? card.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
+                    </div>
                     <div class="home__view__grid__card__info">
-                        <div v-if="card.title"
+                        <div v-if="card.NAME"
                              class="home__view__grid__card__title home__view__grid__card__title--gallery"
-                             :class="{ 'home__view__grid__card__title--video': type == 'video' }">{{ card.title }}</div>
+                             :class="{ 'home__view__grid__card__title--video': type == 'video' }">{{ card.NAME }}</div>
                         <div v-if="card.description"
                              class="home__view__grid__card__description">{{ card.description }}</div>
                     </div>
-                    <Reactions :reactions="card.reactions"
+                    <Reactions v-if="card.reactions"
+                               :reactions="card.reactions"
                                :type="type" />
                 </RouterLink>
             </div>
@@ -26,6 +28,7 @@
 <script lang="ts">
 import Reactions from "@/components/Reactions.vue";
 import { defineComponent } from "vue";
+import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
 
 export default defineComponent({
     components: { Reactions },
@@ -39,6 +42,12 @@ export default defineComponent({
             default: 'gallery',
         },
     },
+    setup(props) {
+        console.log(props);
+        return {
+            blockRouteTips
+        }
+    }
 });
 </script>
 <style>

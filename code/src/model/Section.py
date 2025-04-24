@@ -57,7 +57,7 @@ class MainPage:
                 
                 news['id'] = row[0]
                 news['title'] = row[1]
-                news['description'] = row[2]
+                # news['description'] = row[2]
                 news['image'] = image_url
                 # сюда реакции
                 business_news.append(news)

@@ -6,73 +6,109 @@
                     :key="index">{{ year }}</RouterLink>
     </div>
 
-    <h2 class="page__title mt20">
-        Сотрудник года ЭМК <span class="year"
-              style="font-weight: 300">/ {{ currentYear }}</span>
-    </h2>
-
     <div class="row mb-5 mt20">
-        <div class="staff__item-wrapper col-sm-2"
-             v-for="item in renderThisYearWorkers"
-             :key="item.id">
-            <div class="staff__item"
-                 @click="
-                    isOpen = true;
-                workerInModal = item;
-                ">
-                <div>
-                    <img class="img-fluid staff__item-img"
-                         src="/src/assets/imgs/about/yearResults/gazinskii.png" />
-                </div>
-                <div class="staff__item-name">
-                    {{ item.name }}
-                </div>
-                <div class="staff__item-position">{{ item.position }}</div>
-                <div class="staff__item-organisation">{{ item.department }}</div>
-            </div>
-            <ResultModal :worker="workerInModal"
-                         :isOpen="isOpen"
-                         @closeModal="isOpen = false" />
+        <h2 class="page__title">Сотрудник года ЭМК
+            <span v-if="currentYear"
+                  class="year">/ {{ currentYear }}</span>
+        </h2>
+        <div class="staff__item-wrapper">
+            <WorkerCard :workers="workerWithDiploma" />
+        </div>
+        <h2 v-if="workerWithDiploma.length"
+            class="page__title mt20">
+            Почетными грамотами награждены:
+        </h2>
+        <div class="staff__item-wrapper">
+            <WorkerCard :workers="workerWithDiploma" />
         </div>
     </div>
 </template>
 <script lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch, type Ref } from "vue";
 import { defineComponent } from "vue";
 import { workersOfTheYear } from "@/assets/staticJsons/workersOfTheYear";
-import ResultModal from "./ResultModal.vue";
+import Api from "@/utils/Api";
+import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import type { IWorkersResults } from "@/interfaces/IWorkersOfTheYear";
+import WorkerCard from "./WorkerCard.vue";
 export default defineComponent({
     props: {
         id: {
-            type: Number,
+            type: String,
             default: null,
         },
     },
     components: {
-        ResultModal,
+        WorkerCard
     },
     setup(props) {
-        const currentYear = ref(props.id ? props.id : 2023);
+        const dateYear = new Date().getFullYear();
+        const currentYear = ref(props.id ? props.id : dateYear - 1);
 
-        watch(
-            () => props.id,
-            () => {
+        const allTimeAwards: Ref<IWorkersResults[]> = ref([]);
+        const chosenYearAwards: Ref<IWorkersResults[]> = ref([]);
+        const workerOfTheYear: Ref<IWorkersResults[]> = ref([]);
+        const workerWithDiploma: Ref<IWorkersResults[]> = ref([]);
+
+        onMounted(() => {
+            Api.get(API_URL + `article/infoblock/${sectionTips["Сотрудник года"]}`)
+                .then(res => {
+                    const transformedData = res.map(item => {
+                        const newItem = { ...item };
+
+                        const renameKey = (item: IWorkersResults, key: string) => {
+                            const originalKey = Object.keys(item)[0];
+                            const value = item[originalKey as keyof IWorkersResults];
+                            item[key] = value;
+                        }
+
+                        if (newItem.PROPERTY_1035) {
+                            renameKey(newItem.PROPERTY_1035, "year");
+                        }
+                        if (newItem.PROPERTY_1113) {
+                            renameKey(newItem.PROPERTY_1113, "awardType");
+                        }
+                        return newItem;
+                    });
+                    allTimeAwards.value.length = 0;
+                    allTimeAwards.value = transformedData;
+                })
+                .then(() => {
+                    initWorkers();
+                })
+        })
+
+        const initWorkers = () => {
+            if (props.id) {
                 currentYear.value = props.id;
-                renderThisYearWorkers.value = workersOfTheYear[props.id];
             }
-        );
+            chosenYearAwards.value.length = 0;
+            workerWithDiploma.value.length = 0;
+            workerOfTheYear.value.length = 0;
+            allTimeAwards.value.map(item => {
+                if (item["PROPERTY_1035"] && item["PROPERTY_1035"]["year"] == String(currentYear.value)) {
+                    if (item["PROPERTY_1113"] && item["PROPERTY_1113"]["awardType"] == "888") {
+                        workerWithDiploma.value.push(item);
+                    }
+                    else {
+                        workerOfTheYear.value.push(item);
+                    }
+                }
+            })
+        }
 
-        const isOpen = ref(false);
-        const workerInModal = ref();
-
-        const renderThisYearWorkers = ref(workersOfTheYear[currentYear.value]);
+        watch(() => props.id, () => {
+            initWorkers();
+        }, {
+            immediate: true
+        })
 
         return {
-            renderThisYearWorkers,
             workersOfTheYear,
             currentYear,
-            isOpen,
-            workerInModal,
+            chosenYearAwards,
+            workerWithDiploma,
+            workerOfTheYear
         };
     },
 });

@@ -44,10 +44,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { mainPageCards } from "@/assets/staticJsons/mainPage";
+import { defineComponent, onMounted, ref } from "vue";
 import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
+import Api from "@/utils/Api";
+import type { MainPageCards } from "@/interfaces/IMainPage";
+import { sectionTips } from "@/assets/staticJsons/sectionTips";
 
 export default defineComponent({
     name: "main-page",
@@ -56,11 +58,22 @@ export default defineComponent({
         MainPageRowBlocks
     },
     setup() {
-        mainPageCards.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
-            if (item.type == 'fullRowBlock' && item.images.length > 4) {
-                item.images.length = 4
-            }
-        });
+        const mainPageCards: MainPageCards = ref();
+        onMounted(() => {
+            Api.get(API_URL + `section/${sectionTips['Главная']}`)
+                .then((data) => {
+                    console.log(data);
+                    mainPageCards.value = data
+                })
+                .then(() => {
+                    mainPageCards.value.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
+                        if (item.type == 'fullRowBlock' && item.images.length > 4) {
+                            item.images.length = 4
+                        }
+                    });
+                })
+        })
+
 
         return {
             mainPageCards

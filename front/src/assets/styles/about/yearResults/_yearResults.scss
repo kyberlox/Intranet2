@@ -2,6 +2,27 @@
     margin-bottom: 30px;
     cursor: pointer;
 
+    &__wrapper {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    &-img {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        border-radius: 8px 8px 0 0;
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 4 / 5;
+        height: 100% !important;
+
+        transition: var(--default-transition);
+        border-radius: 4px;
+    }
+
     &:hover {
         .staff__item-img {
             transform: scale(1.03);
@@ -30,12 +51,6 @@
         font-size: 12px;
         line-height: 16px;
         color: #666666;
-    }
-
-    &-img {
-        transition: var(--default-transition);
-
-        border-radius: 4px;
     }
 }
 

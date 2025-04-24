@@ -7,7 +7,7 @@
                 <span v-if="card.blockTitle">{{ card.blockTitle }}</span>
             </span>
             <div class="home__view__grid__card__image"
-                 :style="{ backgroundImage: `url(${card.image})` }"></div>
+                 :style="{ backgroundImage: `url(${card.image ?? 'https://placehold.co/360x206'})` }"></div>
             <div v-if="card.title"
                  class="home__view__grid__card__title home__view__grid__card__title--gallery">{{ card.title }}</div>
             <Reactions v-if="card.reactions"

@@ -21,7 +21,6 @@ export default defineComponent({
     setup() {
 
         const news = mainPageCards.find((e) => e.id == 6);
-        console.log(news);
         const formattedNews = news && news.type == 'fullRowBlock' && news.images ? news.images : [];
         return {
             formattedNews

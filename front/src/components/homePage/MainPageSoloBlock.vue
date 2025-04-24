@@ -41,7 +41,6 @@ export default defineComponent({
         }
     },
     setup(props) {
-        console.log(props)
         return {
             swiperOn: useSwiperconf('main').swiperOn,
             slideNext: useSwiperconf('main').slideNext,

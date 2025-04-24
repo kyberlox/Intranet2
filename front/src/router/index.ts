@@ -48,10 +48,10 @@ const router = createRouter({
       component: () => import('@/views/about/blogs/Blogs.vue'),
     },
     {
-      path: '/about/blogs/:name',
+      path: '/about/blogs/:id',
       name: 'blogOf',
       component: () => import('@/views/about/blogs/BlogsAritcles.vue'),
-      props: (route) => ({ name: route.params.name })
+      props: (route) => ({ name: route.params.name, id: route.params.id })
     },
     {
       path: '/about/blogs/:name/:id',

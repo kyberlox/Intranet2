@@ -66,7 +66,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        console.log(props);
+        console.(props);
 
         return {
             swiperOn: useSwiperconf('fullWidth', props.activeIndex).swiperOn,

@@ -62,7 +62,6 @@ export default defineComponent({
         onMounted(() => {
             Api.get(API_URL + `section/${sectionTips['Главная']}`)
                 .then((data) => {
-                    console.log(data);
                     mainPageCards.value = data
                 })
                 .then(() => {

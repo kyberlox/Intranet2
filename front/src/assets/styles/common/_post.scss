@@ -92,6 +92,10 @@
         width: 100%;
         padding-right: 10px;
 
+        &--blog {
+            justify-content: flex-start
+        }
+
         &-counter {
             color: #5c6470;
             font-size: .75em;

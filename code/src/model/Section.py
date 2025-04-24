@@ -304,7 +304,8 @@ class Section:
                 page_value = Article(section_id = page).search_by_section_id() # список всех статей, новостей и тд
 
                 for value in page_value:
-                    values = value.__dict__
+                    #values = value.__dict__
+                    values = value
                     date_value = [] # список для хранения необходимых данных
                     date_value.append(values["id"])
                     date_value.append(values["name"])

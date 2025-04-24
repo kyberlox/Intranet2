@@ -1,7 +1,6 @@
 <template>
     <div class="staff__filter__link d-flex gap-3 mt20">
-        <RouterLink class=""
-                    :to="{ name: 'year-results-id', params: { id: year } }"
+        <RouterLink :to="{ name: 'year-results-id', params: { id: year } }"
                     v-for="(year, index) in Object.keys(workersOfTheYear)"
                     :key="index">{{ year }}</RouterLink>
     </div>
@@ -11,16 +10,13 @@
             <span v-if="currentYear"
                   class="year">/ {{ currentYear }}</span>
         </h2>
-        <div class="staff__item-wrapper">
-            <WorkerCard :workers="workerWithDiploma" />
-        </div>
+        <WorkerCard :workers="workerWithDiploma" />
+
         <h2 v-if="workerWithDiploma.length"
             class="page__title mt20">
             Почетными грамотами награждены:
         </h2>
-        <div class="staff__item-wrapper">
-            <WorkerCard :workers="workerWithDiploma" />
-        </div>
+        <WorkerCard :workers="workerWithDiploma" />
     </div>
 </template>
 <script lang="ts">

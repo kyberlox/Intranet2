@@ -1,9 +1,8 @@
 <template>
-    <div class="staff__item-wrapper col-sm-2"
-         v-for="item in workers"
-         :key="item.ID">
-
-        <div class="staff__item"
+    <div class="staff__item-wrapper ">
+        <div class="staff__item col-sm-2"
+             v-for="item in workers"
+             :key="item.ID"
              @click="handleClick(item)">
             <div class="img-fluid staff__item-img"
                  :style="{ backgroundImage: 'url(https://placehold.co/240x330)' }">

@@ -1,12 +1,16 @@
 .staff__item {
-    margin-bottom: 30px;
+    // margin-bottom: 30px;
+    // width: 100%;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
 
-    &__wrapper {
+    &-wrapper {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         gap: 20px;
+        align-items: flex-start
     }
 
     &-img {
@@ -18,7 +22,7 @@
         overflow: hidden;
         aspect-ratio: 4 / 5;
         height: 100% !important;
-
+        width: 100%;
         transition: var(--default-transition);
         border-radius: 4px;
     }

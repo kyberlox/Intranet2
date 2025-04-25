@@ -27,7 +27,7 @@ const router = createRouter({
     },
     {
       path: '/about/our-people/:id',
-      name: 'our-people-inner',
+      name: 'ourPeopleInner',
       component: () => import('@/views/about/ourPeople/OurPeopleInner.vue'),
       props: (route) => ({ id: route.params.id })
     },

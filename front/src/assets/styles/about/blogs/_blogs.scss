@@ -8,6 +8,10 @@
         row-gap: 15px;
         justify-items: start;
         align-items: center;
+
+        &:first-child {
+            padding-bottom: 50px;
+        }
     }
 
     &__item {

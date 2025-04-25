@@ -108,6 +108,17 @@ class Article:
         # определяем превью
 
         #тут, по необходимости, можно форматировать data (заменить числовой ключ на значение или что-то вроде того)
+        
+        #убрать ключи из PROPERTY:
+        for key in data.keys():
+            if key.startswith("PROPERTY_") and type(data[key]) == type(dict()):
+                grya = []
+                for key_key in data[key].keys():
+                    if type(data[key][key_key]) == type([]):
+                        for scr_scr in data[key][key_key].values():
+                            grya.append(scr_scr)
+                    else:
+                        grya.append(data[key][key_key])
 
         indirect_data = json.dumps(data)
 

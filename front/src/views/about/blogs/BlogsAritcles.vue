@@ -54,43 +54,20 @@ export default defineComponent({
         const currentArticles = ref([]);
         const targetBlog = ref();
         onMounted(() => {
-            Api.get(API_URL + `article/infoblock/${sectionTips['Блоги']}`)
+            console.log(props.id);
+
+            Api.get(API_URL + `article/find_by/${sectionTips['Блоги']}`)
                 .then(res => {
-                    const transformedData = res.map(item => {
-                        const newItem = { ...item };
-                        if (newItem.PROPERTY_444) {
-                            renameKey(newItem.PROPERTY_444, "authorId");
-                        }
-                        return newItem;
-                    });
-                    blogs.value.length = 0;
-                    blogs.value = transformedData;
-                })
-
-            Api.get(API_URL + `article/infoblock/${sectionTips['Контент_блогов']}`)
-                .then((data) => {
-                    const transformedData = data.map(item => {
-                        const newItem = { ...item };
-                        if (newItem.PROPERTY_451) {
-                            renameKey(newItem.PROPERTY_451, "authorId");
-                        }
-                        if (newItem.PROPERTY_1009) {
-                            renameKey(newItem.PROPERTY_1009, "description");
-                        }
-                        return newItem;
-                    });
-                    blogsArticles.value.length = 0;
-                    blogsArticles.value = transformedData;
                 })
         })
-        watchEffect(() => {
-            if (blogs.value && blogs.value.length && blogsArticles.value && blogsArticles.value.length) {
-                blogName.value = blogs.value.find(e => e.PROPERTY_444?.authorId == props.id)?.NAME;
-                targetBlog.value = blogs.value.find(e => e.PROPERTY_444?.authorId == props.id);
-                console.log(targetBlog.value);
+        // watchEffect(() => {
+        //     if (blogs.value && blogs.value.length && blogsArticles.value && blogsArticles.value.length) {
+        //         blogName.value = blogs.value.find(e => e.PROPERTY_444?.authorId == props.id)?.NAME;
+        //         targetBlog.value = blogs.value.find(e => e.PROPERTY_444?.authorId == props.id);
+        //         console.log(targetBlog.value);
 
-            }
-        })
+        //     }
+        // })
         return {
             blogs,
             blogsArticles,

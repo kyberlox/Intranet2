@@ -28,7 +28,7 @@ export default defineComponent({
         author: Object,
         from: {
             type: String,
-            required: true,
+            default: 'blogs',
         },
     },
     setup(props) {

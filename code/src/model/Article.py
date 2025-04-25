@@ -114,11 +114,12 @@ class Article:
             if key.startswith("PROPERTY_") and type(data[key]) == type(dict()):
                 grya = []
                 for key_key in data[key].keys():
-                    if type(data[key][key_key]) == type([]):
-                        for scr_scr in data[key][key_key].values():
+                    if type(data[key][key_key]) == type(list()):
+                        for scr_scr in data[key][key_key]:
                             grya.append(scr_scr)
                     else:
                         grya.append(data[key][key_key])
+                data[key] = grya
 
         indirect_data = json.dumps(data)
 
@@ -164,7 +165,7 @@ class Article:
             "PROPERTY_407",
             "PROPERTY_409"
         ]
-
+        
         # находим файлы статьи
         files = []
         # preview_image_url = ""

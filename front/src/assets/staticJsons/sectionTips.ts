@@ -6,6 +6,7 @@ export const sectionTips =
     "Блоги": "15",
     "Контент_блогов": "77",
     "Видеоинтервью": "16",
+    "Новому сотруднику": "18"
 }
 
 export const blockRouteTips = {

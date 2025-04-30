@@ -51,13 +51,13 @@ const router = createRouter({
       path: '/about/blogs/:id',
       name: 'blogOf',
       component: () => import('@/views/about/blogs/BlogsAritcles.vue'),
-      props: (route) => ({ name: route.params.name, id: route.params.id })
+      props: (route) => ({ id: route.params.id })
     },
     {
-      path: '/about/blogs/:name/:id',
+      path: '/about/blogs/:authorId/:id',
       name: 'CertainBlog',
       component: () => import('@/views/about/blogs/CertainBlog.vue'),
-      props: (route) => ({ name: route.params.name, id: route.params.id })
+      props: (route) => ({ authorId: route.params.authorId, id: route.params.id })
     },
     {
       path: '/about/videoInterviews',

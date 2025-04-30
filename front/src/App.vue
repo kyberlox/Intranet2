@@ -22,12 +22,15 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { RouterView } from "vue-router";
+import { defineComponent, onMounted, computed, watch, ref } from "vue";
+import { RouterView, useRoute } from "vue-router";
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/Sidebar.vue";
 import AuthPage from "./views/user/AuthPage.vue";
-
+import Api from "./utils/Api";
+import { sectionTips } from "./assets/staticJsons/sectionTips";
+import { useblogDataStore } from "./stores/blogData";
+import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
 export default defineComponent({
     name: "app-layout",
     components: {
@@ -37,12 +40,21 @@ export default defineComponent({
         AuthPage
     },
     setup() {
+        const blogData = useblogDataStore();
+        const blogAuthors = computed(() => blogData.getAllAuthors)
+        const route = useRoute();
+        const allAuthors = ref([]);
+        // предзагрузка блогов в стор
+        watch(route, () => {
+            if (route.fullPath.includes('blog') && !blogAuthors.value.length) {
+                getBlogAuthorsToStore(allAuthors, blogData)
+            }
+        }, { immediate: true, deep: true })
         return {
             isLogin: true,
         }
-    },
-}
-);
+    }
+})
 </script>
 
 <style lang="scss">

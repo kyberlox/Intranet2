@@ -16,6 +16,9 @@ from src.model.Article import Article, article_router
 from src.model.File import File, file_router
 from src.model.vcard import vcard_app
 
+from src.model.SearchModel import UserSearchModel
+from src.model.SearchModel import StructureSearchModel
+
 from src.base.B24 import B24
 
 import os
@@ -63,6 +66,16 @@ app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 @app.get("/test/{ID}")
 def test(ID):
     return Article(section_id=ID).get_inf()
+
+@app.get("/elastic_dump")
+def elastic_dump():
+    res = UserSearchModel().dump()
+    #res = StructureSearchModel().dump()
+    return res
+
+@app.get("/elastic_search")
+def elastic_search(name: str):
+    return UserSearchModel().search_by_name(name)
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")
 def find(inf_id, art_id, property):

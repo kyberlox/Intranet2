@@ -21,7 +21,7 @@ pswd = os.getenv('pswd')
 port = os.getenv('PORT')
 
 # Настройка подключения к базе данных PostgreSQL
-engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb', pool_size=40, max_overflow=0)
 
 
 
@@ -261,6 +261,9 @@ class UserModel:
 
         else:
             return {'err' : "Invalid user id"}
+    
+    def all(self):
+        return self.db.query(self.user).all()
 
     """
     def put_uf_depart(self, usr_dep):
@@ -409,6 +412,9 @@ class DepartmentModel():
         #     return result
         # else:
         #     return {'err': 'Нет такого департамента'}
+    
+    def all(self):
+        return self.db.query(self.department).all()
 
 
 
@@ -617,6 +623,19 @@ class UsDepModel:
             return [res]
         else:
             return {'err' : "Invalid user id"}
+    
+    def find_user_by_dep_id(self):
+        """
+        Выдает id пользователей по id департамента
+        """
+        users = self.db.execute(select(self.us_dep).where(self.us_dep.dep_id == self.id)).scalars().all()
+        if users != []:
+            res = []
+            for usr in users:
+                res.append(usr.user_id)
+            return res
+        else:
+            return {'err' : "Invalid user id"}
 
                 
 
@@ -713,6 +732,7 @@ class ArticleModel():
         return art.__dict__
 
     def find_by_section_id(self):
+        
         data = db.query(Article).filter(Article.section_id == self.section_id).all()
         new_data = []
         try:

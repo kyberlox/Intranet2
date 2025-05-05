@@ -3,11 +3,15 @@
 .blogs {
     &__items {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         column-gap: 60px;
         row-gap: 15px;
         justify-items: start;
         align-items: center;
+
+        &:first-child {
+            padding-bottom: 50px;
+        }
     }
 
     &__item {
@@ -46,9 +50,9 @@
             display: flex;
             gap: 5px;
             flex-direction: column;
-            align-items: flex-start;
             justify-content: flex-start;
             flex-grow: 1;
+            align-items: center
         }
 
         &-title {
@@ -95,13 +99,17 @@
 .blog-list__item-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 35px;
 }
 
 .blog-list__item {
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    &:empty {
+        display: none;
+    }
 }
 
 .blog-list__item-title {

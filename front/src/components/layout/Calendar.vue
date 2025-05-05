@@ -56,9 +56,6 @@ export default defineComponent({
 
         const eventDates: string[] = Object.keys(calendarMiniDates);
 
-        console.log(eventDates);
-
-
         return {
             daysCountInCurrentMonth,
             currentYear,

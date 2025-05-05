@@ -20,7 +20,7 @@
         </swiper-slide>
 
     </swiper>
-    <div v-if="type == 'postInner'"
+    <div v-if="type == 'postInner' && swiperInstance?.isBeginning !== swiperInstance?.isEnd"
          class="swiper-navigation__buttons-group">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
@@ -70,7 +70,6 @@ export default defineComponent({
         },
     },
     setup(props) {
-
         return {
             swiperOn: useSwiperconf(props.type).swiperOn,
             slideNext: useSwiperconf(props.type).slideNext,

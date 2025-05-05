@@ -27,6 +27,7 @@ import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import type { IWorkersResults } from "@/interfaces/IWorkersOfTheYear";
 import WorkerCard from "./WorkerCard.vue";
+import { renameKey } from "@/utils/renameKey";
 export default defineComponent({
     props: {
         id: {
@@ -51,12 +52,6 @@ export default defineComponent({
                 .then(res => {
                     const transformedData = res.map(item => {
                         const newItem = { ...item };
-
-                        const renameKey = (item: IWorkersResults, key: string) => {
-                            const originalKey = Object.keys(item)[0];
-                            const value = item[originalKey as keyof IWorkersResults];
-                            item[key] = value;
-                        }
 
                         if (newItem.PROPERTY_1035) {
                             renameKey(newItem.PROPERTY_1035, "year");

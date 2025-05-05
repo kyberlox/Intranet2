@@ -17,7 +17,7 @@ export default defineComponent({
     setup() {
         const galleryPosts = ref();
         onMounted(() => {
-            Api.get(API_URL + `article/infoblock/${sectionTips['Наши люди']}`)
+            Api.get(API_URL + `article/find_by/${sectionTips['Наши люди']}`)
                 .then((data) => {
                     galleryPosts.value = data
                 });

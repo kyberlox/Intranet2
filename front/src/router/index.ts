@@ -27,7 +27,7 @@ const router = createRouter({
     },
     {
       path: '/about/our-people/:id',
-      name: 'our-people-inner',
+      name: 'ourPeopleInner',
       component: () => import('@/views/about/ourPeople/OurPeopleInner.vue'),
       props: (route) => ({ id: route.params.id })
     },
@@ -48,16 +48,16 @@ const router = createRouter({
       component: () => import('@/views/about/blogs/Blogs.vue'),
     },
     {
-      path: '/about/blogs/:name',
+      path: '/about/blogs/:id',
       name: 'blogOf',
       component: () => import('@/views/about/blogs/BlogsAritcles.vue'),
-      props: (route) => ({ name: route.params.name })
+      props: (route) => ({ id: route.params.id })
     },
     {
-      path: '/about/blogs/:name/:id',
+      path: '/about/blogs/:authorId/:id',
       name: 'CertainBlog',
       component: () => import('@/views/about/blogs/CertainBlog.vue'),
-      props: (route) => ({ name: route.params.name, id: route.params.id })
+      props: (route) => ({ authorId: route.params.authorId, id: route.params.id })
     },
     {
       path: '/about/videoInterviews',

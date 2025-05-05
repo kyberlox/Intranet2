@@ -4,16 +4,21 @@
             <div v-for="card in gallery"
                  :key="'homeCard' + card.id"
                  class="home__view__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
-                <div class="home__view__grid__card_group-title">{{ card.name }}</div>
-                <RouterLink :to="{ name: type !== 'video' ? blockRouteTips[card.IBLOCK_ID] : 'videoInterview', params: { id: card.ID } }"
+                <!-- <div class="home__view__grid__card_group-title">{{ card.name }}</div> -->
+                <RouterLink :to="{ name: type !== 'video' ? 'ourPeopleInner' : 'videoInterview', params: { id: card.indirect_data.ID } }"
                             class="home__view__grid__card__link">
-                    <div class="home__view__grid__card__image"
-                         :style="{ backgroundImage: `url(${card.PREVIEW_PICTURE.includes('https') ? card.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
+                    <div v-if="card.indirect_data.PREVIEW_PICTURE"
+                         class="home__view__grid__card__image"
+                         :style="{ backgroundImage: `url(${card.indirect_data.PREVIEW_PICTURE.includes('https') ? card.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
+                    </div>
+                    <div v-else="card.indirect_data.DETAIL_PICTURE"
+                         class="home__view__grid__card__image"
+                         :style="{ backgroundImage: `url(${card.indirect_data.DETAIL_PICTURE.includes('https') ? card.DETAIL_PICTURE : 'https://placehold.co/360x206'})` }">
                     </div>
                     <div class="home__view__grid__card__info">
-                        <div v-if="card.NAME"
+                        <div v-if="card.name"
                              class="home__view__grid__card__title home__view__grid__card__title--gallery"
-                             :class="{ 'home__view__grid__card__title--video': type == 'video' }">{{ card.NAME }}</div>
+                             :class="{ 'home__view__grid__card__title--video': type == 'video' }">{{ card.name }}</div>
                         <div v-if="card.description"
                              class="home__view__grid__card__description">{{ card.description }}</div>
                     </div>
@@ -27,14 +32,28 @@
 </template>
 <script lang="ts">
 import Reactions from "@/components/Reactions.vue";
-import { defineComponent } from "vue";
+import { defineComponent, type PropType } from "vue";
 import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
+
+interface IGridGalleryCard {
+    id?: string,
+    name?: string,
+    description?: string,
+    reactions?: {
+        likes: string,
+        dislikes: string,
+    },
+    indirect_data?: {
+        ID: string,
+        PREVIEW_PICTURE: string,
+    }
+}
 
 export default defineComponent({
     components: { Reactions },
     props: {
         gallery: {
-            type: Object,
+            type: Object as PropType<IGridGalleryCard[]>,
             required: true,
         },
         type: {
@@ -43,7 +62,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        console.log(props);
+
         return {
             blockRouteTips
         }

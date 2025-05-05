@@ -80,8 +80,6 @@ export default defineComponent({
         ZoomModal
     },
     setup(props) {
-        console.log(props);
-
         const modalVideo = ref();
         const modalImg = ref();
         const modalIsOpen = ref(false);

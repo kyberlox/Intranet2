@@ -31,6 +31,6 @@ export default defineConfig({
     }
   },
   define: {
-    'API_URL': JSON.stringify('http://localhost:8000/api/')
+    'API_URL': JSON.stringify('http://localhost:8000/api/'),
   }
 })

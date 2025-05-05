@@ -724,15 +724,25 @@ class ArticleModel():
 
 
     def find_by_id(self):
-        return db.query(Article).get(self.id)
+        art = db.query(Article).get(self.id)
+        try:
+            art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+        except:
+            art.__dict__["indirect_data"] = art.indirect_data
+        return art.__dict__
 
     def find_by_section_id(self):
         
         data = db.query(Article).filter(Article.section_id == self.section_id).all()
         new_data = []
-        for art in data:
-            art.__dict__["indirect_data"] = json.loads(art.indirect_data)
-            new_data.append(art.__dict__)
+        try:
+            for art in data:
+                art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+                new_data.append(art.__dict__)
+        except:
+            for art in data:
+                art.__dict__["indirect_data"] = art.indirect_data
+                new_data.append(art.__dict__)
         
         return new_data
 

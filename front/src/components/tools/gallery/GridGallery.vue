@@ -5,15 +5,20 @@
                  :key="'homeCard' + card.id"
                  class="home__view__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
                 <!-- <div class="home__view__grid__card_group-title">{{ card.name }}</div> -->
-                <RouterLink :to="{ name: type !== 'video' ? 'ourPeopleInner' : 'videoInterview', params: { id: card.indirect_data.ID } }"
+                <RouterLink v-if="card.indirect_data && card.indirect_data.ID"
+                            :to='{ name: routeTo, params: { id: String(card.indirect_data.ID) } }'
                             class="home__view__grid__card__link">
                     <div v-if="card.indirect_data.PREVIEW_PICTURE"
                          class="home__view__grid__card__image"
-                         :style="{ backgroundImage: `url(${card.indirect_data.PREVIEW_PICTURE.includes('https') ? card.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
+                         :style="{ backgroundImage: `url(${card.indirect_data.PREVIEW_PICTURE.includes('https') ? card.indirect_data.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
                     </div>
-                    <div v-else="card.indirect_data.DETAIL_PICTURE"
+                    <div v-else-if="card.indirect_data.DETAIL_PICTURE"
                          class="home__view__grid__card__image"
-                         :style="{ backgroundImage: `url(${card.indirect_data.DETAIL_PICTURE.includes('https') ? card.DETAIL_PICTURE : 'https://placehold.co/360x206'})` }">
+                         :style="{ backgroundImage: `url(${card.indirect_data.DETAIL_PICTURE.includes('https') ? card.indirect_data.DETAIL_PICTURE : 'https://placehold.co/360x206'})` }">
+                    </div>
+                    <div v-else
+                         class="home__view__grid__card__image"
+                         :style="{ backgroundImage: `url('https://placehold.co/360x206')` }">
                     </div>
                     <div class="home__view__grid__card__info">
                         <div v-if="card.name"
@@ -34,32 +39,25 @@
 import Reactions from "@/components/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
 import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
-
-interface IGridGalleryCard {
-    id?: string,
-    name?: string,
-    description?: string,
-    reactions?: {
-        likes: string,
-        dislikes: string,
-    },
-    indirect_data?: {
-        ID: string,
-        PREVIEW_PICTURE: string,
-    }
-}
+import type { IActualNews } from "@/interfaces/INewNews";
 
 export default defineComponent({
     components: { Reactions },
     props: {
         gallery: {
-            type: Object as PropType<IGridGalleryCard[]>,
+            type: Object as PropType<IActualNews[]>,
             required: true,
         },
         type: {
             type: String,
             default: 'gallery',
         },
+        routeTo: {
+            type: String,
+        },
+        id: {
+            type: Number,
+        }
     },
     setup(props) {
 

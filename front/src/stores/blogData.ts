@@ -1,17 +1,17 @@
 import { defineStore } from "pinia";
+import type { IBlog, IBlogAuthors } from "@/interfaces/INewBlog";
 
 export const useblogDataStore = defineStore('blogData', {
     state: () => ({
-        allBlogs: [],
-        allAuthors: [],
+        allAuthors: [] as IBlogAuthors[],
+        allBlogs: [] as IBlog[],
     }),
 
     actions: {
-        setAuthors(authors) {
+        setAuthors(authors: IBlogAuthors[]) {
             this.allAuthors = authors;
         },
-        setAllBlogs(blogs) {
-            console.log(blogs);
+        setAllBlogs(blogs: IBlog[]) {
             this.allBlogs = blogs;
         }
     },
@@ -19,7 +19,7 @@ export const useblogDataStore = defineStore('blogData', {
     getters: {
         getAllAuthors: (state) => state.allAuthors,
         getCurrentAuthor: (state) => (x: string) => state.allAuthors.find(e => e.authorId == x),
-        getCurrentArticles: (state) => (x: string) => state.allBlogs.filter(e => e.indirect_data['PROPERTY_453'] == x || e.indirect_data['PROPERTY_451'] == x),
-        getBlogById: (state) => (x: string) => state.allBlogs.find(e => e.id == x),
+        getCurrentArticles: (state) => (x: string) => state.allBlogs.filter(e => e.indirect_data && (e.indirect_data['PROPERTY_453'] == x || e.indirect_data['PROPERTY_451'] == x)),
+        getBlogById: (state) => (x: string) => state.allBlogs.find(e => String(e.id) == x),
     }
 });

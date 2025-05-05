@@ -28,6 +28,7 @@ import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import type { IWorkersResults } from "@/interfaces/IWorkersOfTheYear";
 import WorkerCard from "./WorkerCard.vue";
 import { renameKey } from "@/utils/renameKey";
+
 export default defineComponent({
     props: {
         id: {
@@ -48,9 +49,9 @@ export default defineComponent({
         const workerWithDiploma: Ref<IWorkersResults[]> = ref([]);
 
         onMounted(() => {
-            Api.get(API_URL + `article/infoblock/${sectionTips["Сотрудник года"]}`)
+            Api.get(`article/infoblock/${sectionTips["Сотрудник года"]}`)
                 .then(res => {
-                    const transformedData = res.map(item => {
+                    const transformedData = res.map((item: IWorkersResults) => {
                         const newItem = { ...item };
 
                         if (newItem.PROPERTY_1035) {

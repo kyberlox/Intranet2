@@ -1,7 +1,7 @@
 <template>
     <div class="excursions__training__page mt20">
         <div class="page__title">Пожарная безопасность и эвакуация из офисного здания</div>
-        <PostInner page="excursions" />
+        <PostInner />
     </div>
 </template>
 

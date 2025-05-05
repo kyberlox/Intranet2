@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, type Ref } from "vue";
 import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
 import Api from "@/utils/Api";
@@ -58,13 +58,14 @@ export default defineComponent({
         MainPageRowBlocks
     },
     setup() {
-        const mainPageCards: MainPageCards = ref();
+        const mainPageCards: Ref<MainPageCards | undefined> = ref();
         onMounted(() => {
-            Api.get(API_URL + `section/${sectionTips['Главная']}`)
+            Api.get(`section/${sectionTips['Главная']}`)
                 .then((data) => {
                     mainPageCards.value = data
                 })
                 .then(() => {
+                    if (!mainPageCards.value) return;
                     mainPageCards.value.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
                         if (item.type == 'fullRowBlock' && item.images.length > 4) {
                             item.images.length = 4
@@ -73,42 +74,9 @@ export default defineComponent({
                 })
         })
 
-
         return {
             mainPageCards
         };
     },
 });
 </script>
-
-<style>
-.grid-span-4 {
-    grid-column: span 4;
-}
-
-/* .home__view__grid__card__link>.home__view__grid__card__group-title:empty:not(home__view__grid__card__group-title--mixed:empty) {
-    display: block;
-    visibility: hidden;
-} */
-
-.home__view__grid__card__group-title--mixed {
-    display: -webkit-box;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1;
-    min-height: 2em;
-    color: var(--emk-brand-color);
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 24px;
-    /* height: 30px; */
-    text-wrap-mode: nowrap;
-    text-wrap-mode: wrap;
-    padding-bottom: 5px;
-}
-
-.home__view__grid__card__group-title--mixed:empty {
-    /* display: none;xxxx */
-}
-</style>

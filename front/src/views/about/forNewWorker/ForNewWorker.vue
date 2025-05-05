@@ -115,7 +115,7 @@ export default defineComponent({
     setup() {
         const pageContent = ref<IforNewWorkerObject[]>();
         onMounted(() => {
-            Api.get(API_URL + `article/find_by/${sectionTips['Новому сотруднику']}`)
+            Api.get(`article/find_by/${sectionTips['Новому сотруднику']}`)
                 .then((res: IforNewWorkerObject[]) => {
                     pageContent.value = res.sort((a, b) => {
                         return Number(a.indirect_data.PROPERTY_475[0]) - Number(b.indirect_data.PROPERTY_475[0])

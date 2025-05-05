@@ -2,16 +2,19 @@
     <div class="page__title mt20">Актуальные новости</div>
     <TagDateNavBar />
     <div class="row">
-        <GridGallery v-if="formattedNews"
-                     :gallery="formattedNews"
-                     :type="'postPreview'" />
+        <GridGallery v-if="news"
+                     :gallery="news"
+                     :type="'postPreview'"
+                     :routeTo="'newsPreview'" />
     </div>
 </template>
 <script lang="ts">
+import { sectionTips } from '@/assets/staticJsons/sectionTips';
 import TagDateNavBar from '@/components/news/TagDateNavBar.vue';
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
-import { mainPageCards } from "@/assets/staticJsons/mainPage";
-import { defineComponent } from 'vue';
+import Api from '@/utils/Api';
+import { defineComponent, onMounted, type Ref, ref } from 'vue';
+import type { IActualNews } from '@/interfaces/INewNews';
 
 export default defineComponent({
     components: {
@@ -19,11 +22,17 @@ export default defineComponent({
         GridGallery
     },
     setup() {
+        const news: Ref<IActualNews[]> = ref([]);
+        onMounted(() => {
+            Api.get(`article/find_by/${sectionTips['Актуальные новости']}`)
+                .then((res) => {
+                    news.value = res;
+                    console.log(news.value);
 
-        const news = mainPageCards.find((e) => e.id == 6);
-        const formattedNews = news && news.type == 'fullRowBlock' && news.images ? news.images : [];
+                })
+        })
         return {
-            formattedNews
+            news
         };
     },
 });

@@ -1,9 +1,9 @@
 <template>
     <div class="page__wrapper mt20">
-        <h1 class="page__title">Видеоинтервью</h1>
+        <h1 class="page__title">Видеорепортажи</h1>
         <GridGallery class="mt20"
                      :gallery="interviews"
-                     :routeTo="'videoInterview'"
+                     :routeTo="'videoreport'"
                      :type="'video'" />
     </div>
 </template>
@@ -19,7 +19,7 @@ export default defineComponent({
     setup() {
         const interviews = ref([]);
         onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['Видеоинтервью']}`)
+            Api.get(`article/find_by/${sectionTips['Видеорепортажи']}`)
                 .then(res => {
                     interviews.value = res;
                 })

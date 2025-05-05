@@ -1,7 +1,7 @@
 <template>
     <div class="excursions__training__page mt20">
         <div class="page__title">Посещение производственных площадок</div>
-        <PostInner page="excursions" />
+        <PostInner />
     </div>
 </template>
 

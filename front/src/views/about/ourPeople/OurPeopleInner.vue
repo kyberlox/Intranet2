@@ -22,7 +22,7 @@ export default defineComponent({
     setup(props) {
         const currentPost = ref();
         onMounted(() => {
-            Api.get(API_URL + `article/find_by_ID/${props.id}`)
+            Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => {
                     currentPost.value = data
                 })

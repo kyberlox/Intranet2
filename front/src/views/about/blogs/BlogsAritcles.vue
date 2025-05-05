@@ -10,7 +10,7 @@
                 <div class="blog-list__item"
                      v-for="article in blogsArticles"
                      :key="'article' + article.id">
-                    <div>
+                    <div v-if="article.indirect_data">
                         <RouterLink :to="{ name: 'CertainBlog', params: { id: article.id, authorId: targetAuthor?.authorId } }"
                                     class="blog-list__item-title">{{ article.indirect_data.NAME }}</RouterLink>
                         <div class="news-like news-like--blog">

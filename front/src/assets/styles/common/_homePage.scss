@@ -214,3 +214,24 @@
         }
     }
 }
+
+.grid-span-4 {
+    grid-column: span 4;
+}
+
+.home__view__grid__card__group-title--mixed {
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1;
+    min-height: 2em;
+    color: var(--emk-brand-color);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    /* height: 30px; */
+    text-wrap-mode: nowrap;
+    text-wrap-mode: wrap;
+    padding-bottom: 5px;
+}

@@ -6,7 +6,7 @@
                 <div class="blogs__items">
                     <BlogAvatar v-if="authors"
                                 v-for="item in authors"
-                                :key="item.ID"
+                                :key="item.id"
                                 :from="'blogs'"
                                 :author="item" />
                 </div>
@@ -15,7 +15,7 @@
                 <div class="blogs__items">
                     <BlogAvatar v-if="factoryAuthors"
                                 v-for="item in factoryAuthors"
-                                :key="item.ID"
+                                :key="item.id"
                                 :from="'blogs'"
                                 :author="item" />
                 </div>
@@ -25,19 +25,20 @@
 </template>
 <script lang="ts">
 import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
-import { defineComponent, ref, onMounted, computed, watch } from "vue";
+import { defineComponent, ref, type Ref, computed, watch } from "vue";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
 import { renameKey } from "@/utils/renameKey";
 import { useblogDataStore } from "@/stores/blogData";
+import type { IBlogAuthors } from "@/interfaces/INewBlog";
 
 export default defineComponent({
     components: {
         BlogAvatar,
     },
     setup() {
-        const authors = ref([]);
-        const factoryAuthors = ref([]);
+        const authors: Ref<IBlogAuthors[]> = ref([]);
+        const factoryAuthors: Ref<IBlogAuthors[]> = ref([]);
         const blogDataStore = useblogDataStore();
         const allAuthors = computed(() => blogDataStore.getAllAuthors);
 

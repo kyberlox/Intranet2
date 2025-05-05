@@ -71,99 +71,109 @@ export const mainMenuPoints: MainMenuPoints = [
         ],
     },
     {
-        id: 12,
+        id: 2,
         name: "Сервисы",
         subPoints: [
             {
-                id: 13,
-                name: "Подбор оборудования",
-                href: "selection",
+                id: 2.1,
+                name: "Подбор оборудования (ТЭП)",
+                href: "selectionTep",
             },
             {
-                id: 14,
+                id: 2.2,
+                name: "Подбор оборудования (Регулятор)",
+                href: "selectionReg",
+            },
+            {
+                id: 2.3,
                 name: "Поздравительная открытка",
                 href: "postcard",
             },
             {
-                id: 15,
+                id: 2.4,
                 name: "ChatGpt",
                 href: "chatgpt",
             },
             {
-                id: 16,
+                id: 2.5,
                 name: "Разрешительная документация и сертификаты",
                 href: "cert",
             },
             {
-                id: 17,
+                id: 2.6,
                 name: "Референсы и опыт поставок",
                 href: "experience",
             },
         ],
     },
     {
-        id: 18,
+        id: 3,
         name: "Новости",
         subPoints: [
             {
-                id: 19,
+                id: 3.1,
                 name: "Актуальные новости",
                 href: "actualNews",
             },
             {
-                id: 20,
+                id: 3.2,
                 name: "Новости организационного развития",
-                href: "corpNews",
+                href: "corpnews",
             },
             {
-                id: 21,
+                id: 3.3,
+                name: "Видеорепортажи",
+                href: "videoreport",
+            },
+            {
+                id: 3.4,
                 name: "Корпоративная газета ЭМК",
                 href: "gazette",
             },
         ],
     },
     {
-        id: 22,
+        id: 4,
         name: "Галерея",
         subPoints: [
             {
-                id: 23,
+                id: 4.1,
                 name: "Гид по предприятиям",
                 href: "factories",
             },
             {
-                id: 24,
+                id: 4.2,
                 name: "Официальные события",
                 href: "officialEvents",
             },
         ],
     },
     {
-        id: 25,
+        id: 5,
         name: "Внутренние коммуникации",
         subPoints: [
             {
-                id: 26,
+                id: 5.1,
                 name: "Корпоративные события",
                 href: "corporateEvents",
             },
             {
-                id: 27,
+                id: 5.2,
                 name: "Корпоративная жизнь в фото",
                 href: "corporateEventsGallery",
             },
             {
-                id: 28,
+                id: 5.3,
                 name: "Афиша",
                 href: "eventAnnounces",
             },
             {
-                id: 29,
+                id: 5.4,
                 name: "Предложения партнёров",
                 href: "partners",
             },
             {
-                id: 30,
+                id: 5.5,
                 name: "Благотворительные проекты",
                 href: "care",
             },

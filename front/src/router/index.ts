@@ -71,6 +71,18 @@ const router = createRouter({
       props: (route) => ({ id: route.params.id })
     },
     {
+      path: '/about/videoreport',
+      name: 'videoreports',
+      component: () => import('@/views/news/videoReport/VideoReport.vue'),
+      props: (route) => ({ id: route.params.id })
+    },
+    {
+      path: '/about/videoreport',
+      name: 'videoreport',
+      component: () => import('@/views/news/videoReport/VideoReport.vue'),
+      props: (route) => ({ id: route.params.id })
+    },
+    {
       path: '/about/trainingcenter',
       name: 'training',
       component: () => import('@/views/about/trainingCenter/TrainingCenter.vue')
@@ -165,10 +177,19 @@ const router = createRouter({
       component: () => import('@/views/about/calendarPage/CalendarPage.vue')
     },
     {
-      path: '/services/selection',
-      name: 'selection',
+      path: '/services/selectionTep',
+      name: 'selectionTep',
       beforeEnter: (to, from, next) => {
         window.open('https://emk.websto.pro/static/select.html', '_blank')
+        next(false)
+      },
+      redirect: '',
+    },
+    {
+      path: '/services/selectionReg',
+      name: 'selectionReg',
+      beforeEnter: (to, from, next) => {
+        window.open('https://portal.emk.ru/intranet/tools/regconf.php', '_blank')
         next(false)
       },
       redirect: '',
@@ -211,6 +232,12 @@ const router = createRouter({
       path: '/news/actual',
       name: 'actualNews',
       component: () => import('@/views/news/actualNews/ActualNews.vue')
+    },
+    {
+      path: '/news/preview/:id',
+      name: 'newsPreview',
+      component: () => import('@/views/news/NewsPreview.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/news/corpnews',

@@ -18,7 +18,7 @@ services:
       - app-network
 
   mongodb:
-    image: mongo:latest
+    image: mongo:4.4.3
     container_name: mongodb
     volumes:
       - ./mongodb/data:/data/db
@@ -27,6 +27,21 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${pswd}
     ports:
       - "27017:27017"
+    networks:
+      - app-network
+
+  elasticsearch:
+    image: elasticsearch:8.17.2
+    container_name: "elastic"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ./elasticsearch/data:/bitnami/elasticsearch/data
+      - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - app-network
 

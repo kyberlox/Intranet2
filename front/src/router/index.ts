@@ -303,7 +303,13 @@ const router = createRouter({
     {
       path: '/gallery/partners/',
       name: 'partners',
-      component: () => import('@/views/innerCommunications/PartnerBonus.vue')
+      component: () => import('@/views/innerCommunications/PartnerBonus.vue'),
+    },
+    {
+      path: '/gallery/partners/:id',
+      name: 'partnerPost',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Предложения партнеров' })
     },
     {
       path: '/gallery/care/',

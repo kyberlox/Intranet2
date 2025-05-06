@@ -5,11 +5,11 @@
              :key="index">
             <RouterLink v-if="!slide.videoHref && !modifiers.includes('noRoute')"
                         class="flexGallery__card"
-                        :to="checkRouteTo(slide)">
+                        :to="{ name: routeTo, params: { id: slide.id } }">
                 <div class="flexGallery__card__img-wrapper"
                      :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
                     <div class="flexGallery__card__img"
-                         :style="{ backgroundImage: `url(${slide.img})` }">
+                         :style="{ backgroundImage: `url(${slide.img ?? 'https://placehold.co/360x206'})` }">
                     </div>
                 </div>
                 <div v-if="slide.title"
@@ -73,6 +73,10 @@ export default defineComponent({
         modifiers: {
             type: Array,
             default: () => ['']
+        },
+        routeTo: {
+            type: String,
+            required: true,
         }
     },
     components: {

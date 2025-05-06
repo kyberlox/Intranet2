@@ -4,7 +4,7 @@
         <div class="news__list">
             <GridGallery :gallery="news"
                          :type="'postPreview'"
-                         :routeTo="'newsPreview'" />
+                         :routeTo="'corpNewsArticle'" />
         </div>
     </div>
 </template>

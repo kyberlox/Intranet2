@@ -5,7 +5,7 @@
         <GridGallery v-if="news"
                      :gallery="news"
                      :type="'postPreview'"
-                     :routeTo="'newsPreview'" />
+                     :routeTo="'actualArticle'" />
     </div>
 </template>
 <script lang="ts">

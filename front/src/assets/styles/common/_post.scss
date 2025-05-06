@@ -7,6 +7,14 @@
         gap: 10px;
         align-items: center;
 
+        &__phone-care {
+            font-weight: 500;
+            font-size: 0.9rem;
+            line-height: 152.34%;
+            color: #A5A5A5;
+            display: inline-block;
+        }
+
         &__main__img {
             width: 100%;
             border-radius: 4px;

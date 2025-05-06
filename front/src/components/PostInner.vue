@@ -2,7 +2,7 @@
     <div class="post-inner__page__wrapper mt20">
         <div v-if="currentPost"
              class="row">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-6 mb-2">
                 <SwiperBlank :videos="currentPost.videos"
                              :images="currentPost.images ? currentPost.images : ['https://placehold.co/360x206']"
                              :type="'postInner'" />
@@ -14,7 +14,7 @@
                          class="news__detail__top">
                         <div class="row mb-2">
                             <div class="col-12">
-                                <h2 class="news__detail__title mb-2">{{ currentPost.indirect_data.NAME }}</h2>
+                                <h2 class="news__detail__title">{{ currentPost.indirect_data.NAME }}</h2>
                             </div>
                         </div>
                     </div>
@@ -30,6 +30,11 @@
                     </div>
                     <div v-if="currentPost.tags"
                          class="tags"></div>
+                         <div v-if="currentPost.indirect_data['PROPERTY_347'] && currentPost.indirect_data['PROPERTY_347'][0]" class="news__detail__phone-care">
+                            Телефон организатора:
+                            <br/>
+                            {{currentPost.indirect_data['PROPERTY_347'][0]}}
+                         </div>
                     <div class="news__detail__discr"
                          v-html="currentPost.content_text"></div>
                     <div v-if="currentPost.documents"
@@ -82,8 +87,11 @@ export default defineComponent({
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((res) => {
                     currentPost.value = res;
-                    currentPost.value = res;
                     if (!currentPost.value) return;
+                    console.log(currentPost.value)
+                    if(currentPost.value.indirect_data['PROPERTY_348'] && currentPost.value.indirect_data['PROPERTY_348'][0]["TEXT"]){
+                        currentPost.value.content_text = currentPost.value.indirect_data['PROPERTY_348'][0]["TEXT"];
+                    }
                     if (!res.embedVideos || !res.nativeVideos) return;
                     currentPost.value.videos = res.embedVideos.concat(res.nativeVideos);
                 })

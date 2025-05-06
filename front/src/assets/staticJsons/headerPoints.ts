@@ -155,12 +155,12 @@ export const mainMenuPoints: MainMenuPoints = [
             {
                 id: 5.1,
                 name: "Корпоративные события",
-                href: "corporateEvents",
+                href: "corpEvents",
             },
             {
                 id: 5.2,
                 name: "Корпоративная жизнь в фото",
-                href: "corporateEventsGallery",
+                href: "corpEventsGallery",
             },
             {
                 id: 5.3,

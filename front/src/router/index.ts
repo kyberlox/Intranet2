@@ -234,15 +234,21 @@ const router = createRouter({
       component: () => import('@/views/news/actualNews/ActualNews.vue')
     },
     {
-      path: '/news/preview/:id',
-      name: 'newsPreview',
-      component: () => import('@/views/news/NewsPreview.vue'),
-      props: (route) => ({ id: route.params.id })
+      path: '/news/actual/:id',
+      name: 'actualArticle',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Актуальные новости' })
     },
     {
       path: '/news/corpnews',
       name: 'corpnews',
       component: () => import('@/views/news/corpNews/CorpNews.vue')
+    },
+    {
+      path: '/news/corpnews/:id',
+      name: 'corpNewsArticle',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Новости организационного развития' })
     },
     {
       path: '/news/gazette',
@@ -281,12 +287,12 @@ const router = createRouter({
     },
     {
       path: '/communications/corpevents/',
-      name: 'corpevents',
+      name: 'corpEvents',
       component: () => import('@/views/innerCommunications/CorpEvents.vue')
     },
     {
-      path: '/communications/corpeventsGallery/',
-      name: 'corporateEventsGallery',
+      path: '/communications/corpeventsgallery/',
+      name: 'corpEventsGallery',
       component: () => import('@/views/innerCommunications/CorpEventsGallery.vue')
     },
     {
@@ -303,6 +309,12 @@ const router = createRouter({
       path: '/gallery/care/',
       name: 'care',
       component: () => import('@/views/innerCommunications/Care.vue')
+    },
+    {
+      path: '/gallery/care/:id',
+      name: 'carePost',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Благотворительные проекты' })
     },
     {
       path: '/user/auth',

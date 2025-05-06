@@ -60,7 +60,7 @@ export default defineComponent({
     setup() {
         const mainPageCards: Ref<MainPageCards | undefined> = ref();
         onMounted(() => {
-            Api.get(`section/${sectionTips['Главная']}`)
+            Api.get(`article/find_by/${sectionTips['Главная']}`)
                 .then((data) => {
                     mainPageCards.value = data
                 })

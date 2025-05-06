@@ -18,7 +18,7 @@ services:
       - app-network
 
   mongodb:
-    image: mongo:4.4.3
+    image: mongo:latest
     container_name: mongodb
     volumes:
       - ./mongodb/data:/data/db

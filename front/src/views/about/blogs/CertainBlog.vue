@@ -7,7 +7,7 @@
 			</div>
 			<div v-if="currentArticle"
 				 class="col-sm-9">
-				<h2>{{ currentArticle.name }}</h2>
+				<!-- <h2>{{ currentArticle.name }}</h2> -->
 				<div class="blog-list__item-wrapper mt20"
 					 v-html="currentArticle.content_text"></div>
 			</div>

@@ -69,8 +69,8 @@ def test(ID):
 
 @app.get("/elastic_dump")
 def elastic_dump():
-    res = UserSearchModel().dump()
-    #res = StructureSearchModel().dump()
+    # res = UserSearchModel().dump()
+    res = StructureSearchModel().dump()
     return res
 
 @app.get("/elastic_search")

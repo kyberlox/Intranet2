@@ -7,44 +7,11 @@ from src.base.pSQLmodels import UsDepModel
 
 import json
 
+from fastapi import APIRouter, Body
+
+search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
+
 elastic_client = Elasticsearch('http://elastic:9200')
-
-# request_body = {
-#             "settings": {
-#                 "analysis": {
-#                     "analyzer": {
-#                         "russian_custom": {
-#                         "type": "standard",
-#                         "stopwords": "_russian_",
-#                         "filter": ["lowercase", "russian_morphology", "russian_stop"]
-#                         }
-#                     }
-#                 }
-#             },
-#             "mappings": {
-#                 "properties": {
-#                     "user_fio": {
-#                         "type": "text"
-#                     },
-#                     "email": {
-#                         "type": "text"
-#                     },
-#                     "phone": {
-#                         "type": "text"
-#                     },
-#                     "city": {
-#                         "type": "text"
-#                     },
-#                     "male": {
-#                         "type": "text"
-#                     },
-#                     "birthday": {
-#                         "type": "text"
-#                     },
-#                 }
-#             }
-#         }
-
 
 
 class UserSearchModel:
@@ -229,8 +196,9 @@ class UserSearchModel:
             }
             users_data_ES.append(user_action)
         
+        helpers.bulk(elastic_client, users_data_ES)
 
-        return helpers.bulk(elastic_client, users_data_ES)
+        return {"status": True}
 
     def search(self, data):
         #сюда приходит словарь для поискового запроса по пользователям
@@ -296,35 +264,122 @@ class StructureSearchModel:
     def  __init__ (self):
         self.DepartmentModel = DepartmentModel
         self.UsDepModel = UsDepModel
+        self.UserModel = UserModel
+        self.index = 'departs'
+
+    def create_index(self):
+        request_body = {
+            "settings": {
+                "analysis": {
+                    "analyzer": {
+                        "GOD_PLEASE": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase",
+                                "ru_stop",
+                                "ru_stemming",
+                                "myngram"
+                            ]
+                        },
+                        "GOD_PLEASE_FUZZY": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase"
+                            ]
+                        }
+                    },
+                    "filter": {
+                        "ru_stemming": {
+                            "type": "stemmer",
+                            "language": "russian"
+                        },
+                        "ru_stop": {
+                            "type": "stop",
+                            "stopwords": "_russian"
+                        },
+                        "myngram": {
+                            "type": "edge_ngram",
+                            "min_gram": 2,
+                            "max_gram": 20
+                        }
+                    }
+                },
+                "max_ngram_diff" : "20"
+            },
+            "mappings": {
+                "properties": {
+                    "name": {
+                        "type": "text",
+                        "analyzer": "GOD_PLEASE",
+                        # "search_analyzer": "standard",
+                        "fields" : {
+                            "fuzzy": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY"
+                            }
+                        }
+                    },
+                    "father_id": {
+                        "type": "numeric"
+                    },
+                    "user_head_id": {
+                        "type": "numeric"
+                    },
+                    "users": {
+                        "type": "object"
+                    }
+                }
+            }
+        }
+
+        responce = elastic_client.indices.create(index=self.index, body=request_body)
+        return responce
+        
+
     
     def dump(self):
 
-        global_list = []
+        users_list = []
+        
         dep_data = [] # список 
         dep_sql_data = self.DepartmentModel().all()
         for dep in dep_sql_data:
             department_data = dep.__dict__
+            users = self.UsDepModel(id = department_data['id']).find_user_by_dep_id() #берём id всех пользователей департамента
+            if isinstance(users, list):
+                for usr in users:
+                    user_data = {}
+                    user = self.UserModel(Id=usr).find_by_id()
+                    print(user['indirect_data']['work_position'], 'проверка на none')
+                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data']['work_position'] is not None:
+                        if user['second_name'] is not None:
+                            user_data[user['id']] = [f'{user['last_name']} {user['name']} {user['second_name']}', user['indirect_data']['work_position']]
+                        else:
+                            user_data[user['id']] = [f'{user['last_name']} {user['name']}', user['indirect_data']['work_position']]
+                    else:
+                        if user['second_name'] is not None:
+                            user_data[user['id']] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                        else:
+                            user_data[user['id']] = f'{user['last_name']} {user['name']}'
+
+                    users_list.append(user_data)
             
-            users = self.UsDepModel(id = dep.id).find_user_by_dep_id() #берём id всех пользователей департамента
+            else:
+                pass
+            print(users_list, 'usr_list')
+            break
+              
 
             depart = {
                 "name" : department_data["name"],
                 "father_id" : department_data["father_id"],
                 "user_head_id" : department_data["user_head_id"],
-                "users" : users
+                "users" : users_list
             }
 
-            first_row = {"create": {"_index": "depart", "_id": int(department_data["id"])}}
-
-            dep_data.append(first_row)
             dep_data.append(depart)
-
-        with open('./src/base/dep_data.json', 'w') as file:
-            for row in dep_data:
-                json.dump(row, file, ensure_ascii=False)
-                file.write('\n')
-
-        #print(dep_data)
         return {'status': True}
 
     def search(self, data):
@@ -335,3 +390,8 @@ class StructureSearchModel:
         #вывести по иерархии
         pass
 
+    def delete_index(self):
+        elastic_client.indices.delete(index=self.index)
+        return {'status': True}
+
+# @search_router.get("/")

@@ -14,7 +14,6 @@
 <script lang="ts">
 import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
 import { defineComponent, onMounted, type Ref, ref } from "vue";
-import { safetyTechnicsSlides } from "@/assets/staticJsons/careSlides";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import type { ICareSlide } from "@/interfaces/INewNews";

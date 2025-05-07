@@ -30,11 +30,12 @@
                     </div>
                     <div v-if="currentPost.tags"
                          class="tags"></div>
-                         <div v-if="currentPost.indirect_data['PROPERTY_347'] && currentPost.indirect_data['PROPERTY_347'][0]" class="news__detail__phone-care">
-                            Телефон организатора:
-                            <br/>
-                            {{currentPost.indirect_data['PROPERTY_347'][0]}}
-                         </div>
+                    <div v-if="currentPost.indirect_data['PROPERTY_347'] && currentPost.indirect_data['PROPERTY_347'][0]"
+                         class="news__detail__phone-care">
+                        Телефон организатора:
+                        <br />
+                        {{ currentPost.indirect_data['PROPERTY_347'][0] }}
+                    </div>
                     <div class="news__detail__discr"
                          v-html="currentPost.content_text"></div>
                     <div v-if="currentPost.documents"
@@ -67,7 +68,7 @@ import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type PropType, type Ref, onMounted, ref } from "vue";
-import type { IActualNews } from "@/interfaces/INewNews";
+import type { IActualNews, ICareSlide } from "@/interfaces/INewNews";
 import Api from "@/utils/Api";
 export default defineComponent({
     components: {
@@ -82,20 +83,29 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const currentPost = ref<IActualNews>();
+        const currentPost = ref<IActualNews | ICareSlide>();
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((res) => {
                     currentPost.value = res;
                     if (!currentPost.value) return;
-                    console.log(currentPost.value)
-                    if(currentPost.value.indirect_data['PROPERTY_348'] && currentPost.value.indirect_data['PROPERTY_348'][0]["TEXT"]){
-                        currentPost.value.content_text = currentPost.value.indirect_data['PROPERTY_348'][0]["TEXT"];
-                    }
-                    if (!res.embedVideos || !res.nativeVideos) return;
-                    currentPost.value.videos = res.embedVideos.concat(res.nativeVideos);
+                    changeToPostStandart(currentPost, res);
                 })
         })
+
+        const changeToPostStandart = (target: Ref<IActualNews | ICareSlide | undefined>, res: IActualNews | ICareSlide) => {
+            if (target.value == undefined) return;
+            const property348Text = (target.value.indirect_data as any)?.['PROPERTY_348']?.[0]?.["TEXT"];
+            const property374Text = (target.value.indirect_data as any)?.['PROPERTY_374']?.[0]?.["TEXT"];
+            if (property348Text) {
+                target.value.content_text = property348Text;
+            }
+            else if (property374Text) {
+                target.value.content_text = property374Text;
+            }
+            if (!res.embedVideos || !res.nativeVideos) return;
+            (target.value as any).videos = res.embedVideos.concat(res.nativeVideos);
+        }
 
         return {
             currentPost,

@@ -288,17 +288,35 @@ const router = createRouter({
     {
       path: '/communications/corpevents/',
       name: 'corpEvents',
-      component: () => import('@/views/innerCommunications/CorpEvents.vue')
+      component: () => import('@/views/innerCommunications/CorpEvents.vue'),
     },
     {
-      path: '/communications/corpeventsgallery/',
-      name: 'corpEventsGallery',
-      component: () => import('@/views/innerCommunications/CorpEventsGallery.vue')
+      path: '/communications/corpevent/:id',
+      name: 'corpEvent',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративные события' })
+    },
+    {
+      path: '/communications/corplife/',
+      name: 'corpLife',
+      component: () => import('@/views/innerCommunications/CorpLife.vue')
+    },
+    {
+      path: '/communications/corplife/:id',
+      name: 'corpLifeItem',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь' })
     },
     {
       path: '/communications/announces/',
       name: 'eventAnnounces',
       component: () => import('@/views/innerCommunications/EventAnnounces.vue')
+    },
+    {
+      path: '/communications/announces/:id',
+      name: 'eventAnnounce',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Афиша' })
     },
     {
       path: '/gallery/partners/',

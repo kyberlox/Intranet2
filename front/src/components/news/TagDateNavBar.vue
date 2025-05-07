@@ -46,7 +46,7 @@ import { tags } from '@/assets/staticJsons/newsTags';
 export default defineComponent({
     props: {
         modifiers: String,
-        years: Array<string>,
+        years: Array<String>,
     },
     setup(props, { emit }) {
         const showTags = ref(false);

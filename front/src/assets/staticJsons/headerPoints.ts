@@ -160,7 +160,7 @@ export const mainMenuPoints: MainMenuPoints = [
             {
                 id: 5.2,
                 name: "Корпоративная жизнь в фото",
-                href: "corpEventsGallery",
+                href: "corpLife",
             },
             {
                 id: 5.3,

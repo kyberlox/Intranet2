@@ -39,13 +39,13 @@
 import Reactions from "@/components/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
 import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
-import type { IActualNews } from "@/interfaces/INewNews";
+import type { IActualNews, ICorpEventsItem } from "@/interfaces/INewNews";
 
 export default defineComponent({
     components: { Reactions },
     props: {
         gallery: {
-            type: Object as PropType<IActualNews[]>,
+            type: Object as PropType<IActualNews[] | ICorpEventsItem[]>,
             required: true,
         },
         type: {

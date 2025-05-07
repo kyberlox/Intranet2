@@ -1,4 +1,4 @@
-export interface IBaseEntity {
+interface IBaseEntity {
     "section_id"?: Number,
     "name"?: String,
     "preview_text"?: String,
@@ -26,7 +26,7 @@ export interface IBaseEntity {
     }
 }
 
-export interface IBaseIndirectData {
+interface IBaseIndirectData {
     "ID"?: String,
     "PREVIEW_PICTURE"?: string,
     "DETAIL_PICTURE"?: string,
@@ -39,7 +39,7 @@ export interface IBaseIndirectData {
     "ACTIVE_FROM"?: String,
 }
 
-export interface IActualNewsIndirectData extends IBaseIndirectData {
+interface IActualNewsIndirectData extends IBaseIndirectData {
     "PROPERTY_1066"?: String[],
     "PROPERTY_1116"?: String[],
     "PROPERTY_284"?: String[],
@@ -58,11 +58,7 @@ export interface IActualNewsIndirectData extends IBaseIndirectData {
     "PROPERTY_296"?: String[],
 }
 
-export interface IActualNews extends IBaseEntity {
-    "indirect_data"?: IActualNewsIndirectData
-}
-
-export interface ICareIndirectData extends IBaseIndirectData {
+interface ICareIndirectData extends IBaseIndirectData {
     "PROPERTY_342"?: String[],
     "PROPERTY_343"?: String[],
     "PROPERTY_344"?: String[],
@@ -76,6 +72,64 @@ export interface ICareIndirectData extends IBaseIndirectData {
     "PROPERTY_349"?: String[],
 }
 
+interface IAfishaItemIndirectData extends IBaseIndirectData {
+    "PROPERTY_375"?: String[],
+    "PROPERTY_438"?: String[],
+    "PROPERTY_372"?: String[],
+    "PROPERTY_373"?: String[],
+    "PROPERTY_374"?:
+    {
+        "TYPE"?: String,
+        "TEXT"?: String
+    }[]
+    "PROPERTY_376"?: String[],
+    "PROPERTY_5004"?: String[]
+}
+
+interface ICorpEventsIndirectData extends IBaseIndirectData {
+    "PROPERTY_1066"?: String[],
+    "PROPERTY_411"?: String[],
+    "PROPERTY_284"?: String[],
+    "PROPERTY_285"?: String[],
+    "PROPERTY_289"?: String[],
+    "PROPERTY_290"?: String[],
+    "PROPERTY_291"?:
+    {
+        "TYPE"?: String,
+        "TEXT"?: String
+    }[],
+    "PROPERTY_292"?: String[],
+    "PROPERTY_293"?: String[],
+    "PROPERTY_294"?: String[],
+    "PROPERTY_295"?: String[],
+    "PROPERTY_296"?: String[],
+}
+
+interface ICorpLifeIndirectData extends IBaseIndirectData {
+    "PROPERTY_666": String[],
+    "PROPERTY_405": String[],
+    "PROPERTY_406": String[],
+    "PROPERTY_407": String[],
+    "PROPERTY_409": String[],
+    "PROPERTY_408": String[],
+}
+
+export interface IActualNews extends IBaseEntity {
+    "indirect_data"?: IActualNewsIndirectData
+}
+
 export interface ICareSlide extends IBaseEntity {
-    "indirecta_data"?: ICareIndirectData
+    "indirect_data"?: ICareIndirectData
+}
+
+export interface IAfishaItem extends IBaseEntity {
+    indirect_data?: IAfishaItemIndirectData
+}
+
+export interface ICorpEventsItem extends IBaseEntity {
+    indirect_data?: ICorpEventsIndirectData
+}
+
+export interface ICorpLife extends IBaseEntity {
+    indirect_data?: ICorpLifeIndirectData
 }

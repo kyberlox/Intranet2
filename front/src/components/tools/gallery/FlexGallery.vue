@@ -12,8 +12,14 @@
                          :style="{ backgroundImage: `url(${slide.img ?? 'https://placehold.co/360x206'})` }">
                     </div>
                 </div>
-                <div v-if="slide.title"
-                     class="flexGallery__card__title">{{ slide.title }}</div>
+                <div v-if="slide.indirect_data['PROPERTY_375']"
+                     class="flexGallery__card__title">
+                    {{ slide.indirect_data['PROPERTY_438'][0] ? slide.indirect_data['PROPERTY_375'][0] + '-' +
+                        slide.indirect_data['PROPERTY_438'][0] :
+                        slide.indirect_data['PROPERTY_375'][0] }}
+                </div>
+                <div v-if="slide.name"
+                     class="flexGallery__card__title">{{ slide.name }}</div>
             </RouterLink>
 
             <div v-else-if="modifiers.includes('noRoute')"
@@ -51,18 +57,19 @@
 
 
 </template>
+
 <script lang="ts">
 import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
 import type { RouteLocationRaw } from 'vue-router';
-import type { INewsSlide } from "@/interfaces/INewsSlide";
+import type { IAfishaItem } from "@/interfaces/INewNews";
 
 export default defineComponent({
     name: 'FlexGallery',
     props: {
         slides: {
-            type: Array<INewsSlide>,
+            type: Array<IAfishaItem>,
         },
         title: {
             type: String,

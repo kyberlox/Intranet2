@@ -1,0 +1,149 @@
+.personal__user__photo {
+    margin-bottom: 20px;
+}
+
+.personal__user__photo img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+}
+
+.personal__user__about {
+    margin-bottom: 20px;
+}
+
+.personal__user__about h3 {
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 16px;
+    color: #303030;
+    margin: 0;
+}
+
+.personal__user__about p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: #666666;
+}
+
+.personal__user__mess {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.personal__user__mess__link {
+    font-size: 14px;
+    color: #303030;
+    height: 40px;
+    line-height: 40px;
+    display: inline-block;
+    padding: 0 34px;
+    border: 1px solid #ef7f1b;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.personal__user__mess__link:hover {
+    background: #ef7f1b;
+    color: #ffffff;
+}
+
+.personal__user__top {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    margin-bottom: 10px;
+    align-items: center;
+
+    // @include sm {
+    //     margin-top: 20px;
+    // }
+}
+
+.personal__user__top__title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    color: rgba(0, 0, 0, 0.87);
+    margin: 0;
+}
+
+.personal__user__property {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 50px;
+}
+
+.personal__user__social__list {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.personal__user__social__item {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #000000;
+    margin-right: 30px;
+}
+
+.personal__user__social__skype {
+    mask-image: url("/local/templates/intranet/css/../img/socialicon/skype.svg");
+    -webkit-mask-image: url("/local/templates/intranet/css/../img/socialicon/skype.svg");
+}
+
+.personal__user__social__twitter {
+    mask-image: url("/local/templates/intranet/css/../img/socialicon/twitter.svg");
+    -webkit-mask-image: url("/local/templates/intranet/css/../img/socialicon/twitter.svg");
+    width: 20px;
+    height: 16px;
+}
+
+.personal__user__social__facebook {
+    mask-image: url("/local/templates/intranet/css/../img/socialicon/facebook.svg");
+    -webkit-mask-image: url("/local/templates/intranet/css/../img/socialicon/facebook.svg");
+    width: 19px;
+    height: 19px;
+}
+
+.personal__user__social__linkedin {
+    mask-image: url("/local/templates/intranet/css/../img/socialicon/linkedin.svg");
+    -webkit-mask-image: url("/local/templates/intranet/css/../img/socialicon/linkedin.svg");
+}
+
+.personal__user__social__instagram {
+    mask-image: url("/local/templates/intranet/css/../img/socialicon/instagram.svg");
+    -webkit-mask-image: url("/local/templates/intranet/css/../img/socialicon/instagram.svg");
+}
+
+.personal__user__social__item:hover {
+    background-color: #F5821F;
+}
+
+.personal__user__property__items h3 {
+    font-size: 12px;
+    line-height: 16px;
+    color: #303030;
+    margin: 0;
+}
+
+.personal__user__property__items span {
+    font-size: 12px;
+    line-height: 16px;
+    color: #666666;
+    margin: 0 0 20px;
+    display: inline-block;
+}
+
+.personal__user__section {
+    margin-top: 20px;
+}

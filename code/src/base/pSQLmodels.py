@@ -21,7 +21,7 @@ pswd = os.getenv('pswd')
 port = os.getenv('PORT')
 
 # Настройка подключения к базе данных PostgreSQL
-engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb')
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb', pool_size=40, max_overflow=0)
 
 
 
@@ -38,6 +38,7 @@ class User(Base):
     last_name = Column(Text, nullable=True)
     second_name = Column(Text, nullable=True)
     email = Column(Text, nullable=True)
+    phone = Column(Text, nullable=True)
     personal_mobile = Column(Text, nullable=True)
     uf_phone_inner = Column(Text, nullable=True)
     personal_city = Column(Text, nullable=True)
@@ -79,6 +80,7 @@ class Article(Base):
     date_publiction = Column(DateTime, nullable=True)
     date_creation = Column(DateTime, nullable=True)
     indirect_data = Column(JSONB, nullable=True)
+    #preview_image_url = Column(Text, nullable=True)
 
 
 
@@ -259,6 +261,9 @@ class UserModel:
 
         else:
             return {'err' : "Invalid user id"}
+    
+    def all(self):
+        return self.db.query(self.user).all()
 
     """
     def put_uf_depart(self, usr_dep):
@@ -407,6 +412,9 @@ class DepartmentModel():
         #     return result
         # else:
         #     return {'err': 'Нет такого департамента'}
+    
+    def all(self):
+        return self.db.query(self.department).all()
 
 
 
@@ -615,6 +623,19 @@ class UsDepModel:
             return [res]
         else:
             return {'err' : "Invalid user id"}
+    
+    def find_user_by_dep_id(self):
+        """
+        Выдает id пользователей по id департамента
+        """
+        users = self.db.execute(select(self.us_dep).where(self.us_dep.dep_id == self.id)).scalars().all()
+        if users != []:
+            res = []
+            for usr in users:
+                res.append(usr.user_id)
+            return res
+        else:
+            return {'err' : "Invalid user id"}
 
                 
 
@@ -664,7 +685,6 @@ class ArticleModel():
         return article_data
 
     def need_add(self):
-
         db_art = db.query(Article).filter(Article.section_id == self.section_id).all()
         # если в таблице есть раздел
         if db_art != []:
@@ -673,18 +693,57 @@ class ArticleModel():
                 # добавить статью в таблицу, если её там нет
                 if int(art.id) == int(self.id):
                     need = False
-                    print("Такой раздел уже есть", self.id)
-                #если статья есть - обновить данные о ней
+                    # print("Такой раздел уже есть", self.id)
             return need
 
         # если в таблице нет статей раздела
         else:
             return True
 
+    def reassembly(self, article_data):
+        #удалить статью
+        db.query(Article).get(self.id).delete()
+        #залить заново
+        self.add_article(article_data)
+
+    def update(self, article_data):
+        db_art = db.query(Article).get(self.id).__dict__
+        for key in article_data:
+            if key not in ["ID", "_sa_instance_state"]:
+                if key not in db_art:
+                    self.reassembly(article_data)
+                    print(db_art['id'], "добавить", key, "=", article_data[key])
+                    return True
+                elif article_data[key] != db_art[key]:
+                    self.reassembly(article_data)
+                    print(db_art['id'], key, db_art[key], "-->", article_data[key])
+                    return True
+                else:
+                    return False
+
+
+
     def find_by_id(self):
-        return db.query(Article).get(self.id)
+        art = db.query(Article).get(self.id)
+        try:
+            art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+        except:
+            art.__dict__["indirect_data"] = art.indirect_data
+        return art.__dict__
 
     def find_by_section_id(self):
-        return db.query(Article).filter(Article.section_id == self.section_id).all()
+        
+        data = db.query(Article).filter(Article.section_id == self.section_id).all()
+        new_data = []
+        try:
+            for art in data:
+                art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+                new_data.append(art.__dict__)
+        except:
+            for art in data:
+                art.__dict__["indirect_data"] = art.indirect_data
+                new_data.append(art.__dict__)
+        
+        return new_data
 
 

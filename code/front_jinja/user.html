@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Меню сайта</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/api/view/app/style.css">
 </head>
 <body class="depart-body">
 
@@ -16,7 +16,7 @@
             </a>
         </div>
         <div class="title-div right">
-            <a href="/api/view/department" class="menu-button">
+            <a href="/departments/view" class="menu-button">
                 Департаменты
             </a>
         </div>
@@ -26,7 +26,7 @@
         <h1>Пользователи</h1>
         <!-- Блок обновления пользователя -->
         <div class="update-section">
-            <form action="/api/view/user" method="get" class="update-form">
+            <form action="/users/view" method="get" class="update-form">
                 <button type="button" class="menu-button" onclick="fetch_put_users()">Обновить данные</button>
                 
             </form>
@@ -53,7 +53,7 @@
     <script>
         function fetch_put_users() {
             console.log("Функция fetch_put_users вызвана");
-            fetch('http://127.0.0.1:8000/api/users', {
+            fetch('http://127.0.0.1:8000/users', {
                 method: 'PUT', 
                 headers: {"Content-type": "application/json; charset=UTF-8",
                     "Accept": "application/json"
@@ -78,7 +78,7 @@
             const userId = document.getElementById('user_id').value;
             console.log("Поиск пользователя по ID:", userId);
 
-            fetch(`http://127.0.0.1:8000/api/user/${userId}`, {
+            fetch(`http://127.0.0.1:8000/users/find_by/${userId}`, {
                 method: 'GET',
                 headers: {
                     "Accept": "application/json"

@@ -1,0 +1,102 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
+.swiper--vertical {
+
+    &>.swiper-wrapper {
+        @include sm {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+}
+
+.swiper--vertical-slide {
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+}
+
+.swiper--vertical-slide__info {
+    background: #fff;
+    min-height: 50px;
+
+    @include sm {
+        margin-top: 10px;
+    }
+}
+
+.swiper--vertical-slide__name,
+.vertical-title {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 16px;
+    color: #303030;
+    text-decoration: none;
+    margin-top: 10px;
+    max-width: 350px;
+}
+
+.swiper--vertical-slide__position,
+.swiper--vertical-slide__department,
+.vertical-subtitle {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+    color: #666666;
+    margin-top: 1px;
+}
+
+.vertical-subtitle {
+    margin-top: 5px;
+}
+
+.swiper--vertical-slide img {
+    width: 100%;
+    margin-bottom: 15px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.swiper--vertical {
+    flex-grow: 1;
+}
+
+.swiper--vertical {
+    width: fit-content !important;
+    margin-left: 0;
+
+    @include sm {
+        width: 100% !important;
+    }
+}
+
+.swiper--vertical-slide {
+    width: fit-content !important;
+    display: flex;
+    justify-content: center;
+
+    @include sm {
+        width: 100% !important;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+.swiper--vertical-slide img {
+    max-width: 360px;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+    transition: var(--default-transition);
+
+    &:hover {
+        transform: scale(1.02);
+    }
+
+    @include sm {
+        max-width: 100%;
+        margin: auto;
+    }
+}

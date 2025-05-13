@@ -1,0 +1,73 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
+.swiper {
+    max-width: 100%;
+    height: auto;
+
+    &-slide {
+        height: auto !important;
+
+        iframe {
+            height: 100%;
+            border-radius: 15px;
+        }
+
+        img {
+            width: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+
+        }
+    }
+
+    &-navigation {
+        &__buttons {
+            &-group {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 15px;
+                text-align: center;
+                align-items: center;
+
+                @include sm {
+                    display: none;
+                }
+
+                &__button {
+                    color: #FFF;
+                    // margin: 0 5px;
+                    display: flex;
+                    cursor: pointer;
+                    border-radius: 100%;
+                    align-items: center;
+                    justify-content: center;
+                    width: 45px;
+                    height: 42px;
+                    background: #ef7f1b;
+                    outline: none;
+                    border: none;
+
+                    &>svg {
+                        width: 18px;
+                    }
+                }
+            }
+        }
+    }
+
+    &-pagination {
+        &-bullet {
+            width: 15px;
+            height: 15px;
+
+            &-active {
+                background: #ef7f1b !important;
+            }
+        }
+
+        &__button--disabled {
+            opacity: 0.5;
+        }
+    }
+}

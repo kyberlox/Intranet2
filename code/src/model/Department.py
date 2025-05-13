@@ -4,6 +4,14 @@ from src.base.B24 import B24
 import requests
 import json
 
+from fastapi import APIRouter, Body, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
+templates = Jinja2Templates(directory="./front_jinja")
+
+depart_router = APIRouter(prefix="/departments", tags=["Департамент"])
+
 class Department:
     def __init__(self, id=0, name="", father_id="", data=""): #убрать = после каждой переменной в будущем
         self.id = id
@@ -26,3 +34,27 @@ class Department:
     
     def search_dep_by_id(self):
         return DepartmentModel(self.id).find_dep_by_id()
+
+
+# Департаменты можно обновить
+@depart_router.put("")
+def get_department():
+    depart = Department()
+    return depart.fetch_departments_data()
+
+# фронт
+@depart_router.get("/view")
+def get_user(request: Request):
+    return templates.TemplateResponse(name="depart.html", context={"request": request})
+
+# Департамент можно выгрузить
+@depart_router.get("/find_by/{id}")
+def get_department(id):
+    return Department(id).search_dep_by_id()
+
+#Пользователя можно найти
+@depart_router.post("/search")
+def get_user(jsn=Body()):
+    #будет работать через elasticsearch
+    pass
+

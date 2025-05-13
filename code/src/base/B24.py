@@ -21,6 +21,44 @@ class B24:
         result = self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
         return result
 
+
+
+    def get_file(self, id, inf_id):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/j6122m0ystded5ag/")
+        result = self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID={inf_id}&id={id}')
+        return result
+
+    # функции vcard
+    def getUsersByUuid(self, uuid):
+        filter = {
+                "XML_ID" : uuid
+        }
+        result = self.bx24.callMethod('user.search', filter=filter)
+        return result
+
+    def getDepartByID(self, id):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        result = self.bx24.callMethod('department.get', ID=id)
+        return result
+
+
+
+
+
+
+
+
+
+
+    def get_picture_link(self, inf_id, art_id, picture_type, property):
+        link = f"https://portal.emk.ru/company/lists/{inf_id}/file/0/{art_id}/{picture_type}/{property}/"
+        return link
+
+    '''def find(self, inf_id, art_id, property):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+        result = self.bx24.callMethod(f"lists.field.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={inf_id}&FIELD_ID={property}")
+        return result'''
+
     #async def getUsers(self):
         #result = await self.bx24.callMethod('user.get')
         #return result

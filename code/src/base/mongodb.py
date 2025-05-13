@@ -35,6 +35,7 @@ class FileModel:
         return file_id
 
     def remove(self):
+        #удалить сам файл
         return files_collection.delete_one({"b24_id": self.id})
 
     def find_by_id(self):
@@ -55,7 +56,7 @@ class FileModel:
 
 
     # блок для аватарок
-    def add_user_photo(self, file_data):
+    def add_user_photo(self, file`_data):
         file_id = user_photo_collection.insert_one(file_data).inserted_id
         return file_id
 
@@ -64,3 +65,6 @@ class FileModel:
 
     def find_user_photo_by_id(self):
         return user_photo_collection.find_one({"_id": self.id})
+    
+    def find_user_photo_by_uuid(self, uuid):
+        return user_photo_collection.find_one({"uuid": uuid})

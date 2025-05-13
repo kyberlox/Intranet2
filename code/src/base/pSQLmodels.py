@@ -14,11 +14,12 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 
+from src.base.mongodb import FileModel
+
 load_dotenv()
 
 user = os.getenv('user')
 pswd = os.getenv('pswd')
-port = os.getenv('PORT')
 
 # Настройка подключения к базе данных PostgreSQL
 engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb', pool_size=40, max_overflow=0)
@@ -45,6 +46,7 @@ class User(Base):
     personal_gender = Column(String, nullable=True)
     personal_birthday = Column(DateTime, nullable=True)
     indirect_data = Column(JSONB, nullable=True)
+    photo_file_id = Column(Text, nullable=True)
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -256,6 +258,17 @@ class UserModel:
                 result[key] = user.__dict__[key]
 
             result['indirect_data'] = user.indirect_data
+            
+            #информация о фото
+            #вывод ID фотографии пользователя
+            result['photo_file_id'] = user['photo_file_id']
+            if 'photo_file_id' in user.keys() and user['photo_file_id'] is not None:
+                photo_obj = FileModel(user['photo_file_id'])
+                photo_inf = photo_obj.find_user_photo_by_id()
+
+                #вывод URL фотографии пользователя
+                result['photo_file_url'] = photo_inf['url']
+                result['photo_file_b24_url'] = photo_inf['b24_url']
 
             return result
 
@@ -264,6 +277,12 @@ class UserModel:
     
     def all(self):
         return self.db.query(self.user).all()
+    
+    def set_user_photo(self, file_id, file_url):
+        update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.c.id == self.id)
+        return True
+
+
 
     """
     def put_uf_depart(self, usr_dep):

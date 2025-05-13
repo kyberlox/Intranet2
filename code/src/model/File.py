@@ -201,7 +201,8 @@ async def get_file_by_b24(b24_id: str):
 
 @file_router.delete("/{file_id}")
 async def delete_file(file_id: str):
-    file_data = FileModel(id = ObjectId(file_id)).find_by_id()
+    #изменить статус
+    """file_data = FileModel(id = ObjectId(file_id)).find_by_id()
     if not file_data:
         raise HTTPException(404, detail="File not found")
 
@@ -210,6 +211,38 @@ async def delete_file(file_id: str):
         FileModel(id = ObjectId(file_id)).remove()
         return {"status": "deleted"}
     except Exception as e:
-        raise HTTPException(500, detail=str(e))
+        raise HTTPException(500, detail=str(e))"""
+        pass
 
 
+
+user_photo_example = {
+    "id" : "",
+    "uuid" : "",
+    "URL" : "",
+    "b24_url" : "",
+    "is_archive" : False
+}
+
+def dowload_user_photo(self, url):
+    with requests.get(url, stream=True) as r:
+        with open(img_path, "wb") as f:
+            f.write(r.content)
+    return True
+
+@file_router.post("/get_user_photo/{uuid}")
+def get_user_photo(uuid : str):
+    return FileModel().find_user_photo_by_uuid(uuid)
+
+@file_router.get("/get_user_photo/{file_id}")
+def get_user_photo(file_id: str):
+    return FileModel(id = ObjectId(file_id)).find_user_photo_by_id(uuid)
+
+@file_router.post("/add_user_photo/{file_id}")
+def add_user_photo():
+    pass
+
+@file_router.delete("/delete_user_photo/{file_id}")
+def delete_user_photo():
+    #изменить значение параметра is_archive
+    pass

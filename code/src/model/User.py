@@ -28,6 +28,8 @@ class User:
         for usr_data in data:
             #if usr_data['ID'] == '2375':
             UserSQL.upsert_user(usr_data)
+        
+        self.set_users_photo()
 
         return {"status" : True}
 
@@ -51,15 +53,27 @@ class User:
     def get_uf_depart(self):
         return UserModel().find_uf_depart()
 
+    
+
     def set_users_photo(self):
-        #найдем фото пользователя по uuid
-        #если у пользователя есть аватарка
-        #проверим url первоисточника текущей аватарки
-        #если есть изменение - скачать новую
-        #обновить данные в pSQL
-        #в mongodb
-        #вывести отчет по изменениям
-        pass
+        b24 = B24()
+        data = b24.getUsers()
+
+        for usr_data in data:
+            #найдем фото пользователя, если у пользователя есть аватарка
+            uuid = data['ID']
+            if 'PERSONAL_PHOTO' in usr_data:
+                b24_ulr = data['PERSONAL_PHOTO']
+                #проверим url первоисточника текущей аватарки
+                psql_user = UserModel(self.id).find_by_id()
+                if psql_user['photo_file_b24_url'] is None or psql_user['photo_file_b24_url'] != b24_ulr
+                    #если есть несоответствие - скачать новую
+                    
+                    #обновить данные в pSQL
+                    #в mongodb
+                    #cтарую - в архив
+            #вывести отчет по изменениях
+        
 
 
 
@@ -120,24 +134,24 @@ class User:
 
 
 #Пользоваетелей можно обновить
-@users_router.put("")
-def get_user():
+@users_router.put("/update")
+def update_user():
     usr = User()
     return usr.fetch_users_data()
 
 # фронт
 @users_router.get("/view")
-def get_user(request: Request):
+def view_user(request: Request):
     return templates.TemplateResponse(name="user.html", context={"request": request})
 
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")
-def get_user(id):
+def find_by_user(id):
     return User(id).search_by_id()
 
 #Пользователя можно найти
 @users_router.post("/search")
-def get_user(jsn=Body()):
+def search_user(jsn=Body()):
     #будет работать через elasticsearch
     pass
 

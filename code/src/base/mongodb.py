@@ -29,6 +29,7 @@ class FileModel:
         self.id = id
 
 
+
     # блок для файлов
     def add(self, file_data):
         file_id = files_collection.insert_one(file_data).inserted_id

@@ -1,4 +1,4 @@
-from src.base.pSQLmodels import UserModel
+from src.model.File import File
 from src.base.B24 import B24
 
 import requests
@@ -65,19 +65,26 @@ class User:
             if 'PERSONAL_PHOTO' in usr_data:
                 b24_ulr = data['PERSONAL_PHOTO']
                 #проверим url первоисточника текущей аватарки
+                
                 psql_user = UserModel(self.id).find_by_id()
-                if psql_user['photo_file_b24_url'] is None or psql_user['photo_file_b24_url'] != b24_ulr
-                    #если есть несоответствие - скачать новую
+                if psql_user['photo_file_b24_url'] is None or psql_user['photo_file_b24_url'] != b24_ulr:
+                    #cтарую фотку - в архив
+                    if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_ulr:
+                        old_file_id = psql_user['photo_file_id']
+                        File(id = ObjectId(old_file_id)).delete_user_img()
                     
+                    #если есть несоответствие - скачать новую
+                    file_data = File().add_user_img(b24_url, uuid)
+
                     #обновить данные в pSQL
-                    #в mongodb
-                    #cтарую - в архив
-            #вывести отчет по изменениях
-        
+                    UserModel(self.id).set_user_photo(file_id, file_url)
+                    
+        #вывести отчет по изменениях
+        return True
 
 
 
-    '''
+   """
     def variant_users(self, key):
         return B24().variant_key_user(key)
 
@@ -130,7 +137,8 @@ class User:
             current += 50
 
         return (keys, result)
-    '''
+"""
+
 
 
 #Пользоваетелей можно обновить
@@ -154,6 +162,5 @@ def find_by_user(id):
 def search_user(jsn=Body()):
     #будет работать через elasticsearch
     pass
-
 
 

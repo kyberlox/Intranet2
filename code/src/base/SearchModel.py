@@ -1,4 +1,5 @@
 from elasticsearch import Elasticsearch
+from elasticsearch import AsyncElasticsearch
 from elasticsearch import helpers
 
 from src.base.pSQLmodels import UserModel
@@ -392,6 +393,34 @@ class StructureSearchModel:
         helpers.bulk(elastic_client, dep_data)
         return {'status': True}
 
+    async def index_structure_dep(department_id: str):
+        # Получаем данные из PostgreSQL
+        department = await DepartmentModel(self.id).find_dep_by_id()
+        if "user_head_id" in department.keys() and department["user_head_id"] is not None:
+            user = await UserModel(department["user_head_id"]).find_by_id()
+            full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
+            leader = {
+                "id" : user['id'],
+                "name" : full_name,
+                "photo_url" : user['photo_file_url']
+            }
+        
+        user_dep_relations = UsDepModel(department['id']).find_user_by_dep_id()
+        users = []
+        for relation in user_dep_relations:
+            #тут сложности из-за неочевидной структуры в случае когда один пользователь занимает несколько должностей
+            user = await UserModel(relation).find_user_by_dep_id()
+            
+            full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
+            position = 
+            users.append({
+                "id" : user['id'],
+                "name" : full_name,
+                "position" : position
+            })
+
+
+    
     def search(self, data):
         #сюда приходит словарь для поискового запроса по пользователям
         pass
@@ -467,6 +496,8 @@ class StructureSearchModel:
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+
+
 
 @search_router.get("/dump_user")
 def create_data_user():

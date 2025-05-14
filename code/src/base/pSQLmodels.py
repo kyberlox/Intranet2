@@ -261,9 +261,9 @@ class UserModel:
             
             #информация о фото
             #вывод ID фотографии пользователя
-            result['photo_file_id'] = user['photo_file_id']
-            if 'photo_file_id' in user.keys() and user['photo_file_id'] is not None:
-                photo_obj = FileModel(user['photo_file_id'])
+            result['photo_file_id'] = user.__dict__['photo_file_id']
+            if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
+                photo_obj = FileModel(user.__dict__['photo_file_id'])
                 photo_inf = photo_obj.find_user_photo_by_id()
 
                 #вывод URL фотографии пользователя

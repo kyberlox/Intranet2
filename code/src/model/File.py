@@ -126,7 +126,7 @@ class File:
         
         return (name, form)
     
-    def add_user_img(self, b24_url : srt, uuid : srt):
+    def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
         name, form = self.dowload_user_photo(b24_url)
 
@@ -267,7 +267,7 @@ async def get_user_photo(file_id: str):
     return FileModel(id = ObjectId(file_id)).find_user_photo_by_id(uuid)
 
 @file_router.post("/add_user_photo/{b24_url}/{uuid}")
-async def add_user_photo(b24_url : srt, uuid : srt):
+async def add_user_photo(b24_url : str, uuid : str):
     return File().add_user_photo(b24_url, uuid)
 
 @file_router.delete("/delete_user_photo/{file_id}")

@@ -57,7 +57,7 @@ class FileModel:
 
 
     # блок для аватарок
-    def add_user_photo(self, file`_data):
+    def add_user_photo(self, file_data):
         file_id = user_photo_collection.insert_one(file_data).inserted_id
         return file_id
 

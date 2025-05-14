@@ -412,11 +412,11 @@ class StructureSearchModel:
             user = await UserModel(relation).find_user_by_dep_id()
             
             full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
-            position = 
+            # position = 
             users.append({
                 "id" : user['id'],
                 "name" : full_name,
-                "position" : position
+                # "position" : position
             })
 
 

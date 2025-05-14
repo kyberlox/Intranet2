@@ -1,3 +1,4 @@
+from src.base.pSQLmodels import UserModel
 from src.model.File import File
 from src.base.B24 import B24
 
@@ -61,30 +62,31 @@ class User:
 
         for usr_data in data:
             #найдем фото пользователя, если у пользователя есть аватарка
-            uuid = data['ID']
-            if 'PERSONAL_PHOTO' in usr_data:
-                b24_ulr = data['PERSONAL_PHOTO']
-                #проверим url первоисточника текущей аватарки
-                
-                psql_user = UserModel(self.id).find_by_id()
-                if psql_user['photo_file_b24_url'] is None or psql_user['photo_file_b24_url'] != b24_ulr:
-                    #cтарую фотку - в архив
-                    if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_ulr:
-                        old_file_id = psql_user['photo_file_id']
-                        File(id = ObjectId(old_file_id)).delete_user_img()
+            if "ID" in data:
+                uuid = data['ID']
+                if 'PERSONAL_PHOTO' in usr_data:
+                    b24_ulr = data['PERSONAL_PHOTO']
+                    #проверим url первоисточника текущей аватарки
                     
-                    #если есть несоответствие - скачать новую
-                    file_data = File().add_user_img(b24_url, uuid)
+                    psql_user = UserModel(self.id).find_by_id()
+                    if psql_user['photo_file_b24_url'] is None or psql_user['photo_file_b24_url'] != b24_ulr:
+                        #cтарую фотку - в архив
+                        if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_ulr:
+                            old_file_id = psql_user['photo_file_id']
+                            File(id = ObjectId(old_file_id)).delete_user_img()
+                        
+                        #если есть несоответствие - скачать новую
+                        file_data = File().add_user_img(b24_url, uuid)
 
-                    #обновить данные в pSQL
-                    UserModel(self.id).set_user_photo(file_id, file_url)
-                    
-        #вывести отчет по изменениях
-        return True
+                        #обновить данные в pSQL
+                        UserModel(self.id).set_user_photo(file_data['id'], file_data['URL'])
+                        
+            #вывести отчет по изменениях
+            return True
 
 
 
-   """
+   
     def variant_users(self, key):
         return B24().variant_key_user(key)
 
@@ -110,34 +112,34 @@ class User:
         return result
     
 
-    def get(self, method="user.get", params={}):
-        req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
-        if params != {}:
-            req += "?"
-            for parem_key in params.keys():
-                req += f"&{parem_key}={params[parem_key]}"
-        response = requests.get(req)
-        return response.json()
+    # def get(self, method="user.get", params={}):
+    #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
+    #     if params != {}:
+    #         req += "?"
+    #         for parem_key in params.keys():
+    #             req += f"&{parem_key}={params[parem_key]}"
+    #     response = requests.get(req)
+    #     return response.json()
     
-    def get_all(self, method, params={}):
-        response = self.get(method)
-        current = 50
-        result = response["result"]
-        keys = []
-        while current < int(response["total"]):
-            params["start"] = current
-            response = self.get(method, params)
-            curr_result = response["result"]
-            for curr_keys in curr_result:
-                for k in curr_keys:
-                    if k not in keys:
-                        keys.append(k)
-                        #print(k)
-            result = result + curr_result
-            current += 50
+    # def get_all(self, method, params={}):
+    #     response = self.get(method)
+    #     current = 50
+    #     result = response["result"]
+    #     keys = []
+    #     while current < int(response["total"]):
+    #         params["start"] = current
+    #         response = self.get(method, params)
+    #         curr_result = response["result"]
+    #         for curr_keys in curr_result:
+    #             for k in curr_keys:
+    #                 if k not in keys:
+    #                     keys.append(k)
+    #                     #print(k)
+    #         result = result + curr_result
+    #         current += 50
 
-        return (keys, result)
-"""
+    #     return (keys, result)
+
 
 
 

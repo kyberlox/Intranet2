@@ -32,7 +32,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        console.log(props);
+        // console.log(props);
         return {
             makeSlashToBr,
         };

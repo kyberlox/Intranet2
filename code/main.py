@@ -16,8 +16,7 @@ from src.model.Article import Article, article_router
 from src.model.File import File, file_router
 from src.model.vcard import vcard_app
 
-from src.model.SearchModel import UserSearchModel
-from src.model.SearchModel import StructureSearchModel
+from src.model.SearchModel import UserSearchModel, StructureSearchModel, search_router
 
 from src.base.B24 import B24
 
@@ -34,6 +33,7 @@ app.include_router(section_router, prefix="/api")
 app.include_router(article_router, prefix="/api")
 app.include_router(file_router, prefix="/api")
 app.include_router(vcard_app, prefix="/api")
+app.include_router(search_router, prefix="/api")
 
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")

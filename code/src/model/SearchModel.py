@@ -209,21 +209,6 @@ class UserSearchModel:
         pass
 
     def search_by_name(self, name):
-        # res = elastic_client.search(
-        #     index='user',
-        #     query={
-        #         'match': {
-        #             "user_fio": name,
-        #         }
-        #     },
-        #     size=1000
-        # )
-        # res = elastic_client.search(
-        #     index='user',
-        #     query={
-        #         "should"
-        #     }
-        # )
         res = elastic_client.search(
             index='user',
             query={
@@ -313,7 +298,6 @@ class StructureSearchModel:
                     "name": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
-                        # "search_analyzer": "standard",
                         "fields" : {
                             "fuzzy": {
                                 "type": "text",
@@ -322,13 +306,32 @@ class StructureSearchModel:
                         }
                     },
                     "father_id": {
-                        "type": "numeric"
+                        "type": "integer"
                     },
                     "user_head_id": {
-                        "type": "numeric"
+                        "type": "integer"
                     },
                     "users": {
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+                            "user_id": {
+                                "type": "integer"
+                            },
+                            "user_fio": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE",
+                                "fields" : {
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE_FUZZY"
+                                    }
+                                }
+                            },
+                            "user_position": {
+                                "type": "text",
+                                "search_analyzer": "standard"
+                            }
+                        }
                     }
                 }
             }
@@ -340,7 +343,8 @@ class StructureSearchModel:
 
     
     def dump(self):
-
+        self.delete_index()
+        self.create_index()
         users_list = []
         
         dep_data = [] # список 
@@ -352,34 +356,40 @@ class StructureSearchModel:
                 for usr in users:
                     user_data = {}
                     user = self.UserModel(Id=usr).find_by_id()
-                    print(user['indirect_data']['work_position'], 'проверка на none')
-                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data']['work_position'] is not None:
-                        if user['second_name'] is not None:
-                            user_data[user['id']] = [f'{user['last_name']} {user['name']} {user['second_name']}', user['indirect_data']['work_position']]
-                        else:
-                            user_data[user['id']] = [f'{user['last_name']} {user['name']}', user['indirect_data']['work_position']]
-                    else:
-                        if user['second_name'] is not None:
-                            user_data[user['id']] = f'{user['last_name']} {user['name']} {user['second_name']}'
-                        else:
-                            user_data[user['id']] = f'{user['last_name']} {user['name']}'
+                    user_data['user_id'] = user['id']
 
+                    if user['second_name'] is not None or user['second_name'] != '':
+                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                    else:
+                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data']['work_position'] != '':
+                        user_data['user_position'] = user['indirect_data']['work_position']
+                    else:
+                        pass
+       
                     users_list.append(user_data)
-            
             else:
                 pass
-            print(users_list, 'usr_list')
-            break
-              
-
+            
             depart = {
                 "name" : department_data["name"],
                 "father_id" : department_data["father_id"],
                 "user_head_id" : department_data["user_head_id"],
                 "users" : users_list
             }
+            
+            depart_data_ES = {
+                "_index": self.index,
+                "_op_type": "index", # либо create либо index че выбрать хз пока
+                "_id": department_data['id'],
+                "_source": depart
+            }
 
-            dep_data.append(depart)
+            
+
+            dep_data.append(depart_data_ES)
+        helpers.bulk(elastic_client, dep_data)
         return {'status': True}
 
     def search(self, data):
@@ -390,8 +400,90 @@ class StructureSearchModel:
         #вывести по иерархии
         pass
 
+    def search_by_name(self, name):
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "users.user_fio": {
+                                    "query": name,
+                                    # "boost": 2  
+                                }
+                            }
+                        },
+                        {
+                            "match": {
+                                "users.user_fio.fuzzy": {
+                                    "query": name,
+                                    "fuzziness": "AUTO",  
+                                    "prefix_length": 2 
+                                    # "boost": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            size=1000
+        )
+
+        return res['hits']['hits']
+
+    def search_by_position(self, pos):
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "users.user_position": {
+                                    "query": pos,
+                                    # "boost": 2  
+                                }
+                            }
+                        },
+                        {
+                            "match": {
+                                "users.user_position": {
+                                    "query": pos,
+                                    "fuzziness": "AUTO",  
+                                    # "prefix_length": 2,  
+                                    # "boost": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            size=1000
+        )
+
+        return res['hits']['hits']
+
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
 
-# @search_router.get("/")
+@search_router.get("/dump_user")
+def create_data_user():
+    return UserSearchModel().dump()
+
+@search_router.get("/dump_depart")
+def create_data_depart():
+    return StructureSearchModel().dump()
+
+@search_router.get("/users/search_by_name/{name}")
+def search_users(name: str):
+    return UserSearchModel().search_by_name(name)
+
+@search_router.get("/departs/search_by_username/{name}")
+def search_depart_users(name: str):
+    return StructureSearchModel().search_by_name(name)
+
+@search_router.get("/departs/search_by_user_position/{position}")
+def search_depart_users(position: str):
+    return StructureSearchModel().search_by_position(position)

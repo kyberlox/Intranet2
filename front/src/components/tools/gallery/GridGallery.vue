@@ -24,8 +24,6 @@
                         <div v-if="card.name"
                              class="home__view__grid__card__title home__view__grid__card__title--gallery"
                              :class="{ 'home__view__grid__card__title--video': type == 'video' }">{{ card.name }}</div>
-                        <div v-if="card.description"
-                             class="home__view__grid__card__description">{{ card.description }}</div>
                     </div>
                     <Reactions v-if="card.reactions"
                                :reactions="card.reactions"
@@ -39,7 +37,7 @@
 import Reactions from "@/components/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
 import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
-import type { IActualNews, ICorpEventsItem } from "@/interfaces/INewNews";
+import type { IActualNews, ICorpEventsItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: { Reactions },

@@ -2,7 +2,8 @@
     <div class="excursions__training__page mt20">
         <div v-if="pageTitle"
              class="page__title">{{ pageTitle }}</div>
-        <PostInner :id="String(id)" />
+        <PostInner :id="String(id)"
+                   :type="type" />
     </div>
 </template>
 
@@ -19,6 +20,10 @@ export default defineComponent({
         },
         pageTitle: {
             type: String,
+        },
+        type: {
+            type: String,
+            default: 'default'
         }
     },
     components: {

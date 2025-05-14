@@ -30,7 +30,7 @@ import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
 import { renameKey } from "@/utils/renameKey";
 import { useblogDataStore } from "@/stores/blogData";
-import type { IBlogAuthors } from "@/interfaces/INewBlog";
+import type { IBlogAuthors } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {

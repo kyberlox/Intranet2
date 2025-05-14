@@ -31,6 +31,7 @@ import Api from "./utils/Api";
 import { sectionTips } from "./assets/staticJsons/sectionTips";
 import { useblogDataStore } from "./stores/blogData";
 import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
+
 export default defineComponent({
     name: "app-layout",
     components: {

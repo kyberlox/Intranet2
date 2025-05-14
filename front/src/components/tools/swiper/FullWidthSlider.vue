@@ -46,7 +46,7 @@ import SwiperArrowRight from "@/assets/icons/common/SwiperArrowRight.svg?compone
 import SwiperArrowLeft from "@/assets/icons/common/SwiperArrowLeft.svg?component";
 import { useSwiperconf } from "@/utils/useSwiperConf";
 
-import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
+// import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
 
 export default defineComponent({
     components: {
@@ -56,17 +56,16 @@ export default defineComponent({
         SwiperArrowLeft,
     },
     props: {
-        // images: {
-        //     type: Array as PropType<string[]>,
-        //     required: true,
-        // },
+        images: {
+            type: Array as PropType<string[]>,
+            required: true,
+        },
         activeIndex: {
             type: Number,
             default: 0
         },
     },
     setup(props) {
-
         return {
             swiperOn: useSwiperconf('fullWidth', props.activeIndex).swiperOn,
             slideNext: useSwiperconf('fullWidth', props.activeIndex).slideNext,
@@ -75,13 +74,7 @@ export default defineComponent({
             swiperInstance: useSwiperconf('fullWidth', props.activeIndex).swiperInstance,
             isEnd: useSwiperconf('fullWidth', props.activeIndex).isEnd,
             isBeginning: useSwiperconf('fullWidth', props.activeIndex).isBeginning,
-            images: officialEventSlide.slides,
         };
     },
 });
 </script>
-<style>
-.full-width-slider__wrapper {
-    height: 100%;
-}
-</style>

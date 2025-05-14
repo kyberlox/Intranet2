@@ -16,7 +16,7 @@ import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnic
 import { defineComponent, onMounted, type Ref, ref } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
-import type { ICareSlide } from "@/interfaces/INewNews";
+import type { ICareSlide } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {

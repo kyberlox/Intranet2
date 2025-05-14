@@ -16,11 +16,9 @@
 </template>
 
 <script lang="ts">
-import { blogArticles } from "@/assets/staticJsons/blogArticles";
 import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
 import { defineComponent, onMounted, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
-import Api from "@/utils/Api";
 export default defineComponent({
 	components: { BlogAvatar },
 	props: {
@@ -34,15 +32,11 @@ export default defineComponent({
 		}
 	},
 	setup(props) {
-		const blogs = ref([]);
 		const blogData = useblogDataStore();
 		const currentArticle = computed(() => blogData.getBlogById(props.id))
 		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId))
 
-		console.log(targetAuthor.value)
-
 		return {
-			blogArticles,
 			targetAuthor,
 			currentArticle
 		};

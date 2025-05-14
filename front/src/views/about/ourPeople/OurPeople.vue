@@ -8,7 +8,6 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
-import { posts } from "@/assets/staticJsons/ourPeoplePost";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 
@@ -23,7 +22,6 @@ export default defineComponent({
                 });
         })
         return {
-            posts,
             galleryPosts
         };
     },

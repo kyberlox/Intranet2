@@ -1,19 +1,23 @@
 <template>
     <div class="page__title mt20">Корпоративная жизнь</div>
-    <TagDateNavBar :years="years"
+    <TagDateNavBar :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
-                   @pickYear="showEventsByYear" />
+                   @pickYear="(year) => visibleEvents = showEventsByYear(allEvents, year)" />
     <FlexGallery class="mt20"
                  :page=page
                  :slides="visibleEvents"
-                 :routeTo="'corpLifeItem'" />
+                 :routeTo="'corpLifeItem'"
+                 :onlyImg="true" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/staticJsons/sectionTips';
-import TagDateNavBar from '@/components/news/TagDateNavBar.vue';
+import TagDateNavBar from '@/components/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import { getProperty } from "@/utils/fieldChecker";
 import Api from '@/utils/Api';
 import { defineComponent, ref, type Ref, onMounted } from "vue";
+import { extractYears } from '@/utils/extractYearsFromPosts';
+import { showEventsByYear } from "@/utils/showEventsByYear";
 
 export default defineComponent({
     components: {
@@ -23,38 +27,20 @@ export default defineComponent({
     setup() {
         const allEvents = ref([]);
         const visibleEvents = ref([]);
-        const years = ref([]);
         onMounted(() => {
-            const events = ref();
             Api.get(`article/find_by/${sectionTips['Корпоративная_жизнь']}`)
                 .then((res) => {
                     allEvents.value = res;
                     visibleEvents.value = res;
-                    res.map((e) => {
-                        if (e.indirect_data && e.indirect_data['PROPERTY_666']) {
-                            years.value.push(e.indirect_data['PROPERTY_666'][0])
-                        }
-                    })
-
-                    const uniqueYears = [...new Set(years.value.map(date => date.split(' ')[0].split('.')[2]))];
-                    years.value = uniqueYears;
                 })
         })
 
-        const showEventsByYear = (year: string) => {
-            visibleEvents.value = [];
-            allEvents.value?.map((e) => {
-                if (e.indirect_data['PROPERTY_666'][0].includes(year)) {
-                    visibleEvents.value?.push(e);
-                }
-            })
-        }
         return {
             page: 'officialEvents',
             allEvents,
-            years,
             showEventsByYear,
-            visibleEvents
+            visibleEvents,
+            extractYears
         };
     },
 });

@@ -305,7 +305,7 @@ const router = createRouter({
       path: '/communications/corplife/:id',
       name: 'corpLifeItem',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь', type: 'onlyImg' })
     },
     {
       path: '/communications/announces/',
@@ -348,7 +348,9 @@ const router = createRouter({
     {
       path: '/user/:id',
       name: 'userPage',
-      component: () => import('@/views/user/UserPage.vue')
+      component: () => import('@/views/user/UserPage.vue'),
+      props: (route) => ({ id: route.params.id })
+
     },
     {
       path: '/user/ideas',

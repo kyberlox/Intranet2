@@ -12,14 +12,10 @@
                          :style="{ backgroundImage: `url(${slide.img ?? 'https://placehold.co/360x206'})` }">
                     </div>
                 </div>
-                <div v-if="slide.indirect_data['PROPERTY_375']"
-                     class="flexGallery__card__title">
-                    {{ slide.indirect_data['PROPERTY_438'][0] ? slide.indirect_data['PROPERTY_375'][0] + '-' +
-                        slide.indirect_data['PROPERTY_438'][0] :
-                        slide.indirect_data['PROPERTY_375'][0] }}
+                <div class="flexGallery__card__title flexGallery__card__title--text-date">
+                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span v-if="slide.name">{{ slide.name }}</span>
                 </div>
-                <div v-if="slide.name"
-                     class="flexGallery__card__title">{{ slide.name }}</div>
             </RouterLink>
 
             <div v-else-if="modifiers.includes('noRoute')"
@@ -28,8 +24,7 @@
 
                 <div @click="callModal(slides, 'img', index)"
                      class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
-                    <img v-if="slide.img && typeof slide.img == 'string'"
-                         class="flexGallery__card__img"
+                    <img class="flexGallery__card__img"
                          :src="slide.img" />
                 </div>
             </div>
@@ -45,7 +40,7 @@
                     </div>
                     <PlayVideo class="flexGallery__card__play-video-icon" />
                 </div>
-                <div class="flexGallery__card__title">{{ slide.title }}</div>
+                <div class="flexGallery__card__title">{{ slide.name }}</div>
             </div>
         </div>
         <ZoomModal :video="modalVideo"
@@ -63,7 +58,8 @@ import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
 import type { RouteLocationRaw } from 'vue-router';
-import type { IAfishaItem } from "@/interfaces/INewNews";
+import type { IAfishaItem } from "@/interfaces/IEntities";
+import { getProperty } from "@/utils/fieldChecker";
 
 export default defineComponent({
     name: 'FlexGallery',
@@ -84,6 +80,10 @@ export default defineComponent({
         routeTo: {
             type: String,
             required: true,
+        },
+        onlyImg: {
+            type: Boolean,
+            default: false
         }
     },
     components: {
@@ -96,7 +96,7 @@ export default defineComponent({
         const modalIsOpen = ref(false);
         const activeIndex = ref(0);
 
-        const callModal = (src: INewsSlide[] | string, type: 'video' | 'img', imgIndex?: number) => {
+        const callModal = (src: string, type: 'video' | 'img', imgIndex?: number) => {
             if (!src) return;
             if (type == 'video') {
                 modalImg.value = '';
@@ -112,7 +112,7 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        const checkRouteTo = (slide: INewsSlide): RouteLocationRaw => {
+        const checkRouteTo = (slide): RouteLocationRaw => {
             if (props.page === 'experience') {
                 return { name: 'experienceTypes', params: { title: slide.href } }
             }
@@ -127,6 +127,10 @@ export default defineComponent({
             else return '/';
         }
 
+        const setCardDate = (slide) => {
+            return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
+        }
+
         return {
             PlayVideo,
             modalImg,
@@ -134,7 +138,9 @@ export default defineComponent({
             callModal,
             checkRouteTo,
             modalIsOpen,
-            activeIndex
+            activeIndex,
+            getProperty,
+            setCardDate
         }
     }
 })

@@ -13,7 +13,21 @@
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
 import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
 import { defineComponent, computed } from "vue";
-import type { INewsSlide } from "@/interfaces/INewsSlide";
+
+export interface INewsSlide {
+    id?: number;
+    name?: string;
+    title?: string;
+    href?: string;
+    hrefId?: string;
+    hrefTitle?: string;
+    videoHref?: string;
+    img?: string | string[];
+    reportages?: string | boolean;
+    reportsHref?: string;
+    tours?: string | boolean;
+    toursHref?: string;
+}
 
 export default defineComponent({
     components: {

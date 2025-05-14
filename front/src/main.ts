@@ -14,6 +14,6 @@ const app = createApp(App)
 app.component('VueDatePicker', VueDatePicker);
 
 app.use(createPinia())
-app.use(router)
+    .use(router)
 
 app.mount('#app')

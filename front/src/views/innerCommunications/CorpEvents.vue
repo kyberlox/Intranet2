@@ -1,8 +1,9 @@
 <template>
     <h2 class="page__title mt20">Корпоративные события</h2>
-    <TagDateNavBar :years="years"
+    <TagDateNavBar v-if="allEvents"
+                   :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
-                   @pickYear="showEventsByYear" />
+                   @pickYear="(year) => visibleEvents = showEventsByYear(allEvents, year)" />
     <GridGallery v-if="visibleEvents"
                  :gallery="visibleEvents"
                  :routeTo="'corpEvent'" />
@@ -10,11 +11,13 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, type Ref, ref } from "vue";
-import TagDateNavBar from "@/components/news/TagDateNavBar.vue";
+import TagDateNavBar from "@/components/TagDateNavBar.vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
-import type { ICorpEventsItem } from "@/interfaces/INewNews";
+import { extractYears } from "@/utils/extractYearsFromPosts";
+import type { ICorpEventsItem } from "@/interfaces/IEntities";
+import { showEventsByYear } from "@/utils/showEventsByYear";
 
 export default defineComponent({
     components: { GridGallery, TagDateNavBar },
@@ -26,36 +29,19 @@ export default defineComponent({
     setup(props) {
         const allEvents = ref<ICorpEventsItem[]>();
         const visibleEvents = ref<ICorpEventsItem[]>();
-        const years = ref<String[]>([]);
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['Корпоративные_события']}`)
                 .then(res => {
-                    years.value.length = 0;
                     allEvents.value = res;
                     visibleEvents.value = res;
-                    allEvents.value?.map((e) => {
-                        if (e.indirect_data?.ACTIVE_FROM) {
-                            years.value.push(e.indirect_data?.ACTIVE_FROM)
-                        }
-                    })
-                    const uniqueYears = [...new Set(years.value.map(date => date.split(' ')[0].split('.')[2]))];
-                    years.value = uniqueYears;
                 })
 
         })
 
-        const showEventsByYear = (year: string) => {
-            visibleEvents.value = [];
-            allEvents.value?.map((e) => {
-                if (e.indirect_data?.ACTIVE_FROM?.includes(year)) {
-                    visibleEvents.value?.push(e);
-                }
-            })
-        }
-
         return {
             visibleEvents,
-            years,
+            extractYears,
+            allEvents,
             showEventsByYear
         };
     },

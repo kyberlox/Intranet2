@@ -1,7 +1,6 @@
 <template>
     <RouterLink :to="{
         name: 'blogOf',
-        // params: { id: author?.PROPERTY_444.authorId }
         params: { id: author?.authorId }
     }"
                 class="blogs__item col-12 col-md"

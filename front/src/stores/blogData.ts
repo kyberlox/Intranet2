@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { IBlog, IBlogAuthors } from "@/interfaces/INewBlog";
+import type { IBlog, IBlogAuthors } from "@/interfaces/IEntities";
 
 export const useblogDataStore = defineStore('blogData', {
     state: () => ({

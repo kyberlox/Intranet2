@@ -45,6 +45,8 @@
                     overflow: hidden;
                     min-width: 250px;
                     padding-top: 20px;
+                    max-height: 100px;
+                    margin: auto;
 
                     &>.flexGallery__card__img {
                         background-size: contain;
@@ -55,7 +57,7 @@
         }
 
         &__title {
-            font-size: 1rem;
+            font-size: 1em;
             line-height: 150%;
             color: #5E5E5E;
             margin: 0;
@@ -64,8 +66,14 @@
             padding-right: 10px;
             // padding-bottom: 20px;
 
+            &--text-date {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
             &:is(:last-child) {
-                padding-bottom: 15px;
+                // padding-bottom: 15px;
             }
         }
 
@@ -111,6 +119,7 @@
         &--official-events {
             padding: 0;
             width: 100%;
+            gap: 0;
 
             &:hover {
                 box-shadow: none !important;

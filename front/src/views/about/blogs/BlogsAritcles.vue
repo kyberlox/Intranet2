@@ -45,16 +45,16 @@ export default defineComponent({
         }
     },
     setup(props) {
+        console.log(props);
         const blogName = ref();
         const currentArticles = ref([]);
         const targetBlog = ref();
         const blogData = useblogDataStore();
         const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id))
-        const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
 
-        watchEffect(() => {
-            console.log(blogsArticles.value)
-        })
+        console.log(targetAuthor.value);
+
+        const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
         return {
             blogsArticles,
             blogName: targetAuthor.value?.title,

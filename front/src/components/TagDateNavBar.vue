@@ -51,11 +51,11 @@ export default defineComponent({
     setup(props, { emit }) {
         const showTags = ref(false);
         const showYears = ref(false);
-        const navToTag = (tag: string) => {
+        const navToTag = (tag: String) => {
             emit('pickTag', tag);
             showTags.value = false;
         }
-        const navToYear = (year: string) => {
+        const navToYear = (year: String) => {
             emit('pickYear', year);
             showYears.value = false;
         }

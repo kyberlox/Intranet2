@@ -11,7 +11,7 @@
 <script lang="ts">
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import { defineComponent, type Ref, onMounted, ref } from "vue";
-import type { IActualNews } from "@/interfaces/INewNews";
+import type { IActualNews } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 

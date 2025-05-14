@@ -21,14 +21,13 @@
     </div>
 </template>
 <script lang="ts">
-import type { INewsSlide } from '@/interfaces/INewsSlide'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 export default defineComponent({
     name: 'FlexGallery',
     props: {
         slides: {
-            type: Array as PropType<INewsSlide[]>,
+            type: Array,
         },
         page: {
             type: String,
@@ -39,7 +38,7 @@ export default defineComponent({
     },
 
     setup(props) {
-        const checkRouteTo = (slide: INewsSlide) => {
+        const checkRouteTo = (slide) => {
             if (props.page === 'experience') {
                 return { name: 'experienceTypes', params: { title: slide.href } }
             }

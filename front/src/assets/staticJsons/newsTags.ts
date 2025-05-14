@@ -1,4 +1,4 @@
-import type { newsTags } from "@/interfaces/ITags";
+export type newsTags = string[];
 
 export const tags: newsTags = [
     'Арматом',

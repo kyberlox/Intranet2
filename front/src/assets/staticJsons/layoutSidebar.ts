@@ -6,7 +6,7 @@ import DocsIcon from "@/assets/icons/layout/sidebar/socLinks/DocsIcon.svg";
 import MotiwIcon from "@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg";
 import BitrixIcon from "@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg";
 
-import type { WorkLink, SupportLink } from "@/interfaces/ILayoutSideBar";
+import type { WorkLink, SupportLink } from "@/interfaces/ILayout";
 
 export const workLinks: WorkLink[] = [
     {

@@ -11,7 +11,6 @@ export const getProperty = (object: IActualNews | ICareSlide | IBlog, field: str
 
     const indirectData = object.indirect_data as IIndirectDataPlug;
 
-    console.log(indirectData && indirectData[field] && indirectData[field][0]);
     if (indirectData && indirectData[field] && indirectData[field][0]) {
 
         return indirectData[field][0];

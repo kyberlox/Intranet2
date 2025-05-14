@@ -78,7 +78,7 @@
 <script lang="ts">
 import { ref, computed, watch, defineComponent } from "vue";
 import { mainMenuPoints } from "@/assets/staticJsons/headerPoints";
-import type { ISubPoint } from "@/interfaces/IMenuPoints";
+import type { ISubPoint } from "@/interfaces/layout";
 import { usePageDataStore } from "@/stores/pageData";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";

@@ -44,12 +44,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref } from "vue";
+import { computed, defineComponent, onMounted, ref, type Ref } from "vue";
 import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
 import Api from "@/utils/Api";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { useViewsDataStore } from "@/stores/viewsData";
+import { watch } from "vue";
 
 export default defineComponent({
     name: "main-page",
@@ -57,22 +59,29 @@ export default defineComponent({
         MainPageSoloBlock,
         MainPageRowBlocks
     },
-    setup() {
-        const mainPageCards: Ref<MainPageCards | undefined> = ref();
+    setup(props, { emit }) {
+        const useHomeData = useViewsDataStore();
+        // const mainPageCards: Ref<MainPageCards | undefined> = ref();
+        const mainPageCards = computed(() => useHomeData.getHomeData)
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['Главная']}`)
                 .then((data) => {
-                    mainPageCards.value = data
-                })
-                .then(() => {
-                    if (!mainPageCards.value) return;
-                    mainPageCards.value.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
+                    const result = data;
+                    if (!result) return;
+                    result.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
                         if (item.type == 'fullRowBlock' && item.images.length > 4) {
                             item.images.length = 4
                         }
                     });
+                    useHomeData.setHomeData(result);
                 })
         })
+
+        watch(mainPageCards, (newVal) => {
+            if (newVal && newVal.length) {
+                emit('hideLoader');
+            }
+        }, { immediate: true, deep: true })
 
         return {
             mainPageCards

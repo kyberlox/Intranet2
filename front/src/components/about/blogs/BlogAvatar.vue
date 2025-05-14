@@ -22,8 +22,7 @@
 <script lang="ts">
 import { makeSlashToBr } from "@/utils/StringUtils";
 import { defineComponent, onMounted, watch } from "vue";
-import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+
 export default defineComponent({
     props: {
         author: Object,
@@ -33,7 +32,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-
+        console.log(props);
         return {
             makeSlashToBr,
         };

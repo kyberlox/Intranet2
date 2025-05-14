@@ -27,7 +27,6 @@ class File:
             file_data = b24.get_file(self.id, inf_id)
 
             filename = file_data["NAME"]
-            print(filename)
 
             filename_parts = filename.split('.')
             file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
@@ -47,7 +46,8 @@ class File:
                 "content_type": content_type,
                 "article_id": art_id,
                 "b24_id": self.id,
-                "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                "file_url": f"/api/files/{unique_name}",  # Прямой URL
+                "is_archive" : False
             }
 
             #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
@@ -150,8 +150,16 @@ class File:
         return file_data
     
     def delete_user_img(self):
-        #изменить значение параметра is_archive
-        pass
+        file_data = FileModel(id = ObjectId(file_id)).find_user_photo_by_id()
+        if not file_data:
+            raise HTTPException(404, detail="File not found")
+        
+        try:
+            FileModel(id = ObjectId(file_id)).remove_user_photo()
+            return {"status": "to_archive"}
+        except Exception as e:
+            raise HTTPException(500, detail=str(e))
+       
 
 
 
@@ -176,7 +184,8 @@ async def upload_file(file: UploadFile):
             "original_name": file.filename,
             "stored_name": unique_name,
             "content_type": file.content_type,
-            "file_url": f"/api/files/{unique_name}"  # Прямой URL
+            "file_url": f"/api/files/{unique_name}",  # Прямой URL
+            "is_archive" : False # нужен же тут этот флаг?
         }
 
         inserted_id = FileModel().add(file_data)
@@ -242,6 +251,15 @@ async def get_file_by_b24(b24_id: str):
 @file_router.delete("/{file_id}")
 async def delete_file(file_id: str):
     #изменить статус
+    file_data = FileModel(id = ObjectId(file_id)).find_by_id()
+    if not file_data:
+        raise HTTPException(404, detail="File not found")
+    
+    try:
+        FileModel(id = ObjectId(file_id)).remove()
+        return {"status": "to_archive"}
+    except Exception as e:
+        raise HTTPException(500, detail=str(e))
     """
     file_data = FileModel(id = ObjectId(file_id)).find_by_id()
     if not file_data:
@@ -254,7 +272,6 @@ async def delete_file(file_id: str):
     except Exception as e:
         raise HTTPException(500, detail=str(e))
     """
-    pass
 
 
 
@@ -272,4 +289,4 @@ async def add_user_photo(b24_url : str, uuid : str):
 
 @file_router.delete("/delete_user_photo/{file_id}")
 async def delete_user_photo(file_id: str):
-    File().delete_user_img()
+    return File(id = ObjectId(file_id)).delete_user_img()

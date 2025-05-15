@@ -21,15 +21,12 @@ class File:
             file.write(response.content)
         return response.headers.get('Content-Type', 'unknown')
 
-
-
     def upload_inf_art(self, inf_id, art_id=None):
         try:
             b24 = B24()
             file_data = b24.get_file(self.id, inf_id)
 
             filename = file_data["NAME"]
-            print(filename)
 
             filename_parts = filename.split('.')
             file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
@@ -49,7 +46,8 @@ class File:
                 "content_type": content_type,
                 "article_id": art_id,
                 "b24_id": self.id,
-                "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                "file_url": f"/api/files/{unique_name}",  # Прямой URL
+                "is_archive" : False
             }
 
             #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
@@ -115,6 +113,56 @@ class File:
                 file_list.append(file_info)
             return file_list
 
+
+
+    def dowload_user_photo(self, url):
+        name = url.split("/")[-1]
+        form = name.split(".")[-1]
+        img_path = f"{STORAGE_PATH}/{name}"
+
+        with requests.get(url, stream=True) as r:
+            with open(img_path, "wb") as f:
+                f.write(r.content)
+        
+        return (name, form)
+    
+    def add_user_img(self, b24_url : str, uuid : str):
+        #скачать файл
+        name, form = self.dowload_user_photo(b24_url)
+
+        #определить ссылку
+        url = f"/api/files/{name}"
+
+        #собрать данные
+        file_data = {
+            "name" : name,
+            "format" : form,
+            "uuid" : uuid,
+            "URL" : url,
+            "b24_url" : b24_url,
+            "is_archive" : False
+        }
+
+        new_id = FileModel().add_user_photo(file_data)
+
+        file_data["id"] = new_id
+
+        return file_data
+    
+    def delete_user_img(self):
+        file_data = FileModel(id = ObjectId(file_id)).find_user_photo_by_id()
+        if not file_data:
+            raise HTTPException(404, detail="File not found")
+        
+        try:
+            FileModel(id = ObjectId(file_id)).remove_user_photo()
+            return {"status": "to_archive"}
+        except Exception as e:
+            raise HTTPException(500, detail=str(e))
+       
+
+
+
 @file_router.post("/upload")
 async def upload_file(file: UploadFile):
     try:
@@ -136,7 +184,8 @@ async def upload_file(file: UploadFile):
             "original_name": file.filename,
             "stored_name": unique_name,
             "content_type": file.content_type,
-            "file_url": f"/api/files/{unique_name}"  # Прямой URL
+            "file_url": f"/api/files/{unique_name}",  # Прямой URL
+            "is_archive" : False # нужен же тут этот флаг?
         }
 
         inserted_id = FileModel().add(file_data)
@@ -201,6 +250,17 @@ async def get_file_by_b24(b24_id: str):
 
 @file_router.delete("/{file_id}")
 async def delete_file(file_id: str):
+    #изменить статус
+    file_data = FileModel(id = ObjectId(file_id)).find_by_id()
+    if not file_data:
+        raise HTTPException(404, detail="File not found")
+    
+    try:
+        FileModel(id = ObjectId(file_id)).remove()
+        return {"status": "to_archive"}
+    except Exception as e:
+        raise HTTPException(500, detail=str(e))
+    """
     file_data = FileModel(id = ObjectId(file_id)).find_by_id()
     if not file_data:
         raise HTTPException(404, detail="File not found")
@@ -211,5 +271,22 @@ async def delete_file(file_id: str):
         return {"status": "deleted"}
     except Exception as e:
         raise HTTPException(500, detail=str(e))
+    """
 
 
+
+@file_router.post("/get_user_photo/{uuid}")
+async def get_user_photo(uuid : str):
+    return FileModel().find_user_photo_by_uuid(uuid)
+
+@file_router.get("/get_user_photo/{file_id}")
+async def get_user_photo(file_id: str):
+    return FileModel(id = ObjectId(file_id)).find_user_photo_by_id(uuid)
+
+@file_router.post("/add_user_photo/{b24_url}/{uuid}")
+async def add_user_photo(b24_url : str, uuid : str):
+    return File().add_user_photo(b24_url, uuid)
+
+@file_router.delete("/delete_user_photo/{file_id}")
+async def delete_user_photo(file_id: str):
+    return File(id = ObjectId(file_id)).delete_user_img()

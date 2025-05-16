@@ -52,6 +52,7 @@ import type { MainPageCards } from "@/interfaces/IMainPage";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { watch } from "vue";
+import { useLoadingStore } from "@/stores/loadingStore"
 
 export default defineComponent({
     name: "main-page",
@@ -60,10 +61,13 @@ export default defineComponent({
         MainPageRowBlocks
     },
     setup(props, { emit }) {
-        const useHomeData = useViewsDataStore();
+        const useViewsData = useViewsDataStore();
+        const loadingStore = useLoadingStore();
         // const mainPageCards: Ref<MainPageCards | undefined> = ref();
-        const mainPageCards = computed(() => useHomeData.getHomeData)
+        const mainPageCards = computed(() => useViewsData.getData('homeData'))
         onMounted(() => {
+            if (mainPageCards.value.length) return;
+            loadingStore.setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Главная']}`)
                 .then((data) => {
                     const result = data;
@@ -73,13 +77,13 @@ export default defineComponent({
                             item.images.length = 4
                         }
                     });
-                    useHomeData.setHomeData(result);
+                    useViewsData.setData(result, 'homeData');
                 })
         })
 
         watch(mainPageCards, (newVal) => {
             if (newVal && newVal.length) {
-                emit('hideLoader');
+                loadingStore.setLoadingStatus(false);
             }
         }, { immediate: true, deep: true })
 

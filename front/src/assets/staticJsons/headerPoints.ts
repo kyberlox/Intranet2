@@ -59,12 +59,12 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "safetytechnics",
             },
             {
-                id: 1.10,
+                id: 1.11,
                 name: "Открытые вакансии",
                 href: "vacancies",
             },
             {
-                id: 1.11,
+                id: 1.12,
                 name: "Календарь событий",
                 href: "calendar",
             },
@@ -123,7 +123,7 @@ export const mainMenuPoints: MainMenuPoints = [
             {
                 id: 3.3,
                 name: "Видеорепортажи",
-                href: "videoreport",
+                href: "videoreports",
             },
             {
                 id: 3.4,

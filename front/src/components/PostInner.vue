@@ -73,7 +73,7 @@ import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type PropType, type Ref, onMounted, ref } from "vue";
 import type { IActualNews, ICareSlide } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
-import { getProperty } from "@/utils/fieldChecker";
+import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "./tools/gallery/FlexGallery.vue";
 export default defineComponent({
     components: {

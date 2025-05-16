@@ -7,9 +7,19 @@
 			</div>
 			<div v-if="currentArticle"
 				 class="col-sm-9">
-				<!-- <h2>{{ currentArticle.name }}</h2> -->
+				<h2>{{ currentArticle.name }}</h2>
 				<div class="blog-list__item-wrapper mt20"
 					 v-html="currentArticle.content_text"></div>
+				<div v-if="currentArticle.indirect_data['PROPERTY_1222']"
+					 class="blog-list__video__wrapper">
+					<iframe style="width: 100%; min-height: 480px;"
+							id="you-player"
+							:src="currentArticle.indirect_data['PROPERTY_1222'][0]"
+							title="YouTube video player"
+							frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							allowfullscreen=""></iframe>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -17,7 +27,7 @@
 
 <script lang="ts">
 import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
-import { defineComponent, onMounted, ref, computed } from "vue";
+import { defineComponent, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 export default defineComponent({
 	components: { BlogAvatar },

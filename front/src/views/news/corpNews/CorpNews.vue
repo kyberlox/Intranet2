@@ -10,11 +10,12 @@
 </template>
 <script lang="ts">
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
-import { defineComponent, type Ref, onMounted, ref } from "vue";
+import { defineComponent, type Ref, onMounted, computed } from "vue";
 import type { IActualNews } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
-
+import { useViewsDataStore } from "@/stores/viewsData"
+import { useLoadingStore } from "@/stores/loadingStore";
 export default defineComponent({
     components: {
         GridGallery
@@ -23,11 +24,18 @@ export default defineComponent({
         id: String,
     },
     setup() {
-        const news: Ref<IActualNews[]> = ref([]);
+        const viewsData = useViewsDataStore();
+        const news: Ref<IActualNews[]> = computed(() => viewsData.getData('corpNewsData'));
+
         onMounted(() => {
+            if (news.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Новости орг развития']}`)
                 .then((res) => {
-                    news.value = res;
+                    viewsData.setData(res, 'corpNewsData');
+                })
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
                 })
         })
         return {

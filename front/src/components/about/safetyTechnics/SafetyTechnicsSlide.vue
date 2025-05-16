@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { getProperty } from '@/utils/fieldChecker';
+import { getProperty } from '@/utils/getPropertyFirstPos';
 
 export default defineComponent({
     props: {
@@ -44,8 +44,7 @@ export default defineComponent({
             type: String,
         }
     },
-    setup(props) {
-        console.log(props.slide)
+    setup() {
         return {
             getProperty
         };

@@ -6,27 +6,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed, watch } from "vue";
+import { defineComponent, onMounted, computed, watch } from "vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
-
+import { useLoadingStore } from "@/stores/loadingStore"
 
 export default defineComponent({
     components: { GridGallery },
     setup(props, { emit }) {
+        const loadingStore = useLoadingStore();
         const ViewsDataStore = useViewsDataStore();
-        const ourPeople = computed(()=>ViewsDataStore.getOurPeopleData);
+        const ourPeople = computed(() => ViewsDataStore.getData('ourPeopleData'));
         onMounted(() => {
+            if (ourPeople.value.length) return;
+            loadingStore.setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Наши люди']}`)
                 .then((data) => {
-                    ViewsDataStore.setOurPeopleData(data);
+                    ViewsDataStore.setData(data, 'ourPeopleData');
                 });
         })
-        watch(ourPeople, (newVal)=>{
-            if(newVal && newVal.length){
-                emit('hideLoader');
+        watch(ourPeople, (newVal) => {
+            if (newVal && newVal.length) {
+                loadingStore.setLoadingStatus(false);
             }
         })
         return {

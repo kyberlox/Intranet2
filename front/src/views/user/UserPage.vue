@@ -204,7 +204,6 @@ export default defineComponent({
             if (!dateString) return '';
 
             const date = new Date(dateString);
-            console.log(dateString)
 
             const russianMonths = [
                 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',

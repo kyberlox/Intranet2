@@ -15,7 +15,7 @@ const router = createRouter({
       component: () => import('../views/about/ourCompany/OurCompany.vue')
     },
     {
-      path: '/about/company-history/:id',
+      path: '/about/company-history',
       name: 'book-emk',
       component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
       props: (route) => ({ id: route.params.id })
@@ -71,15 +71,14 @@ const router = createRouter({
       props: (route) => ({ id: route.params.id })
     },
     {
-      path: '/about/videoreport',
+      path: '/about/videoreports',
       name: 'videoreports',
-      component: () => import('@/views/news/videoReport/VideoReport.vue'),
-      props: (route) => ({ id: route.params.id })
+      component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
-      path: '/about/videoreport',
+      path: '/about/videoreports/:id',
       name: 'videoreport',
-      component: () => import('@/views/news/videoReport/VideoReport.vue'),
+      component: () => import('@/views/news/videoReports/VideoReports.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {

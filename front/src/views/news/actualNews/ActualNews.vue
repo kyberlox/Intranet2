@@ -14,10 +14,12 @@ import { sectionTips } from '@/assets/staticJsons/sectionTips';
 import TagDateNavBar from '@/components/TagDateNavBar.vue';
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, type Ref, ref } from 'vue';
+import { defineComponent, onMounted, type Ref, ref, computed } from 'vue';
 import type { IActualNews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
+import { useViewsDataStore } from "@/stores/viewsData"
+import { useLoadingStore } from '@/stores/loadingStore';
 
 export default defineComponent({
     components: {
@@ -25,13 +27,19 @@ export default defineComponent({
         GridGallery
     },
     setup() {
-        const allNews: Ref<IActualNews[]> = ref([]);
-        const visibleNews: Ref<IActualNews[]> = ref([]);
+        const viewsData = useViewsDataStore();
+        const allNews: Ref<IActualNews[]> = computed(() => viewsData.getData('actualNewsData'));
+        const visibleNews: Ref<IActualNews[]> = ref(allNews.value);
         onMounted(() => {
+            if (allNews.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Актуальные новости']}`)
                 .then((res) => {
+                    viewsData.setData(res, 'actualNewsData');
                     visibleNews.value = res;
-                    allNews.value = res;
+                })
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
                 })
         })
         return {

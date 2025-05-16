@@ -13,11 +13,12 @@
 import { sectionTips } from '@/assets/staticJsons/sectionTips';
 import TagDateNavBar from '@/components/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { getProperty } from "@/utils/fieldChecker";
 import Api from '@/utils/Api';
-import { defineComponent, ref, type Ref, onMounted } from "vue";
+import { defineComponent, ref, type Ref, onMounted, computed } from "vue";
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from "@/utils/showEventsByYear";
+import { useViewsDataStore } from '@/stores/viewsData';
+import { useLoadingStore } from '@/stores/loadingStore';
 
 export default defineComponent({
     components: {
@@ -25,13 +26,18 @@ export default defineComponent({
         FlexGallery
     },
     setup() {
-        const allEvents = ref([]);
-        const visibleEvents = ref([]);
+        const allEvents = computed(() => useViewsDataStore().getData('corpLifeData'));
+        const visibleEvents = ref(allEvents.value);
         onMounted(() => {
+            if (allEvents.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Корпоративная_жизнь']}`)
                 .then((res) => {
-                    allEvents.value = res;
+                    useViewsDataStore().setData(res, 'corpLifeData')
                     visibleEvents.value = res;
+                })
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
                 })
         })
 

@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { makeSlashToBr } from "@/utils/StringUtils";
-import { defineComponent, onMounted, watch } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
     props: {
@@ -32,7 +32,6 @@ export default defineComponent({
         },
     },
     setup(props) {
-        // console.log(props);
         return {
             makeSlashToBr,
         };

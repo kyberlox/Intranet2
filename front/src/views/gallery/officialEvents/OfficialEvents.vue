@@ -12,11 +12,13 @@
 <script lang="ts">
 import TagDateNavBar from '@/components/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/staticJsons/sectionTips';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from "@/utils/showEventsByYear";
+import { useViewsDataStore } from '@/stores/viewsData';
+import { useLoadingStore } from '@/stores/loadingStore';
 
 export default defineComponent({
     components: {
@@ -24,13 +26,18 @@ export default defineComponent({
         FlexGallery
     },
     setup() {
-        const allSlides = ref([]);
-        const visibleEvents = ref([]);
+        const allSlides = computed(() => useViewsDataStore().getData('officialEventsData'));
+        const visibleEvents = ref(allSlides.value);
         onMounted(() => {
+            if (allSlides.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['офСобытия']}`)
                 .then((res) => {
-                    allSlides.value = res;
-                    visibleEvents.value = res
+                    useViewsDataStore().setData(res, 'officialEventsData');
+                    visibleEvents.value = res;
+                })
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
                 })
         })
         return {

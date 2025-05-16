@@ -68,7 +68,7 @@
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
-import { getProperty } from "@/utils/fieldChecker";
+import { getProperty } from "@/utils/getPropertyFirstPos";
 import { defineComponent, onMounted, ref, type PropType } from "vue";
 
 interface IforNewWorkerObject {

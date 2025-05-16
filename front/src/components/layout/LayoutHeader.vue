@@ -114,15 +114,10 @@ export default defineComponent({
 
         const handleDropDownClick = (point: ISubPoint) => {
             activeDrop.value = null;
-            if (point.params && point.params.id) {
-                router.push({
-                    name: point.href,
-                    params: { id: point.params.id },
-                });
-            } else
-                router.push({
-                    name: point.href,
-                });
+
+            router.push({
+                name: point.href,
+            });
         };
 
         return {

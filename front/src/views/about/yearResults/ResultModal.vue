@@ -41,7 +41,6 @@ export default defineComponent({
         },
     },
     setup(props, { emit }) {
-        console.log(props)
         const item = {
             name: 1,
             position: 1,

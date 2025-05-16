@@ -13,22 +13,28 @@
 </template>
 <script lang="ts">
 import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
-import { defineComponent, onMounted, type Ref, ref } from "vue";
+import { defineComponent, onMounted, type Ref, ref, computed } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import type { ICareSlide } from "@/interfaces/IEntities";
+import { useViewsDataStore } from "@/stores/viewsData";
+import { useLoadingStore } from "@/stores/loadingStore";
 
 export default defineComponent({
     components: {
         SafetyTechnicsSlide,
     },
     setup() {
-        const careSlides: Ref<ICareSlide[]> = ref([]);
+        const careSlides = computed(() => useViewsDataStore().getData('careData'));
         onMounted(() => {
+            if (careSlides.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Благотворительность']}`)
                 .then((res) => {
-                    careSlides.value = res;
-                    console.log(careSlides.value)
+                    useViewsDataStore().setData(res, "careData")
+                })
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
                 })
         })
         return {

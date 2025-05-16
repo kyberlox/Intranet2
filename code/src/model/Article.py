@@ -624,6 +624,7 @@ class Article:
             afisha = {
                 'type': "singleBlock",
                 'title': "Афиша",
+                'href': 'eventAnnounces',
                 'images': [
                     {
                         'id': 1,
@@ -768,6 +769,7 @@ class MainPage:
                 news['title'] = row[1]
                 news['description'] = row[2]
                 news['image'] = image_url
+                news['href'] = 'videoInterview'
                 # сюда реакции
                 news['reactions'] = {
                     'views': 12,

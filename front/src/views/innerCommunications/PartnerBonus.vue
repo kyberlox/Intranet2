@@ -7,13 +7,15 @@
 </template>
 <script lang="ts">
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
+import { useViewsDataStore } from "@/stores/viewsData";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface IFlexGallery {
-    id: String
-    title: String,
-    img: String,
+    id: string
+    title: string,
+    img: string,
 }
 
 export default defineComponent({
@@ -21,10 +23,15 @@ export default defineComponent({
         FlexGallery
     },
     setup() {
-        const bonusesSlides = ref();
+        const bonusesSlides = computed(() => useViewsDataStore().getData('partnerBonusData'));
         onMounted(() => {
+            if (bonusesSlides.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Бонусы партнеров']}`)
-                .then((res) => bonusesSlides.value = res)
+                .then((res) => useViewsDataStore().setData(res, "partnerBonusData"))
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
+                })
         })
         return {
             page: 'officialEvents',

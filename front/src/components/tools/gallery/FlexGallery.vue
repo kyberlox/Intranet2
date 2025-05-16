@@ -59,7 +59,7 @@ import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
 import type { RouteLocationRaw } from 'vue-router';
 import type { IAfishaItem } from "@/interfaces/IEntities";
-import { getProperty } from "@/utils/fieldChecker";
+import { getProperty } from "@/utils/getPropertyFirstPos";
 
 export default defineComponent({
     name: 'FlexGallery',

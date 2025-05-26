@@ -9,12 +9,12 @@
         </div>
         <div class="sidebar-lk__body">
             <div class="sidebar-lk__body__points">
-                <RouterLink class="sidebar-lk__body__points__point"
+                <!-- <RouterLink class="sidebar-lk__body__points__point"
                             v-for="(point, index) in points"
                             :key="index"
                             :to="routeHandle(point)">
                     {{ point.name }}
-                </RouterLink>
+                </RouterLink> -->
             </div>
         </div>
     </div>
@@ -24,7 +24,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, watch } from 'vue'
-import { points } from '@/assets/staticJsons/topRightMenuPoints'
+import { points } from '@/assets/staticJsons/navLinks'
 import { useUserData } from '@/stores/userData'
 import { useRoute } from 'vue-router'
 
@@ -41,11 +41,11 @@ export default defineComponent({
 
         const useUserStore = useUserData();
         const idForRoute = computed(() => useUserStore.getMyId);
-        const routeHandle = (point: { name: string, href: string, params?: { id: number } }) => {
+        const routeHandle = (point) => {
             if (point.href == 'logout') {
                 return ({ name: 'auth' })
             }
-            else {
+            else if (idForRoute.value) {
                 return ({ name: point.href, params: { id: idForRoute.value } })
             }
         }

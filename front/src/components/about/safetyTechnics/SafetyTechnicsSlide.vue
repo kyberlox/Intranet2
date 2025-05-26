@@ -16,7 +16,9 @@
                     </span>
                     <h3 class="section__image__list__item__title">{{ slide.indirect_data.name }}</h3>
                     <RouterLink :to="{ name: routeTo, params: { id: slide.id } }"
-                                class="section__image__list__item__link">Читать</RouterLink>
+                                class="section__image__list__item__link">
+                        Читать
+                    </RouterLink>
                 </span>
             </div>
         </div>

@@ -99,7 +99,8 @@ const router = createRouter({
     {
       path: '/about/trainingcenter/ecources/:id',
       name: 'Ecource',
-      component: () => import('@/views/about/trainingCenter/ecources/CourceDescription.vue')
+      component: () => import('@/views/about/trainingCenter/ecources/CourceDescription.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/about/trainingcenter/trainings',
@@ -110,6 +111,7 @@ const router = createRouter({
       path: '/about/trainingcenter/trainings/:id',
       name: 'conductedTraining',
       component: () => import('@/views/about/trainingCenter/conductedTrainings/Training.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/about/trainingcenter/announces',
@@ -179,6 +181,12 @@ const router = createRouter({
       path: '/about/calendar',
       name: 'calendar',
       component: () => import('@/views/about/calendarPage/CalendarPage.vue')
+    },
+    {
+      path: '/about/calendar/:monthId',
+      name: 'calendarMonth',
+      component: () => import('@/views/about/calendarPage/CalendarPage.vue'),
+      props: (route) => ({ monthId: route.params.monthId }),
     },
     {
       path: '/services/selectionTep',
@@ -293,7 +301,9 @@ const router = createRouter({
     {
       path: '/communications/officialevents/:id',
       name: 'officialEvent',
-      component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue')
+      component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue'),
+      props: (route) => ({ id: route.params.id })
+
     },
     {
       path: '/communications/corpevents/',

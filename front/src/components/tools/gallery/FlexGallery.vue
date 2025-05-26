@@ -157,7 +157,6 @@ export default defineComponent({
             return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
         }
 
-        console.log(props.slides);
 
         return {
             PlayVideo,

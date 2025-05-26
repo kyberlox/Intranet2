@@ -65,23 +65,4 @@ export default defineComponent({
 
 <style lang="scss">
 @use "./assets/styles/mixins/mixins.scss" as *;
-
-.main-content {
-    margin: 0 auto;
-    max-width: 1920px;
-}
-
-.container-fluid--nopadding {
-    padding: 0;
-}
-
-.row--nomargin>* {
-    margin: 0;
-}
-
-.p-progressbar .p-progressbar-value {
-    border: 0 none;
-    margin: 0;
-    background: #f59e52;
-}
 </style>

@@ -28,7 +28,9 @@
                         :key="'bookNavSub' + index"
                         :class="{ 'bookNav__li--active': subpoint.href && subpoint.href.params.id == id }">
                         <RouterLink v-if="subpoint.href"
-                                    :to="subpoint.href">{{ subpoint.name }}</RouterLink>
+                                    :to="subpoint.href">
+                            {{ subpoint.name }}
+                        </RouterLink>
                         <span v-else>{{ subpoint.name }}</span>
                     </li>
                 </ul>

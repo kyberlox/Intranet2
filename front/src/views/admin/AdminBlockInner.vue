@@ -59,7 +59,6 @@ export default defineComponent({
     const events = ref<Event[]>([]);
     const router = useRouter();
     const route = useRoute();
-    console.log(route);
 
     const sampleEvent = [
       {

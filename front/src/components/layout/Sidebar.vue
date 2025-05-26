@@ -53,8 +53,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { workLinks } from "@/assets/staticJsons/layoutSidebar";
-import { supportLinks } from "@/assets/staticJsons/layoutSidebar";
+import { workLinks, supportLinks } from "@/assets/staticJsons/navLinks";
 import Calendar from "./Calendar.vue";
 
 export default defineComponent({

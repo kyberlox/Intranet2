@@ -23,7 +23,6 @@ export default defineComponent({
         const route = useRoute();
         const slides = expTypeSlides;
         const title = ref(route.params.title);
-        console.log(slides);
 
 
         return {

@@ -1,20 +1,20 @@
 <template>
     <div class="post-inner__page__wrapper mt20">
-        <div v-if="currentPost && type == 'default'"
+        <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
              class="row">
             <div class="col-12 col-lg-6 mb-2">
-                <SwiperBlank :videos="currentPost.videos"
-                             :images="currentPost.images ? currentPost.images : ['https://placehold.co/360x206']"
+                <SwiperBlank :videos="currentPost?.videos ? currentPost.videos : 0"
+                             :images="currentPost?.images ? currentPost.images : ['https://placehold.co/360x206']"
                              :type="'postInner'" />
             </div>
-
             <div class="col-12 col-lg-6">
                 <div class="news__detail__content">
-                    <div v-if="currentPost.indirect_data?.NAME"
+                    <div v-if="currentPost.name || currentPost.indirect_data?.NAME"
                          class="news__detail__top">
                         <div class="row mb-2">
                             <div class="col-12">
-                                <h2 class="news__detail__title">{{ currentPost.indirect_data.NAME }}</h2>
+                                <h2 class="news__detail__title">{{ currentPost.name || currentPost.indirect_data?.NAME }}
+                                </h2>
                             </div>
                         </div>
                     </div>
@@ -61,16 +61,16 @@
                 </div>
             </div>
         </div>
-        <FlexGallery :slides="['dss']"
-                     :modifiers="['noRoute']"
-                     v-else />
+        <FlexGallery v-else-if="type !== 'adminPreview'"
+                     :slides="['dss']"
+                     :modifiers="['noRoute']" />
     </div>
 </template>
 <script lang="ts">
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { defineComponent, type PropType, type Ref, onMounted, ref } from "vue";
+import { defineComponent, type Ref, onMounted, ref } from "vue";
 import type { IActualNews, ICareSlide } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
@@ -85,22 +85,28 @@ export default defineComponent({
     props: {
         id: {
             type: String,
-            required: true,
         },
         type: {
             type: String,
             default: 'default'
+        },
+        previewElement: {
+            type: Object
         }
     },
     setup(props) {
         const currentPost = ref<IActualNews | ICareSlide>();
         onMounted(() => {
-            Api.get(`article/find_by_ID/${props.id}`)
-                .then((res) => {
-                    currentPost.value = res;
-                    if (!currentPost.value) return;
-                    changeToPostStandart(currentPost, res);
-                })
+            if (props.type == 'adminPreview') {
+                currentPost.value = props.previewElement
+            }
+            else
+                Api.get(`article/find_by_ID/${props.id}`)
+                    .then((res) => {
+                        currentPost.value = res;
+                        if (!currentPost.value) return;
+                        changeToPostStandart(currentPost, res);
+                    })
         })
 
         const changeToPostStandart = (target: Ref<IActualNews | ICareSlide | undefined>, res: IActualNews | ICareSlide) => {

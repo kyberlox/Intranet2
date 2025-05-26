@@ -1,18 +1,18 @@
 <template>
-    <div class="home__view__grid__card__group-buttons"
-         :class="{ 'home__view__grid__card__group--blog': type == 'blog' }">
+    <div class="homeview__grid__card__group-buttons"
+         :class="{ 'homeview__grid__card__group--blog': type == 'blog' }">
         <div v-if="type !== 'interview' && type !== 'blog'"
-             class="home__view__grid__card__group-buttons__more-button">{{ type == "video" ? "Смотреть" : "Читать далее"
+             class="homeview__grid__card__group-buttons__more-button">{{ type == "video" ? "Смотреть" : "Читать далее"
             }}</div>
         <div v-if="reactions"
-             class="home__view__grid__card__group-buttons__reaction-buttons">
+             class="homeview__grid__card__group-buttons__reaction-buttons">
             <div v-if="reactions.views && (type == 'postPreview' || type == 'blog' || type == 'video' || type == 'interview')"
-                 class="home__view__grid__card__group-buttons__reaction-buttons--views">
+                 class="homeview__grid__card__group-buttons__reaction-buttons--views">
                 <ViewsIcon />
                 {{ reactions.views }}
             </div>
             <div v-if="reactions.likes"
-                 class="home__view__grid__card__group-buttons__reaction-buttons--like home__view__grid__card__group-buttons__reaction-buttons--like_active">
+                 class="homeview__grid__card__group-buttons__reaction-buttons--like homeview__grid__card__group-buttons__reaction-buttons--like_active">
                 <LikeIcon />
                 {{ reactions.likes.count }}
             </div>

@@ -8,7 +8,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { factoryReports } from "@/assets/staticJsons/factorySlides";
+import { factoryReports } from "@/assets/staticJsons/referencesAndExp";
 
 export default defineComponent({
     components: {

@@ -31,7 +31,6 @@ export default defineComponent({
                 .finally(() => {
                     useLoadingStore().setLoadingStatus(false);
                 })
-
         })
         return {
             interviews,

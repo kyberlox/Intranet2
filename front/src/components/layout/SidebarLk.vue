@@ -23,9 +23,10 @@
          @click="close"></div>
 </template>
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, watch } from 'vue'
 import { points } from '@/assets/staticJsons/topRightMenuPoints'
 import { useUserData } from '@/stores/userData'
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
     props: {
@@ -36,6 +37,8 @@ export default defineComponent({
     },
     emits: ['closeSidebar'],
     setup(props, { emit }) {
+        const route = useRoute();
+
         const useUserStore = useUserData();
         const idForRoute = computed(() => useUserStore.getMyId);
         const routeHandle = (point: { name: string, href: string, params?: { id: number } }) => {
@@ -46,6 +49,12 @@ export default defineComponent({
                 return ({ name: point.href, params: { id: idForRoute.value } })
             }
         }
+
+        watch((route), (newVal) => {
+            if (newVal) {
+                emit('closeSidebar');
+            }
+        })
 
         return {
             points,

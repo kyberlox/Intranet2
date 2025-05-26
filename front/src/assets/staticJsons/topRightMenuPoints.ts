@@ -11,6 +11,11 @@ export const points = [
     },
     {
         id: 3,
+        name: 'Панель редактора',
+        href: 'admin'
+    },
+    {
+        id: 4,
         name: 'Выйти',
         href: 'auth',
     }

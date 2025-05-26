@@ -5,7 +5,7 @@ export const bookNavigation: IBook[] = [
     {
         name: "Вступление",
         href: {
-            name: "book-emk",
+            name: "book-emk-page",
             params: {
                 id: 0,
             },
@@ -19,7 +19,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 1. Простор",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 1,
                     },
@@ -28,7 +28,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 2. Разрыв",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 2,
                     },
@@ -37,7 +37,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 3. Команда",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 3,
                     },
@@ -46,7 +46,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 4. Эпоха бартера",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 4,
                     },
@@ -55,7 +55,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 5. Система управления",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 5,
                     },
@@ -70,7 +70,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 6. Обретение ИФАЗа",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 6,
                     },
@@ -79,7 +79,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 7. Украинская арматура",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 7,
                     },
@@ -88,7 +88,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 8. Атомная тема",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 8,
                     },
@@ -97,7 +97,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 9. Рождение САЗа",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 9,
                     },
@@ -106,7 +106,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 10. Тульский проект",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 10,
                     },
@@ -115,7 +115,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 11. Расцвет нулевых",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 11,
                     },
@@ -130,7 +130,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 12. Ассоциация и журнал",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 12,
                     },
@@ -139,7 +139,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 13. Два холдинга с разной судьбой",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 13,
                     },
@@ -148,7 +148,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 14. Хроника распада партнёрства",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 14,
                     },
@@ -157,7 +157,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 15. Становление собственного производства",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 15,
                     },
@@ -172,7 +172,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 16. Как закалялся САЗ",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 16,
                     },
@@ -181,7 +181,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 17. Трудный путь в атомную отрасль",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 17,
                     },
@@ -190,7 +190,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 18. Регулятор",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 18,
                     },
@@ -199,7 +199,7 @@ export const bookNavigation: IBook[] = [
             {
                 name: "Глава 19. Люди и проекты",
                 href: {
-                    name: "book-emk",
+                    name: "book-emk-page",
                     params: {
                         id: 19,
                     },
@@ -210,7 +210,7 @@ export const bookNavigation: IBook[] = [
     {
         name: "ВЗГЛЯД В БУДУЩЕЕ",
         href: {
-            name: "book-emk",
+            name: "book-emk-page",
             params: {
                 id: 20,
             },

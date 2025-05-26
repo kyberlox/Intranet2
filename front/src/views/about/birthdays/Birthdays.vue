@@ -13,15 +13,7 @@
     </div>
     <div class="birthday__date-picker-wrapper mt20">
         <div class="col-12 col-md-2 mb-3">
-            <VueDatePicker v-model="date"
-                           locale="ru"
-                           cancelText="Назад"
-                           selectText="Ок"
-                           :enable-time-picker="false"
-                           disable-year-select
-                           auto-apply
-                           placeholder="Выберите дату"
-                           :format="format" />
+            <DatePicker />
         </div>
     </div>
     <div class="birthday__workers-grid">
@@ -49,29 +41,17 @@
 import { ref } from "vue";
 import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
-import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { slidesForBirthday, fastDayNavigation } from "@/assets/staticJsons/birthday";
 import { defineComponent } from "vue";
+import DatePicker from "@/components/DatePicker.vue";
 export default defineComponent({
     components: {
         VerticalSlider,
         ZoomModal,
-        VueDatePicker,
+        DatePicker,
     },
     setup() {
-        const dateInput = ref();
-
-        const searchValue = ref("20.01.2025");
-
-        const pickDate = (date: string) => {
-            searchValue.value = date;
-        };
-
-        const openDatePicker = () => {
-            if (!dateInput.value) return;
-            dateInput.value.showPicker();
-        };
 
         const imageInModal = ref();
         const hiddenModal = ref(true);
@@ -81,26 +61,13 @@ export default defineComponent({
             hiddenModal.value = false;
         };
 
-        const date = ref(new Date());
-        const format = (date: Date = new Date()) => {
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-
-            return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}`;
-        };
 
         return {
-            dateInput,
-            openDatePicker,
             slidesForBirthday,
             imageInModal,
             openModal,
             hiddenModal,
             fastDayNavigation,
-            searchValue,
-            pickDate,
-            date,
-            format,
         };
     },
 });

@@ -4,7 +4,8 @@
         <FlexGallery :page=page
                      :slides="slides"
                      :title="typeof title == 'string' ? title : ''"
-                     :modifiers="['noFullWidthImg']" />
+                     :modifiers="['noFullWidthImg']"
+                     :routeTo="'experienceType'" />
     </div>
 </template>
 
@@ -12,7 +13,7 @@
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
 import { useRoute } from "vue-router";
 import { defineComponent, ref } from "vue";
-import { expTypeSlides } from "@/assets/staticJsons/expieriencePage";
+import { expTypeSlides } from "@/assets/staticJsons/referencesAndExp";
 export default defineComponent({
     components: {
         FlexGallery,
@@ -21,7 +22,9 @@ export default defineComponent({
     setup() {
         const route = useRoute();
         const slides = expTypeSlides;
-        const title = ref(route.params.title)
+        const title = ref(route.params.title);
+        console.log(slides);
+
 
         return {
             slides,

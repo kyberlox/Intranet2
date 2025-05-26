@@ -1,9 +1,9 @@
 <template>
-    <div class="home__view mt20">
-        <div class="home__view__grid">
+    <div class="homeview mt20">
+        <div class="homeview__grid">
             <div v-for="item in mainPageCards"
-                 class="home__view__grid__card d-flex flex-column"
-                 :class="{ 'home__view__grid__card--fullRowBlock': item.type == 'fullRowBlock' || item.type == 'mixedRowBlock' }"
+                 class="homeview__grid__card d-flex flex-column"
+                 :class="{ 'homeview__grid__card--fullRowBlock': item.type == 'fullRowBlock' || item.type == 'mixedRowBlock' }"
                  :key="item.id">
                 <!-- Для слайдеров в одну ячейку -->
                 <MainPageSoloBlock v-if="item.type == 'singleBlock'"
@@ -11,9 +11,9 @@
 
                 <!-- Для отдельных постов в одну строку -->
                 <div v-else-if="item.type == 'fullRowBlock'"
-                     class="home__view__grid__cards--fullRowBlock">
-                    <span class="home__view__grid__card__group-title">{{ item.title }}</span>
-                    <div class="home__view__grid">
+                     class="homeview__grid__cards--fullRowBlock">
+                    <span class="homeview__grid__card__group-title">{{ item.title }}</span>
+                    <div class="homeview__grid">
                         <MainPageRowBlocks v-for="(block, index) in item.images"
                                            :card="block"
                                            :key="index + 'fullrowblock'" />
@@ -21,14 +21,14 @@
                 </div>
 
                 <!-- Все вместе -->
-                <div class="home__view__grid"
+                <div class="homeview__grid"
                      v-else-if="item.type == 'mixedRowBlock'">
                     <div v-for="(block, index) in item.content"
                          :key="index"
                          :class="{ 'grid-span-4': block.type == 'fullRowBlock' }">
                         <MainPageSoloBlock v-if="block.type == 'singleBlock'"
                                            :card="block" />
-                        <div class="home__view__grid home__view__grid--mixed"
+                        <div class="homeview__grid homeview__grid--mixed"
                              v-else-if="block.type == 'fullRowBlock'">
                             <MainPageRowBlocks v-for="(blockSlides, index) in block.images"
                                                :card="typeof blockSlides === 'string' ? { id: item.id, image: blockSlides } : blockSlides"

@@ -24,7 +24,7 @@
                              target="_blank">{{ workLink.description }}</div>
                     </div>
                 </div>
-                <div class="home__view__item__link"
+                <div class="homeview__item__link"
                      target="_blank">{{ workLink.linkTitle }} <span></span></div>
             </a>
         </div>

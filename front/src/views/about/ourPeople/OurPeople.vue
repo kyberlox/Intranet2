@@ -2,7 +2,8 @@
     <h2 class="page__title mt20">Наши люди</h2>
     <GridGallery v-if="ourPeople"
                  :gallery="ourPeople"
-                 :type="'ourPeople'" />
+                 :type="'ourPeople'"
+                 :routeTo="'ourPeopleInner'" />
 </template>
 
 <script lang="ts">

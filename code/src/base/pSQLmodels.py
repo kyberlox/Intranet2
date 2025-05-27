@@ -22,7 +22,7 @@ user = os.getenv('user')
 pswd = os.getenv('pswd')
 
 # Настройка подключения к базе данных PostgreSQL
-engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb', pool_size=40, max_overflow=0)
+engine = create_engine(f'postgresql+psycopg2://{user}:{pswd}@postgres/pdb', pool_size=50, max_overflow=0)
 
 
 

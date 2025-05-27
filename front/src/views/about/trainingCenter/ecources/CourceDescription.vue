@@ -46,7 +46,7 @@
 </template>
 <script lang="ts">
 import { useRoute } from "vue-router";
-import { allCources } from "@/assets/staticJsons/ecourcesDescription";
+import { allCources } from "@/assets/staticJsons/trainingCenterData";
 import { defineComponent } from "vue";
 export default defineComponent({
     setup() {

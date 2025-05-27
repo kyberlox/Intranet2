@@ -13,7 +13,8 @@
                          class="news__detail__top">
                         <div class="row mb-2">
                             <div class="col-12">
-                                <h2 class="news__detail__title">{{ currentPost.name || currentPost.indirect_data?.NAME }}
+                                <h2 class="news__detail__title">{{ currentPost.name || currentPost.indirect_data?.NAME
+                                    }}
                                 </h2>
                             </div>
                         </div>

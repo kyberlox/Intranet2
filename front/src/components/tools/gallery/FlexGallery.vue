@@ -5,7 +5,7 @@
              :key="index">
             <RouterLink v-if="!slide.videoHref && !modifiers.includes('noRoute') && !modifiers.includes('buttons')"
                         class="flexGallery__card"
-                        :to="checkRouteTo(slide)">
+                        :to="uniqueRoutesHandle(routeTo, slide)">
                 <div class="flexGallery__card__img-wrapper"
                      :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
                     <div class="flexGallery__card__img"
@@ -35,10 +35,10 @@
 
                 <div class="flexGallery__card__buttons">
                     <RouterLink v-if="slide.reportages"
-                                :to="checkRouteTo(slide, 'factoryReports')"
+                                :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
                                 class="flexGallery__card__buttons__button">Репортажи</RouterLink>
                     <RouterLink v-if="slide.tours"
-                                :to="checkRouteTo(slide, 'factoryTours')"
+                                :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
                                 class="flexGallery__card__buttons__button">3D-Туры</RouterLink>
                 </div>
             </div>
@@ -82,9 +82,9 @@
 import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
-import type { RouteLocationRaw } from 'vue-router';
 import type { IAfishaItem } from "@/interfaces/IEntities";
 import { getProperty } from "@/utils/getPropertyFirstPos";
+import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 
 export default defineComponent({
     name: 'FlexGallery',
@@ -134,36 +134,16 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        const checkRouteTo = (slide, reRoute = ''): RouteLocationRaw => {
-            if (reRoute) {
-                return { name: reRoute, params: { id: slide.id } }
-            }
-            else if (props.routeTo === 'experienceType') {
-                return { name: props.routeTo, params: { id: slide.id, factoryId: slide.factoryId } }
-            }
-            else if (props.routeTo === 'experienceTypes') {
-                return { name: props.routeTo, params: { factoryId: slide.factoryId } }
-            }
-            else if (props.routeTo == 'factoryTour') {
-                return { name: props.routeTo, params: { id: slide.id, tourId: slide.tourId } }
-            }
-            else if (props.routeTo === 'officialEvents') {
-                return { name: 'officialEvent', params: { id: slide.href } }
-            }
-            else return { name: props.routeTo, params: { id: slide.id } }
-        }
-
         const setCardDate = (slide) => {
             return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
         }
-
 
         return {
             PlayVideo,
             modalImg,
             modalVideo,
             callModal,
-            checkRouteTo,
+            uniqueRoutesHandle,
             modalIsOpen,
             activeIndex,
             getProperty,

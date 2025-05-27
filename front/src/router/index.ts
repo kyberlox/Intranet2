@@ -373,9 +373,10 @@ const router = createRouter({
 
     },
     {
-      path: '/user/ideas',
+      path: '/user/ideas/',
       name: 'ideasPage',
-      component: () => import('@/views/user/MyIdeas.vue')
+      component: () => import('@/views/user/MyIdeas.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/user/ideas/new',
@@ -398,6 +399,11 @@ const router = createRouter({
       name: 'adminElementInner',
       component: () => import('@/views/admin/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId })
+    },
+    {
+      path: '/about/structure',
+      name: 'structure',
+      component: () => import('@/views/about/companyStructure/CompanyStructure.vue'),
     },
   ]
 })

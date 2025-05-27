@@ -180,12 +180,6 @@ class UserSearchModel:
                         data_row[param] = data[param]
                 else:
                     continue
-            
-            # second_row = {
-            #     "user_fio":fio, "email":data['email'], "phone":data['personal_mobile'], 
-            #     "city":data['personal_city'], "male":data['personal_gender'], "birthday":birth, "work_phone": data['uf_phone_inner'],
-            #     "work_position": data['work_position'], "work_office": data['uf_usr_1586854037086']
-            #     }
 
             user_id = int(data['id'])
             
@@ -296,6 +290,12 @@ class StructureSearchModel:
             },
             "mappings": {
                 "properties": {
+                    "join_field": {
+                        "type": "join",
+                        "relations": {
+                            "department": "section_of_theese_depart"
+                        }
+                    },
                     "name": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
@@ -306,14 +306,14 @@ class StructureSearchModel:
                             }
                         }
                     },
-                    "father_id": {
+                    "dep_id_for_sort": {
                         "type": "integer"
                     },
                     "user_head_id": {
                         "type": "integer"
                     },
                     "users": {
-                        "type": "object",
+                        "type": "nested", # изменили тип с object
                         "properties": {
                             "user_id": {
                                 "type": "integer"
@@ -330,7 +330,13 @@ class StructureSearchModel:
                             },
                             "user_position": {
                                 "type": "text",
-                                "search_analyzer": "standard"
+                                "search_analyzer": "standard",
+                                "fields" : {
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE_FUZZY"
+                                    }
+                                }
                             }
                         }
                     }
@@ -340,57 +346,55 @@ class StructureSearchModel:
 
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
-        
 
     
     def dump(self):
         self.delete_index()
         self.create_index()
-        users_list = []
+        
+
+        list_for_deps = []
         
         dep_data = [] # список 
         dep_sql_data = self.DepartmentModel().all()
         for dep in dep_sql_data:
+            users_list = []
             department_data = dep.__dict__
+            list_for_deps.append(department_data['id'])
             users = self.UsDepModel(id = department_data['id']).find_user_by_dep_id() #берём id всех пользователей департамента
             if isinstance(users, list):
                 for usr in users:
                     user_data = {}
                     user = self.UserModel(Id=usr).find_by_id()
-                    user_data['user_id'] = user['id']
+                    if user['active'] is True:
+                        user_data['user_id'] = user['id']
 
-                    if user['second_name'] is not None or user['second_name'] != '':
-                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
-                    else:
-                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                        if user['second_name'] is not None or user['second_name'] != '':
+                            user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                        else:
+                            user_data['user_fio'] = f'{user['last_name']} {user['name']}'
 
-                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data']['work_position'] != '':
-                        user_data['user_position'] = user['indirect_data']['work_position']
+                        if 'work_position' in user['indirect_data'].keys() and user['indirect_data']['work_position'] != '':
+                            user_data['user_position'] = user['indirect_data']['work_position']
+                        else:
+                            pass
+        
+                        users_list.append(user_data)
                     else:
                         pass
-       
-                    users_list.append(user_data)
             else:
                 pass
-            
             depart = {
+                "join_field": {"name" : "department", "parent": department_data["father_id"]}, # поле "name" забиваем "department" 
+                # если этот департамент чей-то родитель и "section_of_theese_depart" если он ребеноки подотделов больше нет
                 "name" : department_data["name"],
-                "father_id" : department_data["father_id"],
+                "dep_id_for_sort" : department_data['id'],
                 "user_head_id" : department_data["user_head_id"],
                 "users" : users_list
             }
             
-            depart_data_ES = {
-                "_index": self.index,
-                "_op_type": "index", # либо create либо index че выбрать хз пока
-                "_id": department_data['id'],
-                "_source": depart
-            }
+            elastic_client.index(index=self.index, id=department_data['id'], body=depart)
 
-            
-
-            dep_data.append(depart_data_ES)
-        helpers.bulk(elastic_client, dep_data)
         return {'status': True}
 
     async def index_structure_dep(department_id: str):
@@ -418,8 +422,6 @@ class StructureSearchModel:
                 "name" : full_name,
                 # "position" : position
             })
-
-
     
     def search(self, data):
         #сюда приходит словарь для поискового запроса по пользователям
@@ -429,75 +431,85 @@ class StructureSearchModel:
         #вывести по иерархии
         pass
 
-    def search_by_name(self, name):
+    def search_by_username(self, name):
         res = elastic_client.search(
             index=self.index,
             query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "users.user_fio": {
-                                    "query": name,
-                                    # "boost": 2  
-                                }
-                            }
-                        },
-                        {
-                            "match": {
-                                "users.user_fio.fuzzy": {
-                                    "query": name,
-                                    "fuzziness": "AUTO",  
-                                    "prefix_length": 2 
-                                    # "boost": 1
-                                }
-                            }
+                "nested": {
+                    "path": "users",
+                    "query": {
+                        "match": {
+                            "users.user_fio": name
                         }
-                    ]
+                    },
+                    "inner_hits": {}
                 }
             },
-            size=1000
+            size=10
         )
-
         return res['hits']['hits']
 
     def search_by_position(self, pos):
         res = elastic_client.search(
             index=self.index,
             query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "users.user_position": {
-                                    "query": pos,
-                                    # "boost": 2  
-                                }
-                            }
-                        },
-                        {
-                            "match": {
-                                "users.user_position": {
-                                    "query": pos,
-                                    "fuzziness": "AUTO",  
-                                    # "prefix_length": 2,  
-                                    # "boost": 1
-                                }
-                            }
+                "nested": {
+                    "path": "users",
+                    "query": {
+                        "match": {
+                            "users.user_position": pos
                         }
-                    ]
+                    },
+                    "inner_hits": {}
                 }
             },
+            size=10
+        )
+        return res['hits']['hits']
+
+    def search_by_department(self):
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "match_all": {}
+            },
+            sort=[
+                {
+                    "dep_id_for_sort": {
+                        "order": "asc" # "desc" использовать если хотим по убыванию
+                    }
+                }
+            ],
             size=1000
         )
-
         return res['hits']['hits']
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
 
+class ArticleSearchModel:
 
+    def __init__(self):
+        self.index = "articles"
+
+    def create_index(self):
+        pass
+    
+    def dump(self):
+        self.delete_index()
+        self.create_index()
+        pass
+
+    def search_by_title(self, words):
+        pass
+
+    def search_by_text(self, text):
+        pass
+
+    def delete_index(self):
+        elastic_client.indices.delete(index=self.index)
+        return {'status': True}
 
 @search_router.get("/dump_user")
 def create_data_user():
@@ -507,14 +519,22 @@ def create_data_user():
 def create_data_depart():
     return StructureSearchModel().dump()
 
-@search_router.get("/users/search_by_name/{name}")
+@search_router.get("/view_all_departs")
+def view_all_departs():
+    return StructureSearchModel().search_by_department()
+
+@search_router.post("/users/search_by_name/{name}")
 def search_users(name: str):
     return UserSearchModel().search_by_name(name)
 
-@search_router.get("/departs/search_by_username/{name}")
+@search_router.post("/departs/search_by_username/{name}")
 def search_depart_users(name: str):
-    return StructureSearchModel().search_by_name(name)
+    return StructureSearchModel().search_by_username(name)
 
-@search_router.get("/departs/search_by_user_position/{position}")
+@search_router.post("/departs/search_by_user_position/{position}")
 def search_depart_users(position: str):
     return StructureSearchModel().search_by_position(position)
+
+# @search_router.post("/departs/search_by_department/{dep_name}")
+# def search_depart_users(dep_name: str):
+#     return StructureSearchModel().search_by_department(dep_name)

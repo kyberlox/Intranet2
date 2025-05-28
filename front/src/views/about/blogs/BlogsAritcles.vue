@@ -33,7 +33,7 @@
 <script lang="ts">
 import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
 import Reactions from "@/components/Reactions.vue";
-import { defineComponent, ref, watchEffect, computed } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 
 export default defineComponent({
@@ -45,16 +45,13 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const blogName = ref();
         const currentArticles = ref([]);
         const targetBlog = ref();
         const blogData = useblogDataStore();
-        const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id))
-        const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
 
-        watchEffect(() => {
-            console.log(blogsArticles.value)
-        })
+        const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id))
+
+        const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
         return {
             blogsArticles,
             blogName: targetAuthor.value?.title,

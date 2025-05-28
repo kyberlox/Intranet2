@@ -24,7 +24,7 @@
                              target="_blank">{{ workLink.description }}</div>
                     </div>
                 </div>
-                <div class="home__view__item__link"
+                <div class="homeview__item__link"
                      target="_blank">{{ workLink.linkTitle }} <span></span></div>
             </a>
         </div>
@@ -53,8 +53,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { workLinks } from "@/assets/staticJsons/layoutSidebar";
-import { supportLinks } from "@/assets/staticJsons/layoutSidebar";
+import { workLinks, supportLinks } from "@/assets/staticJsons/navLinks";
 import Calendar from "./Calendar.vue";
 
 export default defineComponent({

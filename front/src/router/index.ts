@@ -15,8 +15,13 @@ const router = createRouter({
       component: () => import('../views/about/ourCompany/OurCompany.vue')
     },
     {
-      path: '/about/company-history/:id',
+      path: '/about/company-history',
       name: 'book-emk',
+      component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
+    },
+    {
+      path: '/about/company-history/:id',
+      name: 'book-emk-page',
       component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
       props: (route) => ({ id: route.params.id })
     },
@@ -71,15 +76,14 @@ const router = createRouter({
       props: (route) => ({ id: route.params.id })
     },
     {
-      path: '/about/videoreport',
+      path: '/about/videoreports',
       name: 'videoreports',
-      component: () => import('@/views/news/videoReport/VideoReport.vue'),
-      props: (route) => ({ id: route.params.id })
+      component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
-      path: '/about/videoreport',
+      path: '/about/videoreports/:id',
       name: 'videoreport',
-      component: () => import('@/views/news/videoReport/VideoReport.vue'),
+      component: () => import('@/views/news/videoReports/VideoReports.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {
@@ -95,7 +99,8 @@ const router = createRouter({
     {
       path: '/about/trainingcenter/ecources/:id',
       name: 'Ecource',
-      component: () => import('@/views/about/trainingCenter/ecources/CourceDescription.vue')
+      component: () => import('@/views/about/trainingCenter/ecources/CourceDescription.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/about/trainingcenter/trainings',
@@ -106,6 +111,7 @@ const router = createRouter({
       path: '/about/trainingcenter/trainings/:id',
       name: 'conductedTraining',
       component: () => import('@/views/about/trainingCenter/conductedTrainings/Training.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/about/trainingcenter/announces',
@@ -177,6 +183,12 @@ const router = createRouter({
       component: () => import('@/views/about/calendarPage/CalendarPage.vue')
     },
     {
+      path: '/about/calendar/:monthId',
+      name: 'calendarMonth',
+      component: () => import('@/views/about/calendarPage/CalendarPage.vue'),
+      props: (route) => ({ monthId: route.params.monthId }),
+    },
+    {
       path: '/services/selectionTep',
       name: 'selectionTep',
       beforeEnter: (to, from, next) => {
@@ -219,14 +231,16 @@ const router = createRouter({
       component: () => import('@/views/services/experience/Experience.vue')
     },
     {
-      path: '/services/experience/:title',
+      path: '/services/experience/:factoryId',
       name: 'experienceTypes',
-      component: () => import('@/views/services/experience/ExperienceTypes.vue')
+      component: () => import('@/views/services/experience/ExperienceTypes.vue'),
+      props: (route) => ({ factoryId: route.params.factoryId })
     },
     {
-      path: '/services/experience/:title/:id',
+      path: '/services/experience/:factoryId/:id',
       name: 'experienceType',
-      component: () => import('@/views/services/experience/ExperienceType.vue')
+      component: () => import('@/views/services/experience/ExperienceType.vue'),
+      props: (route) => ({ id: route.params.id, factoryId: route.params.factoryId })
     },
     {
       path: '/news/actual',
@@ -261,19 +275,23 @@ const router = createRouter({
       component: () => import('@/views/gallery/factoryGuid/Factories.vue')
     },
     {
-      path: '/gallery/factories/reports/:title',
-      name: 'factoriesReports',
-      component: () => import('@/views/gallery/factoryGuid/FactoryReports.vue')
+      path: '/gallery/factories/reports/:id',
+      name: 'factoryReports',
+      component: () => import('@/views/gallery/factoryGuid/FactoryReports.vue'),
+      props: (route) => ({ id: route.params.id })
+
     },
     {
-      path: '/gallery/factories/tours/:title',
-      name: 'factoriesTours',
-      component: () => import('@/views/gallery/factoryGuid/FactoryTours.vue')
+      path: '/gallery/factories/tours/:id',
+      name: 'factoryTours',
+      component: () => import('@/views/gallery/factoryGuid/FactoryTours.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
-      path: '/gallery/factories/tours/:title/:id',
+      path: '/gallery/factories/tours/:id/:tourId',
       name: 'factoryTour',
-      component: () => import('@/views/gallery/factoryGuid/FactoryTour.vue')
+      component: () => import('@/views/gallery/factoryGuid/FactoryTour.vue'),
+      props: (route) => ({ id: route.params.id, tourId: route.params.tourId })
     },
     {
       path: '/communications/officialevents',
@@ -283,7 +301,9 @@ const router = createRouter({
     {
       path: '/communications/officialevents/:id',
       name: 'officialEvent',
-      component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue')
+      component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue'),
+      props: (route) => ({ id: route.params.id })
+
     },
     {
       path: '/communications/corpevents/',
@@ -305,7 +325,7 @@ const router = createRouter({
       path: '/communications/corplife/:id',
       name: 'corpLifeItem',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь', type: 'onlyImg' })
     },
     {
       path: '/communications/announces/',
@@ -348,18 +368,43 @@ const router = createRouter({
     {
       path: '/user/:id',
       name: 'userPage',
-      component: () => import('@/views/user/UserPage.vue')
+      component: () => import('@/views/user/UserPage.vue'),
+      props: (route) => ({ id: route.params.id })
+
     },
     {
-      path: '/user/ideas',
+      path: '/user/ideas/',
       name: 'ideasPage',
-      component: () => import('@/views/user/MyIdeas.vue')
+      component: () => import('@/views/user/MyIdeas.vue'),
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/user/ideas/new',
       name: 'newIdeaPage',
       component: () => import('@/views/user/NewIdea.vue')
-    }
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('@/views/admin/AdminPanel.vue')
+    },
+    {
+      path: '/admin/:id',
+      name: 'adminBlockInner',
+      component: () => import('@/views/admin/AdminBlockInner.vue'),
+      props: (route) => ({ id: route.params.id })
+    },
+    {
+      path: '/admin/:id/:elementId',
+      name: 'adminElementInner',
+      component: () => import('@/views/admin/AdminElementInner.vue'),
+      props: (route) => ({ id: route.params.id, elementId: route.params.elementId })
+    },
+    {
+      path: '/about/structure',
+      name: 'structure',
+      component: () => import('@/views/about/companyStructure/CompanyStructure.vue'),
+    },
   ]
 })
 

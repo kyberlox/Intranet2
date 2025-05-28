@@ -1,6 +1,8 @@
 <template>
     <div v-if="isLogin">
         <LayoutHeader />
+        <ProgressBar v-if="isLoading"
+                     mode="indeterminate" />
         <main>
             <div class="container-fluid"
                  :class="{ 'container-fluid--nopadding': !isLogin }">
@@ -22,22 +24,24 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, computed, watch, ref } from "vue";
+import { defineComponent, computed, watch, ref } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/Sidebar.vue";
 import AuthPage from "./views/user/AuthPage.vue";
-import Api from "./utils/Api";
-import { sectionTips } from "./assets/staticJsons/sectionTips";
+
 import { useblogDataStore } from "./stores/blogData";
 import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
+import ProgressBar from 'primevue/progressbar';
+import { useLoadingStore } from '@/stores/loadingStore'
 export default defineComponent({
     name: "app-layout",
     components: {
         LayoutHeader,
         Sidebar,
         RouterView,
-        AuthPage
+        AuthPage,
+        ProgressBar
     },
     setup() {
         const blogData = useblogDataStore();
@@ -50,8 +54,10 @@ export default defineComponent({
                 getBlogAuthorsToStore(allAuthors, blogData)
             }
         }, { immediate: true, deep: true })
+
         return {
             isLogin: true,
+            isLoading: computed(() => useLoadingStore().getLoadingStatus)
         }
     }
 })
@@ -59,17 +65,4 @@ export default defineComponent({
 
 <style lang="scss">
 @use "./assets/styles/mixins/mixins.scss" as *;
-
-.main-content {
-    margin: 0 auto;
-    max-width: 1920px;
-}
-
-.container-fluid--nopadding {
-    padding: 0;
-}
-
-.row--nomargin>* {
-    margin: 0;
-}
 </style>

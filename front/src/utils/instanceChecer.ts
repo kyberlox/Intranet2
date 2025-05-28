@@ -1,5 +1,0 @@
-
-
-// const instanceCheck = (target,) =>{
-//     if()
-// }

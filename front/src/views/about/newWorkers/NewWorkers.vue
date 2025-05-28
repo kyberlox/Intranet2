@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { newWorkers } from '@/assets/staticJsons/newWorkers';
 import { RouterLink } from 'vue-router';
 
 export default defineComponent({
@@ -32,7 +31,13 @@ export default defineComponent({
         RouterLink
     },
     setup() {
-
+        const newWorkers = [{
+            id: 1,
+            name: 'Иванов Иван Иванович',
+            position: 'Директор',
+            department: 'Отдел продаж',
+            href: 'userPage',
+        }]
         return {
             newWorkers,
         }

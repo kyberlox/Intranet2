@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import SideBarNavigation from "@/components/about/companyHistory/SideBarNavigation.vue";
-import { defineAsyncComponent, ref, shallowRef, watchEffect } from "vue";
+import { defineAsyncComponent, ref, shallowRef, watch } from "vue";
 import { useRouter } from "vue-router";
 import { defineComponent } from "vue";
 
@@ -41,7 +41,8 @@ export default defineComponent({
     props: {
         id: {
             type: String,
-            required: true,
+            required: false,
+            default: '0',
         },
     },
 
@@ -57,11 +58,15 @@ export default defineComponent({
         }
 
         const navigate = (page: number) => {
-            router.push({ name: "book-emk", params: { id: page } });
+            router.push({ name: "book-emk-page", params: { id: page } });
             window.scrollTo(0, 0);
         };
 
-        watchEffect(() => (currentPage.value = props.id));
+        watch((props), (newVal) => {
+            if (!newVal.id) return;
+            currentPage.value = props.id;
+        }, { deep: true, immediate: true })
+
         return {
             navigate,
             rollSidebar,

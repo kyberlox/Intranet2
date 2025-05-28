@@ -1,19 +1,24 @@
 <template>
     <div class="page__title mt20">Корпоративная жизнь</div>
-    <TagDateNavBar :years="years"
+    <TagDateNavBar :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
-                   @pickYear="showEventsByYear" />
+                   @pickYear="(year) => visibleEvents = showEventsByYear(allEvents, year)" />
     <FlexGallery class="mt20"
                  :page=page
                  :slides="visibleEvents"
-                 :routeTo="'corpLifeItem'" />
+                 :routeTo="'corpLifeItem'"
+                 :onlyImg="true" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/staticJsons/sectionTips';
-import TagDateNavBar from '@/components/news/TagDateNavBar.vue';
+import TagDateNavBar from '@/components/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
 import Api from '@/utils/Api';
-import { defineComponent, ref, type Ref, onMounted } from "vue";
+import { defineComponent, ref, type Ref, onMounted, computed } from "vue";
+import { extractYears } from '@/utils/extractYearsFromPosts';
+import { showEventsByYear } from "@/utils/showEventsByYear";
+import { useViewsDataStore } from '@/stores/viewsData';
+import { useLoadingStore } from '@/stores/loadingStore';
 
 export default defineComponent({
     components: {
@@ -21,40 +26,27 @@ export default defineComponent({
         FlexGallery
     },
     setup() {
-        const allEvents = ref([]);
-        const visibleEvents = ref([]);
-        const years = ref([]);
+        const allEvents = computed(() => useViewsDataStore().getData('corpLifeData'));
+        const visibleEvents = ref(allEvents.value);
         onMounted(() => {
-            const events = ref();
+            if (allEvents.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Корпоративная_жизнь']}`)
                 .then((res) => {
-                    allEvents.value = res;
+                    useViewsDataStore().setData(res, 'corpLifeData')
                     visibleEvents.value = res;
-                    res.map((e) => {
-                        if (e.indirect_data && e.indirect_data['PROPERTY_666']) {
-                            years.value.push(e.indirect_data['PROPERTY_666'][0])
-                        }
-                    })
-
-                    const uniqueYears = [...new Set(years.value.map(date => date.split(' ')[0].split('.')[2]))];
-                    years.value = uniqueYears;
+                })
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
                 })
         })
 
-        const showEventsByYear = (year: string) => {
-            visibleEvents.value = [];
-            allEvents.value?.map((e) => {
-                if (e.indirect_data['PROPERTY_666'][0].includes(year)) {
-                    visibleEvents.value?.push(e);
-                }
-            })
-        }
         return {
             page: 'officialEvents',
             allEvents,
-            years,
             showEventsByYear,
-            visibleEvents
+            visibleEvents,
+            extractYears
         };
     },
 });

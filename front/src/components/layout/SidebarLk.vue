@@ -10,9 +10,9 @@
         <div class="sidebar-lk__body">
             <div class="sidebar-lk__body__points">
                 <RouterLink class="sidebar-lk__body__points__point"
-                            v-for="point in points"
-                            :key="point.id"
-                            :to="routeHandle(point)">
+                            v-for="(point, index) in points"
+                            :key="index"
+                            :to="uniqueRoutesHandle(point.href, point, idForRoute, '')">
                     {{ point.name }}
                 </RouterLink>
             </div>
@@ -23,9 +23,11 @@
          @click="close"></div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
-import { points } from '@/assets/staticJsons/topRightMenuPoints'
+import { computed, defineComponent, watch } from 'vue'
+import { points } from '@/assets/staticJsons/navLinks'
+import { useUserData } from '@/stores/userData'
+import { useRoute } from 'vue-router'
+import { uniqueRoutesHandle } from '@/router/uniqueRoutesHandle'
 
 export default defineComponent({
     props: {
@@ -36,21 +38,22 @@ export default defineComponent({
     },
     emits: ['closeSidebar'],
     setup(props, { emit }) {
-        const router = useRouter();
+        const route = useRoute();
 
-        const routeHandle = (point: { id: number, name: string, href: string, params?: { id: number } }) => {
-            if (point.href == 'logout') {
-                return ({ name: 'auth' })
+        const useUserStore = useUserData();
+        const idForRoute = computed(() => useUserStore.getMyId);
+
+        watch((route), (newVal) => {
+            if (newVal) {
+                emit('closeSidebar');
             }
-            else {
-                return ({ name: point.href, params: point.params })
-            }
-        }
+        })
 
         return {
             points,
             close: () => emit('closeSidebar'),
-            routeHandle,
+            idForRoute,
+            uniqueRoutesHandle
         }
     }
 })

@@ -1,31 +1,29 @@
 <template>
-    <div class="home__view__grid__gallery">
-        <div class="home__view__grid">
+    <div class="homeview__grid__gallery">
+        <div class="homeview__grid">
             <div v-for="card in gallery"
                  :key="'homeCard' + card.id"
-                 class="home__view__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
-                <!-- <div class="home__view__grid__card_group-title">{{ card.name }}</div> -->
+                 class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
+                <!-- <div class="homeview__grid__card_group-title">{{ card.name }}</div> -->
                 <RouterLink v-if="card.indirect_data && card.indirect_data.ID"
                             :to='{ name: routeTo, params: { id: String(card.indirect_data.ID) } }'
-                            class="home__view__grid__card__link">
+                            class="homeview__grid__card__link">
                     <div v-if="card.indirect_data.PREVIEW_PICTURE"
-                         class="home__view__grid__card__image"
+                         class="homeview__grid__card__image"
                          :style="{ backgroundImage: `url(${card.indirect_data.PREVIEW_PICTURE.includes('https') ? card.indirect_data.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
                     </div>
                     <div v-else-if="card.indirect_data.DETAIL_PICTURE"
-                         class="home__view__grid__card__image"
+                         class="homeview__grid__card__image"
                          :style="{ backgroundImage: `url(${card.indirect_data.DETAIL_PICTURE.includes('https') ? card.indirect_data.DETAIL_PICTURE : 'https://placehold.co/360x206'})` }">
                     </div>
                     <div v-else
-                         class="home__view__grid__card__image"
+                         class="homeview__grid__card__image"
                          :style="{ backgroundImage: `url('https://placehold.co/360x206')` }">
                     </div>
-                    <div class="home__view__grid__card__info">
+                    <div class="homeview__grid__card__info">
                         <div v-if="card.name"
-                             class="home__view__grid__card__title home__view__grid__card__title--gallery"
-                             :class="{ 'home__view__grid__card__title--video': type == 'video' }">{{ card.name }}</div>
-                        <div v-if="card.description"
-                             class="home__view__grid__card__description">{{ card.description }}</div>
+                             class="homeview__grid__card__title homeview__grid__card__title--gallery"
+                             :class="{ 'homeview__grid__card__title--video': type == 'video' }">{{ card.name }}</div>
                     </div>
                     <Reactions v-if="card.reactions"
                                :reactions="card.reactions"
@@ -39,7 +37,7 @@
 import Reactions from "@/components/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
 import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
-import type { IActualNews, ICorpEventsItem } from "@/interfaces/INewNews";
+import type { IActualNews, ICorpEventsItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: { Reactions },
@@ -67,11 +65,3 @@ export default defineComponent({
     }
 });
 </script>
-<style>
-.home__view__grid__card__info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    justify-content: flex-start;
-}
-</style>

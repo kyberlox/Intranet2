@@ -6,6 +6,13 @@
 
     &-slide {
         height: auto !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        object-fit: contain;
+        aspect-ratio: 16/9;
+        background: #80808017;
+        border-radius: 4px;
 
         iframe {
             height: 100%;
@@ -14,9 +21,8 @@
 
         img {
             width: 100%;
-            object-fit: contain;
-            border-radius: 4px;
-
+            max-height: 102%;
+            padding: 5px;
         }
     }
 

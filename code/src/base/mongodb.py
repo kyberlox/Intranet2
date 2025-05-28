@@ -47,7 +47,7 @@ class FileModel:
 
     def remove(self):
         #удалить сам файл
-        return files_collection.delete_one({"b24_id": self.id})
+        return files_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
 
     def find_by_id(self):
         return files_collection.find_one({"_id": self.id})
@@ -75,7 +75,8 @@ class FileModel:
         return user_photo_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
 
     def remove_user_photo(self):
-        return user_photo_collection.delete_one(self.id)
+        # return user_photo_collection.delete_one(self.id)
+        return user_photo_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
 
     def find_user_photo_by_id(self):
         return user_photo_collection.find_one({"_id": self.id})

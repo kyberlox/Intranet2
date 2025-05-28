@@ -74,26 +74,25 @@
             background: var(--color-primary-dark);
         }
     }
-}
 
+    &__dialog {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 10px;
 
-.chatGpt__dialog {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 10px;
-}
+        &__message {
+            width: fit-content;
+            max-width: 50%;
+            box-shadow: 1px 2px 3px 1px rgb(0 0 0 / 24%);
 
-.chatGpt__dialog__message {
-    width: fit-content;
-    max-width: 50%;
-    box-shadow: 1px 2px 3px 1px rgb(0 0 0 / 24%);
+            @include sm {
+                max-width: 95%;
+            }
 
-    @include sm {
-        max-width: 95%;
+            &-response {
+                align-self: flex-end;
+            }
+        }
     }
-}
-
-.chatGpt__dialog__message-response {
-    align-self: flex-end;
 }

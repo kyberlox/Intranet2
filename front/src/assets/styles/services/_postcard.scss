@@ -80,8 +80,8 @@
             background: var(--color-primary-dark);
         }
     }
-}
 
-.postcard__swiper-wrapper {
-    position: relative;
+    &__swiper-wrapper {
+        position: relative;
+    }
 }

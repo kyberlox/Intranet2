@@ -71,8 +71,11 @@
 </template>
 <script lang="ts">
 import { ref, computed, defineComponent } from "vue";
-import { conductedTrainings } from "@/assets/staticJsons/conductedTrainings";
-import TagDateNavBar from "@/components/news/TagDateNavBar.vue";
+import { conductedTrainings } from "@/assets/staticJsons/trainingCenterData";
+import TagDateNavBar from "@/components/TagDateNavBar.vue";
+import { extractYears } from "@/utils/extractYearsFromPosts";
+import { showEventsByYear } from "@/utils/showEventsByYear";
+
 export default defineComponent({
     props: {
         page: {

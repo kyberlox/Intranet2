@@ -8,22 +8,29 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref, computed } from "vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
-import { onMounted, ref } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { useViewsDataStore } from "@/stores/viewsData"
+import { useLoadingStore } from "@/stores/loadingStore";
 
 export default defineComponent({
     components: { GridGallery },
     setup() {
-        const interviews = ref([]);
+        const viewsData = useViewsDataStore();
+        const interviews = computed(() => viewsData.getData('videoInterviewsData'));
+
         onMounted(() => {
+            if (interviews.value.length) return;
+            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Видеоинтервью']}`)
                 .then(res => {
-                    interviews.value = res;
+                    viewsData.setData(res, 'videoInterviewsData')
                 })
-
+                .finally(() => {
+                    useLoadingStore().setLoadingStatus(false);
+                })
         })
         return {
             interviews,

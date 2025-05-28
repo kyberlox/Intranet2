@@ -1,15 +1,15 @@
 <template>
-    <div class="home__view__grid__card home__view__grid__card--soloblock d-flex flex-column">
-        <div class="home__view__grid__card__group-title">{{ card.title }}</div>
-        <div class="home__view__grid__card__image">
+    <div class="homeview__grid__card homeview__grid__card--soloblock d-flex flex-column">
+        <div class="homeview__grid__card__group-title">{{ card.title }}</div>
+        <div class="homeview__grid__card__image">
             <swiper v-bind="sliderConfig"
                     @swiper="swiperOn">
                 <swiper-slide v-for="(slide, index) in card.images"
                               :key="'postImg' + index"
-                              class="home__view__grid__card__image__swiper-slide">
+                              class="homeview__grid__card__image__swiper-slide">
                     <RouterLink class="
-                                home__view__grid__card__link
-                                home__view__grid__card__bg-image"
+                                homeview__grid__card__link
+                                homeview__grid__card__bg-image"
                                 :to="{ name: card.href ?? slide.href }"
                                 :style="{ backgroundImage: `url(${slide.image ?? 'https://placehold.co/360x206'})` }" />
                 </swiper-slide>

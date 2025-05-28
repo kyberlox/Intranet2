@@ -3,33 +3,52 @@
          v-if="slides">
         <div v-for="(slide, index) in slides"
              :key="index">
-            <RouterLink v-if="!slide.videoHref && !modifiers.includes('noRoute')"
+            <RouterLink v-if="!slide.videoHref && !modifiers.includes('noRoute') && !modifiers.includes('buttons')"
                         class="flexGallery__card"
-                        :to="{ name: routeTo, params: { id: slide.id } }">
+                        :to="uniqueRoutesHandle(routeTo, slide)">
                 <div class="flexGallery__card__img-wrapper"
                      :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
                     <div class="flexGallery__card__img"
                          :style="{ backgroundImage: `url(${slide.img ?? 'https://placehold.co/360x206'})` }">
                     </div>
                 </div>
-                <div v-if="slide.indirect_data['PROPERTY_375']"
-                     class="flexGallery__card__title">
-                    {{ slide.indirect_data['PROPERTY_438'][0] ? slide.indirect_data['PROPERTY_375'][0] + '-' +
-                        slide.indirect_data['PROPERTY_438'][0] :
-                        slide.indirect_data['PROPERTY_375'][0] }}
+                <div v-if="slide.name"
+                     class="flexGallery__card__title flexGallery__card__title--text-date">
+                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span>{{ slide.name }}</span>
+                </div>
+            </RouterLink>
+
+            <div v-else-if="modifiers.includes('buttons')"
+                 class="flexGallery__card">
+                <div class="flexGallery__card__img-wrapper"
+                     :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
+                    <div class="flexGallery__card__img"
+                         :style="{ backgroundImage: `url(${slide.img ?? 'https://placehold.co/360x206'})` }">
+                    </div>
                 </div>
                 <div v-if="slide.name"
-                     class="flexGallery__card__title">{{ slide.name }}</div>
-            </RouterLink>
+                     class="flexGallery__card__title flexGallery__card__title--text-date">
+                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span v-if="slide.name">{{ slide.name }}</span>
+                </div>
+
+                <div class="flexGallery__card__buttons">
+                    <RouterLink v-if="slide.reportages"
+                                :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
+                                class="flexGallery__card__buttons__button">Репортажи</RouterLink>
+                    <RouterLink v-if="slide.tours"
+                                :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
+                                class="flexGallery__card__buttons__button">3D-Туры</RouterLink>
+                </div>
+            </div>
 
             <div v-else-if="modifiers.includes('noRoute')"
                  class="flexGallery__card
                  flexGallery__card--official-events">
-
                 <div @click="callModal(slides, 'img', index)"
                      class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
-                    <img v-if="slide.img && typeof slide.img == 'string'"
-                         class="flexGallery__card__img"
+                    <img class="flexGallery__card__img"
                          :src="slide.img" />
                 </div>
             </div>
@@ -45,7 +64,8 @@
                     </div>
                     <PlayVideo class="flexGallery__card__play-video-icon" />
                 </div>
-                <div class="flexGallery__card__title">{{ slide.title }}</div>
+                <div v-if="slide.name"
+                     class="flexGallery__card__title">{{ slide.name }}</div>
             </div>
         </div>
         <ZoomModal :video="modalVideo"
@@ -62,8 +82,9 @@
 import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
-import type { RouteLocationRaw } from 'vue-router';
-import type { IAfishaItem } from "@/interfaces/INewNews";
+import type { IAfishaItem } from "@/interfaces/IEntities";
+import { getProperty } from "@/utils/getPropertyFirstPos";
+import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 
 export default defineComponent({
     name: 'FlexGallery',
@@ -74,9 +95,6 @@ export default defineComponent({
         title: {
             type: String,
         },
-        page: {
-            type: String,
-        },
         modifiers: {
             type: Array,
             default: () => ['']
@@ -84,6 +102,10 @@ export default defineComponent({
         routeTo: {
             type: String,
             required: true,
+        },
+        onlyImg: {
+            type: Boolean,
+            default: false
         }
     },
     components: {
@@ -96,7 +118,7 @@ export default defineComponent({
         const modalIsOpen = ref(false);
         const activeIndex = ref(0);
 
-        const callModal = (src: INewsSlide[] | string, type: 'video' | 'img', imgIndex?: number) => {
+        const callModal = (src: string, type: 'video' | 'img', imgIndex?: number) => {
             if (!src) return;
             if (type == 'video') {
                 modalImg.value = '';
@@ -112,19 +134,8 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        const checkRouteTo = (slide: INewsSlide): RouteLocationRaw => {
-            if (props.page === 'experience') {
-                return { name: 'experienceTypes', params: { title: slide.href } }
-            }
-            else if (props.page === 'experienceTypes') {
-                return { name: 'experienceType', params: { title: props.title, id: slide.id } }
-            }
-            else if (props.page === 'tours') {
-                return { name: 'factoryTour', params: { title: slide.hrefTitle, id: slide.hrefId } }
-            } else if (props.page === 'officialEvents') {
-                return { name: 'officialEvent', params: { id: slide.href } };
-            }
-            else return '/';
+        const setCardDate = (slide) => {
+            return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
         }
 
         return {
@@ -132,9 +143,11 @@ export default defineComponent({
             modalImg,
             modalVideo,
             callModal,
-            checkRouteTo,
+            uniqueRoutesHandle,
             modalIsOpen,
-            activeIndex
+            activeIndex,
+            getProperty,
+            setCardDate
         }
     }
 })

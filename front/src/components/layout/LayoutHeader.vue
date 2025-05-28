@@ -5,7 +5,15 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-4 col-md-5 d-lg-none d-flex align-items-center justify-content-sm-start">
-                            <button class="navbar-toggler"></button>
+                            <button class="navbar-toggler"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#navbarScroll"
+                                    aria-controls="navbarScroll"
+                                    aria-expanded="false"
+                                    aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
                         </div>
                         <div class="col-4 col-md-2 col-lg-2 d-flex align-items-center justify-content-center logo">
                             <router-link to="/"
@@ -77,8 +85,8 @@
 
 <script lang="ts">
 import { ref, computed, watch, defineComponent } from "vue";
-import { mainMenuPoints } from "@/assets/staticJsons/headerPoints";
-import type { ISubPoint } from "@/interfaces/IMenuPoints";
+import { mainMenuPoints } from "@/assets/staticJsons/navLinks";
+import type { ISubPoint } from "@/interfaces/layout";
 import { usePageDataStore } from "@/stores/pageData";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
@@ -114,15 +122,10 @@ export default defineComponent({
 
         const handleDropDownClick = (point: ISubPoint) => {
             activeDrop.value = null;
-            if (point.params && point.params.id) {
-                router.push({
-                    name: point.href,
-                    params: { id: point.params.id },
-                });
-            } else
-                router.push({
-                    name: point.href,
-                });
+
+            router.push({
+                name: point.href,
+            });
         };
 
         return {

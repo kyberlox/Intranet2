@@ -4,9 +4,7 @@
 </template>
 <script lang="ts">
 import Interview from "@/components/about/ourPeople/Interview.vue";
-import { interviewFromOurPeople } from "@/assets/staticJsons/ourPeopleSampleInterview";
 import { defineComponent, onMounted, ref } from "vue";
-import type { IInterviewFromOurPeople } from "@/interfaces/IInterviewFromOurPeople";
 import Api from "@/utils/Api";
 
 export default defineComponent({

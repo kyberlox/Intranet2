@@ -30,8 +30,11 @@
                     </div>
                 </div>
             </div>
-            <RouterLink :to="{ name: 'calendar', params: { id: currentMonth } }"
-                        class="calendar__button">Все события</RouterLink>
+            <RouterLink v-if="currentMonth"
+                        :to="{ name: 'calendarMonth', params: { monthId: currentMonth } }"
+                        class="calendar__button">
+                Все события
+            </RouterLink>
         </div>
     </div>
 </template>

@@ -1,3 +1,5 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
 .portal__auth {
     display: -webkit-flex;
     display: -moz-flex;
@@ -9,6 +11,11 @@
     flex-wrap: nowrap;
     width: 100%;
 
+    @include sm {
+        display: block;
+        position: relative;
+    }
+
     &__bg {
         display: -webkit-flex;
         display: -moz-flex;
@@ -19,6 +26,10 @@
         height: 100vh;
         background: url('https://portal.emk.ru/local/templates/intranet/components/bitrix/system.auth.authorize/.default/bg_auth.jpg') 50% no-repeat;
         background-size: cover;
+
+        @include sm {
+            width: 100%;
+        }
     }
 
     &__content {
@@ -32,6 +43,15 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+
+        @include sm {
+            position: absolute;
+            width: 100%;
+            top: 0px;
+            bottom: 0px;
+            left: 0;
+            right: 0;
+        }
     }
 
     &__form {
@@ -57,6 +77,11 @@
             justify-content: center;
             align-items: center;
             width: 100%;
+
+            @include sm {
+                padding-top: 120px;
+                background-color: rgba(255, 255, 255, .85);
+            }
 
             &-control {
                 display: block;
@@ -107,30 +132,5 @@
             }
         }
 
-    }
-}
-
-@media screen and (max-width: 760px) {
-    .portal__auth {
-        display: block;
-        position: relative;
-    }
-
-    .portal__auth__bg {
-        width: 100%;
-    }
-
-    .portal__auth__content {
-        position: absolute;
-        width: 100%;
-        top: 0px;
-        bottom: 0px;
-        left: 0;
-        right: 0;
-    }
-
-    .portal__auth__form__auth {
-        padding-top: 120px;
-        background-color: rgba(255, 255, 255, .85);
     }
 }

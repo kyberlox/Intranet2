@@ -1,4 +1,8 @@
 /pSQL/data
-/.env
-/code/__pycache__
-/push.sh
+/mongodb/data
+**/__pycache__/
+.env
+push.sh
+/code/files_db
+./docker-compose.yaml
+/front/node_modules

@@ -400,11 +400,11 @@ const router = createRouter({
       component: () => import('@/views/admin/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId })
     },
-    {
-      path: '/about/structure',
-      name: 'structure',
-      component: () => import('@/views/about/companyStructure/CompanyStructure.vue'),
-    },
+    // {
+    //   path: '/about/structure',
+    //   name: 'structure',
+    //   component: () => import('@/views/about/companyStructure/CompanyStructure.vue'),
+    // },
   ]
 })
 

@@ -148,7 +148,10 @@ class UserSearchModel:
 
 
     def dump(self):
-        self.delete_index()
+        try:
+            self.delete_index()
+        except:
+            pass
         self.create_index() # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
         # print(self.create_index())
         users_data = self.UserModel().all()

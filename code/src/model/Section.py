@@ -1,6 +1,7 @@
 from src.base.B24 import B24
 from src.base.pSQLmodels import SectionModel
 from src.base.mongodb import FileModel
+from src.services.LogsMaker import LogsMaker
 
 from datetime import datetime
 
@@ -22,6 +23,10 @@ class Section:
         section_data_file = open("./src/base/sections.json", "r")
         section_data = json.load(section_data_file)
         section_data_file.close()
+
+        logg = LogsMaker()
+        for _ in logg.progress(section_data, "Загрузка струтуры разделов сайта "):
+            pass
 
         return SectionModel().upload(section_data)
 
@@ -58,3 +63,5 @@ def get_section(ID):
 @section_router.get("/subsection/{ID}")
 def get_subsection(ID):
     return Section(parent_id = ID).find_by_parent_id()
+
+

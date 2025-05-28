@@ -1,6 +1,7 @@
 from src.base.pSQLmodels import DepartmentModel
 from src.base.SearchModel import StructureSearchModel
 from src.base.B24 import B24
+from src.services.LogsMaker import LogsMaker
 
 import requests
 import json
@@ -24,9 +25,10 @@ class Department:
         b24 = B24()
         data = b24.getDeps()
         DepSQL = DepartmentModel()
+        logg = LogsMaker()
 
         #отправить записи
-        for dep in data:
+        for dep in logg.progress(data, "Загрузка данных подразделений "):
             #if dep['ID'] == '420':
             DepSQL.upsert_dep(dep)
             

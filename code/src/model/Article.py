@@ -4,6 +4,7 @@ from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.File import File
 from src.model.Section import Section
+from src.services.LogsMaker import LogsMaker
 
 import json
 import datetime
@@ -150,27 +151,53 @@ class Article:
             "DETAIL_PICTURE",
             "PROPERTY_372",
             "PROPERTY_373",
+            #"PROPERTY_376",
+
             "PROPERTY_337",
             "PROPERTY_338",
+
             "PROPERTY_342",
             "PROPERTY_343",
+
             "PROPERTY_1023",
             "PROPERTY_1020",
+
             "PROPERTY_476",
-            "PROPERTY_670",
+
+            "PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
+
             "PROPERTY_463",
+
             "PROPERTY_498",
+
             "PROPERTY_289",
+            # "PROPERTY_296",
+
             "PROPERTY_399",
             "PROPERTY_400",
+            #"PROPERTY_402",
+
             "PROPERTY_407",
-            "PROPERTY_409"
+            "PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            #вложения
+            "PROPERTY_478",
+            "PROPERTY_491"
+
+        ]
+
+        preview_file = [
+            "PREVIEW_PICTURE",
+            "PROPERTY_372",
+            "PROPERTY_337",
+            "PROPERTY_342",
+            "PROPERTY_1023"
         ]
         
         # находим файлы статьи
         files = []
-        # preview_image_url = ""
+        preview_images = []
         for file_property in files_propertys:
             
             if file_property in data:
@@ -185,6 +212,9 @@ class Article:
                             elif type(file_id) == type(list()):
                                 for f_id in file_id:
                                     files.append(f_id)
+
+                                    if file_property in preview_file:
+                                        preview_images.append(f_id)
                     elif type(data[file_property]) == type(list()):
                         for dct in data[file_property]:
                             for file_id in dct.values():
@@ -193,12 +223,21 @@ class Article:
                                 elif type(file_id) == type(list()):
                                     for f_id in file_id:
                                         files.append(f_id)
+
+                                        if file_property in preview_file:
+                                            preview_images.append(f_id)
+
+                    elif type(data[file_property]) == type(str()):
+                        files.append( data[file_property] )
+
+                        if file_property in preview_file:
+                            preview_images.append(f_id)
                     else:
-                        print("Некорректные данные в поле ", file_property)
+                        print("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
                         
                 except:
-                    pass
-                    # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_propertyin)
+                    #pass
+                    print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
 
         if files == []:
             return []
@@ -206,14 +245,12 @@ class Article:
             files_data = []
             files_to_add = File().need_update_file(art_id, files)
             if files_to_add != []:
-                
                 for f_id in files:
-                    try:
-                        file_data = File(id=f_id).upload_inf_art(inf_id, art_id)
-                        print(f'{f_id}файл добавлен в монго', art_id, inf_id)
-                        files_data.append(file_data)
-                    except:
-                        pass
+                    is_preview = f_id in preview_images
+                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview)
+                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                    files_data.append(file_data)
+
             else:
                 print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
 
@@ -227,6 +264,9 @@ class Article:
         ! Не повредить имеющиеся записи и структуру
         ! Выгрузка файлов из инфоблоков
         '''
+
+        # кастомный прогрессбар
+        logg = LogsMaker()
 
         '''
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
@@ -244,7 +284,7 @@ class Article:
 
 
         #проходимся по инфоблокам
-        for i in sec_inf:
+        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56 "):
 
             # запрос в B24
             self.section_id = sec_inf[i]
@@ -277,7 +317,7 @@ class Article:
         #пройти по инфоблоку заголовков
         self.section_id = "75"
         sec_inf_title = self.get_inf()
-        for title_inf in sec_inf_title:
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 75, 77 "):
             title_id = title_inf["ID"]
             title_data = title_inf
 
@@ -313,7 +353,7 @@ class Article:
         # пройти по инфоблоку заголовков
         self.section_id = "82"
         sec_inf_title = self.get_inf()
-        for title_inf in sec_inf_title:
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):
             title_id = title_inf["ID"]
             title_data = title_inf
 
@@ -353,7 +393,7 @@ class Article:
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
-        for title_inf in sec_inf_title:
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 "):
             title_id = title_inf["ID"]
             title_data = title_inf
 
@@ -398,7 +438,7 @@ class Article:
         # пройти по инфоблоку
         self.section_id = "50"
         art_inf = self.get_inf()
-        for art in art_inf:
+        for art in logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
             art_id = art["ID"]
             if "PROPERTY_1066" in art:
                 pre_section_id = list(art["PROPERTY_1066"].values())[0]
@@ -421,7 +461,6 @@ class Article:
                     pass
             else:
                 # че делать с уже не актуальными новостями?
-                
                 self.section_id = 6
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
@@ -445,7 +484,7 @@ class Article:
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
-        for art in art_inf:
+        for art in logg.progress(art_inf, "Загрузка данных разделов \"Официальные события\" и \"Корпоративная жизнь в фото\" "):
             art_id = art["ID"]
 
             if "PROPERTY_403" in art:
@@ -534,6 +573,7 @@ class Article:
             # конфигуратор НПО Регулятор
             # DeepSeek
             # VCard
+            # YandexGPT5 + Yandex ART
             # система личной эффективности
             # магазин мерча
             # QR-код на САЗ

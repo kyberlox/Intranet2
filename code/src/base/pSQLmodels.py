@@ -1,15 +1,17 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, update, ForeignKey, desc, func
+from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import exists, select
 from sqlalchemy import inspect, text
 from sqlalchemy import update, insert, delete
 
+from typing import List, Optional, Dict, Tuple
+
 import json
 import datetime
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import os
 from dotenv import load_dotenv
@@ -48,6 +50,10 @@ class User(Base):
     indirect_data = Column(JSONB, nullable=True)
     photo_file_id = Column(Text, nullable=True)
 
+    # Отношения для лайков и просмотров
+    likes = relationship("Likes", back_populates="user")
+    views = relationship("Views", back_populates="user")
+
 class Department(Base):
     __tablename__ = 'departments'
     id = Column(Integer, primary_key=True)
@@ -84,6 +90,39 @@ class Article(Base):
     indirect_data = Column(JSONB, nullable=True)
     #preview_image_url = Column(Text, nullable=True)
 
+    # Отношения для лайков и просмотров
+    likes = relationship("Likes", back_populates="article")
+    views = relationship("Views", back_populates="article")
+
+class Likes(Base):
+    __tablename__ = 'likes'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
+    article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
+    created_at = Column(DateTime, default=datetime.utcnow)  # Время создания лайка
+    is_active = Column(Boolean, default=True)  # Флаг активности лайка (можно убирать лайки)
+
+    # Опциональные отношения для удобства доступа
+    user = relationship("User", back_populates="likes")
+    article = relationship("Article", back_populates="likes")
+
+
+class Views(Base):
+    """
+    Класс для хранения просмотров пользователями статей.
+    Связывает пользователей (User) и статьи (Article) многие-ко-многим.
+    """
+    __tablename__ = 'views'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
+    article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
+    viewed_at = Column(DateTime, default=datetime.utcnow)  # Время просмотра
+
+    # Опциональные отношения для удобства доступа
+    user = relationship("User", back_populates="views")
+    article = relationship("Article", back_populates="views")
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -92,7 +131,7 @@ db = SessionLocal()
 
 
 
-class UserModel:
+class UserModel():
     def __init__(self, Id=None, uuid=None):
         self.id = Id
         self.uuid = uuid
@@ -263,12 +302,16 @@ class UserModel:
             #вывод ID фотографии пользователя
             result['photo_file_id'] = user.__dict__['photo_file_id']
             if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
-                photo_obj = FileModel(user.__dict__['photo_file_id'])
-                photo_inf = photo_obj.find_user_photo_by_id()
+                photo_inf = FileModel(user.__dict__['photo_file_id']).find_user_photo_by_id()
 
                 #вывод URL фотографии пользователя
-                result['photo_file_url'] = photo_inf['url']
+                result['photo_file_url'] = photo_inf['URL']
                 result['photo_file_b24_url'] = photo_inf['b24_url']
+            else:
+                result['photo_file_id'] = None
+                result['photo_file_url'] = None
+                result['photo_file_b24_url'] = None
+
 
             return result
 
@@ -278,11 +321,14 @@ class UserModel:
     def all(self):
         return self.db.query(self.user).all()
     
-    def set_user_photo(self, file_id, file_url):
-        update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.c.id == self.id)
-        return True
+    def set_user_photo(self, file_id):
+        #update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.id == self.id)
+        with Session(engine) as session:
+            stmt = update(User).where(User.id == self.id).values(photo_file_id=str(file_id))
+            result = session.execute(stmt)
+            session.commit()
 
-
+            return result
 
     """
     def put_uf_depart(self, usr_dep):
@@ -437,7 +483,7 @@ class DepartmentModel():
 
 
 
-class UsDepModel:
+class UsDepModel():
     def __init__(self, id=0, user_id=0, dep_id=0):
         self.id = id
         self.user_id = user_id
@@ -763,6 +809,9 @@ class ArticleModel():
             for art in data:
                 art.__dict__["indirect_data"] = art.indirect_data
                 new_data.append(art.__dict__)
+
+                def all(self):
+        return db.query(self.article).all()
         
         return new_data
 

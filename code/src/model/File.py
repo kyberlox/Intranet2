@@ -10,23 +10,37 @@ from fastapi import APIRouter, Body, UploadFile, HTTPException
 file_router = APIRouter(prefix="/file", tags=["Файлы"])
 
 STORAGE_PATH = "./files_db"
+USER_STORAGE_PATH = "./files_db/user_photo"
 
 class File:
-    def __init__(self, id=None):
+    def __init__(self, id=None, b24_id=None):
+
+        if id is not None:
+            if type(id) == type(ObjectId("a"*24)):
+                id = id
+            elif type(id) == type(str()) and id != '':
+                id = ObjectId(id)
+
         self.id = id
+        self.b24_id = b24_id
 
     def download_by_URL(self, url, path):
-        response = requests.get(url)
+        response = requests.get(f"https://portal.emk.ru{url}")
         with open(path, 'wb') as file:
             file.write(response.content)
         return response.headers.get('Content-Type', 'unknown')
 
-    def upload_inf_art(self, inf_id, art_id=None):
+    def upload_inf_art(self, art_id=None, is_preview = False):
         try:
             b24 = B24()
-            file_data = b24.get_file(self.id, inf_id)
+            #file_data = b24.get_file(self.id, inf_id)
+            file_data = b24.get_all_files(self.b24_id)
 
-            filename = file_data["NAME"]
+            print(file_data)
+            if "ORIGINAL_NAME" in file_data:
+                filename = file_data["ORIGINAL_NAME"]
+            elif "FILE_NAME" in file_data:
+                filename = file_data["FILE_NAME"]
 
             filename_parts = filename.split('.')
             file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
@@ -38,7 +52,7 @@ class File:
             #Проверяем нет ли такого файла уже в БД
 
             # Сохраняем файл
-            content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
+            content_type = self.download_by_URL(file_data["SRC"], file_path)
 
             result = {
                 "original_name": filename,
@@ -46,8 +60,7 @@ class File:
                 "content_type": content_type,
                 "article_id": art_id,
                 "b24_id": self.id,
-                "file_url": f"/api/files/{unique_name}",  # Прямой URL
-                "is_archive" : False
+                "file_url": f"/api/files/{unique_name}"  # Прямой URL
             }
 
             #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
@@ -61,7 +74,9 @@ class File:
                 "stored_name": unique_name,
                 "content_type": content_type,
                 "article_id": art_id,
-                "b24_id": self.id,
+                "b24_id": self.b24_id,
+                "is_archive": False,
+                "is_preview" : is_preview,
                 "file_url": f"/api/files/{unique_name}"
             }
 
@@ -86,7 +101,7 @@ class File:
             # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
             for file in DB_files_id:
                 if file not in files_id:
-                    FileModel(file).remove() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
+                    FileModel(file).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
                     os.remove(DB_files_path[file])
                     # print('лишний файл в БД', file, art_id)
                 else:
@@ -107,9 +122,14 @@ class File:
             for file in file_data:
                 file_info = {}
                 file_info["id"] = str(file["_id"])
-                file_info["url"] = file["file_url"]
+                file_info["file_url"] = file["file_url"]
                 file_info["original_name"] = file["original_name"]
+                file_info["stored_name"] = file["stored_name"]
                 file_info["content_type"] = file["content_type"]
+                file_info["article_id"] = file["article_id"]
+                file_info["b24_id"] = file["b24_id"]
+                file_info["file_url"] = file["file_url"]
+                file_info["is_archive"] = file["is_archive"]
                 file_list.append(file_info)
             return file_list
 
@@ -118,7 +138,7 @@ class File:
     def dowload_user_photo(self, url):
         name = url.split("/")[-1]
         form = name.split(".")[-1]
-        img_path = f"{STORAGE_PATH}/{name}"
+        img_path = f"{USER_STORAGE_PATH}/{name}"
 
         with requests.get(url, stream=True) as r:
             with open(img_path, "wb") as f:
@@ -128,26 +148,29 @@ class File:
     
     def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
-        name, form = self.dowload_user_photo(b24_url)
+        try:
+            name, form = self.dowload_user_photo(b24_url)
 
-        #определить ссылку
-        url = f"/api/files/{name}"
+            #определить ссылку
+            url = f"/api/files/{name}"
 
-        #собрать данные
-        file_data = {
-            "name" : name,
-            "format" : form,
-            "uuid" : uuid,
-            "URL" : url,
-            "b24_url" : b24_url,
-            "is_archive" : False
-        }
+            #собрать данные
+            file_data = {
+                "name" : name,
+                "format" : form,
+                "uuid" : uuid,
+                "URL" : url,
+                "b24_url" : b24_url,
+                "is_archive" : False
+            }
 
-        new_id = FileModel().add_user_photo(file_data)
+            new_id = FileModel().add_user_photo(file_data)
 
-        file_data["id"] = new_id
+            file_data["id"] = new_id
 
-        return file_data
+            return file_data
+        except:
+            print(uuid)
     
     def delete_user_img(self):
         file_data = FileModel(id = ObjectId(file_id)).find_user_photo_by_id()
@@ -184,8 +207,7 @@ async def upload_file(file: UploadFile):
             "original_name": file.filename,
             "stored_name": unique_name,
             "content_type": file.content_type,
-            "file_url": f"/api/files/{unique_name}",  # Прямой URL
-            "is_archive" : False # нужен же тут этот флаг?
+            "file_url": f"/api/files/{unique_name}"  # Прямой URL
         }
 
         inserted_id = FileModel().add(file_data)
@@ -272,6 +294,7 @@ async def delete_file(file_id: str):
     except Exception as e:
         raise HTTPException(500, detail=str(e))
     """
+    pass
 
 
 
@@ -289,4 +312,4 @@ async def add_user_photo(b24_url : str, uuid : str):
 
 @file_router.delete("/delete_user_photo/{file_id}")
 async def delete_user_photo(file_id: str):
-    return File(id = ObjectId(file_id)).delete_user_img()
+    File().delete_user_img()

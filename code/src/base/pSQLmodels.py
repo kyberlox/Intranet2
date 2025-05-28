@@ -695,6 +695,7 @@ class ArticleModel():
     def __init__(self, id=0, section_id=0):
         self.id = id
         self.section_id = section_id
+        self.article = Article
 
     def add_article(self, article_data):
         article = Article(**article_data)
@@ -765,4 +766,5 @@ class ArticleModel():
         
         return new_data
 
-
+    def all(self):
+        return db.query(self.article).all()

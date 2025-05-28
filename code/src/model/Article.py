@@ -1,5 +1,6 @@
 from src.base.B24 import B24
 from src.base.pSQLmodels import ArticleModel
+from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.File import File
 from src.model.Section import Section
@@ -876,7 +877,22 @@ def get_article(ID):
 def get_articles(section_id):
     return Article(section_id = section_id).search_by_section_id()
 
-#найти статьи раздела
-@article_router.post("/search")
-def search_articles(data = Body()):
-    pass
+#найти статьи раздела по названию
+@article_router.post("/search/title/{title}")
+def search_articles_by_title(): # data = Body()
+    return ArticleSearchModel().search_by_title(title)
+
+#найти статьи раздела по заголовку
+@article_router.post("/search/title/{preview}")
+def search_articles_by_preview(): # data = Body()
+    return ArticleSearchModel().search_by_preview(preview)
+
+#найти статьи раздела по тексту
+@article_router.post("/search/text/{text}")
+def search_articles_by_text(): # data = Body()
+    return ArticleSearchModel().search_by_text(text)
+
+#загрузить дату в эластик
+@article_router.put("/elastic_data")
+def upload_articles_to_es():
+    return ArticleSearchModel().dump()

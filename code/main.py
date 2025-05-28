@@ -14,7 +14,7 @@ from src.model.Section import Section, section_router
 from src.model.Article import Article, article_router
 
 from src.model.File import File, file_router
-from src.services.vcard import vcard_app
+from src.services.Vcard import vcard_app
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
 
@@ -59,13 +59,23 @@ app.add_middleware(
 STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
 
+USER_STORAGE_PATH = "./files_db/user_photo"
+os.makedirs(USER_STORAGE_PATH, exist_ok=True)
+
 # Монтируем статику
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
+app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 
 
 @app.get("/test/{ID}")
 def test(ID):
     return Article(section_id=ID).get_inf()
+
+@app.get("/test_file_get/{inf_id}/{file_id}")
+def test_file_get(inf_id, file_id):
+    b24 = B24()
+    file_data = b24.get_file(file_id, inf_id)
+    return file_data
 
 @app.get("/elastic_dump")
 def elastic_dump():
@@ -85,7 +95,7 @@ def find(inf_id, art_id, property):
 def find(inf_id, file_id):
     return B24().get_file(file_id, inf_id)
 
-@app.get("/api/total_update")
+@app.put("/api/total_update")
 def total_update():
     time_start = time.time()
     status = 0

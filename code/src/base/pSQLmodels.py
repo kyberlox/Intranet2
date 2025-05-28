@@ -1,15 +1,17 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, update, ForeignKey, desc, func
+from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import exists, select
 from sqlalchemy import inspect, text
 from sqlalchemy import update, insert, delete
 
+from typing import List, Optional, Dict, Tuple
+
 import json
 import datetime
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import os
 from dotenv import load_dotenv
@@ -48,6 +50,10 @@ class User(Base):
     indirect_data = Column(JSONB, nullable=True)
     photo_file_id = Column(Text, nullable=True)
 
+    # Отношения для лайков и просмотров
+    likes = relationship("Likes", back_populates="user")
+    views = relationship("Views", back_populates="user")
+
 class Department(Base):
     __tablename__ = 'departments'
     id = Column(Integer, primary_key=True)
@@ -84,6 +90,39 @@ class Article(Base):
     indirect_data = Column(JSONB, nullable=True)
     #preview_image_url = Column(Text, nullable=True)
 
+    # Отношения для лайков и просмотров
+    likes = relationship("Likes", back_populates="article")
+    views = relationship("Views", back_populates="article")
+
+class Likes(Base):
+    __tablename__ = 'likes'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
+    article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
+    created_at = Column(DateTime, default=datetime.utcnow)  # Время создания лайка
+    is_active = Column(Boolean, default=True)  # Флаг активности лайка (можно убирать лайки)
+
+    # Опциональные отношения для удобства доступа
+    user = relationship("User", back_populates="likes")
+    article = relationship("Article", back_populates="likes")
+
+
+class Views(Base):
+    """
+    Класс для хранения просмотров пользователями статей.
+    Связывает пользователей (User) и статьи (Article) многие-ко-многим.
+    """
+    __tablename__ = 'views'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
+    article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
+    viewed_at = Column(DateTime, default=datetime.utcnow)  # Время просмотра
+
+    # Опциональные отношения для удобства доступа
+    user = relationship("User", back_populates="views")
+    article = relationship("Article", back_populates="views")
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -92,7 +131,7 @@ db = SessionLocal()
 
 
 
-class UserModel:
+class UserModel():
     def __init__(self, Id=None, uuid=None):
         self.id = Id
         self.uuid = uuid
@@ -263,12 +302,16 @@ class UserModel:
             #вывод ID фотографии пользователя
             result['photo_file_id'] = user.__dict__['photo_file_id']
             if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
-                photo_obj = FileModel(user.__dict__['photo_file_id'])
-                photo_inf = photo_obj.find_user_photo_by_id()
+                photo_inf = FileModel(user.__dict__['photo_file_id']).find_user_photo_by_id()
 
                 #вывод URL фотографии пользователя
-                result['photo_file_url'] = photo_inf['url']
+                result['photo_file_url'] = photo_inf['URL']
                 result['photo_file_b24_url'] = photo_inf['b24_url']
+            else:
+                result['photo_file_id'] = None
+                result['photo_file_url'] = None
+                result['photo_file_b24_url'] = None
+
 
             return result
 
@@ -278,11 +321,14 @@ class UserModel:
     def all(self):
         return self.db.query(self.user).all()
     
-    def set_user_photo(self, file_id, file_url):
-        update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.c.id == self.id)
-        return True
+    def set_user_photo(self, file_id):
+        #update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.id == self.id)
+        with Session(engine) as session:
+            stmt = update(User).where(User.id == self.id).values(photo_file_id=str(file_id))
+            result = session.execute(stmt)
+            session.commit()
 
-
+            return result
 
     """
     def put_uf_depart(self, usr_dep):
@@ -437,7 +483,7 @@ class DepartmentModel():
 
 
 
-class UsDepModel:
+class UsDepModel():
     def __init__(self, id=0, user_id=0, dep_id=0):
         self.id = id
         self.user_id = user_id
@@ -766,3 +812,207 @@ class ArticleModel():
         return new_data
 
 
+
+class LikesModel:
+    def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None):
+        self.session = db
+        self.user_id = user_id
+        self.art_id = art_id
+
+    def add_like(self ) -> bool:
+        """
+        Пользователь поставил лайк статье.
+        Возвращает True, если лайк успешно добавлен, False если лайк уже существует.
+        """
+        # Проверяем, есть ли уже активный лайк
+        existing_like = self.session.query(Likes).filter(
+            Likes.user_id == self.user_id,
+            Likes.article_id == self.art_id,
+            Likes.is_active == True
+        ).first()
+
+        if existing_like:
+            return False  # Лайк уже существует
+
+        # Если лайк был, но is_active=False, обновляем его
+        inactive_like = self.session.query(Likes).filter(
+            Likes.user_id == self.user_id,
+            Likes.article_id == self.art_id,
+            Likes.is_active == False
+        ).first()
+
+        if inactive_like:
+            inactive_like.is_active = True
+            inactive_like.created_at = datetime.utcnow()
+        else:
+            # Создаем новый лайк
+            new_like = Likes(
+                user_id=self.user_id,
+                article_id=self.art_id,
+                is_active=True,
+                created_at=datetime.utcnow()
+            )
+            self.session.add(new_like)
+
+        self.session.commit()
+        return True
+
+    def remove_like(self ) -> bool:
+        """
+        Пользователь убрал лайк со статьи.
+        Возвращает True, если лайк успешно убран, False если лайка не было.
+        """
+        # Ищем активный лайк
+        like = self.session.query(Likes).filter(
+            Likes.user_id == self.user_id,
+            Likes.article_id == self.art_id,
+            Likes.is_active == True
+        ).first()
+
+        if not like:
+            return False  # Активного лайка не было
+
+        like.is_active = False
+        self.session.commit()
+        return True
+
+    def has_liked(self ) -> bool:
+        """
+        Проверяет, поставил ли пользователь лайк статье.
+        """
+        return self.session.query(Likes).filter(
+            Likes.user_id == self.user_id,
+            Likes.article_id == self.art_id,
+            Likes.is_active == True
+        ).count() > 0
+
+    def get_likes_count(self ) -> int:
+        """
+        Возвращает количество активных лайков для статьи.
+        """
+        return self.session.query(Likes).filter(
+            Likes.article_id == self.art_id,
+            Likes.is_active == True
+        ).count()
+
+    def get_user_likes(self ) -> List[int]:
+        """
+        Возвращает список ID статей, которые лайкнул пользователь.
+
+        Args:
+            user_id: ID пользователя
+
+        Returns:
+            Список article_id, которые пользователь лайкнул
+        """
+        likes = self.session.query(Likes.article_id).filter(
+            Likes.user_id == self.user_id,
+            Likes.is_active == True
+        ).all()
+
+        return [like.article_id for like in likes]
+
+    def get_article_likers(self ) -> List[int]:
+        """
+        Возвращает список ID пользователей, которые лайкнули статью.
+
+        Args:
+            art_id: ID статьи
+
+        Returns:
+            Список user_id пользователей, которые лайкнули статью
+        """
+        likers = self.session.query(Likes.user_id).filter(
+            Likes.article_id == self.art_id,
+            Likes.is_active == True
+        ).all()
+
+        return [liker.user_id for liker in likers]
+
+    @classmethod
+    def get_popular_articles(cls, limit: int = 10) -> List[Dict[str, int]]:
+        """
+        Возвращает список самых популярных статей по количеству лайков
+
+        Args:
+            session: SQLAlchemy сессия
+            limit: Количество возвращаемых статей
+
+        Returns:
+            Список словарей с данными статей:
+            [{'article_id': int, 'likes_count': int}, ...]
+        """
+        popular_articles = self.session.query(
+            Likes.article_id,
+            func.count(Likes.id).label('likes_count')
+        ).filter(
+            Likes.is_active == True
+        ).group_by(
+            Likes.article_id
+        ).order_by(
+            desc('likes_count')
+        ).limit(limit).all()
+
+        return [{
+            'article_id': article.article_id,
+            'likes_count': article.likes_count
+        } for article in popular_articles]
+
+    @classmethod
+    def get_recent_popular_articles(cls, days: int = 30, limit: int = 10):
+        """
+        Возвращает популярные статьи за последние N дней
+        """
+        cutoff_date = datetime.utcnow() - timedelta(days=days)
+
+        popular = self.session.query(
+            Likes.article_id,
+            func.count(Likes.id).label('likes_count')
+        ).filter(
+            Likes.is_active == True,
+            Likes.created_at >= cutoff_date
+        ).group_by(
+            Likes.article_id
+        ).order_by(
+            desc('likes_count')
+        ).limit(limit).all()
+
+        return [dict(article_id=row.article_id, likes_count=row.likes_count) for row in popular]
+
+class ViewsModel:
+    def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None):
+        self.session = db
+        self.user_id = user_id
+        self.art_id = art_id
+
+    def add_view(self ) -> None:
+        """
+        Добавляет запись о просмотре статьи пользователем
+        """
+        new_view = Views(
+            user_id=self.user_id,
+            article_id=self.art_id,
+            viewed_at=datetime.utcnow()
+        )
+        self.session.add(new_view)
+        self.session.commit()
+
+    def get_viewers(self) -> List[int]:
+        """
+        Возвращает список user_id пользователей, которые просмотрели статью
+        """
+        viewers = self.session.query(Views.user_id).filter(
+            Views.article_id == self.art_id
+        ).distinct().all()
+
+        return [viewer[0] for viewer in viewers]
+
+    def get_viewed_articles(self) -> List[int]:
+        """
+        Возвращает список art_id статей, которые просмотрел пользователь
+        """
+        articles = self.session.query(Views.article_id).filter(
+            Views.user_id == self.user_id
+        ).distinct().all()
+
+        return [article[0] for article in articles]

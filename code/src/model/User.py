@@ -1,6 +1,7 @@
 from src.base.pSQLmodels import UserModel
 from src.model.File import File
 from src.base.B24 import B24
+from src.services.LogsMaker import LogsMaker
 
 import requests
 import json
@@ -8,6 +9,8 @@ import json
 from fastapi import APIRouter, Body, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+
+
 
 templates = Jinja2Templates(directory="./front_jinja")
 
@@ -24,10 +27,13 @@ class User:
         b24 = B24()
         data = b24.getUsers()
         UserSQL = UserModel()
+        # кастомный прогрессбар
+        logg = LogsMaker()
 
         #отправить записи
-        for usr_data in data:
+        for usr_data in logg.progress(data, "Обработка информации о пользователях "):
             #if usr_data['ID'] == '2375':
+
             UserSQL.upsert_user(usr_data)
         
         self.set_users_photo()
@@ -54,35 +60,40 @@ class User:
     def get_uf_depart(self):
         return UserModel().find_uf_depart()
 
-    
+
 
     def set_users_photo(self):
         b24 = B24()
         data = b24.getUsers()
+        # кастомный прогрессбар
+        logg = LogsMaker()
 
-        for usr_data in data:
+        for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
-            if "ID" in data:
-                uuid = data['ID']
+            if "ID" in usr_data:
+                uuid = usr_data['ID']
                 if 'PERSONAL_PHOTO' in usr_data:
-                    b24_ulr = data['PERSONAL_PHOTO']
+
+                    b24_url = usr_data['PERSONAL_PHOTO']
+                    #print(b24_url)
                     #проверим url первоисточника текущей аватарки
-                    
-                    psql_user = UserModel(self.id).find_by_id()
-                    if psql_user['photo_file_b24_url'] is None or psql_user['photo_file_b24_url'] != b24_ulr:
+                    psql_user = UserModel(uuid).find_by_id()
+                    if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
+
                         #cтарую фотку - в архив
-                        if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_ulr:
+                        if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
                             old_file_id = psql_user['photo_file_id']
-                            File(id = ObjectId(old_file_id)).delete_user_img()
+                            File(id = old_file_id).delete_user_img()
                         
                         #если есть несоответствие - скачать новую
                         file_data = File().add_user_img(b24_url, uuid)
 
                         #обновить данные в pSQL
-                        UserModel(self.id).set_user_photo(file_data['id'], file_data['URL'])
+                        UserModel(uuid).set_user_photo(file_data['id'])
                         
             #вывести отчет по изменениях
-            return True
+            
+        return True
 
 
 
@@ -111,7 +122,7 @@ class User:
 
         return result
     
-
+'''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
     #     if params != {}:
@@ -139,7 +150,7 @@ class User:
     #         current += 50
 
     #     return (keys, result)
-
+'''
 
 
 
@@ -164,5 +175,9 @@ def find_by_user(id):
 def search_user(jsn=Body()):
     #будет работать через elasticsearch
     pass
+
+@users_router.get("/test_update_photo")
+def test_update_photo():
+    return User().set_users_photo()
 
 

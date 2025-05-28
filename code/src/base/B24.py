@@ -1,4 +1,5 @@
 from bitrix24 import Bitrix24
+import requests
 #import asyncio
 
 class B24:
@@ -28,6 +29,12 @@ class B24:
         result = self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID={inf_id}&id={id}')
         return result
 
+    def get_all_files(self, id):
+        url = f'https://portal.emk.ru/pub/rest/d105d8c66fc049a96c58d2cc18ea171e98c7ba89a9afa6425f003e42b4d90991/getBfileById.php?id={id}'
+        response = requests.get(url)
+        result = response.json()
+        return result
+
     # функции vcard
     def getUsersByUuid(self, uuid):
         filter = {
@@ -43,27 +50,22 @@ class B24:
 
 
 
-
-
-
-
-
-
-
     def get_picture_link(self, inf_id, art_id, picture_type, property):
         link = f"https://portal.emk.ru/company/lists/{inf_id}/file/0/{art_id}/{picture_type}/{property}/"
         return link
 
-    '''def find(self, inf_id, art_id, property):
+    '''
+    def find(self, inf_id, art_id, property):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
         result = self.bx24.callMethod(f"lists.field.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={inf_id}&FIELD_ID={property}")
-        return result'''
+        return result
+    '''
 
     #async def getUsers(self):
         #result = await self.bx24.callMethod('user.get')
         #return result
 
-    '''
+'''
     def getUserKeys(self):
         result = self.bx24.callMethod('user.get')
         Keys = []

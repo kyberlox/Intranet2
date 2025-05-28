@@ -2,6 +2,8 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 
+from bson.objectid import ObjectId
+
 load_dotenv()
 
 user = os.getenv('user')
@@ -26,7 +28,12 @@ user_photo_collection = db["user_photo"]
 
 class FileModel:
     def __init__(self, id=""):
-        self.id = id
+        if id is not None:
+            if type(id) == type(ObjectId("a" * 24)):
+                id = id
+            elif type(id) == type(str()) and id != '':
+                id = ObjectId(id)
+            self.id = id
 
 
 
@@ -34,6 +41,9 @@ class FileModel:
     def add(self, file_data):
         file_id = files_collection.insert_one(file_data).inserted_id
         return file_id
+
+    def go_archive(self):
+        return files_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
 
     def remove(self):
         #удалить сам файл
@@ -61,6 +71,9 @@ class FileModel:
         file_id = user_photo_collection.insert_one(file_data).inserted_id
         return file_id
 
+    def go_user_photo_archive(self):
+        return user_photo_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
+
     def remove_user_photo(self):
         # return user_photo_collection.delete_one(self.id)
         return user_photo_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
@@ -70,3 +83,5 @@ class FileModel:
     
     def find_user_photo_by_uuid(self, uuid):
         return user_photo_collection.find_one({"uuid": uuid})
+
+

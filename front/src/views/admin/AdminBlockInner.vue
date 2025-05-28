@@ -37,8 +37,8 @@ interface Event {
   preview_text: string;
   name: string;
   indirect_data: {
-    ID: string;
-    IBLOCK_ID: string;
+    id: number;
+    IBLOCK_id: number;
     NAME: string;
     CREATED_BY: string;
     BP_PUBLISHED: string;

@@ -21,7 +21,7 @@ export default defineComponent({
         GridGallery
     },
     props: {
-        id: String,
+        id: Number,
     },
     setup() {
         const viewsData = useViewsDataStore();

@@ -2,11 +2,11 @@ import { defineStore } from "pinia";
 
 export const useUserData = defineStore('userData', {
     state: () => ({
-        myId: '2366',
+        myId: 2366,
     }),
 
     actions: {
-        setMyId(id: string) {
+        setMyId(id: number) {
             this.myId = id;
         },
     },

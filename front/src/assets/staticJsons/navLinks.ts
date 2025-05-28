@@ -1,4 +1,4 @@
-import type { MainMenuPoints } from "@/interfaces/IMenuPoints";
+import type { MainMenuPoints } from "@/interfaces/ILayout";
 import PhoneIcon from "@/assets/icons/layout/sidebar/socLinks/PhoneIcon.svg";
 import VkIcon from "@/assets/icons/layout/sidebar/socLinks/VkIcon.svg";
 import TelegramIcon from "@/assets/icons/layout/sidebar/socLinks/TelegramIcon.svg";
@@ -24,7 +24,7 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: "История компании",
                 href: "book-emk",
                 params: {
-                    id: "0",
+                    id: 0,
                 },
             },
             {

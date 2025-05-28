@@ -6,7 +6,7 @@
                  class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
                 <!-- <div class="homeview__grid__card_group-title">{{ card.name }}</div> -->
                 <RouterLink v-if="card.indirect_data && card.indirect_data.ID"
-                            :to='{ name: routeTo, params: { id: String(card.indirect_data.ID) } }'
+                            :to='{ name: routeTo, params: { id: String((card.indirect_data.ID)) } }'
                             class="homeview__grid__card__link">
                     <div v-if="card.indirect_data.PREVIEW_PICTURE"
                          class="homeview__grid__card__image"
@@ -57,7 +57,7 @@ export default defineComponent({
             type: Number,
         }
     },
-    setup(props) {
+    setup() {
 
         return {
             blockRouteTips

@@ -22,9 +22,11 @@
                 </span>
             </div>
         </div>
-        <div class="section__image__list__item__subtitle vertical-title">{{ slide.name }}</div>
-        <div class="section__image__list__item__subtitle vertical-subtitle">
-            Организатор: {{ getProperty(slide, "PROPERTY_435") }}
+        <div class="section__image__list__item__subtitle__wrapper">
+            <div class="section__image__list__item__subtitle vertical-title">{{ slide.name }}</div>
+            <div class="section__image__list__item__subtitle vertical-subtitle">
+                Организатор: {{ getProperty(slide, "PROPERTY_435") }}
+            </div>
         </div>
     </div>
 </template>

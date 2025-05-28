@@ -2,7 +2,7 @@
     <div class="card">
         <FileUpload name="demo[]"
                     url="/api/upload"
-                    @upload="onAdvancedUpload($event)"
+                    @upload="onAdvancedUpload()"
                     :multiple="true"
                     accept="image/*"
                     :maxFileSize="1000000">

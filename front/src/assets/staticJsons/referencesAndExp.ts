@@ -19,17 +19,18 @@ export const factoryReports: IFactoryReport[] = [
         title: 'Обучающее видео по неразрушающим методам контроля. Рентген-камера.',
         img: 'https://portal.emk.ru/upload/resize_cache/iblock/cdf/xr0xqd3aeusy50v2fjdm9lqtxdn3tqo8/296_168_2/%D1%80%D0%B5%D0%BF%D0%BE%D1%80%D1%82%D0%B0%D0%B6.png',
         href: 'saz',
-        videoHref: 'https://youtu.be/N3YU2u1qe9w?si=Spy8vdIvyZ2oLeWr'
+        videoHref: 'https://youtu.be/N3YU2u1qe9w?si=Spy8vdIvyZ2oLeWr',
+        factoryId: 1,
     },
 ]
 
 export const factoryTours: IFactoryTours[] = [{
+    id: 1,
     title: 'Цех затворов обратный',
     img: 'https://portal.emk.ru/upload/resize_cache/iblock/fb9/296_168_2/ht_preview_nodeimage_node3.jpg',
     tourId: '3d-01',
     hrefTitle: 'saz',
-    hrefId: '1',
-    id: 1,
+    hrefId: 1,
 },]
 
 export const slides = [

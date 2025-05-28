@@ -25,10 +25,10 @@ export default defineComponent({
     components: { GridGallery, TagDateNavBar },
     props: {
         pageTitle: String,
-        id: String
+        id: Number,
     },
 
-    setup(props) {
+    setup() {
         const allEvents = computed(() => useViewsDataStore().getData('corpEventsData'));
         const visibleEvents = ref<ICorpEventsItem[]>(allEvents.value);
         onMounted(() => {

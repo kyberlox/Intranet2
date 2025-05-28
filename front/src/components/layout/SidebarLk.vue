@@ -23,7 +23,7 @@
          @click="close"></div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, watch } from 'vue'
+import { computed, defineComponent, watch, type ComputedRef } from 'vue'
 import { points } from '@/assets/staticJsons/navLinks'
 import { useUserData } from '@/stores/userData'
 import { useRoute } from 'vue-router'
@@ -41,7 +41,7 @@ export default defineComponent({
         const route = useRoute();
 
         const useUserStore = useUserData();
-        const idForRoute = computed(() => useUserStore.getMyId);
+        const idForRoute: ComputedRef<number> = computed(() => useUserStore.getMyId);
 
         watch((route), (newVal) => {
             if (newVal) {

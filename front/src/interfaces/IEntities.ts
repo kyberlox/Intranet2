@@ -137,7 +137,7 @@ export interface IBlogData extends IBaseIndirectData {
 
 export interface IBlogAuthors {
     id: number,
-    authorid: number,
+    authorId: number,
     title: string,
 }
 

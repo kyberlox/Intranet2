@@ -26,7 +26,6 @@ export default defineComponent({
                 })
         })
         return {
-            // interviewFromOurPeople: interviewFromOurPeople.find((item: IInterviewFromOurPeople) => props.id == item.id),
             interviewFromOurPeople: currentPost
         };
     },

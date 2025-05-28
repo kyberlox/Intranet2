@@ -44,11 +44,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, type Ref } from "vue";
+import { computed, defineComponent, onMounted } from "vue";
 import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
 import Api from "@/utils/Api";
-import type { MainPageCards } from "@/interfaces/IMainPage";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { watch } from "vue";
@@ -60,7 +59,7 @@ export default defineComponent({
         MainPageSoloBlock,
         MainPageRowBlocks
     },
-    setup(props, { emit }) {
+    setup() {
         const useViewsData = useViewsDataStore();
         const loadingStore = useLoadingStore();
         // const mainPageCards: Ref<MainPageCards | undefined> = ref();

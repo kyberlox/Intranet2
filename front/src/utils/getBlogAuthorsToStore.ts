@@ -6,7 +6,7 @@ import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
 import type { useblogDataStore } from "@/stores/blogData"
 import { propertyCheck } from "@/utils/propertyCheck";
 
-const setAuthorId = (e: IBlog): string => {
+const setauthorId = (e: IBlog): string => {
     if (propertyCheck(e.indirect_data, 'PROPERTY_451')) {
         return getProperty(e, 'PROPERTY_451');
     }
@@ -21,7 +21,7 @@ export const getBlogAuthorsToStore = (allAuthors: Ref<IBlogAuthors[]>, blogData:
     Api.get(`article/find_by/${sectionTips['Блоги']}`)
         .then(res => {
             res.map((e: IBlog) => {
-                const authorId = setAuthorId(e);
+                const authorId = setauthorId(e);
 
                 if (e.indirect_data && e.indirect_data.TITLE && e.indirect_data.ID && authorId && (e.indirect_data.PROPERTY_451 || e.indirect_data.PROPERTY_453)) {
                     const newAuthor: IBlogAuthors = {

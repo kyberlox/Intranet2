@@ -1,22 +1,23 @@
 import { defineStore } from "pinia";
+import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem } from "@/interfaces/IEntities";
+import type { MainPageCards } from "@/interfaces/IMainPage";
 
-// Определяем тип для состояния хранилища
 interface DataState {
-    homeData: any[],
+    homeData: MainPageCards,
     ourPeopleData: any[],
     // yearResultsData: any[];
     // blogsData: any[];
     videoInterviewsData: any[],
-    actualNewsData: any[],
+    actualNewsData: IActualNews[],
     corpNewsData: any[],
     videoReportsData: any[],
     // gazettesData: any[],
     officialEventsData: any[],
-    corpEventsData: any[],
-    corpLifeData: any[],
-    afishaData: any[],
+    corpEventsData: ICorpEventsItem[],
+    corpLifeData: ICorpLife[],
+    afishaData: IAfishaItem[],
     partnerBonusData: any[],
-    careData: any[],
+    careData: ICareSlide[],
 }
 
 // Определяем тип для ключей состояния

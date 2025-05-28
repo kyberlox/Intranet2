@@ -19,4 +19,3 @@ qrcode==8.1
 pymongo==4.11.3
 elasticsearch==8.17.2
 tqdm==4.66.6
-#typing==3.10.0.0

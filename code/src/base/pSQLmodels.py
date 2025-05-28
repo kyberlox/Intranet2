@@ -1016,5 +1016,3 @@ class ViewsModel:
         ).distinct().all()
 
         return [article[0] for article in articles]
-
-

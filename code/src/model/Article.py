@@ -918,3 +918,5 @@ def get_articles(section_id):
 @article_router.post("/search")
 def search_articles(data = Body()):
     pass
+
+

@@ -297,3 +297,5 @@ async def add_user_photo(b24_url : str, uuid : str):
 @file_router.delete("/delete_user_photo/{file_id}")
 async def delete_user_photo(file_id: str):
     File().delete_user_img()
+
+

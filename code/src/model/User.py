@@ -179,3 +179,5 @@ def search_user(jsn=Body()):
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()
+
+

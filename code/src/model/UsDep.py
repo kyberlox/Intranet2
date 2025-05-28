@@ -40,3 +40,5 @@ def get_user():
 @usdep_router.get("/{id}")
 def get_usdepart(id):
     return UsDep(id).search_usdep_by_id()
+
+

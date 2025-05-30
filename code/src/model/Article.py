@@ -1,5 +1,6 @@
 from src.base.B24 import B24
 from src.base.pSQLmodels import ArticleModel
+from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.File import File
 from src.model.Section import Section
@@ -235,14 +236,17 @@ class Article:
                         print("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
                         
                 except:
-                    #pass
-                    print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
+                    pass
+                    # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
+                    pass
 
         if files == []:
             return []
         else:
             files_data = []
+            files_to_add = [] # временно
             files_to_add = File().need_update_file(art_id, files)
+
             if files_to_add != []:
                 for f_id in files:
                     is_preview = f_id in preview_images
@@ -253,7 +257,7 @@ class Article:
             else:
                 print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
 
-                return files_data
+            return files_data
 
     def add(self, article_data):
         return ArticleModel().add_article(self.make_valid_article(article_data))
@@ -438,6 +442,10 @@ class Article:
         self.section_id = "50"
         art_inf = self.get_inf()
         for art in logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
+            if art["ID"] == '13486':
+                print(art, ' новость')
+            else:
+                pass
             art_id = art["ID"]
             if "PROPERTY_1066" in art:
                 pre_section_id = list(art["PROPERTY_1066"].values())[0]
@@ -466,7 +474,6 @@ class Article:
                     self.add(art)
                     print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
-                    
                     # сюда надо что-то дописать
                     pass
                 
@@ -915,6 +922,26 @@ def get_article(ID):
 @article_router.get("/find_by/{section_id}")
 def get_articles(section_id):
     return Article(section_id = section_id).search_by_section_id()
+
+#найти статьи раздела по названию
+@article_router.post("/search/title/{title}")
+def search_articles_by_title(title): # data = Body()
+    return ArticleSearchModel().search_by_title(title)
+
+#найти статьи раздела по заголовку
+@article_router.post("/search/preview/{preview}")
+def search_articles_by_preview(preview): # data = Body()
+    return ArticleSearchModel().search_by_preview(preview)
+
+#найти статьи раздела по тексту
+@article_router.post("/search/text/{text}")
+def search_articles_by_text(text): # data = Body()
+    return ArticleSearchModel().search_by_text(text)
+
+#загрузить дату в эластик
+@article_router.put("/elastic_data")
+def upload_articles_to_es():
+    return ArticleSearchModel().dump()
 
 #найти статьи раздела
 @article_router.post("/search")

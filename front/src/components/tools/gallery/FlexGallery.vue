@@ -1,0 +1,170 @@
+<template>
+    <div class="flexGallery"
+         v-if="slides">
+        <div v-for="(slide, index) in slides"
+             :key="index">
+            <RouterLink v-if="!slide.videoHref && !modifiers.includes('noRoute') && !modifiers.includes('buttons') && routeTo"
+                        class="flexGallery__card"
+                        :to="uniqueRoutesHandle(routeTo, slide)">
+                <div class="flexGallery__card__img-wrapper"
+                     :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
+                    <div class="flexGallery__card__img"
+                         :style="{ backgroundImage: `url(${slide.image ?? 'https://placehold.co/360x206'})` }">
+                    </div>
+                </div>
+                <div v-if="slide.name"
+                     class="flexGallery__card__title flexGallery__card__title--text-date">
+                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span>{{ slide.name }}</span>
+                </div>
+            </RouterLink>
+
+            <div v-else-if="modifiers.includes('buttons')"
+                 class="flexGallery__card">
+                <div class="flexGallery__card__img-wrapper"
+                     :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
+                    <div v-if="slide.image"
+                         class="flexGallery__card__img"
+                         :style="{ backgroundImage: `url(${slide.image ?? 'https://placehold.co/360x206'})` }">
+                    </div>
+                </div>
+                <div v-if="slide.name"
+                     class="flexGallery__card__title flexGallery__card__title--text-date">
+                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span v-if="slide.name">{{ slide.name }}</span>
+                </div>
+
+                <div v-if="routeTo"
+                     class="flexGallery__card__buttons">
+                    <RouterLink v-if="slide.reportages"
+                                :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
+                                class="flexGallery__card__buttons__button">Репортажи</RouterLink>
+                    <RouterLink v-if="slide.tours"
+                                :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
+                                class="flexGallery__card__buttons__button">3D-Туры</RouterLink>
+                </div>
+            </div>
+
+            <div v-else-if="modifiers.includes('noRoute') && slide.images"
+                 class="flexGallery__card
+                 flexGallery__card--official-events">
+                <div @click="callModal(slide.images, 'img', index)"
+                     class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
+                    <img class="flexGallery__card__img"
+                         :src="slide.image" />
+                </div>
+            </div>
+
+            <div v-else-if="slide.videoHref"
+                 class="flexGallery__card flexGallery__card--official-events"
+                 v-for="(slide, index) in slides"
+                 :key="'video' + index"
+                 @click="callModal(slide.videoHref, 'video')">
+                <div class="flexGallery__card__img-wrapper">
+                    <div class="flexGallery__card__img"
+                         :style="{ backgroundImage: `url(${slide.image})` }">
+                    </div>
+                    <PlayVideo class="flexGallery__card__play-video-icon" />
+                </div>
+                <div v-if="slide.name"
+                     class="flexGallery__card__title">{{ slide.name }}</div>
+            </div>
+        </div>
+        <ZoomModal :video="modalVideo"
+                   :image="modalImg"
+                   :activeIndex="activeIndex"
+                   v-if="modalIsOpen == true"
+                   @close="modalIsOpen = false" />
+    </div>
+
+
+</template>
+
+<script lang="ts">
+import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
+import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
+import { defineComponent, ref } from "vue";
+import { getProperty } from "@/utils/getPropertyFirstPos";
+import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
+
+interface ISlideForFlexGallery {
+    id: number,
+    videoHref?: string[],
+    modifiers?: string[],
+    image?: string,
+    images?: string[],
+    name?: string,
+    reportages?: string,
+    tours?: string,
+    routeTo?: string,
+    PROPERTY_375?: string,
+    PROPERTY_438?: string
+}
+
+export default defineComponent({
+    name: 'FlexGallery',
+    props: {
+        slides: {
+            type: Array<ISlideForFlexGallery>,
+        },
+        title: {
+            type: String,
+        },
+        modifiers: {
+            type: Array,
+            default: () => ['']
+        },
+        routeTo: {
+            type: String,
+        },
+        onlyImg: {
+            type: Boolean,
+            default: false
+        }
+    },
+    components: {
+        PlayVideo,
+        ZoomModal
+    },
+    setup(props) {
+        const modalVideo = ref();
+        const modalImg = ref();
+        const modalIsOpen = ref(false);
+        const activeIndex = ref(0);
+
+        const callModal = (src: string[], type: 'video' | 'img', imgIndex?: number) => {
+            console.log(src);
+
+            if (!src) return;
+            if (type == 'video') {
+                modalImg.value = '';
+                modalVideo.value = src;
+            }
+            else if (type == 'img') {
+                if (typeof imgIndex !== 'number' && !imgIndex) return;
+                activeIndex.value = imgIndex;
+                modalVideo.value = '';
+                modalImg.value = src;
+                activeIndex.value = imgIndex;
+            }
+            modalIsOpen.value = true;
+        }
+
+        const setCardDate = (slide: ISlideForFlexGallery) => {
+            return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
+        }
+
+        return {
+            PlayVideo,
+            modalImg,
+            modalVideo,
+            callModal,
+            uniqueRoutesHandle,
+            modalIsOpen,
+            activeIndex,
+            getProperty,
+            setCardDate
+        }
+    }
+})
+</script>

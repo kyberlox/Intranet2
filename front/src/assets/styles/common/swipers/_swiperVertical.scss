@@ -1,0 +1,106 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
+.swiper--vertical {
+    flex-grow: 1;
+    width: fit-content !important;
+    margin-left: 0;
+
+    @include sm {
+        width: 100% !important;
+    }
+
+    &>.swiper-wrapper {
+        @include sm {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+}
+
+.swiper--vertical-slide {
+    display: flex !important;
+    flex-direction: column;
+    height: 100% !important;
+    aspect-ratio: auto !important;
+    background: none !important;
+    gap: 15px;
+    width: fit-content !important;
+    justify-content: center;
+
+    @include sm {
+        width: 100% !important;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    &__info {
+        background: #fff;
+        min-height: 50px;
+        width: 100%;
+
+        @include sm {
+            margin-top: 10px;
+        }
+    }
+
+    &__name {
+        font-style: normal;
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 16px;
+        color: #303030;
+        text-decoration: none;
+        max-width: 350px;
+    }
+
+    &__position,
+    &__department {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 16px;
+        color: #666666;
+        margin-top: 1px;
+    }
+
+    img {
+        width: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+        padding: 0 !important;
+        max-width: 360px;
+        height: auto;
+        object-fit: contain;
+        cursor: pointer;
+        transition: var(--default-transition);
+
+        &:hover {
+            transform: scale(1.02);
+        }
+
+        @include sm {
+            max-width: 100%;
+            margin: auto;
+        }
+    }
+}
+
+// Общие стили для вертикальных элементов
+.vertical-title {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 16px;
+    color: #303030;
+    text-decoration: none;
+    max-width: 350px;
+}
+
+.vertical-subtitle {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+    color: #666666;
+    margin-top: 5px;
+}

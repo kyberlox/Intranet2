@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню сайта</title>
+    <link rel="stylesheet" href="/api/view/app/style.css">
+</head>
+<body class="depart-body">
+
+    <div class="base-div">
+        <div class="title-div left">
+            <a href="/api/view/menu" class="menu-button">
+                В главное меню
+            </a>
+        </div>
+        <div class="title-div right">
+            <a href="/departments/view" class="menu-button">
+                Департаменты
+            </a>
+        </div>
+    </div>
+
+    <div class="depart-container">
+        <h1>Пользователи</h1>
+        <!-- Блок обновления пользователя -->
+        <div class="update-section">
+            <form action="/users/view" method="get" class="update-form">
+                <button type="button" class="menu-button" onclick="fetch_put_users()">Обновить данные</button>
+                
+            </form>
+            <div id="result-box" class="status-box">
+                <p>Статус: <span id="status-text"></span></p>
+            </div>
+        </div>
+        <!-- Блок поиска по id -->
+        <div class="menu-button-id">Поиск пользователя по ID</div>
+        <div class="update-section">
+            <div class="search-container">
+                
+                <form onsubmit="fetchUserById(event)" class="search-form">
+                    <input type="text" id="user_id" name="user_id" required>
+                    <button type="submit" class="menu-button">Найти</button>
+                </form>
+            </div>
+            <!-- Блок для вывода результата поиска -->
+            <div id="search-result" class="status-box">
+                <p>Результат: <span id="search-result-text"></span></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function fetch_put_users() {
+            console.log("Функция fetch_put_users вызвана");
+            fetch('http://127.0.0.1:8000/users', {
+                method: 'PUT', 
+                headers: {"Content-type": "application/json; charset=UTF-8",
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => {
+                    console.log("Ответ получен:", response);
+                    return response.json();
+                })
+                .then(data =>{
+                    console.log("Данные", data)
+                    document.getElementById('status-text').textContent = data.status;
+                })
+                .catch(error => {
+                    // В случае ошибки выводим сообщение
+                    document.getElementById('status-text').textContent = "Ошибка: " + error.message;
+                });
+        };
+        function fetchUserById(event) {
+            event.preventDefault();  // Отменить отправку формы
+
+            const userId = document.getElementById('user_id').value;
+            console.log("Поиск пользователя по ID:", userId);
+
+            fetch(`http://127.0.0.1:8000/users/find_by/${userId}`, {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => {
+                    console.log("Ответ получен:", response);
+                    if (!response.ok) {
+                        throw new Error("Пользователь не найден");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Данные:", data);
+                    document.getElementById('search-result-text').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                    document.getElementById('search-result-text').textContent = "Ошибка: " + error.message;
+                });
+        }
+    </script>
+</body>
+</html>

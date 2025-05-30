@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import UserModel
+from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
@@ -94,8 +95,6 @@ class User:
             #вывести отчет по изменениях
             
         return True
-
-
    
     def variant_users(self, key):
         return B24().variant_key_user(key)
@@ -120,6 +119,36 @@ class User:
                     result.append([dep_ID, dep['NAME'], dep_head, f"{usr['LAST_NAME']} {usr['NAME']} {usr['SECOND_NAME']}"])
 
         return result
+    
+'''
+    # def get(self, method="user.get", params={}):
+    #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
+    #     if params != {}:
+    #         req += "?"
+    #         for parem_key in params.keys():
+    #             req += f"&{parem_key}={params[parem_key]}"
+    #     response = requests.get(req)
+    #     return response.json()
+    
+    # def get_all(self, method, params={}):
+    #     response = self.get(method)
+    #     current = 50
+    #     result = response["result"]
+    #     keys = []
+    #     while current < int(response["total"]):
+    #         params["start"] = current
+    #         response = self.get(method, params)
+    #         curr_result = response["result"]
+    #         for curr_keys in curr_result:
+    #             for k in curr_keys:
+    #                 if k not in keys:
+    #                     keys.append(k)
+    #                     #print(k)
+    #         result = result + curr_result
+    #         current += 50
+
+    #     return (keys, result)
+'''
 
 
 
@@ -140,6 +169,21 @@ def find_by_user(id):
     return User(id).search_by_id()
 
 #Пользователя можно найти
+@users_router.post("/search/{username}")
+def search_user(username: str): # jsn=Body()
+    return UserSearchModel().search_by_name(username)
+
+#загрузить дату в ES
+@users_router.put("/elastic_data")
+def upload_users_to_es():
+    return UserSearchModel().dump()
+
+@users_router.get("/test_update_photo")
+def test_update_photo():
+    return User().set_users_photo()
+
+
+
 @users_router.post("/search")
 def search_user(jsn=Body()):
     #будет работать через elasticsearch

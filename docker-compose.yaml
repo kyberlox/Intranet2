@@ -13,9 +13,37 @@ services:
       - ./pSQL/data:/var/lib/postgresql/data
       #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - 5432:5432
+      - "5432:5432"
     networks:
-        - app-network
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - ./mongodb/data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${user}
+      - MONGO_INITDB_ROOT_PASSWORD=${pswd}
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  elasticsearch:
+    image: elasticsearch:8.17.2
+    container_name: "elastic"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ./elasticsearch/data:/bitnami/elasticsearch/data
+      - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - app-network
 
   fastapi:
     build:

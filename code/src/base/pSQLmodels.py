@@ -68,8 +68,6 @@ class UsDep(Base):
     user_id = Column(Integer, nullable=True)
     dep_id = Column(Integer, nullable=True)
 
-
-
 class Section(Base):
     __tablename__ = 'section'
     id = Column(Integer, primary_key=True)
@@ -105,7 +103,6 @@ class Likes(Base):
     # Опциональные отношения для удобства доступа
     user = relationship("User", back_populates="likes")
     article = relationship("Article", back_populates="likes")
-
 
 class Views(Base):
     """
@@ -597,8 +594,7 @@ class UsDepModel():
                         
                         self.db.commit()
                     # для всех остальных значений, когда dep_from_usdep_table не None
-                    else: 
-                    
+                    else:
                         if len(dep_from_usdep_table) > 1:
                             pass
                         else:
@@ -627,7 +623,6 @@ class UsDepModel():
                                     self.db.add(tbl)
                                     
                                 else:
-                                    
                                     pass
                             self.db.commit()
                         # если в б24 по данному user_id список значений
@@ -741,6 +736,7 @@ class ArticleModel():
     def __init__(self, id=0, section_id=0):
         self.id = id
         self.section_id = section_id
+        self.article = Article()
 
     def add_article(self, article_data):
         article = Article(**article_data)
@@ -808,8 +804,12 @@ class ArticleModel():
             for art in data:
                 art.__dict__["indirect_data"] = art.indirect_data
                 new_data.append(art.__dict__)
+
         
         return new_data
+    
+    def all(self):
+        return db.query(self.article).all()
 
 
 

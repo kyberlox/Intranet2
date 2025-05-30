@@ -518,6 +518,7 @@ class UsDepModel():
         
         # проверка на наличия пользователя в таблицах users и departments
         for us_dep_key, us_dep_value in usr_dep.items():
+            
             #преобразуем [11] в 11 или оставляем [11, 12]
             if len(us_dep_value) > 1:
                 pass
@@ -597,7 +598,7 @@ class UsDepModel():
                         
                         self.db.commit()
                     # для всех остальных значений, когда dep_from_usdep_table не None
-                    else: 
+                    else:
                     
                         if len(dep_from_usdep_table) > 1:
                             pass
@@ -627,7 +628,6 @@ class UsDepModel():
                                     self.db.add(tbl)
                                     
                                 else:
-                                    
                                     pass
                             self.db.commit()
                         # если в б24 по данному user_id список значений
@@ -810,8 +810,6 @@ class ArticleModel():
                 art.__dict__["indirect_data"] = art.indirect_data
                 new_data.append(art.__dict__)
 
-                def all(self):
-        return db.query(self.article).all()
         
         return new_data
 

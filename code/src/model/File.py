@@ -113,6 +113,7 @@ class File:
     
     def get_files(self):
         file_data = FileModel(id=self.id).find_all_by_art_id()
+        
 
         file_list = []
         
@@ -131,6 +132,7 @@ class File:
                 file_info["file_url"] = file["file_url"]
                 file_info["is_archive"] = file["is_archive"]
                 file_list.append(file_info)
+                print(file_list)
             return file_list
 
 
@@ -184,7 +186,9 @@ class File:
             raise HTTPException(500, detail=str(e))
        
 
-
+@file_router.put("/create_indexes")
+async def create_mongo_indexes():
+    return FileModel().create_indexes()
 
 @file_router.post("/upload")
 async def upload_file(file: UploadFile):

@@ -21,7 +21,9 @@ class UsDep:
         logg = LogsMaker()
         
         result = dict()
-        for usr in logg.progress(data, "Загрузка данных связей пользователей и подразделений "):
+        # for usr in logg.progress(data, "Загрузка данных связей пользователей и подразделений "):
+
+        for usr in data:
             if usr['ID'] is not None:
                 result[int(usr['ID'])] = usr['UF_DEPARTMENT']
         

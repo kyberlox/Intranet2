@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import UserModel
+from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker

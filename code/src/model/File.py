@@ -113,6 +113,7 @@ class File:
     
     def get_files(self):
         file_data = FileModel(id=self.id).find_all_by_art_id()
+        
 
         file_list = []
         
@@ -131,6 +132,7 @@ class File:
                 file_info["file_url"] = file["file_url"]
                 file_info["is_archive"] = file["is_archive"]
                 file_list.append(file_info)
+                print(file_list)
             return file_list
 
 

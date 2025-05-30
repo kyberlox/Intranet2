@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import DepartmentModel
+from src.base.SearchModel import StructureSearchModel
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
 
@@ -53,6 +54,11 @@ def get_user(request: Request):
 @depart_router.get("/find_by/{id}")
 def get_department(id):
     return Department(id).search_dep_by_id()
+
+# можно выгрузить иерархию
+@depart_router.get("/structure")
+def view_all_departs():
+    return StructureSearchModel().get_structure()
 
 # можно выгрузить иерархию
 @depart_router.get("/structure")

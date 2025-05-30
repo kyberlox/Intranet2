@@ -5,6 +5,7 @@ from elasticsearch import helpers
 from src.base.pSQLmodels import UserModel
 from src.base.pSQLmodels import DepartmentModel
 from src.base.pSQLmodels import UsDepModel
+from src.base.pSQLmodels import ArticleModel
 
 import json
 
@@ -198,13 +199,6 @@ class UserSearchModel:
 
         return {"status": True}
 
-    def search(self, data):
-        #сюда приходит словарь для поискового запроса по пользователям
-        pass
-
-    def show(self):
-        #вывести по иерархии
-        pass
 
     def search_by_name(self, name):
         res = elastic_client.search(
@@ -425,14 +419,6 @@ class StructureSearchModel:
                 "name" : full_name,
                 # "position" : position
             })
-    
-    def search(self, data):
-        #сюда приходит словарь для поискового запроса по пользователям
-        pass
-
-    def show(self):
-        #вывести по иерархии
-        pass
 
     def search_by_username(self, name):
         res = elastic_client.search(
@@ -470,7 +456,7 @@ class StructureSearchModel:
         )
         return res['hits']['hits']
 
-    def search_by_department(self):
+    def get_structure(self):
         res = elastic_client.search(
             index=self.index,
             query={
@@ -494,6 +480,7 @@ class StructureSearchModel:
 class ArticleSearchModel:
 
     def __init__(self):
+        self.ArticleModel = ArticleModel
         self.index = "articles"
 
     def create_index(self):
@@ -712,6 +699,38 @@ class ArticleSearchModel:
         )
 
         return res['hits']['hits']
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "content_text": {
+                                    "query": text,
+                                    "fuzziness": "AUTO",
+                                    "prefix_length": 2
+                                    # "boost": 2  
+                                }
+                            }
+                        },
+                        {
+                            "wildcard": {
+                                "content_text": {
+                                    "value": f"{text}*",
+                                    "case_insensitive": True  
+                                    # "prefix_length": 2,  
+                                    # "boost": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            size=100
+        )
+
+        return res['hits']['hits']
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
@@ -720,7 +739,13 @@ class ArticleSearchModel:
 # @search_router.get("/dump_user")
 # def create_data_user():
 #     return UserSearchModel().dump()
+# @search_router.get("/dump_user")
+# def create_data_user():
+#     return UserSearchModel().dump()
 
+# @search_router.get("/dump_depart")
+# def create_data_depart():
+#     return StructureSearchModel().dump()
 # @search_router.get("/dump_depart")
 # def create_data_depart():
 #     return StructureSearchModel().dump()
@@ -729,6 +754,9 @@ class ArticleSearchModel:
 # def view_all_departs():
 #     return StructureSearchModel().search_by_department()
 
+# @search_router.post("/users/search_by_name/{name}")
+# def search_users(name: str):
+#     return UserSearchModel().search_by_name(name)
 # @search_router.post("/users/search_by_name/{name}")
 # def search_users(name: str):
 #     return UserSearchModel().search_by_name(name)
@@ -741,6 +769,14 @@ class ArticleSearchModel:
 # def search_depart_users(position: str):
 #     return StructureSearchModel().search_by_position(position)
 
-# @search_router.post("/departs/search_by_department/{dep_name}")
-# def search_depart_users(dep_name: str):
-#     return StructureSearchModel().search_by_department(dep_name)
+# @search_router.post("/article/search_by_title/{title}")
+# def search_by_title(title: str):
+#     return ArticleSearchModel().search_by_title(title)
+
+# @search_router.post("/article/search_in_preview/{preview}")
+# def search_in_preview(preview: str):
+#     return ArticleSearchModel().search_by_preview(preview)
+
+# @search_router.post("/article/search_in_text/{text}")
+# def search_in_text(text: str):
+#     return ArticleSearchModel().search_by_text(text)

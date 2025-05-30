@@ -26,6 +26,8 @@ user_photo_collection = db["user_photo"]
 
 
 
+
+
 class FileModel:
     def __init__(self, id=""):
         if id is not None:
@@ -82,6 +84,8 @@ class FileModel:
         return files_collection.find_one({"_id": self.id})
 
     def find_by_art_id(self):
+        index_info = user_photo_collection.list_indexes()
+        print(index_info)
         return files_collection.find_one({"article_id": self.id})
 
     def find_by_b24_id(self):

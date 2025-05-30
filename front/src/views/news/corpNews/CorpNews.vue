@@ -25,7 +25,7 @@ export default defineComponent({
     },
     setup() {
         const viewsData = useViewsDataStore();
-        const news: Ref<IActualNews[]> = computed(() => viewsData.getData('corpNewsData'));
+        const news: Ref<IActualNews[]> = computed(() => viewsData.getData('corpNewsData') as IActualNews[]);
 
         onMounted(() => {
             if (news.value.length) return;

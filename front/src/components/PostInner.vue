@@ -13,8 +13,8 @@
                          class="news__detail__top">
                         <div class="row mb-2">
                             <div class="col-12">
-                                <h2 class="news__detail__title">{{ currentPost.name || currentPost.indirect_data?.NAME
-                                }}
+                                <h2 class="news__detail__title">
+                                    {{ currentPost.name || currentPost.indirect_data?.NAME }}
                                 </h2>
                             </div>
                         </div>
@@ -67,15 +67,18 @@
                      :modifiers="['noRoute']" />
     </div>
 </template>
+
+
 <script lang="ts">
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { defineComponent, type Ref, onMounted, ref } from "vue";
-import type { IActualNews, ICareSlide } from "@/interfaces/IEntities";
+import { defineComponent, type Ref, onMounted, ref, type PropType } from "vue";
+import type { IUnionEntities, IAfishaItem, ICareSlide } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "./tools/gallery/FlexGallery.vue";
+
 export default defineComponent({
     components: {
         SwiperBlank,
@@ -92,13 +95,13 @@ export default defineComponent({
             default: 'default'
         },
         previewElement: {
-            type: Object
+            type: Object as PropType<IUnionEntities>
         }
     },
     setup(props) {
-        const currentPost = ref<IActualNews | ICareSlide>();
+        const currentPost = ref<IUnionEntities>();
         onMounted(() => {
-            if (props.type == 'adminPreview') {
+            if (props.type == 'adminPreview' && currentPost.value) {
                 currentPost.value = props.previewElement
             }
             else
@@ -106,14 +109,14 @@ export default defineComponent({
                     .then((res) => {
                         currentPost.value = res;
                         if (!currentPost.value) return;
-                        changeToPostStandart(currentPost, res);
+                        changeToPostStandart(currentPost as Ref<IUnionEntities>, res);
                     })
         })
 
-        const changeToPostStandart = (target: Ref<IActualNews | ICareSlide | undefined>, res: IActualNews | ICareSlide) => {
+        const changeToPostStandart = (target: Ref<IUnionEntities>, res: IUnionEntities) => {
             if (target.value == undefined) return;
-            const property348Text = getProperty(target.value, 'PROPERTY_348')?.TEXT;
-            const property374Text = getProperty(target.value, 'PROPERTY_374')?.TEXT;
+            const property348Text = getProperty(target.value as ICareSlide, 'PROPERTY_348')?.TEXT;
+            const property374Text = getProperty(target.value as IAfishaItem, 'PROPERTY_374')?.TEXT;
             if (property348Text) {
                 target.value.content_text = property348Text;
             }
@@ -126,6 +129,7 @@ export default defineComponent({
                 const nativeVideos = res.nativeVideos || [];
                 target.value.videos = embedVideos.concat(nativeVideos);
             }
+            return target
         }
 
         return {

@@ -14,11 +14,12 @@ import { sectionTips } from '@/assets/staticJsons/sectionTips';
 import TagDateNavBar from '@/components/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
 import Api from '@/utils/Api';
-import { defineComponent, ref, type Ref, onMounted, computed } from "vue";
+import { defineComponent, ref, onMounted, computed, type ComputedRef, type Ref } from "vue";
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from "@/utils/showEventsByYear";
 import { useViewsDataStore } from '@/stores/viewsData';
 import { useLoadingStore } from '@/stores/loadingStore';
+import type { ICorpLife } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
@@ -26,8 +27,8 @@ export default defineComponent({
         FlexGallery
     },
     setup() {
-        const allEvents = computed(() => useViewsDataStore().getData('corpLifeData'));
-        const visibleEvents = ref(allEvents.value);
+        const allEvents: ComputedRef<ICorpLife[]> = computed(() => useViewsDataStore().getData('corpLifeData') as ICorpLife[]);
+        const visibleEvents: Ref<ICorpLife[]> = ref(allEvents.value);
         onMounted(() => {
             if (allEvents.value.length) return;
             useLoadingStore().setLoadingStatus(true);

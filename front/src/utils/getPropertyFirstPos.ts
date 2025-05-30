@@ -1,18 +1,26 @@
-import type { IBlog } from "@/interfaces/IEntities";
-import type { IActualNews, ICareSlide } from "@/interfaces/IEntities";
+// import type { IUnionEntitiesData } from "@/interfaces/IEntities";
+import type { IUnionEntitiesData, IUnionEntities } from "@/interfaces/IEntities";
 
-interface IIndirectDataPlug {
-    [key: string]: any;
-}
+// type IndirectDataTypes = IForNewWorker; // добавьте другие типы по необходимости
 
-export const getProperty = (object: IActualNews | ICareSlide | IBlog, field: string) => {
 
+export const getProperty = <T extends IUnionEntitiesData>(
+    object: IUnionEntities,
+    field: keyof T
+) => {
     if (!object.indirect_data) return;
 
-    const indirectData = object.indirect_data as IIndirectDataPlug;
+    const indirectData = object.indirect_data as T;
 
-    if (indirectData && indirectData[field] && indirectData[field][0]) {
+    if (indirectData && field in indirectData) {
+        const value = indirectData[field];
 
-        return indirectData[field][0];
+        if (Array.isArray(value) && value[0]) {
+            return value[0];
+        }
+
+        if (value && !Array.isArray(value)) {
+            return value;
+        }
     }
 }

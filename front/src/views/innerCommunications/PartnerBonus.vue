@@ -7,23 +7,19 @@
 </template>
 <script lang="ts">
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
-interface IFlexGallery {
-    id: number;
-    title: string,
-    img: string,
-}
+import type { IPartnerBonus } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
         FlexGallery
     },
     setup() {
-        const bonusesSlides = computed(() => useViewsDataStore().getData('partnerBonusData'));
+        const bonusesSlides: ComputedRef<IPartnerBonus[]> = computed(() => useViewsDataStore().getData('partnerBonusData') as IPartnerBonus[]);
         onMounted(() => {
             if (bonusesSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);

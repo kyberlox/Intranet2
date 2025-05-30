@@ -19,13 +19,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
-import { safetytechnicsCovid } from "@/assets/staticJsons/safetyTechnicsCovid";
+import { safetyTechnicsCovid } from "@/assets/staticJsons/safetyTechnics";
 export default defineComponent({
     components: {
         SafetyTechnicsSlide,
     },
     setup() {
-        const safetyTechnicsSlides = safetytechnicsCovid;
+        const safetyTechnicsSlides = safetyTechnicsCovid;
 
         const sideInfoBlock: string = `
                     <h2 class="news__detail__title mb-2">Техника безопасности</h2>

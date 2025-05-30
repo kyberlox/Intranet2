@@ -9,16 +9,17 @@
 </template>
 <script lang="ts">
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
-import { defineComponent, onMounted, computed } from "vue";
+import { defineComponent, onMounted, computed, type ComputedRef } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
+import type { IVideoReports } from "@/interfaces/IEntities";
 export default defineComponent({
     components: { GridGallery },
     setup() {
         const viewsData = useViewsDataStore();
-        const videoReports = computed(() => viewsData.getData('videoReportsData'));
+        const videoReports: ComputedRef<IVideoReports[]> = computed(() => viewsData.getData('videoReportsData') as IVideoReports[]);
         onMounted(() => {
             if (videoReports.value.length) return;
             useLoadingStore().setLoadingStatus(true);

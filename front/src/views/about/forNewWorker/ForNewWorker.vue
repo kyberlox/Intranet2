@@ -12,7 +12,7 @@
                         <div class="row">
                             <div class="col-12 col-md-6 col-lg-6 col-xl-8">
                                 <div class="memo__item__main__img">
-                                    <img v-if="getProperty(item, 'PROPERTY_476').includes('http')"
+                                    <img v-if="item && getProperty(item as IForNewWorker, 'PROPERTY_476').includes('http')"
                                          class="news__detail__main__img"
                                          src="/public/imgs/forNewWorker1.jpg"
                                          alt="" />
@@ -25,8 +25,8 @@
                             <div class="col-12 col-md-6 col-lg-6 col-xl-4">
                                 <div class="memo__item__content">
                                     <div class="news__detail__discr"
-                                         v-html="getProperty(item, 'PROPERTY_477').TEXT"></div>
-                                    <div v-if="item.pdf"
+                                         v-html="getProperty(item as IForNewWorker, 'PROPERTY_477').TEXT"></div>
+                                    <!-- <div v-if="item.pdf"
                                          class="link__pdf">
                                         <a :href="file.link"
                                            v-for="(file, index) in item.pdf"
@@ -39,7 +39,7 @@
                                             </strong>
                                             <DocIcon />
                                         </a>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -69,44 +69,8 @@ import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
-import { defineComponent, onMounted, ref, type PropType } from "vue";
-
-interface IforNewWorkerObject {
-    "id": number,
-    "active": boolean,
-    "content_text": string,
-    // "date_publiction": null,
-    "indirect_data": {
-        "ID": string,
-        "IBLOCK_ID": string,
-        "NAME": string,
-        "PROPERTY_479": [
-            string
-        ],
-        "PROPERTY_475": [
-            string
-        ],
-        "PROPERTY_476": [
-            string
-        ],
-        "PROPERTY_477": [
-            {
-                "TYPE": string,
-                "TEXT": string
-            }
-        ],
-        "PROPERTY_478": [
-            string
-        ],
-        "PROPERTY_480": [
-            string
-        ],
-        "section_id": number,
-        "TITLE": string
-    },
-    "name": string,
-    [key: string]: any,
-}
+import { defineComponent, onMounted, ref } from "vue";
+import type { IForNewWorker } from '@/interfaces/IEntities'
 
 export default defineComponent({
     name: "ForNewWorker",
@@ -114,12 +78,12 @@ export default defineComponent({
         DocIcon,
     },
     setup() {
-        const pageContent = ref<IforNewWorkerObject[]>();
+        const pageContent = ref<IForNewWorker[]>();
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['Новому сотруднику']}`)
-                .then((res: IforNewWorkerObject[]) => {
+                .then((res: IForNewWorker[]) => {
                     pageContent.value = res.sort((a, b) => {
-                        return Number(getProperty(a, 'PROPERTY_475')) - Number(getProperty(b, 'PROPERTY_475'))
+                        return Number(getProperty(a as IForNewWorker, "PROPERTY_475")) - Number(getProperty(b, 'PROPERTY_475'))
                     })
                 })
         })

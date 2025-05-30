@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref, type ComputedRef } from "vue";
 import TagDateNavBar from "@/components/TagDateNavBar.vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from "@/utils/Api";
@@ -29,7 +29,7 @@ export default defineComponent({
     },
 
     setup() {
-        const allEvents = computed(() => useViewsDataStore().getData('corpEventsData'));
+        const allEvents: ComputedRef<ICorpEventsItem[]> = computed(() => useViewsDataStore().getData('corpEventsData') as ICorpEventsItem[]);
         const visibleEvents = ref<ICorpEventsItem[]>(allEvents.value);
         onMounted(() => {
             if (allEvents.value.length) return;

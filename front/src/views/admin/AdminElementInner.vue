@@ -5,11 +5,11 @@
       <div v-for="(item, index) in sampleEvent"
            class="admin-panel__editor__element-inner__field"
            :key="index">
-        <div v-if="item.type == 'date'">
+        <div v-if="item.type == 'date' && item.name">
           <p>{{ item.title }}</p>
           <DatePicker v-model="currentItem[item.name]" />
         </div>
-        <div v-if="item.type == 'select'">
+        <div v-if="item.type == 'select' && item.name">
           <p>{{ item.title }}</p>
           <select v-model="currentItem[item.name]">
             <option v-for="(option, index) in item.options"
@@ -18,7 +18,7 @@
             </option>
           </select>
         </div>
-        <div v-else-if="item.type == 'textWithRedact'">
+        <div v-else-if="item.type == 'textWithRedact' && item.name">
           <p>{{ item.title }}</p>
           <TextEditor v-model="currentItem[item.name]" />
         </div>
@@ -26,27 +26,27 @@
           <p>{{ item.title }}</p>
           <p>{{ item.value }}</p>
         </div>
-        <div v-else-if="item.type == 'text'">
+        <div v-else-if="item.type == 'text' && item.name">
           <p>{{ item.title }}</p>
           <input v-model="currentItem[item.name]"
-                 :disabled="item.disabled" />
+                 :disabled="Boolean(item.disabled)" />
         </div>
         <div v-else-if="item.type == 'img'">
           <p>{{ item.title }}</p>
           <div class="attached__gallery">
-            <div v-for="(item, index) in item.value"
+            <div v-for="(itemInner, index) in item.value"
                  :key="index"
                  class="attached__gallery__card">
-              <img :src="item"
+              <img :src="itemInner"
                    class="attached__gallery__card-img" />
               <!-- иконки -->
               <div class="attached__gallery__card-icons">
                 <button class="icon-button view-button"
-                        @click.prevent="goToImage(item)">
+                        @click.prevent="goToImage(itemInner)">
                   <ZoomIcon />
                 </button>
                 <button class="icon-button delete-button"
-                        @click.prevent="removeItem(index)">
+                        @click.prevent="removeItem(itemInner)">
                   <CloseIcon />
                 </button>
               </div>
@@ -57,7 +57,7 @@
         <div v-else-if="item.type == 'doc'">
           <p>{{ item.title }}</p>
           <div class="attached__gallery--doc">
-            <a v-for="(item, index) in item.attached"
+            <a v-for="(item, index) in currentItem.documents"
                class="attached__gallery--doc__item"
                :key="index"
                :href="item"
@@ -81,7 +81,7 @@
 
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, watchEffect, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import TextEditor from '@/components/admin/TextEditor.vue';
 import ImgUploader from '@/components/admin/ImgUploader.vue';
@@ -92,6 +92,10 @@ import { sampleEvent } from '@/assets/staticJsons/adminPagePlugs';
 import DatePicker from '@/components/DatePicker.vue';
 import PostInner from '@/components/PostInner.vue';
 
+type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
+interface IAdminElement extends Record<string, AdminElementValue> {
+  id: number;
+}
 export default defineComponent({
   components: {
     TextEditor,
@@ -105,11 +109,12 @@ export default defineComponent({
   setup() {
     const events = ref<Event[]>([]);
     const router = useRouter();
-    const currentItem = ref({});
+    const currentItem: Ref<IAdminElement> = ref({ id: 0 });
     const previewFullWidth = ref(false);
 
     onMounted(() => {
       sampleEvent.map((e) => {
+        if (!e.name) return;
         currentItem.value[e.name] = e.value;
       })
       console.log(currentItem.value);
@@ -117,7 +122,7 @@ export default defineComponent({
     })
 
 
-    const removeItem = (e) => {
+    const removeItem = (e: string) => {
       alert('udalit ' + e);
     }
 
@@ -125,7 +130,7 @@ export default defineComponent({
       events,
       sampleEvent,
       router,
-      goToImage: (e) => window.open(e, '_blank'),
+      goToImage: (e: string) => window.open(e, '_blank'),
       removeItem,
       currentItem,
       previewFullWidth

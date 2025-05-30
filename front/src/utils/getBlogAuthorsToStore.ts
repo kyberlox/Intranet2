@@ -26,8 +26,8 @@ export const getBlogAuthorsToStore = (allAuthors: Ref<IBlogAuthors[]>, blogData:
                 if (e.indirect_data && e.indirect_data.TITLE && e.indirect_data.ID && authorId && (e.indirect_data.PROPERTY_451 || e.indirect_data.PROPERTY_453)) {
                     const newAuthor: IBlogAuthors = {
                         title: e.indirect_data.TITLE,
-                        id: e.indirect_data.ID,
-                        authorId: authorId
+                        id: Number(e.indirect_data.ID),
+                        authorId: Number(authorId)
                     }
                     allAuthors.value.push(newAuthor);
                 }

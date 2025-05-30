@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
 import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
-import { defineComponent, onMounted, type Ref, ref, computed } from "vue";
+import { defineComponent, onMounted, computed, type ComputedRef } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import type { ICareSlide } from "@/interfaces/IEntities";
@@ -25,7 +25,7 @@ export default defineComponent({
         SafetyTechnicsSlide,
     },
     setup() {
-        const careSlides = computed(() => useViewsDataStore().getData('careData'));
+        const careSlides: ComputedRef<ICareSlide[]> = computed(() => useViewsDataStore().getData('careData') as ICareSlide[]);
         onMounted(() => {
             if (careSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);

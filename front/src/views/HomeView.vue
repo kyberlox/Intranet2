@@ -44,9 +44,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "vue";
+import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
 import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
+import type { MainPageBlock, MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
@@ -63,12 +64,17 @@ export default defineComponent({
         const useViewsData = useViewsDataStore();
         const loadingStore = useLoadingStore();
         // const mainPageCards: Ref<MainPageCards | undefined> = ref();
-        const mainPageCards = computed(() => useViewsData.getData('homeData'))
+
+        const mainPageCards: ComputedRef<MainPageCards> = computed(() => {
+            const data = useViewsData.getData('homeData') as MainPageCards;
+            return Array.isArray(data) ? data : [];
+        });
+
         onMounted(() => {
             if (mainPageCards.value.length) return;
             loadingStore.setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Главная']}`)
-                .then((data) => {
+                .then((data: MainPageCards) => {
                     const result = data;
                     if (!result) return;
                     result.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {

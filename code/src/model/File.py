@@ -184,7 +184,9 @@ class File:
             raise HTTPException(500, detail=str(e))
        
 
-
+@file_router.put("/create_indexes")
+async def create_mongo_indexes():
+    return FileModel().create_indexes()
 
 @file_router.post("/upload")
 async def upload_file(file: UploadFile):

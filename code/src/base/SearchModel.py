@@ -497,46 +497,249 @@ class ArticleSearchModel:
         self.index = "articles"
 
     def create_index(self):
-        pass
+        request_body = {
+            "settings": {
+                "analysis": {
+                    "analyzer": {
+                        "GOD_PLEASE": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase",
+                                "ru_stop",
+                                "ru_stemming"
+                            ]
+                        },
+                        "GOD_PLEASE_FUZZY": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase"
+                            ]
+                        }
+                    },
+                    "filter": {
+                        "ru_stemming": {
+                            "type": "stemmer",
+                            "language": "russian"
+                        },
+                        "ru_stop": {
+                            "type": "stop",
+                            "stopwords": "_russian"
+                        }
+                    }
+                }
+            },
+            "mappings": {
+                "properties": {
+                    "section_id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "text",
+                        "analyzer": "GOD_PLEASE",
+                        "fields" : {
+                            "fuzzy": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY"
+                            }
+                        }
+                    },
+                    "preview_text": {
+                        "type": "text",
+                        "analyzer": "GOD_PLEASE",
+                        "fields" : {
+                            "fuzzy": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY"
+                            }
+                        }
+                    },
+                    "content_text": {
+                        "type": "text",
+                        "analyzer": "GOD_PLEASE",
+                        "fields" : {
+                            "fuzzy": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY"
+                            }
+                        }
+                    },
+                    "content_type": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+
+        responce = elastic_client.indices.create(index=self.index, body=request_body)
+        return responce
     
     def dump(self):
-        self.delete_index()
+        try:
+            # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
+            self.delete_index()
+        except:
+            pass
         self.create_index()
-        pass
+
+        article_SQL_data = self.ArticleModel().all()
+        article_data_ES = []
+        for art in article_SQL_data:
+            data_row = {}
+            article_data = art.__dict__
+            if article_data['active']:
+                data_row["section_id"] = article_data["section_id"]
+                data_row["title"] = article_data["name"]
+                data_row["preview_text"] = article_data["preview_text"]
+                data_row["content_text"] = article_data["content_text"]
+                data_row["content_type"] = article_data["content_type"]
+                
+                article_action = {
+                    "_index": self.index,
+                    "_op_type": "index",
+                    "_id": int(article_data['id']),
+                    "_source": data_row
+                }
+                
+            else:
+                pass
+
+            article_data_ES.append(article_action)
+
+        helpers.bulk(elastic_client, article_data_ES)
+
+        return {"status": True}
 
     def search_by_title(self, words):
-        pass
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "title": {
+                                    "query": title,
+                                    "fuzziness": "AUTO",
+                                    "prefix_length": 2
+                                    # "boost": 2  
+                                }
+                            }
+                        },
+                        {
+                            "wildcard": {
+                                "title": {
+                                    "value": f"{title}*",
+                                    "case_insensitive": True  
+                                    # "prefix_length": 2,  
+                                    # "boost": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            size=100
+        )
+
+        return res['hits']['hits']
+
+    def search_by_preview(self, preview):
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "preview_text": {
+                                    "query": preview,
+                                    "fuzziness": "AUTO",
+                                    "prefix_length": 2
+                                    # "boost": 2  
+                                }
+                            }
+                        },
+                        {
+                            "wildcard": {
+                                "preview_text": {
+                                    "value": f"{preview}*",
+                                    "case_insensitive": True  
+                                    # "prefix_length": 2,  
+                                    # "boost": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            size=100
+        )
+
+        return res['hits']['hits']
 
     def search_by_text(self, text):
-        pass
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {
+                            "match": {
+                                "content_text": {
+                                    "query": text,
+                                    "fuzziness": "AUTO",
+                                    "prefix_length": 2
+                                    # "boost": 2  
+                                }
+                            }
+                        },
+                        {
+                            "wildcard": {
+                                "content_text": {
+                                    "value": f"{text}*",
+                                    "case_insensitive": True  
+                                    # "prefix_length": 2,  
+                                    # "boost": 1
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            size=100
+        )
+
+        return res['hits']['hits']
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
 
-@search_router.get("/dump_user")
-def create_data_user():
-    return UserSearchModel().dump()
+# @search_router.get("/dump_user")
+# def create_data_user():
+#     return UserSearchModel().dump()
 
-@search_router.get("/dump_depart")
-def create_data_depart():
-    return StructureSearchModel().dump()
+# @search_router.get("/dump_depart")
+# def create_data_depart():
+#     return StructureSearchModel().dump()
 
-@search_router.get("/view_all_departs")
-def view_all_departs():
-    return StructureSearchModel().search_by_department()
+# @search_router.get("/view_all_departs")
+# def view_all_departs():
+#     return StructureSearchModel().search_by_department()
 
-@search_router.post("/users/search_by_name/{name}")
-def search_users(name: str):
-    return UserSearchModel().search_by_name(name)
+# @search_router.post("/users/search_by_name/{name}")
+# def search_users(name: str):
+#     return UserSearchModel().search_by_name(name)
 
-@search_router.post("/departs/search_by_username/{name}")
-def search_depart_users(name: str):
-    return StructureSearchModel().search_by_username(name)
+# @search_router.post("/departs/search_by_username/{name}")
+# def search_depart_users(name: str):
+#     return StructureSearchModel().search_by_username(name)
 
-@search_router.post("/departs/search_by_user_position/{position}")
-def search_depart_users(position: str):
-    return StructureSearchModel().search_by_position(position)
+# @search_router.post("/departs/search_by_user_position/{position}")
+# def search_depart_users(position: str):
+#     return StructureSearchModel().search_by_position(position)
 
 # @search_router.post("/departs/search_by_department/{dep_name}")
 # def search_depart_users(dep_name: str):

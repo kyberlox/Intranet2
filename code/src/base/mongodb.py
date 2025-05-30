@@ -35,7 +35,33 @@ class FileModel:
                 id = ObjectId(id)
             self.id = id
 
+    def create_indexes(self):
+        #создаем индексы
+        files_collection.create_index(
+            {
+                "id": 1,
+                "original_name": 1,
+                "stored_name": 1,
+                "content_type": 1,
+                "article_id": 1,
+                "b24_id": 1,
+                "file_url": 1
+            }
+        )
 
+        user_photo_collection.create_index(
+            {
+                "id": 1,
+                "name": 1,
+                "format": 1,
+                "uuid": 1,
+                "b24_url": 1
+            }
+        )
+        index_info = files_collection.list_indexes()
+        for index in index_info:
+            print(index)
+        return {"status": True}
 
     # блок для файлов
     def add(self, file_data):

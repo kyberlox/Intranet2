@@ -1,26 +1,26 @@
 import { defineStore } from "pinia";
-import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem } from "@/interfaces/IEntities";
+import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem, IOurPeople, IVideoInterview, IVideoReports, ICorpNews, IOfficialEvents, IPartnerBonus } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 
 interface DataState {
     homeData: MainPageCards,
-    ourPeopleData: any[],
-    // yearResultsData: any[];
-    // blogsData: any[];
-    videoInterviewsData: any[],
+    ourPeopleData: IOurPeople[],
     actualNewsData: IActualNews[],
-    corpNewsData: any[],
-    videoReportsData: any[],
-    // gazettesData: any[],
-    officialEventsData: any[],
     corpEventsData: ICorpEventsItem[],
     corpLifeData: ICorpLife[],
     afishaData: IAfishaItem[],
-    partnerBonusData: any[],
     careData: ICareSlide[],
+    videoInterviewsData: IVideoInterview[],
+    videoReportsData: IVideoReports[],
+    corpNewsData: ICorpNews[],
+    officialEventsData: IOfficialEvents[],
+    partnerBonusData: IPartnerBonus[],
+
+    // yearResultsData: any[];
+    // blogsData: any[];
+    // gazettesData: any[],
 }
 
-// Определяем тип для ключей состояния
 type DataStateKey = keyof DataState;
 
 export const useViewsDataStore = defineStore('viewsData', {
@@ -43,9 +43,9 @@ export const useViewsDataStore = defineStore('viewsData', {
     }),
 
     actions: {
-        setData(fetchedData, dataType: DataStateKey) {
+        setData<T extends DataStateKey>(fetchedData: DataState[T], dataType: T): void {
             if (this[dataType]) {
-                this[dataType] = fetchedData;
+                (this[dataType] as DataState[T]) = fetchedData;
             }
             else console.error(`uknown ${dataType}`);
         }

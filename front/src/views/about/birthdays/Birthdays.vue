@@ -52,7 +52,7 @@ export default defineComponent({
         DatePicker,
     },
     setup() {
-
+        const searchValue = ref();
         const imageInModal = ref();
         const hiddenModal = ref(true);
 
@@ -61,6 +61,9 @@ export default defineComponent({
             hiddenModal.value = false;
         };
 
+        const pickDate = (target: string) => {
+            searchValue.value = target;
+        }
 
         return {
             slidesForBirthday,
@@ -68,6 +71,8 @@ export default defineComponent({
             openModal,
             hiddenModal,
             fastDayNavigation,
+            searchValue,
+            pickDate
         };
     },
 });

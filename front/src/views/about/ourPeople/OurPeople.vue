@@ -13,13 +13,16 @@ import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore"
+import type { IOurPeople } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: { GridGallery },
     setup() {
         const loadingStore = useLoadingStore();
         const ViewsDataStore = useViewsDataStore();
-        const ourPeople = computed(() => ViewsDataStore.getData('ourPeopleData'));
+
+        const ourPeople = computed((): IOurPeople[] => ViewsDataStore.getData('ourPeopleData') as IOurPeople[])
+
         onMounted(() => {
             if (ourPeople.value.length) return;
             loadingStore.setLoadingStatus(true);
@@ -29,7 +32,7 @@ export default defineComponent({
                 });
         })
         watch(ourPeople, (newVal) => {
-            if (newVal && newVal.length) {
+            if (newVal) {
                 loadingStore.setLoadingStatus(false);
             }
         })

@@ -1,11 +1,20 @@
+interface ISampleEvent {
+    name?: string,
+    title?: string,
+    value?: string | string[],
+    type?: string,
+    disabled?: boolean,
+    options?: string[],
+    attached?: string[],
+}
 
-export const sampleEvent = [
+export const sampleEvent: ISampleEvent[] = [
     {
         name: 'id',
         title: 'id',
         value: '1',
         type: 'text',
-        disabled: 'true',
+        disabled: true,
     },
     {
         name: 'name',

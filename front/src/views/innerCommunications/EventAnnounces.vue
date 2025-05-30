@@ -7,24 +7,19 @@
 </template>
 <script lang="ts">
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
-
-interface FlexGalleryElement {
-    videoHref: string,
-    img: string,
-    title: string,
-}
+import type { IAfishaItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
         FlexGallery
     },
     setup() {
-        const afisha = computed(() => useViewsDataStore().getData('afishaData'));
+        const afisha: ComputedRef<IAfishaItem[]> = computed(() => useViewsDataStore().getData('afishaData') as IAfishaItem[]);
         onMounted(() => {
             if (afisha.value.length) return;
             useLoadingStore().setLoadingStatus(true);

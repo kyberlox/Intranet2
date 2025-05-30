@@ -14,7 +14,8 @@
                     <span class="section__image__list__item__category">
                         {{ getProperty(slide, "PROPERTY_344") }}
                     </span>
-                    <h3 class="section__image__list__item__title">{{ slide.indirect_data.name }}</h3>
+                    <h3 v-if="slide.indirect_data && slide.indirect_data.NAME"
+                        class="section__image__list__item__title">{{ slide.indirect_data.NAME }}</h3>
                     <RouterLink :to="{ name: routeTo, params: { id: slide.id } }"
                                 class="section__image__list__item__link">
                         Читать
@@ -31,13 +32,14 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import { getProperty } from '@/utils/getPropertyFirstPos';
+import type { ISafetyTechnicsSlide } from '@/interfaces/IEntities';
 
 export default defineComponent({
     props: {
         slide: {
-            type: Object,
+            type: Object as PropType<ISafetyTechnicsSlide>,
             required: true,
         },
         place: {

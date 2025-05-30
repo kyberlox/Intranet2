@@ -8,18 +8,19 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from "vue";
+import { defineComponent, onMounted, computed } from "vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData"
 import { useLoadingStore } from "@/stores/loadingStore";
+import type { IVideoInterview } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: { GridGallery },
     setup() {
         const viewsData = useViewsDataStore();
-        const interviews = computed(() => viewsData.getData('videoInterviewsData'));
+        const interviews = computed((): IVideoInterview[] => viewsData.getData('videoInterviewsData') as IVideoInterview[]);
 
         onMounted(() => {
             if (interviews.value.length) return;

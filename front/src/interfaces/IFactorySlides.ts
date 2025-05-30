@@ -1,5 +1,5 @@
 export type IFactorySlides = {
-    id?: number;
+    id: number;
     title: string;
     img: string;
     hrefTitle: string;
@@ -11,11 +11,11 @@ export type IFactorySlides = {
 }
 
 export type IFactoryReport = {
-    id?: number;
+    id: number;
     title: string;
     img: string;
     href: string;
-    videoHref: string;
+    videoHref: string[];
     factoryId: number;
 }
 

@@ -143,3 +143,10 @@ export const sideInfoBlock: string = `
                 Вам никогда не столкнуться с чрезвычайными ситуациями!</strong>
 
         `;
+
+
+export const safetyTechnicsCovid: { id: number, title: string, image: string }[] = [{
+    id: 1,
+    title: 'Соблюдайте социальную дистанцию',
+    image: 'https://portal.emk.ru/local/templates/intranet/img/safety/COVID-19/COVID-19-1.jpg'
+}]

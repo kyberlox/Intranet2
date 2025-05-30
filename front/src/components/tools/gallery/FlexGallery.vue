@@ -14,7 +14,7 @@
                 </div>
                 <div v-if="slide.name"
                      class="flexGallery__card__title flexGallery__card__title--text-date">
-                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span v-if="getProperty(slide as IAfishaItem, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
                     <span>{{ slide.name }}</span>
                 </div>
             </RouterLink>
@@ -30,7 +30,7 @@
                 </div>
                 <div v-if="slide.name"
                      class="flexGallery__card__title flexGallery__card__title--text-date">
-                    <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+                    <span v-if="getProperty(slide as IAfishaItem, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
                     <span v-if="slide.name">{{ slide.name }}</span>
                 </div>
 
@@ -86,26 +86,13 @@ import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-
-interface ISlideForFlexGallery {
-    id: number,
-    videoHref?: string[],
-    modifiers?: string[],
-    image?: string,
-    images?: string[],
-    name?: string,
-    reportages?: string,
-    tours?: string,
-    routeTo?: string,
-    PROPERTY_375?: string,
-    PROPERTY_438?: string
-}
+import type { IAfishaItem, IUnionEntities } from "@/interfaces/IEntities";
 
 export default defineComponent({
     name: 'FlexGallery',
     props: {
         slides: {
-            type: Array<ISlideForFlexGallery>,
+            type: Array<IUnionEntities>,
         },
         title: {
             type: String,
@@ -126,7 +113,7 @@ export default defineComponent({
         PlayVideo,
         ZoomModal
     },
-    setup(props) {
+    setup() {
         const modalVideo = ref();
         const modalImg = ref();
         const modalIsOpen = ref(false);
@@ -150,8 +137,8 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        const setCardDate = (slide: ISlideForFlexGallery) => {
-            return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
+        const setCardDate = (slide: IUnionEntities) => {
+            return getProperty(slide as IAfishaItem, "PROPERTY_375") + ' - ' + getProperty(slide as IAfishaItem, "PROPERTY_438");
         }
 
         return {

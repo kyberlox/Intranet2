@@ -15,17 +15,17 @@ import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
 import { defineComponent, computed } from "vue";
 
 export interface INewsSlide {
-    id?: number;
+    id: number;
     name?: string;
     title?: string;
     href?: string;
     hrefId?: string;
     hrefTitle?: string;
-    videoHref?: string;
+    videoHref?: string[];
     img?: string | string[];
-    reportages?: string | boolean;
+    reportages?: boolean;
     reportsHref?: string;
-    tours?: string | boolean;
+    tours?: boolean;
     toursHref?: string;
 }
 

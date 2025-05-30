@@ -11,6 +11,6 @@ interface EmbedpanoOptions {
 declare global {
     interface Window {
         embedpano: (options: EmbedpanoOptions) => void;
-        removepano: (id: number) => void;
+        removepano: (id: string) => void;
     }
 }

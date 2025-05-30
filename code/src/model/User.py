@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import UserModel
+from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
@@ -94,9 +95,6 @@ class User:
             #вывести отчет по изменениях
             
         return True
-
-
-
    
     def variant_users(self, key):
         return B24().variant_key_user(key)
@@ -171,6 +169,21 @@ def find_by_user(id):
     return User(id).search_by_id()
 
 #Пользователя можно найти
+@users_router.post("/search/{username}")
+def search_user(username: str): # jsn=Body()
+    return UserSearchModel().search_by_name(username)
+
+#загрузить дату в ES
+@users_router.put("/elastic_data")
+def upload_users_to_es():
+    return UserSearchModel().dump()
+
+@users_router.get("/test_update_photo")
+def test_update_photo():
+    return User().set_users_photo()
+
+
+
 @users_router.post("/search")
 def search_user(jsn=Body()):
     #будет работать через elasticsearch
@@ -179,5 +192,3 @@ def search_user(jsn=Body()):
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()
-
-

@@ -21,6 +21,9 @@ class UsDep:
         logg = LogsMaker()
         
         result = dict()
+        # for usr in logg.progress(data, "Загрузка данных связей пользователей и подразделений "):
+
+
         for usr in logg.progress(data, "Загрузка данных связей пользователей и подразделений "):
             if usr['ID'] is not None:
                 result[int(usr['ID'])] = usr['UF_DEPARTMENT']
@@ -40,5 +43,3 @@ def get_user():
 @usdep_router.get("/{id}")
 def get_usdepart(id):
     return UsDep(id).search_usdep_by_id()
-
-

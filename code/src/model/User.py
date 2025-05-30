@@ -95,9 +95,6 @@ class User:
             #вывести отчет по изменениях
             
         return True
-
-
-
    
     def variant_users(self, key):
         return B24().variant_key_user(key)
@@ -186,3 +183,12 @@ def test_update_photo():
     return User().set_users_photo()
 
 
+
+@users_router.post("/search")
+def search_user(jsn=Body()):
+    #будет работать через elasticsearch
+    pass
+
+@users_router.get("/test_update_photo")
+def test_update_photo():
+    return User().set_users_photo()

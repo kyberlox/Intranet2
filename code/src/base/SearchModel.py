@@ -89,7 +89,7 @@ class UserSearchModel:
                         }
                     }
                 },
-                "max_ngram_diff" : "20"
+                "max_ngram_diff": "20"
             },
             "mappings": {
                 "properties": {
@@ -97,7 +97,7 @@ class UserSearchModel:
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
                         # "search_analyzer": "standard",
-                        "fields" : {
+                        "fields": {
                             "fuzzy": {
                                 "type": "text",
                                 "analyzer": "GOD_PLEASE_FUZZY"
@@ -146,19 +146,19 @@ class UserSearchModel:
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
 
-
     def dump(self):
         try:
             self.delete_index()
         except:
             pass
-        self.create_index() # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
+        self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
         # print(self.create_index())
         users_data = self.UserModel().all()
         users_data_ES = []
         for user in users_data:
 
-            important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data"]
+            important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday',
+                              'uf_phone_inner', "indirect_data"]
 
             data = user.__dict__
             # birth = f'{data['personal_birthday']}' 'work_position', 'uf_usr_1586854037086'
@@ -167,7 +167,6 @@ class UserSearchModel:
             else:
                 fio = f'{data['last_name']} {data['name']} {data['second_name']}'
 
-        
             data_row = {"user_fio": fio}
             for param in important_list:
                 if param in data.keys():
@@ -186,19 +185,18 @@ class UserSearchModel:
                     continue
 
             user_id = int(data['id'])
-            
+
             user_action = {
                 "_index": self.index,
-                "_op_type": "index", # либо create либо index че выбрать хз пока
+                "_op_type": "index",  # либо create либо index че выбрать хз пока
                 "_id": user_id,
                 "_source": data_row
             }
             users_data_ES.append(user_action)
-        
+
         helpers.bulk(elastic_client, users_data_ES)
 
         return {"status": True}
-
 
     def search_by_name(self, name):
         res = elastic_client.search(
@@ -218,7 +216,7 @@ class UserSearchModel:
                             "match": {
                                 "user_fio.fuzzy": {
                                     "query": name,
-                                    "fuzziness": "AUTO",  
+                                    "fuzziness": "AUTO",
                                     # "prefix_length": 2,  
                                     # "boost": 1
                                 }
@@ -238,7 +236,7 @@ class UserSearchModel:
 
 
 class StructureSearchModel:
-    def  __init__ (self):
+    def __init__(self):
         self.DepartmentModel = DepartmentModel
         self.UsDepModel = UsDepModel
         self.UserModel = UserModel
@@ -283,7 +281,7 @@ class StructureSearchModel:
                         }
                     }
                 },
-                "max_ngram_diff" : "20"
+                "max_ngram_diff": "20"
             },
             "mappings": {
                 "properties": {
@@ -296,7 +294,7 @@ class StructureSearchModel:
                     "name": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
-                        "fields" : {
+                        "fields": {
                             "fuzzy": {
                                 "type": "text",
                                 "analyzer": "GOD_PLEASE_FUZZY"
@@ -310,7 +308,7 @@ class StructureSearchModel:
                         "type": "integer"
                     },
                     "users": {
-                        "type": "nested", # изменили тип с object
+                        "type": "nested",  # изменили тип с object
                         "properties": {
                             "user_id": {
                                 "type": "integer"
@@ -318,7 +316,7 @@ class StructureSearchModel:
                             "user_fio": {
                                 "type": "text",
                                 "analyzer": "GOD_PLEASE",
-                                "fields" : {
+                                "fields": {
                                     "fuzzy": {
                                         "type": "text",
                                         "analyzer": "GOD_PLEASE_FUZZY"
@@ -328,7 +326,7 @@ class StructureSearchModel:
                             "user_position": {
                                 "type": "text",
                                 "search_analyzer": "standard",
-                                "fields" : {
+                                "fields": {
                                     "fuzzy": {
                                         "type": "text",
                                         "analyzer": "GOD_PLEASE_FUZZY"
@@ -344,21 +342,20 @@ class StructureSearchModel:
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
 
-    
     def dump(self):
         self.delete_index()
         self.create_index()
-        
 
         list_for_deps = []
-        
-        dep_data = [] # список 
+
+        dep_data = []  # список
         dep_sql_data = self.DepartmentModel().all()
         for dep in dep_sql_data:
             users_list = []
             department_data = dep.__dict__
             list_for_deps.append(department_data['id'])
-            users = self.UsDepModel(id = department_data['id']).find_user_by_dep_id() #берём id всех пользователей департамента
+            users = self.UsDepModel(
+                id=department_data['id']).find_user_by_dep_id()  # берём id всех пользователей департамента
             if isinstance(users, list):
                 for usr in users:
                     user_data = {}
@@ -371,25 +368,27 @@ class StructureSearchModel:
                         else:
                             user_data['user_fio'] = f'{user['last_name']} {user['name']}'
 
-                        if 'work_position' in user['indirect_data'].keys() and user['indirect_data']['work_position'] != '':
+                        if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                            'work_position'] != '':
                             user_data['user_position'] = user['indirect_data']['work_position']
                         else:
                             pass
-        
+
                         users_list.append(user_data)
                     else:
                         pass
             else:
                 pass
             depart = {
-                "join_field": {"name" : "department", "parent": department_data["father_id"]}, # поле "name" забиваем "department" 
+                "join_field": {"name": "department", "parent": department_data["father_id"]},
+                # поле "name" забиваем "department"
                 # если этот департамент чей-то родитель и "section_of_theese_depart" если он ребеноки подотделов больше нет
-                "name" : department_data["name"],
-                "dep_id_for_sort" : department_data['id'],
-                "user_head_id" : department_data["user_head_id"],
-                "users" : users_list
+                "name": department_data["name"],
+                "dep_id_for_sort": department_data['id'],
+                "user_head_id": department_data["user_head_id"],
+                "users": users_list
             }
-            
+
             elastic_client.index(index=self.index, id=department_data['id'], body=depart)
 
         return {'status': True}
@@ -401,22 +400,22 @@ class StructureSearchModel:
             user = await UserModel(department["user_head_id"]).find_by_id()
             full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
             leader = {
-                "id" : user['id'],
-                "name" : full_name,
-                "photo_url" : user['photo_file_url']
+                "id": user['id'],
+                "name": full_name,
+                "photo_url": user['photo_file_url']
             }
-        
+
         user_dep_relations = UsDepModel(department['id']).find_user_by_dep_id()
         users = []
         for relation in user_dep_relations:
-            #тут сложности из-за неочевидной структуры в случае когда один пользователь занимает несколько должностей
+            # тут сложности из-за неочевидной структуры в случае когда один пользователь занимает несколько должностей
             user = await UserModel(relation).find_user_by_dep_id()
-            
+
             full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
             # position = 
             users.append({
-                "id" : user['id'],
-                "name" : full_name,
+                "id": user['id'],
+                "name": full_name,
                 # "position" : position
             })
 
@@ -465,7 +464,7 @@ class StructureSearchModel:
             sort=[
                 {
                     "dep_id_for_sort": {
-                        "order": "asc" # "desc" использовать если хотим по убыванию
+                        "order": "asc"  # "desc" использовать если хотим по убыванию
                     }
                 }
             ],
@@ -476,6 +475,7 @@ class StructureSearchModel:
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+
 
 class ArticleSearchModel:
 
@@ -525,7 +525,7 @@ class ArticleSearchModel:
                     "title": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
-                        "fields" : {
+                        "fields": {
                             "fuzzy": {
                                 "type": "text",
                                 "analyzer": "GOD_PLEASE_FUZZY"
@@ -535,7 +535,7 @@ class ArticleSearchModel:
                     "preview_text": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
-                        "fields" : {
+                        "fields": {
                             "fuzzy": {
                                 "type": "text",
                                 "analyzer": "GOD_PLEASE_FUZZY"
@@ -545,7 +545,7 @@ class ArticleSearchModel:
                     "content_text": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
-                        "fields" : {
+                        "fields": {
                             "fuzzy": {
                                 "type": "text",
                                 "analyzer": "GOD_PLEASE_FUZZY"
@@ -561,7 +561,7 @@ class ArticleSearchModel:
 
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
-    
+
     def dump(self):
         try:
             # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
@@ -581,14 +581,14 @@ class ArticleSearchModel:
                 data_row["preview_text"] = article_data["preview_text"]
                 data_row["content_text"] = article_data["content_text"]
                 data_row["content_type"] = article_data["content_type"]
-                
+
                 article_action = {
                     "_index": self.index,
                     "_op_type": "index",
                     "_id": int(article_data['id']),
                     "_source": data_row
                 }
-                
+
             else:
                 pass
 
@@ -618,7 +618,7 @@ class ArticleSearchModel:
                             "wildcard": {
                                 "title": {
                                     "value": f"{title}*",
-                                    "case_insensitive": True  
+                                    "case_insensitive": True
                                     # "prefix_length": 2,  
                                     # "boost": 1
                                 }
@@ -652,7 +652,7 @@ class ArticleSearchModel:
                             "wildcard": {
                                 "preview_text": {
                                     "value": f"{preview}*",
-                                    "case_insensitive": True  
+                                    "case_insensitive": True
                                     # "prefix_length": 2,  
                                     # "boost": 1
                                 }
@@ -686,7 +686,7 @@ class ArticleSearchModel:
                             "wildcard": {
                                 "content_text": {
                                     "value": f"{text}*",
-                                    "case_insensitive": True  
+                                    "case_insensitive": True
                                     # "prefix_length": 2,  
                                     # "boost": 1
                                 }
@@ -718,7 +718,7 @@ class ArticleSearchModel:
                             "wildcard": {
                                 "content_text": {
                                     "value": f"{text}*",
-                                    "case_insensitive": True  
+                                    "case_insensitive": True
                                     # "prefix_length": 2,  
                                     # "boost": 1
                                 }

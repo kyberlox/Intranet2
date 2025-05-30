@@ -15,6 +15,5 @@ class LogsMaker:
         )
         if title is not None:
             kwargs["desc"] = title
+
         return tqdm(this_list, bar_format=bar_format, **kwargs)
-
-

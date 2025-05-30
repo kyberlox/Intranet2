@@ -80,4 +80,8 @@ def get_user_by_position(position: str): # jsn=Body()
 def upload_department_to_es():
     return StructureSearchModel().dump()
 
-
+#Пользователя можно найти
+@depart_router.post("/search")
+def get_user(jsn=Body()):
+    #будет работать через elasticsearch
+    pass

@@ -68,8 +68,6 @@ class UsDep(Base):
     user_id = Column(Integer, nullable=True)
     dep_id = Column(Integer, nullable=True)
 
-
-
 class Section(Base):
     __tablename__ = 'section'
     id = Column(Integer, primary_key=True)
@@ -105,7 +103,6 @@ class Likes(Base):
     # Опциональные отношения для удобства доступа
     user = relationship("User", back_populates="likes")
     article = relationship("Article", back_populates="likes")
-
 
 class Views(Base):
     """
@@ -518,7 +515,6 @@ class UsDepModel():
         
         # проверка на наличия пользователя в таблицах users и departments
         for us_dep_key, us_dep_value in usr_dep.items():
-            
             #преобразуем [11] в 11 или оставляем [11, 12]
             if len(us_dep_value) > 1:
                 pass
@@ -599,7 +595,6 @@ class UsDepModel():
                         self.db.commit()
                     # для всех остальных значений, когда dep_from_usdep_table не None
                     else:
-                    
                         if len(dep_from_usdep_table) > 1:
                             pass
                         else:
@@ -741,7 +736,7 @@ class ArticleModel():
     def __init__(self, id=0, section_id=0):
         self.id = id
         self.section_id = section_id
-        self.article = Article
+        self.article = Article()
 
     def add_article(self, article_data):
         article = Article(**article_data)
@@ -816,8 +811,6 @@ class ArticleModel():
     def all(self):
         return db.query(self.article).all()
 
-    def all(self):
-        return db.query(self.article).all()
 
 
 class LikesModel:

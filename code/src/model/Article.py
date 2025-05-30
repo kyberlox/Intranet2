@@ -238,13 +238,15 @@ class Article:
                 except:
                     pass
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
+                    pass
 
         if files == []:
             return []
         else:
             files_data = []
             files_to_add = [] # временно
-            # files_to_add = File().need_update_file(art_id, files)
+            files_to_add = File().need_update_file(art_id, files)
+
             if files_to_add != []:
                 for f_id in files:
                     is_preview = f_id in preview_images
@@ -253,7 +255,9 @@ class Article:
                     files_data.append(file_data)
 
             else:
-                return files_data
+                print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
+
+            return files_data
 
     def add(self, article_data):
         return ArticleModel().add_article(self.make_valid_article(article_data))
@@ -470,7 +474,6 @@ class Article:
                     self.add(art)
                     print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
-
                     # сюда надо что-то дописать
                     pass
                 
@@ -940,3 +943,7 @@ def search_articles_by_text(text): # data = Body()
 def upload_articles_to_es():
     return ArticleSearchModel().dump()
 
+#найти статьи раздела
+@article_router.post("/search")
+def search_articles(data = Body()):
+    pass

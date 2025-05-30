@@ -1,4 +1,9 @@
-export const uniqueRoutesHandle = (route, slide, idForRoute = null, reRoute = '') => {
+export const uniqueRoutesHandle = (
+    route: string,
+    slide: { id: number, factoryId?: number, tourId?: string, href?: string },
+    idForRoute?: number | null,
+    reRoute?: string
+) => {
     if (reRoute) {
         return { name: reRoute, params: { id: slide.id } }
     }
@@ -17,8 +22,8 @@ export const uniqueRoutesHandle = (route, slide, idForRoute = null, reRoute = ''
     else if (route == 'logout' || route == 'ideasPage' || route == 'auth' || route == 'admin') {
         return ({ name: route })
     }
-    else if (idForRoute && idForRoute.value) {
-        return ({ name: route, params: { id: idForRoute.value } })
+    else if (idForRoute) {
+        return ({ name: route, params: { id: idForRoute } })
     }
     else return { name: route, params: { id: slide.id } }
 }

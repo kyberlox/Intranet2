@@ -7,6 +7,7 @@ export type IFactorySlides = {
     reportsHref: string;
     tours: boolean | string;
     toursHref: string;
+    factoryId: number;
 }
 
 export type IFactoryReport = {
@@ -15,12 +16,14 @@ export type IFactoryReport = {
     img: string;
     href: string;
     videoHref: string;
+    factoryId: number;
 }
 
 export type IFactoryTours = {
+    id: number;
     title: string;
     img: string;
-    tour: string;
+    tourId: string;
     hrefTitle: string;
-    hrefId: string;
+    hrefId: number;
 }

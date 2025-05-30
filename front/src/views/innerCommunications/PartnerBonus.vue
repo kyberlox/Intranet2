@@ -13,7 +13,7 @@ import Api from "@/utils/Api";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
 interface IFlexGallery {
-    id: string
+    id: number;
     title: string,
     img: string,
 }

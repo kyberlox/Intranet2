@@ -1,4 +1,12 @@
-import type { IOfficialEvent, IOfficialEvents } from "@/interfaces/IOfficialEvent";
+interface IOfficialEvent {
+    title: string,
+    slides: string[]
+}
+interface IOfficialEventSlides {
+    title: string,
+    img: string,
+    href: string
+}
 
 export const officialEventSlide: IOfficialEvent = {
     title: 'Индийская делегация на САЗ',
@@ -8,7 +16,7 @@ export const officialEventSlide: IOfficialEvent = {
     ]
 }
 
-export const officialEventSlides: IOfficialEvents[] = [
+export const officialEventSlides: IOfficialEventSlides[] = [
     {
         title: 'Индийская делегация на САЗ',
         img: 'https://portal.emk.ru/upload/resize_cache/iblock/c0e/a54janbkziy7t6z93gw9ipz3lk83mcn3/296_168_2/DSC_4007-2.jpg',

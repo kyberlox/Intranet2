@@ -3,7 +3,7 @@
         <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
              class="row">
             <div class="col-12 col-lg-6 mb-2">
-                <SwiperBlank :videos="currentPost?.videos ? currentPost.videos : 0"
+                <SwiperBlank :videos="currentPost?.videos ? currentPost.videos : undefined"
                              :images="currentPost?.images ? currentPost.images : ['https://placehold.co/360x206']"
                              :type="'postInner'" />
             </div>
@@ -14,7 +14,7 @@
                         <div class="row mb-2">
                             <div class="col-12">
                                 <h2 class="news__detail__title">{{ currentPost.name || currentPost.indirect_data?.NAME
-                                    }}
+                                }}
                                 </h2>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
             </div>
         </div>
         <FlexGallery v-else-if="type !== 'adminPreview'"
-                     :slides="['dss']"
+                     :slides="[]"
                      :modifiers="['noRoute']" />
     </div>
 </template>
@@ -121,8 +121,11 @@ export default defineComponent({
                 target.value.content_text = property374Text;
             }
 
-            if (!res.embedVideos || !res.nativeVideos) return;
-            (target.value as any).videos = res.embedVideos.concat(res.nativeVideos);
+            if (res.embedVideos || res.nativeVideos) {
+                const embedVideos = res.embedVideos || [];
+                const nativeVideos = res.nativeVideos || [];
+                target.value.videos = embedVideos.concat(nativeVideos);
+            }
         }
 
         return {

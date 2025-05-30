@@ -86,7 +86,7 @@
 <script lang="ts">
 import { ref, computed, watch, defineComponent } from "vue";
 import { mainMenuPoints } from "@/assets/staticJsons/navLinks";
-import type { ISubPoint } from "@/interfaces/layout";
+import type { ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";

@@ -39,21 +39,6 @@
         vertical-align: middle;
         color: #000;
 
-        &:hover .bx-lists-application-link {
-            text-decoration: underline;
-        }
-
-        .bx-lists-application-link span:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            height: 36px;
-            width: 20px;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0), #f2f6f7 95%, #f2f6f7);
-        }
-
         span {
             max-height: 36px;
             overflow: hidden;

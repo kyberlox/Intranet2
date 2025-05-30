@@ -20,7 +20,7 @@ export interface ISubPoint {
     name: string;
     href: string;
     params?: {
-        id: string;
+        id: number;
     };
 }
 // header

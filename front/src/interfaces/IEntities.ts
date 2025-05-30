@@ -1,16 +1,16 @@
 interface IBaseEntity {
-    section_id?: Number,
-    name?: String,
-    preview_text?: String,
-    content_type?: String,
-    date_creation?: String,
-    active?: Boolean,
-    id?: Number,
-    content_text?: String,
-    date_publiction?: String,
-    images?: [],
-    embedVideos?: [],
-    nativeVideos?: [],
+    section_id?: number,
+    name?: string,
+    preview_text?: string,
+    content_type?: string,
+    date_creation?: string,
+    active?: boolean,
+    id?: number,
+    content_text?: string,
+    date_publiction?: string,
+    images?: string[],
+    embedVideos?: string[],
+    nativeVideos?: string[],
     reactions?: {
         likes?: {
             mine?: boolean,
@@ -18,114 +18,116 @@ interface IBaseEntity {
         },
         views?: string,
     },
-    videos?: [],
-    tags?: [],
+    videos?: string[],
+    tags?: string[],
     documents?: {
         link: string,
         name: string,
-    }
+    },
+    image?: string,
 }
 
 interface IBaseIndirectData {
-    ID?: String,
+    ID?: string,
     PREVIEW_PICTURE?: string,
     DETAIL_PICTURE?: string,
-    IBLOCK_ID?: String,
-    NAME?: String,
-    CREATED_BY?: String,
-    BP_PUBLISHED?: String,
-    DATE_CREATE?: String,
-    ACTIVE_FROM_X?: String,
-    ACTIVE_FROM?: String,
+    IBLOCK_ID?: string,
+    NAME?: string,
+    CREATED_BY?: string,
+    BP_PUBLISHED?: string,
+    DATE_CREATE?: string,
+    ACTIVE_FROM_X?: string,
+    ACTIVE_FROM?: string,
+    videos?: string[]
 }
 
 interface IActualNewsIndirectData extends IBaseIndirectData {
-    PROPERTY_1066?: String[],
-    PROPERTY_1116?: String[],
-    PROPERTY_284?: String[],
-    PROPERTY_285?: String[],
-    PROPERTY_289?: String[],
-    PROPERTY_290?: String[],
+    PROPERTY_1066?: string[],
+    PROPERTY_1116?: string[],
+    PROPERTY_284?: string[],
+    PROPERTY_285?: string[],
+    PROPERTY_289?: string[],
+    PROPERTY_290?: string[],
     PROPERTY_291?:
     {
-        TYPE?: String,
-        TEXT?: String,
+        TYPE?: string,
+        TEXT?: string,
     }[],
-    PROPERTY_292?: String[],
-    PROPERTY_293?: String[],
-    PROPERTY_294?: String[],
-    PROPERTY_295?: String[],
-    PROPERTY_296?: String[],
+    PROPERTY_292?: string[],
+    PROPERTY_293?: string[],
+    PROPERTY_294?: string[],
+    PROPERTY_295?: string[],
+    PROPERTY_296?: string[],
 }
 
 interface ICareIndirectData extends IBaseIndirectData {
-    PROPERTY_342?: String[],
-    PROPERTY_343?: String[],
-    PROPERTY_344?: String[],
-    PROPERTY_435?: String[],
-    PROPERTY_347?: String[],
+    PROPERTY_342?: string[],
+    PROPERTY_343?: string[],
+    PROPERTY_344?: string[],
+    PROPERTY_435?: string[],
+    PROPERTY_347?: string[],
     PROPERTY_348?:
     {
-        TYPE?: String,
-        TEXT?: String
+        TYPE?: string,
+        TEXT?: string
     }[],
-    PROPERTY_349?: String[],
+    PROPERTY_349?: string[],
 }
 
 interface IAfishaItemIndirectData extends IBaseIndirectData {
-    PROPERTY_375?: String[],
-    PROPERTY_438?: String[],
-    PROPERTY_372?: String[],
-    PROPERTY_373?: String[],
+    PROPERTY_375?: string[],
+    PROPERTY_438?: string[],
+    PROPERTY_372?: string[],
+    PROPERTY_373?: string[],
     PROPERTY_374?:
     {
-        TYPE?: String,
-        TEXT?: String
+        TYPE?: string,
+        TEXT?: string
     }[]
-    PROPERTY_376?: String[],
-    PROPERTY_5004?: String[]
+    PROPERTY_376?: string[],
+    PROPERTY_5004?: string[]
 }
 
 interface ICorpEventsIndirectData extends IBaseIndirectData {
-    PROPERTY_1066?: String[],
-    PROPERTY_411?: String[],
-    PROPERTY_284?: String[],
-    PROPERTY_285?: String[],
-    PROPERTY_289?: String[],
-    PROPERTY_290?: String[],
+    PROPERTY_1066?: string[],
+    PROPERTY_411?: string[],
+    PROPERTY_284?: string[],
+    PROPERTY_285?: string[],
+    PROPERTY_289?: string[],
+    PROPERTY_290?: string[],
     PROPERTY_291?:
     {
-        TYPE?: String,
-        TEXT?: String
+        TYPE?: string,
+        TEXT?: string
     }[],
-    PROPERTY_292?: String[],
-    PROPERTY_293?: String[],
-    PROPERTY_294?: String[],
-    PROPERTY_295?: String[],
-    PROPERTY_296?: String[],
+    PROPERTY_292?: string[],
+    PROPERTY_293?: string[],
+    PROPERTY_294?: string[],
+    PROPERTY_295?: string[],
+    PROPERTY_296?: string[],
 }
 
 interface ICorpLifeIndirectData extends IBaseIndirectData {
-    PROPERTY_666: String[],
-    PROPERTY_405: String[],
-    PROPERTY_406: String[],
-    PROPERTY_407: String[],
-    PROPERTY_409: String[],
-    PROPERTY_408: String[],
+    PROPERTY_666: string[],
+    PROPERTY_405: string[],
+    PROPERTY_406: string[],
+    PROPERTY_407: string[],
+    PROPERTY_409: string[],
+    PROPERTY_408: string[],
 }
 
 interface ISafetyTechnicsData extends IBaseIndirectData {
-    PROPERTY_342: String[],
-    PROPERTY_343: String[],
-    PROPERTY_344: String[],
-    PROPERTY_435: String[],
-    PROPERTY_347: String[],
+    PROPERTY_342: string[],
+    PROPERTY_343: string[],
+    PROPERTY_344: string[],
+    PROPERTY_435: string[],
+    PROPERTY_347: string[],
     PROPERTY_348:
     {
-        TYPE: String,
-        TEXT: String
+        TYPE: string,
+        TEXT: string
     }[],
-    PROPERTY_349: String[],
+    PROPERTY_349: string[],
 }
 
 export interface IBlogData extends IBaseIndirectData {
@@ -134,8 +136,8 @@ export interface IBlogData extends IBaseIndirectData {
 }
 
 export interface IBlogAuthors {
-    id: string,
-    authorId: string,
+    id: number,
+    authorId: number,
     title: string,
 }
 

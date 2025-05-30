@@ -16,7 +16,7 @@ import { useLoadingStore } from "@/stores/loadingStore"
 
 export default defineComponent({
     components: { GridGallery },
-    setup(props, { emit }) {
+    setup() {
         const loadingStore = useLoadingStore();
         const ViewsDataStore = useViewsDataStore();
         const ourPeople = computed(() => ViewsDataStore.getData('ourPeopleData'));

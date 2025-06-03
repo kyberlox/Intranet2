@@ -639,7 +639,7 @@ class Article:
                     active_articles.append(res)
                 else:
                     pass
-            sorted_active_aticles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
+            sorted_active_aticles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
             return sorted_active_aticles
     
     def main_page(self, section_id):

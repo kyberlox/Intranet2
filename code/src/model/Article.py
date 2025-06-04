@@ -233,20 +233,18 @@ class Article:
                         files.append( data[file_property] )
 
                         if file_property in preview_file:
-                            preview_images.append(f_id)
+                            preview_images.append(data[file_property])
                     else:
                         print("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
                         
                 except:
                     pass
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
-                    pass
 
         if files == []:
             return []
         else:
             files_data = []
-            files_to_add = [] # временно
             files_to_add = File().need_update_file(art_id, files)
 
             if files_to_add != []:

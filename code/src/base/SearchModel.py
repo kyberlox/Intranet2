@@ -119,7 +119,7 @@ class UserSearchModel:
                         "type": "text"
                     },
                     "phone": {
-                        "type": "text"
+                        "type": "integer"
                     },
                     "city": {
                         "type": "text"
@@ -131,13 +131,50 @@ class UserSearchModel:
                         "type": "text"
                     },
                     "work_phone": {
-                        "type": "text"
+                        "type": "integer"
                     },
-                    "work_position": {
-                        "type": "text"
-                    },
-                    "work_office": {
-                        "type": "text"
+                    # "work_position": {
+                    #     "type": "text"
+                    # },
+                    # "work_office": {
+                    #     "type": "integer"
+                    # },
+                    "indirect_data": {
+                        "type": "object",
+                        "dynamic_templates": [
+                            {
+                                "string_values": {
+                                    "match_mapping_type": "string",
+                                    "mapping": {
+                                        "type": "text"
+                                    }
+                                }
+                            },
+                            {
+                                "integet_values": {
+                                    "match_mapping_type": "long",
+                                    "mapping": {
+                                        "type": "integer"
+                                    }
+                                }
+                            },
+                            {
+                                "boolean_values": {
+                                    "match_mapping_type": "boolean",
+                                    "mapping": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            },
+                            {
+                                "array_values": {
+                                    "match_mapping_type": "boolean",
+                                    "mapping": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        ]
                     }
                 }
             }
@@ -156,45 +193,47 @@ class UserSearchModel:
         users_data = self.UserModel().all()
         users_data_ES = []
         for user in users_data:
-
+            
             important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday',
-                              'uf_phone_inner', "indirect_data"]
+                            'uf_phone_inner', "indirect_data"]
 
             data = user.__dict__
-            # birth = f'{data['personal_birthday']}' 'work_position', 'uf_usr_1586854037086'
-            if data['second_name'] is None:
-                fio = f'{data['last_name']} {data['name']}'
-            else:
-                fio = f'{data['last_name']} {data['name']} {data['second_name']}'
-
-            data_row = {"user_fio": fio}
-            for param in important_list:
-                if param in data.keys():
-                    if param == 'indirect_data':
-                        indirect_elem = data[param]
-                        if "work_position" in indirect_elem.keys() and "uf_usr_1586854037086" in indirect_elem.keys():
-                            data_row["work_position"] = indirect_elem["work_position"]
-                            data_row["work_office"] = indirect_elem["uf_usr_1586854037086"]
-                        else:
-                            pass
-                    elif param == 'uf_phone_inner':
-                        data_row["work_phone"] = data[param]
-                    else:
-                        data_row[param] = data[param]
+            if data['active']:
+                # birth = f'{data['personal_birthday']}' 'work_position', 'uf_usr_1586854037086'
+                if data['second_name'] is None:
+                    fio = f'{data['last_name']} {data['name']}'
                 else:
-                    continue
+                    fio = f'{data['last_name']} {data['name']} {data['second_name']}'
 
-            user_id = int(data['id'])
+                data_row = {"user_fio": fio}
+                for param in important_list:
+                    if param in data.keys():
+                        # if param == 'indirect_data':
+                        #     indirect_elem = data[param]
+                        #     if "work_position" in indirect_elem.keys() and "uf_usr_1586854037086" in indirect_elem.keys():
+                        #         data_row["work_position"] = indirect_elem["work_position"]
+                        #         data_row["work_office"] = indirect_elem["uf_usr_1586854037086"]
+                        #     else:
+                        #         pass
+                        # elif param == 'uf_phone_inner':
+                        #     data_row["work_phone"] = data[param]
+                        # else:
+                        data_row[param] = data[param]
+                    else:
+                        continue
 
-            user_action = {
-                "_index": self.index,
-                "_op_type": "index",  # либо create либо index че выбрать хз пока
-                "_id": user_id,
-                "_source": data_row
-            }
-            users_data_ES.append(user_action)
+                user_id = int(data['id'])
 
-        helpers.bulk(elastic_client, users_data_ES)
+                # user_action = {
+                #     "_index": self.index,
+                #     "_op_type": "index",  # либо create либо index че выбрать хз пока
+                #     "_id": user_id,
+                #     "_source": data_row
+                # }
+                # users_data_ES.append(user_action)
+                elastic_client.index(index=self.index, id=user_id, body=data_row)
+
+        # helpers.bulk(elastic_client, users_data_ES)
 
         return {"status": True}
 
@@ -228,6 +267,24 @@ class UserSearchModel:
             size=1000
         )
 
+        return res['hits']['hits']
+
+    def search_model(self, jsn):
+        res = elastic_client.search(
+            index=self.index,
+            query=jsn
+            )
+        return res['hits']['hits']
+    
+    def search_indirect(self, key_word):
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "term": {
+                    "indirect_data": key_word
+                }
+            }
+            )
         return res['hits']['hits']
 
     def delete_index(self):
@@ -343,7 +400,10 @@ class StructureSearchModel:
         return responce
 
     def dump(self):
-        self.delete_index()
+        try:
+            self.delete_index()
+        except:
+            pass
         self.create_index()
 
         list_for_deps = []

@@ -209,7 +209,7 @@ def test_update_photo():
 @users_router.post("/search")
 def search_user(jsn=Body()):
     #будет работать через elasticsearch
-    pass
+    return UserSearchModel().search_model(jsn)
 
 @users_router.get("/test_update_photo")
 def test_update_photo():
@@ -240,3 +240,7 @@ def add_view(user_id: int, art_id: int):
 def get_viewed_articles(user_id: int):
     return User(user_id=user_id).get_viewed_articles()
 
+@users_router.post("/search_indirect")
+def search_indirect(key_word):
+    #будет работать через elasticsearch
+    return UserSearchModel().search_indirect(key_word)

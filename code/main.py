@@ -14,11 +14,13 @@ from src.model.Section import Section, section_router
 from src.model.Article import Article, article_router
 
 from src.model.File import File, file_router
-from src.services.Vcard import vcard_app
+from src.services.VCard import vcard_app
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
 
 from src.base.B24 import B24
+
+from src.services.Auth import AuthService, auth_router
 
 import os
 
@@ -34,6 +36,8 @@ app.include_router(article_router, prefix="/api")
 app.include_router(file_router, prefix="/api")
 app.include_router(vcard_app, prefix="/api")
 app.include_router(search_router, prefix="/api")
+
+app.include_router(auth_router, prefix="/api")
 
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
@@ -65,6 +69,7 @@ os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 # Монтируем статику
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
+
 
 
 @app.get("/test/{ID}")
@@ -139,10 +144,12 @@ def total_update():
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 
+
 #Заглушки фронта
 @app.get("/api/view/menu", tags=["Меню", "View"])
 def get_user(request: Request):
     return templates.TemplateResponse(name="index.html", context={"request": request})
+
 
 
 '''

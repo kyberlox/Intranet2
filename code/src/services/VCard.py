@@ -148,3 +148,4 @@ def dowload_file(uuid):
 def download_contact(uuid):
     content, filename = User_Vcard(uuid).create_vcs() 
     return Response(content=content, media_type="text/vcard",  headers={"Content-Disposition": f"attachment; filename={filename}"})
+

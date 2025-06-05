@@ -127,5 +127,4 @@ class FileModel:
         return user_photo_collection.find_one({"_id": self.id})
     
     def find_user_photo_by_uuid(self, uuid):
-
         return user_photo_collection.find_one({"uuid": uuid})

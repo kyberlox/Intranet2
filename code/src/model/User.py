@@ -61,6 +61,8 @@ class User:
     def get_uf_depart(self):
         return UserModel().find_uf_depart()
 
+    def user_inf_by_uuid(self):
+        return UserModel(self.uuid).find_by_uuid()
 
 
     def set_users_photo(self):

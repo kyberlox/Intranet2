@@ -35,8 +35,7 @@ class File:
             b24 = B24()
             #file_data = b24.get_file(self.id, inf_id)
             file_data = b24.get_all_files(self.b24_id)
-
-            print(file_data)
+            
             if "ORIGINAL_NAME" in file_data:
                 filename = file_data["ORIGINAL_NAME"]
             elif "FILE_NAME" in file_data:
@@ -59,7 +58,9 @@ class File:
                 "stored_name": unique_name,
                 "content_type": content_type,
                 "article_id": art_id,
-                "b24_id": self.id,
+                "b24_id": self.b24_id,
+                "is_archive": False,
+                "is_preview": is_preview,
                 "file_url": f"/api/files/{unique_name}"  # Прямой URL
             }
 
@@ -113,7 +114,6 @@ class File:
     
     def get_files(self):
         file_data = FileModel(id=self.id).find_all_by_art_id()
-
         file_list = []
         
         if not file_data:
@@ -122,7 +122,6 @@ class File:
             for file in file_data:
                 file_info = {}
                 file_info["id"] = str(file["_id"])
-                file_info["file_url"] = file["file_url"]
                 file_info["original_name"] = file["original_name"]
                 file_info["stored_name"] = file["stored_name"]
                 file_info["content_type"] = file["content_type"]
@@ -130,7 +129,10 @@ class File:
                 file_info["b24_id"] = file["b24_id"]
                 file_info["file_url"] = file["file_url"]
                 file_info["is_archive"] = file["is_archive"]
+                file_info["is_preview"] = file["is_preview"]
+                file_info["file_url"] = file["file_url"]
                 file_list.append(file_info)
+
             return file_list
 
 
@@ -185,6 +187,9 @@ class File:
        
 
 
+# @file_router.put("/create_indexes")
+# async def create_mongo_indexes():
+#     return FileModel().create_indexes()
 
 @file_router.post("/upload")
 async def upload_file(file: UploadFile):

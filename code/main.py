@@ -1,8 +1,11 @@
-from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException#, Cookie, Header, Response
+from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request#, Cookie, Header
 from fastapi.responses import Response#, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi import Request, HTTPException, status
+
+from typing import Awaitable, Callable
 
 # from bson import Binary
 
@@ -14,11 +17,13 @@ from src.model.Section import Section, section_router
 from src.model.Article import Article, article_router
 
 from src.model.File import File, file_router
-from src.services.Vcard import vcard_app
+from src.services.VCard import vcard_app
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
 
 from src.base.B24 import B24
+
+from src.services.Auth import AuthService, auth_router
 
 import os
 
@@ -34,6 +39,8 @@ app.include_router(article_router, prefix="/api")
 app.include_router(file_router, prefix="/api")
 app.include_router(vcard_app, prefix="/api")
 app.include_router(search_router, prefix="/api")
+
+app.include_router(auth_router, prefix="/api")
 
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
@@ -55,6 +62,8 @@ app.add_middleware(
     #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
 )
 
+
+
 # Настройки
 STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
@@ -65,6 +74,47 @@ os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 # Монтируем статику
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
+
+
+
+#Проверка авторизации для ВСЕХ запросов
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
+    # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
+    open_links = [
+        "/docs",
+        "/openapi.json",
+        "/api/auth_router/"
+    ]
+    for open_link in open_links:
+        if open_link in request.url.path:
+            return await call_next(request)
+
+    # Проверяем авторизацию для всех остальных /api эндпоинтов
+    if request.url.path.startswith("/api"):
+        token = request.cookies.get("Authorization")
+        if not token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization cookies missing",
+            )
+
+        try:
+            session = AuthService().validate_session(token)
+            if not session:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token",
+                )
+
+        except IndexError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authorization cookies format",
+            )
+
+    return await call_next(request)
+
 
 
 @app.get("/test/{ID}")
@@ -139,12 +189,15 @@ def total_update():
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 
+
 #Заглушки фронта
 @app.get("/api/view/menu", tags=["Меню", "View"])
 def get_user(request: Request):
     return templates.TemplateResponse(name="index.html", context={"request": request})
 
 
+
 '''
 ! Особенные запросы
 '''
+

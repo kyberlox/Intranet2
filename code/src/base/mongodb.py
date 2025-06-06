@@ -35,7 +35,52 @@ class FileModel:
                 id = ObjectId(id)
             self.id = id
 
+    def create_indexes(self):
+        #создаем индексы
+        files_collection.create_index(
+            [
+                ("id", 1),
+                ("original_name", 1),
+                ("stored_name", 1),
+                ("content_type", 1),
+                ("article_id", 1),
+                ("b24_id", 1),
+                ("file_url", 1)
+            ],
+            background=True
+        )
+        user_photo_collection.create_index(
+            [
+                ("id", 1),
+                ("name", 1),
+                ("format", 1),
+                ("uuid", 1),
+                ("b24_url", 1)
+            ],
+            background=True
+        )
+        # files_collection.create_index(
+        #     {
+        #         "id": 1,
+        #         "original_name": 1,
+        #         "stored_name": 1,
+        #         "content_type": 1,
+        #         "article_id": 1,
+        #         "b24_id": 1,
+        #         "file_url": 1
+        #     },
+        # )
 
+        # user_photo_collection.create_index(
+        #     {
+        #         "id": 1,
+        #         "name": 1,
+        #         "format": 1,
+        #         "uuid": 1,
+        #         "b24_url": 1
+        #     }
+        # )
+        return {"status": True}
 
     # блок для файлов
     def add(self, file_data):
@@ -43,7 +88,7 @@ class FileModel:
         return file_id
 
     def go_archive(self):
-        return files_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
+        return files_collection.update_one({"b24_id": self.id}, { "$set": { "is_archive" : False } })
 
     def remove(self):
         #удалить сам файл

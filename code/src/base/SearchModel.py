@@ -43,26 +43,6 @@ class UserSearchModel:
                                 "lowercase"
                             ]
                         }
-                        # "fio_analyzer": {
-                        #     "type": "custom",
-                        #     "tokenizer": "standard",
-                        #     "filter": [
-                        #         "lowercase",
-                        #         "ru_stop",
-                        #         "ru_stemming",
-                        #     ]
-                        # },
-                        # "fio_search_analyzer": {
-                        #     "type": "custom",
-                        #     "tokenizer": "standard",
-                        #     "filter": [
-                        #         "lowercase",
-                        #         "ru_stop",
-                        #         "ru_stemming",
-                        #         # "name_synonyms",
-                        #         "myngram"
-                        #     ]
-                        # }
                     },
                     "filter": {
                         "ru_stemming": {
@@ -73,15 +53,6 @@ class UserSearchModel:
                             "type": "stop",
                             "stopwords": "_russian"
                         },
-                        # "name_synonyms": {
-                        #     "type": "synonym",
-                        #     "synonyms": [
-                        #         "олег => олег, олегович",
-                        #         "виктор => виктор, викторович",
-                        #         "кучер => кучеренко"
-                        #         # добавьте другие распространенные имена/отчества
-                        #     ]
-                        # },
                         "myngram": {
                             "type": "edge_ngram",
                             "min_gram": 2,
@@ -96,7 +67,6 @@ class UserSearchModel:
                     "user_fio": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE",
-                        # "search_analyzer": "standard",
                         "fields": {
                             "fuzzy": {
                                 "type": "text",
@@ -104,17 +74,6 @@ class UserSearchModel:
                             }
                         }
                     },
-                    # "user_fio": {
-                    #     "type": "text",
-                    #     "analyzer": "fio_analyzer",
-                    #     "search_analyzer": "fio_search_analyzer",
-                    #     "fields" : {
-                    #         "fuzzy": {
-                    #             "type": "text",
-                    #             "analyzer": "standard"
-                    #         }
-                    #     }
-                    # },
                     "email": {
                         "type": "text"
                     },
@@ -133,50 +92,52 @@ class UserSearchModel:
                     "work_phone": {
                         "type": "integer"
                     },
-                    # "work_position": {
-                    #     "type": "text"
-                    # },
-                    # "work_office": {
-                    #     "type": "integer"
-                    # },
                     "indirect_data": {
-                        "type": "object",
-                        "dynamic_templates": [
-                            {
-                                "string_values": {
-                                    "match_mapping_type": "string",
-                                    "mapping": {
-                                        "type": "text"
-                                    }
-                                }
-                            },
-                            {
-                                "integet_values": {
-                                    "match_mapping_type": "long",
-                                    "mapping": {
-                                        "type": "integer"
-                                    }
-                                }
-                            },
-                            {
-                                "boolean_values": {
-                                    "match_mapping_type": "boolean",
-                                    "mapping": {
-                                        "type": "boolean"
-                                    }
-                                }
-                            },
-                            {
-                                "array_values": {
-                                    "match_mapping_type": "boolean",
-                                    "mapping": {
-                                        "type": "boolean"
-                                    }
-                                }
-                            }
-                        ]
+                        "type": "nested",
+                        "dynamic": "true"
                     }
-                }
+                },
+                "dynamic_templates": [
+                    {
+                        "nested_string_values": {
+                            "path_match": "indirect_data.*",
+                            "match_mapping_type": "string",
+                            "mapping": {
+                                "type": "text"
+                            }
+                        }
+                    },
+                    {
+                        "integer_values": {
+                            "match_mapping_type": "long",
+                            "path_match": "indirect_data.*",
+                            "mapping": {
+                                "type": "float",
+                                "ignore_malformed": "true"
+                            }
+                        }
+                    },
+                    {
+                        "boolean_values": {
+                            "match_mapping_type": "boolean",
+                            "path_match": "indirect_data.*",
+                            "mapping": {
+                                "type": "boolean",
+                                "ignore_malformed": "true"
+                            }
+                        }
+                    },
+                    {
+                        "date_values": {
+                            "match_mapping_type": "date",
+                            "path_match": "indirect_data.*",
+                            "mapping": {
+                                "type": "date",
+                                "ignore_malformed": "true"
+                            }
+                        }
+                    }
+                ]
             }
         }
 
@@ -189,7 +150,7 @@ class UserSearchModel:
         except:
             pass
         self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
-        # print(self.create_index())
+        
         users_data = self.UserModel().all()
         users_data_ES = []
         for user in users_data:
@@ -198,42 +159,24 @@ class UserSearchModel:
                             'uf_phone_inner', "indirect_data"]
 
             data = user.__dict__
-            if data['active']:
-                # birth = f'{data['personal_birthday']}' 'work_position', 'uf_usr_1586854037086'
-                if data['second_name'] is None:
-                    fio = f'{data['last_name']} {data['name']}'
-                else:
-                    fio = f'{data['last_name']} {data['name']} {data['second_name']}'
-
-                data_row = {"user_fio": fio}
-                for param in important_list:
-                    if param in data.keys():
-                        # if param == 'indirect_data':
-                        #     indirect_elem = data[param]
-                        #     if "work_position" in indirect_elem.keys() and "uf_usr_1586854037086" in indirect_elem.keys():
-                        #         data_row["work_position"] = indirect_elem["work_position"]
-                        #         data_row["work_office"] = indirect_elem["uf_usr_1586854037086"]
-                        #     else:
-                        #         pass
-                        # elif param == 'uf_phone_inner':
-                        #     data_row["work_phone"] = data[param]
-                        # else:
-                        data_row[param] = data[param]
+            if data['id'] == 1:
+                pass
+            else:
+                if data['active']:
+                    if data['second_name'] is None:
+                        fio = f'{data['last_name']} {data['name']}'
                     else:
-                        continue
+                        fio = f'{data['last_name']} {data['name']} {data['second_name']}'
+                    data_row = {"user_fio": fio}
+                    for param in important_list:
+                        if param in data.keys():
+                            data_row[param] = data[param]
+                        else:
+                            continue
 
-                user_id = int(data['id'])
+                    user_id = int(data['id'])
 
-                # user_action = {
-                #     "_index": self.index,
-                #     "_op_type": "index",  # либо create либо index че выбрать хз пока
-                #     "_id": user_id,
-                #     "_source": data_row
-                # }
-                # users_data_ES.append(user_action)
-                elastic_client.index(index=self.index, id=user_id, body=data_row)
-
-        # helpers.bulk(elastic_client, users_data_ES)
+                    elastic_client.index(index=self.index, id=user_id, body=data_row)
 
         return {"status": True}
 
@@ -284,7 +227,7 @@ class UserSearchModel:
                     "indirect_data": key_word
                 }
             }
-            )
+        )
         return res['hits']['hits']
 
     def delete_index(self):

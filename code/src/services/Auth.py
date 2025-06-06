@@ -7,16 +7,17 @@ from typing import Optional, Dict, Any
 import uuid
 from pydantic import BaseModel
 
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Response, Request, Cookie#, Header
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 from src.base.RedisStorage import RedisStorage
 from src.model.User import User
 
 
+
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизвция"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 
@@ -200,13 +201,13 @@ class AuthService:
         session_data = self.redis.get_session(session_id)
 
         if not session_data:
-            return None
+            return False
 
         try:
             expires_at = datetime.fromisoformat(session_data["expires_at"])
             if datetime.now() > expires_at:
                 self.redis.delete_session(session_id)
-                return None
+                return False
 
             # Обновляем TTL сессии (скользящее окно)
             self.redis.update_session_ttl(session_id, self.session_ttl)
@@ -216,7 +217,7 @@ class AuthService:
         except (KeyError, ValueError) as e:
             logging.error(f"Invalid session data format: {e}")
             self.redis.delete_session(session_id)
-            return None
+            return False
 
     def logout(self, session_id: str) -> None:
         """
@@ -228,25 +229,31 @@ class AuthService:
 
 
 
-@auth_router.post("/auth/{login}/{password}")
-async def authentication(login : str, password : str): #data = Body()
+@auth_router.post("/auth/")
+async def authentication(login : str, password : str, response : Response): #data = Body()
     #login = data["login"]
     #password = data["password"]
-    tkn = await AuthService().authenticate(login, password)
-    if not tkn:
+    session = await AuthService().authenticate(login, password)
+    access_token = session["session_id"]
+    if not session :
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
         )
-    return tkn
 
-@auth_router.get("/check/{token}")
-async def ckeck(token : str = Depends(oauth2_scheme)):
-    session  = await AuthService().validate_session(token)
+    #response.headers["Authorization"] = access_token
+    response.set_cookie(key="Authorization", value=access_token)
+    #return JSONResponse(content=session, headers=response.headers)
+    return session
+
+@auth_router.get("/check/")
+async def check_token(request : Request):
+    token = request.cookies.get("Authorization")
+    print(token)
+    session  = AuthService().validate_session(token)
     if not session :
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid session",
-            headers={"WWW-Authenticate": "Bearer"},
+            detail="Invalid session"
         )
     return session

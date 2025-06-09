@@ -56,16 +56,16 @@ class RedisStorage:
     def find_session_id(self, user_uuid: str, username: str) -> Optional[str]:
         """
         Ищет ключ сессии по user_uuid и username.
-        Работает с разными типами данных в Redis: строками, хешами и JSON.
+        Совместим с redis-py 4.0+ (автоматическое декодирование).
         """
         cursor = 0
         while True:
             cursor, keys = self.client.scan(cursor=cursor, match="session:*")
             
             for key in keys:
-                key_type = self.client.type(key).decode('utf-8')
+                key_type = self.client.type(key)
                 
-                # Обработка строковых значений (обычный JSON)
+                # Обработка строк (JSON)
                 if key_type == 'string':
                     try:
                         value = self.client.get(key)
@@ -74,19 +74,16 @@ class RedisStorage:
                             
                         data = json.loads(value)
                         if data.get('user_uuid') == user_uuid and data.get('username') == username:
-                            return key.decode('utf-8')
-                    except (json.JSONDecodeError, AttributeError):
+                            return key  # Ключ уже строка, декодирование не нужно
+                    except json.JSONDecodeError:
                         continue
                 
                 # Обработка хешей (HSET)
                 elif key_type == 'hash':
-                    try:
-                        user_data = self.client.hgetall(key)
-                        if (user_data.get(b'user_uuid', b'').decode('utf-8') == user_uuid and 
-                            user_data.get(b'username', b'').decode('utf-8') == username):
-                            return key.decode('utf-8')
-                    except (AttributeError, UnicodeDecodeError):
-                        continue
+                    user_data = self.client.hgetall(key)
+                    if (user_data.get('user_uuid') == user_uuid and 
+                        user_data.get('username') == username):
+                        return key  # Ключ уже строка
             
             if cursor == 0:
                 break

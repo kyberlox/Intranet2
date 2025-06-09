@@ -53,6 +53,42 @@ class RedisStorage:
             raise
         return True
 
+    def find_session_id(self, user_uuid: str, username: str) -> Optional[str]:
+        """
+        Ищет ключ сессии (session_id), где значение содержит
+        указанные user_uuid и username.
+
+        Args:
+            user_uuid: UUID пользователя (часть значения)
+            username: Имя пользователя (часть значения)
+
+        Returns:
+            Optional[str]: Найденный session_id или None, если сессии нет.
+        """
+        cursor = 0
+        while True:
+            # Ищем ключи по шаблону "session:*" (или другому, если у вас иной формат)
+            cursor, keys = self.redis.scan(cursor=cursor, match="session:*")
+            
+            for key in keys:
+                value = self.redis.get(key)
+                if not value:
+                    continue
+                
+                try:
+                    data = json.loads(value)
+                    # Проверяем совпадение user_uuid и username
+                    if data.get("user_uuid") == user_uuid and data.get("username") == username:
+                        return key.decode('utf-8')  # Возвращаем найденный ключ
+                except (json.JSONDecodeError, AttributeError):
+                    continue
+            
+            # Выход, если обход завершен (cursor = 0)
+            if cursor == 0:
+                break
+        
+        return None  # Сессия не найдена
+
     def save_session(self, session_id: str, data: Dict[str, Any], ttl: Optional[timedelta] = None) -> bool:
         """
         Сохранение сессии в Redis

@@ -48,7 +48,6 @@ app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="
 templates = Jinja2Templates(directory="./front_jinja")
 
 origins = [
-    "http://localhost:5173",
     "http://localhost:8000",
     "http://intranet.emk.org.ru:8000",
     "http://intranet.emk.org.ru"

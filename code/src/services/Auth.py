@@ -244,7 +244,7 @@ async def authentication(response : Response, data = Body()): #login : str, pass
             detail="Invalid credentials",
         )
 
-    response.headers["Authorization"] = access_token
+    #response.headers["Authorization"] = access_token
 
     response.set_cookie(key="Authorization", value=access_token)#!!!!!!!!!! убери последние параметры в проде
 

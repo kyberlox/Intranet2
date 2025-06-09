@@ -60,15 +60,15 @@ class RedisStorage:
         """
         cursor = 0
         while True:
-            cursor, keys = self.redis.scan(cursor=cursor, match="session:*")
+            cursor, keys = self.client.scan(cursor=cursor, match="session:*")
             
             for key in keys:
-                key_type = self.redis.type(key).decode('utf-8')
+                key_type = self.client.type(key).decode('utf-8')
                 
                 # Обработка строковых значений (обычный JSON)
                 if key_type == 'string':
                     try:
-                        value = self.redis.get(key)
+                        value = self.client.get(key)
                         if not value:
                             continue
                             
@@ -81,7 +81,7 @@ class RedisStorage:
                 # Обработка хешей (HSET)
                 elif key_type == 'hash':
                     try:
-                        user_data = self.redis.hgetall(key)
+                        user_data = self.client.hgetall(key)
                         if (user_data.get(b'user_uuid', b'').decode('utf-8') == user_uuid and 
                             user_data.get(b'username', b'').decode('utf-8') == username):
                             return key.decode('utf-8')

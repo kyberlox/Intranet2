@@ -84,7 +84,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     open_links = [
         "/docs",
         "/openapi.json",
-        "/api/auth_router/"
+        "/api/auth_router",
+        "/total_update"
     ]
     for open_link in open_links:
         if open_link in request.url.path:

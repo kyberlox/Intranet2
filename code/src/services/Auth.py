@@ -243,7 +243,7 @@ async def authentication(response : Response, data = Body()): #login : str, pass
 
     #response.headers["Authorization"] = access_token
     try:
-        response.set_cookie(key="Authorization", value=access_token, samesite='none')#!!!!!!!!!! убери последний параметр в проде
+        response.set_cookie(key="Authorization", value=access_token, secure=False, samesite='none')#!!!!!!!!!! убери последний параметр в проде
         print("Критическией успех!")
         #return JSONResponse(content=session, headers=response.headers)
         return session

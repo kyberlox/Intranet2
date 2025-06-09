@@ -95,8 +95,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Проверяем авторизацию для всех остальных /api эндпоинтов
     if request.url.path.startswith("/api"):
         token = request.cookies.get("Authorization")
-        print(token)
-        if not token:
+        if token is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authorization cookies missing",

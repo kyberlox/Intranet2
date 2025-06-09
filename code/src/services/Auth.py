@@ -86,10 +86,10 @@ class AuthService:
         if ses_find is None:
             self.redis.save_session(session_id, session_data)
         else:
-            session_id = ses_find
+            session_id = ses_find[8:]
 
         return {
-            "session_id": session_id[8:],
+            "session_id": session_id,
             "user": session_data
         }
 

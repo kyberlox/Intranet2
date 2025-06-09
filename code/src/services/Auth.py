@@ -89,7 +89,7 @@ class AuthService:
             session_id = ses_find
 
         return {
-            "session_id": session_id,
+            "session_id": session_id[:8],
             "user": session_data
         }
 

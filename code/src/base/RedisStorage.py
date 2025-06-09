@@ -68,7 +68,7 @@ class RedisStorage:
         cursor = 0
         while True:
             # Ищем ключи по шаблону "session:*" (или другому, если у вас иной формат)
-            cursor, keys = self.redis.scan(cursor=cursor, match="session:*")
+            cursor, keys = self.client.scan(cursor=cursor, match="session:*")
             
             for key in keys:
                 value = self.redis.get(key)

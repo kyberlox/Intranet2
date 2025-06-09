@@ -229,7 +229,7 @@ class AuthService:
 
 
 
-@auth_router.post("/auth/")
+@auth_router.post("/auth")
 async def authentication(login : str, password : str, response : Response): #data = Body()
     #login = data["login"]
     #password = data["password"]
@@ -246,7 +246,7 @@ async def authentication(login : str, password : str, response : Response): #dat
     #return JSONResponse(content=session, headers=response.headers)
     return session
 
-@auth_router.get("/check/")
+@auth_router.get("/check")
 async def check_token(request : Request):
     token = request.cookies.get("Authorization")
     print(token)

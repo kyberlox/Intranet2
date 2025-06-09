@@ -230,9 +230,9 @@ class AuthService:
 
 
 @auth_router.post("/auth")
-async def authentication(login : str, password : str, response : Response): #data = Body()
-    #login = data["login"]
-    #password = data["password"]
+async def authentication(data = Body(), response : Response): #login : str, password : str,
+    login = data["login"]
+    password = data["password"]
     session = await AuthService().authenticate(login, password)
     access_token = session["session_id"]
     if not session :

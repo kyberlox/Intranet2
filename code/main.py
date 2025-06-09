@@ -48,6 +48,7 @@ app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="
 templates = Jinja2Templates(directory="./front_jinja")
 
 origins = [
+    "http://localhost:5173",
     "http://localhost:8000",
     "http://intranet.emk.org.ru:8000",
     "http://intranet.emk.org.ru"
@@ -59,7 +60,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
     allow_headers=["*"]
-    #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
+    allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
 )
 
 

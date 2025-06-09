@@ -230,7 +230,7 @@ class AuthService:
 
 
 @auth_router.post("/auth")
-async def authentication(response : Response ): #login : str, password : str,
+async def authentication(data = Body(), response = Response() ): #login : str, password : str,
     data = response.body()
     print(data)
     login = data["login"]

@@ -55,39 +55,43 @@ class RedisStorage:
 
     def find_session_id(self, user_uuid: str, username: str) -> Optional[str]:
         """
-        Ищет ключ сессии (session_id), где значение содержит
-        указанные user_uuid и username.
-
-        Args:
-            user_uuid: UUID пользователя (часть значения)
-            username: Имя пользователя (часть значения)
-
-        Returns:
-            Optional[str]: Найденный session_id или None, если сессии нет.
+        Ищет ключ сессии по user_uuid и username.
+        Работает с разными типами данных в Redis: строками, хешами и JSON.
         """
         cursor = 0
         while True:
-            # Ищем ключи по шаблону "session:*" (или другому, если у вас иной формат)
-            cursor, keys = self.client.scan(cursor=cursor, match="session:*")
+            cursor, keys = self.redis.scan(cursor=cursor, match="session:*")
             
             for key in keys:
-                value = self.client.get(key)
-                if not value:
-                    continue
+                key_type = self.redis.type(key).decode('utf-8')
                 
-                try:
-                    data = json.loads(value)
-                    # Проверяем совпадение user_uuid и username
-                    if data.get("user_uuid") == user_uuid and data.get("username") == username:
-                        return key.decode('utf-8')  # Возвращаем найденный ключ
-                except (json.JSONDecodeError, AttributeError):
-                    continue
+                # Обработка строковых значений (обычный JSON)
+                if key_type == 'string':
+                    try:
+                        value = self.redis.get(key)
+                        if not value:
+                            continue
+                            
+                        data = json.loads(value)
+                        if data.get('user_uuid') == user_uuid and data.get('username') == username:
+                            return key.decode('utf-8')
+                    except (json.JSONDecodeError, AttributeError):
+                        continue
+                
+                # Обработка хешей (HSET)
+                elif key_type == 'hash':
+                    try:
+                        user_data = self.redis.hgetall(key)
+                        if (user_data.get(b'user_uuid', b'').decode('utf-8') == user_uuid and 
+                            user_data.get(b'username', b'').decode('utf-8') == username):
+                            return key.decode('utf-8')
+                    except (AttributeError, UnicodeDecodeError):
+                        continue
             
-            # Выход, если обход завершен (cursor = 0)
             if cursor == 0:
                 break
-        
-        return None  # Сессия не найдена
+                
+        return None
 
     def save_session(self, session_id: str, data: Dict[str, Any], ttl: Optional[timedelta] = None) -> bool:
         """

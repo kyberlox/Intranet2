@@ -244,20 +244,19 @@ async def authentication(response : Response, data = Body()): #login : str, pass
             detail="Invalid credentials",
         )
 
-    #response.headers["Authorization"] = access_token
-    try:
-        response.set_cookie(key="Authorization", value=access_token, httponly=True, samesite='none', secure=False)#!!!!!!!!!! убери последний параметр в проде
-        print("Критическией успех!")
-        #return JSONResponse(content=session, headers=response.headers)
-        return session
-    except Exception as e:
-            print(f"Фатальная ошибка: {e}")
-            return None
+    response.headers["Authorization"] = access_token
+
+    response.set_cookie(key="Authorization", value=access_token, httponly=True, samesite='none', secure=False)#!!!!!!!!!! убери последние параметры в проде
+
+    #return JSONResponse(content=session, headers=response.headers)
+    return session
         
 @auth_router.get("/check")
 async def check_token(request : Request):
     token = request.cookies.get("Authorization")
-    print(token)
+    if token is None:
+        token = request.headers.get("Authorization")
+
     session  = AuthService().validate_session(token)
     if not session :
         raise HTTPException(

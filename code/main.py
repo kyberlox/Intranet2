@@ -96,10 +96,12 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     if request.url.path.startswith("/api"):
         token = request.cookies.get("Authorization")
         if token is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authorization cookies missing",
-            )
+            token = request.headers.get("Authorization")
+            if token is None:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authorization cookies missing",
+                )
 
         try:
             session = AuthService().validate_session(token)

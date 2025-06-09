@@ -71,7 +71,7 @@ class RedisStorage:
             cursor, keys = self.client.scan(cursor=cursor, match="session:*")
             
             for key in keys:
-                value = self.redis.get(key)
+                value = self.client.get(key)
                 if not value:
                     continue
                 

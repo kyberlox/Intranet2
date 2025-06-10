@@ -637,7 +637,7 @@ class Article:
                     active_articles.append(res)
                 else:
                     pass
-            sorted_active_aticles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
+            sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles
     
     def main_page(self, section_id):
@@ -685,7 +685,7 @@ class Article:
                     date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
             news_id = sorted_data[0][0]
             print(news_id, 'article')
             image_URL = self.get_preview(news_id)
@@ -743,7 +743,7 @@ class Article:
                     date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -793,7 +793,7 @@ class Article:
                     date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -844,7 +844,7 @@ class Article:
                     date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -922,7 +922,7 @@ class Article:
                     date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
             corpevents = {
                 'id': section_id,

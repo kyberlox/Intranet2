@@ -643,8 +643,9 @@ class Article:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
-                if "PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None:
-                    pass
+                if self.section_id == "5":
+                    if "PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None:
+                        pass
                 elif res['active']:
                     active_articles.append(res)
                 else:
@@ -653,7 +654,6 @@ class Article:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             else:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
-            print(sorted_active_aticles, 'проверка')
             return sorted_active_aticles
     
     def main_page(self, section_id):

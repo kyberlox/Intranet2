@@ -653,6 +653,7 @@ class Article:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             else:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            print(sorted_active_aticles, 'проверка')
             return sorted_active_aticles
     
     def main_page(self, section_id):

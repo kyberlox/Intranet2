@@ -555,7 +555,17 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-
+        
+        # вакансии (приведи друга)
+        self.section_id = "67"
+        art_inf = self.get_inf()
+        for art in art_inf:
+            self.section_id = 5 # потом изменить
+            artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(art)
+            elif artDB.update(self.make_valid_article(art)):
+                pass
 
 
         '''самобытные блоки'''
@@ -637,7 +647,10 @@ class Article:
                     active_articles.append(res)
                 else:
                     pass
-            sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            if self.section_id == "5":
+                sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
+            else:
+                sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles
     
     def main_page(self, section_id):

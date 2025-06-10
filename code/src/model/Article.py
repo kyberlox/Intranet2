@@ -643,7 +643,9 @@ class Article:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
-                if res['active']:
+                if "PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None:
+                    pass
+                elif res['active']:
                     active_articles.append(res)
                 else:
                     pass
@@ -799,12 +801,15 @@ class Article:
                 if values["active"] is False:
                         pass
                 else:
-                    date_value = [] # список для хранения необходимых данных
-                    date_value.append(values["id"])
-                    date_value.append(values["name"])
-                    date_value.append(values["preview_text"])
-                    date_value.append(values["date_creation"])
-                    date_list.append(date_value) # получили список с необходимыми данными
+                    if "PROPERTY_1025" not in values['indirect_data'] or values['indirect_data']['PROPERTY_1025'] is None:
+                        pass
+                    else:
+                        date_value = [] # список для хранения необходимых данных
+                        date_value.append(values["id"])
+                        date_value.append(values["name"])
+                        date_value.append(values["preview_text"])
+                        date_value.append(values["date_creation"])
+                        date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 

@@ -314,6 +314,18 @@ class UserModel():
 
         else:
             return {'err' : "Invalid user id"}
+
+    def find_by_uuid(self):
+        user = self.db.query(self.user).filter(self.user.uuid == self.id).one()
+
+        if user is not None:
+            return {
+                "ID": user.id,
+                "email" : user.email,
+                "full_name" : f"{user.second_name} {user.name} {user.last_name}"
+            }
+        else:
+            return None
     
     def all(self):
         return self.db.query(self.user).all()
@@ -697,7 +709,7 @@ class UsDepModel():
         else:
             return {'err' : "Invalid user id"}
 
-                
+
 
 class SectionModel():
 

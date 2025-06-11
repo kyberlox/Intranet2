@@ -38,29 +38,48 @@ class FileModel:
     def create_indexes(self):
         #создаем индексы
         files_collection.create_index(
-            {
-                "id": 1,
-                "original_name": 1,
-                "stored_name": 1,
-                "content_type": 1,
-                "article_id": 1,
-                "b24_id": 1,
-                "file_url": 1
-            }
+            [
+                ("id", 1),
+                ("original_name", 1),
+                ("stored_name", 1),
+                ("content_type", 1),
+                ("article_id", 1),
+                ("b24_id", 1),
+                ("file_url", 1)
+            ],
+            background=True
         )
-
         user_photo_collection.create_index(
-            {
-                "id": 1,
-                "name": 1,
-                "format": 1,
-                "uuid": 1,
-                "b24_url": 1
-            }
+            [
+                ("id", 1),
+                ("name", 1),
+                ("format", 1),
+                ("uuid", 1),
+                ("b24_url", 1)
+            ],
+            background=True
         )
-        index_info = files_collection.list_indexes()
-        for index in index_info:
-            print(index)
+        # files_collection.create_index(
+        #     {
+        #         "id": 1,
+        #         "original_name": 1,
+        #         "stored_name": 1,
+        #         "content_type": 1,
+        #         "article_id": 1,
+        #         "b24_id": 1,
+        #         "file_url": 1
+        #     },
+        # )
+
+        # user_photo_collection.create_index(
+        #     {
+        #         "id": 1,
+        #         "name": 1,
+        #         "format": 1,
+        #         "uuid": 1,
+        #         "b24_url": 1
+        #     }
+        # )
         return {"status": True}
 
     # блок для файлов
@@ -69,7 +88,7 @@ class FileModel:
         return file_id
 
     def go_archive(self):
-        return files_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
+        return files_collection.update_one({"b24_id": self.id}, { "$set": { "is_archive" : False } })
 
     def remove(self):
         #удалить сам файл
@@ -82,10 +101,6 @@ class FileModel:
         return files_collection.find_one({"_id": self.id})
 
     def find_by_art_id(self):
-
-        index_info = user_photo_collection.list_indexes()
-        print(index_info)
-
         return files_collection.find_one({"article_id": self.id})
 
     def find_by_b24_id(self):
@@ -112,5 +127,4 @@ class FileModel:
         return user_photo_collection.find_one({"_id": self.id})
     
     def find_user_photo_by_uuid(self, uuid):
-
         return user_photo_collection.find_one({"uuid": uuid})

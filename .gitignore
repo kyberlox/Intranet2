@@ -3,6 +3,6 @@
 **/__pycache__/
 .env
 push.sh
+pull.shs
 /code/files_db
-./docker-compose.yaml
 /front/node_modules

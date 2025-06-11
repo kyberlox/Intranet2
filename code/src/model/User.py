@@ -61,6 +61,8 @@ class User:
     def get_uf_depart(self):
         return UserModel().find_uf_depart()
 
+    def user_inf_by_uuid(self):
+        return UserModel(self.uuid).find_by_uuid()
 
 
     def set_users_photo(self):
@@ -120,6 +122,26 @@ class User:
 
         return result
     
+    # лайки
+    def add_like(self, art_id):
+        return LikesModel(user_id=self.id, art_id=art_id).add_like()
+
+    def remove_like(self, art_id):
+        return LikesModel(user_id=self.id, art_id=art_id).remove_like()
+
+    def has_liked(self, art_id):
+        return LikesModel(user_id=self.id, art_id=art_id).has_liked()
+
+    def get_user_likes(self):
+        return LikesModel(user_id=self.id).get_user_likes()
+    
+    # просмотры
+    def add_view(self, art_id):
+        return ViewsModel(user_id=self.id, art_id=art_id).add_view()
+
+    def get_viewed_articles(self):
+        return ViewsModel(user_id=self.id).get_viewed_articles()
+
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -187,8 +209,38 @@ def test_update_photo():
 @users_router.post("/search")
 def search_user(jsn=Body()):
     #будет работать через elasticsearch
-    pass
+    return UserSearchModel().search_model(jsn)
 
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()
+
+# лайки и просмотры
+@users_router.put("/add_like")
+def add_like(user_id: int, art_id: int):
+    return User(user_id=user_id).add_like(art_id)
+
+@users_router.delete("/remove_like")
+def remove_like(user_id: int, art_id: int):
+    return User(user_id=user_id).remove_like(art_id)
+
+@users_router.post("/has_liked")
+def has_liked(user_id: int, art_id: int):
+    return User(user_id=user_id).has_liked(art_id)
+
+@users_router.get("/get_user_likes")
+def get_user_likes(user_id: int):
+    return User(user_id=user_id).get_user_likes()
+
+@users_router.put("/add_view")
+def add_view(user_id: int, art_id: int):
+    return User(user_id=user_id).add_view(art_id)
+
+@users_router.get("/get_viewed_articles")
+def get_viewed_articles(user_id: int):
+    return User(user_id=user_id).get_viewed_articles()
+
+@users_router.post("/search_indirect")
+def search_indirect(key_word):
+    #будет работать через elasticsearch
+    return UserSearchModel().search_indirect(key_word)

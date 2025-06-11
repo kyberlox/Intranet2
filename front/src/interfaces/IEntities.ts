@@ -146,6 +146,11 @@ export interface IBlogData extends IBaseIndirectData {
     TITLE?: string,
 }
 
+export interface IBlogArticleData extends IBaseIndirectData {
+    PROPERTY_1222?: string[],
+    PROPERTY_1239?: string[],
+}
+
 interface IOurPeopleData extends IBaseIndirectData {
     PROPERTY_1235?: string[],
     PROPERTY_1237?: string[],
@@ -225,7 +230,13 @@ export interface IFactoryData extends IBaseIndirectData {
     tours?: boolean,
     toursHref?: string,
     factoryId?: number,
-    videoHref?: string[]
+    videoHref?: string[],
+    href?: string,
+    tourId?: string,
+}
+
+export interface IOpenVacancyData extends IBaseIndirectData {
+    PROPERTY_5094: string[]
 }
 
 export interface IBlogAuthors {
@@ -233,8 +244,6 @@ export interface IBlogAuthors {
     authorId: number,
     title: string,
 }
-
-
 
 export interface IActualNews extends IBaseEntity {
     indirect_data?: IActualNewsIndirectData
@@ -295,6 +304,14 @@ export interface IFactorySlides extends IBaseEntity {
     indirect_data?: IFactoryData
 }
 
+export interface IOpenVacancy extends IBaseEntity {
+    indirect_data?: IOpenVacancyData
+}
+
+export interface IBlogArticle extends IBaseEntity {
+    indirect_data?: IBlogArticleData
+}
+
 // Общий индирект
 export interface IUnionEntities extends IBaseEntity {
     indirect_data?: IActualNewsIndirectData |
@@ -304,13 +321,16 @@ export interface IUnionEntities extends IBaseEntity {
     ICorpEventsIndirectData |
     ICorpLifeIndirectData |
     IBlogData |
+    IBlogArticleData |
     IOurPeopleData |
     IVideoInterviewData |
     IVideoReportsData |
     ICorpNewsData |
     IOfficialEventsData |
     IPartnerBonusData |
-    IForNewWorkerData
+    IForNewWorkerData |
+    IFactoryData |
+    IOpenVacancyData
 }
 
 // ЮНИОН внутреннего индиректа
@@ -322,10 +342,13 @@ export type IUnionEntitiesData =
     ICorpEventsIndirectData |
     ICorpLifeIndirectData |
     IBlogData |
+    IBlogArticleData |
     IOurPeopleData |
     IVideoInterviewData |
     IVideoReportsData |
     ICorpNewsData |
     IOfficialEventsData |
     IPartnerBonusData |
-    IForNewWorkerData 
+    IForNewWorkerData |
+    IFactoryData |
+    IOpenVacancyData

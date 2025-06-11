@@ -101,7 +101,7 @@ export default defineComponent({
     setup(props) {
         const currentPost = ref<IUnionEntities>();
         onMounted(() => {
-            if (props.type == 'adminPreview' && currentPost.value) {
+            if (props.type == 'adminPreview' && props.previewElement) {
                 currentPost.value = props.previewElement
             }
             else

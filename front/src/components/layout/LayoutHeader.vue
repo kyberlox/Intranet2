@@ -1,5 +1,5 @@
 <template>
-    <header class="header sticky-top d-print-none">
+    <header class="header  d-print-none">
         <nav class="navbar navbar-light bg-light navbar-expand-lg">
             <div class="w-100">
                 <div class="container-fluid">

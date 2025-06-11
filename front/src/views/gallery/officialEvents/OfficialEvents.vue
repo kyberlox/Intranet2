@@ -30,7 +30,7 @@ export default defineComponent({
         const allSlides = computed((): IOfficialEvents[] => useViewsDataStore().getData('officialEventsData') as IOfficialEvents[]);
         const visibleEvents: Ref<IOfficialEvents[]> = ref(allSlides.value);
         onMounted(() => {
-            if (allSlides.value) return;
+            if (allSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['офСобытия']}`)
                 .then((res) => {

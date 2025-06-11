@@ -1,6 +1,6 @@
 <template>
     <div class="flexGallery"
-         v-if="slides">
+         v-if="slides?.length">
         <div v-for="(slide, index) in slides"
              :key="index">
             <RouterLink v-if="!slide.videoHref && !modifiers.includes('noRoute') && !modifiers.includes('buttons') && routeTo"
@@ -9,7 +9,7 @@
                 <div class="flexGallery__card__img-wrapper"
                      :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
                     <div class="flexGallery__card__img"
-                         :style="{ backgroundImage: `url(${slide.image ?? 'https://placehold.co/360x206'})` }">
+                         :style="{ backgroundImage: `url(${slide.indirect_data?.PREVIEW_PICTURE ?? 'https://placehold.co/360x206'})` }">
                     </div>
                 </div>
                 <div v-if="slide.name"
@@ -23,9 +23,9 @@
                  class="flexGallery__card">
                 <div class="flexGallery__card__img-wrapper"
                      :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
-                    <div v-if="slide.image"
+                    <div v-if="slide.indirect_data?.PREVIEW_PICTURE"
                          class="flexGallery__card__img"
-                         :style="{ backgroundImage: `url(${slide.image ?? 'https://placehold.co/360x206'})` }">
+                         :style="{ backgroundImage: `url(${slide.indirect_data?.PREVIEW_PICTURE ?? 'https://placehold.co/360x206'})` }">
                     </div>
                 </div>
                 <div v-if="slide.name"
@@ -34,14 +34,14 @@
                     <span v-if="slide.name">{{ slide.name }}</span>
                 </div>
 
-                <div v-if="routeTo"
+                <div v-if="routeTo && slide.indirect_data && ('reportages' in slide.indirect_data || 'tours' in slide.indirect_data)"
                      class="flexGallery__card__buttons">
-                    <RouterLink v-if="slide.reportages"
+                    <RouterLink v-if="slide.indirect_data?.reportages"
                                 :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
-                                class="flexGallery__card__buttons__button">Репортажи</RouterLink>
-                    <RouterLink v-if="slide.tours"
+                                class="primary-button primary-button--rounder">Репортажи</RouterLink>
+                    <RouterLink v-if="slide.indirect_data?.tours"
                                 :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
-                                class="flexGallery__card__buttons__button">3D-Туры</RouterLink>
+                                class="primary-button primary-button--rounder">3D-Туры</RouterLink>
                 </div>
             </div>
 
@@ -55,14 +55,14 @@
                 </div>
             </div>
 
-            <div v-else-if="slide.videoHref"
+            <div v-else-if="slide?.indirect_data && 'videoHref' in slide.indirect_data && slide.indirect_data.videoHref"
                  class="flexGallery__card flexGallery__card--official-events"
                  v-for="(slide, index) in slides"
                  :key="'video' + index"
-                 @click="callModal(slide.videoHref, 'video')">
+                 @click="callModal(slide.indirect_data.videoHref, 'video')">
                 <div class="flexGallery__card__img-wrapper">
                     <div class="flexGallery__card__img"
-                         :style="{ backgroundImage: `url(${slide.image})` }">
+                         :style="{ backgroundImage: `url(${slide.indirect_data?.PREVIEW_PICTURE})` }">
                     </div>
                     <PlayVideo class="flexGallery__card__play-video-icon" />
                 </div>
@@ -76,8 +76,7 @@
                    v-if="modalIsOpen == true"
                    @close="modalIsOpen = false" />
     </div>
-
-
+    <FlexGallerySkeleton v-else />
 </template>
 
 <script lang="ts">
@@ -87,6 +86,7 @@ import { defineComponent, ref } from "vue";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IAfishaItem, IUnionEntities } from "@/interfaces/IEntities";
+import FlexGallerySkeleton from "./FlexGallerySkeleton.vue";
 
 export default defineComponent({
     name: 'FlexGallery',
@@ -111,7 +111,8 @@ export default defineComponent({
     },
     components: {
         PlayVideo,
-        ZoomModal
+        ZoomModal,
+        FlexGallerySkeleton
     },
     setup() {
         const modalVideo = ref();
@@ -120,8 +121,6 @@ export default defineComponent({
         const activeIndex = ref(0);
 
         const callModal = (src: string[], type: 'video' | 'img', imgIndex?: number) => {
-            console.log(src);
-
             if (!src) return;
             if (type == 'video') {
                 modalImg.value = '';

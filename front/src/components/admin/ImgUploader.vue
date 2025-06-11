@@ -19,7 +19,6 @@ import { defineComponent } from 'vue';
 export default defineComponent({
     setup() {
         const onAdvancedUpload = () => {
-            console.log(11)
         };
         return {
             onAdvancedUpload

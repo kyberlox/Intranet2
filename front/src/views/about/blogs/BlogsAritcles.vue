@@ -52,7 +52,6 @@ export default defineComponent({
         const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id))
 
         const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
-        console.log(blogData.allBlogs);
 
         return {
             blogsArticles,

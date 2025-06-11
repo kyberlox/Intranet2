@@ -77,6 +77,11 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: "Календарь событий",
                 href: "calendar",
             },
+            {
+                id: 1.13,
+                name: "Магазин мерча",
+                href: "merchStore",
+            },
         ],
     },
     {
@@ -205,11 +210,6 @@ export const points = [
         id: 3,
         name: 'Панель редактора',
         href: 'admin'
-    },
-    {
-        id: 4,
-        name: 'Выйти',
-        href: 'auth',
     },
 ]
 

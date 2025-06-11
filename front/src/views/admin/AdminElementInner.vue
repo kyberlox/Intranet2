@@ -1,115 +1,170 @@
 <template>
-  <div class="admin-panel__editor__element-inner__wrapper mt20"
-       :class="{ 'admin-panel__editor__element-inner__wrapper--previewFullWidth': previewFullWidth }">
-    <div class="admin-panel__editor__element-inner">
-      <div v-for="(item, index) in sampleEvent"
-           class="admin-panel__editor__element-inner__field"
-           :key="index">
-        <div v-if="item.type == 'date' && item.name">
-          <p>{{ item.title }}</p>
-          <DatePicker v-model="currentItem[item.name]" />
-        </div>
-        <div v-if="item.type == 'select' && item.name">
-          <p>{{ item.title }}</p>
-          <select v-model="currentItem[item.name]">
-            <option v-for="(option, index) in item.options"
-                    :key=index>
-              {{ option }}
-            </option>
-          </select>
-        </div>
-        <div v-else-if="item.type == 'textWithRedact' && item.name">
-          <p>{{ item.title }}</p>
-          <TextEditor v-model="currentItem[item.name]" />
-        </div>
-        <div v-else-if="item.type == 'auto'">
-          <p>{{ item.title }}</p>
-          <p>{{ item.value }}</p>
-        </div>
-        <div v-else-if="item.type == 'text' && item.name">
-          <p>{{ item.title }}</p>
-          <input v-model="currentItem[item.name]"
-                 :disabled="Boolean(item.disabled)" />
-        </div>
-        <div v-else-if="item.type == 'img'">
-          <p>{{ item.title }}</p>
-          <div class="attached__gallery">
-            <div v-for="(itemInner, index) in item.value"
-                 :key="index"
-                 class="attached__gallery__card">
-              <img :src="itemInner"
-                   class="attached__gallery__card-img" />
-              <!-- иконки -->
-              <div class="attached__gallery__card-icons">
-                <button class="icon-button view-button"
-                        @click.prevent="goToImage(itemInner)">
-                  <ZoomIcon />
-                </button>
-                <button class="icon-button delete-button"
-                        @click.prevent="removeItem(itemInner)">
-                  <CloseIcon />
-                </button>
+  <div class="mt-20">
+    <button @click="handleTypeClick('news')"> К новостям </button>
+    <button @click="handleTypeClick('blogs')"> К блогам </button>
+    <button @click="handleTypeClick('interview')"> К интервью </button>
+    <button @click="handleTypeClick('noPreview')"> Без превью </button>
+  </div>
+  <Transition :name="previewFullWidth ? 'layout-change' : 'layout-change-toLeft'"
+              mode="out-in">
+    <div class="admin-panel__editor__element-inner__wrapper mt20"
+         :class="{ 'admin-panel__editor__element-inner__wrapper--previewFullWidth': previewFullWidth }"
+         :key="previewFullWidth ? 'fullwidth' : 'normal'">
+      <div class="admin-panel__editor__element-inner"
+           :class="[{ 'admin-panel__editor__element-inner--previewFullWidth': previewFullWidth }, { 'admin-panel__editor__element-inner--noPreview': activeType == 'noPreview' }]">
+        <div v-for="(item, index) in sampleEvent"
+             class="admin-panel__editor__element-inner__field"
+             :class="{ 'admin-panel__editor__element-inner__field--previewFullWidth': previewFullWidth }"
+             :key="index">
+          <div v-if="item.type == 'date' && item.name"
+               class="no-transition">
+            <p>{{ item.title }}</p>
+            <DatePicker class="noTransition"
+                        v-model="currentItem[item.name]" />
+          </div>
+          <div v-else-if="item.type == 'select' && item.name">
+            <p>{{ item.title }}</p>
+            <select v-model="currentItem[item.name]">
+              <option v-for="(option, index) in item.options"
+                      :key=index>
+                {{ option }}
+              </option>
+            </select>
+          </div>
+          <div v-else-if="item.type == 'textWithRedact' && item.name">
+            <p>{{ item.title }}</p>
+            <TextEditor v-model="currentItem[item.name]" />
+          </div>
+          <div v-else-if="item.type == 'auto'">
+            <p>{{ item.title }}</p>
+            <p>{{ item.value }}</p>
+          </div>
+          <div v-else-if="item.type == 'text' && item.name">
+            <p>{{ item.title }}</p>
+            <input v-model="currentItem[item.name]"
+                   :disabled="Boolean(item.disabled)" />
+          </div>
+          <div v-else-if="item.type == 'img'">
+            <p>{{ item.title }}</p>
+            <div class="attached__gallery">
+              <div v-for="(itemInner, index) in item.value"
+                   :key="index"
+                   class="attached__gallery__card">
+                <img v-if="typeof itemInner == 'string'"
+                     :src="itemInner"
+                     class="attached__gallery__card-img" />
+                <div v-if="typeof itemInner == 'string'"
+                     class="attached__gallery__card-icons">
+                  <button class="icon-button view-button"
+                          @click.prevent="goToImage(itemInner)">
+                    <ZoomIcon />
+                  </button>
+                  <button class="icon-button delete-button"
+                          @click.prevent="removeItem(itemInner)">
+                    <CloseIcon />
+                  </button>
+                </div>
               </div>
             </div>
+            <ImgUploader />
           </div>
-          <ImgUploader />
-        </div>
-        <div v-else-if="item.type == 'doc'">
-          <p>{{ item.title }}</p>
-          <div class="attached__gallery--doc">
-            <a v-for="(item, index) in currentItem.documents"
-               class="attached__gallery--doc__item"
-               :key="index"
-               :href="item"
-               target='_blank'>
-              {{ item }}
-            </a>
+          <div v-else-if="item.type == 'doc'">
+            <p>{{ item.title }}</p>
+            <div class="attached__gallery--doc">
+              <a v-for="(item, index) in currentItem.documents"
+                 class="attached__gallery--doc__item"
+                 :key="index"
+                 :href="item"
+                 target='_blank'>
+                {{ item }}
+              </a>
+            </div>
+            <FileUploader />
           </div>
-          <FileUploader />
         </div>
       </div>
+      <div class="admin-panel__editor__element-inner__preview"
+           :class="{ 'admin-panel__editor__element-inner__preview--previewFullWidth': previewFullWidth }">
+        <Transition name="layout-change"
+                    mode="out-in">
+          <LayoutTop v-if="previewFullWidth"
+                     class="zoom--preview"
+                     @click="previewFullWidth = !previewFullWidth" />
+          <LayoutLeft v-else
+                      class="zoom--preview"
+                      @click="previewFullWidth = !previewFullWidth" />
+        </Transition>
+        <PostInner v-if="currentItem.id && activeType == 'news'"
+                   :previewElement="currentItem"
+                   :type="'adminPreview'" />
+        <Interview v-if="activeType == 'interview'"
+                   :interviewInner="currentItem" />
+        <CertainBlog v-if="activeType == 'blogs'"
+                     :interviewInner="currentItem"
+                     :id="String(15768)"
+                     :authorId="String(157)" />
+      </div>
     </div>
-    <div class="admin-panel__editor__element-inner__preview">
-      <ZoomIcon class="zoom--preview"
-                @click="previewFullWidth = !previewFullWidth" />
-      <PostInner v-if="currentItem.id"
-                 :previewElement="currentItem"
-                 :type="'adminPreview'" />
-    </div>
+  </Transition>
+
+  <div class="save-button__wrapper">
+    <button class="save-button">
+      <span class="save-button__text">Сохранить</span>
+    </button>
+    <button class="save-button">
+      <span class="save-button__text">Отменить</span>
+    </button>
   </div>
 </template>
 
-
 <script lang="ts">
-import { defineComponent, onMounted, ref, watchEffect, type Ref } from 'vue';
+import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import TextEditor from '@/components/admin/TextEditor.vue';
 import ImgUploader from '@/components/admin/ImgUploader.vue';
 import FileUploader from '@/components/admin/FileUploader.vue';
 import CloseIcon from "@/assets/icons/admin/CloseIcon.svg?component";
-import ZoomIcon from "@/assets/icons/admin/ZoomIcon.svg?component";
+import LayoutLeft from "@/assets/icons/admin/LayoutLeft.svg?component";
+import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
 import { sampleEvent } from '@/assets/staticJsons/adminPagePlugs';
 import DatePicker from '@/components/DatePicker.vue';
 import PostInner from '@/components/PostInner.vue';
+import Interview from '@/components/about/ourPeople/Interview.vue';
+import CertainBlog from '../about/blogs/CertainBlog.vue';
+import ZoomIcon from '@/assets/icons/admin/ZoomIcon.svg?component'
 
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 interface IAdminElement extends Record<string, AdminElementValue> {
   id: number;
 }
+
 export default defineComponent({
   components: {
     TextEditor,
     FileUploader,
     ImgUploader,
     CloseIcon,
-    ZoomIcon,
+    LayoutLeft,
+    LayoutTop,
     DatePicker,
-    PostInner
+    PostInner,
+    Interview,
+    CertainBlog,
+    ZoomIcon
   },
-  setup() {
+  props: {
+    id: {
+      type: String
+    },
+    elementId: {
+      type: String
+    }
+  },
+  setup(props) {
     const events = ref<Event[]>([]);
     const router = useRouter();
     const currentItem: Ref<IAdminElement> = ref({ id: 0 });
+    const previewItem = ref();
     const previewFullWidth = ref(false);
 
     onMounted(() => {
@@ -117,13 +172,20 @@ export default defineComponent({
         if (!e.name) return;
         currentItem.value[e.name] = e.value;
       })
-      console.log(currentItem.value);
 
+      previewItem.value = {
+        indirect_data: currentItem.value
+      }
     })
-
 
     const removeItem = (e: string) => {
       alert('udalit ' + e);
+    }
+
+    const activeType = ref('news');
+
+    const handleTypeClick = (type: string) => {
+      activeType.value = type;
     }
 
     return {
@@ -133,7 +195,9 @@ export default defineComponent({
       goToImage: (e: string) => window.open(e, '_blank'),
       removeItem,
       currentItem,
-      previewFullWidth
+      previewFullWidth,
+      handleTypeClick,
+      activeType
     };
   }
 });
@@ -149,6 +213,11 @@ export default defineComponent({
   &__preview {
     max-width: 100%;
     overflow-wrap: break-word;
+    user-select: none;
+  }
+
+  &--previewFullWidth {
+    align-items: center;
   }
 }
 
@@ -357,12 +426,101 @@ input:disabled {
 
 .admin-panel__editor__element-inner__preview {
   overflow: hidden;
-  position: relative;
+  flex-grow: 1;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+
+  &--previewFullWidth {
+    position: relative;
+    top: auto;
+  }
 }
 
 .zoom--preview {
   position: absolute;
   width: 25px;
   right: 0;
+  transition: 0.2s;
+
+  &:hover {
+    color: var(--emk-brand-color);
+    cursor: pointer;
+  }
+}
+
+.admin-panel__editor__element-inner__field--previewFullWidth {
+  max-width: 50%;
+}
+
+.admin-panel__editor__element-inner--previewFullWidth {
+  align-content: center;
+  align-items: center;
+  border-top: 1px solid gainsboro;
+  padding-top: 40px;
+}
+
+.layout-change-enter-active,
+.layout-change-leave-active,
+.layout-change-toLeft-enter-active,
+.layout-change-toLeft-leave-active {
+  transition: all 0.2s ease;
+}
+
+.layout-change-enter-from,
+.layout-change-leave-to {
+  opacity: 0.7;
+  transform: translateX(-30px);
+}
+
+.layout-change-toLeft-enter-from,
+.layout-change-toLeft-leave-to {
+  opacity: 0.7;
+  transform: translateX(30px);
+}
+
+// save-btn
+.save-button__wrapper {
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.save-button {
+  background-color: var(--emk-brand-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 20px;
+  min-width: 120px;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: #6ed110;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.3);
+  }
+}
+
+.noTransition {
+  transition: none !important;
+}
+
+.admin-panel__editor__element-inner--noPreview {
+  width: 100%;
+  align-items: center;
 }
 </style>

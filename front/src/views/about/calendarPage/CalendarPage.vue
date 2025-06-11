@@ -11,30 +11,21 @@
                 </div>
             </div>
         </div>
-        <div class="calendar__nav-group">
-            <select class="calendarYear__nav-select month-select">
-                <option selected
-                        disabled>Укажите месяц</option>
-                <option>Все месяцы</option>
-                <option v-for="month in monthesInit"
-                        :key="'month' + month.value">{{ month.name }}</option>
-            </select>
-            <select v-model="yearSelect"
-                    class="calendarYear__nav-select year-select">
-                <option selected
-                        disabled>Укажите год</option>
-                <option v-for="year in years"
-                        :key="year + 'year'">{{ year }}</option>
-            </select>
-        </div>
+
+        <DatePicker v-model="date"
+                    month-picker
+                    :calendarType="'monthAndYear'" />
     </div>
-    <div class="calendarYear">
+    <div class="calendarYear mt20">
         <div class="calendarYear__item__wrapper"
              v-for="month in monthesInit"
              :key="'month' + month.value">
             <div class="calendarYear__item"
                  v-if="currentEvents.find((item) => item.month == month.value)">
-                <div class="calendarYear__title">{{ month.name }}</div>
+                <div class="calendarYear__title "
+                     :class="{ 'calendarYear__title--target': String(monthId) == month.value }"
+                     :data-month-num="month.value"
+                     ref=chosenMonth>{{ month.name }}</div>
                 <div class="calendarYear__content">
                     <div class="calendarYear__event__wrapper"
                          v-for="event in currentEvents"
@@ -57,11 +48,20 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref, nextTick, watchEffect } from 'vue';
 import { monthesInit, calendarPage } from '@/assets/staticJsons/calendar';
 import type { ICalendarEntity } from '@/interfaces/ICalendar';
+import DatePicker from '@/components/DatePicker.vue';
 export default defineComponent({
-    setup() {
+    components: {
+        DatePicker
+    },
+    props: {
+        monthId: {
+            type: String
+        }
+    },
+    setup(props) {
         const years = Object.keys(calendarPage);
         const currentYear = new Date().getFullYear();
         const currentEvents = calendarPage[currentYear];
@@ -80,14 +80,41 @@ export default defineComponent({
             }
         }
         const yearSelect = ref(new Date().getFullYear());
+
+        const date = ref(new Date());
+
+        const chosenMonth = ref();
+
+        watchEffect(() => {
+            if (chosenMonth.value) {
+                chosenMonth.value.map((e: HTMLElement) => {
+                    if (e.getAttribute('data-month-num') == props.monthId) {
+                        setTimeout(() =>
+                            e.scrollIntoView({ behavior: 'smooth', block: 'center' }), 10)
+                    }
+                })
+            }
+        })
+
         return {
             years,
             monthesInit,
             currentYear,
             yearSelect,
             currentEvents,
-            checkButtonStatus
+            checkButtonStatus,
+            date,
+            chosenMonth,
         };
     },
 });
 </script>
+
+<style>
+.calendarYear__title--target {
+    background-color: rgba(0, 123, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+</style>

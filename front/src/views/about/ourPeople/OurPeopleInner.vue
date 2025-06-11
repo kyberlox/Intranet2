@@ -13,20 +13,20 @@ export default defineComponent({
     },
     props: {
         id: {
-            type: Number,
+            type: String,
             required: true,
         },
     },
     setup(props) {
-        const currentPost = ref();
+        const interviewFromOurPeople = ref();
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => {
-                    currentPost.value = data
+                    interviewFromOurPeople.value = data
                 })
         })
         return {
-            interviewFromOurPeople: currentPost
+            interviewFromOurPeople
         };
     },
 });

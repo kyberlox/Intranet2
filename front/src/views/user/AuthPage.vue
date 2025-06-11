@@ -3,61 +3,55 @@
               <div class="portal__auth__bg"></div>
               <div class="portal__auth__content">
                      <div class="portal__auth__message"> </div>
-                     <form name="form_auth"
-                           method="post"
-                           target="_top"
-                           action="/intranet/?login=yes"
-                           class="portal__auth__form__auth">
-                            <input type="hidden"
-                                   name="AUTH_FORM"
-                                   value="Y">
-                            <input type="hidden"
-                                   name="TYPE"
-                                   value="AUTH">
-                            <input type="hidden"
-                                   name="backurl"
-                                   value="/intranet/">
+                     <div class="portal__auth__form__auth">
                             <div class="portal__auth__form__input__block">
                                    <input class="bx-auth-input form-control portal__auth__form__input"
-                                          type="text"
-                                          name="USER_LOGIN"
-                                          maxlength="255"
-                                          value="gazinskii.i.v"
-                                          placeholder="Логин">
+                                          placeholder="Логин"
+                                          v-model="userName">
                             </div>
                             <div class="portal__auth__form__input__block">
                                    <input class="bx-auth-input form-control portal__auth__form__input"
                                           type="password"
-                                          name="USER_PASSWORD"
-                                          maxlength="255"
                                           autocomplete="off"
-                                          placeholder="Пароль">
+                                          placeholder="Пароль"
+                                          v-model="passWord">
                             </div>
-
-                            <div class="portal__auth__form__remember">
-                                   <input type="checkbox"
-                                          id="USER_REMEMBER"
-                                          name="USER_REMEMBER"
-                                          value="Y"><label for="USER_REMEMBER">&nbsp;<span>Запомнить меня на этом
-                                                 компьютере</span></label>
-                            </div>
-
-                            <input type="submit"
-                                   class="btn btn-primary portal__auth__form__auth__submit"
-                                   name="Login"
-                                   value="Войти">
-                     </form>
+                            <button class="btn btn-primary portal__auth__form__auth__submit"
+                                    name="Login"
+                                    @click="tryLogin">
+                                   Войти
+                            </button>
+                     </div>
               </div>
        </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { useUserData } from '@/stores/userData';
+import Api from '@/utils/Api';
+import { defineComponent, onMounted, ref } from 'vue';
 
 export default defineComponent({
        name: 'AuthPage',
        components: {},
        setup() {
-              return {};
+              const userName = ref('');
+              const passWord = ref('');
+
+              const tryLogin = async () => {
+                     await Api.post('auth_router/auth', { login: "abobus", password: "1" })
+                            .then((resp) => {
+                                   if (resp.session_id) {
+                                          localStorage.setItem('authKey', resp.session_id);
+                                          useUserData().setAuthKey(resp.session_id);
+                                          useUserData().setLogin(true);
+                                   }
+                            })
+              }
+              return {
+                     tryLogin,
+                     userName,
+                     passWord
+              };
        },
 })
 </script>

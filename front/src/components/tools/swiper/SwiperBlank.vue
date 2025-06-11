@@ -1,27 +1,15 @@
 <template>
-    <swiper :class="{ 'swiper--inner': type == 'postInner' }"
-            v-bind="sliderConfig"
+    <swiper v-bind="sliderConfig"
             @swiper="swiperOn">
-        <template v-if="type === 'postInner' && videos?.length">
-            <swiper-slide v-for="(video, index) in videos"
-                          :key="'postVideo' + index">
-                <iframe width="100%"
-                        height="500px"
-                        :src="String(repairVideoUrl(video))"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen> </iframe>
-            </swiper-slide>
-        </template>
 
         <swiper-slide v-for="(image, index) in images"
                       :key="'postImg' + index">
-            <img :src="image" />
+            <img :src="image"
+                 @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>
 
     </swiper>
-    <div v-if="type == 'postInner' && swiperInstance?.isBeginning !== swiperInstance?.isEnd"
-         class="swiper-navigation__buttons-group">
+    <div class="swiper-navigation__buttons-group">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
                 @click.stop="slidePrev">
@@ -34,6 +22,10 @@
             <ArrowRight />
         </button>
     </div>
+    <ZoomModal v-if="modalIsVisible"
+               :image="images"
+               :activeIndex="activeIndex"
+               @close="modalIsVisible = false" />
 </template>
 
 <script lang="ts">
@@ -44,8 +36,8 @@ import "swiper/css/pagination";
 import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
 import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
-import { defineComponent } from "vue";
-import type { PropType } from "vue";
+import { defineComponent, type PropType, ref } from "vue";
+import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 
 import { useSwiperconf } from "@/utils/useSwiperConf";
 export default defineComponent({
@@ -54,6 +46,7 @@ export default defineComponent({
         SwiperSlide,
         ArrowLeft,
         ArrowRight,
+        ZoomModal
     },
     props: {
         images: {
@@ -70,6 +63,8 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const modalIsVisible = ref(false);
+        const activeIndex = ref(0);
         return {
             swiperOn: useSwiperconf(props.type).swiperOn,
             slideNext: useSwiperconf(props.type).slideNext,
@@ -78,7 +73,9 @@ export default defineComponent({
             swiperInstance: useSwiperconf(props.type).swiperInstance,
             isEnd: useSwiperconf(props.type).isEnd,
             isBeginning: useSwiperconf(props.type).isBeginning,
-            repairVideoUrl
+            repairVideoUrl,
+            modalIsVisible,
+            activeIndex
         };
     },
 })

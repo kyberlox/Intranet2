@@ -20,7 +20,8 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-  }, css: {
+  },
+  css: {
     preprocessorOptions: {
       scss: {
         additionalData: `
@@ -30,7 +31,4 @@ export default defineConfig({
       }
     }
   },
-  define: {
-    'API_URL': JSON.stringify(''),
-  }
 })

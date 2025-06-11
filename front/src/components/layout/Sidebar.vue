@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar mt20">
-        <div class="tasks__block">
+        <div class="task__block">
             <Calendar />
         </div>
 

@@ -14,7 +14,8 @@ from src.model.Section import Section, section_router
 from src.model.Article import Article, article_router
 
 from src.model.File import File, file_router
-from src.services.Vcard import vcard_app
+from src.services.VCard import vcard_app
+
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
 

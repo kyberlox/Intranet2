@@ -3,6 +3,7 @@ from src.base.pSQLmodels import ArticleModel
 from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.File import File
+from src.model.User import User
 from src.model.Section import Section
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
@@ -639,6 +640,13 @@ class Article:
             del page_view[-2:]
 
             return page_view
+        
+        elif self.section_id == "1":
+            users_bday_info = []
+            date_bday = datetime.datetime.now().strftime("%d.%m")
+            users = User().get_birthday_celebrants(date_bday)
+            return users
+
         else:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
@@ -658,14 +666,19 @@ class Article:
     def main_page(self, section_id):
         #Новые сотрудники
         if section_id == 1:
+            images_for_bday = []
+            date_bday = datetime.datetime.now().strftime("%d.%m")
+            users = User().get_birthday_celebrants(date_bday)
+            for user in users:
+                user.pop('position')
+                user.pop('department')
+                images_for_bday.append(user)
+            
             new_workers = {
                 'id': 1,
                 'type': 'singleBlock',
                 'title': 'Новые сотрудники',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                }],
+                'images': images_for_bday,
                 'href': 'newWorkers',
             } # словарь-заглушка для будущей секции "новые сотрудники"
             return new_workers

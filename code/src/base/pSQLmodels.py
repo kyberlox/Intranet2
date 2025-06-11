@@ -293,7 +293,16 @@ class UserModel():
             for key in DB_columns:
                 result[key] = user.__dict__[key]
 
-            result['indirect_data'] = user.indirect_data
+            indirect_data = user.indirect_data
+            list_departs = []
+            if len(indirect_data['uf_department']) != 0:
+                for dep in indirect_data['uf_department']:
+                    dep_str = DepartmentModel(dep).find_dep_by_id()
+                    for de in dep_str:
+                        list_departs.append(de.__dict__['name'])
+                    
+            indirect_data['uf_department'] = list_departs
+            result['indirect_data'] = indirect_data
             
             #информация о фото
             #вывод ID фотографии пользователя
@@ -338,6 +347,40 @@ class UserModel():
             session.commit()
 
             return result
+    
+    def find_all_celebrants(self, date):
+        """
+        Выводит список пользователей, у кого день рождение в этот день (date)
+        Важно! Не выводит пользователей, у кого департамент Аксиома и у кого нет фото
+        """
+        normal_list = []
+        users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
+        for usr in users:
+            user = usr.__dict__
+            if 112 in user['indirect_data']['uf_department']:
+                pass
+            else:
+                if user['active'] and user['photo_file_id'] is not None:
+                    user_info = {}
+                    indirect_data = user['indirect_data']
+                    list_departs = []
+                    if len(indirect_data['uf_department']) != 0:
+                        for dep in indirect_data['uf_department']:
+                            dep_str = DepartmentModel(dep).find_dep_by_id()
+                            for de in dep_str:
+                                list_departs.append(de.__dict__['name'])
+                            
+                    indirect_data['uf_department'] = list_departs
+                    # добавляем только нужную информацию
+                    user_info = {}
+                    user_image = FileModel(user['photo_file_id']).find_user_photo_by_id()
+                    user_info['id'] = user['id']
+                    user_info['position'] = indirect_data['work_position']
+                    user_info['department'] = indirect_data['uf_department']
+                    user_info['image'] = user_image['URL']
+                    
+                    normal_list.append(user_info)
+        return normal_list
 
     """
     def put_uf_depart(self, usr_dep):

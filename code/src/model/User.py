@@ -141,6 +141,10 @@ class User:
 
     def get_viewed_articles(self):
         return ViewsModel(user_id=self.id).get_viewed_articles()
+    
+    # день рождения
+    def get_birthday_celebrants(self, date):
+        return UserModel().find_all_celebrants(date)
 
 '''
     # def get(self, method="user.get", params={}):
@@ -244,3 +248,8 @@ def get_viewed_articles(user_id: int):
 def search_indirect(key_word):
     #будет работать через elasticsearch
     return UserSearchModel().search_indirect(key_word)
+
+# запрос для получения списка пользователей у кого в эту дату ДР
+@users_router.get("/get_birthday_celebrants/{day_month}")
+def birthday_celebrants(day_month: str):
+    return User().get_birthday_celebrants(day_month)

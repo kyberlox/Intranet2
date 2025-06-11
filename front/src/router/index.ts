@@ -189,6 +189,23 @@ const router = createRouter({
       props: (route) => ({ monthId: route.params.monthId }),
     },
     {
+      path: '/about/merch',
+      name: 'merchStore',
+      component: () => import('@/views/about/merchStore/MerchStore.vue'),
+    },
+    {
+      path: '/about/merch/:id',
+      name: 'merchStoreItem',
+      component: () => import('@/views/about/merchStore/MerchStoreItem.vue'),
+      props: (route) => ({ id: Number(route.params.id) }),
+    },
+    {
+      path: '/about/merch/:id/test',
+      name: 'merchStoreItemTest',
+      component: () => import('@/views/about/merchStore/MerchStoreItemTest.vue'),
+      props: (route) => ({ id: Number(route.params.id) }),
+    },
+    {
       path: '/services/selectionTep',
       name: 'selectionTep',
       beforeEnter: (to, from, next) => {
@@ -405,7 +422,11 @@ const router = createRouter({
     //   name: 'structure',
     //   component: () => import('@/views/about/companyStructure/CompanyStructure.vue'),
     // },
-  ]
+  ],
+  scrollBehavior() {
+    return { top: 0, behavior: 'smooth' };
+  }
 })
+
 
 export default router

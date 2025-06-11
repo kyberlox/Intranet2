@@ -1,5 +1,6 @@
 <template>
-    <div class="homeview__grid__gallery">
+    <div v-if="gallery.length"
+         class="homeview__grid__gallery">
         <div class="homeview__grid">
             <div v-for="card in gallery"
                  :key="'homeCard' + card.id"
@@ -32,15 +33,20 @@
             </div>
         </div>
     </div>
+    <GridGallerySkeleton v-else />
 </template>
 <script lang="ts">
 import Reactions from "@/components/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
 import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
 import type { IUnionEntities } from "@/interfaces/IEntities";
+import GridGallerySkeleton from "./GridGallerySkeleton.vue";
 
 export default defineComponent({
-    components: { Reactions },
+    components: {
+        Reactions,
+        GridGallerySkeleton
+    },
     props: {
         gallery: {
             type: Object as PropType<IUnionEntities[]>,

@@ -1,5 +1,6 @@
 <template>
-    <div class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
+    <div v-if="card"
+         class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
         <RouterLink :to="{ name: card.href, params: { id: card.id } }"
                     class="homeview__grid__card__link">
             <span v-if="modifiers?.includes('mixedType')"

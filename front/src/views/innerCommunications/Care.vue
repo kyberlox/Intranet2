@@ -6,7 +6,8 @@
                 <SafetyTechnicsSlide v-for="slide in careSlides"
                                      :key="slide.id"
                                      :slide="slide"
-                                     :routeTo="'carePost'" />
+                                     :routeTo="'carePost'"
+                                     :modifiers="['noCenterTitle']" />
             </div>
         </div>
     </div>

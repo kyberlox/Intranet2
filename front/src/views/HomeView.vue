@@ -1,6 +1,7 @@
 <template>
     <div class="homeview mt20">
-        <div class="homeview__grid">
+        <div v-if="mainPageCards.length"
+             class="homeview__grid">
             <div v-for="item in mainPageCards"
                  class="homeview__grid__card d-flex flex-column"
                  :class="{ 'homeview__grid__card--fullRowBlock': item.type == 'fullRowBlock' || item.type == 'mixedRowBlock' }"
@@ -40,6 +41,8 @@
                 </div>
             </div>
         </div>
+
+        <GridGallerySkeleton v-else />
     </div>
 </template>
 
@@ -47,18 +50,20 @@
 import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
 import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
-import type { MainPageBlock, MainPageCards } from "@/interfaces/IMainPage";
+import type { MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { watch } from "vue";
-import { useLoadingStore } from "@/stores/loadingStore"
+import { useLoadingStore } from "@/stores/loadingStore";
+import GridGallerySkeleton from "@/components/tools/gallery/GridGallerySkeleton.vue";
 
 export default defineComponent({
     name: "main-page",
     components: {
         MainPageSoloBlock,
-        MainPageRowBlocks
+        MainPageRowBlocks,
+        GridGallerySkeleton
     },
     setup() {
         const useViewsData = useViewsDataStore();

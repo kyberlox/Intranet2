@@ -5,13 +5,18 @@
                       v-for="(slide, index) in slides"
                       :key="'vertSlide' + index">
             <img :src="slide.image" />
-            <span class="birthday-icon"></span>
+            <span v-if="modifiers && modifiers.includes('birthday-icon')"
+                  class="birthday-icon"></span>
             <div class="swiper--vertical-slide__info"
                  v-if="page == 'birthdays'">
-                <div class="swiper--vertical-slide__name vertical-title">{{ slide.name }}</div>
+                <div class="swiper--vertical-slide__name vertical-title">{{ slide.name ?? slide.user_fio }}</div>
                 <div class="swiper--vertical-slide__position vertical-subtitle">{{ slide.position ? slide.position : ""
-                }}</div>
-                <div class="swiper--vertical-slide__department">{{ slide.department ? slide.department : "" }}</div>
+                    }}</div>
+                <div v-for="(item, index) in slide.department"
+                     :key="index + 'dep'"
+                     class="swiper--vertical-slide__department">
+                    {{ item }}
+                </div>
             </div>
         </swiper-slide>
     </swiper>
@@ -55,6 +60,10 @@ export default defineComponent({
         page: {
             type: String,
         },
+        modifiers: {
+            type: Array,
+            default: () => ['birthday-icon']
+        }
     },
     setup() {
 

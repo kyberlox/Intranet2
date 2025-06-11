@@ -1,7 +1,7 @@
 interface ISampleEvent {
     name?: string,
     title?: string,
-    value?: string | string[],
+    value?: string | string[] | number,
     type?: string,
     disabled?: boolean,
     options?: string[],
@@ -12,7 +12,7 @@ export const sampleEvent: ISampleEvent[] = [
     {
         name: 'id',
         title: 'id',
-        value: '1',
+        value: 1,
         type: 'text',
         disabled: true,
     },

@@ -14,7 +14,7 @@
                     <span class="section__image__list__item__category">
                         {{ getProperty(slide, "PROPERTY_344") }}
                     </span>
-                    <h3 v-if="slide.indirect_data && slide.indirect_data.NAME"
+                    <h3 v-if="slide.indirect_data && slide.indirect_data.NAME && !modifiers?.includes('noCenterTitle')"
                         class="section__image__list__item__title">{{ slide.indirect_data.NAME }}</h3>
                     <RouterLink :to="{ name: routeTo, params: { id: slide.id } }"
                                 class="section__image__list__item__link">
@@ -48,6 +48,9 @@ export default defineComponent({
         },
         routeTo: {
             type: String,
+        },
+        modifiers: {
+            type: Array<string>
         }
     },
     setup() {

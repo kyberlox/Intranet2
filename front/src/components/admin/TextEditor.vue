@@ -20,9 +20,6 @@ export default defineComponent({
     setup() {
         const editorValue = ref();
 
-        watchEffect(() => console.log(editorValue.value))
-
-
         const editorModules = {
             toolbar: [
                 ['bold', 'italic', 'underline'],

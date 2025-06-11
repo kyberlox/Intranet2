@@ -26,6 +26,7 @@
     gap: 15px;
     width: fit-content !important;
     justify-content: center;
+    max-width: 200px;
 
     @include sm {
         width: 100% !important;

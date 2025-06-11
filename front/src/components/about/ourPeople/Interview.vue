@@ -9,7 +9,8 @@
                              class="interview__img"></div>
                         <div class="imageCaption">{{ interviewInner.name }}</div>
                         <div class="news-like">
-                            <Reactions :reactions="interviewInner.reactions"
+                            <Reactions v-if="interviewInner.reactions"
+                                       :reactions="interviewInner.reactions"
                                        :type="'interview'" />
                         </div>
                     </div>
@@ -30,7 +31,7 @@ export default defineComponent({
     },
     props: {
         interviewInner: {
-            type: Object || String,
+            type: Object,
             required: true,
         },
     },

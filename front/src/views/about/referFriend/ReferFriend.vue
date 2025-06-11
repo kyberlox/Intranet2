@@ -15,36 +15,55 @@
                 class="job-list">
                 <li v-for="job in jobList"
                     :key="job.id">
-                    <a :href=job.href
+                    <a :href="getProperty(job, 'PROPERTY_5094')"
                        target="_blank"
                        class="job-link">
-                        {{ job.name }} </a>
+                        {{ job.name }}
+                    </a>
+                </li>
+            </ul>
+
+            <ul v-else-if="noVac">
+                <li class="job-link job-link--nohover">
+                    В настоящее время открытых вакансий нет
                 </li>
             </ul>
 
             <ul v-else>
-                <li class="job-link job-link--nohover">
-                    В настоящее время открытых вакансий нет
+                <li v-for="i in 16"
+                    :key="'jobSkelet' + i"
+                    class="job-link job-link--nohover skeleton-job-link">
                 </li>
             </ul>
         </div>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-
-interface IJobList {
-    id: number,
-    href: string,
-    name: string
-}
+import { sectionTips } from '@/assets/staticJsons/sectionTips';
+import Api from '@/utils/Api';
+import { defineComponent, onMounted, ref } from 'vue';
+import { getProperty } from '@/utils/getPropertyFirstPos';
+import { type IOpenVacancy } from '@/interfaces/IEntities';
 
 export default defineComponent({
     setup() {
-        const jobList = ref<IJobList[]>();
+        const jobList = ref<IOpenVacancy[]>();
+        const noVac = ref(false);
+
+        onMounted(() => {
+            Api.get(`article/find_by/${sectionTips["ОткрытыеВакансии"]}`)
+                .then((data) => {
+                    if (data.length) {
+                        jobList.value = data;
+                    }
+                    else noVac.value = true;
+                })
+        })
 
         return {
-            jobList
+            jobList,
+            getProperty,
+            noVac
         }
     }
 })

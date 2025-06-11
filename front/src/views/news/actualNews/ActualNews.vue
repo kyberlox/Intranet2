@@ -3,8 +3,7 @@
     <TagDateNavBar :years="extractYears(allNews)"
                    @pickYear="(year) => visibleNews = showEventsByYear(allNews, year)" />
     <div class="row">
-        <GridGallery v-if="visibleNews"
-                     :gallery="visibleNews"
+        <GridGallery :gallery="visibleNews"
                      :type="'postPreview'"
                      :routeTo="'actualArticle'" />
     </div>
@@ -18,13 +17,15 @@ import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef }
 import type { IActualNews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
-import { useViewsDataStore } from "@/stores/viewsData"
+import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from '@/stores/loadingStore';
+// import GridGallerySkeleton from '@/components/tools/gallery/GridGallerySkeleton.vue';
 
 export default defineComponent({
     components: {
         TagDateNavBar,
-        GridGallery
+        GridGallery,
+        // GridGallerySkeleton
     },
     setup() {
         const viewsData = useViewsDataStore();

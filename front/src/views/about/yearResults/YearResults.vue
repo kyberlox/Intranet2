@@ -49,7 +49,7 @@ export default defineComponent({
         const workerWithDiploma: Ref<IWorkersResults[]> = ref([]);
 
         onMounted(() => {
-            Api.get(`article/infoblock/${sectionTips["Сотрудник года"]}`)
+            Api.get(`article/find_by/${sectionTips["Сотрудник года"]}`)
                 .then(res => {
                     const transformedData = res.map((item: IWorkersResults) => {
                         const newItem = { ...item };

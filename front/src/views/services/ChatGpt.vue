@@ -33,7 +33,7 @@
 
                     <div class="chatGpt__form-group">
                         <button type="submit"
-                                class="submit-button"
+                                class="primary-button"
                                 @click.prevent="sendToChatGpt">Отправить</button>
                     </div>
                 </form>

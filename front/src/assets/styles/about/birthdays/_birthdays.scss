@@ -90,6 +90,7 @@
         flex-grow: 1;
         max-width: fit-content;
         cursor: zoom-in;
+        margin: auto;
 
         @include sm {
             max-width: 100%;

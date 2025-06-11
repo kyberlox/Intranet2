@@ -641,7 +641,7 @@ class Article:
 
             return page_view
         
-        elif self.section_id == "1":
+        elif self.section_id == "2":
             users_bday_info = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
             users = User().get_birthday_celebrants(date_bday)
@@ -665,35 +665,36 @@ class Article:
     
     def main_page(self, section_id):
         #Новые сотрудники
-        if section_id == 1:
-            images_for_bday = []
-            date_bday = datetime.datetime.now().strftime("%d.%m")
-            users = User().get_birthday_celebrants(date_bday)
-            for user in users:
-                user.pop('position')
-                user.pop('department')
-                images_for_bday.append(user)
-            
+        if section_id == 1:       
             new_workers = {
                 'id': 1,
                 'type': 'singleBlock',
                 'title': 'Новые сотрудники',
-                'images': images_for_bday,
+                'images': [{
+                    "id": 1,
+                    "image": None,
+                    "href": "/"
+                }],
                 'href': 'newWorkers',
             } # словарь-заглушка для будущей секции "новые сотрудники"
             return new_workers
 
         #С днем рождения!
         elif section_id == 2:
+            images_for_bday = []
+            date_bday = datetime.datetime.now().strftime("%d.%m")
+            users = User().get_birthday_celebrants(date_bday)
+            for user in users:
+                user.pop('position')
+                user.pop('department')
+                user.pop('user_fio')
+                images_for_bday.append(user)
+
             birthday = {
                 'id': 2,
                 'type': 'singleBlock',
                 'title': 'С днем рождения!',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                    "href": "/"
-                }],
+                'images': images_for_bday,
                 'href': 'birthdays',
             } # словарь-заглушка для будущей секции "С днем рождения!"
             return birthday

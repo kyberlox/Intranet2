@@ -630,7 +630,7 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            main_page = [1, 2, 32, 4, 5, 31, 16, 33, 9, 10, 51] #section id
+            main_page = [1, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
@@ -641,7 +641,7 @@ class Article:
 
             return page_view
         
-        elif self.section_id == "2":
+        elif self.section_id == "19":
             users_bday_info = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
             users = User().get_birthday_celebrants(date_bday)
@@ -657,7 +657,7 @@ class Article:
                     active_articles.append(res)
                 else:
                     pass
-            if self.section_id == "5":
+            if self.section_id == "111":
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             else:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
@@ -680,7 +680,7 @@ class Article:
             return new_workers
 
         #С днем рождения!
-        elif section_id == 2:
+        elif section_id == 19:
             images_for_bday = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
             users = User().get_birthday_celebrants(date_bday)
@@ -691,7 +691,7 @@ class Article:
                 images_for_bday.append(user)
 
             birthday = {
-                'id': 2,
+                'id': section_id,
                 'type': 'singleBlock',
                 'title': 'С днем рождения!',
                 'images': images_for_bday,
@@ -744,9 +744,9 @@ class Article:
             return idea_block
 
         #
-        elif section_id == 5:
+        elif section_id == 111:
             emk_competition = {
-                'id': 5,
+                'id': section_id,
                 'type': 'singleBlock',
                 'title': 'Конкурсы ЭМК',
                 'images': [{

@@ -602,7 +602,7 @@ class Article:
         return {"status" : True}
 
     def search_by_id(self):
-        art = ArticleModel(id = self.id).find_by_id()
+        art = ArticleModel(art_id = self.id).find_by_id()
         files = File(id = self.id).get_files()
 
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
@@ -641,7 +641,7 @@ class Article:
     #         return mongo_list[0]['file_url']
     
     def get_preview(self ):
-        res = File(id = self.id).get_files()
+        res = File(art_id = self.id).get_files()
         mongo_list = []
         preview_inf = []
         one_preview_inf = []

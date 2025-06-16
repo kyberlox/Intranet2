@@ -11,3 +11,5 @@ CREATE VIEW NewUsers AS
    FROM users
   WHERE users.active = true AND to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) >= (date_trunc('week'::text, CURRENT_DATE::timestamp with time zone) - '14 days'::interval)
   ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));
+
+--SELECT * FROM public."NewUsers";

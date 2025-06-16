@@ -760,7 +760,7 @@ class Article:
             news_id = sorted_data[0][0]
 
             print(news_id, 'article')
-            self.id = news_id
+            self.art_id = news_id
             image_URL = self.get_preview()
             second_page = {
                 'id': section_id, 
@@ -832,7 +832,7 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    self.id = row[0]
+                    self.art_id = row[0]
                     preview_pict = self.get_preview()
 
                     if preview_pict is None:
@@ -886,7 +886,7 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    self.id = row[0]
+                    self.art_id = row[0]
                     preview_pict = self.get_preview()
 
                     if preview_pict is None:
@@ -938,7 +938,7 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    self.id = row[0]
+                    self.art_id = row[0]
                     preview_pict = self.get_preview()
 
                     if preview_pict is None:
@@ -1015,7 +1015,7 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    self.id = row[0]
+                    self.art_id = row[0]
                     preview_pict = self.get_preview()
 
                     if preview_pict is None:

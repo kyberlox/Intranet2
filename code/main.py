@@ -18,6 +18,7 @@ from src.model.Article import Article, article_router
 
 from src.model.File import File, file_router
 from src.services.VCard import vcard_app
+from src.services.LogsMaker import LogsMaker
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
 
@@ -80,12 +81,17 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
+    # Внедряю свою отладку
+    log = LogsMaker()
+
     # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
     open_links = [
         "/docs",
         "/openapi.json",
         "/api/auth_router",
-        "/total_update"
+        "/total_update",
+        "/api/files",
+        "/api/user_files"
     ]
     for open_link in open_links:
         if open_link in request.url.path:
@@ -97,24 +103,27 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         if token is None:
             token = request.headers.get("Authorization")
             if token is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Authorization cookies missing",
-                )
+                return await log.auth_error_template(error_message="Authorization cookies missing")
+                # raise HTTPException(
+                #     status_code=status.HTTP_401_UNAUTHORIZED,
+                #     detail="Authorization cookies missing",
+                # )
 
         try:
             session = AuthService().validate_session(token)
             if not session:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token",
-                )
+                return await log.auth_error_template(error_message="Invalid token")
+                # raise HTTPException(
+                #     status_code=status.HTTP_401_UNAUTHORIZED,
+                #     detail="Invalid token",
+                # )
 
         except IndexError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authorization cookies format",
-            )
+            return await log.auth_error_template(error_message="Invalid authorization cookies or headers format")
+            # raise HTTPException(
+            #     status_code=status.HTTP_401_UNAUTHORIZED,
+            #     detail="Invalid authorization cookies format",
+            # )
 
     return await call_next(request)
 

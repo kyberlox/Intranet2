@@ -130,7 +130,6 @@ class File:
                 file_info["file_url"] = file["file_url"]
                 file_info["is_archive"] = file["is_archive"]
                 file_info["is_preview"] = file["is_preview"]
-                file_info["file_url"] = file["file_url"]
                 file_list.append(file_info)
 
             return file_list

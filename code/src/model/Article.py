@@ -602,10 +602,46 @@ class Article:
         return {"status" : True}
 
     def search_by_id(self):
-        return ArticleModel(id = self.id).find_by_id()
+        art = ArticleModel(id = self.id).find_by_id()
+        files = File(id = self.id).get_files()
 
-    def get_preview(self, id):
-        res = FileModel(id).find_all_by_art_id()
+        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+        for file in files:
+            url = file["file_url"]
+            file["file_url"] = f"http://intranet.emk.org.ru{url}"
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        art['files'] = files
+        return art
+
+
+
+    # def get_preview(self, id):
+    #     res = File(id).find_all_by_art_id()
+    #     mongo_list = []
+    #     preview_inf = []
+    #     one_preview_inf = []
+    #     for result in res:
+    #         mongo_list.append(result)
+    #     if len(mongo_list) > 1:
+
+    #         for info in mongo_list:
+    #             one_preview_inf.append(info['b24_id'])
+    #             one_preview_inf.append(info['file_url'])
+    #             preview_inf.append(one_preview_inf)
+
+    #         # сортируем по b24_id если фоток много и берем с наименьшим b24_id
+    #         sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
+
+    #         preview_inf = sorted_list[0][1]
+    #         return preview_inf
+    #     elif len(mongo_list) == 0:
+    #         return None
+    #     else:
+    #         return mongo_list[0]['file_url']
+    
+    def get_preview(self ):
+        res = File(id = self.id).get_files()
         mongo_list = []
         preview_inf = []
         one_preview_inf = []
@@ -615,7 +651,10 @@ class Article:
 
             for info in mongo_list:
                 one_preview_inf.append(info['b24_id'])
-                one_preview_inf.append(info['file_url'])
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+                url = info['file_url']
+                one_preview_inf.append(f"http://intranet.emk.org.ru{url}")
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 preview_inf.append(one_preview_inf)
 
             # сортируем по b24_id если фоток много и берем с наименьшим b24_id
@@ -626,7 +665,10 @@ class Article:
         elif len(mongo_list) == 0:
             return None
         else:
-            return mongo_list[0]['file_url']
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+            url = mongo_list[0]['file_url']
+            return f"http://intranet.emk.org.ru{url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def search_by_section_id(self):
         if self.section_id == "0":
@@ -716,8 +758,10 @@ class Article:
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
             news_id = sorted_data[0][0]
+
             print(news_id, 'article')
-            image_URL = self.get_preview(news_id)
+            self.id = news_id
+            image_URL = self.get_preview()
             second_page = {
                 'id': section_id, 
                 'type': 'singleBlock', 
@@ -788,7 +832,8 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    preview_pict = Article().get_preview(row[0])
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -841,7 +886,8 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    preview_pict = Article().get_preview(row[0])
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -892,7 +938,8 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    preview_pict = Article().get_preview(row[0])
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -968,7 +1015,8 @@ class Article:
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
-                    preview_pict = Article().get_preview(row[0])
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
 
                     if preview_pict is None:
                         image_url = None

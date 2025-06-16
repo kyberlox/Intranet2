@@ -46,7 +46,7 @@ app.include_router(auth_router, prefix="/api")
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
-templates = Jinja2Templates(directory="./front_jinja")
+templates = Jinja2Templates(directory="./front_jinja") 
 
 origins = [
     "http://localhost:8000",

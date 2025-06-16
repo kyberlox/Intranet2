@@ -1,4 +1,7 @@
 from tqdm import tqdm
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="./front_jinja")
 
 class LogsMaker:
     def __init__(self):
@@ -39,4 +42,4 @@ class LogsMaker:
             "error_message": error_message,
             "help_url": help_url
         }
-        return self.templates.TemplateResponse("auth_error.html", context)
+        return templates.TemplateResponse("auth_error.html", context)

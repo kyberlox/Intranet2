@@ -103,7 +103,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         if token is None:
             token = request.headers.get("Authorization")
             if token is None:
-                return await log.auth_error_template(error_message="Authorization cookies missing")
+                return await log.auth_error_template(request, error_message="Authorization cookies missing")
                 # raise HTTPException(
                 #     status_code=status.HTTP_401_UNAUTHORIZED,
                 #     detail="Authorization cookies missing",
@@ -112,14 +112,14 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         try:
             session = AuthService().validate_session(token)
             if not session:
-                return await log.auth_error_template(error_message="Invalid token")
+                return await log.auth_error_template(request, error_message="Invalid token")
                 # raise HTTPException(
                 #     status_code=status.HTTP_401_UNAUTHORIZED,
                 #     detail="Invalid token",
                 # )
 
         except IndexError:
-            return await log.auth_error_template(error_message="Invalid authorization cookies or headers format")
+            return await log.auth_error_template(request, error_message="Invalid authorization cookies or headers format")
             # raise HTTPException(
             #     status_code=status.HTTP_401_UNAUTHORIZED,
             #     detail="Invalid authorization cookies format",

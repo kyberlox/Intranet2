@@ -20,7 +20,7 @@ class File:
                 id = id
             elif type(id) == type(str()) and id != '':
                 id = ObjectId(id)
-
+        self.art_id = art_id
         self.id = id
         self.b24_id = b24_id
 

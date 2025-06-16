@@ -31,12 +31,12 @@ class LogsMaker:
         self, 
         request: Request, 
         error_message: str = "Ошибка авторизации",
-        login_url: str = "/user/auth"
+        help_url: str = "/user/auth"
     ) -> HTMLResponse:
         """Возвращает HTML шаблон с ошибкой авторизации"""
         context = {
             "request": request,
             "error_message": error_message,
-            "login_url": login_url
+            "help_url": help_url
         }
         return self.templates.TemplateResponse("auth_error.html", context)

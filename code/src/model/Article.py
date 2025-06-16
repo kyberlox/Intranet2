@@ -602,7 +602,7 @@ class Article:
         return {"status" : True}
 
     def search_by_id(self):
-        art = ArticleModel(art_id = self.id).find_by_id()
+        art = File(art_id = self.id).find_by_id()
         files = File(id = self.id).get_files()
 
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!

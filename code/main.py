@@ -18,6 +18,10 @@ from src.model.Article import Article, article_router
 
 from src.model.File import File, file_router
 from src.services.VCard import vcard_app
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5681eeb30d0d86968b5148d58a979a9cefe4fa6d
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
 

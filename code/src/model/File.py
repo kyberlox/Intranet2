@@ -36,7 +36,7 @@ class File:
     def upload_inf_art(self, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
         try:
             b24 = B24()
-            print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
+            #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
 
             if need_all_method:
                 file_data = b24.get_all_files(self.b24_id)

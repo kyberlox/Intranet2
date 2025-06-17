@@ -604,22 +604,28 @@ class Article:
     def search_by_id(self):
         return ArticleModel(id = self.id).find_by_id()
 
-    def get_preview(self, id):
-        res = FileModel(id).find_all_by_art_id()
+    def get_preview(self, art_id):
+        res = File(art_id=art_id).get_files_by_art_id()
         mongo_list = []
-        preview_inf = []
-        one_preview_inf = []
+        preview = None
+        # one_preview_inf = []
         for result in res:
             mongo_list.append(result)
         if len(mongo_list) > 1:
 
             for info in mongo_list:
-                one_preview_inf.append(info['b24_id'])
-                one_preview_inf.append(info['file_url'])
-                preview_inf.append(one_preview_inf)
+                if info['is_preview']:
+                    preview = None
 
-            # сортируем по b24_id если фоток много и берем с наименьшим b24_id
-            sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
+                # one_preview_inf.append(info['b24_id'])
+                # one_preview_inf.append(info['file_url'])
+                # preview_inf.append(one_preview_inf)
+
+            # # сортируем по b24_id если фоток много и берем с наименьшим b24_id
+            # sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
+            
+            # сортируем по ключу is_preview
+
 
             preview_inf = sorted_list[0][1]
             return preview_inf
@@ -630,7 +636,7 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            main_page = [1, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id
+            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
@@ -646,6 +652,9 @@ class Article:
             date_bday = datetime.datetime.now().strftime("%d.%m")
             users = User().get_birthday_celebrants(date_bday)
             return users
+
+        elif self.section_id == "112":
+            return User().get_new_workers()
 
         else:
             active_articles = []
@@ -665,19 +674,22 @@ class Article:
     
     def main_page(self, section_id):
         #Новые сотрудники
-        if section_id == 1:       
-            new_workers = {
-                'id': 1,
+        if section_id == 112:
+            img_new_workers = []     
+            users = User().get_new_workers()  
+            for user in users:
+                user.pop('position')
+                user.pop('department')
+                user.pop('user_fio')
+                img_new_workers.append(user)
+            new_workers_view = {
+                'id': section_id,
                 'type': 'singleBlock',
                 'title': 'Новые сотрудники',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                    "href": "/"
-                }],
+                'images': img_new_workers,
                 'href': 'newWorkers',
             } # словарь-заглушка для будущей секции "новые сотрудники"
-            return new_workers
+            return new_workers_view
 
         #С днем рождения!
         elif section_id == 19:
@@ -699,7 +711,7 @@ class Article:
             } # словарь-заглушка для будущей секции "С днем рождения!"
             return birthday
 
-        #
+        # Орг развитие
         elif section_id == 32:
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()

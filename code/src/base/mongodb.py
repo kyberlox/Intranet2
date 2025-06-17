@@ -27,13 +27,14 @@ user_photo_collection = db["user_photo"]
 
 
 class FileModel:
-    def __init__(self, id=""):
+    def __init__(self, id="", art_id=None):
         if id is not None:
             if type(id) == type(ObjectId("a" * 24)):
                 id = id
             elif type(id) == type(str()) and id != '':
                 id = ObjectId(id)
             self.id = id
+        self.art_id = art_id
 
     def create_indexes(self):
         #создаем индексы

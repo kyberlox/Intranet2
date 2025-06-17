@@ -13,7 +13,7 @@ STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
 
 class File:
-    def __init__(self, id=None, b24_id=None):
+    def __init__(self, id=None, art_id=None, b24_id=None):
 
         if id is not None:
             if type(id) == type(ObjectId("a"*24)):
@@ -22,6 +22,7 @@ class File:
                 id = ObjectId(id)
 
         self.id = id
+        self.art_id = art_id
         self.b24_id = b24_id
 
     def download_by_URL(self, url, path):
@@ -113,7 +114,7 @@ class File:
             return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
     def get_files(self):
-        file_data = FileModel(id=self.id).find_all_by_art_id()
+        file_data = FileModel(id=self.id).find_by_id()
         file_list = []
         
         if not file_data:
@@ -130,12 +131,52 @@ class File:
                 file_info["file_url"] = file["file_url"]
                 file_info["is_archive"] = file["is_archive"]
                 file_info["is_preview"] = file["is_preview"]
-                file_info["file_url"] = file["file_url"]
                 file_list.append(file_info)
 
             return file_list
 
+    def get_files_by_art_id(self):
+        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
+        file_list = []
+        
+        if not file_data:
+            raise HTTPException(status_code=404, detail="File not found")
+        else:
+            for file in file_data:
+                file_info = {}
+                file_info["id"] = str(file["_id"])
+                file_info["original_name"] = file["original_name"]
+                file_info["stored_name"] = file["stored_name"]
+                file_info["content_type"] = file["content_type"]
+                file_info["article_id"] = file["article_id"]
+                file_info["b24_id"] = file["b24_id"]
+                file_info["file_url"] = file["file_url"]
+                file_info["is_archive"] = file["is_archive"]
+                file_info["is_preview"] = file["is_preview"]
+                file_list.append(file_info)
 
+            return file_list
+            
+
+    def get_users_photo(self):
+        file_data = FileModel(id=self.id).find_user_photo_by_id()
+        
+        
+        if not file_data:
+            raise HTTPException(status_code=404, detail="File not found")
+        else:
+            
+            file_info = {}
+            file_info["id"] = str(file_data["_id"])
+            file_info["name"] = file_data["name"]
+            file_info["format"] = file_data["format"]
+            file_info["uuid"] = file_data["uuid"]
+            file_info["URL"] = file_data["URL"]
+            file_info["b24_url"] = file_data["b24_url"]
+            file_info["is_archive"] = file_data["is_archive"]
+                
+
+            return file_info
 
     def dowload_user_photo(self, url):
         name = url.split("/")[-1]

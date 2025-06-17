@@ -309,9 +309,16 @@ class UserModel():
             list_departs = []
             if len(indirect_data['uf_department']) != 0:
                 for dep in indirect_data['uf_department']:
-                    dep_str = DepartmentModel(dep).find_dep_by_id()
-                    for de in dep_str:
-                        list_departs.append(de.__dict__['name'])
+                    dedep = DepartmentModel(dep).find_dep_by_id()
+                    if type(dedep) == type(dict()):
+                        if 'name' in dedep:
+                            list_departs.append(dedep['name'])
+                        else:
+                            print(dedep)
+                    else: #если объект
+                        for dp in dedep:
+                            list_departs.append(dp.__dict__['name'])
+
                     
             indirect_data['uf_department'] = list_departs
             result['indirect_data'] = indirect_data
@@ -320,7 +327,7 @@ class UserModel():
             #вывод ID фотографии пользователя
             result['photo_file_id'] = user.__dict__['photo_file_id']
             if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
-                photo_inf = FileModel(user.__dict__['photo_file_id']).find_user_photo_by_id()
+                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
 
                 #вывод URL фотографии пользователя
                 result['photo_file_url'] = photo_inf['URL']

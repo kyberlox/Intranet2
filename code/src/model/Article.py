@@ -82,7 +82,7 @@ class Article:
             content = data['DETAIL_TEXT']
             #data.pop('DETAIL_TEXT')
         elif "PROPERTY_365" in data:
-            preview = list(data['PROPERTY_365'].values())[0]
+            content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         else:
             keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358"]
@@ -232,7 +232,7 @@ class Article:
             
             if file_property in data:
                 #обрабатываются днфолтным методом битры
-                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_366", "PROPERTY_678"]:
                     need_all_method = False
                 try:
                     # выцепить id файла

@@ -36,6 +36,7 @@ class File:
     def upload_inf_art(self, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
         try:
             b24 = B24()
+            print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
 
             if need_all_method:
                 file_data = b24.get_all_files(self.b24_id)
@@ -114,13 +115,14 @@ class File:
 
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
-        result = FileModel(art_id).find_all_by_art_id()
+        result = FileModel(art_id=art_id).find_all_by_art_id()
         DB_files_id = []
         DB_files_path = {}
+
         if result is None: # если в бд нет такого файла
             return files_id 
         else:
-            # цикло для сбора данных с БД
+            # цикл для сбора данных с БД
             for res in result: # выдергиваем все b24_id из монго по art_id 
                 file = res["b24_id"]
                 DB_files_id.append(file)
@@ -242,12 +244,12 @@ class File:
             print(uuid)
     
     def delete_user_img(self):
-        file_data = FileModel(id = ObjectId(file_id)).find_user_photo_by_id()
+        file_data = FileModel(id = self.id).find_user_photo_by_id()
         if not file_data:
             raise HTTPException(404, detail="File not found")
         
         try:
-            FileModel(id = ObjectId(file_id)).remove_user_photo()
+            FileModel(id = self.id).remove_user_photo()
             return {"status": "to_archive"}
         except Exception as e:
             raise HTTPException(500, detail=str(e))

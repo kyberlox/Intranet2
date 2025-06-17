@@ -110,6 +110,9 @@ class FileModel:
     def find_all_by_art_id(self):
         return files_collection.find({"article_id": self.art_id})
 
+    def find_all_by_b24_id(self):
+        return files_collection.find({"b24_id": self.art_id})
+
 
 
     # блок для аватарок

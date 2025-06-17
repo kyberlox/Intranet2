@@ -1,9 +1,13 @@
 from src.base.B24 import B24
 from src.base.pSQLmodels import ArticleModel
+from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.File import File
+from src.model.User import User
 from src.model.Section import Section
 from src.services.LogsMaker import LogsMaker
+from src.base.pSQLmodels import LikesModel
+from src.base.pSQLmodels import ViewsModel
 
 import json
 import datetime
@@ -53,6 +57,15 @@ class Article:
         elif "PROPERTY_290" in data:
             preview = list(data['PROPERTY_290'].values())[0]
             #data.pop('PROPERTY_290')
+        elif "PROPERTY_356" in data:
+            preview = list(data['PROPERTY_356'].values())[0]
+            #data.pop('PROPERTY_356')
+        elif "PROPERTY_488" in data:
+            preview = list(data['PROPERTY_488'].values())[0]
+            # data.pop('PROPERTY_488')
+        elif "PROPERTY_1127" in data:
+            preview = list(data['PROPERTY_1127'].values())[0]
+            # data.pop('PROPERTY_1127')
         else:
             preview = None
 
@@ -68,8 +81,11 @@ class Article:
         elif "DETAIL_TEXT" in data:
             content = data['DETAIL_TEXT']
             #data.pop('DETAIL_TEXT')
+        elif "PROPERTY_365" in data:
+            preview = list(data['PROPERTY_365'].values())[0]
+            # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291"]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358"]
             content = None
             for key in keys:
                 if key in data:
@@ -145,6 +161,7 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
+
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
@@ -158,12 +175,12 @@ class Article:
             "PROPERTY_342",
             "PROPERTY_343",
 
-            "PROPERTY_1023",
-            "PROPERTY_1020",
+            #"PROPERTY_1023",
+            #"PROPERTY_1020",
 
             "PROPERTY_476",
 
-            "PROPERTY_670", #!!! сслыка на ютуб !!!
+            #"PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
 
             "PROPERTY_463",
@@ -174,32 +191,49 @@ class Article:
             # "PROPERTY_296",
 
             "PROPERTY_399",
+
             "PROPERTY_400",
             #"PROPERTY_402",
-
             "PROPERTY_407",
-            "PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            #"PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            "PROPERTY_476",
+            "PROPERTY_1025",
+            "PROPERTY_678",
+            "PROPERTY_356",
 
             #вложения
             "PROPERTY_478",
-            "PROPERTY_491"
-
+            "PROPERTY_491",
+            "PROPERTY_366",
         ]
 
         preview_file = [
-            "PREVIEW_PICTURE",
+            "PROPERTY_399",
+            "PROPERTY_407",
             "PROPERTY_372",
             "PROPERTY_337",
             "PROPERTY_342",
-            "PROPERTY_1023"
+            "PROPERTY_476",
+            "PROPERTY_669",
+            "PROPERTY_463",
+            "PROPERTY_498",
+            "PREVIEW_PICTURE",
+            "PROPERTY_356",
         ]
         
         # находим файлы статьи
         files = []
         preview_images = []
+        need_all_method = True
+        #собираем данные о файлах
         for file_property in files_propertys:
             
             if file_property in data:
+                #обрабатываются днфолтным методом битры
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
+                    need_all_method = False
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -230,30 +264,32 @@ class Article:
                         files.append( data[file_property] )
 
                         if file_property in preview_file:
-                            preview_images.append(f_id)
+                            preview_images.append(data[file_property])
                     else:
                         print("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
                         
                 except:
-                    #pass
-                    print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
+                    pass
+                    # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
 
         if files == []:
             return []
         else:
             files_data = []
+            #проеверяем, нужно ли обновить файлы?
             files_to_add = File().need_update_file(art_id, files)
+
             if files_to_add != []:
                 for f_id in files:
                     is_preview = f_id in preview_images
-                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview)
+                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
                     #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
                     files_data.append(file_data)
 
             else:
                 print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
 
-                return files_data
+            return files_data
 
     def add(self, article_data):
         return ArticleModel().add_article(self.make_valid_article(article_data))
@@ -263,6 +299,9 @@ class Article:
         ! Не повредить имеющиеся записи и структуру
         ! Выгрузка файлов из инфоблоков
         '''
+
+        # создание индексов в Mongo
+        FileModel().create_indexes()
 
         # кастомный прогрессбар
         logg = LogsMaker()
@@ -278,12 +317,15 @@ class Article:
             32 : "132", # Новости организационного развития
             53 : "62", # Афиша
             54 : "55", # Предложения партнеров
-            55 : "56" # Благотворительные проекты
+            55 : "56", # Благотворительные проекты
+
+            25 : "100", #Референсы и опыт поставок
+            17 : "60" #Учебный центр (Литература)
         }
 
 
         #проходимся по инфоблокам
-        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56 "):
+        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56, 100, 60 "):
 
             # запрос в B24
             self.section_id = sec_inf[i]
@@ -438,6 +480,10 @@ class Article:
         self.section_id = "50"
         art_inf = self.get_inf()
         for art in logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
+            if art["ID"] == '13486':
+                print(art, ' новость')
+            else:
+                pass
             art_id = art["ID"]
             if "PROPERTY_1066" in art:
                 pre_section_id = list(art["PROPERTY_1066"].values())[0]
@@ -466,7 +512,6 @@ class Article:
                     self.add(art)
                     print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
-                    
                     # сюда надо что-то дописать
                     pass
                 
@@ -545,7 +590,17 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-
+        
+        # вакансии (приведи друга)
+        self.section_id = "67"
+        art_inf = self.get_inf()
+        for art in art_inf:
+            self.section_id = 5 # потом изменить
+            artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(art)
+            elif artDB.update(self.make_valid_article(art)):
+                pass
 
 
         '''самобытные блоки'''
@@ -581,61 +636,186 @@ class Article:
         return {"status" : True}
 
     def search_by_id(self):
-        return ArticleModel(id = self.id).find_by_id()
+        art = ArticleModel(id = self.id).find_by_id()
+        files = File(art_id = self.id).get_files()
 
-    def get_preview(self, id):
-        res = FileModel(id).find_all_by_art_id()
+        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+        for file in files:
+            url = file["file_url"]
+            file["file_url"] = f"http://intranet.emk.org.ru{url}"
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        art['files'] = files
+        return art
+
+
+
+    # def get_preview(self, id):
+    #     res = File(id).find_all_by_art_id()
+    #     mongo_list = []
+    #     preview_inf = []
+    #     one_preview_inf = []
+    #     for result in res:
+    #         mongo_list.append(result)
+    #     if len(mongo_list) > 1:
+
+    #         for info in mongo_list:
+    #             one_preview_inf.append(info['b24_id'])
+    #             one_preview_inf.append(info['file_url'])
+    #             preview_inf.append(one_preview_inf)
+
+    #         # сортируем по b24_id если фоток много и берем с наименьшим b24_id
+    #         sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
+
+    #         preview_inf = sorted_list[0][1]
+    #         return preview_inf
+    #     elif len(mongo_list) == 0:
+    #         return None
+    #     else:
+    #         return mongo_list[0]['file_url']
+    
+    def get_preview(self ):
+        res = File(art_id = self.id).get_files()
         mongo_list = []
-        preview_inf = []
-        one_preview_inf = []
+        preview = None
+        # one_preview_inf = []
         for result in res:
             mongo_list.append(result)
         if len(mongo_list) > 1:
 
             for info in mongo_list:
                 one_preview_inf.append(info['b24_id'])
-                one_preview_inf.append(info['file_url'])
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+                url = info['file_url']
+                one_preview_inf.append(f"http://intranet.emk.org.ru{url}")
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 preview_inf.append(one_preview_inf)
 
-            # сортируем по b24_id если фоток много и берем с наименьшим b24_id
-            sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
+            # # сортируем по b24_id если фоток много и берем с наименьшим b24_id
+            # sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
+            
+            # сортируем по ключу is_preview
+
 
             preview_inf = sorted_list[0][1]
             return preview_inf
         elif len(mongo_list) == 0:
             return None
         else:
-            return mongo_list[0]['file_url']
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+            url = mongo_list[0]['file_url']
+            return f"http://intranet.emk.org.ru{url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            main_page = [32, 31, 16, 33, 51] # список доступных секций для отображения на главной странце
-            
+            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id
             page_view = []
 
-            new_workers = {
-                'id': 1,
+            for page in main_page: # проходимся по каждой секции
+                sec = self.main_page(page)
+                page_view.append(sec) 
+            page_view[-3]['content'] = [page_view[-2], page_view[-1]]
+            del page_view[-2:]
+
+            return page_view
+        
+        elif self.section_id == "19":
+            users_bday_info = []
+            date_bday = datetime.datetime.now().strftime("%d.%m")
+            users = User().get_birthday_celebrants(date_bday)
+            return users
+
+        elif self.section_id == "112":
+            return User().get_new_workers()
+
+        else:
+            active_articles = []
+            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            for res in result:
+                if self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None):
+                    continue
+                elif res['active']:
+                    active_articles.append(res)
+                else:
+                    pass
+            if self.section_id == "111":
+                sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
+            else:
+                sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            return sorted_active_aticles
+    
+    def main_page(self, section_id):
+        #Новые сотрудники
+        if section_id == 112:
+            img_new_workers = []     
+            users = User().get_new_workers()  
+            for user in users:
+                user.pop('position')
+                user.pop('department')
+                user.pop('user_fio')
+                img_new_workers.append(user)
+            new_workers_view = {
+                'id': section_id,
                 'type': 'singleBlock',
                 'title': 'Новые сотрудники',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                }],
+                'images': img_new_workers,
                 'href': 'newWorkers',
             } # словарь-заглушка для будущей секции "новые сотрудники"
+            return new_workers_view
+
+        #С днем рождения!
+        elif section_id == 19:
+            images_for_bday = []
+            date_bday = datetime.datetime.now().strftime("%d.%m")
+            users = User().get_birthday_celebrants(date_bday)
+            for user in users:
+                user.pop('position')
+                user.pop('department')
+                user.pop('user_fio')
+                images_for_bday.append(user)
 
             birthday = {
-                'id': 2,
+                'id': section_id,
                 'type': 'singleBlock',
                 'title': 'С днем рождения!',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                    "href": "/"
-                }],
+                'images': images_for_bday,
                 'href': 'birthdays',
             } # словарь-заглушка для будущей секции "С днем рождения!"
+            return birthday
 
+        # Орг развитие
+        elif section_id == 32:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
+                    date_value = [] # список для хранения необходимых данных
+                    date_value.append(values["id"])
+                    date_value.append(values["name"])
+                    date_value.append(values["preview_text"])
+                    date_value.append(values["date_creation"])
+                    date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            news_id = sorted_data[0][0]
+
+            print(news_id, 'article')
+            self.id = news_id
+            image_URL = self.get_preview()
+            second_page = {
+                'id': section_id, 
+                'type': 'singleBlock', 
+                'title': 'Организационное развитие', 
+                "href": "corpnews", 
+                'images': [{'id': news_id, 'image': image_URL}]
+                }
+            return second_page
+        
+        #
+        elif section_id == 4:
             idea_block = {
                 'id': 4,
                 'type': 'singleBlock',
@@ -648,9 +828,12 @@ class Article:
                 'modifiers': ['outline'],
                 'href': 'ideasPage'
             }# словарь-заглушка для будущей секции "Предложить идею"
+            return idea_block
 
+        #
+        elif section_id == 111:
             emk_competition = {
-                'id': 5,
+                'id': section_id,
                 'type': 'singleBlock',
                 'title': 'Конкурсы ЭМК',
                 'images': [{
@@ -660,7 +843,174 @@ class Article:
                 }],
                 '// href': '/'
             } # словарь-заглушка для будущей секции "Конкурсы ЭМК"
+            return emk_competition
 
+        elif section_id == 31:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
+                    date_value = [] # список для хранения необходимых данных
+                    date_value.append(values["id"])
+                    date_value.append(values["name"])
+                    date_value.append(values["preview_text"])
+                    date_value.append(values["date_creation"])
+                    date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+
+            second_page = {
+                'id': section_id,
+                'type': 'fullRowBlock',
+                'title': 'Бизнес-новости',
+                'href': 'actualnews',
+                'images': []
+            }
+
+            business_news = []
+            
+            image_url = ''
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+                    
+                    news['id'] = row[0]
+                    news['title'] = row[1]
+                    # news['description'] = row[2]
+                    news['image'] = image_url
+                    # сюда реакции
+                    news['reactions'] = {
+                        'views': 12,
+                        'likes': { 'count': 13, 'likedByMe': 1 },
+                    }
+                    business_news.append(news)
+            second_page['images'] = business_news
+            return second_page
+
+        elif section_id == 16:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
+                    if "PROPERTY_1025" not in values['indirect_data'] or values['indirect_data']['PROPERTY_1025'] is None:
+                        pass
+                    else:
+                        date_value = [] # список для хранения необходимых данных
+                        date_value.append(values["id"])
+                        date_value.append(values["name"])
+                        date_value.append(values["preview_text"])
+                        date_value.append(values["date_creation"])
+                        date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+
+            second_page = {
+                'id': section_id,
+                'type': 'fullRowBlock',
+                'title': 'Интервью',
+                'href': 'interview',
+                'images': []
+            }
+
+            interview_news = []
+            
+            image_url = ''
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+                    
+                    news['id'] = row[0]
+                    news['title'] = row[1]
+                    news['description'] = row[2]
+                    news['image'] = image_url
+                    news['href'] = 'videoInterview'
+                    # сюда реакции
+                    news['reactions'] = {
+                        'views': 12,
+                        'likes': { 'count': 13, 'likedByMe': 1 },
+                    }
+                    interview_news.append(news)
+            second_page['images'] = interview_news
+            return second_page
+
+        elif section_id == 33:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
+                    date_value = [] # список для хранения необходимых данных
+                    date_value.append(values["id"])
+                    date_value.append(values["name"])
+                    date_value.append(values["preview_text"])
+                    date_value.append(values["date_creation"])
+                    date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+
+            second_page = {
+                'id': section_id,
+                'type': 'fullRowBlock',
+                'title': 'Видеорепортажи',
+                'href': 'videonews',
+                'images': []
+            }
+
+            video_news = []
+            
+            image_url = ''
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+                    
+                    news['id'] = row[0]
+                    news['title'] = row[1]
+                    news['description'] = row[2]
+                    news['image'] = image_url
+                    # сюда реакции
+                    news['reactions'] = {
+                        'views': 12,
+                        'likes': { 'count': 13, 'likedByMe': 1 },
+                    }
+                    video_news.append(news)
+            second_page['images'] = video_news
+            return second_page
+
+        elif section_id == 9:
+            second_page = {
+                "id": 9,
+                "type": "mixedRowBlock",
+                "content": []
+            }
+            return second_page
+
+        elif section_id == 10:
             afisha = {
                 'type': "singleBlock",
                 'title': "Афиша",
@@ -678,222 +1028,74 @@ class Article:
                     }
                 ]
             } # словарь-заглушка для будущей секции "Афиша"
+            return afisha
         
-
-            page_view.append(new_workers) # заглушка (в будущем дописать функцию в класс MainPage) 
-            page_view.append(birthday) # заглушка (в будущем дописать функцию в класс MainPage)
-
-            for page in main_page: # проходимся по каждой секции
-                second_page = {} # словарь для секций и ее статей
-                date_list = [] # список для сортировки по дате
-                page_value = ArticleModel(section_id = page).find_by_section_id() # список всех статей, новостей и тд
-
-                for value in page_value:
-                    #values = value.__dict__
-                    values = value
+        elif section_id == 51:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
                     date_value = [] # список для хранения необходимых данных
                     date_value.append(values["id"])
                     date_value.append(values["name"])
                     date_value.append(values["preview_text"])
                     date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
-                # сортируем по дате
-                sorted_list = sorted(date_list, key=lambda x: x[3], reverse=True)
-                
-
-                if page == 32:
-                    second_page = MainPage(page, sorted_list).page_32()
-                    page_view.append(second_page)
-
-                    page_view.append(idea_block) # заглушка (в будущем дописать функцию в класс MainPage)
-                    page_view.append(emk_competition) # заглушка (в будущем дописать функцию в класс MainPage)
-
-                elif page == 31:
-                    second_page = MainPage(page, sorted_list).page_31()
-                    page_view.append(second_page)
-                
-                elif page == 16: 
-                    second_page = MainPage(page, sorted_list).page_16()
-                    page_view.append(second_page)
-
-                elif page == 33:
-                    second_page = MainPage(page, sorted_list).page_33()
-                    page_view.append(second_page)
-
-                elif page == 51:
-                    second_page = MainPage(page, sorted_list).page_51(afisha) # afisha - заглушка (в будущем дописать функцию в класс MainPage)
-                    page_view.append(second_page)
-
-            return page_view
-        else:
-            return ArticleModel(section_id = self.section_id).find_by_section_id()
-
-class MainPage:
-    """
-    Класс для организации данных по секциям на главной странице
-    """
-    def __init__(self, page=0, sorted_list=[]):
-        self.page = page
-        self.sorted_list = sorted_list
-
-    def page_32(self):
-        news_id = self.sorted_list[0][0]
-        second_page = {
-            'id': self.page, 
-            'type': 'singleBlock', 
-            'title': 'Организационное развитие', 
-            "href": "corpnews", 
-            'images': [{'id': news_id, 'image': None}]
+            corpevents = {
+                'id': section_id,
+                'type': "fullRowBlock",
+                'title': "Корпоративные события",
+                'href': "corpevents",
+                'images': []
             }
-        return second_page
+            image_url = ''
+            corpevents_news = []
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
 
-    def page_31(self):
-        second_page = {
-            'id': self.page,
-            'type': 'fullRowBlock',
-            'title': 'Бизнес-новости',
-            'href': 'actualnews',
-            'images': []
-        }
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+                    
+                    news['id'] = row[0]
+                    news['title'] = row[1]
+                    news['description'] = row[2]
+                    news['image'] = image_url
+                    # сюда реакции
+                    news['reactions'] = {
+                        'views': 12,
+                        'likes': { 'count': 13, 'likedByMe': 1 },
+                    }
+                    corpevents_news.append(news)
 
-        business_news = []
-        
-        image_url = ''
-        for i, row in enumerate(self.sorted_list):
-            if i < 5:
-                news = {}
-                preview_pict = Article().get_preview(row[0])
+            corpevents['images'] = corpevents_news
+            return corpevents
 
-                if preview_pict is None:
-                    image_url = None
-                else:
-                    image_url = None #preview_pict
-                
-                news['id'] = row[0]
-                news['title'] = row[1]
-                # news['description'] = row[2]
-                news['image'] = image_url
-                # сюда реакции
-                news['reactions'] = {
-                    'views': 12,
-                    'likes': { 'count': 13, 'likedByMe': 1 },
-                }
-                business_news.append(news)
-        second_page['images'] = business_news
-        return second_page
+    # лайки
+    def get_all_likes(self):
+        return LikesModel(art_id=self.id).get_likes_count()
 
-    def page_16(self):
-        second_page = {
-            'id': self.page,
-            'type': 'fullRowBlock',
-            'title': 'Интервью',
-            'href': 'interview',
-            'images': []
-        }
-
-        interview_news = []
-        
-        image_url = ''
-        for i, row in enumerate(self.sorted_list):
-            if i < 5:
-                news = {}
-                preview_pict = Article().get_preview(row[0])
-
-                if preview_pict is None:
-                    image_url = None
-                else:
-                    image_url = None #preview_pict
-                
-                news['id'] = row[0]
-                news['title'] = row[1]
-                news['description'] = row[2]
-                news['image'] = image_url
-                news['href'] = 'videoInterview'
-                # сюда реакции
-                news['reactions'] = {
-                    'views': 12,
-                    'likes': { 'count': 13, 'likedByMe': 1 },
-                }
-                interview_news.append(news)
-        second_page['images'] = interview_news
-        return second_page
+    def get_article_likers(self):
+        return LikesModel(art_id=self.id).get_article_likers()
     
-    def page_33(self):
-        second_page = {
-            'id': self.page,
-            'type': 'fullRowBlock',
-            'title': 'Видеорепортажи',
-            'href': 'videonews',
-            'images': []
-        }
+    def get_popular_articles(self, limit):
+        return LikesModel().get_popular_articles(limit=limit)
 
-        video_news = []
-        
-        image_url = ''
-        for i, row in enumerate(self.sorted_list):
-            if i < 5:
-                news = {}
-                preview_pict = Article().get_preview(row[0])
-
-                if preview_pict is None:
-                    image_url = None
-                else:
-                    image_url = None #preview_pict
-                
-                news['id'] = row[0]
-                news['title'] = row[1]
-                news['description'] = row[2]
-                news['image'] = image_url
-                # сюда реакции
-                news['reactions'] = {
-                    'views': 12,
-                    'likes': { 'count': 13, 'likedByMe': 1 },
-                }
-                video_news.append(news)
-        second_page['images'] = video_news
-        return second_page
-
-    def page_51(self, afisha):
-        second_page = {
-            'id': 9,
-            'type': 'mixedRowBlock',
-            'content': []
-        }
-        corpevents = {
-            'id': self.page,
-            'type': "fullRowBlock",
-            'title': "Корпоративные события",
-            'href': "corpevents",
-            'images': []
-        }
-        image_url = ''
-        corpevents_news = []
-        for i, row in enumerate(self.sorted_list):
-            if i < 5:
-                news = {}
-                preview_pict = Article().get_preview(row[0])
-
-                if preview_pict is None:
-                    image_url = None
-                else:
-                    image_url = None #preview_pict
-                
-                news['id'] = row[0]
-                news['title'] = row[1]
-                news['description'] = row[2]
-                news['image'] = image_url
-                # сюда реакции
-                news['reactions'] = {
-                    'views': 12,
-                    'likes': { 'count': 13, 'likedByMe': 1 },
-                }
-                corpevents_news.append(news)
-
-        corpevents['images'] = corpevents_news
-        second_page['content'] = [afisha, corpevents]
-        return second_page
-
+    def get_recent_popular_articles(self, days, limit):
+        return LikesModel().get_recent_popular_articles(days=days, limit=limit)
+    
+    # просмотры
+    def get_viewers(self):
+        return ViewsModel(art_id=self.id).get_viewers()
 
 
 #Получить данные инфоблока из Б24
@@ -916,7 +1118,48 @@ def get_article(ID):
 def get_articles(section_id):
     return Article(section_id = section_id).search_by_section_id()
 
+#найти статьи раздела по названию
+@article_router.post("/search/title/{title}")
+def search_articles_by_title(title): # data = Body()
+    return ArticleSearchModel().search_by_title(title)
+
+#найти статьи раздела по заголовку
+@article_router.post("/search/preview/{preview}")
+def search_articles_by_preview(preview): # data = Body()
+    return ArticleSearchModel().search_by_preview(preview)
+
+#найти статьи раздела по тексту
+@article_router.post("/search/text/{text}")
+def search_articles_by_text(text): # data = Body()
+    return ArticleSearchModel().search_by_text(text)
+
+#загрузить дату в эластик
+@article_router.put("/elastic_data")
+def upload_articles_to_es():
+    return ArticleSearchModel().dump()
+
 #найти статьи раздела
 @article_router.post("/search")
 def search_articles(data = Body()):
     pass
+
+#лайки и просмотры
+@article_router.get("/get_all_likes/{ID}")
+def get_all_likes(ID: int):
+    return Article(id = ID).get_all_likes()
+
+@article_router.get("/get_article_likers/{ID}")
+def get_article_likers(ID: int):
+    return Article(id = ID).get_article_likers()
+
+@article_router.get("/get_popular_articles/{limit}")
+def get_popular_articles(limit: int):
+    return Article().get_popular_articles(limit)
+
+@article_router.get("/get_recent_popular_articles/{days}/{limit}")
+def get_recent_popular_articles(days: int, limit: int):
+    return Article().get_recent_popular_articles(days=days, limit=limit)
+
+@article_router.get("/get_viewers/{ID}")
+def get_viewers(ID: int):
+    return Article(id = ID).get_viewers()

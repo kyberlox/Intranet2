@@ -13,53 +13,81 @@ STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
 
 class File:
-    def __init__(self, id=None, b24_id=None):
+    def __init__(self, id=None, art_id =None, b24_id=None):
 
         if id is not None:
             if type(id) == type(ObjectId("a"*24)):
                 id = id
             elif type(id) == type(str()) and id != '':
                 id = ObjectId(id)
-
         self.id = id
+        self.art_id = art_id
         self.b24_id = b24_id
 
     def download_by_URL(self, url, path):
-        response = requests.get(f"https://portal.emk.ru{url}")
+        if "https://portal.emk.ru" in url:
+            response = requests.get(url)
+        else:
+            response = requests.get(f"https://portal.emk.ru{url}")
         with open(path, 'wb') as file:
             file.write(response.content)
         return response.headers.get('Content-Type', 'unknown')
 
-    def upload_inf_art(self, art_id=None, is_preview = False):
+    def upload_inf_art(self, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
         try:
             b24 = B24()
-            #file_data = b24.get_file(self.id, inf_id)
-            file_data = b24.get_all_files(self.b24_id)
 
-            print(file_data)
-            if "ORIGINAL_NAME" in file_data:
-                filename = file_data["ORIGINAL_NAME"]
-            elif "FILE_NAME" in file_data:
-                filename = file_data["FILE_NAME"]
+            if need_all_method:
+                file_data = b24.get_all_files(self.b24_id)
 
-            filename_parts = filename.split('.')
-            file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+                if "ORIGINAL_NAME" in file_data:
+                    filename = file_data["ORIGINAL_NAME"]
+                elif "FILE_NAME" in file_data:
+                    filename = file_data["FILE_NAME"]
+                elif "NAME" in file_data:
+                    filename = file_data["NAME"]
 
-            # Генерируем уникальное имя файла
-            unique_name = str(ObjectId()) + file_ext
-            file_path = os.path.join(STORAGE_PATH, unique_name)
+                filename_parts = filename.split('.')
+                file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
-            #Проверяем нет ли такого файла уже в БД
+                # Генерируем уникальное имя файла
+                unique_name = str(ObjectId()) + file_ext
+                file_path = os.path.join(STORAGE_PATH, unique_name)
 
-            # Сохраняем файл
-            content_type = self.download_by_URL(file_data["SRC"], file_path)
+                # Сохраняем файл
+                content_type = self.download_by_URL(file_data["SRC"], file_path)
+
+
+            else:
+                file_data = b24.get_file(self.b24_id, inf_id)
+
+                if "ORIGINAL_NAME" in file_data:
+                    filename = file_data["ORIGINAL_NAME"]
+                elif "FILE_NAME" in file_data:
+                    filename = file_data["FILE_NAME"]
+                elif "NAME" in file_data:
+                    filename = file_data["NAME"]
+
+                filename_parts = filename.split('.')
+                file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+
+                # Генерируем уникальное имя файла
+                unique_name = str(ObjectId()) + file_ext
+                file_path = os.path.join(STORAGE_PATH, unique_name)
+
+                # Сохраняем файл
+                content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
+
+
 
             result = {
                 "original_name": filename,
                 "stored_name": unique_name,
                 "content_type": content_type,
                 "article_id": art_id,
-                "b24_id": self.id,
+                "b24_id": self.b24_id,
+                "is_archive": False,
+                "is_preview": is_preview,
                 "file_url": f"/api/files/{unique_name}"  # Прямой URL
             }
 
@@ -112,8 +140,7 @@ class File:
             return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
     def get_files(self):
-        file_data = FileModel(id=self.id).find_all_by_art_id()
-
+        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
         file_list = []
         
         if not file_data:
@@ -122,7 +149,6 @@ class File:
             for file in file_data:
                 file_info = {}
                 file_info["id"] = str(file["_id"])
-                file_info["file_url"] = file["file_url"]
                 file_info["original_name"] = file["original_name"]
                 file_info["stored_name"] = file["stored_name"]
                 file_info["content_type"] = file["content_type"]
@@ -130,10 +156,53 @@ class File:
                 file_info["b24_id"] = file["b24_id"]
                 file_info["file_url"] = file["file_url"]
                 file_info["is_archive"] = file["is_archive"]
+                file_info["is_preview"] = file["is_preview"]
                 file_list.append(file_info)
+
             return file_list
 
+    def get_files_by_art_id(self):
+        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
+        file_list = []
+        
+        if not file_data:
+            raise HTTPException(status_code=404, detail="File not found")
+        else:
+            for file in file_data:
+                file_info = {}
+                file_info["id"] = str(file["_id"])
+                file_info["original_name"] = file["original_name"]
+                file_info["stored_name"] = file["stored_name"]
+                file_info["content_type"] = file["content_type"]
+                file_info["article_id"] = file["article_id"]
+                file_info["b24_id"] = file["b24_id"]
+                file_info["file_url"] = file["file_url"]
+                file_info["is_archive"] = file["is_archive"]
+                file_info["is_preview"] = file["is_preview"]
+                file_list.append(file_info)
 
+            return file_list
+            
+
+    def get_users_photo(self):
+        file_data = FileModel(id=self.id).find_user_photo_by_id()
+        
+        
+        if not file_data:
+            raise HTTPException(status_code=404, detail="File not found")
+        else:
+            
+            file_info = {}
+            file_info["id"] = str(file_data["_id"])
+            file_info["name"] = file_data["name"]
+            file_info["format"] = file_data["format"]
+            file_info["uuid"] = file_data["uuid"]
+            file_info["URL"] = file_data["URL"]
+            file_info["b24_url"] = file_data["b24_url"]
+            file_info["is_archive"] = file_data["is_archive"]
+                
+
+            return file_info
 
     def dowload_user_photo(self, url):
         name = url.split("/")[-1]
@@ -185,6 +254,9 @@ class File:
        
 
 
+# @file_router.put("/create_indexes")
+# async def create_mongo_indexes():
+#     return FileModel().create_indexes()
 
 @file_router.post("/upload")
 async def upload_file(file: UploadFile):

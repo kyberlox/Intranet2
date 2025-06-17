@@ -1,0 +1,43 @@
+.dp {
+    &__input_icon {
+        color: var(--emk-brand-color-dark);
+
+    }
+
+    &__today {
+        border: 1px solid var(--emk-brand-color-dark);
+    }
+
+    &__active_date {
+        background: var(--emk-brand-color-dark);
+    }
+
+    &__flex_display {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__inner_nav {
+        color: var(--emk-brand-color-dark);
+    }
+
+
+}
+
+.calendar {
+    &__wrapper {
+        margin: auto;
+        text-align: center;
+        // overflow: hidden;
+    }
+
+    &__button__wrapper {
+        max-width: fit-content;
+        margin: 10px auto 20px auto;
+    }
+}
+
+body {
+    overflow-x: hidden;
+}

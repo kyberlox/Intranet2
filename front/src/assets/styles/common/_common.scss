@@ -1,0 +1,64 @@
+@forward './modal';
+@forward './post';
+@forward './accordion';
+@forward './buttons';
+@forward './scoreStars';
+@forward './calendar';
+@forward './homeview';
+@forward './userPage';
+@forward './auth';
+
+@forward './swipers/_swipers';
+@forward './modules/_modules';
+@forward './galleries/_galleries';
+
+*,
+::after,
+::before {
+    box-sizing: border-box;
+}
+
+body {
+    color: #282828;
+    font-family: 'Montserrat', sans-serif;
+}
+
+a {
+    color: #282828;
+    text-decoration: none;
+}
+
+a:hover {
+    // color: var(--emk-brand-color);
+    text-decoration: none;
+}
+
+
+.hidden {
+    display: none;
+}
+
+.page__title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    // margin-top: 10px;
+    margin-bottom: 1rem;
+
+    &__details {
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 24px;
+        color: rgba(0, 0, 0, 0.87);
+        margin: 0;
+    }
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+
+input[type='checkbox'],
+label {
+    cursor: pointer;
+}

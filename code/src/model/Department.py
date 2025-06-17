@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import DepartmentModel
+from src.base.SearchModel import StructureSearchModel
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
 
@@ -53,6 +54,31 @@ def get_user(request: Request):
 @depart_router.get("/find_by/{id}")
 def get_department(id):
     return Department(id).search_dep_by_id()
+
+# можно выгрузить иерархию
+@depart_router.get("/structure")
+def view_all_departs():
+    return StructureSearchModel().get_structure()
+
+# можно выгрузить иерархию
+@depart_router.get("/structure")
+def view_all_departs():
+    return StructureSearchModel().get_structure()
+
+#Пользователя можно найти
+@depart_router.post("/search/{username}")
+def get_user(username: str): # jsn=Body()
+    return StructureSearchModel().search_by_username(username)
+
+#По названию должностей можно найти отдел и пользователя
+@depart_router.post("/search_by_position/{position}")
+def get_user_by_position(position: str): # jsn=Body()
+    return StructureSearchModel().search_by_position(position)
+
+#загрузить дату в ES
+@depart_router.put("/elastic_data")
+def upload_department_to_es():
+    return StructureSearchModel().dump()
 
 #Пользователя можно найти
 @depart_router.post("/search")

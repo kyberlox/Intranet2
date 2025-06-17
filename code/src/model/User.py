@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import UserModel
+from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
@@ -60,6 +61,8 @@ class User:
     def get_uf_depart(self):
         return UserModel().find_uf_depart()
 
+    def user_inf_by_uuid(self):
+        return UserModel(self.uuid).find_by_uuid()
 
 
     def set_users_photo(self):
@@ -94,8 +97,6 @@ class User:
             #вывести отчет по изменениях
             
         return True
-
-
    
     def variant_users(self, key):
         return B24().variant_key_user(key)
@@ -120,6 +121,64 @@ class User:
                     result.append([dep_ID, dep['NAME'], dep_head, f"{usr['LAST_NAME']} {usr['NAME']} {usr['SECOND_NAME']}"])
 
         return result
+    
+    # лайки
+    def add_like(self, art_id):
+        return LikesModel(user_id=self.id, art_id=art_id).add_like()
+
+    def remove_like(self, art_id):
+        return LikesModel(user_id=self.id, art_id=art_id).remove_like()
+
+    def has_liked(self, art_id):
+        return LikesModel(user_id=self.id, art_id=art_id).has_liked()
+
+    def get_user_likes(self):
+        return LikesModel(user_id=self.id).get_user_likes()
+    
+    # просмотры
+    def add_view(self, art_id):
+        return ViewsModel(user_id=self.id, art_id=art_id).add_view()
+
+    def get_viewed_articles(self):
+        return ViewsModel(user_id=self.id).get_viewed_articles()
+    
+    # день рождения
+    def get_birthday_celebrants(self, date):
+        return UserModel().find_all_celebrants(date)
+    
+    # новые сотрудники
+    def get_new_workers(self):
+        return UserModel().new_workers()
+
+'''
+    # def get(self, method="user.get", params={}):
+    #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
+    #     if params != {}:
+    #         req += "?"
+    #         for parem_key in params.keys():
+    #             req += f"&{parem_key}={params[parem_key]}"
+    #     response = requests.get(req)
+    #     return response.json()
+    
+    # def get_all(self, method, params={}):
+    #     response = self.get(method)
+    #     current = 50
+    #     result = response["result"]
+    #     keys = []
+    #     while current < int(response["total"]):
+    #         params["start"] = current
+    #         response = self.get(method, params)
+    #         curr_result = response["result"]
+    #         for curr_keys in curr_result:
+    #             for k in curr_keys:
+    #                 if k not in keys:
+    #                     keys.append(k)
+    #                     #print(k)
+    #         result = result + curr_result
+    #         current += 50
+
+    #     return (keys, result)
+'''
 
 
 
@@ -140,11 +199,61 @@ def find_by_user(id):
     return User(id).search_by_id()
 
 #Пользователя можно найти
-@users_router.post("/search")
-def search_user(jsn=Body()):
-    #будет работать через elasticsearch
-    pass
+@users_router.post("/search/{username}")
+def search_user(username: str): # jsn=Body()
+    return UserSearchModel().search_by_name(username)
+
+#загрузить дату в ES
+@users_router.put("/elastic_data")
+def upload_users_to_es():
+    return UserSearchModel().dump()
 
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()
+
+
+
+@users_router.post("/search")
+def search_user(jsn=Body()):
+    #будет работать через elasticsearch
+    return UserSearchModel().search_model(jsn)
+
+@users_router.get("/test_update_photo")
+def test_update_photo():
+    return User().set_users_photo()
+
+# лайки и просмотры
+@users_router.put("/add_like")
+def add_like(user_id: int, art_id: int):
+    return User(user_id=user_id).add_like(art_id)
+
+@users_router.delete("/remove_like")
+def remove_like(user_id: int, art_id: int):
+    return User(user_id=user_id).remove_like(art_id)
+
+@users_router.post("/has_liked")
+def has_liked(user_id: int, art_id: int):
+    return User(user_id=user_id).has_liked(art_id)
+
+@users_router.get("/get_user_likes")
+def get_user_likes(user_id: int):
+    return User(user_id=user_id).get_user_likes()
+
+@users_router.put("/add_view")
+def add_view(user_id: int, art_id: int):
+    return User(user_id=user_id).add_view(art_id)
+
+@users_router.get("/get_viewed_articles")
+def get_viewed_articles(user_id: int):
+    return User(user_id=user_id).get_viewed_articles()
+
+@users_router.post("/search_indirect")
+def search_indirect(key_word):
+    #будет работать через elasticsearch
+    return UserSearchModel().search_indirect(key_word)
+
+# запрос для получения списка пользователей у кого в эту дату ДР
+@users_router.get("/get_birthday_celebrants/{day_month}")
+def birthday_celebrants(day_month: str):
+    return User().get_birthday_celebrants(day_month)

@@ -1,9 +1,10 @@
 /pSQL/data
 /mongodb/data
+/code/files_db
+
 **/__pycache__/
 .env
 .idea
-push.sh
-/code/files_db
-./docker-compose.yaml
+
 /front/node_modules
+/front/.vscode

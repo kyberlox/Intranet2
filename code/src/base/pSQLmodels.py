@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, update, ForeignKey, desc, func
+from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, update, ForeignKey, desc, func, Date
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 
-from src.base.mongodb import FileModel
+from src.model.File import File
 
 load_dotenv()
 
@@ -68,8 +68,6 @@ class UsDep(Base):
     user_id = Column(Integer, nullable=True)
     dep_id = Column(Integer, nullable=True)
 
-
-
 class Section(Base):
     __tablename__ = 'section'
     id = Column(Integer, primary_key=True)
@@ -106,7 +104,6 @@ class Likes(Base):
     user = relationship("User", back_populates="likes")
     article = relationship("Article", back_populates="likes")
 
-
 class Views(Base):
     """
     Класс для хранения просмотров пользователями статей.
@@ -124,6 +121,18 @@ class Views(Base):
     article = relationship("Article", back_populates="views")
 
 
+metadata = MetaData()
+
+NewUser = Table('NewUser', metadata,
+                Column('id', Integer, primary_key=True),
+                Column('active', Boolean),
+                Column('last_name', Text),
+                Column('name', Text),
+                Column('second_name', Text),
+                Column('dat', Date),
+                Column('indirect_data', JSONB),
+                Column('photo_file_id', Text)
+            )
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
@@ -296,7 +305,16 @@ class UserModel():
             for key in DB_columns:
                 result[key] = user.__dict__[key]
 
-            result['indirect_data'] = user.indirect_data
+            indirect_data = user.indirect_data
+            list_departs = []
+            if len(indirect_data['uf_department']) != 0:
+                for dep in indirect_data['uf_department']:
+                    dep_str = DepartmentModel(dep).find_dep_by_id()
+                    for de in dep_str:
+                        list_departs.append(de.__dict__['name'])
+                    
+            indirect_data['uf_department'] = list_departs
+            result['indirect_data'] = indirect_data
             
             #информация о фото
             #вывод ID фотографии пользователя
@@ -317,6 +335,18 @@ class UserModel():
 
         else:
             return {'err' : "Invalid user id"}
+
+    def find_by_uuid(self):
+        user = self.db.query(self.user).filter(self.user.uuid == self.id).one()
+
+        if user is not None:
+            return {
+                "ID": user.id,
+                "email" : user.email,
+                "full_name" : f"{user.second_name} {user.name} {user.last_name}"
+            }
+        else:
+            return None
     
     def all(self):
         return self.db.query(self.user).all()
@@ -329,7 +359,83 @@ class UserModel():
             session.commit()
 
             return result
+    
+    def find_all_celebrants(self, date):
+        """
+        Выводит список пользователей, у кого день рождение в этот день (date)
+        Важно! Не выводит пользователей, у кого департамент Аксиома и у кого нет фото
+        """
+        normal_list = []
+        users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
+        for usr in users:
+            user = usr.__dict__
+            if 112 in user['indirect_data']['uf_department']:
+                pass
+            else:
+                if user['active'] and user['photo_file_id'] is not None:
+                    user_info = {}
+                    indirect_data = user['indirect_data']
+                    list_departs = []
+                    if len(indirect_data['uf_department']) != 0:
+                        for dep in indirect_data['uf_department']:
+                            dep_str = DepartmentModel(dep).find_dep_by_id()
+                            for de in dep_str:
+                                list_departs.append(de.__dict__['name'])
+                            
+                    indirect_data['uf_department'] = list_departs
+                    # добавляем только нужную информацию
+                    user_info = {}
+                    user_image = File(user['photo_file_id']).get_users_photo()
+                    user_info['id'] = user['id']
+                    if user['second_name'] == '' or user['second_name'] is None:
+                        user_info['user_fio'] = f'{user['last_name']} {user['name']}'
+                    else:
+                        user_info['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                    user_info['position'] = indirect_data['work_position']
+                    user_info['department'] = indirect_data['uf_department']
+                    user_info['image'] =  f'http://intranet.emk.org.ru{user_image['URL']}'
+                    
+                    normal_list.append(user_info)
+        return normal_list
 
+    def new_workers(self):
+        # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
+        result = self.db.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
+        # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id
+        
+        users = []
+        for res in result:
+            
+            user = list(res)
+            
+            if 112 in user[6]['uf_department']:
+                pass
+            else:
+                if user[1] and user[7] is not None:
+                    user_info = {}
+                    indirect_data = user[6]
+                    list_departs = []
+                    if len(indirect_data['uf_department']) != 0:
+                        for dep in indirect_data['uf_department']:
+                            dep_str = DepartmentModel(dep).find_dep_by_id()
+                            for de in dep_str:
+                                list_departs.append(de.__dict__['name'])
+                            
+                    indirect_data['uf_department'] = list_departs
+                    # добавляем только нужную информацию
+                    user_info = {}
+                    user_image = File(user[7]).get_users_photo()
+                    print(user[7])
+                    user_info['id'] = user[0]
+                    if user[4] == '' or user[4] is None:
+                        user_info['user_fio'] = f'{user[2]} {user[3]}'
+                    else:
+                        user_info['user_fio'] = f'{user[2]} {user[3]} {user[4]}'
+                    user_info['position'] = indirect_data['work_position']
+                    user_info['department'] = indirect_data['uf_department']
+                    user_info['image'] = f'http://intranet.emk.org.ru{user_image['URL']}'
+                    users.append(user_info)
+        return users
     """
     def put_uf_depart(self, usr_dep):
         
@@ -597,8 +703,7 @@ class UsDepModel():
                         
                         self.db.commit()
                     # для всех остальных значений, когда dep_from_usdep_table не None
-                    else: 
-                    
+                    else:
                         if len(dep_from_usdep_table) > 1:
                             pass
                         else:
@@ -627,7 +732,6 @@ class UsDepModel():
                                     self.db.add(tbl)
                                     
                                 else:
-                                    
                                     pass
                             self.db.commit()
                         # если в б24 по данному user_id список значений
@@ -702,7 +806,7 @@ class UsDepModel():
         else:
             return {'err' : "Invalid user id"}
 
-                
+
 
 class SectionModel():
 
@@ -741,6 +845,7 @@ class ArticleModel():
     def __init__(self, id=0, section_id=0):
         self.id = id
         self.section_id = section_id
+        self.article = Article()
 
     def add_article(self, article_data):
         article = Article(**article_data)
@@ -808,8 +913,12 @@ class ArticleModel():
             for art in data:
                 art.__dict__["indirect_data"] = art.indirect_data
                 new_data.append(art.__dict__)
+
         
         return new_data
+    
+    def all(self):
+        return db.query(self.article).all()
 
 
 

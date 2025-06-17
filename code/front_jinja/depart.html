@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню сайта</title>
+    <link rel="stylesheet" href="/api/view/app/dep_style.css">
+</head>
+<body class="depart-body">
+
+    <div class="base-div">
+        <div class="title-div left">
+            <a href="/api/view/menu" class="menu-button">
+                В главное меню
+            </a>
+        </div>
+        <div class="title-div right">
+            <a href="/users/view" class="menu-button">
+                Пользователи
+            </a>
+        </div>
+    </div>
+
+    <div class="depart-container">
+        <h1>Департаменты</h1>
+        <!-- Блок обновления департамента -->
+        
+        <form action="/departments/view" method="get" class="menu-button-id">
+            <button type="button" class="menu-button" onclick="fetch_put_deps()">Обновить данные</button>
+            
+        </form>
+            
+        
+        <!-- Блок поиска по id -->
+        
+        <div class="menu-button-id">Поиск департамента по ID</div>
+        
+                
+        <form onsubmit="fetchDepartmentById(event)" class="search-form">
+            <input type="text" id="department_id" name="department_id" required>
+            <button type="submit" class="menu-button-id">Найти</button>
+        </form>
+            
+            <!-- Блок для вывода результата поиска -->
+            
+        </div>
+        <div id="search-result" class="status-box">
+            <p>Результат: <span id="search-result-text"></span></p>
+        </div>
+    </div>
+    <script>
+        function fetch_put_deps() {
+            console.log("Функция fetch_put_deps вызвана");
+            fetch('http://127.0.0.1:8000/departments', {
+                method: 'PUT', 
+                headers: {"Content-type": "application/json; charset=UTF-8",
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => {
+                    console.log("Ответ получен:", response);
+                    return response.json();
+                })
+                .then(data =>{
+                    console.log("Данные", data)
+                    document.getElementById('status-text').textContent = data.status;
+                })
+                .catch(error => {
+                    // В случае ошибки выводим сообщение
+                    document.getElementById('status-text').textContent = "Ошибка: " + error.message;
+                });
+        };
+        function fetchDepartmentById(event) {
+            event.preventDefault();  // Отменить отправку формы
+
+            const departmentId = document.getElementById('department_id').value;
+            console.log("Поиск департамента по ID:", departmentId);
+
+            fetch(`http://127.0.0.1:8000/departments/${departmentId}`, {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => {
+                    console.log("Ответ получен:", response);
+                    if (!response.ok) {
+                        throw new Error("Департамент не найден");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Данные:", data);
+                    const formattedData = `
+                        ID: ${data[0].id},
+                        name: ${data[0].name},
+                        user_head_id: ${data[0].user_head_id},
+                        father_id: ${data[0].father_id},
+                        sort: ${data[0].sort}
+                    `;
+                    document.getElementById('search-result-text').textContent = formattedData;
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                    document.getElementById('search-result-text').textContent = "Ошибка: " + error.message;
+                });
+        }
+    </script>
+</body>
+</html>

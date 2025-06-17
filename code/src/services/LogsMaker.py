@@ -1,4 +1,9 @@
 from tqdm import tqdm
+from fastapi import Request, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="./front_jinja")
 
 class LogsMaker:
     def __init__(self):
@@ -15,4 +20,28 @@ class LogsMaker:
         )
         if title is not None:
             kwargs["desc"] = title
+
         return tqdm(this_list, bar_format=bar_format, **kwargs)
+
+    def error_message(self, message: str) -> None:
+        """Выводит сообщение об ошибке красным цветом в консоль"""
+        print(f"\033[91m[ERROR] {message}\033[0m")  # 91 - красный цвет
+
+    def warning_message(self, error: Exception) -> None:
+        """Выводит предупреждение/ошибку желтым цветом в консоль"""
+        error_msg = str(error)
+        print(f"\033[93m[WARNING] {error_msg}\033[0m")  # 93 - желтый цвет
+
+    async def auth_error_template(
+        self, 
+        request: Request, 
+        error_message: str = "Ошибка авторизации",
+        help_url: str = "/user/auth"
+    ) -> HTMLResponse:
+        """Возвращает HTML шаблон с ошибкой авторизации"""
+        context = {
+            "request": request,
+            "error_message": error_message,
+            "help_url": help_url
+        }
+        return templates.TemplateResponse("auth_error.html", context)

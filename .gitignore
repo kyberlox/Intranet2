@@ -2,6 +2,7 @@
 /mongodb/data
 **/__pycache__/
 .env
+.idea
 push.sh
 pull.shs
 /code/files_db

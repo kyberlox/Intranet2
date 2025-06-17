@@ -52,7 +52,8 @@
                    class="attached__gallery__card">
                 <img v-if="typeof itemInner == 'string'"
                      :src="itemInner"
-                     class="attached__gallery__card-img" />
+                     class="attached__gallery__card-img"
+                     alt="Изображение элемента" />
                 <div v-if="typeof itemInner == 'string'"
                      class="attached__gallery__card-icons">
                   <button class="icon-button view-button"
@@ -101,7 +102,7 @@
                    :interviewInner="currentItem" />
         <CertainBlog v-if="activeType == 'blogs'"
                      :interviewInner="currentItem"
-                     :id="String(15768)"
+                     :id="String(15238)"
                      :authorId="String(157)" />
       </div>
     </div>
@@ -225,6 +226,11 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
   gap: 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+
 
   &--previewFullWidth {
     flex-direction: column-reverse;
@@ -243,14 +249,6 @@ p {
   font-weight: 500;
   margin-bottom: 8px;
 }
-
-.admin-panel__editor__element-inner__wrapper {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-
 
 /* Standard input styling */
 input[type="text"],
@@ -363,7 +361,6 @@ input:disabled {
 .attached__gallery__card {
   width: 100%;
   object-fit: contain;
-  /* height: 150px; */
   aspect-ratio: 16 / 9;
   position: relative;
 }

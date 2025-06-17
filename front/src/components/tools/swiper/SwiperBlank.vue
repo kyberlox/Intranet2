@@ -9,7 +9,8 @@
         </swiper-slide>
 
     </swiper>
-    <div class="swiper-navigation__buttons-group">
+    <div class="swiper-navigation__buttons-group"
+         v-if="images.length > 1">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
                 @click.stop="slidePrev">

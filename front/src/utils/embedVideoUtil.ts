@@ -18,7 +18,6 @@ export const repairVideoUrl = (url: string): string | false => {
             if (keyIndex !== -1) {
                 const videoId = url.substring(keyIndex + item.length).split("&")[0];
                 cleanUrl = `https://www.youtube.com/embed/${videoId}`;
-
                 return cleanUrl;
             }
         })

@@ -27,11 +27,11 @@
                                     <div class="news__detail__discr"
                                          v-html="getProperty(item as IForNewWorker, 'PROPERTY_477').TEXT"></div>
                                     <!-- <div v-if="item.pdf"
-                                         class="link__pdf">
+                                         class="mt20">
                                         <a :href="file.link"
                                            v-for="(file, index) in item.pdf"
                                            :key="index"
-                                           class="document-link">
+                                           class="news__detail__document-link">
                                             <strong>
                                                 Cкачать
                                                 <br />
@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
+// import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
@@ -75,7 +75,7 @@ import type { IForNewWorker } from '@/interfaces/IEntities'
 export default defineComponent({
     name: "ForNewWorker",
     components: {
-        DocIcon,
+        // DocIcon,
     },
     setup() {
         const pageContent = ref<IForNewWorker[]>();

@@ -66,8 +66,6 @@ export default defineComponent({
         const pickDate = (target: string, needNulify: boolean = false) => {
             searchValue.value = target;
             if (needNulify) {
-                console.log('d');
-
                 nullifyDateInput.value = true;
             }
             nextTick(() => {

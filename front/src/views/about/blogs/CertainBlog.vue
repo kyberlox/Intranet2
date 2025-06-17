@@ -17,7 +17,6 @@
 							id="you-player"
 							:src="getProperty(currentArticle, 'PROPERTY_1222')"
 							title="YouTube video player"
-							frameborder="0"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 							allowfullscreen></iframe>
 				</div>
@@ -47,7 +46,7 @@ export default defineComponent({
 	setup(props) {
 		const blogData = useblogDataStore();
 		const currentArticle = computed(() => blogData.getBlogById(props.id));
-		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId))
+		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId));
 
 		return {
 			targetAuthor,

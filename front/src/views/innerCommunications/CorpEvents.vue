@@ -34,7 +34,7 @@ export default defineComponent({
         onMounted(() => {
             if (allEvents.value.length) return;
             useLoadingStore().setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Корпоративные_события']}`)
+            Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                 .then(res => {
                     useViewsDataStore().setData(res, 'corpEventsData')
                     visibleEvents.value = res;

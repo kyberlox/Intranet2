@@ -77,6 +77,34 @@
                 color: #ef7f1b;
                 text-decoration: underline;
             }
+
+            &ul {
+                margin: 10px 0 20px;
+                padding: 0;
+                list-style: none;
+                display: inline-block;
+                width: 100%;
+
+                &li {
+                    font-size: 12px;
+                    line-height: 16px;
+                    color: #666666;
+                    position: relative;
+                    padding-left: 12px;
+
+                    &::before {
+                        content: "";
+                        display: block;
+                        width: 5px;
+                        height: 5px;
+                        border-radius: 50%;
+                        background: #F5821F;
+                        position: absolute;
+                        left: 0;
+                        top: 5px;
+                    }
+                }
+            }
         }
 
         &__content {

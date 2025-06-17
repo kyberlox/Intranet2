@@ -4,7 +4,6 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 
 import '@vuepic/vue-datepicker/dist/main.css'
 import PrimeVue from 'primevue/config';
-import ProgressBar from 'primevue/progressbar';
 import FileUpload from 'primevue/fileupload';
 
 import { createApp } from 'vue'
@@ -16,7 +15,6 @@ import router from './router'
 const app = createApp(App)
 
 app.component('VueDatePicker', VueDatePicker);
-app.component('progressBar', ProgressBar);
 app.component('FileUpload', FileUpload);
 
 app.use(createPinia())

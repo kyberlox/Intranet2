@@ -1,4 +1,3 @@
-import type { MainMenuPoints } from "@/interfaces/ILayout";
 import PhoneIcon from "@/assets/icons/layout/sidebar/socLinks/PhoneIcon.svg";
 import VkIcon from "@/assets/icons/layout/sidebar/socLinks/VkIcon.svg";
 import TelegramIcon from "@/assets/icons/layout/sidebar/socLinks/TelegramIcon.svg";
@@ -7,7 +6,7 @@ import DocsIcon from "@/assets/icons/layout/sidebar/socLinks/DocsIcon.svg";
 import MotiwIcon from "@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg";
 import BitrixIcon from "@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg";
 
-import type { WorkLink, SupportLink } from "@/interfaces/ILayout";
+import type { MainMenuPoints, WorkLink, SupportLink } from "@/interfaces/ILayout";
 
 export const mainMenuPoints: MainMenuPoints = [
     {

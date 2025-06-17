@@ -30,7 +30,7 @@ export default defineComponent({
         onMounted(() => {
             if (news.value.length) return;
             useLoadingStore().setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Новости орг развития']}`)
+            Api.get(`article/find_by/${sectionTips['НовостиОргРазвития']}`)
                 .then((res) => {
                     viewsData.setData(res, 'corpNewsData');
                 })

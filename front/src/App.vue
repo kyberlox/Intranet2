@@ -1,8 +1,6 @@
 <template>
     <div v-if="isLogin">
         <LayoutHeader />
-        <ProgressBar v-if="isLoading"
-                     mode="indeterminate" />
         <main>
             <div class="container-fluid"
                  :class="{ 'container-fluid--nopadding': !isLogin }">
@@ -33,7 +31,6 @@ import AuthPage from "./views/user/AuthPage.vue";
 
 import { useblogDataStore } from "./stores/blogData";
 import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
-import ProgressBar from 'primevue/progressbar';
 import { useLoadingStore } from '@/stores/loadingStore'
 import { useUserData } from "./stores/userData";
 export default defineComponent({
@@ -43,7 +40,6 @@ export default defineComponent({
         Sidebar,
         RouterView,
         AuthPage,
-        ProgressBar
     },
     setup() {
         const blogData = useblogDataStore();

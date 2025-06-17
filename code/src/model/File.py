@@ -25,33 +25,60 @@ class File:
         self.b24_id = b24_id
 
     def download_by_URL(self, url, path):
-        response = requests.get(f"https://portal.emk.ru{url}")
+        if "https://portal.emk.ru" in url:
+            response = requests.get(url)
+        else:
+            response = requests.get(f"https://portal.emk.ru{url}")
         with open(path, 'wb') as file:
             file.write(response.content)
         return response.headers.get('Content-Type', 'unknown')
 
-    def upload_inf_art(self, art_id=None, is_preview = False):
+    def upload_inf_art(self, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
         try:
             b24 = B24()
-            #file_data = b24.get_file(self.id, inf_id)
-            file_data = b24.get_all_files(self.b24_id)
-            
-            if "ORIGINAL_NAME" in file_data:
-                filename = file_data["ORIGINAL_NAME"]
-            elif "FILE_NAME" in file_data:
-                filename = file_data["FILE_NAME"]
 
-            filename_parts = filename.split('.')
-            file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+            if need_all_method:
+                file_data = b24.get_all_files(self.b24_id)
 
-            # Генерируем уникальное имя файла
-            unique_name = str(ObjectId()) + file_ext
-            file_path = os.path.join(STORAGE_PATH, unique_name)
+                if "ORIGINAL_NAME" in file_data:
+                    filename = file_data["ORIGINAL_NAME"]
+                elif "FILE_NAME" in file_data:
+                    filename = file_data["FILE_NAME"]
+                elif "NAME" in file_data:
+                    filename = file_data["NAME"]
 
-            #Проверяем нет ли такого файла уже в БД
+                filename_parts = filename.split('.')
+                file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
-            # Сохраняем файл
-            content_type = self.download_by_URL(file_data["SRC"], file_path)
+                # Генерируем уникальное имя файла
+                unique_name = str(ObjectId()) + file_ext
+                file_path = os.path.join(STORAGE_PATH, unique_name)
+
+                # Сохраняем файл
+                content_type = self.download_by_URL(file_data["SRC"], file_path)
+
+
+            else:
+                file_data = b24.get_file(self.b24_id, inf_id)
+
+                if "ORIGINAL_NAME" in file_data:
+                    filename = file_data["ORIGINAL_NAME"]
+                elif "FILE_NAME" in file_data:
+                    filename = file_data["FILE_NAME"]
+                elif "NAME" in file_data:
+                    filename = file_data["NAME"]
+
+                filename_parts = filename.split('.')
+                file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+
+                # Генерируем уникальное имя файла
+                unique_name = str(ObjectId()) + file_ext
+                file_path = os.path.join(STORAGE_PATH, unique_name)
+
+                # Сохраняем файл
+                content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
+
+
 
             result = {
                 "original_name": filename,

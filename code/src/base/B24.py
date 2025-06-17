@@ -35,6 +35,8 @@ class B24:
         result = response.json()
         return result
 
+
+
     # функции vcard
     def getUsersByUuid(self, uuid):
         filter = {

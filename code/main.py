@@ -91,7 +91,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/auth_router",
         "/total_update",
         "/api/files",
-        "/api/user_files"
+        "/api/user_files",
+        "test", "get_file", "get_all_files"
     ]
     for open_link in open_links:
         if open_link in request.url.path:
@@ -133,10 +134,16 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 def test(ID):
     return Article(section_id=ID).get_inf()
 
-@app.get("/test_file_get/{inf_id}/{file_id}")
+@app.get("/get_file/{inf_id}/{file_id}")
 def test_file_get(inf_id, file_id):
     b24 = B24()
     file_data = b24.get_file(file_id, inf_id)
+    return file_data
+
+@app.get("/get_all_files/{file_id}")
+def test_file_get(file_id):
+    b24 = B24()
+    file_data = b24.get_all_files(file_id)
     return file_data
 
 @app.get("/elastic_dump")

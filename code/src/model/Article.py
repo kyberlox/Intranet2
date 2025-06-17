@@ -57,6 +57,15 @@ class Article:
         elif "PROPERTY_290" in data:
             preview = list(data['PROPERTY_290'].values())[0]
             #data.pop('PROPERTY_290')
+        elif "PROPERTY_356" in data:
+            preview = list(data['PROPERTY_356'].values())[0]
+            #data.pop('PROPERTY_356')
+        elif "PROPERTY_488" in data:
+            preview = list(data['PROPERTY_488'].values())[0]
+            # data.pop('PROPERTY_488')
+        elif "PROPERTY_1127" in data:
+            preview = list(data['PROPERTY_1127'].values())[0]
+            # data.pop('PROPERTY_1127')
         else:
             preview = None
 
@@ -72,8 +81,11 @@ class Article:
         elif "DETAIL_TEXT" in data:
             content = data['DETAIL_TEXT']
             #data.pop('DETAIL_TEXT')
+        elif "PROPERTY_365" in data:
+            preview = list(data['PROPERTY_365'].values())[0]
+            # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291"]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358"]
             content = None
             for key in keys:
                 if key in data:
@@ -149,6 +161,7 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
+
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
@@ -162,12 +175,12 @@ class Article:
             "PROPERTY_342",
             "PROPERTY_343",
 
-            "PROPERTY_1023",
-            "PROPERTY_1020",
+            #"PROPERTY_1023",
+            #"PROPERTY_1020",
 
             "PROPERTY_476",
 
-            "PROPERTY_670", #!!! сслыка на ютуб !!!
+            #"PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
 
             "PROPERTY_463",
@@ -178,32 +191,49 @@ class Article:
             # "PROPERTY_296",
 
             "PROPERTY_399",
+
             "PROPERTY_400",
             #"PROPERTY_402",
-
             "PROPERTY_407",
-            "PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            #"PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            "PROPERTY_476",
+            "PROPERTY_1025",
+            "PROPERTY_678",
+            "PROPERTY_356",
 
             #вложения
             "PROPERTY_478",
-            "PROPERTY_491"
-
+            "PROPERTY_491",
+            "PROPERTY_366",
         ]
 
         preview_file = [
-            "PREVIEW_PICTURE",
+            "PROPERTY_399",
+            "PROPERTY_407",
             "PROPERTY_372",
             "PROPERTY_337",
             "PROPERTY_342",
-            "PROPERTY_1023"
+            "PROPERTY_476",
+            "PROPERTY_669",
+            "PROPERTY_463",
+            "PROPERTY_498",
+            "PREVIEW_PICTURE",
+            "PROPERTY_356",
         ]
         
         # находим файлы статьи
         files = []
         preview_images = []
+        need_all_method = True
+        #собираем данные о файлах
         for file_property in files_propertys:
             
             if file_property in data:
+                #обрабатываются днфолтным методом битры
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
+                    need_all_method = False
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -246,12 +276,13 @@ class Article:
             return []
         else:
             files_data = []
+            #проеверяем, нужно ли обновить файлы?
             files_to_add = File().need_update_file(art_id, files)
 
             if files_to_add != []:
                 for f_id in files:
                     is_preview = f_id in preview_images
-                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview)
+                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
                     #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
                     files_data.append(file_data)
 
@@ -286,12 +317,15 @@ class Article:
             32 : "132", # Новости организационного развития
             53 : "62", # Афиша
             54 : "55", # Предложения партнеров
-            55 : "56" # Благотворительные проекты
+            55 : "56", # Благотворительные проекты
+
+            25 : "100", #Референсы и опыт поставок
+            17 : "60" #Учебный центр (Литература)
         }
 
 
         #проходимся по инфоблокам
-        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56 "):
+        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56, 100, 60 "):
 
             # запрос в B24
             self.section_id = sec_inf[i]

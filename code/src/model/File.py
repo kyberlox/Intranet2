@@ -13,14 +13,13 @@ STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
 
 class File:
-    def __init__(self, id=None, art_id=None, b24_id=None):
+    def __init__(self, id=None, art_id =None, b24_id=None):
 
         if id is not None:
             if type(id) == type(ObjectId("a"*24)):
                 id = id
             elif type(id) == type(str()) and id != '':
                 id = ObjectId(id)
-
         self.id = id
         self.art_id = art_id
         self.b24_id = b24_id
@@ -114,7 +113,7 @@ class File:
             return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
     def get_files(self):
-        file_data = FileModel(id=self.id).find_by_id()
+        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
         file_list = []
         
         if not file_data:

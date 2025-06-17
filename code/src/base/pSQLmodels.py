@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, update, ForeignKey, desc, func
+from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, update, ForeignKey, desc, func, Date
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 
-from src.base.mongodb import FileModel
+from src.model.File import File
 
 load_dotenv()
 
@@ -121,6 +121,18 @@ class Views(Base):
     article = relationship("Article", back_populates="views")
 
 
+metadata = MetaData()
+
+NewUser = Table('NewUser', metadata,
+                Column('id', Integer, primary_key=True),
+                Column('active', Boolean),
+                Column('last_name', Text),
+                Column('name', Text),
+                Column('second_name', Text),
+                Column('dat', Date),
+                Column('indirect_data', JSONB),
+                Column('photo_file_id', Text)
+            )
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
@@ -373,7 +385,7 @@ class UserModel():
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
-                    user_image = FileModel(user['photo_file_id']).find_user_photo_by_id()
+                    user_image = File(user['photo_file_id']).get_users_photo()
                     user_info['id'] = user['id']
                     if user['second_name'] == '' or user['second_name'] is None:
                         user_info['user_fio'] = f'{user['last_name']} {user['name']}'
@@ -381,11 +393,49 @@ class UserModel():
                         user_info['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
-                    user_info['image'] = user_image['URL']
+                    user_info['image'] =  f'http://intranet.emk.org.ru{user_image['URL']}'
                     
                     normal_list.append(user_info)
         return normal_list
 
+    def new_workers(self):
+        # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
+        result = self.db.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
+        # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id
+        
+        users = []
+        for res in result:
+            
+            user = list(res)
+            
+            if 112 in user[6]['uf_department']:
+                pass
+            else:
+                if user[1] and user[7] is not None:
+                    user_info = {}
+                    indirect_data = user[6]
+                    list_departs = []
+                    if len(indirect_data['uf_department']) != 0:
+                        for dep in indirect_data['uf_department']:
+                            dep_str = DepartmentModel(dep).find_dep_by_id()
+                            for de in dep_str:
+                                list_departs.append(de.__dict__['name'])
+                            
+                    indirect_data['uf_department'] = list_departs
+                    # добавляем только нужную информацию
+                    user_info = {}
+                    user_image = File(user[7]).get_users_photo()
+                    print(user[7])
+                    user_info['id'] = user[0]
+                    if user[4] == '' or user[4] is None:
+                        user_info['user_fio'] = f'{user[2]} {user[3]}'
+                    else:
+                        user_info['user_fio'] = f'{user[2]} {user[3]} {user[4]}'
+                    user_info['position'] = indirect_data['work_position']
+                    user_info['department'] = indirect_data['uf_department']
+                    user_info['image'] = f'http://intranet.emk.org.ru{user_image['URL']}'
+                    users.append(user_info)
+        return users
     """
     def put_uf_depart(self, usr_dep):
         

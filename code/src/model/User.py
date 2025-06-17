@@ -145,6 +145,10 @@ class User:
     # день рождения
     def get_birthday_celebrants(self, date):
         return UserModel().find_all_celebrants(date)
+    
+    # новые сотрудники
+    def get_new_workers(self):
+        return UserModel().new_workers()
 
 '''
     # def get(self, method="user.get", params={}):

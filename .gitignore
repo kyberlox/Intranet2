@@ -1,8 +1,0 @@
-/pSQL/data
-/mongodb/data
-**/__pycache__/
-.env
-push.sh
-pull.shs
-/code/files_db
-/front/node_modules

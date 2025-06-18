@@ -167,11 +167,11 @@ def find(inf_id, file_id):
 
 @app.put("/api/total_background_task_update")
 def total_background_task_update(background_tasks: BackgroundTasks):
-    background_tasks.add_task(Department().fetch_departments_data())
-    background_tasks.add_task(User().fetch_users_data())
-    background_tasks.add_task(UsDep().get_usr_dep())
-    background_tasks.add_task(Section().load())
-    background_tasks.add_task(Article().uplod())
+    background_tasks.add_task(Department().fetch_departments_data)
+    background_tasks.add_task(User().fetch_users_data)
+    background_tasks.add_task(UsDep().get_usr_dep)
+    background_tasks.add_task(Section().load)
+    background_tasks.add_task(Article().uplod)
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 
 @app.put("/api/total_ws_update")

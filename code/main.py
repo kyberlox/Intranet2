@@ -177,7 +177,7 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 
 @app.put("/api/total_ws_update")
-def total_ws_update(websocket: WebSocket):
+async def total_ws_update(websocket: WebSocket):
     await websocket.accept()
     try:
         # Сообщаем клиенту о начале задачи

@@ -652,7 +652,7 @@ class Article:
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = self.id).get_files_by_art_id()
         
-
+        print(files)
         
         for file in files:
 

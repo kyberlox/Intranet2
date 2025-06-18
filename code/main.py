@@ -31,6 +31,8 @@ import os
 
 import time
 
+import asyncio
+
 app = FastAPI()
 
 app.include_router(users_router, prefix="/api")

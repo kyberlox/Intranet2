@@ -182,7 +182,7 @@ class File:
         file_data = FileModel(id=self.id).find_user_photo_by_id()
         
         
-        if not file_data or file_info["is_archive"]:
+        if not file_data or file_data["is_archive"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
             file_info = {}

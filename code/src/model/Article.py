@@ -282,10 +282,17 @@ class Article:
 
             if files_to_add != []:
                 for f_id in files:
-                    is_preview = f_id in preview_images
-                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
-                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                    files_data.append(file_data)
+                    try:
+                        is_preview = f_id in preview_images
+                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
+                        #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                        files_data.append(file_data)
+                    except:
+                        is_preview = f_id in preview_images
+                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                        # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                        files_data.append(file_data)
+
 
             else:
                 pass
@@ -314,15 +321,15 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            13 : "149", # Наши люди
+            #13 : "149", # Наши люди
             16 : "122", # Видеоитервью
             32 : "132", # Новости организационного развития
             53 : "62", # Афиша
-            54 : "55", # Предложения партнеров
-            55 : "56", # Благотворительные проекты
+            #54 : "55", # Предложения партнеров
+            #55 : "56", # Благотворительные проекты
 
-            25 : "100", #Референсы и опыт поставок
-            17 : "60" #Учебный центр (Литература)
+            #25 : "100", #Референсы и опыт поставок
+            #17 : "60" #Учебный центр (Литература)
         }
 
 
@@ -349,6 +356,7 @@ class Article:
 
 
         '''с параметрами'''
+        '''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
             15 : ["75", "77"], #Блоги
@@ -470,7 +478,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-
+        '''
 
 
         #несколько section_id - один IBLOCK_ID
@@ -522,7 +530,7 @@ class Article:
                 
 
 
-
+        '''
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
             42 : ["68", "69"], #Официальные события
@@ -605,27 +613,28 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-
+        '''
 
         '''самобытные блоки'''
         # полная статика
             # 11 Наша компания -> Наша компания
             # 12 История компании -> История компании
+
             # 110 Техника безопасности -> Техника безопасности
             # 33 Корпоративная газета ЭМК -> газеты
             # 41 Гид по предприятиям -> 3D тур
 
         #переделки
-            # 17 Учебный центр
             # 19 Дни рождения
             # 21 Подбор оборудования
             # 22 Поздравительная открытка
             # 23 ChatGPT
             # 24 Разрешительная документация и сертиффикаты
-            # 25 Референсы и опыт поставок
             # Новые сотрудники
             # Личный кабинет
             # Есть Идея
+
+            #РЕДАКТОРКА
 
         #новые разделы
             # конфигуратор НПО Регулятор

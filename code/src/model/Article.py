@@ -281,10 +281,17 @@ class Article:
 
             if files_to_add != []:
                 for f_id in files:
-                    is_preview = f_id in preview_images
-                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
-                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                    files_data.append(file_data)
+                    try:
+                        is_preview = f_id in preview_images
+                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
+                        #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                        files_data.append(file_data)
+                    except:
+                        is_preview = f_id in preview_images
+                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                        # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                        files_data.append(file_data)
+
 
             else:
                 print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')

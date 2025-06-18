@@ -170,13 +170,13 @@ class File:
 
                     #файлы делятся по категориям
                     if "image" in file["content_type"]:
-                        file["type"] = "image"
+                        file_info["type"] = "image"
                     elif "video" in file["content_type"]:
-                        file["type"] = "video"
+                        file_info["type"] = "video"
                     elif "link" in file["content_type"]:
-                        file["type"] = "video_embed"
+                        file_infofile_info["type"] = "video_embed"
                     else:
-                        file["type"] = "documentation"
+                        file_info["type"] = "documentation"
 
                     file_info["article_id"] = file["article_id"]
                     file_info["b24_id"] = file["b24_id"]

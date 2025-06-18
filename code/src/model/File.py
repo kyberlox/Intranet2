@@ -1,5 +1,6 @@
 from src.base.mongodb import FileModel
 from src.base.B24 import B24
+from src.services.LogsMaker import LogsMaker
 
 from bson.objectid import ObjectId
 import requests
@@ -79,7 +80,7 @@ class File:
                     # Сохраняем файл
                     content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
             except:
-                print(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
+                LogsMaker().warning_message(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
 
 
             result = {
@@ -217,14 +218,14 @@ class File:
                 f.write(r.content)
         
         return (name, form)
-    
+
     def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
         try:
             name, form = self.dowload_user_photo(b24_url)
 
             #определить ссылку
-            url = f"/api/files/{name}"
+            url = f"/api/user_files/{name}"
 
             #собрать данные
             file_data = {

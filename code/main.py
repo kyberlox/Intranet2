@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request
-from fastapi import BackgroundTasks, WebSocket, WebSocketDisconnect #, Cookie, Header
+from fastapi import BackgroundTasks #, Cookie, Header
 from fastapi.responses import Response#, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
@@ -96,7 +96,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/files",
         "/api/user_files",
         "test", "get_file", "get_all_files",
-        "/api/total_background_task_update", "/api/total_ws_update",
+        "/api/total_background_task_update",
     ]
     for open_link in open_links:
         if open_link in request.url.path:
@@ -176,27 +176,6 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     background_tasks.add_task(Section().load)
     background_tasks.add_task(Article().uplod)
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
-
-@app.put("/api/total_ws_update")
-async def total_ws_update(websocket: WebSocket):
-    await websocket.accept()
-    try:
-        # Сообщаем клиенту о начале задачи
-        await websocket.send_text("🔃 Начинаем обновление...")
-
-        # запускаем долгие операции
-        Department().fetch_departments_data()
-        User().fetch_users_data()
-        UsDep().get_usr_dep()
-        Section().load()
-        Article().uplod()
-
-        # Отправляем результат
-        result = "Данные успешно обновлены! 🎉"
-        await websocket.send_text(result)
-
-    except WebSocketDisconnect:
-        print("Клиент отключился")
 
 
 

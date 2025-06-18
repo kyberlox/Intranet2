@@ -174,6 +174,35 @@ class File:
                     file_info["is_preview"] = file["is_preview"]
                     file_list.append(file_info)
 
+            for file in file_list:
+
+                if file["is_preview"]:
+                    url = file["file_url"]
+                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                
+                #файлы делятся по категориям
+                if "image" in file["content_type"]:
+                    file["type"] = "image"
+                elif "video" in file["content_type"]:
+                    file["type"] = "video"
+                elif "link" in file["content_type"]:
+                    file["type"] = "video_embed"
+                else:
+                    file["type"] = "documentation"
+
+            
+            if "preview_file_url" not in art:
+                #надодим любую картинку, если она есть
+                for file in file_list:
+                    if file["type"] == "image":
+                        url = file["file_url"]
+                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                        art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
+                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        break
+
             return file_list
             
 

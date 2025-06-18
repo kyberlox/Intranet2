@@ -650,6 +650,7 @@ class Article:
 
     def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
+        print(self.id)
         files = File(art_id = self.id).get_files_by_art_id()
         
         print(files)

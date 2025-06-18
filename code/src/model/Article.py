@@ -266,10 +266,11 @@ class Article:
                         if file_property in preview_file:
                             preview_images.append(data[file_property])
                     else:
-                        print("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
+                        LogsMaker().warning_message("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
+                        # print("Некорректные данные в поле ", file_property, f"Данные: {type(data[file_property])}", f"Ищи в {inf_id}, {art_id}")
                         
-                except:
-                    pass
+                except Exception as e:
+                    return LogsMaker().error_message(e)
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
 
         if files == []:
@@ -287,7 +288,8 @@ class Article:
                     files_data.append(file_data)
 
             else:
-                print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
+                pass
+                #print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
 
             return files_data
 
@@ -338,7 +340,7 @@ class Article:
                     self.section_id = i
 
                     if artDB.need_add():
-                        print("Добавил стаью", inf["ID"])
+                        logg.warning_message(f'Добавил статью, {inf["ID"]}')
                         self.add(inf)
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
@@ -405,7 +407,8 @@ class Article:
                 if "PROPERTY_480" in data_inf:
                     data_title_id = list(data_inf["PROPERTY_480"].values())[0]
                 else:
-                    print("##################", data_inf["ID"])
+                    logg.warning_message(f'##################, {data_inf["ID"]}')
+                    
 
                 # если эта статья принадлежит инфоблоку
                 if data_title_id == title_id:
@@ -481,7 +484,8 @@ class Article:
         art_inf = self.get_inf()
         for art in logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
             if art["ID"] == '13486':
-                print(art, ' новость')
+                logg.warning_message(f'{art["ID"]} новостьь которая проникает не туда')
+                # print(art, ' новость')
             else:
                 pass
             art_id = art["ID"]
@@ -647,8 +651,6 @@ class Article:
 
         art['files'] = files
         return art
-
-
 
     # def get_preview(self, id):
     #     res = File(id).find_all_by_art_id()

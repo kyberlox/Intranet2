@@ -341,7 +341,7 @@ class UserModel():
             return result
 
         else:
-            return {'err' : "Invalid user id"}
+            return LogsMaker().warning_message("Invalid user id")
 
     def find_by_uuid(self):
         user = self.db.query(self.user).filter(self.user.uuid == self.id).one()
@@ -353,7 +353,7 @@ class UserModel():
                 "full_name" : f"{user.second_name} {user.name} {user.last_name}"
             }
         else:
-            return None
+            return LogsMaker().warning_message("Invalid user uuid")
     
     def all(self):
         return self.db.query(self.user).all()

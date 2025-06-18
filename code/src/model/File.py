@@ -37,48 +37,49 @@ class File:
         try:
             b24 = B24()
             #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
+            try:
+                if need_all_method:
+                    file_data = b24.get_all_files(self.b24_id)
 
-            if need_all_method:
-                file_data = b24.get_all_files(self.b24_id)
+                    if "ORIGINAL_NAME" in file_data:
+                        filename = file_data["ORIGINAL_NAME"]
+                    elif "FILE_NAME" in file_data:
+                        filename = file_data["FILE_NAME"]
+                    elif "NAME" in file_data:
+                        filename = file_data["NAME"]
 
-                if "ORIGINAL_NAME" in file_data:
-                    filename = file_data["ORIGINAL_NAME"]
-                elif "FILE_NAME" in file_data:
-                    filename = file_data["FILE_NAME"]
-                elif "NAME" in file_data:
-                    filename = file_data["NAME"]
+                    filename_parts = filename.split('.')
+                    file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
-                filename_parts = filename.split('.')
-                file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+                    # Генерируем уникальное имя файла
+                    unique_name = str(ObjectId()) + file_ext
+                    file_path = os.path.join(STORAGE_PATH, unique_name)
 
-                # Генерируем уникальное имя файла
-                unique_name = str(ObjectId()) + file_ext
-                file_path = os.path.join(STORAGE_PATH, unique_name)
-
-                # Сохраняем файл
-                content_type = self.download_by_URL(file_data["SRC"], file_path)
+                    # Сохраняем файл
+                    content_type = self.download_by_URL(file_data["SRC"], file_path)
 
 
-            else:
-                file_data = b24.get_file(self.b24_id, inf_id)
+                else:
+                    file_data = b24.get_file(self.b24_id, inf_id)
 
-                if "ORIGINAL_NAME" in file_data:
-                    filename = file_data["ORIGINAL_NAME"]
-                elif "FILE_NAME" in file_data:
-                    filename = file_data["FILE_NAME"]
-                elif "NAME" in file_data:
-                    filename = file_data["NAME"]
+                    if "ORIGINAL_NAME" in file_data:
+                        filename = file_data["ORIGINAL_NAME"]
+                    elif "FILE_NAME" in file_data:
+                        filename = file_data["FILE_NAME"]
+                    elif "NAME" in file_data:
+                        filename = file_data["NAME"]
 
-                filename_parts = filename.split('.')
-                file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+                    filename_parts = filename.split('.')
+                    file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
-                # Генерируем уникальное имя файла
-                unique_name = str(ObjectId()) + file_ext
-                file_path = os.path.join(STORAGE_PATH, unique_name)
+                    # Генерируем уникальное имя файла
+                    unique_name = str(ObjectId()) + file_ext
+                    file_path = os.path.join(STORAGE_PATH, unique_name)
 
-                # Сохраняем файл
-                content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
-
+                    # Сохраняем файл
+                    content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
+            except:
+                print(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
 
 
             result = {

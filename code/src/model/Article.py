@@ -650,13 +650,39 @@ class Article:
 
     def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
-        files = File(art_id = self.id).get_files()
+        files = File(art_id = self.art_id).get_files_by_art_id()
+        
 
-        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+        
         for file in files:
-            url = file["file_url"]
-            file["file_url"] = f"http://intranet.emk.org.ru{url}"
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            if file["is_preview"]:
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            #файлы делятся по категориям
+            if "image" in file["content_type"]:
+                file["type"] = "image"
+            elif "video" in file["content_type"]:
+                file["type"] = "video"
+            elif "link" in file["content_type"]:
+                file["type"] = "video_embed"
+            else:
+                file["type"] = "documentation"
+
+        
+        if "preview_file_url" not in art:
+            #надодим любую картинку, если она есть
+            for file in files:
+                if file["type"] == "image":
+                    url = file["file_url"]
+                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    break
+        
 
         art['files'] = files
         return art
@@ -686,37 +712,24 @@ class Article:
     #         return mongo_list[0]['file_url']
     
     def get_preview(self ):
-        res = File(art_id = self.id).get_files()
-        mongo_list = []
+        res = File(art_id = self.id).get_files_by_art_id()
+        url = ""
+
         preview = None
-        # one_preview_inf = []
-        for result in res:
-            mongo_list.append(result)
-        if len(mongo_list) > 1:
+        one_preview_inf = []
 
-            for info in mongo_list:
-                one_preview_inf.append(info['b24_id'])
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
-                url = info['file_url']
-                one_preview_inf.append(f"http://intranet.emk.org.ru{url}")
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                preview_inf.append(one_preview_inf)
-
-            # # сортируем по b24_id если фоток много и берем с наименьшим b24_id
-            # sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
-            
-            # сортируем по ключу is_preview
-
-
-            preview_inf = sorted_list[0][1]
-            return preview_inf
-        elif len(mongo_list) == 0:
+        if len(res) > 1:
+            for file_info in res:
+                if file_info["is_preview"]:
+                    url = file_info["file_url"]
+        elif len(res) == 0:
             return None
         else:
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
-            url = mongo_list[0]['file_url']
-            return f"http://intranet.emk.org.ru{url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            url = res[0]['file_url']
+
+        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
+        return f"http://intranet.emk.org.ru{url}"
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def search_by_section_id(self):
         if self.section_id == "0":

@@ -143,27 +143,15 @@ class File:
 
             return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
-    def get_files(self):
-        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
-        file_list = []
+    def get_file(self):
+        file_data = FileModel(id=self.id).find_by_id()
         
-        if not file_data:
+        if file_data["is_archive"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
-            for file in file_data:
-                file_info = {}
-                file_info["id"] = str(file["_id"])
-                file_info["original_name"] = file["original_name"]
-                file_info["stored_name"] = file["stored_name"]
-                file_info["content_type"] = file["content_type"]
-                file_info["article_id"] = file["article_id"]
-                file_info["b24_id"] = file["b24_id"]
-                file_info["file_url"] = file["file_url"]
-                file_info["is_archive"] = file["is_archive"]
-                file_info["is_preview"] = file["is_preview"]
-                file_list.append(file_info)
-
-            return file_list
+            file_data["id"] = str(file_data["_id"])
+            file_data.pop("_id")
+            return file_data
 
     def get_files_by_art_id(self):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
@@ -173,29 +161,30 @@ class File:
             raise HTTPException(status_code=404, detail="File not found")
         else:
             for file in file_data:
-                file_info = {}
-                file_info["id"] = str(file["_id"])
-                file_info["original_name"] = file["original_name"]
-                file_info["stored_name"] = file["stored_name"]
-                file_info["content_type"] = file["content_type"]
-                file_info["article_id"] = file["article_id"]
-                file_info["b24_id"] = file["b24_id"]
-                file_info["file_url"] = file["file_url"]
-                file_info["is_archive"] = file["is_archive"]
-                file_info["is_preview"] = file["is_preview"]
-                file_list.append(file_info)
+                if not file["is_archive"]:
+                    file_info = {}
+                    file_info["id"] = str(file["_id"])
+                    file_info["original_name"] = file["original_name"]
+                    file_info["stored_name"] = file["stored_name"]
+                    file_info["content_type"] = file["content_type"]
+                    file_info["article_id"] = file["article_id"]
+                    file_info["b24_id"] = file["b24_id"]
+                    file_info["file_url"] = file["file_url"]
+                    file_info["is_archive"] = file["is_archive"]
+                    file_info["is_preview"] = file["is_preview"]
+                    file_list.append(file_info)
 
             return file_list
             
 
     def get_users_photo(self):
+        #переделать с учетом is_archive
         file_data = FileModel(id=self.id).find_user_photo_by_id()
         
         
-        if not file_data:
+        if not file_data or file_info["is_archive"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
-            
             file_info = {}
             file_info["id"] = str(file_data["_id"])
             file_info["name"] = file_data["name"]
@@ -318,9 +307,9 @@ async def get_file_info(file_id: str):
 
 
 @file_router.get("/info/article_id/{article_id}")
-async def get_file_by_article(article_id: int):
+async def get_file_article(article_id: int):
     try:
-        file_data = File(id=article_id).get_files()
+        file_data = File(art_id=article_id).get_files_by_art_id()
 
         if not file_data:
             raise HTTPException(status_code=404, detail="File not found")

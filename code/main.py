@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request#, Cookie, Header
+from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request
+from fastapi import BackgroundTasks, WebSocket, WebSocketDisconnect #, Cookie, Header
 from fastapi.responses import Response#, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
@@ -163,6 +164,38 @@ def find(inf_id, art_id, property):
 @app.get("/find_file/{inf_id}/{file_id}")
 def find(inf_id, file_id):
     return B24().get_file(file_id, inf_id)
+
+@app.put("/api/total_background_task_update")
+def total_background_task_update(background_tasks: BackgroundTasks):
+    background_tasks.add_task(Department().fetch_departments_data())
+    background_tasks.add_task(User().fetch_users_data())
+    background_tasks.add_task(UsDep().get_usr_dep())
+    background_tasks.add_task(Section().load())
+    background_tasks.add_task(Article().uplod())
+    return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
+
+@app.put("/api/total_ws_update")
+def total_ws_update(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        # Сообщаем клиенту о начале задачи
+        await websocket.send_text("🔃 Начинаем обновление...")
+
+        # запускаем долгие операции
+        Department().fetch_departments_data()
+        User().fetch_users_data()
+        UsDep().get_usr_dep()
+        Section().load()
+        Article().uplod()
+
+        # Отправляем результат
+        result = "Данные успешно обновлены! 🎉"
+        await websocket.send_text(result)
+
+    except WebSocketDisconnect:
+        print("Клиент отключился")
+
+
 
 @app.put("/api/total_update")
 def total_update():

@@ -224,7 +224,7 @@ class File:
             name, form = self.dowload_user_photo(b24_url)
 
             #определить ссылку
-            url = f"/api/files/{name}"
+            url = f"/api/user_files/{name}"
 
             #собрать данные
             file_data = {

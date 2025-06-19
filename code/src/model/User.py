@@ -33,9 +33,9 @@ class User:
 
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
-            #if usr_data['ID'] == '2375':
-
-            UserSQL.upsert_user(usr_data)
+            cool_users = ['2366', '2375', '4133', '157', '174', '1375']
+            if usr_data['ID'] in cool_users:
+                UserSQL.upsert_user(usr_data)
         
         self.set_users_photo()
 

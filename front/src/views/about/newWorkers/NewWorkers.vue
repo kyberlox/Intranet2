@@ -10,7 +10,8 @@
             <RouterLink :to="{ name: item.href, params: { id: item.id } }"
                         class="staff__item">
                 <img class="img-fluid staff__item-img"
-                     src="/src/assets/imgs/about/yearResults/gazinskii.png" />
+                     src="/src/assets/imgs/about/yearResults/gazinskii.png"
+                     alt="фото сотрудника" />
                 <div class="staff__item-name">
                     {{ item.name }}
                 </div>

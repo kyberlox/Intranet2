@@ -1,5 +1,4 @@
 import type { IUnionEntities, IFactorySlides } from "@/interfaces/IEntities";
-import { useUserData } from "@/stores/userData";
 
 export const uniqueRoutesHandle = (
     route: string,

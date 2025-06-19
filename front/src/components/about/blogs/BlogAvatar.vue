@@ -13,8 +13,6 @@
             <h3 class="blogs__item-title">
                 {{ author?.title }}
             </h3>
-            <!-- <p class="blogs__item-description"
-               v-html="'sample text'"></p> -->
         </div>
     </RouterLink>
 </template>

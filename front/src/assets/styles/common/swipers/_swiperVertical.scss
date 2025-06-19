@@ -19,14 +19,18 @@
 
 .swiper--vertical-slide {
     display: flex !important;
+    justify-content: flex-start;
     flex-direction: column;
     height: 100% !important;
     aspect-ratio: auto !important;
     background: none !important;
     gap: 15px;
     width: fit-content !important;
-    justify-content: center;
     max-width: 200px;
+
+    &-img {
+        min-height: 400px;
+    }
 
     @include sm {
         width: 100% !important;

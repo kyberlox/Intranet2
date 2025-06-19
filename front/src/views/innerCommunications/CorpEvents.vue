@@ -1,5 +1,5 @@
 <template>
-    <h2 class="page__title mt20">Корпоративные события</h2>
+    <h1 class="page__title mt20">Корпоративные события</h1>
     <TagDateNavBar v-if="allEvents"
                    :years="extractYears(allEvents)"
                    :modifiers="'noTag'"

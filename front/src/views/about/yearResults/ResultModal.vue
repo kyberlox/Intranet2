@@ -13,7 +13,8 @@
                     <div class="modal__grid">
                         <div class="modal__left">
                             <img class="modal__image"
-                                 :src="'/src/assets/imgs/about/yearResults/gazinskii.png'" />
+                                 :src="'/src/assets/imgs/about/yearResults/gazinskii.png'"
+                                 alt="фото сотрудника" />
                             <span class="modal__name">{{ worker.name }}</span>
                             <div class="modal__position">{{ worker.position }}</div>
                             <div class="modal__department">{{ worker.department }}</div>

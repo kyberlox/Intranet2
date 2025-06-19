@@ -1,5 +1,5 @@
 <template>
-    <div class="page__title mt20">Новости организационного развития</div>
+    <h1 class="page__title mt20">Новости организационного развития</h1>
     <div class="row">
         <div class="news__list">
             <GridGallery :gallery="news"

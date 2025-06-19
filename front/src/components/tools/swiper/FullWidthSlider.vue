@@ -8,7 +8,8 @@
                           :key="'postImg' + index">
                 <img class="full-width-slider__slide__img"
                      :src="image"
-                     @click.stop="slideNext" />
+                     @click.stop="slideNext"
+                     alt="слайд" />
             </swiper-slide>
         </swiper>
 
@@ -45,8 +46,6 @@ import "swiper/css/pagination";
 import SwiperArrowRight from "@/assets/icons/common/SwiperArrowRight.svg?component";
 import SwiperArrowLeft from "@/assets/icons/common/SwiperArrowLeft.svg?component";
 import { useSwiperconf } from "@/utils/useSwiperConf";
-
-// import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
 
 export default defineComponent({
     components: {

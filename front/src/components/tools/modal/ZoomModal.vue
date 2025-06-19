@@ -22,7 +22,7 @@
                      class="modal__video">
                     <iframe class="modal__video__frame"
                             :src="String(repairVideoUrl(video))"
-                            frameborder="0"
+                            title="video"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen>
                     </iframe>

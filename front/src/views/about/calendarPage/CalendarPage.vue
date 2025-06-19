@@ -34,7 +34,6 @@
                              v-if="event.month == month.value">
                             <span class="calendarYear__event__date">{{ event.date }}</span>
                             <span class="calendarYear__event__name">{{ event.name }}</span>
-                            <!-- <div style="width: 133px"></div> -->
                             <div class="square-mark"></div>
                             <button v-if="checkButtonStatus(event)"
                                     class="calendarYear__event-btn calendarYear__event-btn_archive event-button">
@@ -48,7 +47,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, nextTick, watchEffect } from 'vue';
+import { defineComponent, ref, watchEffect } from 'vue';
 import { monthesInit, calendarPage } from '@/assets/staticJsons/calendar';
 import type { ICalendarEntity } from '@/interfaces/ICalendar';
 import DatePicker from '@/components/DatePicker.vue';

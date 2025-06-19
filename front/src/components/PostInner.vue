@@ -5,16 +5,17 @@
             <div class="col-12 col-lg-6 mb-2">
                 <SwiperBlank :videos="currentPost?.videos ? currentPost.videos : undefined"
                              :images="currentPost?.images ? currentPost.images : ['https://placehold.co/360x206']"
+                             :sectionId="currentPost?.section_id"
                              :type="'postInner'" />
             </div>
             <div class="col-12 col-lg-6">
                 <div class="news__detail__content">
-                    <div v-if="currentPost.name || currentPost.indirect_data?.NAME"
+                    <div v-if="currentPost.name"
                          class="news__detail__top">
                         <div class="row mb-2">
                             <div class="col-12">
                                 <h2 class="news__detail__title">
-                                    {{ currentPost.name || currentPost.indirect_data?.NAME }}
+                                    {{ currentPost.name }}
                                 </h2>
                             </div>
                         </div>
@@ -39,26 +40,18 @@
                     </div>
                     <div class="news__detail__discr"
                          v-html="currentPost.content_text"></div>
-                    <div v-if="currentPost.documents"
+                    <div v-if="currentPost.documentation"
                          class="news__detail__documents">
                         <div class="news__detail__document"
-                             v-for="(doc, index) in currentPost.documents"
+                             v-for="(doc, index) in currentPost.documentation"
                              :key="'doc' + index">
-                            <!-- <a class="news__detail__document__link"
-                               :href="doc.link"
-                               _blank>Открыть {{ doc.name }}
+                            <a class="news__detail__document__link"
+                               :href="doc"
+                               _blank>Открыть {{ doc }}
                                 <DocIcon />
-                            </a> -->
+                            </a>
                         </div>
                     </div>
-                    <!-- <div v-if="page == 'news'"
-                         class="col-12 news__detail__content__back-to-news">
-                        <a href="/intranet/company-life/news/"
-                           class="section__item__link">
-                            Посмотреть другие новости
-                            <span style="display: none">К списку новостей</span>
-                        </a>
-                    </div> -->
                 </div>
             </div>
         </div>
@@ -124,9 +117,9 @@ export default defineComponent({
                 target.value.content_text = property374Text;
             }
 
-            if (res.embedVideos || res.nativeVideos) {
-                const embedVideos = res.embedVideos || [];
-                const nativeVideos = res.nativeVideos || [];
+            if (res.videos_embed || res.videos_native) {
+                const embedVideos = res.videos_embed || [];
+                const nativeVideos = res.videos_native || [];
                 target.value.videos = embedVideos.concat(nativeVideos);
             }
             return target

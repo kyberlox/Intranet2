@@ -43,7 +43,8 @@
                             <div class="conducted-training__users__list">
                                 <span v-for="(worker, index) in training.peoples"
                                       :key="index">
-                                    <img :src="worker.img" />
+                                    <img :src="worker.img"
+                                         alt="фото сотрудника" />
                                 </span>
                                 <span v-if="training.peoples.length > 3">+ {{ training.peoples.length - 3 }}</span>
                             </div>
@@ -53,7 +54,8 @@
                                 <div class="conducted-training__users__list__full__list scroll__cont">
                                     <span v-for="(worker, index) in training.peoples"
                                           :key="index">
-                                        <img :src="worker.img" />
+                                        <img :src="worker.img"
+                                             alt="фото сотрудника" />
                                         <span>{{ worker.name }}</span>
                                     </span>
                                 </div>
@@ -90,10 +92,9 @@
     </div>
 </template>
 <script lang="ts">
-import { ref } from "vue";
+import { defineComponent, ref } from "vue";
 import ReviewForm from "@/components/about/trainingCenter/ReviewForm.vue";
 import Toast from "@/components/Toast.vue";
-import { defineComponent } from "vue";
 export default defineComponent({
     components: {
         ReviewForm,

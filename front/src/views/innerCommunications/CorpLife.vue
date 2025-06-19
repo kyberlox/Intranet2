@@ -1,9 +1,9 @@
 <template>
-    <div class="page__title mt20">Корпоративная жизнь</div>
+    <h1 class="page__title mt20">Корпоративная жизнь</h1>
     <TagDateNavBar :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
                    @pickYear="(year) => visibleEvents = showEventsByYear(allEvents, year)" />
-    <FlexGallery class="mt20"
+    <FlexGallery class="mt10"
                  :page=page
                  :slides="visibleEvents"
                  :routeTo="'corpLifeItem'"

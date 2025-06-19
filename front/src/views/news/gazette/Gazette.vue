@@ -13,21 +13,21 @@
         </div>
     </div>
     <Transition name="modal">
-        <FullScreenModal v-if="modalActive"
-                         :activeGazete="activeGazete"
-                         @closeModal="modalActive = false" />
+        <PdfViewerModal v-if="modalActive"
+                        :activeGazete="activeGazete"
+                        @closeModal="modalActive = false" />
     </Transition>
 </template>
 <script lang="ts">
 import { ref } from "vue";
 import { gazettes } from "@/assets/staticJsons/gazettes";
-import FullScreenModal from "@/components/tools/modal/FullScreenModal.vue";
+import PdfViewerModal from "@/components/tools/modal/PdfViewerModal.vue";
 import { defineComponent } from "vue";
 import type { IGazette } from "@/interfaces/IGazettes";
 
 export default defineComponent({
     components: {
-        FullScreenModal
+        PdfViewerModal
     },
     setup() {
         const modalActive = ref(false);

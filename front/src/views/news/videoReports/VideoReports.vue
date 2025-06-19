@@ -1,11 +1,9 @@
 <template>
-    <div class="page__wrapper mt20">
-        <h1 class="page__title">Видеорепортажи</h1>
-        <GridGallery class="mt20"
-                     :gallery="videoReports"
-                     :routeTo="'videoreport'"
-                     :type="'video'" />
-    </div>
+    <h1 class="page__title mt20">Видеорепортажи</h1>
+    <GridGallery class="mt20"
+                 :gallery="videoReports"
+                 :routeTo="'videoreport'"
+                 :type="'video'" />
 </template>
 <script lang="ts">
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
@@ -28,8 +26,8 @@ export default defineComponent({
                     viewsData.setData(res, 'videoReportsData');
                 })
                 .finally(() => useLoadingStore().setLoadingStatus(false));
+        });
 
-        })
         return {
             videoReports,
         };

@@ -26,7 +26,8 @@
             </div>
             <div class="birthday__static__greetings">
                 <img @click="openModal(['https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488'])"
-                     src="https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488" />
+                     src="https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488"
+                     alt="поздравление" />
             </div>
         </div>
     </div>
@@ -37,12 +38,10 @@
     </Transition>
 </template>
 <script lang="ts">
-import { onMounted, ref, watch, nextTick } from "vue";
+import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
 import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
-// import { slidesForBirthday } from "@/assets/staticJsons/birthday";
-import { defineComponent } from "vue";
 import DatePicker from "@/components/DatePicker.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";

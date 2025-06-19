@@ -191,7 +191,6 @@ export default defineComponent({
 .admin-panel__editor-table {
   border-radius: 16px;
   padding: 24px;
-  /* box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); */
   min-height: 100dvh;
 }
 
@@ -248,6 +247,9 @@ export default defineComponent({
 .events-table tbody tr {
   transition: all 0.3s ease;
   cursor: pointer;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
 }
 
 .events-table tbody tr:hover {
@@ -355,12 +357,6 @@ export default defineComponent({
 
 .delete-button:active {
   transform: translateY(0);
-}
-
-.events-table tbody tr {
-  animation: fadeInUp 0.6s ease forwards;
-  opacity: 0;
-  transform: translateY(20px);
 }
 
 @keyframes fadeInUp {

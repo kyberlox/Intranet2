@@ -119,6 +119,16 @@
     column-gap: 15px;
     color: rgba(0, 0, 0, .55);
     font-size: 0.9rem;
+
+    &__search-icon {
+        width: 35px;
+        cursor: pointer;
+        transition: 0.2s all;
+
+        &:hover {
+            color: var(--emk-brand-color);
+        }
+    }
 }
 
 .dropdown {

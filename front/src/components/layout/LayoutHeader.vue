@@ -27,9 +27,7 @@
 
                         <div
                              class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
-                            <div class="navbar-collapse collapse"
-                                 id="navbarScroll"
-                                 style="">
+                            <div class="navbar-collapse collapse">
                                 <hr class="col-12 col-md-12 d-lg-none mt-4 mt-md-0" />
                                 <ul class="navbar-nav m-auto">
                                     <li class="nav-item dropdown"
@@ -51,11 +49,10 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <!-- <li onclick="$('#searchBar').slideToggle()" class="nav-item dropdown" id="searchCallButton">
-                                        <div class="nav-link dropdown" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="">
-                                            <i class="fa-solid fa-magnifying-glass" style="font-size: 20px; color: var(--emk-brand-color)"></i>
-                                        </div>
-                                    </li> -->
+                                    <SearchIcon class="navbar-nav__search-icon"
+                                                @click="visibleSearchModal = true" />
+                                    <SearchModal :visibleModal=visibleSearchModal
+                                                 @closeSearchModal="visibleSearchModal = false" />
                                 </ul>
                             </div>
                         </div>
@@ -67,7 +64,8 @@
                                 <button class="header__user__button"
                                         type="button">
                                     <img class="header__user__block__img"
-                                         src="/src/assets/avatarGI.png" />
+                                         src="/src/assets/avatarGI.png"
+                                         alt="Ваша фотография" />
                                     <div class="header__user__block__title d-none d-lg-flex">
                                         <span class="header__user__block__name">Газинский Игорь Владимирович</span>
                                     </div>
@@ -88,12 +86,15 @@ import { ref, computed, watch, defineComponent } from "vue";
 import { mainMenuPoints } from "@/assets/staticJsons/navLinks";
 import type { ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
-import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SidebarLk from "./SidebarLk.vue";
+import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
+import SearchModal from "@/components/layout/SearchModal.vue";
 export default defineComponent({
     components: {
-        SidebarLk
+        SidebarLk,
+        SearchIcon,
+        SearchModal
     },
     setup() {
         const pageDataStore = usePageDataStore();
@@ -115,7 +116,7 @@ export default defineComponent({
 
         const openDropdown = (id: number) => {
             if (id == activeDrop.value) {
-                return (activeDrop.value = null);
+                activeDrop.value = null;
             }
             activeDrop.value = id;
         };
@@ -128,13 +129,16 @@ export default defineComponent({
             });
         };
 
+        const visibleSearchModal = ref(false);
+
         return {
             handleDropDownClick,
             mainMenuPoints,
             openDropdown,
             activeDrop,
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
-            visibleSidebar
+            visibleSidebar,
+            visibleSearchModal
         };
     },
 });

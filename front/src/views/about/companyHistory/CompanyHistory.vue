@@ -28,9 +28,8 @@
 
 <script lang="ts">
 import SideBarNavigation from "@/components/about/companyHistory/SideBarNavigation.vue";
-import { defineAsyncComponent, ref, shallowRef, watch } from "vue";
+import { defineAsyncComponent, defineComponent, ref, shallowRef, watch } from "vue";
 import { useRouter } from "vue-router";
-import { defineComponent } from "vue";
 
 interface PagesRecord {
     [key: number]: unknown;

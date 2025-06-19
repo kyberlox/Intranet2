@@ -9,7 +9,8 @@
                          :key="'img' + index"
                          class="merchStoreItem__images__image">
                         <img @click="callModal(index)"
-                             :src="image" />
+                             :src="image"
+                             alt="фото изделия" />
                     </div>
                 </div>
             </div>
@@ -44,14 +45,6 @@
                         Оформить
                     </div>
                 </div>
-                <!-- <div class="merchStoreItem__info__colors">
-                    <div v-for="(color, index) in merchItemPlug.colors"
-                         :key="'color' + index"
-                         class="merchStoreItem__info__color">
-                        {{ color }}
-                    </div>
-                </div> -->
-                <!-- <div class="merchStoreItem__info__material">{{ merchItemPlug.material }}</div> -->
 
                 <ZoomModal v-if="modalIsVisible"
                            :image="merchItemPlug.images"
@@ -174,113 +167,109 @@ export default defineComponent({
     }
 
     &__action {
-        &__wrapper {
-            margin-top: 20px;
-        }
 
         &__button {
-            padding: 29px 0;
+            padding: 20px 60px;
             background: black;
-            color: white;
-            width: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    }
+            color: var(--emk-brand-color);
+            border: 1px solid var(--emk-brand-color);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.4s ease;
+            z-index: 1;
 
-    &__images {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-
-        &__wrapper {}
-
-        &__image {
-            height: 100%;
-
-            &:first-child {
-                grid-column: 1 / -1;
-                // height: 650px;
-            }
-
-            &:nth-child(n+2) {
-                grid-column: span 1;
-            }
-
-            &>img {
-                max-width: 100%;
-                aspect-ratio: auto;
-                /* margin: auto; */
-                text-align: center;
-                min-width: 100%;
-                display: flex;
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
                 height: 100%;
-                transition: 0.2s;
-                cursor: pointer;
+                background: var(--emk-brand-color);
+                transition: left 0.4s ease;
+                z-index: -1;
+            }
 
-                &:hover {
-                    transform: scale(1.05);
+            &:hover {
+                color: white;
+
+                &::before {
+                    left: 0;
+                }
+            }
+
+            &__wrapper {
+                margin-top: 20px;
+            }
+
+            &__button {
+                padding: 29px 0;
+                background: black;
+                color: white;
+                width: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        &__images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+
+
+            &__image {
+                height: 100%;
+
+                &:first-child {
+                    grid-column: 1 / -1;
+                }
+
+                &:nth-child(n+2) {
+                    grid-column: span 1;
+                }
+
+                &>img {
+                    max-width: 100%;
+                    aspect-ratio: auto;
+                    text-align: center;
+                    min-width: 100%;
+                    display: flex;
+                    height: 100%;
+                    transition: 0.2s;
+                    cursor: pointer;
+
+                    &:hover {
+                        transform: scale(1.05);
+                    }
                 }
             }
         }
-    }
 
 
 
-    /* Адаптивность для мобильных устройств */
-    @media (max-width: 768px) {
-        .merchStoreItem__images__wrapper {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .merchStoreItem__images__wrapper {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
 
-        .merchStoreItem__images__wrapper>*:first-child {
-            grid-column: 1;
-        }
-    }
-}
-
-.count-text {
-    color: var(--emk-brand-color);
-}
-
-
-// 
-.merchStoreItem__action {
-    &__button {
-        padding: 20px 60px;
-        background: black;
-        color: var(--emk-brand-color);
-        border: 1px solid var(--emk-brand-color);
-        border-radius: 8px;
-        font-size: 18px;
-        font-weight: 600;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        transition: color 0.4s ease;
-        z-index: 1;
-
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--emk-brand-color);
-            transition: left 0.4s ease;
-            z-index: -1;
-        }
-
-        &:hover {
-            color: white;
-
-            &::before {
-                left: 0;
+            .merchStoreItem__images__wrapper>*:first-child {
+                grid-column: 1;
             }
         }
     }
+
+    .count-text {
+        color: var(--emk-brand-color);
+    }
+
+
 }
 </style>

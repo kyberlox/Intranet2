@@ -4,8 +4,6 @@
     max-height: 100vh;
     height: 100% !important;
 
-    // Base layout styles
-
     &__navigation-container {
         position: absolute;
         width: 100%;
@@ -13,7 +11,14 @@
         top: 0;
         left: 0;
         pointer-events: none;
+    }
 
+    &__slide {
+        display: flex !important;
+
+        &__img {
+            height: auto !important;
+        }
     }
 
     &__wrapper {

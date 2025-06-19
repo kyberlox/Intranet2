@@ -5,7 +5,6 @@
             <div v-for="card in gallery"
                  :key="'homeCard' + card.id"
                  class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
-                <!-- <div class="homeview__grid__card_group-title">{{ card.name }}</div> -->
                 <RouterLink v-if="card.indirect_data && card.indirect_data.ID"
                             :to='{ name: routeTo, params: { id: String((card.indirect_data.ID)) } }'
                             class="homeview__grid__card__link">
@@ -59,9 +58,7 @@ export default defineComponent({
         routeTo: {
             type: String,
         },
-        id: {
-            type: Number,
-        }
+
     },
     setup() {
 

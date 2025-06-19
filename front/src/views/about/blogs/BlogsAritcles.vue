@@ -1,6 +1,5 @@
 <template>
     <div class="page__wrapper mt20">
-        <!-- <h2 class="page__title">{{ blogName }}</h2> -->
         <div class="row d-flex mt20 blog__articles-wrapper">
             <div class="avatar__wrapper col-sm-3">
                 <BlogAvatar :author="targetAuthor"

@@ -8,9 +8,6 @@ interface IBaseEntity {
     active?: boolean,
     content_text?: string,
     date_publiction?: string,
-    images?: string[],
-    embedVideos?: string[],
-    nativeVideos?: string[],
     reactions?: {
         likes?: {
             mine?: boolean,
@@ -18,18 +15,22 @@ interface IBaseEntity {
         },
         views?: string,
     },
-    videos?: string[],
     tags?: string[],
     documents?: {
         link: string,
         name: string,
     },
-    image?: string,
-
 
     reportages?: boolean,
     tours?: boolean,
     videoHref?: string[]
+
+    images?: string[],
+    documentation?: string[],
+    videos_native?: string[],
+    videos_embed?: string[],
+    videos?: string[],
+    preview_file_url?: string
 }
 
 interface IBaseIndirectData {

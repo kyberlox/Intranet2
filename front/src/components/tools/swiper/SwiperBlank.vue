@@ -3,8 +3,10 @@
             @swiper="swiperOn">
 
         <swiper-slide v-for="(image, index) in images"
+                      :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
                       :key="'postImg' + index">
             <img :src="image"
+                 alt="изображение слайдера"
                  @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>
 
@@ -62,6 +64,9 @@ export default defineComponent({
             type: String,
             default: "common",
         },
+        sectionId: {
+            type: Number,
+        }
     },
     setup(props) {
         const modalIsVisible = ref(false);

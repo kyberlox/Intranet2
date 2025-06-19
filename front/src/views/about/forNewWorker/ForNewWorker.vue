@@ -26,20 +26,6 @@
                                 <div class="memo__item__content">
                                     <div class="news__detail__discr"
                                          v-html="getProperty(item as IForNewWorker, 'PROPERTY_477').TEXT"></div>
-                                    <!-- <div v-if="item.pdf"
-                                         class="mt20">
-                                        <a :href="file.link"
-                                           v-for="(file, index) in item.pdf"
-                                           :key="index"
-                                           class="news__detail__document-link">
-                                            <strong>
-                                                Cкачать
-                                                <br />
-                                                "{{ file.name }}"
-                                            </strong>
-                                            <DocIcon />
-                                        </a>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -65,7 +51,6 @@
 </template>
 
 <script lang="ts">
-// import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";

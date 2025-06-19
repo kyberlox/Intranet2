@@ -171,7 +171,6 @@ export default defineComponent({
 .merchStore__grid__item__title {
     padding: 6px;
     font-size: 18px;
-    // color: #2d3748;
     text-align: center;
     line-height: 1.3;
     position: relative;

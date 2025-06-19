@@ -4,7 +4,9 @@
         <swiper-slide class="swiper--vertical-slide"
                       v-for="(slide, index) in slides"
                       :key="'vertSlide' + index">
-            <img :src="slide.image" />
+            <img class="swiper--vertical-slide-img"
+                 :src="slide.image"
+                 alt="фото сотрудника" />
             <span v-if="modifiers && modifiers.includes('birthday-icon')"
                   class="birthday-icon"></span>
             <div class="swiper--vertical-slide__info"

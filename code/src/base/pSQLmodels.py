@@ -17,6 +17,7 @@ import os
 from dotenv import load_dotenv
 
 from src.model.File import File
+from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 

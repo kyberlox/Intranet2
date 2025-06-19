@@ -233,17 +233,22 @@ class AuthService:
 
 
 @auth_router.post("/auth")
-async def authentication(response : Response, data = Body()): #login : str, password : str,
-    login = data["login"]
-    password = data["password"]
+async def authentication(response : Response, data = Body()):
+    if "login" in data and "password" in data: #login : str, password : str,
+        login = data["login"]
+        password = data["password"]
+    else:
+        return await LogsMaker().warning_message(message="Login or Password has missing")
+    
     session = await AuthService().authenticate(login, password)
     access_token = session["session_id"]
+
     if not session :
         return await LogsMaker().warning_message(message="Invalid credentials")
 
     #response.headers["Authorization"] = access_token
 
-    response.set_cookie(key="Authorization", value=access_token)#!!!!!!!!!! убери последние параметры в проде
+    response.set_cookie(key="Authorization", value=access_token)
 
     #return JSONResponse(content=session, headers=response.headers)
     return session

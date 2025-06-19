@@ -37,9 +37,9 @@ class User:
 
             UserSQL.upsert_user(usr_data)
         
-        self.set_users_photo()
+        status = self.set_users_photo()
 
-        return {"status" : True}
+        return {"status" : status}
 
     def search_by_id(self):
         return UserModel(self.id).find_by_id()
@@ -73,19 +73,24 @@ class User:
 
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
+            # print()
+            
             if "ID" in usr_data:
                 uuid = usr_data['ID']
                 if 'PERSONAL_PHOTO' in usr_data:
-
+                    print(usr_data['PERSONAL_PHOTO'], 'из битры фотка')
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #print(b24_url)
                     #проверим url первоисточника текущей аватарки
                     psql_user = UserModel(uuid).find_by_id()
+                    print(psql_user['photo_file_id'], 'из БД фотка')
                     if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
 
                         #cтарую фотку - в архив
                         if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
                             old_file_id = psql_user['photo_file_id']
+                            print(usr_data, 'something')
+                            print(old_file_id, 'old')
                             File(id = old_file_id).delete_user_img()
                         
                         #если есть несоответствие - скачать новую

@@ -225,7 +225,9 @@ class File:
     def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
         try:
+
             name, form = self.dowload_user_photo(b24_url)
+            print(uuid, name, form, 'ищем 393')
 
             #определить ссылку
             url = f"/api/user_files/{name}"
@@ -239,6 +241,7 @@ class File:
                 "b24_url" : b24_url,
                 "is_archive" : False
             }
+            print(file_data, uuid)
 
             new_id = FileModel().add_user_photo(file_data)
 

@@ -17,6 +17,7 @@ import os
 from dotenv import load_dotenv
 
 from src.model.File import File
+from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 
@@ -123,7 +124,7 @@ class Views(Base):
 
 metadata = MetaData()
 
-NewUser = Table('newuser', metadata,
+NewUser = Table('NewUser', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('active', Boolean),
                 Column('last_name', Text),
@@ -327,7 +328,9 @@ class UserModel():
             #вывод ID фотографии пользователя
             result['photo_file_id'] = user.__dict__['photo_file_id']
             if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
+                print('тут начинается проврека')
                 photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
+                print('тут начинается ошибка')
 
                 #вывод URL фотографии пользователя
                 result['photo_file_url'] = photo_inf['URL']

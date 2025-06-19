@@ -178,7 +178,14 @@ class File:
             
 
             return file_list
-            
+
+    def need_update_link(self):
+        pass
+
+    def get_link_as_file(self):
+        pass
+        
+                 
 
     def get_users_photo(self):
         #переделать с учетом is_archive

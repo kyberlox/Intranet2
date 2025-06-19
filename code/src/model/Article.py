@@ -660,7 +660,10 @@ class Article:
 
             #файлы делятся по категориям
             if "image" in file["content_type"]:
-                art['images'].append(file)
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                art['images'].append(f"http://intranet.emk.org.ru{url}")
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
                 art['videos'].append(file)
             elif "link" in file["content_type"]:

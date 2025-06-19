@@ -232,7 +232,7 @@ class Article:
             
             if file_property in data:
                 #обрабатываются днфолтным методом битры
-                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_366", "PROPERTY_678"]:
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
                     need_all_method = False
                 try:
                     # выцепить id файла

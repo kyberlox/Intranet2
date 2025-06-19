@@ -234,6 +234,7 @@ class Article:
                 #обрабатываются днфолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
                     need_all_method = False
+                    print(file_property)
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -282,6 +283,7 @@ class Article:
 
             if files_to_add != []:
                 for f_id in files:
+                    print(f"f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
                     try:
                         is_preview = f_id in preview_images
                         file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)

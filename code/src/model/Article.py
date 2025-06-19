@@ -243,10 +243,11 @@ class Article:
                         for file_id in data[file_property].values():
                             if type(file_id) == type(str()):
                                 files.append(file_id)
+                                if file_property in preview_file:
+                                        preview_images.append(file_id)
                             elif type(file_id) == type(list()):
                                 for f_id in file_id:
                                     files.append(f_id)
-
                                     if file_property in preview_file:
                                         preview_images.append(f_id)
                     elif type(data[file_property]) == type(list()):
@@ -254,10 +255,11 @@ class Article:
                             for file_id in dct.values():
                                 if type(file_id) == type(str()):
                                     files.append(file_id)
+                                    if file_property in preview_file:
+                                            preview_images.append(file_id)
                                 elif type(file_id) == type(list()):
                                     for f_id in file_id:
                                         files.append(f_id)
-
                                         if file_property in preview_file:
                                             preview_images.append(f_id)
 

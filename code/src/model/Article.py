@@ -652,8 +652,8 @@ class Article:
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = int(self.id)).get_files_by_art_id()
         art['images'] = []
-        art['videos'] = []
-        art['video_embed'] = []
+        art['videos_native'] = []
+        art['videos_embed'] = []
         art['documentation'] = []
         
         for file in files:
@@ -665,9 +665,9 @@ class Article:
                 art['images'].append(f"http://intranet.emk.org.ru{url}")
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
-                art['videos'].append(file)
+                art['videos_native'].append(file)
             elif "link" in file["content_type"]:
-                art['video_embed'].append(file)
+                art['videos_embed'].append(file)
             else:
                 art['documentation'].append(file)
 

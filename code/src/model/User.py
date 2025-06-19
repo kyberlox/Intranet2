@@ -33,9 +33,11 @@ class User:
 
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
-            #if usr_data['ID'] == '2375':
-
-            UserSQL.upsert_user(usr_data)
+            #!!!!!!!!!!!!!!!!!!!!!!убрать по окончанию тестового периода!!!!!!!!!!!!!
+            cool_users = ['2366', '2375', '4133', '157', '174', '1375']
+            if usr_data['ID'] in cool_users:
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                UserSQL.upsert_user(usr_data)
         
         status = self.set_users_photo()
 
@@ -77,8 +79,9 @@ class User:
             
             if "ID" in usr_data:
                 uuid = usr_data['ID']
-                if 'PERSONAL_PHOTO' in usr_data:
-                    print(usr_data['PERSONAL_PHOTO'], 'из битры фотка')
+                #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
+                if 'PERSONAL_PHOTO' in usr_data and 'id' in UserModel(uuid).find_by_id().keys():
+
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #print(b24_url)
                     #проверим url первоисточника текущей аватарки

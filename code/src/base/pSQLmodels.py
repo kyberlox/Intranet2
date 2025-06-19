@@ -124,7 +124,7 @@ class Views(Base):
 
 metadata = MetaData()
 
-NewUser = Table('NewUser', metadata,
+NewUser = Table('newuser', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('active', Boolean),
                 Column('last_name', Text),
@@ -339,8 +339,7 @@ class UserModel():
                 result['photo_file_id'] = None
                 result['photo_file_url'] = None
                 result['photo_file_b24_url'] = None
-
-
+                
             return result
 
         else:

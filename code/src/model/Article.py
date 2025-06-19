@@ -288,6 +288,7 @@ class Article:
                         #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
                         files_data.append(file_data)
                     except:
+                        LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
                         is_preview = f_id in preview_images
                         file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
                         # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
@@ -322,8 +323,8 @@ class Article:
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди
-            16 : "122", # Видеоитервью
-            32 : "132", # Новости организационного развития
+            #16 : "122", # Видеоитервью
+            #32 : "132", # Новости организационного развития
             53 : "62", # Афиша
             #54 : "55", # Предложения партнеров
             #55 : "56", # Благотворительные проекты
@@ -331,7 +332,7 @@ class Article:
             #25 : "100", #Референсы и опыт поставок
             #17 : "60" #Учебный центр (Литература)
         }
-
+        
 
         #проходимся по инфоблокам
         for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56, 100, 60 "):
@@ -352,7 +353,6 @@ class Article:
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
-
 
 
         '''с параметрами'''
@@ -482,6 +482,7 @@ class Article:
 
 
         #несколько section_id - один IBLOCK_ID
+        
         sec_inf = {
             31 : "50", #Актуальные новости
             51 : "50"  #Корпоративные события
@@ -652,25 +653,38 @@ class Article:
     def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = int(self.id)).get_files_by_art_id()
-        art['files'] = files
+        art['images'] = []
+        art['videos_native'] = []
+        art['videos_embed'] = []
+        art['documentation'] = []
         
         for file in files:
+
+            #файлы делятся по категориям
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                art['images'].append(f"http://intranet.emk.org.ru{url}")
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            elif "video" in file["content_type"]:
+                art['videos_native'].append(file)
+            elif "link" in file["content_type"]:
+                art['videos_embed'].append(file)
+            else:
+                art['documentation'].append(file)
 
             if file["is_preview"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
-        if "preview_file_url" not in art and art['files'] != []:
-            #надодим любую картинку, если она есть
-            for file in files:
-                if file["type"] == "image":
-                    url = file["file_url"]
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    break
+
+        #находим любую картинку, если она есть
+        if "preview_file_url" not in art and art['images'] != []:
+            url = art['images'][0]
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         return art
 

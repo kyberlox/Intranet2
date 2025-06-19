@@ -83,6 +83,7 @@ class User:
                     #print(b24_url)
                     #проверим url первоисточника текущей аватарки
                     psql_user = UserModel(uuid).find_by_id()
+                    print(psql_user)
                     if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
 
                         #cтарую фотку - в архив

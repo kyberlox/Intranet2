@@ -35,6 +35,7 @@ class File:
         return response.headers.get('Content-Type', 'unknown')
 
     def upload_inf_art(self, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
+        print(f"f"Качаю файл {self.b24_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
         try:
             b24 = B24()
             #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
@@ -184,8 +185,8 @@ class File:
 
     def get_link_as_file(self):
         pass
-        
-                 
+
+
 
     def get_users_photo(self):
         #переделать с учетом is_archive

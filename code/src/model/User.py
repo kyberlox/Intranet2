@@ -92,8 +92,6 @@ class User:
                         #cтарую фотку - в архив
                         if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
                             old_file_id = psql_user['photo_file_id']
-                            print(usr_data, 'something')
-                            print(old_file_id, 'old')
                             File(id = old_file_id).delete_user_img()
                         
                         #если есть несоответствие - скачать новую

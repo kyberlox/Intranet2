@@ -673,16 +673,14 @@ class Article:
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
-        if "preview_file_url" not in art and art['files'] != []:
-            #находим любую картинку, если она есть
-            for file in files:
-                if file["type"] == "image":
-                    url = file["file_url"]
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    break
+
+        #находим любую картинку, если она есть
+        if "preview_file_url" not in art and art['images'] != []:
+            url = art['images'][0]["file_url"]
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            break
         
         return art
 

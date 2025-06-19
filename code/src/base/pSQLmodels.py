@@ -123,7 +123,7 @@ class Views(Base):
 
 metadata = MetaData()
 
-NewUser = Table('NewUser', metadata,
+NewUser = Table('newuser', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('active', Boolean),
                 Column('last_name', Text),

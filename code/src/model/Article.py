@@ -651,9 +651,8 @@ class Article:
 
     def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
-        files = File(art_id = self.art_id).get_files_by_art_id()
-
-
+        files = File(art_id = int(self.id)).get_files_by_art_id()
+        art['files'] = files
         
         for file in files:
 
@@ -662,19 +661,8 @@ class Article:
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            
-            #файлы делятся по категориям
-            if "image" in file["content_type"]:
-                file["type"] = "image"
-            elif "video" in file["content_type"]:
-                file["type"] = "video"
-            elif "link" in file["content_type"]:
-                file["type"] = "video_embed"
-            else:
-                file["type"] = "documentation"
-
         
-        if "preview_file_url" not in art:
+        if "preview_file_url" not in art and art['files'] != []:
             #надодим любую картинку, если она есть
             for file in files:
                 if file["type"] == "image":
@@ -684,8 +672,6 @@ class Article:
                     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     break
         
-
-        art['files'] = files
         return art
 
     # def get_preview(self, id):

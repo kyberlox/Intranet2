@@ -432,7 +432,7 @@ class UserModel():
                     # добавляем только нужную информацию
                     user_info = {}
                     user_image = File(user[7]).get_users_photo()
-                    print(user[7])
+                    
                     user_info['id'] = user[0]
                     if user[4] == '' or user[4] is None:
                         user_info['user_fio'] = f'{user[2]} {user[3]}'
@@ -569,7 +569,8 @@ class DepartmentModel():
                     
 
         except SQLAlchemyError as e:
-            print(f'An error: {e}')
+            # print(f'An error: {e}')
+            return LogsMaker().error_message(e)
 
     def find_dep_by_id(self):
         """
@@ -579,7 +580,8 @@ class DepartmentModel():
         if res is not None:
             return [res]
         else:
-            return {'err': 'Нет такого департамента'}
+            # return {'err': 'Нет такого департамента'}
+            return LogsMaker().warning_message('Нет такого департамента')
 
         # dep = self.db.query(self.department).get(self.id)
         # result = dict()
@@ -889,11 +891,13 @@ class ArticleModel():
             if key not in ["ID", "_sa_instance_state"]:
                 if key not in db_art:
                     self.reassembly(article_data)
-                    print(db_art['id'], "добавить", key, "=", article_data[key])
+                    LogsMaker().warning_message(f'{db_art['id']} добавить {key} = {article_data[key]}')
+                    # print(db_art['id'], "добавить", key, "=", article_data[key])
                     return True
                 elif article_data[key] != db_art[key]:
                     self.reassembly(article_data)
-                    print(db_art['id'], key, db_art[key], "-->", article_data[key])
+                    LogsMaker().warning_message(f'{db_art['id']} {key} {db_art[key]} --> {article_data[key]}')
+                    # print(db_art['id'], key, db_art[key], "-->", article_data[key])
                     return True
                 else:
                     return False

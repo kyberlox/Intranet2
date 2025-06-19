@@ -522,7 +522,8 @@ class Article:
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
-                    print("Статья", art["NAME"], art["ID"], "уже не актуальна")
+                    logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
+                    # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
@@ -651,7 +652,7 @@ class Article:
     def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = self.art_id).get_files_by_art_id()
-        
+
 
         
         for file in files:

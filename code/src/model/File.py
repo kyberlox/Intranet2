@@ -112,8 +112,8 @@ class File:
             }
 
         except requests.exceptions.RequestException as e:
-            print(f"Ошибка при скачивании файла: {e}")
-            return None
+            # print(f"Ошибка при скачивании файла: {e}")
+            return LogsMaker().error_message(e)
 
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
@@ -182,7 +182,7 @@ class File:
         file_data = FileModel(id=self.id).find_user_photo_by_id()
         
         
-        if not file_data or file_info["is_archive"]:
+        if not file_data or file_data["is_archive"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
             file_info = {}
@@ -243,7 +243,8 @@ class File:
             FileModel(id = self.id).remove_user_photo()
             return {"status": "to_archive"}
         except Exception as e:
-            raise HTTPException(500, detail=str(e))
+            # raise HTTPException(500, detail=str(e))
+            return LogsMaker().error_message(e)
        
 
 

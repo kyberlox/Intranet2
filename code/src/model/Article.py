@@ -659,7 +659,7 @@ class Article:
         for file in files:
 
             #файлы делятся по категориям
-            if "image" in file["content_type"]:
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                 art['images'].append(f"http://intranet.emk.org.ru{url}")

@@ -680,7 +680,6 @@ class Article:
             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
             art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            break
         
         return art
 

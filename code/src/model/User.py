@@ -77,7 +77,8 @@ class User:
             #найдем фото пользователя, если у пользователя есть аватарка
             if "ID" in usr_data:
                 uuid = usr_data['ID']
-                if 'PERSONAL_PHOTO' in usr_data and 'id' in UsDepModel(uuid).find_by_id().keys() and uuid == UsDepModel(uuid).find_by_id()['id']:
+                #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
+                if 'PERSONAL_PHOTO' in usr_data and 'id' in UserModel(uuid).find_by_id().keys():
 
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #print(b24_url)

@@ -13,7 +13,7 @@
     </div>
 </template>
 <script lang="ts">
-import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
+import SafetyTechnicsSlide from "@/views/about/safetyTechnics/components/SafetyTechnicsSlide.vue";
 import { defineComponent, onMounted, computed, type ComputedRef } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";

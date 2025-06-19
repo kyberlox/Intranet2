@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import TrainingTable from "@/components/about/trainingCenter/TrainingTable.vue";
+import TrainingTable from "../components/TrainingTable.vue";
 import { defineComponent } from "vue";
 export default defineComponent({
     components: {

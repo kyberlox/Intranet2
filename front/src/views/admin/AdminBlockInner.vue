@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import SearchAndButtons from '@/components/admin/SearchAndButtons.vue';
+import SearchAndButtons from './components/SearchAndButtons.vue';
 import Api from '@/utils/Api';
 import { useRouter, useRoute } from 'vue-router';
 import EditIcon from '@/assets/icons/admin/EditIcon.svg?component'

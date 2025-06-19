@@ -41,15 +41,14 @@
                 </div>
             </div>
         </div>
-
         <GridGallerySkeleton v-else />
     </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
-import MainPageSoloBlock from "@/components/homePage/MainPageSoloBlock.vue";
-import MainPageRowBlocks from "@/components/homePage/MainPageRowBlocks.vue";
+import MainPageSoloBlock from "./components/MainPageSoloBlock.vue";
+import MainPageRowBlocks from "./components/MainPageRowBlocks.vue";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";

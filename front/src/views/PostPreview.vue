@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import PostInner from "@/components/PostInner.vue";
+import PostInner from "@/components/tools/common/PostInner.vue";
 
 export default defineComponent({
     name: "PostPreview",

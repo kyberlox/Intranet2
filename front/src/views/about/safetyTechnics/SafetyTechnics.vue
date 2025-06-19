@@ -16,7 +16,7 @@
     </div>
 </template>
 <script lang="ts">
-import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
+import SafetyTechnicsSlide from "./components/SafetyTechnicsSlide.vue";
 import { defineComponent } from "vue";
 import { safetyTechnicsSlides, sideInfoBlock } from "@/assets/staticJsons/safetyTechnics";
 export default defineComponent({

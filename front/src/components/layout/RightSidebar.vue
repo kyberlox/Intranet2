@@ -54,7 +54,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { workLinks, supportLinks } from "@/assets/staticJsons/navLinks";
-import Calendar from "./Calendar.vue";
+import Calendar from "./RightSidebarCalendar.vue";
 
 export default defineComponent({
     components: {

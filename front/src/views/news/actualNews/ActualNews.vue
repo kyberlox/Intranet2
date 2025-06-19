@@ -10,7 +10,7 @@
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/staticJsons/sectionTips';
-import TagDateNavBar from '@/components/TagDateNavBar.vue';
+import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef } from 'vue';
@@ -19,13 +19,11 @@ import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from '@/stores/loadingStore';
-// import GridGallerySkeleton from '@/components/tools/gallery/GridGallerySkeleton.vue';
 
 export default defineComponent({
     components: {
         TagDateNavBar,
         GridGallery,
-        // GridGallerySkeleton
     },
     setup() {
         const viewsData = useViewsDataStore();

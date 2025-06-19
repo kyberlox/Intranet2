@@ -28,17 +28,18 @@
                                                     <div class="search-result-block__section-title">{{ item.section }}
                                                     </div>
                                                     <div class="search-result-block-info"
-                                                         v-for="(item, index) in item.content"
+                                                         v-for="(contentItem, index) in item.content"
                                                          :key="index">
                                                         <div class="search-result-block-info__image-wrapper">
                                                             <img class="search-result-block-info__image"
-                                                                 v-if="item.image"
-                                                                 :src="item.image"
+                                                                 v-if="contentItem.image"
+                                                                 :src="contentItem.image"
                                                                  alt="изображение из поиска" />
                                                             <SearchRedirectIcon class="search-result-block-info__image"
                                                                                 v-else />
                                                         </div>
-                                                        <div class="search-result-block-info__title">{{ item.name }}
+                                                        <div class="search-result-block-info__title">
+                                                            {{ contentItem.name }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -67,10 +68,21 @@
     </transition>
 </template>
 
+
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component"
 import SearchRedirectIcon from "@/assets/icons/layout/SearchRedirectIcon.svg?component"
+
+interface searchResults {
+    section: string,
+    content: {
+        name?: string,
+        href?: string,
+        section?: string,
+        image?: string
+    }[]
+};
 
 export default defineComponent({
     props: {
@@ -91,24 +103,26 @@ export default defineComponent({
             }
         })
 
+        const plug: searchResults[] = [
+            {
+                section: 'Пользователи',
+                content: [
+                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" },
+                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" }
+                ]
+            },
+            {
+                section: 'Контент',
+                content: [
+                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" },
+                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО" }
+                ]
+            }
+        ]
+
         return {
             closeModal: () => emit('closeSearchModal'),
-            plug: [
-                {
-                    section: 'Пользователи',
-                    content: [
-                        { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" },
-                        { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" }
-                    ]
-                },
-                {
-                    section: 'Контент',
-                    content: [
-                        { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" },
-                        { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО" }
-                    ]
-                }
-            ],
+            plug,
             inputFocus
         }
     }

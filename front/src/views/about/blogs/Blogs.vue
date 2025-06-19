@@ -4,7 +4,7 @@
         <div class="mb-sm-5 blogs-section">
             <div class="blogs__list">
                 <div v-if="authors"
-                      class="blogs__items">
+                     class="blogs__items">
                     <BlogAvatar v-for="item in authors"
                                 :key="item.id"
                                 :from="'blogs'"
@@ -24,7 +24,7 @@
     </div>
 </template>
 <script lang="ts">
-import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
+import BlogAvatar from "./components/BlogAvatar.vue";
 import { defineComponent, ref, type Ref, computed, watch } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import type { IBlogAuthors } from "@/interfaces/IEntities";

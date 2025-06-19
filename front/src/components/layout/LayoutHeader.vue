@@ -87,9 +87,9 @@ import { mainMenuPoints } from "@/assets/staticJsons/navLinks";
 import type { ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
 import { useRoute, useRouter } from "vue-router";
-import SidebarLk from "./SidebarLk.vue";
+import SidebarLk from "./TopRightSidebar.vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
-import SearchModal from "@/components/layout/SearchModal.vue";
+import SearchModal from "@/components/tools/modal/SearchModal.vue";
 export default defineComponent({
     components: {
         SidebarLk,

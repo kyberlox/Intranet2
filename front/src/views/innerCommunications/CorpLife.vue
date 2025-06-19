@@ -11,7 +11,7 @@
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/staticJsons/sectionTips';
-import TagDateNavBar from '@/components/TagDateNavBar.vue';
+import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, ref, onMounted, computed, type ComputedRef, type Ref } from "vue";

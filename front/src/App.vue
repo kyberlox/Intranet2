@@ -26,7 +26,7 @@
 import { defineComponent, computed, watch, ref, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
-import Sidebar from "./components/layout/Sidebar.vue";
+import Sidebar from "./components/layout/RightSidebar.vue";
 import AuthPage from "./views/user/AuthPage.vue";
 
 import { useblogDataStore } from "./stores/blogData";

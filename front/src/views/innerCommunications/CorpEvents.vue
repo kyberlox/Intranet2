@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, type ComputedRef } from "vue";
-import TagDateNavBar from "@/components/TagDateNavBar.vue";
+import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
 import GridGallery from "@/components/tools/gallery/GridGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";

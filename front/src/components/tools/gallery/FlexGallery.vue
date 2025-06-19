@@ -48,10 +48,13 @@
             <div v-else-if="modifiers.includes('noRoute') && slide.images"
                  class="flexGallery__card
                  flexGallery__card--official-events">
-                <div @click="callModal(slide.images, 'img', index)"
+                <div v-for="(image, index) in slide.images"
+                     :key="index"
+                     @click="callModal(slide.images, 'img', index)"
                      class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
                     <img class="flexGallery__card__img"
-                         :src="slide.image" />
+                         :src="image"
+                         alt="slide" />
                 </div>
             </div>
 

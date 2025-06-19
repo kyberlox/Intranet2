@@ -18,7 +18,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
+import SafetyTechnicsSlide from "./components/SafetyTechnicsSlide.vue";
 import { safetyTechnicsCovid } from "@/assets/staticJsons/safetyTechnics";
 export default defineComponent({
     components: {

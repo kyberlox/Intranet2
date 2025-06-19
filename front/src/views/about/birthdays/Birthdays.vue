@@ -42,7 +42,7 @@ import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
 import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
-import DatePicker from "@/components/DatePicker.vue";
+import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/staticJsons/sectionTips";
 export default defineComponent({

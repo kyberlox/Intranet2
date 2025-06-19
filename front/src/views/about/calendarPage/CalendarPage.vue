@@ -50,7 +50,7 @@
 import { defineComponent, ref, watchEffect } from 'vue';
 import { monthesInit, calendarPage } from '@/assets/staticJsons/calendar';
 import type { ICalendarEntity } from '@/interfaces/ICalendar';
-import DatePicker from '@/components/DatePicker.vue';
+import DatePicker from '@/components/tools/common/DatePicker.vue';
 export default defineComponent({
     components: {
         DatePicker

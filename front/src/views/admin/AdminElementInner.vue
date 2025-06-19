@@ -152,16 +152,16 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
-import TextEditor from '@/components/admin/TextEditor.vue';
-import ImgUploader from '@/components/admin/ImgUploader.vue';
-import FileUploader from '@/components/admin/FileUploader.vue';
+import TextEditor from './components/TextEditor.vue';
+import ImgUploader from './components/ImgUploader.vue';
+import FileUploader from './components/FileUploader.vue';
 import CloseIcon from "@/assets/icons/admin/CloseIcon.svg?component";
 import LayoutLeft from "@/assets/icons/admin/LayoutLeft.svg?component";
 import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
 import { sampleEvent } from '@/assets/staticJsons/adminPagePlugs';
-import DatePicker from '@/components/DatePicker.vue';
-import PostInner from '@/components/PostInner.vue';
-import Interview from '@/components/about/ourPeople/Interview.vue';
+import DatePicker from '@/components/tools/common/DatePicker.vue';
+import PostInner from '@/components/tools/common/PostInner.vue';
+import Interview from '@/views/about/ourPeople/components/Interview.vue';
 import CertainBlog from '../about/blogs/CertainBlog.vue';
 import ZoomIcon from '@/assets/icons/admin/ZoomIcon.svg?component'
 

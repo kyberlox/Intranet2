@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import Reactions from "@/components/Reactions.vue";
+import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
 import type { ImageWithHref, BlockImage } from '@/interfaces/IMainPage'

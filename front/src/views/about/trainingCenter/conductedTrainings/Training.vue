@@ -93,8 +93,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import ReviewForm from "@/components/about/trainingCenter/ReviewForm.vue";
-import Toast from "@/components/Toast.vue";
+import ReviewForm from "@/views/about/trainingCenter/components/ReviewForm.vue";
+import Toast from "@/components/tools/Toast.vue";
 export default defineComponent({
     components: {
         ReviewForm,

@@ -30,8 +30,8 @@
 </template>
 
 <script lang="ts">
-import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
-import Reactions from "@/components/Reactions.vue";
+import BlogAvatar from "./components/BlogAvatar.vue";
+import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 

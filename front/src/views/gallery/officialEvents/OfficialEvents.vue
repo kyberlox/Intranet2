@@ -10,7 +10,7 @@
                  :routeTo="'officialEvent'" />
 </template>
 <script lang="ts">
-import TagDateNavBar from '@/components/TagDateNavBar.vue';
+import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
 import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
 import { computed, defineComponent, onMounted, ref, type Ref } from 'vue';
 import Api from '@/utils/Api';

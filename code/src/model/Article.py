@@ -165,9 +165,9 @@ class Article:
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
+
             "PROPERTY_372",
             "PROPERTY_373",
-            #"PROPERTY_376",
 
             "PROPERTY_337",
             "PROPERTY_338",
@@ -324,9 +324,9 @@ class Article:
         sec_inf = {
             #13 : "149", # Наши люди
             #16 : "122", # Видеоитервью
-            #32 : "132", # Новости организационного развития
+            32 : "132", # Новости организационного развития
             53 : "62", # Афиша
-            #54 : "55", # Предложения партнеров
+            54 : "55", # Предложения партнеров
             #55 : "56", # Благотворительные проекты
 
             #25 : "100", #Референсы и опыт поставок
@@ -335,7 +335,7 @@ class Article:
         
 
         #проходимся по инфоблокам
-        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56, 100, 60 "):
+        for i in logg.progress(sec_inf, f"Загрузка данных инфоблоков {sec_inf.values} "):
 
             # запрос в B24
             self.section_id = sec_inf[i]
@@ -482,7 +482,7 @@ class Article:
 
 
         #несколько section_id - один IBLOCK_ID
-        
+        '''
         sec_inf = {
             31 : "50", #Актуальные новости
             51 : "50"  #Корпоративные события
@@ -527,7 +527,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-                
+        ''' 
                 
 
 

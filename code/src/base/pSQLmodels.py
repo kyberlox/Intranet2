@@ -337,8 +337,7 @@ class UserModel():
                 result['photo_file_id'] = None
                 result['photo_file_url'] = None
                 result['photo_file_b24_url'] = None
-
-            print(result)
+                
             return result
 
         else:

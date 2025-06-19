@@ -679,7 +679,7 @@ class Article:
 
         #находим любую картинку, если она есть
         if "preview_file_url" not in art and art['images'] != []:
-            url = art['images'][0]["file_url"]
+            url = art['images'][0]
             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
             art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

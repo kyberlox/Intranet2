@@ -239,10 +239,7 @@ async def authentication(response : Response, data = Body()): #login : str, pass
     session = await AuthService().authenticate(login, password)
     access_token = session["session_id"]
     if not session :
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-        )
+        return await LogsMaker().warning_message(message="Invalid credentials")
 
     #response.headers["Authorization"] = access_token
 

@@ -64,7 +64,7 @@ class AuthService:
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)['GUID']
         if not user_uuid:
-            return {"err" : "Auth error! Please try again!"}
+            return {"err" : "Auth error! Invalid login or password!"}
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)

@@ -150,49 +150,63 @@ async def compress_images_middleware(request: Request, call_next):
     # Пропускаем запрос через цепочку middleware
     response = await call_next(request)
     
-    # Проверяем, является ли ответ изображением
+    # 1. Проверяем, нужно ли сжимать этот ответ
     content_type = response.headers.get("content-type", "").lower()
     if not content_type.startswith("image/"):
         return response
     
-    # Получаем тело ответа
+    # 2. Получаем тело ответа
     body = b""
     async for chunk in response.body_iterator:
         body += chunk
     
-    # Пытаемся сжать изображение
+    # 3. Алгоритм сжатия изображения
     try:
-        img = Image.open(io.BytesIO(body))
-        if img.format not in ('JPEG', 'PNG', 'WEBP'):
-            return response
-        
-        output = io.BytesIO()
-        quality = 85  # Качество сжатия
-        
-        # Оптимальные настройки для разных форматов
-        if img.format == 'PNG':
-            img.save(output, format='PNG', optimize=True)
-        elif img.format == 'WEBP':
-            img.save(output, format='WEBP', quality=quality)
-        else:  # JPEG
-            img.save(output, format='JPEG', quality=quality, optimize=True)
-        
-        compressed_body = output.getvalue()
-        
-        # Возвращаем сжатое изображение только если оно действительно меньше
-        if len(compressed_body) < len(body):
-            headers = dict(response.headers)
-            headers["content-length"] = str(len(compressed_body))
-            return Response(
-                content=compressed_body,
-                status_code=response.status_code,
-                headers=headers,
-                media_type=response.media_type
-            )
-    except Exception as e:
-        print(f"Error compressing image: {e}")
+        with io.BytesIO(body) as input_buf, io.BytesIO() as output_buf:
+            # Открываем изображение
+            img = Image.open(input_buf)
+            
+            # Автоматически поворачиваем согласно EXIF (для фото с телефонов)
+            if hasattr(img, '_getexif'):
+                img = ImageOps.exif_transpose(img)
+            
+            # Оптимальные настройки сжатия
+            quality = 85
+            optimize = True
+            
+            # Определяем лучший формат
+            if img.format == 'PNG' and img.mode in ('RGBA', 'LA'):
+                # Для PNG с прозрачностью - сохраняем как PNG
+                img.save(output_buf, format='PNG', optimize=optimize)
+            elif 'image/webp' in request.headers.get('accept', '').lower():
+                # Если клиент поддерживает WebP - используем его
+                img.save(output_buf, format='WEBP', quality=quality)
+            else:
+                # По умолчанию - JPEG
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+                img.save(output_buf, format='JPEG', quality=quality, optimize=optimize)
+            
+            compressed_body = output_buf.getvalue()
+            
+            # Возвращаем сжатое изображение только если оно действительно меньше
+            if len(compressed_body) < len(body):
+                headers = dict(response.headers)
+                headers.update({
+                    "content-length": str(len(compressed_body)),
+                    "x-image-compressed": "true",
+                })
+                return Response(
+                    content=compressed_body,
+                    status_code=response.status_code,
+                    headers=headers,
+                    media_type=f"image/{img.format.lower()}" if img.format else response.media_type
+                )
     
-    # Если что-то пошло не так, возвращаем оригинальный ответ
+    except Exception as e:
+        print(f"Image compression error: {str(e)}")
+    
+    # 4. Если что-то пошло не так - возвращаем оригинал
     return Response(
         content=body,
         status_code=response.status_code,

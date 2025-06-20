@@ -151,10 +151,118 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 
-@app.get("/api/compress_image/")
-async def get_image():
-    from fastapi.responses import FileResponse
-    return FileResponse("large_image.jpg")
+
+def compress_image(input_path: str, max_size_kb: int = 250, preserve_transparency: bool = False) -> BytesIO:
+    """
+    Сжимает изображение до размера не превышающего max_size_kb в КБ.
+    Возвращает BytesIO объект с сжатым изображением.
+    
+    :param input_path: путь к исходному изображению
+    :param max_size_kb: максимальный размер в КБ
+    :param preserve_transparency: сохранять ли прозрачность (для PNG)
+    :return: BytesIO с сжатым изображением
+    """
+    with Image.open(input_path) as img:
+        original_format = img.format
+        output_buffer = BytesIO()
+        
+        # Если изображение уже достаточно маленькое
+        if os.path.getsize(input_path) / 1024 <= max_size_kb:
+            img.save(output_buffer, format=original_format)
+            output_buffer.seek(0)
+            return output_buffer
+        
+        # Настройки сжатия для разных форматов
+        if original_format == 'JPEG':
+            quality = 85
+            params = {'format': 'JPEG', 'quality': quality, 'optimize': True}
+        elif original_format == 'PNG':
+            if preserve_transparency and img.mode in ('RGBA', 'LA'):
+                # Для PNG с прозрачностью используем оптимизацию
+                quality = 90
+                params = {'format': 'PNG', 'compress_level': 6, 'optimize': True}
+            else:
+                # Конвертируем в JPEG если прозрачность не важна
+                img = img.convert('RGB')
+                quality = 85
+                params = {'format': 'JPEG', 'quality': quality, 'optimize': True}
+        elif original_format == 'GIF':
+            # Для GIF просто сохраняем как есть (сжатие GIF сложнее)
+            img.save(output_buffer, format='GIF')
+            output_buffer.seek(0)
+            return output_buffer
+        elif original_format == 'WEBP':
+            quality = 80
+            params = {'format': 'WEBP', 'quality': quality, 'method': 6}
+        else:
+            # Для других форматов пробуем сохранить как JPEG
+            img = img.convert('RGB')
+            quality = 85
+            params = {'format': 'JPEG', 'quality': quality, 'optimize': True}
+        
+        # Процесс сжатия с итеративным уменьшением качества
+        while True:
+            output_buffer.seek(0)
+            output_buffer.truncate()
+            
+            img.save(output_buffer, **params)
+            
+            size_kb = output_buffer.tell() / 1024
+            if size_kb <= max_size_kb or quality <= 10:
+                break
+                
+            # Уменьшаем качество
+            quality_step = 5 if size_kb / max_size_kb < 2 else 15
+            quality = max(10, quality - quality_step)
+            params['quality'] = quality
+        
+        output_buffer.seek(0)
+        return output_buffer
+
+@app.get("/api/compress_image/{filename}")
+async def get_compressed_image(filename: str, preserve_transparency: Optional[bool] = False):
+    # Базовый путь к папке с изображениями (измените на свой)
+    IMAGE_FOLDER = "images"
+    file_path = os.path.join(IMAGE_FOLDER, filename)
+    
+    # Проверяем существование файла
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Проверяем, что это изображение
+    try:
+        with Image.open(file_path) as img:
+            original_format = img.format.upper() if img.format else None
+    except:
+        raise HTTPException(status_code=400, detail="File is not a valid image")
+    
+    # Проверяем размер файла
+    file_size_kb = os.path.getsize(file_path) / 1024
+    
+    if file_size_kb <= 250:
+        # Возвращаем как есть, если размер меньше 250 КБ
+        return FileResponse(file_path)
+    else:
+        # Сжимаем изображение
+        compressed_image = compress_image(file_path, preserve_transparency=preserve_transparency)
+        
+        # Определяем Content-Type
+        content_type = f"image/{original_format.lower()}" if original_format else "image/jpeg"
+        if original_format == 'JPEG':
+            content_type = 'image/jpeg'
+        elif original_format == 'PNG':
+            content_type = 'image/png'
+        elif original_format == 'GIF':
+            content_type = 'image/gif'
+        elif original_format == 'WEBP':
+            content_type = 'image/webp'
+        
+        # Возвращаем сжатое изображение
+        return Response(
+            content=compressed_image.getvalue(),
+            media_type=content_type,
+            headers={"Content-Disposition": f"inline; filename=compressed_{filename}"}
+        )
 
 @app.get("/test/{ID}")
 def test(ID):

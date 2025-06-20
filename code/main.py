@@ -222,8 +222,8 @@ def compress_image(input_path: str, max_size_kb: int = 250, preserve_transparenc
 @app.get("/api/compress_image/{filename}")
 async def get_compressed_image(filename: str, preserve_transparency: Optional[bool] = False):
     # Базовый путь к папке с изображениями (измените на свой)
-    IMAGE_FOLDER = "images"
-    file_path = os.path.join(IMAGE_FOLDER, filename)
+    STORAGE_PATH = "images"
+    file_path = os.path.join(STORAGE_PATH, filename)
     
     # Проверяем существование файла
     if not os.path.exists(file_path):

@@ -8,6 +8,9 @@ from fastapi import Request, HTTPException, status
 
 from typing import Awaitable, Callable
 
+from PIL import Image
+import io
+
 # from bson import Binary
 
 from src.model.User import User, users_router
@@ -140,6 +143,63 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             # )
 
     return await call_next(request)
+
+#Сжатие картинок
+@app.middleware("http")
+async def compress_images_middleware(request: Request, call_next):
+    # Пропускаем запрос через цепочку middleware
+    response = await call_next(request)
+    
+    # Проверяем, является ли ответ изображением
+    content_type = response.headers.get("content-type", "").lower()
+    if not content_type.startswith("image/"):
+        return response
+    
+    # Получаем тело ответа
+    body = b""
+    async for chunk in response.body_iterator:
+        body += chunk
+    
+    # Пытаемся сжать изображение
+    try:
+        img = Image.open(io.BytesIO(body))
+        if img.format not in ('JPEG', 'PNG', 'WEBP'):
+            return response
+        
+        output = io.BytesIO()
+        quality = 85  # Качество сжатия
+        
+        # Оптимальные настройки для разных форматов
+        if img.format == 'PNG':
+            img.save(output, format='PNG', optimize=True)
+        elif img.format == 'WEBP':
+            img.save(output, format='WEBP', quality=quality)
+        else:  # JPEG
+            img.save(output, format='JPEG', quality=quality, optimize=True)
+        
+        compressed_body = output.getvalue()
+        
+        # Возвращаем сжатое изображение только если оно действительно меньше
+        if len(compressed_body) < len(body):
+            headers = dict(response.headers)
+            headers["content-length"] = str(len(compressed_body))
+            return Response(
+                content=compressed_body,
+                status_code=response.status_code,
+                headers=headers,
+                media_type=response.media_type
+            )
+    except Exception as e:
+        print(f"Error compressing image: {e}")
+    
+    # Если что-то пошло не так, возвращаем оригинальный ответ
+    return Response(
+        content=body,
+        status_code=response.status_code,
+        headers=dict(response.headers),
+        media_type=response.media_type
+    )
+
 
 
 

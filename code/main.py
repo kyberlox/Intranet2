@@ -149,12 +149,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     return await call_next(request)
 
 #Сжатие картинок
-def calculate_new_size(width: int, height: int, max_dimension: int) -> tuple:
-    """Вычисляет новые размеры с сохранением пропорций"""
-    if width > height:
-        return (max_dimension, int(height * max_dimension / width))
-    return (int(width * max_dimension / height), max_dimension)
-
 @app.middleware("http")
 async def compress_images_middleware(request: Request, call_next):
     # 1. Получаем исходный ответ

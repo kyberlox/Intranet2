@@ -700,50 +700,6 @@ class Article:
         
 
 
-
-    #     res = File(id).find_all_by_art_id()
-    #     mongo_list = []
-    #     preview_inf = []
-    #     one_preview_inf = []
-    #     for result in res:
-    #         mongo_list.append(result)
-    #     if len(mongo_list) > 1:
-
-    #         for info in mongo_list:
-    #             one_preview_inf.append(info['b24_id'])
-    #             one_preview_inf.append(info['file_url'])
-    #             preview_inf.append(one_preview_inf)
-
-    #         # сортируем по b24_id если фоток много и берем с наименьшим b24_id
-    #         sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
-
-    #         preview_inf = sorted_list[0][1]
-    #         return preview_inf
-    #     elif len(mongo_list) == 0:
-    #         return None
-    #     else:
-    #         return mongo_list[0]['file_url']
-    
-    def get_preview(self ):
-        res = File(art_id = self.id).get_files_by_art_id()
-        url = ""
-
-        preview = None
-        one_preview_inf = []
-
-        if len(res) > 1:
-            for file_info in res:
-                if file_info["is_preview"]:
-                    url = file_info["file_url"]
-        elif len(res) == 0:
-            return None
-        else:
-            url = res[0]['file_url']
-
-        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
-        return f"http://intranet.emk.org.ru{url}"
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     def search_by_section_id(self):
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id

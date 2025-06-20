@@ -148,6 +148,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     return await call_next(request)
 
+'''
 #Сжатие картинок
 @app.middleware("http")
 async def compress_images_middleware(request: Request, call_next):
@@ -236,6 +237,7 @@ async def compress_images_middleware(request: Request, call_next):
         headers=dict(response.headers),
         media_type=response.media_type
     )
+'''
 
 
 

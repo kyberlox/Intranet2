@@ -5,7 +5,6 @@ COPY ./requirements.txt /data/app/requirements.txt
 
 RUN pip install --upgrade pip
 
-RUN apk add --no-cache vips-dev
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 #COPY ./ /data/app

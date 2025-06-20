@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request
+from fastapi.responses import FileResponse
 from fastapi import BackgroundTasks #, Cookie, Header
 from fastapi.responses import Response, JSONResponse#, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,7 +32,7 @@ from src.services.Auth import AuthService, auth_router
 
 from typing import Awaitable, Callable, Optional
 
-import pyvips
+from PIL import Image
 import io
 
 import os
@@ -151,80 +152,71 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 #Сжатие картинок
 @app.middleware("http")
-async def vips_compression_middleware(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
-    # 1. Получаем исходный ответ
+async def compress_images(request: Request, call_next):
     response = await call_next(request)
     
-    # 2. Проверяем content-type (только изображения)
-    content_type = response.headers.get("content-type", "").lower()
-    if not content_type.startswith(("image/jpeg", "image/png", "image/webp")):
-        return response
-    
-    # 3. Собираем тело ответа
-    body = b""
-    if hasattr(response, "body_iterator"):
-        async for chunk in response.body_iterator:
-            body += chunk
-    elif hasattr(response, "body"):
-        body = response.body
-    
-    # 4. Пропускаем маленькие файлы (<250KB)
-    if len(body) <= 256000:
-        return Response(
-            content=body,
-            status_code=response.status_code,
-            headers=dict(response.headers),
-            media_type=response.media_type
-        )
-    
-    # 5. Асинхронное сжатие через VIPS
-    try:
-        # Выносим CPU-bound операцию в отдельный поток
-        compressed_body = await asyncio.to_thread(lambda: 
-            (lambda img_bytes, accept_header: 
-                (lambda:
-                    (lambda img, fmt:
-                        (lambda buf: 
-                            buf if len(buf) <= 256000 else None
-                        )(
-                            img.webpsave_buffer(Q=75, effort=6) if "webp" in accept_header.lower() 
-                            else img.jpegsave_buffer(Q=80, optimize_coding=True)
-                        )
-                    )(
-                        pyvips.Image.new_from_buffer(img_bytes, "").thumbnail_image(
-                            1920, height=1920, size=pyvips.enums.Size.DOWN
-                        ),
-                        "webp" if "webp" in accept_header.lower() else "jpeg"
+    # Проверяем, является ли ответ изображением и его размер больше 250KB
+    if response.headers.get("content-type", "").startswith("image/"):
+        content = await response.body()
+        if len(content) > 250 * 1024:  # 250KB в байтах
+            try:
+                # Открываем изображение с помощью Pillow
+                img = Image.open(BytesIO(content))
+                
+                # Конвертируем в RGB если это PNG с альфа-каналом
+                if img.mode in ('RGBA', 'LA'):
+                    img = img.convert('RGB')
+                
+                # Настраиваем качество сжатия
+                quality = 85
+                output_buffer = BytesIO()
+                
+                # Определяем формат изображения
+                img_format = img.format or 'JPEG'
+                
+                # Сохраняем с разным качеством пока не достигнем нужного размера
+                while True:
+                    output_buffer.seek(0)
+                    output_buffer.truncate()
+                    
+                    if img_format.upper() == 'JPEG' or img_format.upper() == 'JPG':
+                        img.save(output_buffer, format='JPEG', quality=quality, optimize=True)
+                    elif img_format.upper() == 'PNG':
+                        img.save(output_buffer, format='PNG', optimize=True)
+                    else:
+                        # Для других форматов просто сохраняем как есть
+                        break
+                    
+                    # Если размер меньше 250KB или качество слишком низкое - останавливаемся
+                    if output_buffer.tell() <= 250 * 1024 or quality <= 50:
+                        break
+                    
+                    # Уменьшаем качество для следующей попытки
+                    quality -= 5
+                
+                if output_buffer.tell() < len(content):
+                    # Обновляем ответ сжатым изображением
+                    compressed_content = output_buffer.getvalue()
+                    response.headers["content-length"] = str(len(compressed_content))
+                    return Response(
+                        content=compressed_content,
+                        media_type=response.headers["content-type"],
+                        headers=dict(response.headers),
+                        status_code=response.status_code
                     )
-                )()
-            )(body, request.headers.get("accept", ""))
-        )
-        
-        if compressed_body:
-            headers = dict(response.headers)
-            headers.update({
-                "content-length": str(len(compressed_body)),
-                "x-image-compressed": "true",
-                "x-compression-ratio": f"{len(compressed_body)/len(body):.2f}"
-            })
-            return Response(
-                content=compressed_body,
-                status_code=response.status_code,
-                headers=headers,
-                media_type="image/webp" if "webp" in request.headers.get("accept", "").lower() else "image/jpeg"
-            )
+                
+            except Exception as e:
+                # В случае ошибки просто возвращаем оригинальное изображение
+                print(f"Error compressing image: {e}")
+                pass
     
-    except Exception as e:
-        print(f"VIPS compression error: {str(e)}")
-    
-    # 6. Возвращаем оригинал при ошибках
-    return Response(
-        content=body,
-        status_code=response.status_code,
-        headers=dict(response.headers),
-        media_type=response.media_type
-    )
+    return response
 
+
+@app.get("/api/compress_image/")
+async def get_image():
+    from fastapi.responses import FileResponse
+    return FileResponse("large_image.jpg")
 
 
 @app.get("/test/{ID}")

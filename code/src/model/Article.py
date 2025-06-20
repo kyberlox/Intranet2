@@ -161,7 +161,7 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
-
+        
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
@@ -231,6 +231,9 @@ class Article:
         for file_property in files_propertys:
             
             if file_property in data:
+                # if art_id == 12221:
+                #     print(data, art_id)
+
                 #обрабатываются днфолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_366", "PROPERTY_678"]:
                     need_all_method = False
@@ -242,6 +245,8 @@ class Article:
                         for file_id in data[file_property].values():
                             if type(file_id) == type(str()):
                                 files.append(file_id)
+                                if file_property in preview_file:
+                                        preview_images.append(file_id)
                             elif type(file_id) == type(list()):
                                 for f_id in file_id:
                                     files.append(f_id)
@@ -253,6 +258,8 @@ class Article:
                             for file_id in dct.values():
                                 if type(file_id) == type(str()):
                                     files.append(file_id)
+                                    if file_property in preview_file:
+                                        preview_images.append(file_id)
                                 elif type(file_id) == type(list()):
                                     for f_id in file_id:
                                         files.append(f_id)
@@ -272,12 +279,15 @@ class Article:
                 except Exception as e:
                     return LogsMaker().error_message(e)
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
-
+        
         if files == []:
             return []
         else:
             files_data = []
             #проеверяем, нужно ли обновить файлы?
+            # if art_id == 12221:
+            #     print(f'{files} проверяет на обновлениеб {preview_images} - сработали ли?')
+
             files_to_add = File().need_update_file(art_id, files)
 
             if files_to_add != []:

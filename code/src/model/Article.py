@@ -675,23 +675,29 @@ class Article:
                 art['videos_embed'].append(file)
             else:
                 art['documentation'].append(file)
-
-            if file["is_preview"]:
-                url = file["file_url"]
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        #находим любую картинку, если она есть
-        if "preview_file_url" not in art and art['images'] != []:
-            url = art['images'][0]
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-            art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         return art
 
-    # def get_preview(self, id):
+    def get_preview(self ):
+        files = File(art_id = int(self.id)).get_files_by_art_id()
+        for file in files:
+            if file["is_preview"]:
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                return f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        #находим любую картинку, если она есть
+        for file in files:
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                url = art['images'][0]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                return = f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+
+
+
     #     res = File(id).find_all_by_art_id()
     #     mongo_list = []
     #     preview_inf = []

@@ -31,7 +31,7 @@ from src.services.Auth import AuthService, auth_router
 
 from typing import Awaitable, Callable, Optional
 
-from PIL import Image, ImageOps
+import pyvips
 import io
 
 import os
@@ -151,22 +151,24 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 #Сжатие картинок
 @app.middleware("http")
-async def simple_image_compressor(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+async def vips_compression_middleware(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    # 1. Получаем исходный ответ
     response = await call_next(request)
     
-    # Проверяем, является ли ответ изображением
-    if not response.headers.get("content-type", "").startswith(("image/jpeg", "image/png", "image/webp")):
+    # 2. Проверяем content-type (только изображения)
+    content_type = response.headers.get("content-type", "").lower()
+    if not content_type.startswith(("image/jpeg", "image/png", "image/webp")):
         return response
     
-    # Получаем тело ответа
+    # 3. Собираем тело ответа
     body = b""
     if hasattr(response, "body_iterator"):
         async for chunk in response.body_iterator:
             body += chunk
-    else:
+    elif hasattr(response, "body"):
         body = response.body
     
-    # Пропускаем изображения меньше 250КБ
+    # 4. Пропускаем маленькие файлы (<250KB)
     if len(body) <= 256000:
         return Response(
             content=body,
@@ -175,53 +177,53 @@ async def simple_image_compressor(request: Request, call_next: Callable[[Request
             media_type=response.media_type
         )
     
-    # Сжимаем до 250КБ
+    # 5. Асинхронное сжатие через VIPS
     try:
-        compressed = await asyncio.to_thread(_compress_to_target, body)
-        if compressed:
+        # Выносим CPU-bound операцию в отдельный поток
+        compressed_body = await asyncio.to_thread(lambda: 
+            (lambda img_bytes, accept_header: 
+                (lambda:
+                    (lambda img, fmt:
+                        (lambda buf: 
+                            buf if len(buf) <= 256000 else None
+                        )(
+                            img.webpsave_buffer(Q=75, effort=6) if "webp" in accept_header.lower() 
+                            else img.jpegsave_buffer(Q=80, optimize_coding=True)
+                        )
+                    )(
+                        pyvips.Image.new_from_buffer(img_bytes, "").thumbnail_image(
+                            1920, height=1920, size=pyvips.enums.Size.DOWN
+                        ),
+                        "webp" if "webp" in accept_header.lower() else "jpeg"
+                    )
+                )()
+            )(body, request.headers.get("accept", ""))
+        )
+        
+        if compressed_body:
             headers = dict(response.headers)
             headers.update({
-                "content-length": str(len(compressed)),
-                "x-image-compressed": "true"
+                "content-length": str(len(compressed_body)),
+                "x-image-compressed": "true",
+                "x-compression-ratio": f"{len(compressed_body)/len(body):.2f}"
             })
             return Response(
-                content=compressed,
+                content=compressed_body,
                 status_code=response.status_code,
                 headers=headers,
-                media_type=response.media_type
+                media_type="image/webp" if "webp" in request.headers.get("accept", "").lower() else "image/jpeg"
             )
-    except Exception as e:
-        print(f"Compression failed: {e}")
     
-    # Возвращаем оригинал при ошибке
+    except Exception as e:
+        print(f"VIPS compression error: {str(e)}")
+    
+    # 6. Возвращаем оригинал при ошибках
     return Response(
         content=body,
         status_code=response.status_code,
         headers=dict(response.headers),
         media_type=response.media_type
     )
-
-def _compress_to_target(image_bytes: bytes) -> bytes:
-    """Сжимает изображение до 250КБ"""
-    with io.BytesIO(image_bytes) as input_buf, io.BytesIO() as output_buf:
-        img = Image.open(input_buf)
-        
-        # Простое сжатие с постепенным уменьшением качества
-        for quality in range(90, 10, -10):
-            output_buf.seek(0)
-            output_buf.truncate()
-            
-            img.save(
-                output_buf,
-                format="JPEG",  # Всегда используем JPEG для простоты
-                quality=quality,
-                optimize=True
-            )
-            
-            if output_buf.tell() <= 256000:
-                break
-        
-        return output_buf.getvalue()
 
 
 

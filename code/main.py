@@ -31,7 +31,7 @@ from src.services.Auth import AuthService, auth_router
 
 from typing import Awaitable, Callable, Optional
 
-from PIL import Image
+from PIL import Image, ImageOps
 import io
 
 import os

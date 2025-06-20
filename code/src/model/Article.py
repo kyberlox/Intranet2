@@ -723,9 +723,11 @@ class Article:
     #         return mongo_list[0]['file_url']
     
     def get_preview(self ):
+        
         res = File(art_id = self.id).get_files_by_art_id()
         url = ""
-
+        if self.id == 39405:
+            print(res)
         preview = None
         one_preview_inf = []
 
@@ -744,7 +746,8 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id
+            # main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
@@ -835,9 +838,10 @@ class Article:
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            print('article', sorted_data)
             news_id = sorted_data[0][0]
 
-            print(news_id, 'article')
+            
             self.id = news_id
             image_URL = self.get_preview()
             second_page = {
@@ -1045,7 +1049,7 @@ class Article:
             }
             return second_page
 
-        elif section_id == 10:
+        elif section_id == 53:
             afisha = {
                 'type': "singleBlock",
                 'title': "Афиша",

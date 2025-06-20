@@ -124,7 +124,7 @@ class Views(Base):
 
 metadata = MetaData()
 
-NewUser = Table('newuser', metadata,
+NewUser = Table('newusers', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('active', Boolean),
                 Column('last_name', Text),
@@ -290,7 +290,25 @@ class UserModel():
                     connection.execute(sql, user_data)
                     connection.commit()
             # тут создать представление
-            
+            view = text(f"CREATE VIEW NewUsers AS\n"
+            f"SELECT users.id,\n"
+                f"users.active,\n"
+                f"users.last_name,\n"
+                f"users.name,\n"
+                f"users.second_name,\n"
+                f"to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) AS dat,\n"
+                f"users.indirect_data,\n"
+                f"users.photo_file_id\n"
+            f"FROM users\n"
+            f"WHERE users.active = true AND to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) >= (date_trunc('week'::text, CURRENT_DATE::timestamp with time zone) - '14 days'::interval)\n"
+            f"ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));"
+            )
+            try:
+                with engine.connect() as connection:
+                    connection.execute(view)
+                    connection.commit()
+            except:
+                pass
         except SQLAlchemyError as e:
             db.rollback()
             print(f"An error occurred: {e}")

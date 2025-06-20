@@ -710,7 +710,7 @@ class Article:
     def search_by_section_id(self):
         if self.section_id == "0":
             # main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
-            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51]
+            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
@@ -1012,24 +1012,56 @@ class Article:
             }
             return second_page
 
+        # Афиша
         elif section_id == 53:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
+                    date_value = [] # список для хранения необходимых данных
+                    date_value.append(values["id"])
+                    # date_value.append(values["name"])
+                    # date_value.append(values["preview_text"])
+                    # date_value.append(values["date_creation"])
+                    date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+
             afisha = {
                 'type': "singleBlock",
                 'title': "Афиша",
                 'href': 'eventAnnounces',
-                'images': [
-                    {
-                        'id': 1,
-                        'image': None,
-                        'href': "home"
-                    },
-                    {
-                        'id': 2,
-                        'image': None,
-                        'href': "home"
-                    }
-                ]
-            } # словарь-заглушка для будущей секции "Афиша"
+                'images': []
+            } 
+            image_url = ''
+            afisha_news = []
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+                    
+                    news['id'] = row[0]
+                    # news['title'] = row[1]
+                    # news['description'] = row[2]
+                    news['image'] = image_url
+                    # сюда реакции
+                    # news['reactions'] = {
+                    #     'views': 12,
+                    #     'likes': { 'count': 13, 'likedByMe': 1 },
+                    # }
+                    afisha_news.append(news)
+
+            afisha['images'] = afisha_news
+
+
             return afisha
         
         elif section_id == 51:

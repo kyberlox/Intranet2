@@ -692,6 +692,10 @@ class Article:
         for file in files:
             if file["is_preview"]:
                 url = file["file_url"]
+                #внедряю компрессию
+                preview_link = url.split("/")
+                preview_link[-2] = "compress_image"
+                url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -700,6 +704,10 @@ class Article:
         for file in files:
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
+                #внедряю компрессию
+                preview_link = url.split("/")
+                preview_link[-2] = "compress_image"
+                url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -148,7 +148,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     return await call_next(request)
 
-'''
+
 #Сжатие картинок
 @app.middleware("http")
 async def compress_images_middleware(request: Request, call_next):
@@ -183,11 +183,11 @@ async def compress_images_middleware(request: Request, call_next):
                 extra_args = {"method": 6}  # Максимальное сжатие
             elif img.format == "PNG" and img.mode in ("RGBA", "LA"):
                 target_format = "PNG"
-                quality = 85
+                quality = 100
                 extra_args = {"compress_level": 9}
             else:
                 target_format = "JPEG"
-                quality = 80
+                quality = 95
                 extra_args = {"progressive": True, "subsampling": "4:2:0"}
             
             # Ресайз для больших изображений (макс. 1920px)
@@ -237,7 +237,7 @@ async def compress_images_middleware(request: Request, call_next):
         headers=dict(response.headers),
         media_type=response.media_type
     )
-'''
+
 
 
 

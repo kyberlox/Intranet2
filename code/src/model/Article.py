@@ -1147,12 +1147,12 @@ def upload_articles():
 #найти статью по id
 @article_router.get("/find_by_ID/{ID}")
 async def get_article(ID):
-    return await Article(id = ID).search_by_id()
+    return Article(id = ID).search_by_id()
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
 async def get_articles(section_id):
-    return await Article(section_id = section_id).search_by_section_id()
+    return Article(section_id = section_id).search_by_section_id()
 
 #найти статьи раздела по названию
 @article_router.post("/search/title/{title}")

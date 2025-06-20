@@ -23,13 +23,13 @@ class LogsMaker:
 
         return tqdm(this_list, bar_format=bar_format, **kwargs)
 
-    def error_message(self, error: Exception) -> None:
+    async def error_message(self, error: Exception) -> None:
         """Выводит сообщение об ошибке красным цветом в консоль"""
         error_msg = str(error)
         print(f"\033[91m[ERROR] {error_msg}\033[0m")  # 91 - красный цвет
         return {"err" : error_msg}
 
-    def warning_message(self, message: str) -> None:
+    async def warning_message(self, message: str) -> None:
         """Выводит предупреждение/ошибку желтым цветом в консоль"""
         print(f"\033[93m[WARNING] {message}\033[0m")  # 93 - желтый цвет
         return {"warn" : message}

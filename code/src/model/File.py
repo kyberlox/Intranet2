@@ -195,8 +195,8 @@ class File:
 
     def get_link_as_file(self):
         pass
-        
-                 
+
+
 
     def get_users_photo(self):
         #переделать с учетом is_archive

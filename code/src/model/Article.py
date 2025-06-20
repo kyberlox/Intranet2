@@ -165,9 +165,9 @@ class Article:
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
+
             "PROPERTY_372",
             "PROPERTY_373",
-            #"PROPERTY_376",
 
             "PROPERTY_337",
             "PROPERTY_338",
@@ -235,8 +235,9 @@ class Article:
                 #     print(data, art_id)
 
                 #обрабатываются днфолтным методом битры
-                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_366", "PROPERTY_678"]:
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
                     need_all_method = False
+                    print(file_property)
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -250,7 +251,6 @@ class Article:
                             elif type(file_id) == type(list()):
                                 for f_id in file_id:
                                     files.append(f_id)
-
                                     if file_property in preview_file:
                                         preview_images.append(f_id)
                     elif type(data[file_property]) == type(list()):
@@ -259,11 +259,10 @@ class Article:
                                 if type(file_id) == type(str()):
                                     files.append(file_id)
                                     if file_property in preview_file:
-                                        preview_images.append(file_id)
+                                            preview_images.append(file_id)
                                 elif type(file_id) == type(list()):
                                     for f_id in file_id:
                                         files.append(f_id)
-
                                         if file_property in preview_file:
                                             preview_images.append(f_id)
 
@@ -292,6 +291,7 @@ class Article:
 
             if files_to_add != []:
                 for f_id in files:
+                    print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
                     try:
                         is_preview = f_id in preview_images
                         file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
@@ -334,9 +334,9 @@ class Article:
         sec_inf = {
             #13 : "149", # Наши люди
             #16 : "122", # Видеоитервью
-            #32 : "132", # Новости организационного развития
+            32 : "132", # Новости организационного развития
             53 : "62", # Афиша
-            #54 : "55", # Предложения партнеров
+            54 : "55", # Предложения партнеров
             #55 : "56", # Благотворительные проекты
 
             #25 : "100", #Референсы и опыт поставок
@@ -345,7 +345,7 @@ class Article:
         
 
         #проходимся по инфоблокам
-        for i in logg.progress(sec_inf, "Загрузка данных инфоблоков 149, 122, 132, 62, 55, 56, 100, 60 "):
+        for i in logg.progress(sec_inf, f"Загрузка данных инфоблоков {sec_inf.values} "):
 
             # запрос в B24
             self.section_id = sec_inf[i]
@@ -492,7 +492,7 @@ class Article:
 
 
         #несколько section_id - один IBLOCK_ID
-        
+        '''
         sec_inf = {
             31 : "50", #Актуальные новости
             51 : "50"  #Корпоративные события
@@ -538,7 +538,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-                
+        ''' 
                 
 
 

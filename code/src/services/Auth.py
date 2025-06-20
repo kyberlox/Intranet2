@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
 from src.base.RedisStorage import RedisStorage
+from src.services.LogsMaker import LogsMaker
 from src.model.User import User
 
 
@@ -63,7 +64,7 @@ class AuthService:
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)['GUID']
         if not user_uuid:
-            return {"err" : "Auth error! Please try again!"}
+            return {"err" : "Auth error! Invalid login or password!"}
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
@@ -233,20 +234,23 @@ class AuthService:
 
 
 @auth_router.post("/auth")
-async def authentication(response : Response, data = Body()): #login : str, password : str,
-    login = data["login"]
-    password = data["password"]
+async def authentication(response : Response, data = Body()):
+    if "login" in data and "password" in data: #login : str, password : str,
+        login = data["login"]
+        password = data["password"]
+    else:
+        return await LogsMaker().warning_message(message="Login or Password has missing")
+    
     session = await AuthService().authenticate(login, password)
-    access_token = session["session_id"]
     if not session :
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-        )
+        return await LogsMaker().warning_message(message="Invalid credentials")
+    elif "err" in session.keys():
+        return await LogsMaker().warning_message(message=session["err"])
+    access_token = session["session_id"]
 
     #response.headers["Authorization"] = access_token
 
-    response.set_cookie(key="Authorization", value=access_token)#!!!!!!!!!! убери последние параметры в проде
+    response.set_cookie(key="Authorization", value=access_token)
 
     #return JSONResponse(content=session, headers=response.headers)
     return session

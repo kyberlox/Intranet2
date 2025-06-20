@@ -237,7 +237,6 @@ class Article:
                 #обрабатываются днфолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
                     need_all_method = False
-                    print(file_property)
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -660,7 +659,7 @@ class Article:
 
         return {"status" : True}
 
-    def search_by_id(self):
+    async def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = int(self.id)).get_files_by_art_id()
         art['images'] = []
@@ -683,12 +682,11 @@ class Article:
             else:
                 art['documentation'].append(file)
         
-        art["preview_file_url"] = self.get_preview()
+        art["preview_file_url"] = await self.get_preview()
         
         return art
 
-    def get_preview(self ):
-        print(self.id)
+    async def get_preview(self ):
         files = File(art_id = int(self.id)).get_files_by_art_id()
         for file in files:
             if file["is_preview"]:
@@ -699,7 +697,6 @@ class Article:
 
         #находим любую картинку, если она есть
         for file in files:
-            print(file)
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
@@ -710,14 +707,14 @@ class Article:
         
 
 
-    def search_by_section_id(self):
+    async def search_by_section_id(self):
         if self.section_id == "0":
-            # main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
-            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
+            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            #main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
-                sec = self.main_page(page)
+                sec = await self.main_page(page)
                 page_view.append(sec) 
             page_view[-3]['content'] = [page_view[-2], page_view[-1]]
             del page_view[-2:]
@@ -750,7 +747,7 @@ class Article:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles
     
-    def main_page(self, section_id):
+    async def main_page(self, section_id):
         #Новые сотрудники
         if section_id == 112:
             img_new_workers = []     
@@ -1148,13 +1145,13 @@ def upload_articles():
 
 #найти статью по id
 @article_router.get("/find_by_ID/{ID}")
-def get_article(ID):
-    return Article(id = ID).search_by_id()
+async def get_article(ID):
+    return await Article(id = ID).search_by_id()
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
-def get_articles(section_id):
-    return Article(section_id = section_id).search_by_section_id()
+async def get_articles(section_id):
+    return await Article(section_id = section_id).search_by_section_id()
 
 #найти статьи раздела по названию
 @article_router.post("/search/title/{title}")

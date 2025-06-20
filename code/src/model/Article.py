@@ -669,7 +669,6 @@ class Article:
         art['documentation'] = []
         
         for file in files:
-
             #файлы делятся по категориям
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
@@ -682,67 +681,31 @@ class Article:
                 art['videos_embed'].append(file)
             else:
                 art['documentation'].append(file)
-
-            if file["is_preview"]:
-                url = file["file_url"]
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        #находим любую картинку, если она есть
-        if "preview_file_url" not in art and art['images'] != []:
-            url = art['images'][0]
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-            art["preview_file_url"] = f"http://intranet.emk.org.ru{url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+        art["preview_file_url"] = self.get_preview()
         
         return art
 
-    # def get_preview(self, id):
-    #     res = File(id).find_all_by_art_id()
-    #     mongo_list = []
-    #     preview_inf = []
-    #     one_preview_inf = []
-    #     for result in res:
-    #         mongo_list.append(result)
-    #     if len(mongo_list) > 1:
-
-    #         for info in mongo_list:
-    #             one_preview_inf.append(info['b24_id'])
-    #             one_preview_inf.append(info['file_url'])
-    #             preview_inf.append(one_preview_inf)
-
-    #         # сортируем по b24_id если фоток много и берем с наименьшим b24_id
-    #         sorted_list = sorted(preview_inf, key=lambda x: x[0], reverse=True)
-
-    #         preview_inf = sorted_list[0][1]
-    #         return preview_inf
-    #     elif len(mongo_list) == 0:
-    #         return None
-    #     else:
-    #         return mongo_list[0]['file_url']
-    
     def get_preview(self ):
+        files = File(art_id = int(self.id)).get_files_by_art_id()
+        for file in files:
+            if file["is_preview"]:
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                return f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        #находим любую картинку, если она есть
+        for file in files:
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                return = f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
-        res = File(art_id = self.id).get_files_by_art_id()
-        url = ""
-        if self.id == 39405:
-            print(res)
-        preview = None
-        one_preview_inf = []
+        return None
+        
 
-        if len(res) > 1:
-            for file_info in res:
-                if file_info["is_preview"]:
-                    url = file_info["file_url"]
-        elif len(res) == 0:
-            return None
-        else:
-            url = res[0]['file_url']
-
-        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!
-        return f"http://intranet.emk.org.ru{url}"
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def search_by_section_id(self):
         if self.section_id == "0":

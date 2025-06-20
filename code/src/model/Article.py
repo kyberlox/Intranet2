@@ -726,12 +726,12 @@ class Article:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
-                if self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None):
-                    continue
-                elif res['active']:
+                if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
+                    res["preview_file_url"] = self.get_preview()
                     active_articles.append(res)
                 else:
                     pass
+
             if self.section_id == "111":
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             else:

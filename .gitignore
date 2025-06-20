@@ -1,6 +1,7 @@
 /pSQL/data
 /mongodb/data
 /code/files_db
+/redis_data
 
 **/__pycache__/
 .env

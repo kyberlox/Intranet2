@@ -677,7 +677,7 @@ class Article:
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
                 url = file["file_url"]
-                art['videos_native'].(f"http://intranet.emk.org.ru{url}")
+                art['videos_native'].append(f"http://intranet.emk.org.ru{url}")
             elif "link" in file["content_type"]:
                 art['videos_embed'].append(file)
             else:

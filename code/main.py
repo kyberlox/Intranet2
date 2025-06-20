@@ -34,6 +34,8 @@ from typing import Awaitable, Callable, Optional
 from PIL import Image
 import io
 
+import os
+
 import time
 
 import asyncio

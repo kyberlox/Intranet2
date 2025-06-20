@@ -151,6 +151,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 #Сжатие картинок
+'''
 @app.middleware("http")
 async def compress_images(request: Request, call_next):
     response = await call_next(request)
@@ -211,6 +212,7 @@ async def compress_images(request: Request, call_next):
                 pass
     
     return response
+'''
 
 
 @app.get("/api/compress_image/")

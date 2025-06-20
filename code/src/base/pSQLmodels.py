@@ -289,8 +289,8 @@ class UserModel():
                 with engine.connect() as connection:
                     connection.execute(sql, user_data)
                     connection.commit()
-
-
+            # тут создать представление
+            
         except SQLAlchemyError as e:
             db.rollback()
             print(f"An error occurred: {e}")

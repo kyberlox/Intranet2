@@ -150,76 +150,11 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     return await call_next(request)
 
 
-#Сжатие картинок
-'''
-@app.middleware("http")
-async def compress_images(request: Request, call_next):
-    response = await call_next(request)
-    
-    # Проверяем, является ли ответ изображением и его размер больше 250KB
-    if response.headers.get("content-type", "").startswith("image/"):
-        content = await response.body()
-        if len(content) > 250 * 1024:  # 250KB в байтах
-            try:
-                # Открываем изображение с помощью Pillow
-                img = Image.open(BytesIO(content))
-                
-                # Конвертируем в RGB если это PNG с альфа-каналом
-                if img.mode in ('RGBA', 'LA'):
-                    img = img.convert('RGB')
-                
-                # Настраиваем качество сжатия
-                quality = 85
-                output_buffer = BytesIO()
-                
-                # Определяем формат изображения
-                img_format = img.format or 'JPEG'
-                
-                # Сохраняем с разным качеством пока не достигнем нужного размера
-                while True:
-                    output_buffer.seek(0)
-                    output_buffer.truncate()
-                    
-                    if img_format.upper() == 'JPEG' or img_format.upper() == 'JPG':
-                        img.save(output_buffer, format='JPEG', quality=quality, optimize=True)
-                    elif img_format.upper() == 'PNG':
-                        img.save(output_buffer, format='PNG', optimize=True)
-                    else:
-                        # Для других форматов просто сохраняем как есть
-                        break
-                    
-                    # Если размер меньше 250KB или качество слишком низкое - останавливаемся
-                    if output_buffer.tell() <= 250 * 1024 or quality <= 50:
-                        break
-                    
-                    # Уменьшаем качество для следующей попытки
-                    quality -= 5
-                
-                if output_buffer.tell() < len(content):
-                    # Обновляем ответ сжатым изображением
-                    compressed_content = output_buffer.getvalue()
-                    response.headers["content-length"] = str(len(compressed_content))
-                    return Response(
-                        content=compressed_content,
-                        media_type=response.headers["content-type"],
-                        headers=dict(response.headers),
-                        status_code=response.status_code
-                    )
-                
-            except Exception as e:
-                # В случае ошибки просто возвращаем оригинальное изображение
-                print(f"Error compressing image: {e}")
-                pass
-    
-    return response
-'''
-
 
 @app.get("/api/compress_image/")
 async def get_image():
     from fastapi.responses import FileResponse
     return FileResponse("large_image.jpg")
-
 
 @app.get("/test/{ID}")
 def test(ID):

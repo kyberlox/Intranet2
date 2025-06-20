@@ -729,6 +729,7 @@ class Article:
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
                 if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
+                    self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
                     active_articles.append(res)
                 else:

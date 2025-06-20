@@ -662,7 +662,6 @@ class Article:
         art['documentation'] = []
         
         for file in files:
-
             #файлы делятся по категориям
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
@@ -675,6 +674,8 @@ class Article:
                 art['videos_embed'].append(file)
             else:
                 art['documentation'].append(file)
+        
+        art["preview_file_url"] = self.get_preview()
         
         return art
 
@@ -690,7 +691,7 @@ class Article:
         #находим любую картинку, если она есть
         for file in files:
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                url = art['images'][0]
+                url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

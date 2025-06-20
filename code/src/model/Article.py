@@ -11,6 +11,7 @@ from src.base.pSQLmodels import ViewsModel
 
 import json
 import datetime
+import asyncio
 
 from fastapi import APIRouter, Body
 

@@ -151,9 +151,69 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 #Сжатие картинок
 @app.middleware("http")
-async def compress_image_async(image_bytes: bytes, accept_header: str) -> bytes:
-    """Асинхронно сжимает изображение в отдельном потоке"""
-    def _sync_compress():
+async def compress_images_middleware(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    # Получаем исходный ответ
+    response = await call_next(request)
+    
+    # Проверяем, является ли ответ изображением
+    content_type = response.headers.get("content-type", "").lower()
+    if not content_type.startswith(("image/jpeg", "image/png", "image/webp")):
+        return response
+    
+    # Собираем тело ответа
+    body = b""
+    if hasattr(response, "body_iterator"):
+        async for chunk in response.body_iterator:
+            body += chunk
+    elif hasattr(response, "body"):
+        body = response.body if isinstance(response.body, bytes) else response.body.encode()
+    
+    # Пропускаем маленькие изображения (<250KB)
+    if len(body) <= 256000:
+        return Response(
+            content=body,
+            status_code=response.status_code,
+            headers=dict(response.headers),
+            media_type=response.media_type
+        )
+    
+    # Асинхронное сжатие
+    try:
+        # Выносим CPU-bound операцию в отдельный поток
+        compressed_body = await asyncio.to_thread(
+            compress_image_sync,
+            body,
+            request.headers.get("accept", "")
+        )
+        
+        if compressed_body and len(compressed_body) < len(body):
+            headers = dict(response.headers)
+            headers.update({
+                "content-length": str(len(compressed_body)),
+                "x-image-compressed": "true",
+                "x-compression-ratio": f"{len(compressed_body)/len(body):.2f}"
+            })
+            return Response(
+                content=compressed_body,
+                status_code=response.status_code,
+                headers=headers,
+                media_type=f"image/{'webp' if 'webp' in request.headers.get('accept', '').lower() else 'jpeg'}"
+            )
+    
+    except Exception as e:
+        print(f"Image compression error: {str(e)}")
+    
+    # Возвращаем оригинал в случае ошибки
+    return Response(
+        content=body,
+        status_code=response.status_code,
+        headers=dict(response.headers),
+        media_type=response.media_type
+    )
+
+def compress_image_sync(image_bytes: bytes, accept_header: str) -> bytes:
+    """Синхронная функция сжатия изображения"""
+    try:
         with io.BytesIO(image_bytes) as input_buf, io.BytesIO() as output_buf:
             img = Image.open(input_buf)
             
@@ -166,7 +226,7 @@ async def compress_image_async(image_bytes: bytes, accept_header: str) -> bytes:
             # Определяем формат вывода
             output_format = "WEBP" if "webp" in accept_header.lower() else "JPEG"
             
-            # Ресайз только для больших изображений
+            # Ресайз для больших изображений
             max_size = 1920
             if max(img.size) > max_size:
                 img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
@@ -186,61 +246,9 @@ async def compress_image_async(image_bytes: bytes, accept_header: str) -> bytes:
             
             img.save(output_buf, **{k: v for k, v in save_params.items() if v is not None})
             return output_buf.getvalue()
-    
-    return await asyncio.to_thread(_sync_compress)
-
-async def compress_images_middleware(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
-    response = await call_next(request)
-    
-    # Проверяем content-type
-    content_type = response.headers.get("content-type", "").lower()
-    if not content_type.startswith(("image/jpeg", "image/png", "image/webp")):
-        return response
-    
-    # Получаем тело ответа
-    body = b""
-    if hasattr(response, "body_iterator"):
-        async for chunk in response.body_iterator:
-            body += chunk
-    elif hasattr(response, "body"):
-        body = response.body
-    
-    # Пропускаем маленькие изображения (<250KB)
-    if len(body) <= 256000:
-        return Response(
-            content=body,
-            status_code=response.status_code,
-            headers=dict(response.headers),
-            media_type=response.media_type
-        )
-    
-    # Асинхронное сжатие
-    try:
-        compressed_body = await compress_image_async(body, request.headers.get("accept", ""))
-        
-        if len(compressed_body) < len(body):
-            headers = dict(response.headers)
-            headers.update({
-                "content-length": str(len(compressed_body)),
-                "x-image-compressed": "true",
-                "x-compression-ratio": f"{len(compressed_body)/len(body):.2f}"
-            })
-            return Response(
-                content=compressed_body,
-                status_code=response.status_code,
-                headers=headers,
-                media_type=f"image/{'webp' if 'webp' in request.headers.get('accept', '').lower() else 'jpeg'}"
-            )
-    
     except Exception as e:
-        print(f"Image compression error: {str(e)}")
-    
-    return Response(
-        content=body,
-        status_code=response.status_code,
-        headers=dict(response.headers),
-        media_type=response.media_type
-    )
+        print(f"Sync compression error: {str(e)}")
+        return None
 
 
 

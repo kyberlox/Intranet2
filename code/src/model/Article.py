@@ -687,7 +687,7 @@ class Article:
         
         return art
 
-    async def get_preview(self ):
+    def get_preview(self ):
         files = File(art_id = int(self.id)).get_files_by_art_id()
         async for file in files:
             if file["is_preview"]:

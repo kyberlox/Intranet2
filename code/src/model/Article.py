@@ -695,6 +695,8 @@ class Article:
                 return = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
+        return None
+        
 
 
 

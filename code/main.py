@@ -33,7 +33,7 @@ from src.services.Auth import AuthService, auth_router
 from typing import Awaitable, Callable, Optional
 
 from PIL import Image
-import io
+from io import BytesIO
 
 import os
 

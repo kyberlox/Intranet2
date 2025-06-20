@@ -332,11 +332,12 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            #13 : "149", # Наши люди
-            #16 : "122", # Видеоитервью
-            32 : "132", # Новости организационного развития
-            53 : "62", # Афиша
-            54 : "55", # Предложения партнеров
+            13 : "149", # Наши люди
+            16 : "122", # Видеоитервью
+            
+            #32 : "132", # Новости организационного развития
+            #53 : "62", # Афиша
+            #54 : "55", # Предложения партнеров
             #55 : "56", # Благотворительные проекты
 
             #25 : "100", #Референсы и опыт поставок
@@ -492,7 +493,6 @@ class Article:
 
 
         #несколько section_id - один IBLOCK_ID
-        '''
         sec_inf = {
             31 : "50", #Актуальные новости
             51 : "50"  #Корпоративные события
@@ -538,7 +538,6 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        ''' 
                 
 
 
@@ -676,7 +675,8 @@ class Article:
                 art['images'].append(f"http://intranet.emk.org.ru{url}")
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
-                art['videos_native'].append(file)
+                url = file["file_url"]
+                art['videos_native'].(f"http://intranet.emk.org.ru{url}")
             elif "link" in file["content_type"]:
                 art['videos_embed'].append(file)
             else:
@@ -687,6 +687,7 @@ class Article:
         return art
 
     def get_preview(self ):
+        print(self.id)
         files = File(art_id = int(self.id)).get_files_by_art_id()
         for file in files:
             if file["is_preview"]:
@@ -697,6 +698,7 @@ class Article:
 
         #находим любую картинку, если она есть
         for file in files:
+            print(file)
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
@@ -735,6 +737,7 @@ class Article:
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
                 if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
+                    self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
                     active_articles.append(res)
                 else:

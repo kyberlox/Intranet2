@@ -680,6 +680,7 @@ class Article:
         return art
 
     def get_preview(self ):
+        print(self.id)
         files = File(art_id = int(self.id)).get_files_by_art_id()
         for file in files:
             if file["is_preview"]:
@@ -690,6 +691,7 @@ class Article:
 
         #находим любую картинку, если она есть
         for file in files:
+            print(file)
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!

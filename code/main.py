@@ -149,55 +149,20 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     return await call_next(request)
 
 #Сжатие картинок
-def get_compression_settings(original_format: str, accept_header: str, pixel_count: int) -> tuple:
-    """Определяет оптимальные параметры сжатия"""
-    accept_header = accept_header.lower()
-    
-    # Для маленьких изображений (иконки) используем менее агрессивное сжатие
-    if pixel_count < 250_000:  # ~500x500px
-        base_quality = 90
-        max_dimension = 1024
-    else:
-        base_quality = 80
-        max_dimension = 1920
-    
-    # Предпочитаем WebP если клиент поддерживает
-    if "webp" in accept_header:
-        return "WEBP", {
-            "quality": max(75, base_quality - 5),
-            "max_dimension": max_dimension,
-            "extra_args": {"method": 6}  # Максимальное сжатие
-        }
-    
-    # Для JPEG/PNG выбираем на основе исходного формата
-    if original_format == "PNG":
-        return "PNG", {
-            "quality": base_quality,
-            "max_dimension": max_dimension,
-            "extra_args": {"compress_level": 9}
-        }
-    
-    # По умолчанию используем JPEG
-    return "JPEG", {
-        "quality": base_quality,
-        "max_dimension": max_dimension,
-        "extra_args": {"progressive": True, "subsampling": "4:2:0"}
-    }
-
 def calculate_new_size(width: int, height: int, max_dimension: int) -> tuple:
     """Вычисляет новые размеры с сохранением пропорций"""
     if width > height:
         return (max_dimension, int(height * max_dimension / width))
     return (int(width * max_dimension / height), max_dimension)
-    
+
 @app.middleware("http")
 async def compress_images_middleware(request: Request, call_next):
     # 1. Получаем исходный ответ
     response = await call_next(request)
     
-    # 2. Проверяем, нужно ли сжимать
+    # 2. Проверяем, нужно ли сжимать (только JPEG/PNG/WEBP)
     content_type = response.headers.get("content-type", "").lower()
-    if not content_type.startswith(("image/jpeg", "image/png", "image/webp")):
+    if not any(content_type.startswith(f"image/{fmt}") for fmt in ["jpeg", "png", "webp"]):
         return response
     
     # 3. Читаем тело ответа
@@ -205,41 +170,54 @@ async def compress_images_middleware(request: Request, call_next):
     async for chunk in response.body_iterator:
         body += chunk
     
-    # 4. Применяем продвинутое сжатие
+    # 4. Оптимизируем изображение
     try:
         with io.BytesIO(body) as input_buf, io.BytesIO() as output_buf:
-            # Открываем и автоматически поворачиваем изображение
+            # Открываем изображение с коррекцией ориентации
             img = ImageOps.exif_transpose(Image.open(input_buf))
             
             # Определяем параметры сжатия
             width, height = img.size
-            target_format, compression_params = get_compression_settings(
-                img.format,
-                request.headers.get("accept", ""),
-                width * height
-            )
+            accept_header = request.headers.get("accept", "").lower()
+            pixel_count = width * height
             
-            # Применяем ресайз если нужно
-            if max(width, height) > compression_params["max_dimension"]:
-                new_size = calculate_new_size(width, height, compression_params["max_dimension"])
-                img = img.resize(new_size, Image.Resampling.LANCZOS)
+            # Выбираем формат (WebP при поддержке клиентом)
+            if "webp" in accept_header:
+                target_format = "WEBP"
+                quality = 75
+                extra_args = {"method": 6}  # Максимальное сжатие
+            elif img.format == "PNG" and img.mode in ("RGBA", "LA"):
+                target_format = "PNG"
+                quality = 85
+                extra_args = {"compress_level": 9}
+            else:
+                target_format = "JPEG"
+                quality = 80
+                extra_args = {"progressive": True, "subsampling": "4:2:0"}
             
-            # Конвертируем в оптимальный цветовой профиль
+            # Ресайз для больших изображений (макс. 1920px)
+            max_dimension = 1024 if pixel_count < 250000 else 1920
+            if max(width, height) > max_dimension:
+                new_width = min(width, max_dimension)
+                new_height = int(height * (new_width / width))
+                img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            
+            # Конвертируем цветовой профиль для JPEG/WEBP
             if target_format in ("JPEG", "WEBP") and img.mode != "RGB":
                 img = img.convert("RGB")
             
-            # Сохраняем с оптимальными параметрами
+            # Применяем сжатие
             img.save(
                 output_buf,
                 format=target_format,
-                quality=compression_params["quality"],
+                quality=quality,
                 optimize=True,
-                **compression_params.get("extra_args", {})
+                **extra_args
             )
             
             compressed_body = output_buf.getvalue()
             
-            # Возвращаем сжатое изображение если удалось уменьшить размер
+            # Возвращаем результат если сжатие успешно
             if len(compressed_body) < len(body):
                 return Response(
                     content=compressed_body,
@@ -247,16 +225,17 @@ async def compress_images_middleware(request: Request, call_next):
                     headers={
                         **dict(response.headers),
                         "content-length": str(len(compressed_body)),
-                        "x-image-compressed": "true",
-                        "x-compression-ratio": f"{len(compressed_body)/len(body):.2f}"
+                        "x-image-optimized": "true",
+                        "x-original-size": str(len(body)),
+                        "x-compressed-size": str(len(compressed_body))
                     },
                     media_type=f"image/{target_format.lower()}"
                 )
     
     except Exception as e:
-        print(f"Compression error: {str(e)}")
+        print(f"[Image Compression Error] {str(e)}")
     
-    # 5. Возвращаем оригинал если сжатие не удалось
+    # 5. Возвращаем оригинал при ошибках
     return Response(
         content=body,
         status_code=response.status_code,

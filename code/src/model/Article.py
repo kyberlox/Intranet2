@@ -332,8 +332,8 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            13 : "149", # Наши люди
-            16 : "122", # Видеоитервью
+            #13 : "149", # Наши люди
+            #16 : "122", # Видеоитервью
             
             #32 : "132", # Новости организационного развития
             #53 : "62", # Афиша
@@ -341,7 +341,7 @@ class Article:
             #55 : "56", # Благотворительные проекты
 
             #25 : "100", #Референсы и опыт поставок
-            #17 : "60" #Учебный центр (Литература)
+            17 : "60" #Учебный центр (Литература)
         }
         
 
@@ -491,7 +491,7 @@ class Article:
                         pass
         '''
 
-
+        '''
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости
@@ -538,6 +538,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
+        '''
                 
 
 
@@ -676,7 +677,7 @@ class Article:
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
                 url = file["file_url"]
-                art['videos_native'].(f"http://intranet.emk.org.ru{url}")
+                art['videos_native'].append(f"http://intranet.emk.org.ru{url}")
             elif "link" in file["content_type"]:
                 art['videos_embed'].append(file)
             else:

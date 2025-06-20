@@ -660,7 +660,7 @@ class Article:
 
         return {"status" : True}
 
-    async def search_by_id(self):
+    def search_by_id(self):
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = int(self.id)).get_files_by_art_id()
         art['images'] = []
@@ -689,7 +689,7 @@ class Article:
 
     async def get_preview(self ):
         files = File(art_id = int(self.id)).get_files_by_art_id()
-        for file in files:
+        async for file in files:
             if file["is_preview"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
@@ -697,7 +697,7 @@ class Article:
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         #находим любую картинку, если она есть
-        for file in files:
+        async for file in files:
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
@@ -708,14 +708,14 @@ class Article:
         
 
 
-    async def search_by_section_id(self):
+    def search_by_section_id(self):
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
             #main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
-                sec = await self.main_page(page)
+                sec = self.main_page(page)
                 page_view.append(sec) 
             page_view[-3]['content'] = [page_view[-2], page_view[-1]]
             del page_view[-2:]
@@ -737,7 +737,7 @@ class Article:
             for res in result:
                 if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
                     self.id = res["id"]
-                    res["preview_file_url"] = self.get_preview()
+                    res["preview_file_url"] = await self.get_preview()
                     active_articles.append(res)
                 else:
                     pass
@@ -748,7 +748,7 @@ class Article:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles
     
-    async def main_page(self, section_id):
+    def main_page(self, section_id):
         #Новые сотрудники
         if section_id == 112:
             img_new_workers = []     
@@ -808,7 +808,7 @@ class Article:
 
             
             self.id = news_id
-            image_URL = self.get_preview()
+            image_URL = await self.get_preview()
             second_page = {
                 'id': section_id, 
                 'type': 'singleBlock', 
@@ -880,7 +880,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -934,7 +934,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -986,7 +986,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -1043,7 +1043,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -1095,7 +1095,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None

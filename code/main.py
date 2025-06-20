@@ -6,10 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, HTTPException, status
 
-from typing import Awaitable, Callable
 
-from PIL import Image
-import io
 
 # from bson import Binary
 
@@ -30,8 +27,12 @@ from src.base.B24 import B24
 
 from src.services.Auth import AuthService, auth_router
 
-from PIL import Image, ImageOps
-import os
+
+
+from typing import Awaitable, Callable, Optional
+
+from PIL import Image
+import io
 
 import time
 
@@ -148,72 +149,74 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 #Сжатие картинок
 @app.middleware("http")
 async def compress_images_middleware(request: Request, call_next):
-    # Пропускаем запрос через цепочку middleware
     response = await call_next(request)
     
-    # 1. Проверяем, нужно ли сжимать этот ответ
-    content_type = response.headers.get("content-type", "").lower()
-    if not content_type.startswith("image/"):
+    # Проверяем, является ли ответ изображением
+    if not response.headers.get("content-type", "").startswith("image/"):
         return response
     
-    # 2. Получаем тело ответа
+    # Получаем тело ответа
     body = b""
     async for chunk in response.body_iterator:
         body += chunk
     
-    # 3. Алгоритм сжатия изображения
-    try:
-        with io.BytesIO(body) as input_buf, io.BytesIO() as output_buf:
-            # Открываем изображение
-            img = Image.open(input_buf)
-            
-            # Автоматически поворачиваем согласно EXIF (для фото с телефонов)
-            if hasattr(img, '_getexif'):
-                img = ImageOps.exif_transpose(img)
-            
-            # Оптимальные настройки сжатия
-            quality = 85
-            optimize = True
-            
-            # Определяем лучший формат
-            if img.format == 'PNG' and img.mode in ('RGBA', 'LA'):
-                # Для PNG с прозрачностью - сохраняем как PNG
-                img.save(output_buf, format='PNG', optimize=optimize)
-            elif 'image/webp' in request.headers.get('accept', '').lower():
-                # Если клиент поддерживает WebP - используем его
-                img.save(output_buf, format='WEBP', quality=quality)
-            else:
-                # По умолчанию - JPEG
-                if img.mode != 'RGB':
-                    img = img.convert('RGB')
-                img.save(output_buf, format='JPEG', quality=quality, optimize=optimize)
-            
-            compressed_body = output_buf.getvalue()
-            
-            # Возвращаем сжатое изображение только если оно действительно меньше
-            if len(compressed_body) < len(body):
-                headers = dict(response.headers)
-                headers.update({
-                    "content-length": str(len(compressed_body)),
-                    "x-image-compressed": "true",
-                })
-                return Response(
-                    content=compressed_body,
-                    status_code=response.status_code,
-                    headers=headers,
-                    media_type=f"image/{img.format.lower()}" if img.format else response.media_type
-                )
+    # Оптимизируем изображение
+    optimized_img = await optimize_image(body, request)
+    if optimized_img and len(optimized_img) < len(body):
+        headers = dict(response.headers)
+        headers["content-length"] = str(len(optimized_img))
+        return Response(
+            content=optimized_img,
+            status_code=response.status_code,
+            headers=headers,
+            media_type=response.media_type
+        )
     
-    except Exception as e:
-        print(f"Image compression error: {str(e)}")
-    
-    # 4. Если что-то пошло не так - возвращаем оригинал
     return Response(
         content=body,
         status_code=response.status_code,
         headers=dict(response.headers),
         media_type=response.media_type
     )
+
+async def optimize_image(original: bytes, request: Request) -> Optional[bytes]:
+    try:
+        with io.BytesIO(original) as input_buf, io.BytesIO() as output_buf:
+            img = Image.open(input_buf)
+            
+            # Автокоррекция ориентации
+            img = ImageOps.exif_transpose(img)
+            
+            # Ресайз только если изображение слишком большое
+            if max(img.size) > 1920:
+                img.thumbnail((1920, 1920), Image.Resampling.LANCZOS)
+            
+            # Определяем лучший формат
+            format = (
+                'WEBP' if 'webp' in request.headers.get('accept', '').lower() 
+                else 'JPEG' if img.mode == 'RGB' 
+                else 'PNG'
+            )
+            
+            # Параметры сжатия
+            save_kwargs = {
+                'format': format,
+                'optimize': True,
+                'quality': 75 if format == 'JPEG' else 85
+            }
+            
+            # Для PNG с прозрачностью
+            if format == 'PNG' and img.mode in ('RGBA', 'LA'):
+                img.save(output_buf, **save_kwargs)
+            else:
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+                img.save(output_buf, **save_kwargs)
+            
+            return output_buf.getvalue()
+    except Exception as e:
+        print(f"Ошибка оптимизации изображения: {str(e)}")
+        return None
 
 
 

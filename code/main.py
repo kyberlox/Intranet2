@@ -152,22 +152,26 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 #Сжатие картинок
 @app.middleware("http")
 async def compress_images_middleware(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    # Получаем исходный ответ
     response = await call_next(request)
     
-    # Проверяем content-type
+    # Проверяем, является ли ответ изображением
     content_type = response.headers.get("content-type", "").lower()
     if not content_type.startswith(("image/jpeg", "image/png", "image/webp")):
         return response
     
-    # Получаем тело ответа как bytes
+    # Собираем тело ответа
     body = b""
     if hasattr(response, "body_iterator"):
         async for chunk in response.body_iterator:
             body += chunk
     else:
-        body = response.body
+        if hasattr(response, "body"):
+            body = response.body
+        else:
+            return response
     
-    # Проверяем размер (250KB = 256000 bytes)
+    # Проверяем размер (250KB = 256000 байт)
     if len(body) <= 256000:
         return Response(
             content=body,
@@ -176,63 +180,66 @@ async def compress_images_middleware(request: Request, call_next: Callable[[Requ
             media_type=response.media_type
         )
     
-    # Сжимаем только большие изображения
+    # Обрабатываем изображение
     try:
-        with io.BytesIO(body) as input_buf:
+        with io.BytesIO(body) as input_buf, io.BytesIO() as output_buf:
             img = Image.open(input_buf)
             
-            # Применяем EXIF-коррекцию
+            # Коррекция ориентации
             try:
                 img = ImageOps.exif_transpose(img)
             except Exception:
                 pass
             
             # Определяем формат вывода
-            accept = request.headers.get("accept", "").lower()
-            output_format = "WEBP" if "webp" in accept else "JPEG"
+            accept_header = request.headers.get("accept", "").lower()
+            output_format = "WEBP" if "webp" in accept_header else "JPEG"
             
-            # Ресайз с сохранением пропорций
+            # Ресайз
             max_size = 1920
             if max(img.size) > max_size:
                 img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
             
-            # Конвертируем в RGB если нужно
+            # Конвертация цветового пространства
             if output_format in ("JPEG", "WEBP") and img.mode != "RGB":
                 img = img.convert("RGB")
             
-            # Постепенное сжатие до целевого размера
-            with io.BytesIO() as output_buf:
-                for quality in range(80, 40, -5):  # от 80% до 40% с шагом 5%
-                    output_buf.seek(0)
-                    output_buf.truncate()
-                    
-                    img.save(
-                        output_buf,
-                        format=output_format,
-                        quality=quality,
-                        optimize=True
-                    )
-                    
-                    if output_buf.tell() <= 256000:
-                        break
+            # Постепенное сжатие
+            for quality in range(80, 40, -5):
+                output_buf.seek(0)
+                output_buf.truncate()
                 
-                compressed_body = output_buf.getvalue()
+                save_params = {
+                    "format": output_format,
+                    "quality": quality,
+                    "optimize": True
+                }
                 
-                if len(compressed_body) < len(body):
-                    headers = dict(response.headers)
-                    headers.update({
-                        "content-length": str(len(compressed_body)),
-                        "x-image-compressed": "true",
-                    })
-                    return Response(
-                        content=compressed_body,
-                        status_code=response.status_code,
-                        headers=headers,
-                        media_type=f"image/{output_format.lower()}"
-                    )
+                if output_format == "WEBP":
+                    save_params["method"] = 6
+                
+                img.save(output_buf, **save_params)
+                
+                if output_buf.tell() <= 256000:
+                    break
+            
+            compressed_body = output_buf.getvalue()
+            
+            if len(compressed_body) < len(body):
+                headers = dict(response.headers)
+                headers.update({
+                    "content-length": str(len(compressed_body)),
+                    "x-image-compressed": "true",
+                })
+                return Response(
+                    content=compressed_body,
+                    status_code=response.status_code,
+                    headers=headers,
+                    media_type=f"image/{output_format.lower()}"
+                )
     
     except Exception as e:
-        print(f"Image compression failed: {str(e)}")
+        print(f"Image compression error: {str(e)}")
     
     # Возвращаем оригинал в случае ошибки
     return Response(

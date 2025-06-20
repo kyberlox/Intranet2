@@ -5,6 +5,8 @@ COPY ./requirements.txt /data/app/requirements.txt
 
 RUN pip install --upgrade pip
 
+apt-get update && apt-get install -y \
+    libvips-dev
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 #COPY ./ /data/app

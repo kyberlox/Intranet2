@@ -30,6 +30,7 @@ from src.base.B24 import B24
 
 from src.services.Auth import AuthService, auth_router
 
+from PIL import Image, ImageOps
 import os
 
 import time

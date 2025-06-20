@@ -34,14 +34,14 @@ class User:
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
             #!!!!!!!!!!!!!!!!!!!!!!убрать по окончанию тестового периода!!!!!!!!!!!!!
-            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367']
+            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515']
             if usr_data['ID'] in cool_users:
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 UserSQL.upsert_user(usr_data)
         
-        self.set_users_photo()
+        status = self.set_users_photo()
 
-        return {"status" : True}
+        return {"status" : status}
 
     def search_by_id(self):
         return UserModel(self.id).find_by_id()
@@ -75,28 +75,32 @@ class User:
 
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
+            # print()
+            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515']
+
             if "ID" in usr_data:
-                uuid = usr_data['ID']
-                #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
-                if 'PERSONAL_PHOTO' in usr_data and 'id' in UserModel(uuid).find_by_id().keys():
+                if usr_data['ID'] in cool_users:
+                    uuid = usr_data['ID']
+                    #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
+                    if 'PERSONAL_PHOTO' in usr_data and 'id' in UserModel(uuid).find_by_id().keys():
 
-                    b24_url = usr_data['PERSONAL_PHOTO']
-                    #print(b24_url)
-                    #проверим url первоисточника текущей аватарки
-                    psql_user = UserModel(uuid).find_by_id()
-                    if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
+                        b24_url = usr_data['PERSONAL_PHOTO']
+                        #print(b24_url)
+                        #проверим url первоисточника текущей аватарки
+                        psql_user = UserModel(uuid).find_by_id()
+                        if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
 
-                        #cтарую фотку - в архив
-                        if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
-                            old_file_id = psql_user['photo_file_id']
-                            File(id = old_file_id).delete_user_img()
-                        
-                        #если есть несоответствие - скачать новую
-                        file_data = File().add_user_img(b24_url, uuid)
+                            #cтарую фотку - в архив
+                            if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
+                                old_file_id = psql_user['photo_file_id']
+                                File(id = old_file_id).delete_user_img()
+                            
+                            #если есть несоответствие - скачать новую
+                            file_data = File().add_user_img(b24_url, uuid)
 
-                        #обновить данные в pSQL
-                        UserModel(uuid).set_user_photo(file_data['id'])
-                        
+                            #обновить данные в pSQL
+                            UserModel(uuid).set_user_photo(file_data['id'])
+                            
             #вывести отчет по изменениях
             
         return True

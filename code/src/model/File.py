@@ -112,8 +112,8 @@ class File:
             }
 
         except requests.exceptions.RequestException as e:
-            print(f"Ошибка при скачивании файла: {e}")
-            return None
+            # print(f"Ошибка при скачивании файла: {e}")
+            return LogsMaker().error_message(e)
 
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
@@ -167,6 +167,17 @@ class File:
                     file_info["original_name"] = file["original_name"]
                     file_info["stored_name"] = file["stored_name"]
                     file_info["content_type"] = file["content_type"]
+
+                    #файлы делятся по категориям
+                    if "image" in file["content_type"]:
+                        file_info["type"] = "image"
+                    elif "video" in file["content_type"]:
+                        file_info["type"] = "video"
+                    elif "link" in file["content_type"]:
+                        file_infofile_info["type"] = "video_embed"
+                    else:
+                        file_info["type"] = "documentation"
+
                     file_info["article_id"] = file["article_id"]
                     file_info["b24_id"] = file["b24_id"]
                     file_info["file_url"] = file["file_url"]
@@ -221,7 +232,9 @@ class File:
     def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
         try:
+
             name, form = self.dowload_user_photo(b24_url)
+            print(uuid, name, form, 'ищем 393')
 
             #определить ссылку
             url = f"/api/user_files/{name}"
@@ -235,6 +248,7 @@ class File:
                 "b24_url" : b24_url,
                 "is_archive" : False
             }
+            print(file_data, uuid)
 
             new_id = FileModel().add_user_photo(file_data)
 
@@ -253,7 +267,8 @@ class File:
             FileModel(id = self.id).remove_user_photo()
             return {"status": "to_archive"}
         except Exception as e:
-            raise HTTPException(500, detail=str(e))
+            # raise HTTPException(500, detail=str(e))
+            return LogsMaker().error_message(e)
        
 
 

@@ -124,7 +124,7 @@ class Views(Base):
 
 metadata = MetaData()
 
-NewUser = Table('newuser', metadata,
+NewUser = Table('newusers', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('active', Boolean),
                 Column('last_name', Text),
@@ -289,8 +289,26 @@ class UserModel():
                 with engine.connect() as connection:
                     connection.execute(sql, user_data)
                     connection.commit()
-
-
+            # тут создать представление
+            view = text(f"CREATE VIEW NewUsers AS\n"
+            f"SELECT users.id,\n"
+                f"users.active,\n"
+                f"users.last_name,\n"
+                f"users.name,\n"
+                f"users.second_name,\n"
+                f"to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) AS dat,\n"
+                f"users.indirect_data,\n"
+                f"users.photo_file_id\n"
+            f"FROM users\n"
+            f"WHERE users.active = true AND to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) >= (date_trunc('week'::text, CURRENT_DATE::timestamp with time zone) - '14 days'::interval)\n"
+            f"ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));"
+            )
+            try:
+                with engine.connect() as connection:
+                    connection.execute(view)
+                    connection.commit()
+            except:
+                pass
         except SQLAlchemyError as e:
             db.rollback()
             print(f"An error occurred: {e}")
@@ -432,7 +450,7 @@ class UserModel():
                     # добавляем только нужную информацию
                     user_info = {}
                     user_image = File(user[7]).get_users_photo()
-                    print(user[7])
+                    
                     user_info['id'] = user[0]
                     if user[4] == '' or user[4] is None:
                         user_info['user_fio'] = f'{user[2]} {user[3]}'
@@ -569,7 +587,8 @@ class DepartmentModel():
                     
 
         except SQLAlchemyError as e:
-            print(f'An error: {e}')
+            # print(f'An error: {e}')
+            return LogsMaker().error_message(e)
 
     def find_dep_by_id(self):
         """
@@ -579,7 +598,8 @@ class DepartmentModel():
         if res is not None:
             return [res]
         else:
-            return {'err': 'Нет такого департамента'}
+            # return {'err': 'Нет такого департамента'}
+            return LogsMaker().warning_message('Нет такого департамента')
 
         # dep = self.db.query(self.department).get(self.id)
         # result = dict()
@@ -889,11 +909,13 @@ class ArticleModel():
             if key not in ["ID", "_sa_instance_state"]:
                 if key not in db_art:
                     self.reassembly(article_data)
-                    print(db_art['id'], "добавить", key, "=", article_data[key])
+                    LogsMaker().warning_message(f'{db_art['id']} добавить {key} = {article_data[key]}')
+                    # print(db_art['id'], "добавить", key, "=", article_data[key])
                     return True
                 elif article_data[key] != db_art[key]:
                     self.reassembly(article_data)
-                    print(db_art['id'], key, db_art[key], "-->", article_data[key])
+                    LogsMaker().warning_message(f'{db_art['id']} {key} {db_art[key]} --> {article_data[key]}')
+                    # print(db_art['id'], key, db_art[key], "-->", article_data[key])
                     return True
                 else:
                     return False

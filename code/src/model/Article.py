@@ -161,7 +161,7 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
-
+        
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
@@ -231,6 +231,9 @@ class Article:
         for file_property in files_propertys:
             
             if file_property in data:
+                # if art_id == 12221:
+                #     print(data, art_id)
+
                 #обрабатываются днфолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
                     need_all_method = False
@@ -275,12 +278,15 @@ class Article:
                 except Exception as e:
                     return LogsMaker().error_message(e)
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
-
+        
         if files == []:
             return []
         else:
             files_data = []
             #проеверяем, нужно ли обновить файлы?
+            # if art_id == 12221:
+            #     print(f'{files} проверяет на обновлениеб {preview_images} - сработали ли?')
+
             files_to_add = File().need_update_file(art_id, files)
 
             if files_to_add != []:
@@ -527,7 +533,8 @@ class Article:
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
-                    print("Статья", art["NAME"], art["ID"], "уже не актуальна")
+                    logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
+                    # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
@@ -704,7 +711,8 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 10, 51] #section id
+            # main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
@@ -796,9 +804,10 @@ class Article:
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            
             news_id = sorted_data[0][0]
 
-            print(news_id, 'article')
+            
             self.id = news_id
             image_URL = self.get_preview()
             second_page = {
@@ -1006,24 +1015,56 @@ class Article:
             }
             return second_page
 
-        elif section_id == 10:
+        # Афиша
+        elif section_id == 53:
+            date_list = [] # список для сортировки по дате
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            for values in articles_in_section:
+                if values["active"] is False:
+                        pass
+                else:
+                    date_value = [] # список для хранения необходимых данных
+                    date_value.append(values["id"])
+                    # date_value.append(values["name"])
+                    # date_value.append(values["preview_text"])
+                    # date_value.append(values["date_creation"])
+                    date_list.append(date_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+
             afisha = {
                 'type': "singleBlock",
                 'title': "Афиша",
                 'href': 'eventAnnounces',
-                'images': [
-                    {
-                        'id': 1,
-                        'image': None,
-                        'href': "home"
-                    },
-                    {
-                        'id': 2,
-                        'image': None,
-                        'href': "home"
-                    }
-                ]
-            } # словарь-заглушка для будущей секции "Афиша"
+                'images': []
+            } 
+            image_url = ''
+            afisha_news = []
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+                    
+                    news['id'] = row[0]
+                    # news['title'] = row[1]
+                    # news['description'] = row[2]
+                    news['image'] = image_url
+                    # сюда реакции
+                    # news['reactions'] = {
+                    #     'views': 12,
+                    #     'likes': { 'count': 13, 'likedByMe': 1 },
+                    # }
+                    afisha_news.append(news)
+
+            afisha['images'] = afisha_news
+
+
             return afisha
         
         elif section_id == 51:

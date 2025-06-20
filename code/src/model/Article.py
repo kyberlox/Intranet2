@@ -819,7 +819,7 @@ class Article:
                 }
             return second_page
         
-        #
+        # предложить идею
         elif section_id == 4:
             idea_block = {
                 'id': 4,

@@ -27,7 +27,7 @@ from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_r
 from src.base.B24 import B24
 
 from src.services.Auth import AuthService, auth_router
-
+from src.services.Comporession import compress_router
 
 
 from typing import Awaitable, Callable, Optional

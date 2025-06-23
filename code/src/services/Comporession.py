@@ -8,66 +8,84 @@ compress_router = APIRouter(prefix="/compress_image", tags=["Компресси�
 STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
 
-# Конфигурация сжатия
-MAX_UNCOMPRESSED_SIZE_KB = 250    # Не сжимать файлы <250KB
-LARGE_FILE_THRESHOLD_KB = 1024    # Порог для жёсткого сжатия
-LARGE_FILE_TARGET_KB = 512        # Целевой размер для больших файлов
+# Ваши настройки конфигурации
+MAX_UNCOMPRESSED_SIZE_KB = 250      # Не сжимать файлы меньше этого размера
+LARGE_FILE_THRESHOLD_KB = 1024      # Порог для "жёсткого" сжатия
+LARGE_FILE_TARGET_KB = 512          # Целевой размер для больших файлов
 
-def compress_image(file_path: str) -> BytesIO:
-    """Синхронная функция сжатия"""
-    file_size_kb = os.path.getsize(file_path) / 1024
+def compress_image(input_path: str) -> BytesIO:
+    """Сжимает изображение согласно вашим настройкам"""
+    file_size_kb = os.path.getsize(input_path) / 1024
     
-    with Image.open(file_path) as img:
-        buffer = BytesIO()
+    with Image.open(input_path) as img:
+        output_buffer = BytesIO()
+        original_format = img.format
         
-        # Определяем параметры сжатия
+        # 1. Возвращаем как есть для маленьких файлов
+        if file_size_kb <= MAX_UNCOMPRESSED_SIZE_KB:
+            img.save(output_buffer, format=original_format)
+            output_buffer.seek(0)
+            return output_buffer
+        
+        # 2. Определяем параметры сжатия
         if file_size_kb > LARGE_FILE_THRESHOLD_KB:
-            quality = 40  # Жёсткое сжатие
+            # Жёсткое сжатие для больших файлов
+            quality = 40
+            target_format = 'JPEG'
         else:
-            quality = 70  # Нормальное качество
+            # Обычное сжатие
+            quality = 70
+            target_format = 'JPEG' if original_format != 'PNG' else original_format
+        
+        # 3. Конвертируем PNG без прозрачности в JPEG
+        if original_format == 'PNG' and img.mode not in ('RGBA', 'LA'):
+            img = img.convert('RGB')
+            target_format = 'JPEG'
+        
+        # 4. Процесс сжатия
+        while True:
+            output_buffer.seek(0)
+            output_buffer.truncate()
+            img.save(output_buffer, format=target_format, quality=quality, optimize=True)
             
-        # Сохраняем в оптимальном формате
-        if img.format == 'PNG' and img.mode in ('RGBA', 'LA'):
-            img.save(buffer, format='PNG', optimize=True)
-        else:
-            img.convert('RGB').save(buffer, format='JPEG', quality=quality, optimize=True)
+            current_size_kb = output_buffer.tell() / 1024
+            
+            # Условия выхода:
+            # - Уложились в размер
+            # - Достигли минимального качества
+            # - Для больших файлов: достигли целевого размера
+            if (current_size_kb <= MAX_UNCOMPRESSED_SIZE_KB or 
+                quality <= 10 or 
+                (file_size_kb > LARGE_FILE_THRESHOLD_KB and current_size_kb <= LARGE_FILE_TARGET_KB)):
+                break
+                
+            quality = max(10, quality - 5)
         
-        # Досжатие для больших файлов
-        if file_size_kb > LARGE_FILE_THRESHOLD_KB:
-            while buffer.tell() / 1024 > LARGE_FILE_TARGET_KB and quality > 20:
-                quality -= 5
-                buffer.seek(0)
-                buffer.truncate()
-                img.convert('RGB').save(buffer, format='JPEG', quality=quality, optimize=True)
-        
-        buffer.seek(0)
-        return buffer
+        output_buffer.seek(0)
+        return output_buffer
 
 @compress_router.get("/{filename}")
-def get_compressed_image(filename: str):  # Убрано async!
+def get_compressed_image(filename: str):
     file_path = os.path.join(STORAGE_PATH, filename)
     
     if not os.path.exists(file_path):
         raise HTTPException(404, "File not found")
     
-    file_size_kb = os.path.getsize(file_path) / 1024
-    
-    # 1. Возврат без сжатия для маленьких файлов
-    if file_size_kb <= MAX_UNCOMPRESSED_SIZE_KB:
-        return FileResponse(file_path)
-    
     try:
-        # 2. Синхронное сжатие
-        buffer = compress_image(file_path)
-        
-        return Response(
-            content=buffer.getvalue(),
-            media_type="image/jpeg",
-            headers={
-                "X-Compression-Mode": "turbo" if file_size_kb > LARGE_FILE_THRESHOLD_KB else "normal",
-                "X-Original-Size": f"{file_size_kb:.1f}KB",
-                "X-Compressed-Size": f"{buffer.tell()/1024:.1f}KB"
-            }
-        )
-    except Exception as e:
-        raise HTTPException(500, f"Processing error: {str(e)}")
+        # Проверка что это изображение
+        with Image.open(file_path) as img:
+            original_format = img.format.upper() if img.format else 'JPEG'
+    except:
+        raise HTTPException(400, "Invalid image file")
+    
+    # Получаем сжатое изображение
+    compressed_image = compress_image(file_path)
+    
+    # Определяем Content-Type
+    content_type = f"image/{original_format.lower()}" if original_format != 'JPEG' else 'image/jpeg'
+    
+    return Response(
+        content=compressed_image.getvalue(),
+        media_type=content_type,
+        headers={"Content-Disposition": f"inline; filename=compressed_{filename}"}
+    )

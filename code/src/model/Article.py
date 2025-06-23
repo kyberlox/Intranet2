@@ -982,7 +982,6 @@ class Article:
                 'id': section_id,
                 'type': 'fullRowBlock',
                 'title': 'Видеорепортажи',
-                'href': 'videonews',
                 'images': []
             }
 
@@ -1001,6 +1000,7 @@ class Article:
                         image_url = preview_pict
                     
                     news['id'] = row[0]
+                    news['href'] = 'videoReport'
                     news['title'] = row[1]
                     news['description'] = row[2]
                     news['image'] = image_url
@@ -1093,7 +1093,6 @@ class Article:
                 'id': section_id,
                 'type': "fullRowBlock",
                 'title': "Корпоративные события",
-                'href': "corpevents",
                 'images': []
             }
             image_url = ''
@@ -1110,6 +1109,7 @@ class Article:
                         image_url = preview_pict
                     
                     news['id'] = row[0]
+                    news['href'] = 'corpEvent'
                     news['title'] = row[1]
                     news['description'] = row[2]
                     news['image'] = image_url

@@ -38,6 +38,7 @@ class File:
         try:
             b24 = B24()
             #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
+            filename = "___"
             try:
                 if need_all_method:
                     file_data = b24.get_all_files(self.b24_id)
@@ -79,37 +80,43 @@ class File:
 
                     # Сохраняем файл
                     content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
+                    print(filename, 'filename')
+
+                result = {
+                    "original_name": filename,
+                    "stored_name": unique_name,
+                    "content_type": content_type,
+                    "article_id": art_id,
+                    "b24_id": self.b24_id,
+                    "is_archive": False,
+                    "is_preview": is_preview,
+                    "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                }
+
+                inserted_id = FileModel().add(result)
+
+                return {
+                    "id": str(inserted_id),
+                    "original_name": filename,
+                    "stored_name": unique_name,
+                    "content_type": content_type,
+                    "article_id": art_id,
+                    "b24_id": self.b24_id,
+                    "is_archive": False,
+                    "is_preview" : is_preview,
+                    "file_url": f"/api/files/{unique_name}"
+                }
+
             except:
                 LogsMaker().warning_message(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
 
-
-            result = {
-                "original_name": filename,
-                "stored_name": unique_name,
-                "content_type": content_type,
-                "article_id": art_id,
-                "b24_id": self.b24_id,
-                "is_archive": False,
-                "is_preview": is_preview,
-                "file_url": f"/api/files/{unique_name}"  # Прямой URL
-            }
+            
+            
 
             #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
 
             #записать в mongodb
-            inserted_id = FileModel().add(result)
-
-            return {
-                "id": str(inserted_id),
-                "original_name": filename,
-                "stored_name": unique_name,
-                "content_type": content_type,
-                "article_id": art_id,
-                "b24_id": self.b24_id,
-                "is_archive": False,
-                "is_preview" : is_preview,
-                "file_url": f"/api/files/{unique_name}"
-            }
+            
 
         except requests.exceptions.RequestException as e:
             # print(f"Ошибка при скачивании файла: {e}")

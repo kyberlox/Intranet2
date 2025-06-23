@@ -3,8 +3,15 @@ FROM python:3.13-alpine3.22
 WORKDIR /data/app
 COPY ./requirements.txt /data/app/requirements.txt
 
-RUN apt-get update && apt-get install -y libvips-dev && \
-    pip install pyvips
+# Устанавливаем зависимости для pyvips
+RUN apk add --no-cache \
+    vips-dev \
+    vips \
+    vips-cpp \
+    vips-tools \
+    vips-libs \
+    build-base \
+    && pip install --no-cache-dir pyvips
 
 RUN pip install --upgrade pip
 

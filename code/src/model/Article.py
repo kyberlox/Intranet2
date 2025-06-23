@@ -147,7 +147,7 @@ class Article:
 
             
             if type(data['PROPERTY_1036']) == type(list()):
-                uuid = data['PROPERTY_1036'].values()[0]
+                uuid = data['PROPERTY_1036'][0]
             else:
                 uuid = list(data['PROPERTY_1036'].values())[0]
 

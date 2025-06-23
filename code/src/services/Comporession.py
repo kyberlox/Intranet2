@@ -3,7 +3,6 @@ from fastapi.responses import FileResponse, Response
 from PIL import Image
 from io import BytesIO
 import os
-import asyncio
 
 compress_router = APIRouter(prefix="/compress_image", tags=["Компрессия изображений"])
 STORAGE_PATH = "./files_db"
@@ -14,8 +13,8 @@ MAX_UNCOMPRESSED_SIZE_KB = 250    # Не сжимать файлы <250KB
 LARGE_FILE_THRESHOLD_KB = 1024    # Порог для жёсткого сжатия
 LARGE_FILE_TARGET_KB = 512        # Целевой размер для больших файлов
 
-def _sync_compress(file_path: str) -> BytesIO:
-    """Синхронная функция сжатия для вызова в отдельном потоке"""
+def compress_image(file_path: str) -> BytesIO:
+    """Синхронная функция сжатия"""
     file_size_kb = os.path.getsize(file_path) / 1024
     
     with Image.open(file_path) as img:
@@ -45,7 +44,7 @@ def _sync_compress(file_path: str) -> BytesIO:
         return buffer
 
 @compress_router.get("/{filename}")
-async def get_compressed_image(filename: str):
+def get_compressed_image(filename: str):  # Убрано async!
     file_path = os.path.join(STORAGE_PATH, filename)
     
     if not os.path.exists(file_path):
@@ -58,8 +57,8 @@ async def get_compressed_image(filename: str):
         return FileResponse(file_path)
     
     try:
-        # 2. Запускаем сжатие в отдельном потоке
-        buffer = await asyncio.to_thread(_sync_compress, file_path)
+        # 2. Синхронное сжатие
+        buffer = compress_image(file_path)
         
         return Response(
             content=buffer.getvalue(),

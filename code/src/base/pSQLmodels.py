@@ -311,7 +311,8 @@ class UserModel():
                 pass
         except SQLAlchemyError as e:
             db.rollback()
-            print(f"An error occurred: {e}")
+            #print(f"An error occurred: {e}")
+            LogsMaker().error_message(e)
 
     def find_by_id(self):
         """

@@ -243,10 +243,7 @@ def _optimized_compress(image: Image.Image, original_format: str, max_size_kb: i
     return buffer
 
 @app.get("/api/compress_image/{filename}")
-async def get_compressed_image(
-    filename: str, 
-    preserve_transparency: Optional[bool] = False
-):
+async def get_compressed_image(filename: str, preserve_transparency: Optional[bool] = False):
     file_path = os.path.join(STORAGE_PATH, filename)
     
     # Быстрая проверка файла

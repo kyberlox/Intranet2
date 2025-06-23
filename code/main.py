@@ -224,12 +224,12 @@ def _optimized_compress(image: Image.Image, original_format: str, max_size_kb: i
     """Ускоренная версия сжатия без итеративного подбора качества."""
     buffer = BytesIO()
     format_params = {
-        "JPEG": {"format": "JPEG", "quality": 85, "optimize": True},
-        "PNG": {"format": "PNG", "compress_level": 6},
-        "WEBP": {"format": "WEBP", "quality": 80, "method": 4}
+        "JPEG": {"format": "JPEG", "quality": 95, "optimize": True},
+        "PNG": {"format": "PNG", "compress_level": 9},
+        "WEBP": {"format": "WEBP", "quality": 95, "method": 9}
     }
     
-    params = format_params.get(original_format, {"format": "JPEG", "quality": 75})
+    params = format_params.get(original_format, {"format": "JPEG", "quality": 95})
     image.save(buffer, **params)
     
     if buffer.tell() / 1024 > max_size_kb and original_format in ("JPEG", "WEBP"):

@@ -220,6 +220,69 @@ def compress_image(input_path: str, max_size_kb: int = 250, preserve_transparenc
         output_buffer.seek(0)
         return output_buffer
 
+def _optimized_compress(image: Image.Image, original_format: str, max_size_kb: int = 250) -> BytesIO:
+    """Ускоренная версия сжатия без итеративного подбора качества."""
+    buffer = BytesIO()
+    format_params = {
+        "JPEG": {"format": "JPEG", "quality": 85, "optimize": True},
+        "PNG": {"format": "PNG", "compress_level": 6},
+        "WEBP": {"format": "WEBP", "quality": 80, "method": 4}
+    }
+    
+    params = format_params.get(original_format, {"format": "JPEG", "quality": 75})
+    image.save(buffer, **params)
+    
+    if buffer.tell() / 1024 > max_size_kb and original_format in ("JPEG", "WEBP"):
+        # Жёсткое сжатие, если не уложились в размер
+        buffer.seek(0)
+        buffer.truncate()
+        params["quality"] = max(30, params.get("quality", 75) - 25)
+        image.save(buffer, **params)
+    
+    buffer.seek(0)
+    return buffer
+
+@app.get("/api/compress_image/{filename}")
+async def get_compressed_image(
+    filename: str, 
+    preserve_transparency: Optional[bool] = False
+):
+    file_path = os.path.join(STORAGE_PATH, filename)
+    
+    # Быстрая проверка файла
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    try:
+        # Загрузка изображения в память один раз
+        with Image.open(file_path) as img:
+            original_format = img.format.upper() if img.format else "JPEG"
+            file_size_kb = os.path.getsize(file_path) / 1024
+            
+            if file_size_kb <= 250:
+                return FileResponse(file_path)
+            
+            # Конвертация формата, если нужно
+            if original_format == "PNG" and not preserve_transparency:
+                img = img.convert("RGB")
+                original_format = "JPEG"
+            
+            # Асинхронное сжатие
+            buffer = await asyncio.to_thread(
+                _optimized_compress, 
+                img, 
+                original_format
+            )
+            
+            return Response(
+                content=buffer.getvalue(),
+                media_type=f"image/{original_format.lower()}",
+                headers={"Content-Disposition": f"inline; filename=compressed_{filename}"}
+            )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Image processing failed: {str(e)}")
+
+'''
 @app.get("/api/compress_image/{filename}")
 async def get_compressed_image(filename: str, preserve_transparency: Optional[bool] = False):
     # Базовый путь к папке с изображениями (измените на свой)
@@ -263,6 +326,9 @@ async def get_compressed_image(filename: str, preserve_transparency: Optional[bo
             media_type=content_type,
             headers={"Content-Disposition": f"inline; filename=compressed_{filename}"}
         )
+'''
+
+
 
 @app.get("/test/{ID}")
 def test(ID):

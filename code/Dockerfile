@@ -3,7 +3,8 @@ FROM python:3.13-alpine3.22
 WORKDIR /data/app
 COPY ./requirements.txt /data/app/requirements.txt
 
-RUN apt-get update && apt-get install -y libvips-dev
+RUN apt-get update && apt-get install -y libvips-dev && \
+    pip install pyvips
 
 RUN pip install --upgrade pip
 

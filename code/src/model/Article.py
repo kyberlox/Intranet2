@@ -718,8 +718,8 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            #main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
-            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
+            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            #main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции

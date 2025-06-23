@@ -985,7 +985,7 @@ class Article:
                 'type': 'fullRowBlock',
                 'title': 'Видеорепортажи',
                 'href': 'videoReport',
-                'sectionId': 'videoReports'
+                'sectionId': 'videoReports',
                 'images': []
             }
 

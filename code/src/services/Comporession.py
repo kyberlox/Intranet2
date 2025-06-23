@@ -33,6 +33,8 @@ async def _turbo_compress(img_path: str) -> BytesIO:
         except Exception as e:
             raise RuntimeError(f"Compression failed: {str(e)}")
 
+
+
 @compress_router.get("/{filename}")
 async def get_compressed_image(filename: str):
     file_path = os.path.join(STORAGE_PATH, filename)

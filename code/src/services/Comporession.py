@@ -16,25 +16,22 @@ MAX_UNCOMPRESSED_SIZE_KB = 250  # Не сжимаем файлы меньше э
 LARGE_FILE_THRESHOLD_KB = 1024   # Порог для "жёсткого" сжатия (1 МБ)
 LARGE_FILE_TARGET_KB = 512       # Целевой размер для больших файлов
 
-def _turbo_compress(img_path: str) -> BytesIO:
-    """Ускоренное сжатие с контролем размера"""
-    buffer = BytesIO()
-    img = pyvips.Image.new_from_file(img_path)
-    
-    # Автоподбор качества
-    file_size_kb = os.path.getsize(img_path) / 1024
-    quality = 30 if file_size_kb > LARGE_FILE_THRESHOLD_KB else 70
-    
-    img.webpsave_buffer(buffer, Q=quality, strip=True)
-    buffer.seek(0)
-    
-    # Досжатие, если не уложились в лимит для больших файлов
-    if file_size_kb > LARGE_FILE_THRESHOLD_KB and buffer.getbuffer().nbytes / 1024 > LARGE_FILE_TARGET_KB:
-        buffer = BytesIO()
-        img.webpsave_buffer(buffer, Q=20, strip=True)
-        buffer.seek(0)
-    
-    return buffer
+async def _turbo_compress(img_path: str) -> BytesIO:
+    """Асинхронное сжатие через pyvips"""
+    def _sync_compress():
+        try:
+            img = pyvips.Image.new_from_file(img_path)
+            buffer = BytesIO()
+            
+            # Динамическое качество
+            file_size_kb = os.path.getsize(img_path) / 1024
+            quality = 30 if file_size_kb > 1024 else 70
+            
+            img.webpsave_buffer(buffer, Q=quality, strip=True)
+            buffer.seek(0)
+            return buffer
+        except Exception as e:
+            raise RuntimeError(f"Compression failed: {str(e)}")
 
 @compress_router.get("/{filename}")
 async def get_compressed_image(filename: str):
@@ -46,17 +43,16 @@ async def get_compressed_image(filename: str):
     file_size_kb = os.path.getsize(file_path) / 1024
     
     # 1. Возврат без сжатия для маленьких файлов
-    if file_size_kb <= MAX_UNCOMPRESSED_SIZE_KB:
+    if file_size_kb <= 250:
         return FileResponse(file_path)
     
     try:
-        # 2. Быстрое сжатие через pyvips
-        buffer = await asyncio.to_thread(_turbo_compress, file_path)
+        # 2. Асинхронное сжатие
+        buffer = await _turbo_compress(file_path)
         
         return Response(
             content=buffer.getvalue(),
-            media_type="image/webp",
-            headers={"X-Compression": "turbo" if file_size_kb > LARGE_FILE_THRESHOLD_KB else "normal"}
+            media_type="image/webp"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

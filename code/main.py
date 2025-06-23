@@ -153,7 +153,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 
-def compress_image(input_path: str, max_size_kb: int = 200, preserve_transparency: bool = False) -> BytesIO:
+def compress_image(input_path: str, max_size_kb: int = 250, preserve_transparency: bool = False) -> BytesIO:
     """
     Сжимает изображение до размера не превышающего max_size_kb в КБ.
     Возвращает BytesIO объект с сжатым изображением.
@@ -220,7 +220,7 @@ def compress_image(input_path: str, max_size_kb: int = 200, preserve_transparenc
         output_buffer.seek(0)
         return output_buffer
 
-def _optimized_compress(image: Image.Image, original_format: str, max_size_kb: int = 250) -> BytesIO:
+def _optimized_compress(image: Image.Image, original_format: str, max_size_kb: int = 150) -> BytesIO:
     """Ускоренная версия сжатия без итеративного подбора качества."""
     buffer = BytesIO()
     format_params = {

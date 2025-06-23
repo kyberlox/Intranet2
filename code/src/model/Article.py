@@ -757,8 +757,6 @@ class Article:
     
     def main_page(self, section_id):
         #Новые сотрудники
-        
-        print("Я тут есть")
         if section_id == 112:
             img_new_workers = []     
             users = User().get_new_workers()  
@@ -798,7 +796,6 @@ class Article:
 
         # Орг развитие
         elif section_id == 32:
-            print("Меня тут нет")
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:

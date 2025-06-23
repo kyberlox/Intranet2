@@ -143,13 +143,14 @@ class Article:
         #отдельно обарботаем случай доски почета
         #соберём совою indirect_data
         uuid = list(data['PROPERTY_1036'].values())[0]
+        photo = User(id=uuid).search_by_id()["photo_file_url"],
         if data["IBLOCK_ID"] == "123":
             indirect_data = json.dumps({
                 "uuid" : uuid,
                 "year" : list(data['PROPERTY_1035'].values())[0],
                 "position" : list(data['PROPERTY_1037'].values())[0],
                 "department" : list(data['PROPERTY_1039'].values())[0],
-                "photo_file_url" : User(id=uuid).search_by_id()["photo_file_url"],
+                "photo_file_url" : photo,
                 "location" : ""
             })
 

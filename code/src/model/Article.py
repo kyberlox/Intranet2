@@ -86,7 +86,7 @@ class Article:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358"]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034"]
             content = None
             for key in keys:
                 if key in data:
@@ -139,8 +139,20 @@ class Article:
                     else:
                         grya.append(data[key][key_key])
                 data[key] = grya
+        
+        #отдельно обарботаем случай доски почета
+        #соберём совою indirect_data
+        if data["IBLOCK_ID"] == "123":
+            indirect_data = json.dumps({
+                "uuid" : list(data['PROPERTY_1036'].values())[0],
+                "year" : list(data['PROPERTY_1035'].values())[0],
+                "position" : list(data['PROPERTY_1037'].values())[0],
+                "department" : list(data['PROPERTY_1039'].values())[0],
+                "location" : ""
+            })
 
-        indirect_data = json.dumps(data)
+        else:
+            indirect_data = json.dumps(data)
 
         article_data = {
             "id" : self.id,
@@ -333,6 +345,7 @@ class Article:
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди
+            14 : "123", #Доска почёта
             #16 : "122", # Видеоитервью
             
             #32 : "132", # Новости организационного развития

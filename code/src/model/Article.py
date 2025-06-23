@@ -11,6 +11,7 @@ from src.base.pSQLmodels import ViewsModel
 
 import json
 import datetime
+import asyncio
 
 from fastapi import APIRouter, Body
 
@@ -237,7 +238,6 @@ class Article:
                 #обрабатываются днфолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
                     need_all_method = False
-                    print(file_property)
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -688,20 +688,26 @@ class Article:
         return art
 
     def get_preview(self ):
-        print(self.id)
         files = File(art_id = int(self.id)).get_files_by_art_id()
         for file in files:
             if file["is_preview"]:
                 url = file["file_url"]
+                #внедряю компрессию
+                preview_link = url.split("/")
+                preview_link[-2] = "compress_image"
+                url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         #находим любую картинку, если она есть
         for file in files:
-            print(file)
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
+                #внедряю компрессию
+                preview_link = url.split("/")
+                preview_link[-2] = "compress_image"
+                url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -712,8 +718,8 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            #main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
-            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
+            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            #main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции

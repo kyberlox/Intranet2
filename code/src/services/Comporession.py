@@ -3,51 +3,29 @@ from fastapi.responses import Response, FileResponse
 import os
 import asyncio
 import pyvips
+from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 import logging
-from pathlib import Path
 
+# Конфигурация
 compress_router = APIRouter(prefix="/compress_image", tags=["Компрессия изображений"])
 STORAGE_PATH = "./files_db"
-Path(STORAGE_PATH).mkdir(exist_ok=True)
+os.makedirs(STORAGE_PATH, exist_ok=True)
 
-# Настройки сжатия
-MAX_UNCOMPRESSED_SIZE_KB = 250
-LARGE_FILE_THRESHOLD_KB = 1024
-LARGE_FILE_TARGET_KB = 512
+# Оптимальное количество потоков (подбирается экспериментально)
+MAX_WORKERS = 4
+executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 async def _turbo_compress(img_path: str) -> BytesIO:
-    """Надежная асинхронная компрессия с полной диагностикой"""
-    try:
-        # Проверка файла перед обработкой
-        if not os.path.isfile(img_path):
-            logging.error(f"File not found or is directory: {img_path}")
-            return None
-            
-        file_size = os.path.getsize(img_path)
-        if file_size == 0:
-            logging.error(f"Empty file: {img_path}")
-            return None
-
-        # Чтение файла с проверкой
+    """Асинхронное сжатие с контролем памяти"""
+    def _sync_compress():
         try:
-            img = pyvips.Image.new_from_file(img_path)
-            if img is None:
-                logging.error(f"pyvips failed to load image: {img_path}")
-                return None
-        except pyvips.Error as e:
-            logging.error(f"pyvips error with {img_path}: {str(e)}")
-            return None
-
-        # Определение параметров сжатия
-        file_size_kb = file_size / 1024
-        is_large = file_size_kb > LARGE_FILE_THRESHOLD_KB
-        quality = 30 if is_large else 70
-        target_format = "webp"
-
-        # Сжатие с обработкой ошибок
-        try:
+            img = pyvips.Image.new_from_file(img_path, access='sequential')
             buffer = BytesIO()
+            
+            file_size_kb = os.path.getsize(img_path) / 1024
+            quality = 30 if file_size_kb > 1024 else 70
+            
             img.webpsave_buffer(
                 buffer,
                 Q=quality,
@@ -55,62 +33,34 @@ async def _turbo_compress(img_path: str) -> BytesIO:
                 smart_subsample=True,
                 reduction_effort=4
             )
-            buffer.seek(0)
-            
-            # Проверка размера после сжатия
-            compressed_size = len(buffer.getvalue()) / 1024
-            if is_large and compressed_size > LARGE_FILE_TARGET_KB:
-                logging.warning(f"Recompressing {img_path} (size: {compressed_size:.1f}KB)")
-                buffer = BytesIO()
-                img.webpsave_buffer(buffer, Q=20)
-                buffer.seek(0)
-                
             return buffer
         except Exception as e:
-            logging.error(f"Compression failed for {img_path}: {str(e)}")
-            return None
-            
-    except Exception as e:
-        logging.critical(f"Unexpected error in _turbo_compress: {str(e)}")
-        return None
+            logging.error(f"Compression error: {str(e)}")
+            raise
+
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, _sync_compress)
 
 @compress_router.get("/{filename}")
 async def get_compressed_image(filename: str):
-    """Эндпоинт с полной обработкой ошибок"""
+    file_path = os.path.join(STORAGE_PATH, filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    file_size_kb = os.path.getsize(file_path) / 1024
+    
+    # Быстрый возврат для маленьких файлов
+    if file_size_kb <= 250:
+        return FileResponse(file_path)
+    
     try:
-        file_path = os.path.join(STORAGE_PATH, filename)
-        
-        # 1. Проверка существования файла
-        if not os.path.isfile(file_path):
-            raise HTTPException(status_code=404, detail="File not found")
-            
-        # 2. Проверка размера файла
-        file_size = os.path.getsize(file_path)
-        if file_size == 0:
-            raise HTTPException(status_code=400, detail="Empty file")
-
-        # 3. Возврат без сжатия для маленьких файлов
-        if file_size <= MAX_UNCOMPRESSED_SIZE_KB * 1024:
-            return FileResponse(file_path)
-
-        # 4. Асинхронное сжатие
         buffer = await _turbo_compress(file_path)
-        if buffer is None:
-            raise HTTPException(status_code=500, detail="Image processing failed")
-
-        # 5. Возврат результата
         return Response(
             content=buffer.getvalue(),
             media_type="image/webp",
-            headers={
-                "X-Compression-Mode": "turbo" if file_size > LARGE_FILE_THRESHOLD_KB*1024 else "normal",
-                "X-Original-Size": str(file_size),
-                "X-Compressed-Size": str(len(buffer.getvalue()))
-            }
+            headers={"X-Compression": "turbo" if file_size_kb > 1024 else "normal"}
         )
-        
-    except HTTPException:
-        raise
     except Exception as e:
-        logging.error(f"Critical error in endpoint: {str(e)}", exc_info=True)
+        logging.error(f"Failed to process {filename}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")

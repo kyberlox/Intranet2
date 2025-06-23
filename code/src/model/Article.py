@@ -146,11 +146,11 @@ class Article:
         if data["IBLOCK_ID"] == "123":
 
             
-            if type(data['PROPERTY_1036'].values()) == type(list()):
+            if type(data['PROPERTY_1036']) == type(list()):
                 uuid = data['PROPERTY_1036'].values()[0]
             else:
                 uuid = list(data['PROPERTY_1036'].values())[0]
-                
+
             photo = User(id=uuid).search_by_id()["photo_file_url"]
             indirect_data = json.dumps({
                 "uuid" : uuid,

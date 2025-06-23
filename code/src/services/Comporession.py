@@ -1,64 +1,62 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import Response, FileResponse
+from fastapi import APIRouter, HTTPException, Response
+from fastapi.responses import FileResponse
 import os
-import asyncio
-import pyvips
+from io import BytesIO
 from typing import Optional
-import logging
+from PIL import Image
+import asyncio
+import pyvips  # Убедитесь, что установлен (pip install pyvips)
 
-# Обязательное именование роутера (как требуется в проекте)
 compress_router = APIRouter(prefix="/compress_image", tags=["Компрессия изображений"])
 
-# Конфигурация (как указано)
+# Конфигурация (возвращаем старые параметры)
 STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
-TARGET_QUALITY = 70  # Качество сжатия (0-100)
+MAX_UNCOMPRESSED_SIZE_KB = 250  # Не сжимаем файлы меньше этого размера
+LARGE_FILE_THRESHOLD_KB = 1024   # Порог для "жёсткого" сжатия (1 МБ)
+LARGE_FILE_TARGET_KB = 512       # Целевой размер для больших файлов
 
-def _compress_image_sync(image_path: str) -> bytes:
-    """Синхронное сжатие изображения через pyvips"""
-    try:
-        image = pyvips.Image.new_from_file(image_path)
-        return image.webpsave_buffer(Q=TARGET_QUALITY)
-    except Exception as e:
-        logging.error(f"Ошибка сжатия {image_path}: {str(e)}")
-        raise
+def _turbo_compress(img_path: str) -> BytesIO:
+    """Ускоренное сжатие с контролем размера"""
+    buffer = BytesIO()
+    img = pyvips.Image.new_from_file(img_path)
+    
+    # Автоподбор качества
+    file_size_kb = os.path.getsize(img_path) / 1024
+    quality = 30 if file_size_kb > LARGE_FILE_THRESHOLD_KB else 70
+    
+    img.webpsave_buffer(buffer, Q=quality, strip=True)
+    buffer.seek(0)
+    
+    # Досжатие, если не уложились в лимит для больших файлов
+    if file_size_kb > LARGE_FILE_THRESHOLD_KB and buffer.getbuffer().nbytes / 1024 > LARGE_FILE_TARGET_KB:
+        buffer = BytesIO()
+        img.webpsave_buffer(buffer, Q=20, strip=True)
+        buffer.seek(0)
+    
+    return buffer
 
-@compress_router.get("/{filename}")  # Обязательное именование (как в требованиях)
-async def get_compressed_image(
-    filename: str,
-    preserve_transparency: Optional[bool] = False
-):
-    """
-    Возвращает сжатое изображение.
-    Соответствует строгим требованиям проекта:
-    - Роутер именуется `compress_router`
-    - Префикс `/compress_image`
-    - Путь к файлам: `./files_db`
-    """
+@compress_router.get("/{filename}")
+async def get_compressed_image(filename: str):
     file_path = os.path.join(STORAGE_PATH, filename)
     
-    # Проверка существования файла
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Файл не найден")
-
-    # Быстрый возврат для маленьких файлов (<250KB)
-    if os.path.getsize(file_path) < 250 * 1024:
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    file_size_kb = os.path.getsize(file_path) / 1024
+    
+    # 1. Возврат без сжатия для маленьких файлов
+    if file_size_kb <= MAX_UNCOMPRESSED_SIZE_KB:
         return FileResponse(file_path)
-
+    
     try:
-        # Асинхронное сжатие в отдельном потоке
-        compressed_data = await asyncio.to_thread(
-            _compress_image_sync,
-            file_path
-        )
+        # 2. Быстрое сжатие через pyvips
+        buffer = await asyncio.to_thread(_turbo_compress, file_path)
         
         return Response(
-            content=compressed_data,
+            content=buffer.getvalue(),
             media_type="image/webp",
-            headers={
-                "Content-Disposition": f"inline; filename=compressed_{filename}",
-                "X-Compression-Quality": str(TARGET_QUALITY)
-            }
+            headers={"X-Compression": "turbo" if file_size_kb > LARGE_FILE_THRESHOLD_KB else "normal"}
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка обработки: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

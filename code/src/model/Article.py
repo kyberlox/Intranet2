@@ -758,6 +758,8 @@ class Article:
     
     def main_page(self, section_id):
         #Новые сотрудники
+        
+        print("Я тут есть")
         if section_id == 112:
             img_new_workers = []     
             users = User().get_new_workers()  
@@ -796,7 +798,6 @@ class Article:
             return birthday
 
         # Орг развитие
-        print("Я тут есть")
         elif section_id == 32:
             print("Меня тут нет")
             date_list = [] # список для сортировки по дате

@@ -1,55 +1,64 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, FileResponse
 import os
 import asyncio
 import pyvips
-from typing import List
+from typing import Optional
 import logging
 
-router = APIRouter(prefix="/compress", tags=["Компрессия"])
+# Обязательное именование роутера (как требуется в проекте)
+compress_router = APIRouter(prefix="/compress_image", tags=["Компрессия изображений"])
+
+# Конфигурация (как указано)
 STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
+TARGET_QUALITY = 70  # Качество сжатия (0-100)
 
-# Настройки сжатия
-TARGET_QUALITY = 70  # Баланс скорость/качество
-MAX_WIDTH = 1920     # Максимальная ширина (для уменьшения разрешения)
-
-def _compress_vips(image_path: str) -> bytes:
-    """Синхронное сжатие через libvips (очень быстрое)"""
+def _compress_image_sync(image_path: str) -> bytes:
+    """Синхронное сжатие изображения через pyvips"""
     try:
         image = pyvips.Image.new_from_file(image_path)
-        
-        # Уменьшаем разрешение для больших изображений
-        if image.width > MAX_WIDTH:
-            image = image.resize(MAX_WIDTH / image.width)
-        
         return image.webpsave_buffer(Q=TARGET_QUALITY)
     except Exception as e:
-        logging.error(f"Ошибка сжатия {image_path}: {e}")
+        logging.error(f"Ошибка сжатия {image_path}: {str(e)}")
         raise
 
-async def compress_image(image_path: str) -> Response:
-    """Асинхронная обёртка для сжатия"""
-    if not os.path.exists(image_path):
-        raise HTTPException(status_code=404, detail="Файл не найден")
+@compress_router.get("/{filename}")  # Обязательное именование (как в требованиях)
+async def get_compressed_image(
+    filename: str,
+    preserve_transparency: Optional[bool] = False
+):
+    """
+    Возвращает сжатое изображение.
+    Соответствует строгим требованиям проекта:
+    - Роутер именуется `compress_router`
+    - Префикс `/compress_image`
+    - Путь к файлам: `./files_db`
+    """
+    file_path = os.path.join(STORAGE_PATH, filename)
     
+    # Проверка существования файла
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Файл не найден")
+
+    # Быстрый возврат для маленьких файлов (<250KB)
+    if os.path.getsize(file_path) < 250 * 1024:
+        return FileResponse(file_path)
+
     try:
-        # Запускаем в отдельном потоке (не блокируем event loop)
-        compressed_data = await asyncio.to_thread(_compress_vips, image_path)
+        # Асинхронное сжатие в отдельном потоке
+        compressed_data = await asyncio.to_thread(
+            _compress_image_sync,
+            file_path
+        )
+        
         return Response(
             content=compressed_data,
             media_type="image/webp",
-            headers={"X-Compressed": "true"}
+            headers={
+                "Content-Disposition": f"inline; filename=compressed_{filename}",
+                "X-Compression-Quality": str(TARGET_QUALITY)
+            }
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка: {str(e)}")
-
-@router.post("/batch")
-async def compress_batch(filenames: List[str]) -> List[Response]:
-    """Параллельная обработка 300+ фото"""
-    tasks = []
-    for filename in filenames:
-        file_path = os.path.join(STORAGE_PATH, filename)
-        tasks.append(compress_image(file_path))
-    
-    return await asyncio.gather(*tasks)
+        raise HTTPException(status_code=500, detail=f"Ошибка обработки: {str(e)}")

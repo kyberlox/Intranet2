@@ -718,8 +718,8 @@ class Article:
 
     def search_by_section_id(self):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
-            #main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
+            #main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            main_page = [112, 19, 4, 111, 31, 33, 9, 53, 51] #[112, 19, 4, 111, 31, 16, 9, 53, 51]
             page_view = []
 
             for page in main_page: # проходимся по каждой секции
@@ -877,7 +877,8 @@ class Article:
                 'id': section_id,
                 'type': 'fullRowBlock',
                 'title': 'Бизнес-новости',
-                'href': 'actualNews',
+                'href': 'actualArticle',
+                'sectionId': 'actualNews',
                 'images': []
             }
 
@@ -930,7 +931,9 @@ class Article:
             second_page = {
                 'id': section_id,
                 'type': 'fullRowBlock',
-                'title': 'Интервью',
+                'title': 'Видеоинтервью',
+                'href': 'videoInterview',
+                'sectionId': 'videoInterviews',
                 'images': []
             }
 
@@ -951,8 +954,7 @@ class Article:
                     news['id'] = row[0]
                     news['title'] = row[1]
                     news['description'] = row[2]
-                    news['image'] = image_url
-                    news['href'] = 'videoInterview'
+                    news['image'] = image_url                    
                     # сюда реакции
                     news['reactions'] = {
                         'views': 12,
@@ -982,6 +984,8 @@ class Article:
                 'id': section_id,
                 'type': 'fullRowBlock',
                 'title': 'Видеорепортажи',
+                'href': 'videoReport',
+                'sectionId': 'videoReports',
                 'images': []
             }
 
@@ -1000,7 +1004,6 @@ class Article:
                         image_url = preview_pict
                     
                     news['id'] = row[0]
-                    news['href'] = 'videoReport'
                     news['title'] = row[1]
                     news['description'] = row[2]
                     news['image'] = image_url
@@ -1093,6 +1096,8 @@ class Article:
                 'id': section_id,
                 'type': "fullRowBlock",
                 'title': "Корпоративные события",
+                'href': 'corpEvent',
+                'sectionId': 'corpEvents',
                 'images': []
             }
             image_url = ''
@@ -1109,7 +1114,6 @@ class Article:
                         image_url = preview_pict
                     
                     news['id'] = row[0]
-                    news['href'] = 'corpEvent'
                     news['title'] = row[1]
                     news['description'] = row[2]
                     news['image'] = image_url

@@ -142,7 +142,10 @@ class Article:
         
         #отдельно обарботаем случай доски почета
         #соберём совою indirect_data
-        uuid = list(data['PROPERTY_1036'].values())[0]
+        try:
+            uuid = list(data['PROPERTY_1036'].values())[0]
+        except:
+            print(self.id)
         photo = User(id=uuid).search_by_id()["photo_file_url"],
         if data["IBLOCK_ID"] == "123":
             indirect_data = json.dumps({

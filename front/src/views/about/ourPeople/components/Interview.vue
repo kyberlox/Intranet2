@@ -5,7 +5,7 @@
                 <div class="row blog">
                     <h1 class="page__title">{{ interviewInner.name }}</h1>
                     <div class="col-sm-4">
-                        <div :style="{ backgroundImage: `url('${interviewInner.image ?? 'https://placehold.co/490x642'}')` }"
+                        <div :style="{ backgroundImage: `url('${interviewInner.images[1] ?? interviewInner.preview_file_url}')` }"
                              class="interview__img"></div>
                         <div class="imageCaption">{{ interviewInner.name }}</div>
                         <div class="news-like">
@@ -15,7 +15,7 @@
                         </div>
                     </div>
                     <div class="col-sm-8"
-                         v-html="interviewInner.content_text">
+                         v-html="parseMarkdown(interviewInner.content_text)">
                     </div>
                 </div>
             </div>
@@ -24,6 +24,7 @@
 </template>
 <script lang="ts">
 import Reactions from "@/components/tools/common/Reactions.vue";
+import { parseMarkdown } from "@/utils/useMarkdown";
 import { defineComponent } from "vue";
 export default defineComponent({
     components: {
@@ -35,5 +36,10 @@ export default defineComponent({
             required: true,
         },
     },
+    setup() {
+        return {
+            parseMarkdown
+        }
+    }
 });
 </script>

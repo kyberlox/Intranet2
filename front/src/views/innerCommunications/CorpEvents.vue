@@ -12,9 +12,9 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, type ComputedRef } from "vue";
 import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
-import GridGallery from "@/components/tools/gallery/GridGallery.vue";
+import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import { extractYears } from "@/utils/extractYearsFromPosts";
 import type { ICorpEventsItem } from "@/interfaces/IEntities";
 import { showEventsByYear } from "@/utils/showEventsByYear";

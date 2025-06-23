@@ -9,9 +9,9 @@
     </div>
 </template>
 <script lang="ts">
-import { sectionTips } from '@/assets/staticJsons/sectionTips';
+import { sectionTips } from '@/assets/static/sectionTips';
 import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
-import GridGallery from "@/components/tools/gallery/GridGallery.vue";
+import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef } from 'vue';
 import type { IActualNews } from '@/interfaces/IEntities';

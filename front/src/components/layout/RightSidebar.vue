@@ -44,16 +44,11 @@
                 </div>
             </a>
         </div>
-
-        <div id="pageArrow"
-             style=""
-             class="default"><i class="fa fa-arrow-down"
-               aria-hidden="true"></i></div>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { workLinks, supportLinks } from "@/assets/staticJsons/navLinks";
+import { workLinks, supportLinks } from "@/assets/static/navLinks";
 import Calendar from "./RightSidebarCalendar.vue";
 
 export default defineComponent({

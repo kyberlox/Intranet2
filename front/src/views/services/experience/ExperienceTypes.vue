@@ -10,10 +10,10 @@
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { useRoute } from "vue-router";
 import { defineComponent, ref } from "vue";
-import { expTypeSlides } from "@/assets/staticJsons/referencesAndExp";
+import { expTypeSlides } from "@/assets/static/referencesAndExp";
 export default defineComponent({
     components: {
         FlexGallery,

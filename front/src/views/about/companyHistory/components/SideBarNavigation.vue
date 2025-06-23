@@ -44,7 +44,7 @@ import { defineComponent, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 import ListSidebar from "@/assets/icons/book-emk/ListSidebar.svg?component";
 import ListArrowDown from "@/assets/icons/book-emk/arrow-down.svg?component";
-import { bookNavigation } from "@/assets/staticJsons/bookNavigation";
+import { bookNavigation } from "@/assets/static/bookNavigation";
 import type { SubpageItem, IBook } from "@/interfaces/IBook";
 
 export default defineComponent({

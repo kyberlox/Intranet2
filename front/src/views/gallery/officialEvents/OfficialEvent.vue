@@ -10,8 +10,8 @@
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { officialEventSlide } from "@/assets/static/officialEventsSlides";
 import { defineComponent, computed } from "vue";
 
 export interface INewsSlide {

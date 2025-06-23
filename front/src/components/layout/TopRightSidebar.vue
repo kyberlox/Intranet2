@@ -26,7 +26,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, watch, type ComputedRef } from 'vue'
-import { points } from '@/assets/staticJsons/navLinks'
+import { points } from '@/assets/static/navLinks'
 import { useUserData } from '@/stores/userData'
 import { useRoute } from 'vue-router'
 import { uniqueRoutesHandle } from '@/router/uniqueRoutesHandle'

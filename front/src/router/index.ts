@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: 'router-link-active',
@@ -7,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/homeView/HomeView.vue')
+      component: () => import('../views/homeView/HomeView.vue'),
     },
     {
       path: '/about',
@@ -60,7 +59,7 @@ const router = createRouter({
     },
     {
       path: '/about/blogs/:authorId/:id',
-      name: 'CertainBlog',
+      name: 'certainBlog',
       component: () => import('@/views/about/blogs/CertainBlog.vue'),
       props: (route) => ({ authorId: route.params.authorId, id: route.params.id })
     },
@@ -72,19 +71,19 @@ const router = createRouter({
     {
       path: '/about/videoInterviews/:id',
       name: 'videoInterview',
-      component: () => import('@/views/about/videoInterview/VideoInterviewInner.vue'),
-      props: (route) => ({ id: route.params.id })
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Видеоинтервью' })
     },
     {
       path: '/about/videoreports',
-      name: 'videoreports',
+      name: 'videoReports',
       component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
-      path: '/about/videoreports/:id',
-      name: 'videoreport',
-      component: () => import('@/views/news/videoReports/VideoReports.vue'),
-      props: (route) => ({ id: route.params.id })
+      path: '/about/videoreport/:id',
+      name: 'videoReport',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Видео-репортажи' })
     },
     {
       path: '/about/trainingcenter',
@@ -139,7 +138,7 @@ const router = createRouter({
     },
     {
       path: '/about/fornewworker',
-      name: 'fornewworker',
+      name: 'forNewWorker',
       component: () => import('@/views/about/forNewWorker/ForNewWorker.vue')
     },
     {
@@ -272,7 +271,7 @@ const router = createRouter({
     },
     {
       path: '/news/corpnews',
-      name: 'corpnews',
+      name: 'corpNews',
       component: () => import('@/views/news/corpNews/CorpNews.vue')
     },
     {

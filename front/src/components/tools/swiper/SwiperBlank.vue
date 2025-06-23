@@ -2,6 +2,7 @@
     <swiper v-bind="sliderConfig"
             @swiper="swiperOn">
 
+        <!-- для img -->
         <swiper-slide v-for="(image, index) in images"
                       :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
                       :key="'postImg' + index">
@@ -10,18 +11,30 @@
                  @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>
 
+        <!-- для video -->
+        <swiper-slide v-for="(video, index) in videos"
+                      :key="'postVideo' + index">
+            <iframe width="100%"
+                    height="500px"
+                    :title="'Видеоконтент'"
+                    :src="String(repairVideoUrl(video))"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+        </swiper-slide>
+
     </swiper>
     <div class="swiper-navigation__buttons-group"
-         v-if="images.length > 1">
+         v-if="images.length > 1 || videos.length > 1 || images.length + videos.length > 1">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                @click.stop="slidePrev">
+                @click="slidePrev">
             <ArrowLeft />
         </button>
         <div class="swiper-navigation__buttons-group__pagination"></div>
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
                 :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                @click.stop="slideNext">
+                @click="slideNext">
             <ArrowRight />
         </button>
     </div>

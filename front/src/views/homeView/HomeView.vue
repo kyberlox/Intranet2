@@ -13,10 +13,13 @@
                 <!-- Для отдельных постов в одну строку -->
                 <div v-else-if="item.type == 'fullRowBlock'"
                      class="homeview__grid__cards--fullRowBlock">
-                    <span class="homeview__grid__card__group-title">{{ item.title }}</span>
+                    <span class="homeview__grid__card__group-title">
+                        {{ item.title }}
+                    </span>
                     <div class="homeview__grid">
                         <MainPageRowBlocks v-for="(block, index) in item.images"
                                            :card="block"
+                                           :href="item.href"
                                            :key="index + 'fullrowblock'" />
                     </div>
                 </div>
@@ -35,13 +38,14 @@
                                                :card="typeof blockSlides === 'string' ? { id: item.id, image: blockSlides } : blockSlides"
                                                :key="index + 'fullrowblock'"
                                                :blockTitle="'Корпоративные события'"
+                                               :href="block.href"
                                                :modifiers="['mixedType']" />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <GridGallerySkeleton v-else />
+        <SampleGallerySkeleton v-else />
     </div>
 </template>
 
@@ -51,23 +55,22 @@ import MainPageSoloBlock from "./components/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "./components/MainPageRowBlocks.vue";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { watch } from "vue";
 import { useLoadingStore } from "@/stores/loadingStore";
-import GridGallerySkeleton from "@/components/tools/gallery/GridGallerySkeleton.vue";
+import SampleGallerySkeleton from "@/components/tools/gallery/sample/SampleGallerySkeleton.vue";
 
 export default defineComponent({
     name: "main-page",
     components: {
         MainPageSoloBlock,
         MainPageRowBlocks,
-        GridGallerySkeleton
+        SampleGallerySkeleton
     },
     setup() {
         const useViewsData = useViewsDataStore();
         const loadingStore = useLoadingStore();
-        // const mainPageCards: Ref<MainPageCards | undefined> = ref();
 
         const mainPageCards: ComputedRef<MainPageCards> = computed(() => {
             const data = useViewsData.getData('homeData') as MainPageCards;

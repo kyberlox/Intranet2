@@ -37,7 +37,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { ideas } from '@/assets/staticJsons/ideas';
+import { ideas } from '@/assets/static/ideas';
 export default defineComponent({
     name: 'MyIdeas',
     setup() {

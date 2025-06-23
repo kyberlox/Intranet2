@@ -63,7 +63,7 @@
     </div>
 </template>
 <script lang="ts">
-import { sectionsJson } from "@/assets/staticJsons/trainingCenterData";
+import { sectionsJson } from "@/assets/static/trainingCenterData";
 import { defineComponent } from "vue";
 export default defineComponent({
     setup() {

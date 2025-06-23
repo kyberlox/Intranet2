@@ -16,7 +16,7 @@
 import SafetyTechnicsSlide from "@/views/about/safetyTechnics/components/SafetyTechnicsSlide.vue";
 import { defineComponent, onMounted, computed, type ComputedRef } from "vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import type { ICareSlide } from "@/interfaces/IEntities";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";

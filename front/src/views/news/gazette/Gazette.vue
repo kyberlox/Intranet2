@@ -19,10 +19,9 @@
     </Transition>
 </template>
 <script lang="ts">
-import { ref } from "vue";
-import { gazettes } from "@/assets/staticJsons/gazettes";
+import { ref, defineComponent } from "vue";
+import { gazettes } from "@/assets/static/gazettes";
 import PdfViewerModal from "@/components/tools/modal/PdfViewerModal.vue";
-import { defineComponent } from "vue";
 import type { IGazette } from "@/interfaces/IGazettes";
 
 export default defineComponent({

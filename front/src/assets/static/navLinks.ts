@@ -54,7 +54,7 @@ export const mainMenuPoints: MainMenuPoints = [
             {
                 id: 1.8,
                 name: "Памятка новому сотруднику",
-                href: "fornewworker",
+                href: "forNewWorker",
             },
             {
                 id: 1.9,
@@ -131,12 +131,12 @@ export const mainMenuPoints: MainMenuPoints = [
             {
                 id: 3.2,
                 name: "Новости организационного развития",
-                href: "corpnews",
+                href: "corpNews",
             },
             {
                 id: 3.3,
                 name: "Видеорепортажи",
-                href: "videoreports",
+                href: "videoReports",
             },
             {
                 id: 3.4,

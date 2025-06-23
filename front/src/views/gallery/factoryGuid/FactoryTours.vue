@@ -10,8 +10,8 @@
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { factoryTours } from "@/assets/staticJsons/referencesAndExp";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { factoryTours } from "@/assets/static/referencesAndExp";
 export default {
     components: {
         FlexGallery,

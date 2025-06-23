@@ -9,9 +9,9 @@
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { defineComponent } from "vue";
-import { expSlides } from "@/assets/staticJsons/referencesAndExp";
+import { expSlides } from "@/assets/static/referencesAndExp";
 export default defineComponent({
     components: {
         FlexGallery,

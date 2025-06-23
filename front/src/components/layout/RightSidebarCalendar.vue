@@ -16,7 +16,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
-import { calendarMiniDates } from '@/assets/staticJsons/calendar';
+import { calendarMiniDates } from '@/assets/static/calendar';
 import DatePicker from '../tools/common/DatePicker.vue';
 import { dateConvert } from '@/utils/dateConvert';
 import { useRouter } from 'vue-router';

@@ -8,12 +8,15 @@ import FileUpload from 'primevue/fileupload';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { vLazyLoad } from './customDirectives/lazyLoad'
+
 
 import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
 
+app.directive('lazy-load', vLazyLoad)
 app.component('VueDatePicker', VueDatePicker);
 app.component('FileUpload', FileUpload);
 

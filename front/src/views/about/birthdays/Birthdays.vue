@@ -44,7 +44,7 @@ import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 export default defineComponent({
     components: {
         VerticalSlider,

@@ -38,9 +38,20 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
         }
     };
 
+    const slidesPerViewDefine = (type: string) => {
+        switch (type) {
+            case 'fullWidth':
+                return 1;
+            case 'vertical':
+                return 3;
+            default:
+                return "auto" as const;
+        }
+    }
+
     const sliderConfig = {
         modules: type == 'vertical' ? [Navigation, Autoplay] : [Navigation, Autoplay, Pagination],
-        slidesPerView: type == 'fullWidth' ? 1 : "auto" as const,
+        slidesPerView: slidesPerViewDefine(type),
         initialSlide: type == 'fullWidth' ? activeIndex : 0,
         spaceBetween: type == 'main' ? 2 : 12,
         autoplay:

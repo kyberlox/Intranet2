@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useUserData } from "@/stores/userData";
 import { computed } from "vue";
 import { type IAuth } from '@/interfaces/IPostFetch';
@@ -20,7 +20,15 @@ api.interceptors.request.use(config => {
 
 export default class Api {
     static async get(url: string) {
-        return (await api.get(url)).data;
+        try {
+            return (await api.get(url)).data;
+        } catch (error) {
+            if (error instanceof AxiosError && error.response?.status == 401) {
+                useUserData().logOut();
+                throw new Error('Сессия истекла. Необходимо войти в систему заново.');
+            }
+            throw error;
+        }
     }
 
     static async post(url: string, data: IAuth) {

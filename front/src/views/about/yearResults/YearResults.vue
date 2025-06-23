@@ -2,7 +2,9 @@
     <div class="staff__filter__link d-flex gap-3 mt20">
         <RouterLink :to="{ name: 'year-results-id', params: { id: year } }"
                     v-for="(year, index) in Object.keys(workersOfTheYear)"
-                    :key="index">{{ year }}</RouterLink>
+                    :key="index">
+            {{ year }}
+        </RouterLink>
     </div>
 
     <div class="row mb-5 mt20">
@@ -22,9 +24,9 @@
 <script lang="ts">
 import { onMounted, ref, watch, type Ref } from "vue";
 import { defineComponent } from "vue";
-import { workersOfTheYear } from "@/assets/staticJsons/workersOfTheYear";
+import { workersOfTheYear } from "@/assets/static/workersOfTheYear";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import type { IWorkersResults } from "@/interfaces/IWorkersOfTheYear";
 import WorkerCard from "./WorkerCard.vue";
 import { renameKey } from "@/utils/renameKey";
@@ -49,7 +51,7 @@ export default defineComponent({
         const workerWithDiploma: Ref<IWorkersResults[]> = ref([]);
 
         onMounted(() => {
-            Api.get(`article/find_by/${sectionTips["Сотрудник года"]}`)
+            Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`)
                 .then(res => {
                     const transformedData = res.map((item: IWorkersResults) => {
                         const newItem = { ...item };

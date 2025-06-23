@@ -158,7 +158,7 @@ import FileUploader from './components/FileUploader.vue';
 import CloseIcon from "@/assets/icons/admin/CloseIcon.svg?component";
 import LayoutLeft from "@/assets/icons/admin/LayoutLeft.svg?component";
 import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
-import { sampleEvent } from '@/assets/staticJsons/adminPagePlugs';
+import { sampleEvent } from '@/assets/static/adminPagePlugs';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
 import PostInner from '@/components/tools/common/PostInner.vue';
 import Interview from '@/views/about/ourPeople/components/Interview.vue';

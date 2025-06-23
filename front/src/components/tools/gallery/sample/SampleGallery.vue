@@ -8,17 +8,8 @@
                 <RouterLink v-if="card.indirect_data && card.indirect_data.ID"
                             :to='{ name: routeTo, params: { id: String((card.indirect_data.ID)) } }'
                             class="homeview__grid__card__link">
-                    <div v-if="card.indirect_data.PREVIEW_PICTURE"
-                         class="homeview__grid__card__image"
-                         :style="{ backgroundImage: `url(${card.indirect_data.PREVIEW_PICTURE.includes('https') ? card.indirect_data.PREVIEW_PICTURE : 'https://placehold.co/360x206'})` }">
-                    </div>
-                    <div v-else-if="card.indirect_data.DETAIL_PICTURE"
-                         class="homeview__grid__card__image"
-                         :style="{ backgroundImage: `url(${card.indirect_data.DETAIL_PICTURE.includes('https') ? card.indirect_data.DETAIL_PICTURE : 'https://placehold.co/360x206'})` }">
-                    </div>
-                    <div v-else
-                         class="homeview__grid__card__image"
-                         :style="{ backgroundImage: `url('https://placehold.co/360x206')` }">
+                    <div class="homeview__grid__card__image"
+                         v-lazy-load="card.preview_file_url">
                     </div>
                     <div class="homeview__grid__card__info">
                         <div v-if="card.name"
@@ -32,20 +23,17 @@
             </div>
         </div>
     </div>
-    <GridGallerySkeleton v-else />
+    <SampleGallerySkeleton v-else />
 </template>
 <script lang="ts">
 import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
-import { blockRouteTips } from "@/assets/staticJsons/sectionTips";
+import { blockRouteTips } from "@/assets/static/sectionTips";
 import type { IUnionEntities } from "@/interfaces/IEntities";
-import GridGallerySkeleton from "./GridGallerySkeleton.vue";
+import SampleGallerySkeleton from "./SampleGallerySkeleton.vue";
 
 export default defineComponent({
-    components: {
-        Reactions,
-        GridGallerySkeleton
-    },
+    name: 'SampleGallery',
     props: {
         gallery: {
             type: Object as PropType<IUnionEntities[]>,
@@ -58,13 +46,69 @@ export default defineComponent({
         routeTo: {
             type: String,
         },
-
     },
-    setup() {
+    components: {
+        Reactions,
+        SampleGallerySkeleton
+    },
+    setup(props) {
 
         return {
-            blockRouteTips
+            blockRouteTips,
         }
     }
 });
 </script>
+
+<style lang="scss">
+.homeview__grid__card__image {
+    &.lazy-loading {
+        background-color: #f0f0f0;
+        background-image: none !important;
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.4) 50%,
+                    transparent 100%);
+            animation: shimmer 1.5s infinite;
+        }
+    }
+
+    &.lazy-loaded {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    &.lazy-error {
+        background-color: #ffebee;
+        position: relative;
+
+        &::after {
+            content: '⚠️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+</style>

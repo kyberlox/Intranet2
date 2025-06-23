@@ -11,10 +11,10 @@
 </template>
 <script lang="ts">
 import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { computed, defineComponent, onMounted, ref, type Ref } from 'vue';
 import Api from '@/utils/Api';
-import { sectionTips } from '@/assets/staticJsons/sectionTips';
+import { sectionTips } from '@/assets/static/sectionTips';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from "@/utils/showEventsByYear";
 import { useViewsDataStore } from '@/stores/viewsData';

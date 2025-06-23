@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import SafetyTechnicsSlide from "./components/SafetyTechnicsSlide.vue";
-import { safetyTechnicsCovid } from "@/assets/staticJsons/safetyTechnics";
+import { safetyTechnicsCovid } from "@/assets/static/safetyTechnics";
 export default defineComponent({
     components: {
         SafetyTechnicsSlide,

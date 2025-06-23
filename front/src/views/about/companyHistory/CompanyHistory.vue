@@ -53,7 +53,7 @@ export default defineComponent({
         const pages = shallowRef<PagesRecord>({});
 
         for (let index = 0; index < 21; index++) {
-            pages.value[index] = defineAsyncComponent(() => import(`@/components/about/companyHistory/chapters/Chapter-${index}.vue`));
+            pages.value[index] = defineAsyncComponent(() => import(`./components/chapters/Chapter-${index}.vue`));
         }
 
         const navigate = (page: number) => {

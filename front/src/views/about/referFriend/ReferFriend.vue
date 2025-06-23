@@ -39,7 +39,7 @@
     </div>
 </template>
 <script lang="ts">
-import { sectionTips } from '@/assets/staticJsons/sectionTips';
+import { sectionTips } from '@/assets/static/sectionTips';
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, ref } from 'vue';
 import { getProperty } from '@/utils/getPropertyFirstPos';

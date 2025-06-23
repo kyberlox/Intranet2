@@ -48,7 +48,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, watchEffect } from 'vue';
-import { monthesInit, calendarPage } from '@/assets/staticJsons/calendar';
+import { monthesInit, calendarPage } from '@/assets/static/calendar';
 import type { ICalendarEntity } from '@/interfaces/ICalendar';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
 export default defineComponent({

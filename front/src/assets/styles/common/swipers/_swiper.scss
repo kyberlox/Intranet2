@@ -28,6 +28,7 @@
 
         &--boxPhoto {
             aspect-ratio: 4/4;
+            max-height: 600px;
 
             img {
                 object-fit: cover;

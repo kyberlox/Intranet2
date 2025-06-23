@@ -21,6 +21,7 @@
                                     @click="tryLogin">
                                    Войти
                             </button>
+                            <div class="portal__auth__form__error">{{ error ? error : '' }}</div>
                      </div>
               </div>
        </div>
@@ -28,7 +29,7 @@
 <script lang="ts">
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
        name: 'AuthPage',
@@ -36,6 +37,7 @@ export default defineComponent({
        setup() {
               const userName = ref('');
               const passWord = ref('');
+              const error = ref();
 
               const tryLogin = async () => {
                      await Api.post('auth_router/auth', { login: "abobus", password: "1" })
@@ -45,12 +47,19 @@ export default defineComponent({
                                           useUserData().setAuthKey(resp.session_id);
                                           useUserData().setLogin(true);
                                    }
+                                   else if (resp.warn) {
+                                          if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {
+                                                 error.value = 'Ошибка авторизации. Проверьте логин и пароль'
+                                          }
+                                          else error.value = 'Что-то пошло не так. Повторите попытку или сообщите в поддержку сайта (5182/5185)'
+                                   }
                             })
               }
               return {
                      tryLogin,
                      userName,
-                     passWord
+                     passWord,
+                     error
               };
        },
 })

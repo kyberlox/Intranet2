@@ -41,21 +41,21 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { tags } from '@/assets/staticJsons/newsTags';
+import { tags } from '@/assets/static/newsTags';
 
 export default defineComponent({
     props: {
         modifiers: String,
-        years: Array<String>,
+        years: Array<string>,
     },
     setup(props, { emit }) {
         const showTags = ref(false);
         const showYears = ref(false);
-        const navToTag = (tag: String) => {
+        const navToTag = (tag: string) => {
             emit('pickTag', tag);
             showTags.value = false;
         }
-        const navToYear = (year: String) => {
+        const navToYear = (year: string) => {
             emit('pickYear', year);
             showYears.value = false;
         }

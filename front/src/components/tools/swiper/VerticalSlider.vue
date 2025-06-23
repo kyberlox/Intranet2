@@ -1,29 +1,60 @@
 <template>
-    <swiper v-bind="sliderConfig"
+    <swiper class="swiper--vertical"
+            v-bind="sliderConfig"
             @swiper="swiperOn">
         <swiper-slide class="swiper--vertical-slide"
                       v-for="(slide, index) in slides"
                       :key="'vertSlide' + index">
-            <img class="swiper--vertical-slide-img"
-                 :src="slide.image"
-                 alt="фото сотрудника" />
-            <span v-if="modifiers && modifiers.includes('birthday-icon')"
-                  class="birthday-icon"></span>
-            <div class="swiper--vertical-slide__info"
-                 v-if="page == 'birthdays'">
-                <div class="swiper--vertical-slide__name vertical-title">{{ slide.name ?? slide.user_fio }}</div>
-                <div class="swiper--vertical-slide__position vertical-subtitle">{{ slide.position ? slide.position : ""
-                    }}</div>
-                <div v-for="(item, index) in slide.department"
-                     :key="index + 'dep'"
-                     class="swiper--vertical-slide__department">
-                    {{ item }}
+
+            <div class="swiper--vertical__bg-slide"
+                 :style="{ backgroundImage: `url('${slide.image}')` }">
+                <span v-if="modifiers && modifiers.includes('birthday-icon')"
+                      class="birthday-icon"></span>
+                <!-- Под дни рождения -->
+                <div class="swiper--vertical-slide__info"
+                     v-if="page == 'birthdays'">
+                    <div class="swiper--vertical-slide__name vertical-title">{{ slide.name ?? slide.user_fio }}</div>
+                    <div class="swiper--vertical-slide__position vertical-subtitle">
+                        {{ slide.position ? slide.position : "" }}
+                    </div>
+                    <div v-for="(item, index) in slide.department"
+                         :key="index + 'dep'"
+                         class="swiper--vertical-slide__department">
+                        {{ item }}
+                    </div>
+                </div>
+                <!-- Под технику безопасности-->
+                <div v-else-if="page == 'safetyTechnics'"
+                     class="section__image__list__item__banner">
+                    <span class="section__image__list__item__banner__inner">
+                        <span class="section__image__list__item__category">
+                            {{ slide.header }}
+                        </span>
+                        <div class="section__image__list__item__logo">
+                            <img src="/src/assets/imgs/emkLogo.webp"
+                                 alt="ЭМК"
+                                 title="ЭМК" />
+                        </div>
+                        <h3 class="section__image__list__item__title">{{ slide.name }}</h3>
+                        <RouterLink :to="{ name: slide.routeTo, params: { id: slide.id } }"
+                                    class="section__image__list__item__link">
+                            Читать
+                        </RouterLink>
+                    </span>
+                </div>
+                <div class="section__image__list__item__subtitle__wrapper">
+                    <div class="section__image__list__item__subtitle vertical-title">
+                        {{ slide.subtitle }}
+                    </div>
+                    <div class="section__image__list__item__subtitle vertical-subtitle">
+                        {{ slide.description }}
+                    </div>
                 </div>
             </div>
         </swiper-slide>
     </swiper>
 
-    <div v-if="slides.length >= 3"
+    <div v-if="slides.length >= 3 && page == 'birthdays'"
          class="swiper-navigation__buttons-group">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
@@ -64,7 +95,6 @@ export default defineComponent({
         },
         modifiers: {
             type: Array,
-            default: () => ['birthday-icon']
         }
     },
     setup() {
@@ -81,3 +111,60 @@ export default defineComponent({
     },
 });
 </script>
+<style lang="scss">
+.swiper--vertical {
+    &>.swiper-wrapper {
+        justify-content: space-around;
+    }
+}
+
+.swiper--vertical-slide {
+    max-width: 100% !important;
+}
+
+.swiper--vertical-slide img {
+    object-fit: cover;
+}
+
+.swiper--vertical__bg-slide {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: auto;
+    height: 100% !important;
+    width: 100%;
+    transition: var(--default-transition);
+    border-radius: 4px;
+}
+
+.section__image__list__item__logo {
+    max-height: 100px;
+}
+
+.section__image__list__item__subtitle__wrapper {
+
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 16px;
+    color: #000000;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.6392156863);
+    padding: 10px;
+
+}
+
+.section__image__list__item__title {
+    max-width: 350px;
+}
+
+.section__image__list__item__banner {
+    padding: 0px;
+    gap: 15px;
+}
+
+.vertical-subtitle {
+    color: rgba(0, 0, 0, 0.693);
+}
+</style>

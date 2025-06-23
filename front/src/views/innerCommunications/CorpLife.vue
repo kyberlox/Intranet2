@@ -10,9 +10,9 @@
                  :onlyImg="true" />
 </template>
 <script lang="ts">
-import { sectionTips } from '@/assets/staticJsons/sectionTips';
+import { sectionTips } from '@/assets/static/sectionTips';
 import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, ref, onMounted, computed, type ComputedRef, type Ref } from "vue";
 import { extractYears } from '@/utils/extractYearsFromPosts';

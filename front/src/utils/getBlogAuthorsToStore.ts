@@ -1,7 +1,7 @@
 import Api from "./Api"
 import type { Ref } from "vue"
 import { getProperty } from "./getPropertyFirstPos"
-import { sectionTips } from "@/assets/staticJsons/sectionTips"
+import { sectionTips } from "@/assets/static/sectionTips"
 import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
 import type { useblogDataStore } from "@/stores/blogData"
 import { propertyCheck } from "@/utils/propertyCheck";

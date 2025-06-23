@@ -70,7 +70,7 @@ import { defineComponent, type Ref, onMounted, ref, type PropType } from "vue";
 import type { IUnionEntities, IAfishaItem, ICareSlide } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
-import FlexGallery from "../gallery/FlexGallery.vue";
+import FlexGallery from "../gallery/complex/ComplexGallery.vue";
 
 export default defineComponent({
     components: {

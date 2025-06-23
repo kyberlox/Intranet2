@@ -6,9 +6,9 @@
                  :routeTo="'partnerPost'" />
 </template>
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";

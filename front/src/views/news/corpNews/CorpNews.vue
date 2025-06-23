@@ -9,11 +9,11 @@
     </div>
 </template>
 <script lang="ts">
-import GridGallery from "@/components/tools/gallery/GridGallery.vue";
+import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import { defineComponent, type Ref, onMounted, computed } from "vue";
 import type { IActualNews } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData"
 import { useLoadingStore } from "@/stores/loadingStore";
 export default defineComponent({

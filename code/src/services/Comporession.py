@@ -8,6 +8,8 @@ import asyncio
 
 compress_router = APIRouter(prefix="/compress_image", tags=["Компрессия изображений"])
 
+# Конфигурация
+STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
 MAX_UNCOMPRESSED_SIZE_KB = 250  # Если меньше - возвращаем как есть
 LARGE_FILE_THRESHOLD_KB = 1024  # 1 МБ - порог для "жёсткого" сжатия

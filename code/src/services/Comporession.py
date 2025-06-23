@@ -10,12 +10,12 @@ STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
 
 # Конфигурация сжатия
-MAX_UNCOMPRESSED_SIZE_KB = 250    # Не сжимать файлы меньше этого размера
-LARGE_FILE_THRESHOLD_KB = 1024    # Порог для "жёсткого" сжатия
+MAX_UNCOMPRESSED_SIZE_KB = 250    # Не сжимать файлы <250KB
+LARGE_FILE_THRESHOLD_KB = 1024    # Порог для жёсткого сжатия
 LARGE_FILE_TARGET_KB = 512        # Целевой размер для больших файлов
 
-async def compress_image(file_path: str) -> BytesIO:
-    """Умное сжатие с учетом конфигурации"""
+def _sync_compress(file_path: str) -> BytesIO:
+    """Синхронная функция сжатия для вызова в отдельном потоке"""
     file_size_kb = os.path.getsize(file_path) / 1024
     
     with Image.open(file_path) as img:
@@ -23,7 +23,7 @@ async def compress_image(file_path: str) -> BytesIO:
         
         # Определяем параметры сжатия
         if file_size_kb > LARGE_FILE_THRESHOLD_KB:
-            quality = 40  # Жёсткое сжатие для больших файлов
+            quality = 40  # Жёсткое сжатие
         else:
             quality = 70  # Нормальное качество
             
@@ -32,8 +32,8 @@ async def compress_image(file_path: str) -> BytesIO:
             img.save(buffer, format='PNG', optimize=True)
         else:
             img.convert('RGB').save(buffer, format='JPEG', quality=quality, optimize=True)
-            
-        # Досжатие, если не уложились в лимит для больших файлов
+        
+        # Досжатие для больших файлов
         if file_size_kb > LARGE_FILE_THRESHOLD_KB:
             while buffer.tell() / 1024 > LARGE_FILE_TARGET_KB and quality > 20:
                 quality -= 5
@@ -58,8 +58,8 @@ async def get_compressed_image(filename: str):
         return FileResponse(file_path)
     
     try:
-        # 2. Асинхронное сжатие
-        buffer = await asyncio.to_thread(compress_image, file_path)
+        # 2. Запускаем сжатие в отдельном потоке
+        buffer = await asyncio.to_thread(_sync_compress, file_path)
         
         return Response(
             content=buffer.getvalue(),

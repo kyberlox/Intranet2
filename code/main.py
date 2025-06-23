@@ -153,7 +153,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 
-def compress_image(input_path: str, max_size_kb: int = 250, preserve_transparency: bool = False) -> BytesIO:
+def compress_image(input_path: str, max_size_kb: int = 150, preserve_transparency: bool = False) -> BytesIO:
     """
     Сжимает изображение до размера не превышающего max_size_kb в КБ.
     Возвращает BytesIO объект с сжатым изображением.
@@ -224,12 +224,12 @@ def _optimized_compress(image: Image.Image, original_format: str, max_size_kb: i
     """Ускоренная версия сжатия без итеративного подбора качества."""
     buffer = BytesIO()
     format_params = {
-        "JPEG": {"format": "JPEG", "quality": 95, "optimize": True},
+        "JPEG": {"format": "JPEG", "quality": 100, "optimize": True},
         "PNG": {"format": "PNG", "compress_level": 9},
-        "WEBP": {"format": "WEBP", "quality": 95, "method": 9}
+        "WEBP": {"format": "WEBP", "quality": 100, "method": 9}
     }
     
-    params = format_params.get(original_format, {"format": "JPEG", "quality": 95})
+    params = format_params.get(original_format, {"format": "JPEG", "quality": 100})
     image.save(buffer, **params)
     
     if buffer.tell() / 1024 > max_size_kb and original_format in ("JPEG", "WEBP"):

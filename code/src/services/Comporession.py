@@ -12,7 +12,7 @@ compress_router = APIRouter(prefix="/compress_image", tags=["Компресси�
 STORAGE_PATH = "./files_db"
 os.makedirs(STORAGE_PATH, exist_ok=True)
 MAX_UNCOMPRESSED_SIZE_KB = 256  # Если меньше - возвращаем как есть
-LARGE_FILE_THRESHOLD_KB = 1024+128  # 1 МБ - порог для "жёсткого" сжатия
+LARGE_FILE_THRESHOLD_KB = 1024  # 1 МБ - порог для "жёсткого" сжатия
 LARGE_FILE_TARGET_KB = 512+128      # Целевой размер для больших файлов
 
 def _calculate_quality(file_size_kb: float) -> int:

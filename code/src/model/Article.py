@@ -796,7 +796,9 @@ class Article:
             return birthday
 
         # Орг развитие
+        print("Я тут есть")
         elif section_id == 32:
+            print("Меня тут нет")
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:

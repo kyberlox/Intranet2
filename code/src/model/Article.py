@@ -821,12 +821,12 @@ class Article:
                 'id': section_id, 
                 'type': 'singleBlock', 
                 'title': 'Организационное развитие', 
-                "href": "corpnews", 
+                "href": "corpNews", 
                 'images': [{'id': news_id, 'image': image_URL}]
                 }
             return second_page
         
-        #
+        # предложить идею
         elif section_id == 4:
             idea_block = {
                 'id': 4,
@@ -877,7 +877,7 @@ class Article:
                 'id': section_id,
                 'type': 'fullRowBlock',
                 'title': 'Бизнес-новости',
-                'href': 'actualnews',
+                'href': 'actualNews',
                 'images': []
             }
 
@@ -931,7 +931,6 @@ class Article:
                 'id': section_id,
                 'type': 'fullRowBlock',
                 'title': 'Интервью',
-                'href': 'interview',
                 'images': []
             }
 

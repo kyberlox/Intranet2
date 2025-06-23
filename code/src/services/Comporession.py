@@ -33,7 +33,7 @@ def _turbo_compress(img: Image.Image, original_format: str, is_large_file: bool 
     buffer.seek(0)
     return buffer
 
-@compress_router.post("/{filename}")
+@compress_router.get("/{filename}")
 async def get_compressed_image(filename: str, preserve_transparency: Optional[bool] = False):
     file_path = os.path.join(STORAGE_PATH, filename)
     

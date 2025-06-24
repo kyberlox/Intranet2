@@ -3,6 +3,7 @@ from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
+from src.services.SendMail import SendEmail
 
 import requests
 import json
@@ -264,3 +265,7 @@ def search_indirect(key_word):
 @users_router.get("/get_birthday_celebrants/{day_month}")
 def birthday_celebrants(day_month: str):
     return User().get_birthday_celebrants(day_month)
+
+@users_router.post("/test_send_mail")
+def send_test_mail(sender: str, reciever: str, title_msg: str, file_url: str, html_content=Body(...)):
+    return SendEmail(sender=sender, reciever=reciever, title_msg=title_msg, file_url=file_url, html_content=html_content).send_congratulations()

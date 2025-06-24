@@ -164,6 +164,16 @@ class Article:
                 department = data['PROPERTY_1039'][0]
             else:
                 department = list(data['PROPERTY_1039'].values())[0]
+            
+            if "PROPERTY_1113" in data:
+                if type(data['PROPERTY_1113']) == type(list()):
+                    pre_award = data['PROPERTY_1113'][0]
+                else:
+                    pre_award = list(data['PROPERTY_1113'].values())[0]
+                pre_award = "Почетная грамота" if int(pre_award) == 888 else "Сотрудник года"
+            else:
+                award = "Сотрудник года"
+
 
             user = User(id=uuid).search_by_id()
             photo = user["photo_file_url"]
@@ -173,6 +183,7 @@ class Article:
                 "position" : position,
                 "department" : department,
                 "photo_file_url" : photo,
+                "award" : award,
                 "location" : ""
             })
 
@@ -370,16 +381,16 @@ class Article:
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди ✔️
-            #14 : "123", #Доска почёта ✔️
+            14 : "123", #Доска почёта ✔️
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
             #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
-            55 : "56", # Благотворительные проекты ❌
+            #55 : "56", # Благотворительные проекты ❌
 
-            25 : "100", #Референсы и опыт поставок ❌
-            17 : "60" #Учебный центр (Литература) ❌
+            #25 : "100", #Референсы и опыт поставок ❌
+            #17 : "60" #Учебный центр (Литература) ❌
         }
         
 

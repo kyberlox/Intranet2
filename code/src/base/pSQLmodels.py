@@ -350,7 +350,10 @@ class UserModel():
                 photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
 
                 #вывод URL фотографии пользователя
-                result['photo_file_url'] = photo_inf['URL']
+                url = photo_inf['URL']
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                result['photo_file_url'] = f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None

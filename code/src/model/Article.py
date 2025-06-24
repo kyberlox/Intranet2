@@ -425,7 +425,6 @@ class Article:
 
 
         '''с параметрами'''
-        '''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
             15 : ["75", "77"], #Блоги ♻️
@@ -468,7 +467,8 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-
+        
+        '''
         #Памятка
         # пройти по инфоблоку заголовков
         self.section_id = "82"

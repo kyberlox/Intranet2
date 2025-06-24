@@ -42,7 +42,7 @@ class File:
             try:
                 if need_all_method:
                     file_data = b24.get_all_files(self.b24_id)
-
+                    
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
                     elif "FILE_NAME" in file_data:
@@ -80,8 +80,7 @@ class File:
 
                     # Сохраняем файл
                     content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
-                    print(filename, 'filename')
-
+                
                 result = {
                     "original_name": filename,
                     "stored_name": unique_name,
@@ -93,6 +92,9 @@ class File:
                     "file_url": f"/api/files/{unique_name}"  # Прямой URL
                 }
 
+                #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
+
+                #записать в mongodb
                 inserted_id = FileModel().add(result)
 
                 return {
@@ -111,13 +113,6 @@ class File:
                 LogsMaker().warning_message(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
 
             
-            
-
-            #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
-
-            #записать в mongodb
-            
-
         except requests.exceptions.RequestException as e:
             # print(f"Ошибка при скачивании файла: {e}")
             return LogsMaker().error_message(e)

@@ -152,7 +152,8 @@ class Article:
             
             print(uuid)
 
-            photo = (User(id=uuid).search_by_id())["photo_file_url"]
+            user = User(id=uuid).search_by_id()
+            photo = user["photo_file_url"]
             indirect_data = json.dumps({
                 "uuid" : uuid,
                 "year" : list(data['PROPERTY_1035'].values())[0],

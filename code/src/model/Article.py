@@ -152,7 +152,7 @@ class Article:
             
             print(uuid)
 
-            user = User(id=uuid).search_by_id()
+            user = User(id=uuid).search_by_id().__dict__
             print(user)
             photo = user["photo_file_url"]
             indirect_data = json.dumps({

@@ -188,7 +188,7 @@ class Article:
             })
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
-            
+
         else:
             indirect_data = json.dumps(data)
 
@@ -706,7 +706,7 @@ class Article:
         #новые разделы
             # конфигуратор НПО Регулятор ✔️
             # DeepSeek ❌
-            # VCard ❌
+            # VCard ✔️
             # YandexGPT5 + Yandex ART ❌
             # система личной эффективности ❌
             # магазин мерча ❌

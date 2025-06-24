@@ -82,7 +82,7 @@ class File:
             except:
                 LogsMaker().warning_message(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
 
-
+            print(filename)
             result = {
                 "original_name": filename,
                 "stored_name": unique_name,

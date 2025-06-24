@@ -41,14 +41,13 @@ class File:
             try:
                 if need_all_method:
                     file_data = b24.get_all_files(self.b24_id)
-                    print(file_data)
+                    
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
                     elif "FILE_NAME" in file_data:
                         filename = file_data["FILE_NAME"]
                     elif "NAME" in file_data:
                         filename = file_data["NAME"]
-                    print(filename)
 
                     filename_parts = filename.split('.')
                     file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
@@ -63,7 +62,7 @@ class File:
 
                 else:
                     file_data = b24.get_file(self.b24_id, inf_id)
-                    print(file_data)
+
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
                     elif "FILE_NAME" in file_data:
@@ -81,7 +80,6 @@ class File:
                     # Сохраняем файл
                     content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
                 
-                print(filename)
                 result = {
                     "original_name": filename,
                     "stored_name": unique_name,

@@ -14,9 +14,13 @@ os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 # Настройки качества
 TARGET_WIDTH = 357
 TARGET_HEIGHT = 204
+
 TARGET_USER_WIDTH = 359
 TARGET_USER_HEIGHT = 493
+
 QUALITY = 95  # Качество сохранения (1-100)
+QUALITY_USER = 80  # Качество сохранения (1-100)
+
 RESAMPLE = Image.LANCZOS  # Лучший алгоритм интерполяции
 
 def resize_image_quality(input_path: str) -> BytesIO:
@@ -72,7 +76,7 @@ def resize_user_image_quality(input_path: str) -> BytesIO:
         output_buffer = BytesIO()
         save_params = {
             'format': original_format,
-            'quality': QUALITY,
+            'quality': QUALITY_USER,
             'optimize': True,
             'subsampling': 0,  # Отключаем субдискретизацию для JPEG
             'qtables': 'web_high'  # Используем высококачественные таблицы квантования

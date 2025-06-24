@@ -146,7 +146,7 @@ class Article:
         if data["IBLOCK_ID"] == "123":
             
             if type(data['PROPERTY_1036']) == type(list()):
-                uuid = int(data['PROPERTY_1036'][0])
+                uuid = int((data['PROPERTY_1036'])[0])
             else:
                 uuid = int(list(data['PROPERTY_1036'].values())[0])
             

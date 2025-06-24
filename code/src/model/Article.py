@@ -170,7 +170,7 @@ class Article:
                     pre_award = data['PROPERTY_1113'][0]
                 else:
                     pre_award = list(data['PROPERTY_1113'].values())[0]
-                pre_award = "Почетная грамота" if int(pre_award) == 888 else "Сотрудник года"
+                award = "Почетная грамота" if int(pre_award) == 888 else "Сотрудник года"
             else:
                 award = "Сотрудник года"
 

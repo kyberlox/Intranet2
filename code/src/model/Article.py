@@ -144,12 +144,11 @@ class Article:
         #соберём совою indirect_data
         
         if data["IBLOCK_ID"] == "123":
-
             
             if type(data['PROPERTY_1036']) == type(list()):
-                uuid = data['PROPERTY_1036'][0]
+                uuid = int(data['PROPERTY_1036'][0])
             else:
-                uuid = list(data['PROPERTY_1036'].values())[0]
+                uuid = int(list(data['PROPERTY_1036'].values())[0])
 
             photo = User(id=uuid).search_by_id()["photo_file_url"]
             indirect_data = json.dumps({

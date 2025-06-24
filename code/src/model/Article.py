@@ -142,8 +142,8 @@ class Article:
         
 
 
-        #отдельно обарботаем случай доски почета
-        if data["IBLOCK_ID"] == "123":
+        #отдельно обарботаем случай Доски почета
+        if self.section_id == 14:
             #соберём совою indirect_data
             if type(data['PROPERTY_1036']) == type(list()):
                 uuid = int(data['PROPERTY_1036'][0])
@@ -174,13 +174,8 @@ class Article:
             else:
                 award = "Сотрудник года"
 
-
             user = User(id=uuid).search_by_id()
             photo = user["photo_file_url"]
-            
-            
-            
-            
             indirect_data = json.dumps({
                 "uuid" : uuid,
                 "year" : year,
@@ -191,7 +186,9 @@ class Article:
                 "award" : award,
                 "location" : ""
             })
-
+        #отдельно обарботаем случай Блогов
+        elif self.section_id == 15:
+            
         else:
             indirect_data = json.dumps(data)
 
@@ -399,7 +396,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ☑️
 
             #25 : "100", #Референсы и опыт поставок ☑️
-            17 : "60" #Учебный центр (Литература) ☑️
+            #17 : "60" #Учебный центр (Литература) ☑️
         }
         
 

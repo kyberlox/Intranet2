@@ -151,17 +151,17 @@ class Article:
                 uuid = int(list(data['PROPERTY_1036'].values())[0])
 
             if type(data['PROPERTY_1035']) == type(list()):
-                year = int(data['PROPERTY_1035'][0])
+                year = data['PROPERTY_1035'][0]
             else:
                 year = list(data['PROPERTY_1035'].values())[0]
             
             if type(data['PROPERTY_1037']) == type(list()):
-                position = int(data['PROPERTY_1037'][0])
+                position = data['PROPERTY_1037'][0]
             else:
                 position = list(data['PROPERTY_1037'].values())[0]
             
             if type(data['PROPERTY_1039']) == type(list()):
-                department = int(data['PROPERTY_1039'][0])
+                department = data['PROPERTY_1039'][0]
             else:
                 department = list(data['PROPERTY_1039'].values())[0]
 

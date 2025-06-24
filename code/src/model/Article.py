@@ -149,11 +149,8 @@ class Article:
                 uuid = int(data['PROPERTY_1036'][0])
             else:
                 uuid = int(list(data['PROPERTY_1036'].values())[0])
-            
-            print(uuid)
 
-            user = User(id=uuid).search_by_id().__dict__
-            print(user)
+            user = User(id=uuid).search_by_id()
             photo = user["photo_file_url"]
             indirect_data = json.dumps({
                 "uuid" : uuid,

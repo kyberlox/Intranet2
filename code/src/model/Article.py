@@ -140,11 +140,11 @@ class Article:
                         grya.append(data[key][key_key])
                 data[key] = grya
         
+
+
         #отдельно обарботаем случай доски почета
-        #соберём совою indirect_data
-        
         if data["IBLOCK_ID"] == "123":
-            
+            #соберём совою indirect_data
             if type(data['PROPERTY_1036']) == type(list()):
                 uuid = int(data['PROPERTY_1036'][0])
             else:
@@ -177,12 +177,17 @@ class Article:
 
             user = User(id=uuid).search_by_id()
             photo = user["photo_file_url"]
+            
+            
+            
+            
             indirect_data = json.dumps({
                 "uuid" : uuid,
                 "year" : year,
                 "position" : position,
                 "department" : department,
-                "photo_file_url" : photo,
+                #внедряю компрессию
+                "photo_file_url" : photo.replace("user_files", "compress_image/user"),
                 "award" : award,
                 "location" : ""
             })
@@ -385,7 +390,7 @@ class Article:
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди ✔️
-            #14 : "123", #Доска почёта ☑️
+            14 : "123", #Доска почёта ♻️
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
@@ -394,7 +399,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ☑️
 
             #25 : "100", #Референсы и опыт поставок ☑️
-            17 : "60" #Учебный центр (Литература) ♻️
+            #17 : "60" #Учебный центр (Литература) ♻️
         }
         
 

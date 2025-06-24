@@ -62,7 +62,7 @@ class File:
 
                 else:
                     file_data = b24.get_file(self.b24_id, inf_id)
-
+                    print(file_data)
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
                     elif "FILE_NAME" in file_data:

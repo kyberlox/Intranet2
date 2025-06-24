@@ -41,7 +41,7 @@ class File:
             try:
                 if need_all_method:
                     file_data = b24.get_all_files(self.b24_id)
-
+                    print(file_data)
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
                     elif "FILE_NAME" in file_data:

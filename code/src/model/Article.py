@@ -228,7 +228,7 @@ class Article:
             for url in matches:
                 print(url)
                 urls.append(url)
-                full_content
+                content
 
             indirect_data = {
                 #из 75ого

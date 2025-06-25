@@ -188,7 +188,7 @@ class Article:
             })
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
-            pass
+            print(data)
         else:
             indirect_data = json.dumps(data)
 

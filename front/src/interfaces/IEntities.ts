@@ -84,6 +84,16 @@ export interface ICareIndirectData extends IBaseIndirectData {
     PROPERTY_349?: string[],
 }
 
+export interface IWorkerOfTheYearData extends IBaseIndirectData {
+    uuid: number,
+    year: string,
+    position: string,
+    department: string,
+    photo_file_url: string,
+    award: string,
+    location: string
+}
+
 export interface IAfishaItemIndirectData extends IBaseIndirectData {
     PROPERTY_375?: string[],
     PROPERTY_438?: string[],
@@ -311,6 +321,10 @@ export interface IOpenVacancy extends IBaseEntity {
 
 export interface IBlogArticle extends IBaseEntity {
     indirect_data?: IBlogArticleData
+}
+
+export interface IWorkerOfTheYear extends IBaseEntity {
+    indirect_data?: IWorkerOfTheYearData
 }
 
 // Общий индирект

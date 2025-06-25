@@ -5,7 +5,7 @@
                  v-if="user">
                 <div class="col-12 col-md-6">
                     <div class="personal__user__photo">
-                        <img v-if="user && user.indirect_data && user.indirect_data.personal_photo"
+                        <img v-if="user && user.photo_file_url"
                              :src="user.indirect_data.personal_photo"
                              alt="Игорь"
                              @click="modalIsOpen = true" />

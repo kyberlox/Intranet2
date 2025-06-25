@@ -7,7 +7,7 @@
                   class="homeview__grid__card__group-title homeview__grid__card__group-title--mixed">
             </span>
             <div class="homeview__grid__card__image"
-                 :style="{ backgroundImage: `url(${card.image ?? 'https://placehold.co/360x206'})` }"></div>
+                 v-lazy-load="card.image"></div>
             <div v-if="card.title"
                  class="homeview__grid__card__title homeview__grid__card__title--gallery">{{ card.title }}</div>
             <Reactions v-if="card.reactions"

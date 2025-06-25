@@ -4,7 +4,7 @@
         <main>
             <div class="container-fluid"
                  :class="{ 'container-fluid--nopadding': !isLogin }">
-                <div class="row flex-layout"
+                <div class="row main-layout"
                      :class="{ 'row--nomargin': !isLogin }">
                     <div class="main-content flex-grow">
                         <RouterView />
@@ -67,27 +67,4 @@ export default defineComponent({
 
 <style lang="scss">
 @use "./assets/styles/mixins/mixins.scss" as *;
-
-.flex-layout {
-    display: flex;
-    flex-wrap: nowrap;
-
-    .main-content {
-        flex: 1; // Занимает все доступное пространство
-        min-width: 0; // Позволяет контенту сжиматься
-    }
-
-    .main-sidebar {
-        flex: 0 0 auto; // Не растягивается и не сжимается, размер по контенту
-        width: auto;
-        min-width: fit-content;
-    }
-}
-
-// Адаптивность для мобильных устройств
-@media screen and (max-width: 991px) {
-    .flex-layout {
-        flex-direction: column;
-    }
-}
 </style>

@@ -40,7 +40,7 @@ import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IAfishaItem, IUnionEntities } from "@/interfaces/IEntities";
 import RichGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
-import ComplexGalleryCardWithButtons from "./ComplexGalleryCardWithButtons.vue";
+import ComplexGalleryCardWithButtons from "./ComplexGalleryCardButtons.vue";
 import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
 import ComplexGalleryCardVideo from "./ComplexGalleryCardVideo.vue";
 

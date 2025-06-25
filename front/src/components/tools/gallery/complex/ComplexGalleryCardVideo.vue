@@ -5,7 +5,7 @@
          @click="callModal(slide?.indirect_data?.videoHref)">
         <div class="flexGallery__card__img-wrapper">
             <div class="flexGallery__card__img"
-                 :style="{ backgroundImage: `url(${slide.indirect_data?.PREVIEW_PICTURE})` }">
+                 v-lazy-load="slide.indirect_data?.PREVIEW_PICTURE">
             </div>
             <PlayVideo class="flexGallery__card__play-video-icon" />
         </div>

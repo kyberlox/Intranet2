@@ -18,12 +18,12 @@ export const vLazyLoad: Directive = {
                         const imageUrl = binding.value
 
                         if (imageUrl) {
+
                             if (isBackgroundImage) {
                                 // Для фоновых изображений
                                 const img = new Image()
                                 img.onload = () => {
-                                    // Убираем skeleton только после полной загрузки
-                                    element.style.backgroundImage = `url(${imageUrl})`
+                                    element.style.backgroundImage = `url("${imageUrl}")`
                                     element.classList.remove('skeleton-grid__gallery-image')
                                     element.classList.add('lazy-loaded')
                                 }
@@ -32,16 +32,13 @@ export const vLazyLoad: Directive = {
                                     element.classList.remove('skeleton-grid__gallery-image')
                                     element.classList.add('lazy-error')
                                 }
-                                // Начинаем загрузку, но skeleton остается до onload
                                 img.src = imageUrl
                             } else {
                                 // Для img элементов
                                 const imgElement = element as HTMLImageElement
 
-                                // Создаем временное изображение для предзагрузки
                                 const tempImg = new Image()
                                 tempImg.onload = () => {
-                                    // Устанавливаем src только после полной загрузки
                                     imgElement.src = imageUrl
                                     imgElement.classList.remove('skeleton-grid__gallery-image')
                                     imgElement.classList.add('lazy-loaded')
@@ -51,7 +48,6 @@ export const vLazyLoad: Directive = {
                                     imgElement.classList.remove('skeleton-grid__gallery-image')
                                     imgElement.classList.add('lazy-error')
                                 }
-                                // Начинаем предзагрузку
                                 tempImg.src = imageUrl
                             }
                             observer.unobserve(element)

@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
+import { computed, defineComponent, onBeforeMount, onMounted, type ComputedRef } from "vue";
 import MainPageSoloBlock from "./components/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "./components/MainPageRowBlocks.vue";
 import type { MainPageCards } from "@/interfaces/IMainPage";
@@ -77,7 +77,7 @@ export default defineComponent({
             return Array.isArray(data) ? data : [];
         });
 
-        onMounted(() => {
+        onBeforeMount(() => {
             if (mainPageCards.value.length) return;
             loadingStore.setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Главная']}`)

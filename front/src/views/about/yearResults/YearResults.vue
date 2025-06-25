@@ -1,19 +1,17 @@
 <template>
     <div class="staff__filter__link d-flex gap-3 mt20">
         <RouterLink :to="{ name: 'year-results-id', params: { id: year } }"
-                    v-for="(year, index) in Object.keys(workersOfTheYear)"
+                    v-for="(year, index) in actualYears"
                     :key="index">
             {{ year }}
         </RouterLink>
     </div>
-
     <div class="row mb-5 mt20">
         <h2 class="page__title">Сотрудник года ЭМК
             <span v-if="currentYear"
                   class="year">/ {{ currentYear }}</span>
         </h2>
-        <WorkerCard :workers="workerWithDiploma" />
-
+        <WorkerCard :workers="workerOfTheYear" />
         <h2 v-if="workerWithDiploma.length"
             class="page__title mt20">
             Почетными грамотами награждены:
@@ -24,12 +22,10 @@
 <script lang="ts">
 import { onMounted, ref, watch, type Ref } from "vue";
 import { defineComponent } from "vue";
-import { workersOfTheYear } from "@/assets/static/workersOfTheYear";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
-import type { IWorkersResults } from "@/interfaces/IWorkersOfTheYear";
 import WorkerCard from "./WorkerCard.vue";
-import { renameKey } from "@/utils/renameKey";
+import type { IWorkerOfTheYear } from "@/interfaces/IEntities";
 
 export default defineComponent({
     props: {
@@ -45,29 +41,26 @@ export default defineComponent({
         const dateYear = new Date().getFullYear();
         const currentYear = ref(props.id ? props.id : dateYear - 1);
 
-        const allTimeAwards: Ref<IWorkersResults[]> = ref([]);
-        const chosenYearAwards: Ref<IWorkersResults[]> = ref([]);
-        const workerOfTheYear: Ref<IWorkersResults[]> = ref([]);
-        const workerWithDiploma: Ref<IWorkersResults[]> = ref([]);
+        const allTimeAwards: Ref<IWorkerOfTheYear[]> = ref([]);
+        const chosenYearAwards: Ref<IWorkerOfTheYear[]> = ref([]);
+        const workerOfTheYear: Ref<IWorkerOfTheYear[]> = ref([]);
+        const workerWithDiploma: Ref<IWorkerOfTheYear[]> = ref([]);
+        const actualYears: Ref<string[]> = ref([]);
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`)
                 .then(res => {
-                    const transformedData = res.map((item: IWorkersResults) => {
-                        const newItem = { ...item };
-
-                        if (newItem.PROPERTY_1035) {
-                            renameKey(newItem.PROPERTY_1035, "year");
-                        }
-                        if (newItem.PROPERTY_1113) {
-                            renameKey(newItem.PROPERTY_1113, "awardType");
-                        }
-                        return newItem;
-                    });
                     allTimeAwards.value.length = 0;
-                    allTimeAwards.value = transformedData;
+                    actualYears.value.length = 0;
+                    allTimeAwards.value = res;
+                    res.map((item: IWorkerOfTheYear) => {
+                        if (item.indirect_data && (actualYears.value.length == 0 || (actualYears.value.indexOf(item.indirect_data.year) < 0))) {
+                            actualYears.value.push(item.indirect_data.year)
+                        }
+                    })
+                    actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
                 })
-                .then(() => {
+                .finally(() => {
                     initWorkers();
                 })
         })
@@ -79,9 +72,10 @@ export default defineComponent({
             chosenYearAwards.value.length = 0;
             workerWithDiploma.value.length = 0;
             workerOfTheYear.value.length = 0;
+
             allTimeAwards.value.map(item => {
-                if (item["PROPERTY_1035"] && item["PROPERTY_1035"]["year"] == String(currentYear.value)) {
-                    if (item["PROPERTY_1113"] && item["PROPERTY_1113"]["awardType"] == "888") {
+                if (item.indirect_data && item.indirect_data.year == String(currentYear.value)) {
+                    if (item.indirect_data.award == 'Почетная грамота') {
                         workerWithDiploma.value.push(item);
                     }
                     else {
@@ -98,11 +92,11 @@ export default defineComponent({
         })
 
         return {
-            workersOfTheYear,
             currentYear,
             chosenYearAwards,
             workerWithDiploma,
-            workerOfTheYear
+            workerOfTheYear,
+            actualYears
         };
     },
 });

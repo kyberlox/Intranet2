@@ -11,7 +11,7 @@
                                 homeview__grid__card__link
                                 homeview__grid__card__bg-image"
                                 :to="{ name: card.href ?? slide.href }"
-                                :style="{ backgroundImage: `url(${slide.image ?? 'https://placehold.co/360x206'})` }" />
+                                v-lazy-load="slide.image" />
                 </swiper-slide>
             </swiper>
         </div>

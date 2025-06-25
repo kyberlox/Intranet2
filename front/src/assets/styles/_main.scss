@@ -7,11 +7,28 @@
 @forward './services/_services';
 @forward './news/news';
 @forward './admin/admin';
+@use '@/assets/styles/mixins/_mixins.scss' as *;
 
-.main-content {
-    flex-grow: 1;
-}
 
-.main-sidebar {
-    width: fit-content;
+.main {
+    &-content {
+        flex: 1;
+        min-width: 0;
+        flex-grow: 1;
+    }
+
+    &-sidebar {
+        width: fit-content;
+        flex: 0 0 auto;
+        min-width: fit-content;
+    }
+
+    &-layout {
+        display: flex;
+        flex-wrap: nowrap;
+
+        @include md {
+            flex-direction: column;
+        }
+    }
 }

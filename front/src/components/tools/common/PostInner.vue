@@ -81,20 +81,21 @@ export default defineComponent({
     },
     props: {
         id: {
-            type: String,
+            type: String || undefined,
         },
         type: {
             type: String,
             default: 'default'
         },
         previewElement: {
-            type: Object as PropType<IUnionEntities>
+            type: Object as PropType<IUnionEntities | null>
         }
     },
     setup(props) {
         const currentPost = ref<IUnionEntities>();
         onMounted(() => {
-            if (props.type == 'adminPreview' && props.previewElement) {
+            if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
+                console.log(props.previewElement);
                 currentPost.value = props.previewElement
             }
             else

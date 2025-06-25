@@ -120,7 +120,8 @@ const router = createRouter({
     {
       path: '/about/trainingcenter/excursions',
       name: 'excursions',
-      component: () => import('@/views/about/trainingCenter/excursions/Excursions.vue')
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ pageTitle: 'Экскурсии' })
     },
     {
       path: '/about/trainingcenter/literature',

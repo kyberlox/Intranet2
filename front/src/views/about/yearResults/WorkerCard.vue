@@ -2,17 +2,24 @@
     <div class="staff__item-wrapper ">
         <div class="staff__item col-sm-2"
              v-for="item in workers"
-             :key="item.ID"
+             :key="item.id"
              @click="handleClick(item)">
             <div class="img-fluid staff__item-img"
-                 :style="{ backgroundImage: 'url(https://placehold.co/240x330)' }">
+                 v-lazy-load="formatSpacesInImg(item.indirect_data.photo_file_url)">
             </div>
             <div class="staff__item-name">
-                {{ item.NAME }}
+                {{ item.name }}
             </div>
-            <div class="staff__item-position">{{ item.PROPERTY_1037 }}</div>
-            <div class="staff__item-organisation">{{ item.PROPERTY_1069 }}</div>
-            <div class="staff__item-organisation">{{ item.PROPERTY_1039 }}</div>
+            <div class="staff__item-position">
+                {{ item.indirect_data.department }}
+            </div>
+            <div class="staff__item-organisation">
+                {{ item.indirect_data.position }}
+            </div>
+            <div v-if="item.indirect_data.location"
+                 class="staff__item-organisation">
+                {{ item.indirect_data.location }}
+            </div>
         </div>
         <ResultModal :worker="workerInModal"
                      :isOpen="isOpen"
@@ -44,11 +51,18 @@ export default defineComponent({
         const closeModal = () => {
             isOpen.value = false;
         }
+
+        const formatSpacesInImg = (imgPath: string) => {
+            const basePath = imgPath.split('user');
+            const newPath = `${basePath[0]}user${encodeURIComponent(basePath[1])}`;
+            return newPath;
+        }
         return {
             handleClick,
             closeModal,
             workerInModal,
-            isOpen
+            isOpen,
+            formatSpacesInImg
         }
     }
 })

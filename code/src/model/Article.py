@@ -222,13 +222,11 @@ class Article:
                 content = take_value(data["PROPERTY_457"])['TEXT']
             elif "PROPERTY_1239" in data:
                 content = take_value(data["PROPERTY_1239"])
-            urls=[]
-            matches = re.findall(r'src="([^"]*)"', content)
             #хватаю url
+            matches = re.findall(r'src="([^"]*)"', content)
             for url in matches:
-                print(url)
-                urls.append(url)
-                content
+                #качаю файл новым методом
+                #заменяю url на новый
 
             indirect_data = {
                 #из 75ого

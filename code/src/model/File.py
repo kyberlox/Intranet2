@@ -116,6 +116,11 @@ class File:
             # print(f"Ошибка при скачивании файла: {e}")
             return LogsMaker().error_message(e)
 
+    def upload_by_URL(self, url, path, art_id, art_id=None, is_preview = False, inf_id=None):
+        #скачать файл по ссылке
+        
+
+
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
         result = FileModel(art_id=art_id).find_all_by_art_id()

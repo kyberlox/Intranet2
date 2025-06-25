@@ -9,6 +9,7 @@ from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
 from src.base.pSQLmodels import ViewsModel
 
+import re
 import json
 import datetime
 import asyncio
@@ -218,10 +219,16 @@ class Article:
 
             #отдельно обрабатываем файлы
             if "PROPERTY_457" in data:
-                full_content = take_value(data["PROPERTY_457"])
+                content = take_value(data["PROPERTY_457"])['TEXT']
             elif "PROPERTY_1239" in data:
-                full_content = take_value(data["PROPERTY_1239"])
-
+                content = take_value(data["PROPERTY_1239"])
+            urls=[]
+            matches = re.findall(r'src="([^"]*)"', content)
+            #хватаю url
+            for url in matches:
+                print(url)
+                urls.append(url)
+                full_content
 
             indirect_data = {
                 #из 75ого
@@ -234,7 +241,7 @@ class Article:
             indirect_data["PROPERTY_1023"] = data["PROPERTY_1023"] #фото превью
             indirect_data["PROPERTY_1222"] = data["PROPERTY_1222"] #ссылка на youtube
             indirect_data["PROPERTY_455"] = data["PROPERTY_455"]
-            indirect_data["PROPERTY_1025"] = data["PROPERTY_1020"]
+            indirect_data["PROPERTY_1020"] = data["PROPERTY_1020"]
         else:
             indirect_data = json.dumps(data)
 

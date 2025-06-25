@@ -26,6 +26,13 @@ def make_date_valid(date):
     else:
         return None
 
+def take_value(PROPERTY):
+    if type(PROPERTY) == type(dict()):
+        return list(PROPERTY.values())[0]
+    elif type(PROPERTY) == type(list()):
+        PROPERTY[0]
+    else:
+        return None
 
 
 class Article:
@@ -188,8 +195,46 @@ class Article:
             })
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
-            print(data)
-            indirect_data = json.dumps(data)
+            #собираем из двух статей одну
+            author = None
+            if "PROPERTY_444" in data:
+                author = take_value(data["PROPERTY_444"])
+            company = None
+            if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
+                company = "АО «НПО «Регулятор»"
+            elif  "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6178":
+                company = "АО «САЗ»"
+            
+            if "PROPERTY_446" in data and take_value(data["PROPERTY_446"]) == "333":
+                data["active"] = True
+            else:
+                False
+            
+            link = None
+            if "PROPERTY_1247" in data:
+                link = take_value(data["PROPERTY_1247"])
+            
+            
+
+            #отдельно обрабатываем файлы
+            if "PROPERTY_457" in data:
+                full_content = take_value(data["PROPERTY_457"])
+            elif "PROPERTY_1239" in data:
+                full_content = take_value(data["PROPERTY_1239"])
+
+
+            indirect_data = {
+                #из 75ого
+                "TITLE" : data["TITLE"],
+                "author_uuid" : author,
+                "link" : link
+            }
+
+            #файлы для Интранета
+            indirect_data["PROPERTY_1023"] = data["PROPERTY_1023"] #фото превью
+            indirect_data["PROPERTY_1222"] = data["PROPERTY_1222"] #ссылка на youtube
+            indirect_data["PROPERTY_455"] = data["PROPERTY_455"]
+            indirect_data["PROPERTY_1025"] = data["PROPERTY_1020"]
         else:
             indirect_data = json.dumps(data)
 
@@ -226,9 +271,12 @@ class Article:
 
             "PROPERTY_342",
             "PROPERTY_343",
-
-            #"PROPERTY_1023",
-            #"PROPERTY_1020",
+            
+            #Блоги
+            "PROPERTY_1023",
+            #"PROPERTY_1222", #ссылка на youtube
+            "PROPERTY_455",
+            "PROPERTY_1020",
 
             "PROPERTY_476",
 

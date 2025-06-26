@@ -88,6 +88,8 @@ class FileModel:
         file_id = files_collection.insert_one(file_data).inserted_id
         return file_id
 
+    def 
+
     def go_archive(self):
         return files_collection.update_one({"b24_id": self.id}, { "$set": { "is_archive" : False } })
 

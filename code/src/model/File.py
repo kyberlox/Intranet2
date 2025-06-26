@@ -173,6 +173,9 @@ class File:
                         "is_preview": is_preview,
                         "file_url": f"/api/files/{unique_name}"  # Прямой URL
                     }
+            
+            #записать в mongodb
+            inserted_id = FileModel().add(result)
 
             new_url = result["file_url"]
 

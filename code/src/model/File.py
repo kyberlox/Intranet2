@@ -218,18 +218,18 @@ class File:
         else:
             # цикл для сбора данных с БД
             for res in result: # выдергиваем все b24_id из монго по art_id 
-                file = res["b24_id"]
-                DB_files_id.append(file)
-                DB_files_path[file] = f'{STORAGE_PATH}/{res["stored_name"]}'
+                fl = res["b24_id"]
+                DB_files_id.append(fl)
+                DB_files_path[fl] = f'{STORAGE_PATH}/{res["stored_name"]}'
 
             # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
-            for file in DB_files_id:
-                if file not in files_id:
-                    FileModel(file).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
-                    os.remove(DB_files_path[file])
+            for fl in DB_files_id:
+                if fl not in files_id:
+                    FileModel(fl).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
+                    os.remove(DB_files_path[fl])
                     # print('лишний файл в БД', file, art_id)
                 else:
-                    files_id.remove(file) # удаляем из входящего списка все файлы которые уже есть в DB_files_id
+                    files_id.remove(fl) # удаляем из входящего списка все файлы которые уже есть в DB_files_id
 
             # print('2)', files_id, 'файлы, которые нужно добавить', art_id)
 

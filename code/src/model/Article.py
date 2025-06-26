@@ -215,6 +215,11 @@ class Article:
                 company = "АО «НПО «Регулятор»"
             elif  "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6178":
                 company = "АО «САЗ»"
+
+            if "PROPERTY_453" in data and take_value(data["PROPERTY_453"]) == "335":
+                data["active"] = True
+            else:
+                data["active"] = False
             
             if "PROPERTY_446" in data and take_value(data["PROPERTY_446"]) == "333":
                 data["active"] = True

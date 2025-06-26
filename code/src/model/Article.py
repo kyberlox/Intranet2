@@ -204,7 +204,7 @@ class Article:
                 uuid = int(take_value(data["PROPERTY_444"]))
                 
                 #отдельно вытащить превьюшки людей
-                user = await User(id=uuid).search_by_id()
+                user = User(id=uuid).search_by_id()
                 print(user["photo_file_url"])
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")

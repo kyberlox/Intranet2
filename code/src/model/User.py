@@ -50,7 +50,7 @@ class User:
 
         return {"status" : status}
 
-    async def search_by_id(self):
+    def search_by_id(self):
         return UserModel(self.id).find_by_id()
 
     def get_dep_usrs(self):

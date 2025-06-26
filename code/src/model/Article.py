@@ -198,6 +198,7 @@ class Article:
         elif self.section_id == 15:
             #собираем из двух статей одну
             author = None
+            photo = None
             if "PROPERTY_444" in data:
                 author = take_value(data["PROPERTY_444"])
                 #отдельно вытащить превьюшки людей

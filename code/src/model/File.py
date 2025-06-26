@@ -185,6 +185,7 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
+                    
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
         return f"http://intranet.emk.org.ru{new_url}"
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

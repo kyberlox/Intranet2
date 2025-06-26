@@ -201,7 +201,7 @@ class Article:
             uuid = None
             photo = None
             if "PROPERTY_444" in data:
-                uuid = int(int(data['PROPERTY_1036'][0]))
+                uuid = int(int(data['PROPERTY_444'][0]))
 
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id()

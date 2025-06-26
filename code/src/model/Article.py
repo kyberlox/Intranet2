@@ -205,6 +205,7 @@ class Article:
                 print(author)
                 user = User(id=author).search_by_id()
                 photo = user["photo_file_url"]
+                photo = photo.replace("user_files", "compress_image/user")
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
                 company = "АО «НПО «Регулятор»"
@@ -241,7 +242,7 @@ class Article:
                 "author_uuid" : author,
                 "company" : company, 
                 "link" : link,
-                "photo_file_url" : photo.replace("user_files", "compress_image/user"),
+                "photo_file_url" : photo,
             }
             
             

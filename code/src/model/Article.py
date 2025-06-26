@@ -220,13 +220,14 @@ class Article:
             #отдельно обрабатываем файлы
             if "PROPERTY_1239" in data:
                 content = take_value(data["PROPERTY_1239"])
-            #хватаю url
-            matches = re.findall(r'src="([^"]*)"', content)
-            for url in matches:
-                #качаю файл новым методом
-                new_url = File().upload_by_URL(url=url, art_id=self.id)
-                #заменяю url на новый
-                content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+            if content is not None:
+                #хватаю url
+                matches = re.findall(r'src="([^"]*)"', content)
+                for url in matches:
+                    #качаю файл новым методом
+                    new_url = File().upload_by_URL(url=url, art_id=self.id)
+                    #заменяю url на новый
+                    content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
             
             #отдельно вытащить превьюшки
             #для людей
@@ -238,6 +239,7 @@ class Article:
                 #из 75ого
                 "TITLE" : data["TITLE"],
                 "author_uuid" : author,
+                "company" : company, 
                 "link" : link
             }
             

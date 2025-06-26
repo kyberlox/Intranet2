@@ -241,7 +241,7 @@ class Article:
                 "link" : link
             }
             
-            '''
+            
             #файлы для Интранета ???сработает???
             keys = [
                 "PROPERTY_1023", #фото превью
@@ -252,7 +252,7 @@ class Article:
             for key in keys:
                 if key in data:
                     indirect_data[key] = data[key]
-            '''
+            
         else:
             indirect_data = json.dumps(data)
 
@@ -291,10 +291,10 @@ class Article:
             "PROPERTY_343",
             
             #Блоги
-            "PROPERTY_1023",
+            #"PROPERTY_1023",
             #"PROPERTY_1222", #ссылка на youtube
-            "PROPERTY_455",
-            "PROPERTY_1020",
+            #"PROPERTY_455",
+            #"PROPERTY_1020",
 
             "PROPERTY_476",
 

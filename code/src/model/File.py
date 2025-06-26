@@ -121,39 +121,79 @@ class File:
 
 
 
+    def need_update_url_file(self,  art_id, filename):
+        # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
+        result = FileModel(art_id=art_id).find_all_by_art_id()
+        DB_files_id = []
+        DB_files_path = {}
 
+        if result is None: # если в бд нет такой статьи
+            return False 
+        else:
+            # цикл для сбора данных с БД
+            for res in result: # выдергиваем все original_name из монго по art_id 
+                fl = res["original_name"]
+                DB_files_name.append(fl)
+
+            # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
+            for fl in DB_files_name:
+                if fl == filename:
+                    return True
+                else:
+                    return False
 
     def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
-        # Генерируем уникальное имя файла
-        unique_name = str(ObjectId()) + file_ext
-        file_path = os.path.join(STORAGE_PATH, unique_name)
+        #тут надо проверить, нет ли такого файла уже в БД?
+        if self.need_update_file(art_id, filename):
+            # Генерируем уникальное имя файла
+            unique_name = str(ObjectId()) + file_ext
+            file_path = os.path.join(STORAGE_PATH, unique_name)
 
-        #скачать файл по ссылке
-        response = requests.get(f"https://portal.emk.ru{url}")
-        with open(file_path, 'wb') as file:
-            file.write(response.content)
-        
-        content_type = response.headers.get('Content-Type', 'unknown')
+            #скачать файл по ссылке
+            response = requests.get(f"https://portal.emk.ru{url}")
+            with open(file_path, 'wb') as file:
+                file.write(response.content)
+            
+            content_type = response.headers.get('Content-Type', 'unknown')
 
-        result = {
-                    "original_name": filename,
-                    "stored_name": unique_name,
-                    "content_type": content_type,
-                    "article_id": art_id,
-                    "b24_id": self.b24_id,
-                    "is_archive": False,
-                    "is_preview": is_preview,
-                    "file_url": f"/api/files/{unique_name}"  # Прямой URL
-                }
+            result = {
+                        "original_name": filename,
+                        "stored_name": unique_name,
+                        "content_type": content_type,
+                        "article_id": art_id,
+                        "b24_id": self.b24_id,
+                        "is_archive": False,
+                        "is_preview": is_preview,
+                        "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                    }
 
-        new_url = result["file_url"]
-        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-        return f"http://intranet.emk.org.ru{new_url}"
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            new_url = result["file_url"]
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            return f"http://intranet.emk.org.ru{new_url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        else: #надо заменить
+            self.art_id = art_id
+            files = self.get_files_by_art_id()
+            for fl in files:
+                if fl["original_name"] == filename:
+                    #перезаписываем
+                    unique_name = fl["stored_name"]
+                    file_path = os.path.join(STORAGE_PATH, unique_name)
+                    response = requests.get(f"https://portal.emk.ru{url}")
+                    with open(file_path, 'wb') as file:
+                        file.write(response.content)
+                    
+                    new_url = fl["file_url"]
+                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    return f"http://intranet.emk.org.ru{new_url}"
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 
         
 

@@ -124,8 +124,7 @@ class File:
     def need_update_url_file(self,  art_id, filename):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
         result = FileModel(art_id=art_id).find_all_by_art_id()
-        DB_files_id = []
-        DB_files_path = {}
+        DB_files_name = []
 
         if result is None: # если в бд нет такой статьи
             return False 

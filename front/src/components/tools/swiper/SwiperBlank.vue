@@ -25,7 +25,7 @@
 
     </swiper>
     <div class="swiper-navigation__buttons-group"
-         v-if="images.length > 1 || videos.length > 1 || images.length + videos.length > 1">
+         v-if="(images && images.length > 1) || (videos && videos.length > 1) || images && videos && images.length + videos.length > 1">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
                 @click="slidePrev">
@@ -46,17 +46,15 @@
 
 <script lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
 import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
-import { defineComponent, type PropType, ref } from "vue";
+import { defineComponent, type PropType, ref, watch } from "vue";
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-
 import { useSwiperconf } from "@/utils/useSwiperConf";
+
 export default defineComponent({
+    name: 'SwiperBlank',
     components: {
         Swiper,
         SwiperSlide,
@@ -67,7 +65,7 @@ export default defineComponent({
     props: {
         images: {
             type: Array as PropType<string[]>,
-            required: true,
+            default: () => [],
         },
         videos: {
             type: Array as PropType<string[]>,
@@ -79,19 +77,40 @@ export default defineComponent({
         },
         sectionId: {
             type: Number,
+        },
+        activeIndexInModal: {
+            type: Number
         }
     },
     setup(props) {
         const modalIsVisible = ref(false);
-        const activeIndex = ref(0);
+        const activeIndex = ref();
+
+        watch((props), (newVal) => {
+            if (newVal.activeIndexInModal && newVal.activeIndexInModal !== null || newVal.activeIndexInModal == 0) {
+                activeIndex.value = newVal.activeIndexInModal;
+                modalIsVisible.value = true;
+            }
+        }, { deep: true, immediate: true })
+
+        const {
+            swiperOn,
+            slideNext,
+            slidePrev,
+            sliderConfig,
+            swiperInstance,
+            isEnd,
+            isBeginning
+        } = useSwiperconf(props.type);
+
         return {
-            swiperOn: useSwiperconf(props.type).swiperOn,
-            slideNext: useSwiperconf(props.type).slideNext,
-            slidePrev: useSwiperconf(props.type).slidePrev,
-            sliderConfig: useSwiperconf(props.type).sliderConfig,
-            swiperInstance: useSwiperconf(props.type).swiperInstance,
-            isEnd: useSwiperconf(props.type).isEnd,
-            isBeginning: useSwiperconf(props.type).isBeginning,
+            swiperOn,
+            slideNext,
+            slidePrev,
+            sliderConfig,
+            swiperInstance,
+            isEnd,
+            isBeginning,
             repairVideoUrl,
             modalIsVisible,
             activeIndex

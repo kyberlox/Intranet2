@@ -3,13 +3,11 @@
     <div class="d-flex flex-column">
         <div class="section__image__list__section order-1 order-md-2">
             <div class="section__image__list__items row">
-                <VerticalSlider v-for="slide in safetyTechnicsCovidInner.content"
-                                     :key="slide.id"
-                                     :slide="slide"
-                                     :place="'inner'" />
+                <VerticalSlider :slides="safetyTechnicsCovidInner.content"
+                                :modifiers="['needLogo']" />
 
                 <div class="col-12 col-xl-12 col-xxl-3"
-                 v-html="safetyTechnicsCovidInner.sideInfo">
+                     v-html="safetyTechnicsCovidInner.sideInfo">
                 </div>
             </div>
         </div>
@@ -18,9 +16,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { safetyTechnicsCovidInner } from "@/assets/static/safetyTechnics";
-import 
+import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 export default defineComponent({
-
+    components: {
+        VerticalSlider
+    },
     setup() {
         return {
             safetyTechnicsCovidInner,

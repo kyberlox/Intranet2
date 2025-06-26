@@ -4,11 +4,11 @@
              class="row">
             <div class="col-12 col-lg-6 mb-2">
                 <SwiperBlank :videos="currentPost?.videos ? currentPost.videos : undefined"
-                             :images="currentPost?.images ? currentPost.images : ['https://placehold.co/360x206']"
-                             :sectionId="currentPost?.section_id"
-                             :type="'postInner'" />
+                             :images="currentPost?.images ? currentPost.images : undefined"
+                             :sectionId="currentPost?.section_id" />
             </div>
-            <div class="col-12 col-lg-6">
+            <div v-if="type !== 'onlyImg'"
+                 class="col-12 col-lg-6">
                 <div class="news__detail__content">
                     <div v-if="currentPost.name"
                          class="news__detail__top">
@@ -95,7 +95,6 @@ export default defineComponent({
         const currentPost = ref<IUnionEntities>();
         onMounted(() => {
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
-                console.log(props.previewElement);
                 currentPost.value = props.previewElement
             }
             else

@@ -42,7 +42,7 @@ export default defineComponent({
         watch(allAuthors, () => {
             if (!allAuthors.value.length) return
             allAuthors.value.map((e) => {
-                if (e.title == 'Новая техника ЗАО «САЗ»' || e.title == 'Новая техника ЗАО «НПО «Регулятор»') {
+                if (e.title == 'Новая техника АО «САЗ»' || e.title == 'Новая техника ЗАО «НПО «Регулятор»') {
                     factoryAuthors.value.push(e);
                 } else {
                     authors.value.push(e);

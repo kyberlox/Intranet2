@@ -53,6 +53,11 @@
                 background-repeat: no-repeat;
                 aspect-ratio: 16/9;
                 width: 100%;
+
+                &__swiper-slide {
+                    border: none !important;
+                    background: none !important;
+                }
             }
 
             &__bg-image {

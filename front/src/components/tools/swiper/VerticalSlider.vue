@@ -24,10 +24,11 @@
                     </div>
                 </div>
                 <!-- Под технику безопасности-->
-                <div v-else-if="page == 'safetyTechnics'"
+                <div v-else-if="page == 'safetyTechnics' || (modifiers && modifiers.includes('needLogo'))"
                      class="section__image__list__item__banner">
                     <span class="section__image__list__item__banner__inner">
-                        <span class="section__image__list__item__category">
+                        <span v-if="page == 'safetyTechnics'"
+                              class="section__image__list__item__category">
                             {{ slide.header }}
                         </span>
                         <div class="section__image__list__item__logo">
@@ -36,7 +37,8 @@
                                  title="ЭМК" />
                         </div>
                         <h3 class="section__image__list__item__title">{{ slide.name }}</h3>
-                        <RouterLink :to="{ name: slide.routeTo, params: { id: slide.id } }"
+                        <RouterLink v-if="page == 'safetyTechnics'"
+                                    :to="{ name: slide.routeTo, params: { id: slide.id } }"
                                     class="section__image__list__item__link">
                             Читать
                         </RouterLink>
@@ -137,6 +139,9 @@ export default defineComponent({
     width: 100%;
     transition: var(--default-transition);
     border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 
 .section__image__list__item__logo {
@@ -150,7 +155,7 @@ export default defineComponent({
     line-height: 16px;
     color: #000000;
     width: 100%;
-    background: rgba(255, 255, 255, 0.6392156863);
+    background: rgb(255 255 255 / 88%);
     padding: 10px;
 
 }

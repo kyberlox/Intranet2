@@ -11,8 +11,10 @@
         justify-content: center;
         object-fit: contain;
         aspect-ratio: 16/9;
-        background: #80808017;
+        background: #b1b1b137;
         border-radius: 4px;
+        border: 1px solid rgba(128, 128, 128, 0.333);
+        padding: 10px;
 
         iframe {
             height: 100%;

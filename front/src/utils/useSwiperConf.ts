@@ -1,40 +1,43 @@
 import type { Swiper as SwiperType } from 'swiper';
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 import { ref } from 'vue';
 
-let swiperInstance: SwiperType | null = null;
-
-const isBeginning = ref(true);
-const isEnd = ref(false);
-
 export const useSwiperconf = (type: string, activeIndex?: number) => {
-    const swiperOn = (swiper: SwiperType) => {
-        swiperInstance = swiper;
-        isBeginning.value = swiperInstance.isBeginning;
-        isEnd.value = swiperInstance.isEnd;
+    // Создаем локальные реактивные переменные для каждого экземпляра
+    const swiperInstance = ref<SwiperType | null>(null);
+    const isBeginning = ref(true);
+    const isEnd = ref(false);
 
-        swiperInstance.on("slideChange", () => {
-            if (swiperInstance) {
-                isBeginning.value = swiperInstance.isBeginning;
-                isEnd.value = swiperInstance.isEnd;
+    const swiperOn = (swiper: SwiperType) => {
+        swiperInstance.value = swiper;
+        isBeginning.value = swiper.isBeginning;
+        isEnd.value = swiper.isEnd;
+
+        swiper.on("slideChange", () => {
+            if (swiperInstance.value) {
+                isBeginning.value = swiperInstance.value.isBeginning;
+                isEnd.value = swiperInstance.value.isEnd;
             }
         });
     };
 
     const slideNext = () => {
-        swiperInstance?.slideNext();
-        if (swiperInstance) {
-            isBeginning.value = swiperInstance.isBeginning;
-            isEnd.value = swiperInstance.isEnd;
+        swiperInstance.value?.slideNext();
+        if (swiperInstance.value) {
+            isBeginning.value = swiperInstance.value.isBeginning;
+            isEnd.value = swiperInstance.value.isEnd;
         }
-
     };
+
     const slidePrev = () => {
-        if (swiperInstance) {
-            swiperInstance?.slidePrev();
-            isBeginning.value = swiperInstance.isBeginning;
-            isEnd.value = swiperInstance.isEnd;
+        if (swiperInstance.value) {
+            swiperInstance.value.slidePrev();
+            isBeginning.value = swiperInstance.value.isBeginning;
+            isEnd.value = swiperInstance.value.isEnd;
         }
     };
 
@@ -59,16 +62,9 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                 ? {
                     delay: 3000,
                     disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
                 }
                 : false,
-        pagination: { el: ".swiper-navigation__buttons-group__pagination", clickable: true },
-        navigation: {
-            nextEl: type == 'fullWidth' ?
-                ".full-width-slider-pagination__button--next" : ".swiper-navigation__buttons-group__button--next",
-            prevEl: type == 'fullWidthSlider' ?
-                "full-width-slider-pagination__button--prev" : ".swiper-navigation__buttons-group__button--prev",
-        },
+        // добавьте остальные настройки
     };
 
     return {
@@ -77,7 +73,7 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
         slidePrev,
         sliderConfig,
         swiperInstance,
-        isBeginning,
         isEnd,
-    }
-} 
+        isBeginning
+    };
+};

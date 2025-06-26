@@ -1,19 +1,67 @@
 <template>
     <div class="excursions__training__page mt20">
         <div class="page__title">Пожарная безопасность и эвакуация из офисного здания</div>
-        <PostInner />
+        <PostInner :previewElement="safetyTechnicsFireInner.content" />
+        <div class="evacuation">
+            <div class="evacuation__swiper-wrapper">
+                <SwiperBlank :activeIndexInModal="activeIndexInModal"
+                             :type="'second'"
+                             :images="safetyTechnicsFireInner.evacuationContent.images" />
+            </div>
+            <div class="evacuation__floors-list">
+                <h4>План эвакуации по этажам</h4>
+                <div class="evacuation__floor"
+                     @click="activeIndexInModal = index"
+                     v-for="(i, index) in [1, 3, 6, 7, 8, 9, 10, 11, 12]">
+                    {{ `Этаж ${i}` }}
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import PostInner from "@/components/tools/common/PostInner.vue";
-import { defineComponent } from "vue";
+import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
+import { defineComponent, ref } from "vue";
+import { safetyTechnicsFireInner } from "@/assets/static/safetyTechnics";
 export default defineComponent({
     components: {
         PostInner,
+        SwiperBlank
     },
     setup() {
-        return {};
+        const activeIndexInModal = ref(null);
+        return {
+            activeIndexInModal,
+            safetyTechnicsFireInner
+        };
     },
 });
 </script>
+
+<style lang="scss">
+.evacuation {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.evacuation__swiper-wrapper {
+    max-width: 50%;
+}
+
+.evacuation__floor {
+    color: var(--emk-brand-color);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+        color: gray;
+    }
+
+    &:not(:first-child) {
+        margin-top: 5px;
+    }
+}
+</style>

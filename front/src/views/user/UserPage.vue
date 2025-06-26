@@ -6,7 +6,7 @@
                 <div class="col-12 col-md-6">
                     <div class="personal__user__photo">
                         <img v-if="user && user.photo_file_url"
-                             :src="user.indirect_data.personal_photo"
+                             :src="user.photo_file_url"
                              alt="Игорь"
                              @click="modalIsOpen = true" />
                         <img src="https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"

@@ -18,7 +18,7 @@ export const safetyTechnics: ISafetyTechnicsSlide[] = {
             header: "При пожаре",
             subtitle: "Правила пожарной безопасности и эвакуации из офисного здания",
             description: "Схема эвакуации и что нужно делать при пожаре",
-            routeTo: "safetytechnicsCovid",
+            routeTo: "safetytechnicsFire",
         },
         {
             id: 3,
@@ -27,7 +27,7 @@ export const safetyTechnics: ISafetyTechnicsSlide[] = {
             header: "Техника безопасности на производстве",
             subtitle: "Что нужно знать при посещении производственных площадок",
             description: "Правила для персонала и гостей",
-            routeTo: "safetytechnicsCovid",
+            routeTo: "safetytechnicsFactory",
         }],
     sideInfo: `
             <h4>Техника безопасности</h4>
@@ -54,18 +54,18 @@ export const safetyTechnicsCovidInner: { id: number, title: string, image: strin
     content: [
         {
             id: 1,
-            title: 'Соблюдайте социальную дистанцию',
-            image: '/src/assets/imgs/about/safetyTechnics/COVID1.jpg',
+            subtitle: 'Соблюдайте социальную дистанцию',
+            image: '/src/assets/imgs/about/safetyTechnics/covid/COVID1.jpg',
         },
         {
             id: 2,
-            title: 'Ходите в масках и используйте антисептики',
-            image: '/src/assets/imgs/about/safetyTechnics/COVID2.jpg',
+            subtitle: 'Ходите в масках и используйте антисептики',
+            image: '/src/assets/imgs/about/safetyTechnics/covid/COVID2.jpg',
         },
         {
             id: 3,
-            title: 'Старайтесь не приглашать лишних людей в офис',
-            image: '/src/assets/imgs/about/safetyTechnics/COVID3.jpg',
+            subtitle: 'Старайтесь не приглашать лишних людей в офис',
+            image: '/src/assets/imgs/about/safetyTechnics/covid/COVID3.jpg',
         }
     ],
     sideInfo: `<div class="news__detail__discr safety__section__discr">
@@ -88,4 +88,94 @@ export const safetyTechnicsCovidInner: { id: number, title: string, image: strin
                     <strong>Просим отнестись к этим мерам с пониманием. Будьте ответственны за себя и
                         окружающих.</strong>
                 </div>`
+}
+
+export const safetyTechnicsFireInner: { id: number, title: string, image: string }[] =
+{
+    content: {
+        id: 1,
+        videos: ['/src/assets/videos/fire.mp4'],
+        content_text: `<div class="news__detail__discr safety__detail__discr">
+                    <h2 class="news__detail__title mb-2">Техника безопасности</h2>
+                    <strong>При возникновении локального возгорания</strong>
+                    <p>В нашем офисе установлена система противопожарной защиты, сигнал которой оповестит всех
+                        находящихся в
+                        здании людей о возникшей угрозе. Если Вы услышали данный сигнал, немедленно покиньте помещение
+                        по
+                        пожарной лестнице.</p>
+                    <p class="attention">В случае возгорания не пользуйтесь лифтами. Система безопасности
+                        предусматривает
+                        спуск всех лифтов и их блокировку на 1 этаже во время сигнала тревоги. Ждать лифт
+                        бесполезно.</p>
+                    <p>При срабатывании системы пожарной безопасности все электронные замки здания разблокируются и
+                        двери
+                        будут открыты. Если произошло возгорание в непосредственной близости к Вам, прекратите работу,
+                        отключите всю технику от электросети и защитите дыхательные пути мокрой тканью. При небольшом
+                        локальном возгорании, предварительно приняв все меры собственной безопасности, примите посильные
+                        меры по тушению пожара: пламя гасите огнетушителем, песком или землёй (из горшков офисных
+                        цветов),
+                        иными подручными средствами. Имейте в виду, что вода для тушения горючих жидкостей и некоторых
+                        видов
+                        пластика непригодна.</p>
+                    <p>Расположение огнетушителей отмечено на <a href="../evacuation/">поэтажных планах
+                            эвакуации</a>.</p>
+                    <strong>При возникновении локального возгорания</strong>
+                    <p>Запрещается открывать для проветривания окна и двери, а также разбивать стёкла во избежание
+                        распространения огня и дыма в смежные помещения до полной ликвидации огня.</p>
+                    <p>В случае, если объем возгорания значительный или Вы не можете самостоятельно оценить степень угрозы,
+                        немедленно вызовите городскую пожарную охрану и покиньте помещение, убедившись, что в близко
+                        расположенных помещениях не осталось людей, которые не оповещены о возникновении возгорания.</p>
+                    <p class="attention">Руководители отделов должны контролировать эвакуацию своих сотрудников.</p>
+                    <p>Номер пожарной службы — <a>101</a></p>
+                    <p>Номер единой службы спасения — <a>112</a></p>    
+                </div>`,
+    },
+    evacuationContent: {
+        images: [
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor1.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor3.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor6.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor7.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor8.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor9.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor10.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor11.jpg',
+            '/src/assets/imgs/about/safetyTechnics/evacuation/floor12.jpg'
+        ],
+    }
+}
+
+export const safetyTechnicsFactoryInner: { id: number, title: string, image: string }[] =
+{
+    content: {
+        id: 1,
+        images: ['/src/assets/imgs/about/safetyTechnics/factory/factory1.jpg'],
+        content_text: `<div class="news__detail__discr safety__section__discr">
+            <p><strong>Пребывая на производственном объекте,</strong> обращайте внимание на предупредительные
+                плакаты и придерживайтесь установленных правил.</p>
+            <ul class="safety__section__info__list__style">
+                <li>Слушайте и выполняйте все указания инженера по охране труда. Сообщайте ему обо всех
+                    замеченных нарушениях правил охраны труда, а также о любых неисправностях, будь то
+                    перегоревшая лампочка или ощущение действия тока от поверхностей оборудования
+                </li>
+                <li>Держитесь ближе к центру проходов и не приближайтесь к станкам. Не переходите
+                    ограничительную желтую линию, нанесенную на полу проходов в цехах
+                </li>
+                <li>Категорически запрещается прикасаться к станкам, проводам, моторам, рубильникам и любому
+                    другому оборудованию
+                </li>
+                <li>Запрещается класть любые предметы в проходах, на подножках и лесенках, а также на станках и
+                    прочем оборудовании
+                </li>
+                <li>Не трогайте заграждения и не заходите за них. Не трогайте стружку, прочие материалы и отходы
+                    производства
+                </li>
+                <li>Не стойте под работающими кран-балками. Не стойте под грузом</li>
+                <li>Не приближайтесь, не пытайтесь коснуться или взять что-либо с работающих погрузчиков</li>
+                <li>На территории категорически запрещено появляться в нетрезвом виде, проносить спиртные напитки</li>
+                <li>На производственной площадке нельзя курить, кроме строго отведенного места</li>
+                <li>Фотографирование и запись видео без разрешения сопровождающего сотрудника категорически запрещены</li>
+            </ul>
+        </div>`
+    }
 }

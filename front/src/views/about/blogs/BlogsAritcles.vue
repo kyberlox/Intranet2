@@ -3,7 +3,8 @@
         <div class="row d-flex mt20 blog__articles-wrapper">
             <div class="avatar__wrapper col-sm-3">
                 <BlogAvatar :author="targetAuthor"
-                            :from="'blogsArticles'" />
+                            :from="'blogsArticles'"
+                            :needLink="true" />
             </div>
             <div class="blog-list__item-wrapper col-sm-9">
                 <div class="blog-list__item"
@@ -11,9 +12,11 @@
                      :key="'article' + article.id">
                     <div v-if="article.indirect_data">
                         <RouterLink :to="{ name: 'certainBlog', params: { id: article.id, authorId: targetAuthor?.authorId } }"
-                                    class="blog-list__item-title">{{ article.indirect_data.NAME }}</RouterLink>
+                                    class="blog-list__item-title">
+                            {{ article.name }}
+                        </RouterLink>
                         <div class="news-like news-like--blog">
-                            <span class="blog-date">{{ article.indirect_data.DATE_CREATE }}</span>
+                            <span class="blog-date">{{ article.date_creation.replace('T', ' ') }} //</span>
                             <Reactions v-if="article.reactions"
                                        :reactions="article.reactions"
                                        :type="'blog'" />
@@ -48,7 +51,7 @@ export default defineComponent({
         const targetBlog = ref();
         const blogData = useblogDataStore();
 
-        const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id))
+        const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id));
 
         const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
 

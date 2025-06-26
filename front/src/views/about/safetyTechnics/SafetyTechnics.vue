@@ -20,12 +20,11 @@ import { defineComponent } from "vue";
 import { safetyTechnics } from "@/assets/static/safetyTechnics";
 import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 export default defineComponent({
-    components: { 
+    components: {
         SafetyTechnicsSlide,
         VerticalSlider
     },
     setup() {
-        console.log(safetyTechnics)
         return {
             safetyTechnics,
         };

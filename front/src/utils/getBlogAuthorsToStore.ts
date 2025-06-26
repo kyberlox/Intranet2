@@ -1,35 +1,26 @@
 import Api from "./Api"
 import type { Ref } from "vue"
-import { getProperty } from "./getPropertyFirstPos"
 import { sectionTips } from "@/assets/static/sectionTips"
 import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
 import type { useblogDataStore } from "@/stores/blogData"
-import { propertyCheck } from "@/utils/propertyCheck";
 
-const setauthorId = (e: IBlog): string => {
-    if (propertyCheck(e.indirect_data, 'PROPERTY_451')) {
-        return getProperty(e, 'PROPERTY_451');
-    }
-    else if (propertyCheck(e.indirect_data, 'PROPERTY_1022')) {
-        return getProperty(e, 'PROPERTY_1022')
-    }
-    else {
-        return '0'
-    }
-}
 export const getBlogAuthorsToStore = (allAuthors: Ref<IBlogAuthors[]>, blogData: ReturnType<typeof useblogDataStore>) => {
+    const uniqAuthors = [];
     Api.get(`article/find_by/${sectionTips['Блоги']}`)
         .then(res => {
             res.map((e: IBlog) => {
-                const authorId = setauthorId(e);
-
-                if (e.indirect_data?.TITLE && e.indirect_data.ID && authorId && (e.indirect_data.PROPERTY_451 || e.indirect_data.PROPERTY_453)) {
+                if (e.indirect_data?.TITLE) {
                     const newAuthor: IBlogAuthors = {
                         title: e.indirect_data.TITLE,
-                        id: Number(e.indirect_data.ID),
-                        authorId: Number(authorId)
+                        authorId: e.indirect_data.author_uuid ?? e.indirect_data.company,
+                        authorAvatar: e.preview_file_url ?? e.indirect_data.photo_file_url,
+                        link: e.indirect_data.link ?? null
                     }
-                    allAuthors.value.push(newAuthor);
+                    console.log(newAuthor);
+                    if (!uniqAuthors.length || !uniqAuthors.find((e) => e.title == newAuthor.title)) {
+                        uniqAuthors.push(newAuthor)
+                    }
+                    allAuthors.value = uniqAuthors;
                 }
             })
 

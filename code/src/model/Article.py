@@ -204,8 +204,7 @@ class Article:
                 author = take_value(data["PROPERTY_444"])
                 #отдельно вытащить превьюшки людей
                 print(author)
-                user = User(id=int(author)).search_by_id()
-                photo = user["photo_file_url"]
+                photo = (User(id=int(author)).search_by_id())["photo_file_url"]
                 photo = photo.replace("user_files", "compress_image/user")
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":

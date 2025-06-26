@@ -198,14 +198,14 @@ class Article:
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
             #собираем из двух статей одну
-            author = None
+            uuid = None
             photo = None
             if "PROPERTY_444" in data:
-                author = take_value(data["PROPERTY_444"])
+                uuid = take_value(data["PROPERTY_444"])
                 #отдельно вытащить превьюшки людей
-                print(author)
-                photo = (await User(id=int(author)).search_by_id())["photo_file_url"]
-                photo = photo.replace("user_files", "compress_image/user")
+                user = User(id=uuid).search_by_id()
+                photo = user["photo_file_url"]
+                #photo = photo.replace("user_files", "compress_image/user")
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
                 company = "АО «НПО «Регулятор»"
@@ -239,7 +239,7 @@ class Article:
 
             indirect_data = {
                 "TITLE" : data["TITLE"],
-                "author_uuid" : author,
+                "author_uuid" : uuid,
                 "company" : company, 
                 "link" : link,
                 "photo_file_url" : photo,

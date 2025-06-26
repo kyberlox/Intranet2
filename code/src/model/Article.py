@@ -204,9 +204,9 @@ class Article:
                 uuid = int(take_value(data["PROPERTY_444"]))
                 
                 #отдельно вытащить превьюшки людей
-                user = User(id=uuid).search_by_id()
-                print(user)
-                photo = dict(user)["photo_file_url"]
+                user = await User(id=uuid).search_by_id()
+                print(user["photo_file_url"])
+                photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":

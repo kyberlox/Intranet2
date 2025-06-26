@@ -194,6 +194,7 @@ class Article:
                 "award" : award,
                 "location" : ""
             })
+
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
             #собираем из двух статей одну
@@ -203,7 +204,7 @@ class Article:
                 author = take_value(data["PROPERTY_444"])
                 #отдельно вытащить превьюшки людей
                 print(author)
-                user = User(id=author).search_by_id()
+                user = User(id=int(author)).search_by_id()
                 photo = user["photo_file_url"]
                 photo = photo.replace("user_files", "compress_image/user")
             company = None

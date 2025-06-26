@@ -227,6 +227,10 @@ class Article:
                 new_url = File().upload_by_URL(url=url, art_id=self.id)
                 #заменяю url на новый
                 content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+            
+            #отдельно вытащить превьюшки
+            #для людей
+            #для заводов
 
 
 
@@ -236,7 +240,8 @@ class Article:
                 "author_uuid" : author,
                 "link" : link
             }
-
+            
+            '''
             #файлы для Интранета ???сработает???
             keys = [
                 "PROPERTY_1023", #фото превью
@@ -246,7 +251,8 @@ class Article:
             ]
             for key in keys:
                 if key in data:
-                    indirect_data[key] = data[key] 
+                    indirect_data[key] = data[key]
+            '''
         else:
             indirect_data = json.dumps(data)
 

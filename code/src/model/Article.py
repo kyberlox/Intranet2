@@ -219,15 +219,15 @@ class Article:
 
             #отдельно обрабатываем файлы
             if "PROPERTY_457" in data:
-                if "TEXT" in data[key]:
-                        content = list(data[key]["TEXT"].values())[0]
-                        if "TYPE" in data[key]:
-                            content_type = list(data[key]["TYPE"].values())[0]
+                if "TEXT" in data[PROPERTY_457]:
+                        content = list(data[PROPERTY_457]["TEXT"].values())[0]
+                        if "TYPE" in data[PROPERTY_457]:
+                            content_type = list(data[PROPERTY_457]["TYPE"].values())[0]
 
-                    elif "TEXT" in list(data[key].values())[0]:
-                        content = list(data[key].values())[0]["TEXT"]
-                        if "TYPE" in list(data[key].values())[0]:
-                            content_type = list(data[key].values())[0]["TYPE"]
+                    elif "TEXT" in list(data[PROPERTY_457].values())[0]:
+                        content = list(data[PROPERTY_457].values())[0]["TEXT"]
+                        if "TYPE" in list(data[PROPERTY_457].values())[0]:
+                            content_type = list(data[PROPERTY_457].values())[0]["TYPE"]
             elif "PROPERTY_1239" in data:
                 content = take_value(data["PROPERTY_1239"])
             #хватаю url

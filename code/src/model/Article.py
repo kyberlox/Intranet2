@@ -226,7 +226,11 @@ class Article:
             matches = re.findall(r'src="([^"]*)"', content)
             for url in matches:
                 #качаю файл новым методом
+                new_url = File().upload_by_URL(url=url, art_id=self.id)
                 #заменяю url на новый
+                content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+
+
 
             indirect_data = {
                 #из 75ого
@@ -235,7 +239,7 @@ class Article:
                 "link" : link
             }
 
-            #файлы для Интранета
+            #файлы для Интранета ???сработает???
             indirect_data["PROPERTY_1023"] = data["PROPERTY_1023"] #фото превью
             indirect_data["PROPERTY_1222"] = data["PROPERTY_1222"] #ссылка на youtube
             indirect_data["PROPERTY_455"] = data["PROPERTY_455"]

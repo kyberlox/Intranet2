@@ -116,9 +116,55 @@ class File:
             # print(f"Ошибка при скачивании файла: {e}")
             return LogsMaker().error_message(e)
 
-    def upload_by_URL(self, url, path, art_id, art_id=None, is_preview = False, inf_id=None):
+
+
+
+
+
+
+
+    def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
+        filename = url.split("/")[-1]
+        filename_parts = filename.split('.')
+        file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+
+        # Генерируем уникальное имя файла
+        unique_name = str(ObjectId()) + file_ext
+        file_path = os.path.join(STORAGE_PATH, unique_name)
+
         #скачать файл по ссылке
+        response = requests.get(f"https://portal.emk.ru{url}")
+        with open(file_path, 'wb') as file:
+            file.write(response.content)
         
+        content_type = response.headers.get('Content-Type', 'unknown')
+
+        result = {
+                    "original_name": filename,
+                    "stored_name": unique_name,
+                    "content_type": content_type,
+                    "article_id": art_id,
+                    "b24_id": self.b24_id,
+                    "is_archive": False,
+                    "is_preview": is_preview,
+                    "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                }
+
+        new_url = result["file_url"]
+        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+        return f"http://intranet.emk.org.ru{new_url}"
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        
+
+
+
+
+
+
+
+
+
 
 
     def need_update_file(self,  art_id, files_id):

@@ -205,7 +205,6 @@ class Article:
                     uuid = int(data['PROPERTY_444'][0])
                 else:
                     uuid = int(list(data['PROPERTY_444'].values())[0])
-                print(uuid)
                     
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id()
@@ -220,7 +219,7 @@ class Article:
             if "PROPERTY_446" in data and take_value(data["PROPERTY_446"]) == "333":
                 data["active"] = True
             else:
-                False
+                data["active"] = False
             
             link = None
             if "PROPERTY_1247" in data:

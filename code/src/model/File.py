@@ -148,7 +148,7 @@ class File:
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
         #тут надо проверить, нет ли такого файла уже в БД?
-        if self.need_update_file(art_id, filename):
+        if self.need_update_url_file(art_id, filename):
             # Генерируем уникальное имя файла
             unique_name = str(ObjectId()) + file_ext
             file_path = os.path.join(STORAGE_PATH, unique_name)

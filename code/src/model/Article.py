@@ -202,7 +202,7 @@ class Article:
             photo = None
             if "PROPERTY_444" in data:
                 uuid = int(take_value(data["PROPERTY_444"]))
-                
+                print(uuid)
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id()
                 photo = user["photo_file_url"]

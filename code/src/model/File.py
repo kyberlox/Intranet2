@@ -243,7 +243,7 @@ class File:
             for fl in DB_files_id:
                 if fl not in files_id:
                     FileModel(b24_id = fl).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
-                    os.remove(DB_files_path[fl])
+                    #os.remove(DB_files_path[fl])
                     # print('лишний файл в БД', file, art_id)
                 else:
                     files_id.remove(fl) # удаляем из входящего списка все файлы которые уже есть в DB_files_id

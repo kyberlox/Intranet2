@@ -205,7 +205,6 @@ class Article:
                 
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id()
-                print(uuid)
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None
@@ -234,6 +233,7 @@ class Article:
                 for url in matches:
                     #качаю файл новым методом
                     new_url = File().upload_by_URL(url=url, art_id=self.id)
+                    print(new_url)
                     #заменяю url на новый
                     content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
 

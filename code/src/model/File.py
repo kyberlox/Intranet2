@@ -172,6 +172,11 @@ class File:
 
             new_url = result["file_url"]
 
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            return f"http://intranet.emk.org.ru{new_url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+
         else: #надо заменить
             self.art_id = art_id
             files = self.get_files_by_art_id()
@@ -185,10 +190,10 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
-                    
-        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-        return f"http://intranet.emk.org.ru{new_url}"
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    return f"http://intranet.emk.org.ru{new_url}"
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 

@@ -27,7 +27,7 @@ user_photo_collection = db["user_photo"]
 
 
 class FileModel:
-    def __init__(self, id="", art_id = None):
+    def __init__(self, id="", art_id = None, b24_id = None):
         if id is not None:
             if type(id) == type(ObjectId("a" * 24)):
                 id = id
@@ -35,6 +35,7 @@ class FileModel:
                 id = ObjectId(id)
             self.id = id
         self.art_id = art_id
+        self.b24_id = b24_id
 
     def create_indexes(self):
         #создаем индексы
@@ -89,7 +90,7 @@ class FileModel:
         return file_id
 
     def go_archive(self):
-        return files_collection.update_one({"b24_id": self.id}, { "$set": { "is_archive" : False } })
+        return files_collection.update_one({"b24_id": self.b24_id}, { "$set": { "is_archive" : False } })
 
     def remove(self):
         #удалить сам файл

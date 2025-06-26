@@ -343,6 +343,7 @@ class Article:
             "PROPERTY_498",
             "PREVIEW_PICTURE",
             "PROPERTY_356",
+            "PROPERTY_1023",
         ]
         
         # находим файлы статьи

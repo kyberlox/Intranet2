@@ -232,6 +232,7 @@ class Article:
             
             #отдельно вытащить превьюшки
             #для людей
+            print(author)
             user = User(id=author).search_by_id()
             photo = user["photo_file_url"]
             #для заводов

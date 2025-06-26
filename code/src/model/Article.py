@@ -238,10 +238,15 @@ class Article:
             }
 
             #файлы для Интранета ???сработает???
-            indirect_data["PROPERTY_1023"] = data["PROPERTY_1023"] #фото превью
-            indirect_data["PROPERTY_1222"] = data["PROPERTY_1222"] #ссылка на youtube
-            indirect_data["PROPERTY_455"] = data["PROPERTY_455"]
-            indirect_data["PROPERTY_1020"] = data["PROPERTY_1020"]
+            keys = [
+                "PROPERTY_1023", #фото превью
+                "PROPERTY_1222", #ссылка на youtube
+                "PROPERTY_455",
+                "PROPERTY_1020",
+            ]
+            for key in keys:
+                if key in data:
+                    indirect_data[key] = data[key] 
         else:
             indirect_data = json.dumps(data)
 

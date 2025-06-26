@@ -31,7 +31,7 @@ def take_value(PROPERTY):
     if type(PROPERTY) == type(dict()):
         return list(PROPERTY.values())[0]
     elif type(PROPERTY) == type(list()):
-        PROPERTY[0]
+        return PROPERTY[0]
     else:
         return None
 

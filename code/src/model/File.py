@@ -145,12 +145,13 @@ class File:
 
     def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
-        print(filename)
+        
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
         #тут надо проверить, нет ли такого файла уже в БД?
         if self.need_update_url_file(art_id, filename):
+            print(filename)
             # Генерируем уникальное имя файла
             unique_name = str(ObjectId()) + file_ext
             file_path = os.path.join(STORAGE_PATH, unique_name)

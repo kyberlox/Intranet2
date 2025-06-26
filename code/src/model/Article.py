@@ -199,7 +199,7 @@ class Article:
             #собираем из двух статей одну
             author = None
             if "PROPERTY_444" in data:
-                print(data["PROPERTY_444"])
+                print(take_value(data["PROPERTY_444"]))
                 author = take_value(data["PROPERTY_444"])
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":

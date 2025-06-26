@@ -205,7 +205,7 @@ class Article:
                 
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id()
-                print(user["photo_file_url"])
+                print(uuid)
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None

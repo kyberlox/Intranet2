@@ -138,7 +138,7 @@ class File:
             for fl in DB_files_name:
                 print(filename)
                 print(fl)
-                if fl == filename:
+                if fl == filename or filename == 'uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1':
                     return False
                 else:
                     return True

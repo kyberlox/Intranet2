@@ -139,9 +139,9 @@ class File:
                 print(filename)
                 print(fl)
                 if fl == filename:
-                    return True
-                else:
                     return False
+                else:
+                    return True
 
     def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]

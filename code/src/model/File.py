@@ -143,6 +143,7 @@ class File:
 
     def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
+        print(filename)
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 

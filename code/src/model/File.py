@@ -136,8 +136,8 @@ class File:
 
             # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
             for fl in DB_files_name:
-                print(filename)
-                print(fl)
+                #print(filename)
+                #print(fl)
                 if fl == filename or filename == 'uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1':
                     return False
                 else:
@@ -145,7 +145,7 @@ class File:
 
     def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
-        
+        print(filename)
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 

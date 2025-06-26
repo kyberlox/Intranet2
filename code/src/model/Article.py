@@ -199,8 +199,11 @@ class Article:
             #собираем из двух статей одну
             author = None
             if "PROPERTY_444" in data:
-                print(take_value(data["PROPERTY_444"]))
                 author = take_value(data["PROPERTY_444"])
+                #отдельно вытащить превьюшки людей
+                print(author)
+                user = User(id=author).search_by_id()
+                photo = user["photo_file_url"]
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
                 company = "АО «НПО «Регулятор»"
@@ -229,13 +232,6 @@ class Article:
                     new_url = File().upload_by_URL(url=url, art_id=self.id)
                     #заменяю url на новый
                     content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
-            
-            #отдельно вытащить превьюшки
-            #для людей
-            print(author)
-            user = User(id=author).search_by_id()
-            photo = user["photo_file_url"]
-            #для заводов
 
 
 

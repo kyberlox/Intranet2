@@ -232,16 +232,18 @@ class Article:
             
             #отдельно вытащить превьюшки
             #для людей
+            user = User(id=uuid).search_by_id()
+            photo = user["photo_file_url"]
             #для заводов
 
 
 
             indirect_data = {
-                #из 75ого
                 "TITLE" : data["TITLE"],
                 "author_uuid" : author,
                 "company" : company, 
-                "link" : link
+                "link" : link,
+                "photo_file_url" : photo.replace("user_files", "compress_image/user"),
             }
             
             

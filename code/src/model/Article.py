@@ -205,7 +205,7 @@ class Article:
                     uuid = int(data['PROPERTY_444'][0])
                 else:
                     uuid = int(list(data['PROPERTY_444'].values())[0])
-                print()
+                print(uuid)
                     
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id()

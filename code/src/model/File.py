@@ -136,6 +136,8 @@ class File:
 
             # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
             for fl in DB_files_name:
+                print(filename)
+                print(fl)
                 if fl == filename:
                     return True
                 else:
@@ -149,7 +151,6 @@ class File:
 
         #тут надо проверить, нет ли такого файла уже в БД?
         if self.need_update_url_file(art_id, filename):
-            print(filename)
             # Генерируем уникальное имя файла
             unique_name = str(ObjectId()) + file_ext
             file_path = os.path.join(STORAGE_PATH, unique_name)

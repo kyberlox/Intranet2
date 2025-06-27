@@ -188,6 +188,8 @@ class File:
             files = self.get_files_by_art_id()
             for fl in files:
                 if fl["original_name"] == filename:
+                    print(filename)
+                    print(fl["original_name"])
                     #перезаписываем
                     unique_name = fl["stored_name"]
                     file_path = os.path.join(STORAGE_PATH, unique_name)

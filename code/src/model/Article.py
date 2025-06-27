@@ -269,6 +269,14 @@ class Article:
             for key in keys:
                 if key in data:
                     indirect_data[key] = data[key]
+        
+        #отдельно забираю сортировку для Памятки Новому Сотруднику
+        elif self.section_id == 18:
+            sort = None
+            if "PROPERTY_457" in data:
+                sort = take_value(data["PROPERTY_457"])
+            indirect_data = {"sort" : sort}
+
         else:
             indirect_data = json.dumps(data)
 

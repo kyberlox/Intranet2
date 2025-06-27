@@ -274,7 +274,7 @@ class Article:
         elif self.section_id == 18:
             sort = None
             if "PROPERTY_457" in data:
-                sort = take_value(data["PROPERTY_457"])
+                sort = data["PROPERTY_457"][0]
             indirect_data = {"sort" : sort}
 
         else:

@@ -845,10 +845,11 @@ class Article:
         for file in files:
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
-                #внедряю компрессию
-                preview_link = url.split("/")
-                preview_link[-2] = "compress_image"
-                url = '/'.join(preview_link)
+                if self.section_id != 18:
+                    #внедряю компрессию
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image"
+                    url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -887,8 +888,6 @@ class Article:
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
                     active_articles.append(res)
-                else:
-                    pass
 
             if self.section_id == "111":
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)

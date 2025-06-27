@@ -127,7 +127,7 @@ class File:
         DB_files_name = []
 
         if result is None: # если в бд нет такой статьи
-            return False 
+            return True 
         else:
             # цикл для сбора данных с БД
             for res in result: # выдергиваем все original_name из монго по art_id 
@@ -138,10 +138,11 @@ class File:
             for fl in DB_files_name:
                 #print(filename)
                 #print(fl)
-                if fl == filename or filename == 'uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1':
+                if filename == 'uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1':
                     return False
-                else:
-                    return True
+                elif fl == filename:
+                    return False
+            return True
 
     def upload_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
@@ -151,7 +152,6 @@ class File:
 
         #тут надо проверить, нет ли такого файла уже в БД?
         if self.need_update_url_file(art_id, filename):
-            print(filename)
             # Генерируем уникальное имя файла
             unique_name = str(ObjectId()) + file_ext
             file_path = os.path.join(STORAGE_PATH, unique_name)
@@ -183,7 +183,6 @@ class File:
             return f"http://intranet.emk.org.ru{new_url}"
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
-
         else: #надо заменить
             self.art_id = art_id
             files = self.get_files_by_art_id()
@@ -196,13 +195,6 @@ class File:
                     with open(file_path, 'wb') as file:
                         file.write(response.content)
                     
-                    new_url = fl["file_url"]
-
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    return f"http://intranet.emk.org.ru{new_url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                
-                else:
                     new_url = fl["file_url"]
 
                     #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!

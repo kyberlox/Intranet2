@@ -6,7 +6,7 @@
             <div class="evacuation__swiper-wrapper">
                 <SwiperBlank :activeIndexInModal="activeIndexInModal"
                              :type="'second'"
-                             :images="safetyTechnicsFireInner.evacuationContent.images" />
+                             :images="safetyTechnicsFireInner?.evacuationContent?.images" />
             </div>
             <div class="evacuation__floors-list">
                 <h4>План эвакуации по этажам</h4>
@@ -31,7 +31,7 @@ export default defineComponent({
         SwiperBlank
     },
     setup() {
-        const activeIndexInModal = ref(null);
+        const activeIndexInModal = ref();
         return {
             activeIndexInModal,
             safetyTechnicsFireInner
@@ -45,6 +45,9 @@ export default defineComponent({
     display: flex;
     flex-direction: row;
     gap: 10px;
+    padding-top: 20px;
+    border-top: 2px solid rgba(128, 128, 128, 0.351);
+
 }
 
 .evacuation__swiper-wrapper {

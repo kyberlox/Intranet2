@@ -5,8 +5,8 @@
             <div v-for="card in gallery"
                  :key="'homeCard' + card.id"
                  class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
-                <RouterLink v-if="card.indirect_data && card.indirect_data.ID"
-                            :to='{ name: routeTo, params: { id: String((card.indirect_data.ID)) } }'
+                <RouterLink v-if="card.indirect_data"
+                            :to='{ name: routeTo, params: { id: String((card.id)) } }'
                             class="homeview__grid__card__link">
                     <div class="homeview__grid__card__image"
                          v-lazy-load="card.preview_file_url">

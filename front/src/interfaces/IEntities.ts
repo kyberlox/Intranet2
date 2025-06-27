@@ -136,25 +136,13 @@ interface ICorpLifeIndirectData extends IBaseIndirectData {
     PROPERTY_408?: string[],
 }
 
-interface ISafetyTechnicsData extends IBaseIndirectData {
-    PROPERTY_342?: string[],
-    PROPERTY_343?: string[],
-    PROPERTY_344?: string[],
-    PROPERTY_435?: string[],
-    PROPERTY_347?: string[],
-    PROPERTY_348?:
-    {
-        TYPE?: string,
-        TEXT?: string
-    }[],
-    PROPERTY_349?: string[],
-}
 
 export interface IBlogData extends IBaseIndirectData {
-    PROPERTY_453?: string,
-    PROPERTY_451?: string,
-    PROPERTY_1022?: string,
+    author_uuid: number,
+    company: number,
     TITLE?: string,
+    photo_file_url: string,
+    link: string,
 }
 
 export interface IBlogArticleData extends IBaseIndirectData {
@@ -251,9 +239,11 @@ export interface IOpenVacancyData extends IBaseIndirectData {
 }
 
 export interface IBlogAuthors {
-    id: number,
-    authorId: number,
-    title: string,
+    authorId?: number,
+    title?: string,
+    authorAvatar?: string,
+    link?: string,
+    telegramQr?: string
 }
 
 export interface IActualNews extends IBaseEntity {
@@ -264,9 +254,31 @@ export interface ICareSlide extends IBaseEntity {
     indirect_data?: ICareIndirectData
 }
 
-export interface ISafetyTechnicsSlide extends IBaseEntity {
-    indirect_data?: ISafetyTechnicsData
+
+export interface ISafetyTechnicsSlide {
+    content?: {
+        id?: number,
+        name?: string,
+        image?: string,
+        images?: string[],
+        videos?: string[],
+        content_text?: string,
+        subtitle?: string,
+        header?: string,
+        description?: string,
+        routeTo?: string
+    }[] | {
+        id?: number,
+        videos?: string[],
+        content_text?: string,
+        images?: string[]
+    },
+    evacuationContent?: {
+        images?: string[],
+    },
+    sideInfo?: string,
 }
+
 
 export interface IAfishaItem extends IBaseEntity {
     indirect_data?: IAfishaItemIndirectData
@@ -331,7 +343,6 @@ export interface IWorkerOfTheYear extends IBaseEntity {
 export interface IUnionEntities extends IBaseEntity {
     indirect_data?: IActualNewsIndirectData |
     ICareIndirectData |
-    ISafetyTechnicsData |
     IAfishaItemIndirectData |
     ICorpEventsIndirectData |
     ICorpLifeIndirectData |
@@ -345,14 +356,14 @@ export interface IUnionEntities extends IBaseEntity {
     IPartnerBonusData |
     IForNewWorkerData |
     IFactoryData |
-    IOpenVacancyData
+    IOpenVacancyData |
+    ISafetyTechnicsSlide
 }
 
 // ЮНИОН внутреннего индиректа
 export type IUnionEntitiesData =
     IActualNewsIndirectData |
     ICareIndirectData |
-    ISafetyTechnicsData |
     IAfishaItemIndirectData |
     ICorpEventsIndirectData |
     ICorpLifeIndirectData |
@@ -366,4 +377,5 @@ export type IUnionEntitiesData =
     IPartnerBonusData |
     IForNewWorkerData |
     IFactoryData |
-    IOpenVacancyData
+    IOpenVacancyData |
+    ISafetyTechnicsSlide

@@ -15,13 +15,12 @@
     </div>
 </template>
 <script lang="ts">
-import SafetyTechnicsSlide from "./components/SafetyTechnicsSlide.vue";
 import { defineComponent } from "vue";
 import { safetyTechnics } from "@/assets/static/safetyTechnics";
 import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 export default defineComponent({
     components: {
-        SafetyTechnicsSlide,
+        safetyTechnics,
         VerticalSlider
     },
     setup() {

@@ -17,12 +17,14 @@
                 </h3>
             </div>
         </RouterLink>
-        <a v-if="needLink && author.link"
+        <a v-if="needLink && author?.link"
            class="blogs__item-contact"
            :href=author.link
            target="_blank">
             {{ author.link }}
         </a>
+        <img v-if="author?.telegramQr && needLink"
+             :src="author?.telegramQr" />
     </div>
 </template>
 
@@ -40,7 +42,7 @@ export default defineComponent({
         needLink: {
             type: Boolean,
             default: false
-        }
+        },
     },
     setup(props) {
         console.log(props)

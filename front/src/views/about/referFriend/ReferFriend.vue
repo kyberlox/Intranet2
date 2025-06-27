@@ -30,7 +30,7 @@
             </ul>
 
             <ul v-else>
-                <li v-for="i in 16"
+                <li v-for="i in 1"
                     :key="'jobSkelet' + i"
                     class="job-link job-link--nohover skeleton-job-link">
                 </li>

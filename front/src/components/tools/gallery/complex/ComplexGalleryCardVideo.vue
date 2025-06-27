@@ -1,11 +1,10 @@
 <template>
     <div class="flexGallery__card flexGallery__card--official-events"
          v-for="(slide, index) in slides"
-         :key="'video' + index"
-         @click="callModal(slide?.indirect_data?.videoHref)">
+         :key="'video' + index">
         <div class="flexGallery__card__img-wrapper">
             <div class="flexGallery__card__img"
-                 v-lazy-load="slide.indirect_data?.PREVIEW_PICTURE">
+                 v-lazy-load="slide.preview_file_url">
             </div>
             <PlayVideo class="flexGallery__card__play-video-icon" />
         </div>
@@ -34,7 +33,7 @@ export default defineComponent({
     setup(props, { emit }) {
         return {
             uniqueRoutesHandle,
-            callModal: (slides: string) => emit('callModal', slides, 'video')
+            // callModal: (slides: string) => emit('callModal', slides, 'video')
         }
     }
 })

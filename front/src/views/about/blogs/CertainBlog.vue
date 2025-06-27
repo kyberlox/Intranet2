@@ -3,13 +3,14 @@
 		<div class="row d-flex mt20 blog__articles-wrapper">
 			<div class="avatar__wrapper col-sm-3">
 				<BlogAvatar :author="targetAuthor"
-							:from="'blogsArticles'" />
+							:from="'blogsArticles'"
+							:need-link="true" />
 			</div>
 			<div v-if="currentArticle && 'name' in currentArticle"
 				 class="col-sm-9">
 				<h2>{{ currentArticle.name }}</h2>
 				<div class=" mt20"
-					 v-html="currentArticle.content_text ?? parseMarkdown(getProperty(currentArticle, 'PROPERTY_1239'))">
+					 v-html="parseMarkdown(currentArticle.content_text)">
 				</div>
 				<div v-if="getProperty(currentArticle, 'PROPERTY_1222')"
 					 class="blog-list__video__wrapper">

@@ -80,6 +80,7 @@ import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
 import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 import { defineComponent } from "vue";
 import { useSwiperconf } from "@/utils/useSwiperConf";
+import type { ISafetyTechnicsSlide } from "@/interfaces/IEntities";
 export default defineComponent({
     components: {
         Swiper,
@@ -89,7 +90,7 @@ export default defineComponent({
     },
     props: {
         slides: {
-            type: Object,
+            type: Object || ISafetyTechnicsSlide,
             required: true,
         },
         page: {

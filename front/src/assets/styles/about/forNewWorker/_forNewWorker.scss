@@ -1,12 +1,24 @@
 .memo {
-    &__item__main__img {
+    &__item__main__img__wrapper {
         border: 1px solid rgba(0, 0, 0, 0.12);
         box-sizing: border-box;
         border-radius: 4px;
         position: relative;
         padding: 15px;
         display: block;
+        width: 100%;
     }
+
+    &__item__main__img {
+        width: 100%;
+        height: auto;
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+        background-repeat: no-repeat;
+        aspect-ratio: 16/10;
+    }
+
 
     &__menu-dots {
         margin: 0;
@@ -15,7 +27,7 @@
         background: #fafafa;
         border-radius: 4px;
         box-sizing: border-box;
-        width: 372.453px;
+        width: 372px;
         position: fixed;
         top: 150px;
         z-index: 0;

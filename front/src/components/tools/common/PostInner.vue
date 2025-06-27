@@ -7,8 +7,7 @@
                              :images="currentPost?.images ? currentPost.images : undefined"
                              :sectionId="currentPost?.section_id" />
             </div>
-            <div v-if="type !== 'onlyImg'"
-                 class="col-12 col-lg-6">
+            <div class="col-12 col-lg-6">
                 <div class="news__detail__content">
                     <div v-if="currentPost.name"
                          class="news__detail__top">
@@ -95,7 +94,10 @@ export default defineComponent({
         const currentPost = ref<IUnionEntities>();
         onMounted(() => {
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
-                currentPost.value = props.previewElement
+                if (props.previewElement == null) {
+                    currentPost.value = undefined;
+                }
+                else currentPost.value = props.previewElement
             }
             else
                 Api.get(`article/find_by_ID/${props.id}`)

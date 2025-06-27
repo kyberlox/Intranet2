@@ -16,7 +16,7 @@
                             {{ article.name }}
                         </RouterLink>
                         <div class="news-like news-like--blog">
-                            <span class="blog-date">{{ article.date_creation.replace('T', ' ') }} //</span>
+                            <span class="blog-date">{{ article.date_creation?.replace('T', ' ') }} //</span>
                             <Reactions v-if="article.reactions"
                                        :reactions="article.reactions"
                                        :type="'blog'" />
@@ -53,7 +53,7 @@ export default defineComponent({
 
         const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id));
 
-        const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
+        const blogsArticles = computed(() => blogData.getCurrentArticles(Number(props.id)));
 
         return {
             blogsArticles,

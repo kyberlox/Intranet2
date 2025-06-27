@@ -6,7 +6,7 @@
                 <div v-if="authors"
                      class="blogs__items">
                     <BlogAvatar v-for="item in authors"
-                                :key="item.id"
+                                :key="item.authorId"
                                 :from="'blogs'"
                                 :author="item" />
                 </div>
@@ -15,7 +15,7 @@
                 <div v-if="factoryAuthors"
                      class="blogs__items">
                     <BlogAvatar v-for="item in factoryAuthors"
-                                :key="item.id"
+                                :key="item.authorId"
                                 :from="'blogs'"
                                 :author="item" />
                 </div>

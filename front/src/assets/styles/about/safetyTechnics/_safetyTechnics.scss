@@ -1,5 +1,9 @@
 .section__image__list__items {
     row-gap: 20px;
+
+    &>.swiper {
+        max-width: 75%;
+    }
 }
 
 .section__image__list__item {

@@ -1,6 +1,6 @@
 import type { ISafetyTechnicsSlide } from "@/interfaces/IEntities";
 
-export const safetyTechnics: ISafetyTechnicsSlide[] = {
+export const safetyTechnics: ISafetyTechnicsSlide = {
     content: [
         {
             id: 1,
@@ -49,7 +49,7 @@ export const safetyTechnics: ISafetyTechnicsSlide[] = {
                 Вам никогда не столкнуться с чрезвычайными ситуациями!</strong>`
 }
 
-export const safetyTechnicsCovidInner: { id: number, title: string, image: string }[] =
+export const safetyTechnicsCovidInner: ISafetyTechnicsSlide =
 {
     content: [
         {
@@ -90,7 +90,7 @@ export const safetyTechnicsCovidInner: { id: number, title: string, image: strin
                 </div>`
 }
 
-export const safetyTechnicsFireInner: { id: number, title: string, image: string }[] =
+export const safetyTechnicsFireInner: ISafetyTechnicsSlide =
 {
     content: {
         id: 1,
@@ -145,7 +145,7 @@ export const safetyTechnicsFireInner: { id: number, title: string, image: string
     }
 }
 
-export const safetyTechnicsFactoryInner: { id: number, title: string, image: string }[] =
+export const safetyTechnicsFactoryInner: ISafetyTechnicsSlide =
 {
     content: {
         id: 1,

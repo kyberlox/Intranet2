@@ -311,6 +311,7 @@ class Article:
             #"PROPERTY_1222", #ссылка на youtube
             "PROPERTY_455",
             "PROPERTY_1020",
+            "PROPERTY_1246", #QR-код Земской
 
             "PROPERTY_476",
 

@@ -60,6 +60,39 @@ def resize_image_quality(input_path: str) -> BytesIO:
         
         return output_buffer
 
+def resize_image_yowai_mo_quality(input_path: str) -> BytesIO:
+    """Изменение размера с сохранением качества"""
+    with Image.open(input_path) as img:
+        # Сохраняем исходный формат и EXIF-данные
+        original_format = img.format
+        exif = img.info.get('exif')
+        
+        # Пропорциональное уменьшение с лучшим алгоритмом
+        img.thumbnail(
+            (YOWAIMO_TARGET_WIDTH, YOWAIMO_TARGET_HEIGHT),
+            resample=RESAMPLE
+        )
+        
+        # Легкое повышение резкости (опционально)
+        img = img.filter(ImageFilter.SHARPEN)
+        
+        # Сохранение с высоким качеством
+        output_buffer = BytesIO()
+        save_params = {
+            'format': original_format,
+            'quality': YOWAIMO_QUALITY,
+            'optimize': True,
+            'subsampling': 0,  # Отключаем субдискретизацию для JPEG
+            'qtables': 'web_high'  # Используем высококачественные таблицы квантования
+        }
+        if exif:
+            save_params['exif'] = exif
+            
+        img.save(output_buffer, **save_params)
+        output_buffer.seek(0)
+        
+        return output_buffer
+
 def resize_user_image_quality(input_path: str) -> BytesIO:
     """Изменение размера с сохранением качества"""
     with Image.open(input_path) as img:
@@ -131,7 +164,7 @@ def get_resized_yowai_mo_image(filename: str):
             original_format = img.format.lower() if img.format else 'jpeg'
             original_res = f"{img.width}x{img.height}"
         
-        resized_image = resize_image_quality(file_path)
+        resized_image = resize_image_yowai_mo_quality(file_path)
         
         return Response(
             content=resized_image.getvalue(),

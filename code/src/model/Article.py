@@ -273,8 +273,8 @@ class Article:
         #отдельно забираю сортировку для Памятки Новому Сотруднику
         elif self.section_id == 18:
             sort = None
-            if "PROPERTY_457" in data:
-                sort = data["PROPERTY_457"][0]
+            if "PROPERTY_475" in data:
+                sort = take_value(data["PROPERTY_475"])
             indirect_data = {"sort" : sort}
 
         else:

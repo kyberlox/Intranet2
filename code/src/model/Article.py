@@ -246,7 +246,7 @@ class Article:
                         #заменяю url на новый
                         #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
                         
-                        content = re.sub(url, new_url, content)
+                        content = content.sub(url, new_url)
 
 
 

@@ -242,7 +242,8 @@ class Article:
                     #качаю файл новым методом
                     new_url = File().upload_by_URL(url=url, art_id=self.id)
                     #заменяю url на новый
-                    content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+                    #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+                    content = re.sub(url, new_url, content)
 
 
 

@@ -908,6 +908,9 @@ class Article:
 
             if self.section_id == "111":
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
+            #отдельная сортировка Памятки новому сторуднику
+            elif self.section_id == "18":
+                sorted_active_aticles = sorted(active_articles, key=lambda x: x['indirect_data']["sort"], reverse=False)
             else:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles

@@ -240,11 +240,13 @@ class Article:
                 matches = re.findall(r'src="([^"]*)"', content)
                 for url in matches:
                     #качаю файл новым методом
-                    new_url = File().upload_by_URL(url=url, art_id=self.id)
-                    print(url, "-->", new_url)
-                    #заменяю url на новый
-                    #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
-                    content = re.sub(url, new_url, content)
+                    if url != "https://portal.emk.ru/bitrix/tools/disk/uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1":
+                        new_url = File().upload_by_URL(url=url, art_id=self.id)
+                        print(url, "-->", new_url)
+                        #заменяю url на новый
+                        #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+                        
+                        content = re.sub(url, new_url, content)
 
 
 

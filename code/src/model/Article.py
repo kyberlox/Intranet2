@@ -296,8 +296,9 @@ class Article:
                             "8306" : "Химия",
                             "8305" : "Нефтегаз"
                         }
-                        key_property[key] = values_dict[take_value(data[key_property[key]])]
                         key_property["industryId"] = take_value(data[key_property[key]])
+                        key_property[key] = values_dict[take_value(data[key_property[key]])]
+                        
                     elif key_property[key] == "PROPERTY_680":
                         values_dict = {
                             None : "Ошибка",
@@ -310,8 +311,9 @@ class Article:
                             "6179" : "ЗАО «Курганспецарматура»",
                             "6178" : "ЗАО «Саратовский арматурный завод»"
                         }
-                        key_property[key] = values_dict[take_value(data[key_property[key]])]
                         key_property["enterpriseId"] = take_value(data[key_property[key]])
+                        key_property[key] = values_dict[take_value(data[key_property[key]])]
+                        
                     else:
                         key_property[key] = take_value(data[key_property[key]])
 

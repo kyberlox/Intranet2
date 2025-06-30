@@ -282,7 +282,6 @@ class Article:
         #Референсы и опыт поставок
         elif self.section_id == 25:
             key_property = {
-                "short_description" : "PROPERTY_677",
                 "industries" : "PROPERTY_681",
                 "enterprises" : "PROPERTY_680"
             }

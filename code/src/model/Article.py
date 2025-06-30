@@ -281,44 +281,45 @@ class Article:
 
         #Референсы и опыт поставок
         elif self.section_id == 25:
-            key_property = {
-                "industry" : "PROPERTY_681",
-                "enterprise" : "PROPERTY_680"
+            
+            industryId = None
+            if "PROPERTY_681" in data:
+                industryId = take_value(data["PROPERTY_681"])
+            
+            industry = None
+            values_dict = {
+                None : "Прочие",
+                "8308" : "Прочие",
+                "8307" : "Энергетика",
+                "8306" : "Химия",
+                "8305" : "Нефтегаз"
             }
-            
-            for key in key_property.keys():
-                if key_property[key] in data.keys():
-                    if key_property[key] == "PROPERTY_681":
-                        values_dict = {
-                            None : "Прочие",
-                            "8308" : "Прочие",
-                            "8307" : "Энергетика",
-                            "8306" : "Химия",
-                            "8305" : "Нефтегаз"
-                        }
-                        key_property["industryId"] = take_value(data[key_property[key]])
-                        key_property[key] = values_dict[take_value(data[key_property[key]])]
-                        
-                    elif key_property[key] == "PROPERTY_680":
-                        values_dict = {
-                            None : "Ошибка",
-                            "6185" : "ООО «Пульсатор»",
-                            "6184" : "ООО «Техно-Сфера»",
-                            "6183" : "ООО «АРМАТОМ»",
-                            "6182" : "АО «Тулаэлектропривод»",
-                            "6181" : "ООО «ТехПромАрма»",
-                            "6180" : "АО «НПО Регулятор»",
-                            "6179" : "ЗАО «Курганспецарматура»",
-                            "6178" : "ЗАО «Саратовский арматурный завод»"
-                        }
-                        key_property["enterpriseId"] = take_value(data[key_property[key]])
-                        key_property[key] = values_dict[take_value(data[key_property[key]])]
-                        
-                    else:
-                        key_property[key] = take_value(data[key_property[key]])
+            industry = values_dict[industryId]
 
+            enterpriseId = None
+            if "PROPERTY_680" in data:
+                enterpriseId = take_value(data["PROPERTY_680"])
             
-            indirect_data = key_property
+            enterprise = None
+            values_dict = {
+                None : "Ошибка",
+                "6185" : "ООО «Пульсатор»",
+                "6184" : "ООО «Техно-Сфера»",
+                "6183" : "ООО «АРМАТОМ»",
+                "6182" : "АО «Тулаэлектропривод»",
+                "6181" : "ООО «ТехПромАрма»",
+                "6180" : "АО «НПО Регулятор»",
+                "6179" : "ЗАО «Курганспецарматура»",
+                "6178" : "ЗАО «Саратовский арматурный завод»"
+            }
+            enterprise = take_value(enterpriseId)
+            
+            indirect_data = {
+                "industry" : industry,
+                "industryId" : industryId,
+                "enterprise" : enterprise,
+                "enterpriseId" : enterpriseId
+            }
 
         else:
             indirect_data = json.dumps(data)

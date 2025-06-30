@@ -9,6 +9,7 @@ from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
 from src.base.pSQLmodels import ViewsModel
 
+import re
 import json
 import datetime
 import asyncio
@@ -26,6 +27,13 @@ def make_date_valid(date):
     else:
         return None
 
+def take_value(PROPERTY):
+    if type(PROPERTY) == type(dict()):
+        return list(PROPERTY.values())[0]
+    elif type(PROPERTY) == type(list()):
+        return PROPERTY[0]
+    else:
+        return None
 
 
 class Article:
@@ -142,8 +150,8 @@ class Article:
         
 
 
-        #отдельно обарботаем случай доски почета
-        if data["IBLOCK_ID"] == "123":
+        #отдельно обарботаем случай Доски почета
+        if self.section_id == 14:
             #соберём совою indirect_data
             if type(data['PROPERTY_1036']) == type(list()):
                 uuid = int(data['PROPERTY_1036'][0])
@@ -174,13 +182,8 @@ class Article:
             else:
                 award = "Сотрудник года"
 
-
             user = User(id=uuid).search_by_id()
             photo = user["photo_file_url"]
-            
-            
-            
-            
             indirect_data = json.dumps({
                 "uuid" : uuid,
                 "year" : year,
@@ -191,7 +194,90 @@ class Article:
                 "award" : award,
                 "location" : ""
             })
+
+        #отдельно обарботаем случай Блогов
+        elif self.section_id == 15:
+            #собираем из двух статей одну
+            uuid = None
+            photo = None
+            if "PROPERTY_444" in data:
+                if type(data['PROPERTY_444']) == type(list()):
+                    uuid = int(data['PROPERTY_444'][0])
+                else:
+                    uuid = int(list(data['PROPERTY_444'].values())[0])
+                    
+                #отдельно вытащить превьюшки людей
+                user = User(id=uuid).search_by_id()
+                photo = user["photo_file_url"]
+                #photo = photo.replace("user_files", "compress_image/user")
+            company = None
+            if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
+                company = 10834#"АО «НПО «Регулятор»"
+            elif  "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6178":
+                company = 10815#"АО «САЗ»"
+
+            if "PROPERTY_453" in data and take_value(data["PROPERTY_453"]) == "335":
+                data["active"] = True
+            else:
+                data["active"] = False
+            
+            if "PROPERTY_446" in data and take_value(data["PROPERTY_446"]) == "333":
+                data["active"] = True
+            else:
+                data["active"] = False
+            
+            link = None
+            if "PROPERTY_1247" in data:
+                link = take_value(data["PROPERTY_1247"])
+            
+            
+
+            #отдельно обрабатываем файлы
+            if "PROPERTY_1239" in data:
+                content = take_value(data["PROPERTY_1239"])
+            if content is not None:
+                #хватаю url
+                matches = re.findall(r'src="([^"]*)"', content)
+                for url in matches:
+                    #качаю файл новым методом
+                    if url != "https://portal.emk.ru/bitrix/tools/disk/uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1":
+                        new_url = File().upload_by_URL(url=url, art_id=self.id)
+                        print(url, "-->", new_url)
+                        #заменяю url на новый
+                        #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
+                        
+                        content = content.replace(url, new_url)
+
+
+
+            indirect_data = {
+                "TITLE" : data["TITLE"],
+                "author_uuid" : uuid,
+                "company" : company, 
+                "link" : link,
+                "photo_file_url" : photo,
+            }
+            
+            
+            #файлы для Интранета ???сработает??? - да
+            keys = [
+                "PROPERTY_1023", #фото превью
+                "PROPERTY_1222", #ссылка на youtube
+                "PROPERTY_455",
+                "PROPERTY_1020",
+            ]
+            for key in keys:
+                if key in data:
+                    indirect_data[key] = data[key]
         
+        #отдельно забираю сортировку для Памятки Новому Сотруднику
+        elif self.section_id == 18:
+            sort = None
+            if "PROPERTY_475" in data:
+                sort = take_value(data["PROPERTY_475"])
+            indirect_data = {"sort" : sort}
+
+        # отдельно обрабатываем Конкурсы ЭМК
         elif data["IBLOCK_ID"] == "128":
             nomination = None
             age_group = None
@@ -258,9 +344,13 @@ class Article:
 
             "PROPERTY_342",
             "PROPERTY_343",
-
-            #"PROPERTY_1023",
-            #"PROPERTY_1020",
+            
+            #Блоги
+            "PROPERTY_1023",
+            #"PROPERTY_1222", #ссылка на youtube
+            "PROPERTY_455",
+            "PROPERTY_1020",
+            "PROPERTY_1246", #QR-код Земской
 
             "PROPERTY_476",
 
@@ -305,6 +395,7 @@ class Article:
             "PROPERTY_498",
             "PREVIEW_PICTURE",
             "PROPERTY_356",
+            "PROPERTY_1023",
         ]
         
         # находим файлы статьи
@@ -429,7 +520,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ☑️
 
             #25 : "100", #Референсы и опыт поставок ☑️
-            17 : "60" #Учебный центр (Литература) ☑️
+            #17 : "60" #Учебный центр (Литература) ☑️
         }
         
 
@@ -457,11 +548,11 @@ class Article:
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
-            15 : ["75", "77"], #Блоги ♻️
+            #15 : ["75", "77"], #Блоги ♻️
             18 : ["81", "82"], #Памятка ❌
-            41 : ["98", "78", "84"] #Гид по предприятиям ❌
+            #41 : ["98", "78", "84"] #Гид по предприятиям ❌
         }
-
+        '''
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -498,6 +589,8 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         
+        
+        '''
         #Конкурсы ЭМК 7 секция
         self.section_id = "128"
         competitions_info = self.get_inf()
@@ -510,7 +603,7 @@ class Article:
                     self.add(inf)
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
-        '''
+                    
         #Памятка
         # пройти по инфоблоку заголовков
         self.section_id = "82"
@@ -551,7 +644,8 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-
+        
+        '''
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"
@@ -739,7 +833,7 @@ class Article:
         #переделки
             # 19 Дни рождения ✔️
             # 21 Подбор оборудования ✔️
-            # 22 Поздравительная открытка ❌
+            # 22 Поздравительная открытка ♻️
             # 23 ChatGPT ❌
             # 24 Разрешительная документация и сертиффикаты ❌
             # Новые сотрудники ✔️
@@ -751,7 +845,7 @@ class Article:
         #новые разделы
             # конфигуратор НПО Регулятор ✔️
             # DeepSeek ❌
-            # VCard ❌
+            # VCard ✔️
             # YandexGPT5 + Yandex ART ❌
             # система личной эффективности ❌
             # магазин мерча ❌
@@ -793,9 +887,14 @@ class Article:
             if file["is_preview"]:
                 url = file["file_url"]
                 #внедряю компрессию
-                preview_link = url.split("/")
-                preview_link[-2] = "compress_image"
-                url = '/'.join(preview_link)
+                if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image/yowai_mo"
+                    url = '/'.join(preview_link)
+                else:
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image"
+                    url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -805,9 +904,14 @@ class Article:
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 #внедряю компрессию
-                preview_link = url.split("/")
-                preview_link[-2] = "compress_image"
-                url = '/'.join(preview_link)
+                if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image/yowai_mo"
+                    url = '/'.join(preview_link)
+                else:
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image"
+                    url = '/'.join(preview_link)
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
                 return f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -846,11 +950,12 @@ class Article:
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
                     active_articles.append(res)
-                else:
-                    pass
 
             if self.section_id == "111":
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
+            #отдельная сортировка Памятки новому сторуднику
+            elif self.section_id == "18":
+                sorted_active_aticles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
                 sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles

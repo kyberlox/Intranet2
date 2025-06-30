@@ -75,6 +75,8 @@ class Article:
         elif "PROPERTY_1127" in data:
             preview = list(data['PROPERTY_1127'].values())[0]
             # data.pop('PROPERTY_1127')
+        elif "PROPERTY_677" in data:
+            preview = list(data['PROPERTY_1127'].values())[0]
         else:
             preview = None
 

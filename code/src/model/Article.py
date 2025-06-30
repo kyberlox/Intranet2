@@ -282,8 +282,8 @@ class Article:
         #Референсы и опыт поставок
         elif self.section_id == 25:
             key_property = {
-                "industries" : "PROPERTY_681",
-                "enterprises" : "PROPERTY_680"
+                "industry" : "PROPERTY_681",
+                "enterprise" : "PROPERTY_680"
             }
             
             for key in key_property.keys():
@@ -297,6 +297,7 @@ class Article:
                             "8305" : "Нефтегаз"
                         }
                         key_property[key] = values_dict[take_value(data[key_property[key]])]
+                        key_property["industryId"] = take_value(data[key_property[key]])
                     elif key_property[key] == "PROPERTY_680":
                         values_dict = {
                             None : "Ошибка",
@@ -310,6 +311,7 @@ class Article:
                             "6178" : "ЗАО «Саратовский арматурный завод»"
                         }
                         key_property[key] = values_dict[take_value(data[key_property[key]])]
+                        key_property["enterpriseId"] = take_value(data[key_property[key]])
                     else:
                         key_property[key] = take_value(data[key_property[key]])
 

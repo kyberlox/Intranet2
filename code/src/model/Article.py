@@ -277,6 +277,44 @@ class Article:
                 sort = take_value(data["PROPERTY_475"])
             indirect_data = {"sort" : sort}
 
+        #Референсы и опыт поставок
+        elif self.section_id == 25:
+            key_property = {
+                "short_description" : "PROPERTY_677",
+                "industries" : "PROPERTY_681",
+                "enterprises" : "PROPERTY_680"
+            }
+            
+            for key in key_property.keys():
+                if key_property[key] in data.keys():
+                    if key_property[key] == "PROPERTY_681":
+                        values_dict = {
+                            None : "Прочие",
+                            "8308" : "Прочие",
+                            "8307" : "Энергетика",
+                            "8306" : "Химия",
+                            "8305" : "Нефтегаз"
+                        }
+                        key_property[key] = values_dict[take_value(data[key_property[key]])]
+                    elif key_property[key] == "PROPERTY_680":
+                        values_dict = {
+                            None : "Ошибка",
+                            "6185" : "ООО «Пульсатор»",
+                            "6184" : "ООО «Техно-Сфера»",
+                            "6183" : "ООО «АРМАТОМ»",
+                            "6182" : "АО «Тулаэлектропривод»",
+                            "6181" : "ООО «ТехПромАрма»",
+                            "6180" : "АО «НПО Регулятор»",
+                            "6179" : "ЗАО «Курганспецарматура»",
+                            "6178" : "ЗАО «Саратовский арматурный завод»"
+                        }
+                        key_property[key] = values_dict[take_value(data[key_property[key]])]
+                    else:
+                        key_property[key] = take_value(data[key_property[key]])
+
+            
+            indirect_data = key_property
+
         else:
             indirect_data = json.dumps(data)
 
@@ -320,6 +358,9 @@ class Article:
             "PROPERTY_455",
             "PROPERTY_1020",
             "PROPERTY_1246", #QR-код Земской
+            
+            #Референсы
+            "PROPERTY_679",
 
             "PROPERTY_476",
 
@@ -488,7 +529,7 @@ class Article:
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ☑️
 
-            #25 : "100", #Референсы и опыт поставок ☑️
+            25 : "100", #Референсы и опыт поставок ☑️♻️
             #17 : "60" #Учебный центр (Литература) ☑️
         }
         
@@ -517,9 +558,9 @@ class Article:
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
-            #15 : ["75", "77"], #Блоги ♻️
-            18 : ["81", "82"], #Памятка ❌
-            #41 : ["98", "78", "84"] #Гид по предприятиям ❌
+            #15 : ["75", "77"], #Блоги ✔️
+            18 : ["81", "82"], #Памятка ✔️
+            41 : ["98", "78", "84"] #Гид по предприятиям ♻️ сделать сервис
         }
         '''
         #Блоги
@@ -557,7 +598,6 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
 
         #Памятка
         # пройти по инфоблоку заголовков
@@ -600,7 +640,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         
-        '''
+
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"

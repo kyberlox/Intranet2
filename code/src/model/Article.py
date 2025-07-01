@@ -969,25 +969,25 @@ class Article:
                     #взаимствую логику поиска файлов из метода поиска статей по их id
                     art = ArticleModel(id = self.id).find_by_id()
                     files = File(art_id = int(self.id)).get_files_by_art_id()
-                    art['images'] = []
-                    art['videos_native'] = []
-                    art['videos_embed'] = []
-                    art['documentation'] = []
+                    res['images'] = []
+                    res['videos_native'] = []
+                    res['videos_embed'] = []
+                    res['documentation'] = []
                     
                     for file in files:
                         #файлы делятся по категориям
                         if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                             url = file["file_url"]
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                            art['images'].append(f"http://intranet.emk.org.ru{url}")
+                            res['images'].append(f"http://intranet.emk.org.ru{url}")
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         elif "video" in file["content_type"]:
                             url = file["file_url"]
-                            art['videos_native'].append(f"http://intranet.emk.org.ru{url}")
+                            res['videos_native'].append(f"http://intranet.emk.org.ru{url}")
                         elif "link" in file["content_type"]:
-                            art['videos_embed'].append(file)
+                            res['videos_embed'].append(file)
                         else:
-                            art['documentation'].append(file)
+                            res['documentation'].append(file)
 
                     active_articles.append(res)
             

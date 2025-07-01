@@ -535,8 +535,8 @@ class Article:
             #54 : "55", # Предложения партнеров ✔️
             55 : "56", # Благотворительные проекты ☑️ ♻️
 
-            #25 : "100", #Референсы и опыт поставок ✔️
-            17 : "60" #Учебный центр (Литература) ☑️ ♻️
+            25 : "100", #Референсы и опыт поставок ✔️
+            #17 : "60" #Учебный центр (Литература) ☑️ ♻️
         }
         
 
@@ -991,11 +991,16 @@ class Article:
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         elif "video" in file["content_type"]:
                             url = file["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                             res['videos_native'].append(f"http://intranet.emk.org.ru{url}")
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         elif "link" in file["content_type"]:
                             res['videos_embed'].append(file)
                         else:
-                            res['documentation'].append(file)
+                            url = file["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                            res['documentation'].append(f"http://intranet.emk.org.ru{url}")
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                     active_articles.append(res)
             

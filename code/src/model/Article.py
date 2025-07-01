@@ -661,6 +661,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
+        '''
         
         '''
 

@@ -391,7 +391,6 @@ class Article:
 
             "PROPERTY_476",
             "PROPERTY_1025",
-            "PROPERTY_678",
             "PROPERTY_356",
 
             #вложения

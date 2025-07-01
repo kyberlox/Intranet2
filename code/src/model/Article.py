@@ -336,6 +336,28 @@ class Article:
             
             indirect_data = dict_to_indirect_data(data, property_dict)
 
+        elif self.section_id == 17:
+            property_dict = {
+                "PROPERTY_489" : "subsection_id",
+                "PROPERTY_488" : "author"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
+            subsection_id = indirect_data["subsection_id"]
+            values_dict = {
+                None : "Нет данных",
+                "339" : "Техническая литература",
+                "340" : "Обучающие материалы",
+                "1020" : "Диджитал и IT",
+                "1021" : "Психология и развитие",
+                "1761" : "Обучающие материалы: продажи B2B",
+                "1762" : "Обучающие материалы: Эффективные переговоры",
+                "23134" : "Обучающие материалы: Профессиональное планирование для регулярного менеджмента",
+            }
+            indirect_data["subsection"] = values_dict[subsection_id]
+
+
         else:
             indirect_data = json.dumps(data)
 
@@ -374,8 +396,9 @@ class Article:
             "PROPERTY_343",
             
             #Блоги
-            "PROPERTY_1023",
+            "PROPERTY_1023", 
             #"PROPERTY_1222", #ссылка на youtube
+            #"PROPERTY_1203", #ссылка на youtube
             "PROPERTY_455",
             "PROPERTY_1020",
             "PROPERTY_1246", #QR-код Земской

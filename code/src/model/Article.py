@@ -999,8 +999,9 @@ class Article:
                         else:
                             url = file["file_url"]
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                            res['documentation'].append(f"http://intranet.emk.org.ru{url}")
+                            file["file_url"] = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            res['documentation'].append(file")
 
                     active_articles.append(res)
             

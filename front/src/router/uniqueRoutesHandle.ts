@@ -9,13 +9,13 @@ export const uniqueRoutesHandle = (
     if (reRoute) {
         return { name: reRoute, params: { id: slide.id } }
     }
-    else if (route === 'experienceType') {
-        const typedSlide = slide as IFactorySlides
-        return { name: route, params: { id: typedSlide.id, factoryId: typedSlide?.indirect_data?.factoryId } }
-    }
     else if (route === 'experienceTypes') {
-        const typedSlide = slide as IFactorySlides
-        return { name: route, params: { factoryId: typedSlide?.indirect_data?.factoryId } }
+        const typedSlide = slide
+        return { name: route, params: { factoryId: typedSlide?.factoryId } }
+    }
+    else if (route === 'experienceType') {
+        const typedSlide = slide
+        return { name: route, params: { factoryId: typedSlide.factoryId, sectorId: typedSlide.sectorId } }
     }
     else if (route == 'factoryTour') {
         const typedSlide = slide as IFactorySlides

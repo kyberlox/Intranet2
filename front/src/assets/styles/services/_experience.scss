@@ -14,6 +14,12 @@
         transition: var(--default-transition);
         padding: 10px;
 
+        &__download-link {
+            &:hover {
+                color: var(--emk-brand-color);
+            }
+        }
+
         &:not(:first-child) {
             margin-top: 15px;
         }

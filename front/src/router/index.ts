@@ -254,10 +254,10 @@ const router = createRouter({
       props: (route) => ({ factoryId: route.params.factoryId })
     },
     {
-      path: '/services/experience/:factoryId/:id',
+      path: '/services/experience/:factoryId/:sectorId',
       name: 'experienceType',
       component: () => import('@/views/services/experience/ExperienceType.vue'),
-      props: (route) => ({ id: route.params.id, factoryId: route.params.factoryId })
+      props: (route) => ({ factoryId: route.params.factoryId, sectorId: route.params.sectorId })
     },
     {
       path: '/news/actual',

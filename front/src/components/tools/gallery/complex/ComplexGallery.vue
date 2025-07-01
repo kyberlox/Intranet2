@@ -101,10 +101,14 @@ export default defineComponent({
         }
 
         const checkCardType = (slide: IUnionEntities) => {
-            if (!slide.videoHref && !props.modifiers.includes('noRoute') && !props.modifiers.includes('buttons') && props.routeTo) {
+            if (!slide.videoHref && !props.modifiers.includes('noRoute') &&
+                !props.modifiers.includes('buttons') &&
+                props.routeTo) {
                 return 'basic';
             }
-            else if (props.routeTo && props.modifiers.includes('buttons') && slide.indirect_data && ('reportages' in slide.indirect_data || 'tours' in slide.indirect_data)) {
+            else if (props.routeTo &&
+                props.modifiers.includes('buttons') &&
+                (slide.indirect_data && ('reportages' in slide.indirect_data || 'tours' in slide.indirect_data))) {
                 return 'withButtons'
             }
             else if (props.modifiers.includes('noRoute') && slide.images) {

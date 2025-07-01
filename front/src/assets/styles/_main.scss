@@ -21,6 +21,10 @@
         width: fit-content;
         flex: 0 0 auto;
         min-width: fit-content;
+
+        @include md {
+            width: 100%;
+        }
     }
 
     &-layout {

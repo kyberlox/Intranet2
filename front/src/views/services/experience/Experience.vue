@@ -1,27 +1,49 @@
 <template>
     <div class="experience__page mt20">
         <div class="page__title">Референсы и опыт поставок</div>
-        <FlexGallery :page=page
-                     :slides="slides"
-                     :modifiers="['noFullWidthImg']"
-                     :routeTo="'experienceTypes'" />
+        <ComplexGallery :page="page"
+                        :slides="slides"
+                        :modifiers="['noFullWidthImg']"
+                        :routeTo="'experienceTypes'" />
     </div>
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { defineComponent } from "vue";
-import { expSlides } from "@/assets/static/referencesAndExp";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { defineComponent, onMounted, ref, type Ref, watch } from "vue";
+import { useExperienceData } from "@/utils/useExperienceData";
+
 export default defineComponent({
     components: {
-        FlexGallery,
+        ComplexGallery,
     },
     setup() {
+        const slides: Ref<{
+            factoryId: number;
+            slides: string[];
+            name: string;
+        }[]> = ref([]);
+
+        const { loadExperienceData, generateSlides } = useExperienceData();
+
+        const initializeData = () => {
+            const data = loadExperienceData();
+
+            watch(data, (newValue) => {
+                if (Object.keys(newValue).length) {
+                    slides.value = generateSlides(newValue);
+                }
+            }, { deep: true, immediate: true });
+        };
+
+        onMounted(() => {
+            initializeData();
+        });
 
         return {
-            slides: expSlides,
-            page: "experience"
+            slides,
+            page: "experience",
         };
-    },
+    }
 });
 </script>

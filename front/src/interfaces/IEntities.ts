@@ -26,7 +26,17 @@ interface IBaseEntity {
     videoHref?: string[]
 
     images?: string[],
-    documentation?: string[],
+    documentation?: {
+        article_id: number,
+        b24_id: string,
+        ile_url: string,
+        id: string,
+        is_archive: boolean,
+        is_preview: boolean,
+        original_name: string,
+        stored_name: string,
+        type: string
+    },
     videos_native?: string[],
     videos_embed?: string[],
     videos?: string[],
@@ -221,6 +231,13 @@ export interface IForNewWorkerData extends IBaseIndirectData {
     PROPERTY_480?: string[]
 }
 
+export interface IExperienceData extends IBaseIndirectData {
+    enterprise: string,
+    enterpriseId: string,
+    industry: string,
+    industryId: string
+}
+
 export interface IFactoryData extends IBaseIndirectData {
     PREVIEW_PICTURE?: string,
     hrefTitle?: string,
@@ -254,6 +271,9 @@ export interface ICareSlide extends IBaseEntity {
     indirect_data?: ICareIndirectData
 }
 
+export interface IExperience extends IBaseEntity {
+    indirect_data?: IExperienceData
+}
 
 export interface ISafetyTechnicsSlide {
     content?: {
@@ -277,6 +297,30 @@ export interface ISafetyTechnicsSlide {
         images?: string[],
     },
     sideInfo?: string,
+}
+
+interface ISector {
+    sectorTitle: string;
+    sectorDocs: {
+        article_id: number,
+        b24_id: string,
+        ile_url: string,
+        id: string,
+        is_archive: boolean,
+        is_preview: boolean,
+        original_name: string,
+        stored_name: string,
+        type: string
+    }[]
+}
+
+interface IFactoryInExpData {
+    sectors: ISector[];
+    factoryName: string;
+}
+
+export interface IFormattedData {
+    [factoryKey: string]: IFactoryInExpData;
 }
 
 

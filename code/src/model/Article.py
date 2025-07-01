@@ -336,6 +336,7 @@ class Article:
             
             indirect_data = dict_to_indirect_data(data, property_dict)
 
+        #Учебный центр
         elif self.section_id == 17:
             property_dict = {
                 "PROPERTY_489" : "subsection_id",
@@ -1005,7 +1006,7 @@ class Article:
         elif self.section_id == "112":
             return User().get_new_workers()
 
-        elif self.section_id == "25":
+        elif self.section_id == "25" or self.section_id == "17":
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:

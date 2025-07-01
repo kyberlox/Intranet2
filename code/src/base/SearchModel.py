@@ -6,6 +6,7 @@ from src.base.pSQLmodels import UserModel
 from src.base.pSQLmodels import DepartmentModel
 from src.base.pSQLmodels import UsDepModel
 from src.base.pSQLmodels import ArticleModel
+from src.model.File import File
 
 import json
 
@@ -95,6 +96,9 @@ class UserSearchModel:
                     "indirect_data": {
                         "type": "nested",
                         "dynamic": "true"
+                    },
+                    "usr_photo": {
+                        "type": "text"
                     }
                 },
                 "dynamic_templates": [
@@ -156,7 +160,7 @@ class UserSearchModel:
         for user in users_data:
             
             important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday',
-                            'uf_phone_inner', "indirect_data"]
+                            'uf_phone_inner', "indirect_data", "photo_file_id"]
 
             data = user.__dict__
             if data['id'] == 1:
@@ -170,7 +174,11 @@ class UserSearchModel:
                     data_row = {"user_fio": fio}
                     for param in important_list:
                         if param in data.keys():
-                            data_row[param] = data[param]
+                            if param == "photo_file_id" and data['photo_file_id'] is not None:
+                                file_inf = File(data['photo_file_id']).get_users_photo()
+                                data_row[param] = f"http://intranet.emk.org.ru{file_inf['URL']}"
+                            else:
+                                data_row[param] = data[param]
                         else:
                             continue
 
@@ -223,8 +231,16 @@ class UserSearchModel:
         res = elastic_client.search(
             index=self.index,
             query={
-                "term": {
-                    "indirect_data": key_word
+                "nested": {
+                    "path": "indirect_data",
+                    "query": {
+                        "bool": {
+                            "should": [
+                                {"match": {"indirect_data.work_position": key_word}},
+                                {"match": {"indirect_data.uf_usr_1705744824758": key_word}}
+                            ]
+                        }
+                    }
                 }
             }
         )
@@ -557,6 +573,9 @@ class ArticleSearchModel:
                     },
                     "content_type": {
                         "type": "text"
+                    },
+                    "preview_url": {
+                        "type": "text"
                     }
                 }
             }
@@ -573,17 +592,54 @@ class ArticleSearchModel:
             pass
         self.create_index()
 
-        article_SQL_data = self.ArticleModel().all()
+        article_SQL_data = ArticleModel().all()
         article_data_ES = []
         for art in article_SQL_data:
             data_row = {}
             article_data = art.__dict__
             if article_data['active']:
+                preview_photo = None
+                #обработка превью
+                files = File(art_id = article_data['id']).get_files_by_art_id()
+                for file in files:
+                    if file["is_preview"]:
+                        url = file["file_url"]
+                        #внедряю компрессию
+                        if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
+                            preview_link = url.split("/")
+                            preview_link[-2] = "compress_image/yowai_mo"
+                            url = '/'.join(preview_link)
+                        else:
+                            preview_link = url.split("/")
+                            preview_link[-2] = "compress_image"
+                            url = '/'.join(preview_link)
+                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                        preview_photo = f"http://intranet.emk.org.ru{url}"
+                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                #находим любую картинку, если она есть
+                for file in files:
+                    if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                        url = file["file_url"]
+                        #внедряю компрессию
+                        if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
+                            preview_link = url.split("/")
+                            preview_link[-2] = "compress_image/yowai_mo"
+                            url = '/'.join(preview_link)
+                        else:
+                            preview_link = url.split("/")
+                            preview_link[-2] = "compress_image"
+                            url = '/'.join(preview_link)
+                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                        preview_photo = f"http://intranet.emk.org.ru{url}"
+                
                 data_row["section_id"] = article_data["section_id"]
                 data_row["title"] = article_data["name"]
                 data_row["preview_text"] = article_data["preview_text"]
                 data_row["content_text"] = article_data["content_text"]
                 data_row["content_type"] = article_data["content_type"]
+                data_row["preview_photo"] = preview_photo
+
 
                 article_action = {
                     "_index": self.index,
@@ -610,7 +666,7 @@ class ArticleSearchModel:
                         {
                             "match": {
                                 "title": {
-                                    "query": title,
+                                    "query": words,
                                     "fuzziness": "AUTO",
                                     "prefix_length": 2
                                     # "boost": 2  
@@ -620,7 +676,7 @@ class ArticleSearchModel:
                         {
                             "wildcard": {
                                 "title": {
-                                    "value": f"{title}*",
+                                    "value": f"{words}*",
                                     "case_insensitive": True
                                     # "prefix_length": 2,  
                                     # "boost": 1
@@ -739,47 +795,96 @@ class ArticleSearchModel:
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
 
-# @search_router.get("/dump_user")
-# def create_data_user():
-#     return UserSearchModel().dump()
-# @search_router.get("/dump_user")
-# def create_data_user():
-#     return UserSearchModel().dump()
 
-# @search_router.get("/dump_depart")
-# def create_data_depart():
-#     return StructureSearchModel().dump()
-# @search_router.get("/dump_depart")
-# def create_data_depart():
-#     return StructureSearchModel().dump()
 
-# @search_router.get("/view_all_departs")
-# def view_all_departs():
-#     return StructureSearchModel().search_by_department()
+def search_everywhere(key_word):
+    result = []
+    res = elastic_client.search(
+        index=["articles", "user"],
+        body={
+            "query": {
+                "bool": {
+                    "should": [
+                        {
+                            "bool": {
+                                "must": [
+                                    {"terms": {"_index": ["articles"]}},
+                                    {
+                                        "multi_match": {
+                                            "query": key_word,
+                                            "fields": ["title", "preview_text", "content_text"]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "bool": {
+                                "must": [
+                                    {"terms": {"_index": ["user"]}},
+                                    {
+                                        "bool": {
+                                            "should": [
+                                                {
+                                                    "multi_match": {
+                                                        "query": key_word,
+                                                        "fields": ["user_fio", "email", "uf_phone_inner"]
+                                                    }
+                                                },
+                                                {
+                                                    "nested": {
+                                                        "path": "indirect_data",
+                                                        "query": {
+                                                            "multi_match": {
+                                                                "query": key_word,
+                                                                "fields": [
+                                                                    "indirect_data.work_position",
+                                                                    "indirect_data.uf_usr_1705744824758",
+                                                                    "indirect_data.uf_usr_1586854037086",
+                                                                    "indirect_data.uf_usr_1696592324977"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "score_mode": "max"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "minimum_should_match": 1 
+                }
+            }
+        },
+        size=10
+    )
+    users = []
+    articles = []
+    for res_info in res['hits']['hits']:
+        if res_info["_index"] == 'user':
+            user_info = {}
+            user_info['name'] = res_info["_source"]["user_fio"]
+            user_info['href'] = "userPage"
+            user_info['id'] = int(res_info["_id"])
+            user_info['image'] = res_info["_source"]["photo_file_id"]
+            users.append(user_info)
+        elif res_info["_index"] == 'articles':
+            art_info = {}
+            art_info['name'] = res_info["_source"]["title"]
+            art_info['href'] = res_info["_source"]["section_id"]
+            art_info['id'] = int(res_info["_id"])
+            art_info['image'] = res_info["_source"]["preview_photo"]
+            articles.append(art_info)
+    sec_user = {}
+    sec_art = {}
+    sec_user['section'] = 'Пользователи'
+    sec_user['content'] = users
+    sec_art['section'] = 'Контент'
+    sec_art['content'] = articles
+    result.append(sec_user)
+    result.append(sec_art)
 
-# @search_router.post("/users/search_by_name/{name}")
-# def search_users(name: str):
-#     return UserSearchModel().search_by_name(name)
-# @search_router.post("/users/search_by_name/{name}")
-# def search_users(name: str):
-#     return UserSearchModel().search_by_name(name)
-
-# @search_router.post("/departs/search_by_username/{name}")
-# def search_depart_users(name: str):
-#     return StructureSearchModel().search_by_username(name)
-
-# @search_router.post("/departs/search_by_user_position/{position}")
-# def search_depart_users(position: str):
-#     return StructureSearchModel().search_by_position(position)
-
-# @search_router.post("/article/search_by_title/{title}")
-# def search_by_title(title: str):
-#     return ArticleSearchModel().search_by_title(title)
-
-# @search_router.post("/article/search_in_preview/{preview}")
-# def search_in_preview(preview: str):
-#     return ArticleSearchModel().search_by_preview(preview)
-
-# @search_router.post("/article/search_in_text/{text}")
-# def search_in_text(text: str):
-#     return ArticleSearchModel().search_by_text(text)
+    return result

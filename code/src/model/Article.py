@@ -662,6 +662,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         
+        '''
 
         #Гид по предприятиям
         # пройти по инфоблоку заголовков

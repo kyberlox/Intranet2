@@ -202,21 +202,6 @@ class File:
                     return f"http://intranet.emk.org.ru{new_url}"
                     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
         result = FileModel(art_id=art_id).find_all_by_art_id()

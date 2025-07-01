@@ -22,7 +22,7 @@ from src.model.File import File, file_router
 from src.services.VCard import vcard_app
 from src.services.LogsMaker import LogsMaker
 
-from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router
+from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere
 
 from src.base.B24 import B24
 
@@ -175,9 +175,9 @@ def elastic_dump():
     res = StructureSearchModel().dump()
     return res
 
-@app.get("/elastic_search")
-def elastic_search(name: str):
-    return UserSearchModel().search_by_name(name)
+@app.get("/full_search")
+def elastic_search(keyword: str):
+    return search_everywhere(keyword)
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")
 def find(inf_id, art_id, property):

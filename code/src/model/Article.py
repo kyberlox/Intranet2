@@ -366,7 +366,8 @@ class Article:
             "PROPERTY_1246", #QR-код Земской
             
             #Референсы
-            "PROPERTY_679",
+            "PROPERTY_678",
+            #"PROPERTY_679",
 
             "PROPERTY_476",
 

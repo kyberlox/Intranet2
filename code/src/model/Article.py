@@ -910,6 +910,9 @@ class Article:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
+                #Для баготворительных проектов компрессия не требуется
+                elif self.section_id == "55":
+                    return f"http://intranet.emk.org.ru{url}"
                 else:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
@@ -927,6 +930,9 @@ class Article:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
+                #Для баготворительных проектов компрессия не требуется
+                elif self.section_id == "55":
+                    return f"http://intranet.emk.org.ru{url}"
                 else:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"

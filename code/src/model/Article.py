@@ -959,6 +959,39 @@ class Article:
         elif self.section_id == "112":
             return User().get_new_workers()
 
+        elif self.section_id == "25":
+            active_articles = []
+            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            for res in result:
+                if res['active']:
+                    self.id = res["id"]
+                    #взаимствую логику поиска файлов из метода поиска статей по их id
+                    art = ArticleModel(id = self.id).find_by_id()
+                    files = File(art_id = int(self.id)).get_files_by_art_id()
+                    art['images'] = []
+                    art['videos_native'] = []
+                    art['videos_embed'] = []
+                    art['documentation'] = []
+                    
+                    for file in files:
+                        #файлы делятся по категориям
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                            art['images'].append(f"http://intranet.emk.org.ru{url}")
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        elif "video" in file["content_type"]:
+                            url = file["file_url"]
+                            art['videos_native'].append(f"http://intranet.emk.org.ru{url}")
+                        elif "link" in file["content_type"]:
+                            art['videos_embed'].append(file)
+                        else:
+                            art['documentation'].append(file)
+
+                    active_articles.append(res)
+            
+            return sorted(active_articles, key=lambda x: x['id'], reverse=True)
+
         else:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()

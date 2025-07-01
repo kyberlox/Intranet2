@@ -1001,7 +1001,7 @@ class Article:
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                             file["file_url"] = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            res['documentation'].append(file")
+                            res['documentation'].append(file)
 
                     active_articles.append(res)
             

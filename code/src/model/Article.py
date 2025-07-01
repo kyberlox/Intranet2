@@ -35,6 +35,12 @@ def take_value(PROPERTY):
     else:
         return None
 
+def dict_to_indirect_data(data, property_value_dict):
+    res = dict()
+    for key in property_value_dict.keys():
+        if key in data:
+            res[property_value_dict[key]] = take_value(data[key])
+    return res
 
 class Article:
     def __init__(self, id=0, section_id=0):
@@ -96,7 +102,7 @@ class Article:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034"]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]
             content = None
             for key in keys:
                 if key in data:
@@ -321,6 +327,18 @@ class Article:
                 "enterpriseId" : enterpriseId
             }
 
+        #Благотворительные проекты
+        elif self.section_id == 55:
+            {
+                "PROPERTY_435" : "organizer",
+                "PROPERTY_347" : "phone_number"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+            
+            
+
+
         else:
             indirect_data = json.dumps(data)
 
@@ -535,7 +553,7 @@ class Article:
             #54 : "55", # Предложения партнеров ✔️
             55 : "56", # Благотворительные проекты ☑️ ♻️
 
-            25 : "100", #Референсы и опыт поставок ✔️
+            #25 : "100", #Референсы и опыт поставок ✔️
             #17 : "60" #Учебный центр (Литература) ☑️ ♻️
         }
         

@@ -75,6 +75,8 @@ class Article:
         elif "PROPERTY_1127" in data:
             preview = list(data['PROPERTY_1127'].values())[0]
             # data.pop('PROPERTY_1127')
+        elif "PROPERTY_677" in data:
+            preview = list(data['PROPERTY_677'].values())[0]
         else:
             preview = None
 
@@ -277,36 +279,47 @@ class Article:
                 sort = take_value(data["PROPERTY_475"])
             indirect_data = {"sort" : sort}
 
-        # отдельно обрабатываем Конкурсы ЭМК
-        elif data["IBLOCK_ID"] == "128":
-            nomination = None
-            age_group = None
+        #Референсы и опыт поставок
+        elif self.section_id == 25:
+            
+            industryId = None
+            if "PROPERTY_681" in data:
+                industryId = take_value(data["PROPERTY_681"])
+            
+            industry = None
+            values_dict = {
+                None : "Прочие",
+                "8308" : "Прочие",
+                "8307" : "Энергетика",
+                "8306" : "Химия",
+                "8305" : "Нефтегаз"
+            }
+            industry = values_dict[industryId]
 
-            if 'PROPERTY_1071' in data:
-                if int(data['PROPERTY_1071'][0]) == 664:
-                    nomination = 'Дети от 5 до 7 лет'
-                elif int(data['PROPERTY_1071'][0]) == 1775:
-                    nomination = 'Дети от 8 до 11 лет'
-                elif int(data['PROPERTY_1071'][0]) == 1776:
-                    nomination = 'Дети от 12 до 16 лет'
-        
-
-            if 'PROPERTY_1072' in data:
-                if int(data['PROPERTY_1072'][0]) == 671:
-                    age_group = 'Дети от 5 до 7 лет'
-                elif int(data['PROPERTY_1072'][0]) == 672:
-                    age_group = 'Дети от 8 до 11 лет'
-                elif int(data['PROPERTY_1072'][0]) == 673:
-                    age_group = 'Дети от 12 до 16 лет'
-
-            indirect_data = json.dumps({
-                "created_by" : data['CREATED_BY'],
-                "author" : str(data['PROPERTY_1070'][0]),
-                "nomination" : nomination,
-                "age_group" : age_group,
-                "representative_id" : int(data['PROPERTY_1074'][0]),
-                "representative_text" : str(data['PROPERTY_1075'][0])
-            })
+            enterpriseId = None
+            if "PROPERTY_680" in data:
+                enterpriseId = take_value(data["PROPERTY_680"])
+            
+            enterprise = None
+            values_dict = {
+                None : "Ошибка",
+                "6185" : "ООО «Пульсатор»",
+                "6184" : "ООО «Техно-Сфера»",
+                "6183" : "ООО «АРМАТОМ»",
+                "6182" : "АО «Тулаэлектропривод»",
+                "6181" : "ООО «ТехПромАрма»",
+                "6180" : "АО «НПО Регулятор»",
+                "6179" : "ЗАО «Курганспецарматура»",
+                "6178" : "ЗАО «Саратовский арматурный завод»"
+            }
+            enterprise = values_dict[enterpriseId]
+            
+            indirect_data = {
+                "industry" : industry,
+                "industryId" : industryId,
+                "enterprise" : enterprise,
+                "enterpriseId" : enterpriseId
+            }
 
         else:
             indirect_data = json.dumps(data)
@@ -351,6 +364,10 @@ class Article:
             "PROPERTY_455",
             "PROPERTY_1020",
             "PROPERTY_1246", #QR-код Земской
+            
+            #Референсы
+            "PROPERTY_678",
+            #"PROPERTY_679",
 
             "PROPERTY_476",
 
@@ -374,7 +391,6 @@ class Article:
 
             "PROPERTY_476",
             "PROPERTY_1025",
-            "PROPERTY_678",
             "PROPERTY_356",
 
             #вложения
@@ -519,7 +535,7 @@ class Article:
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ☑️
 
-            #25 : "100", #Референсы и опыт поставок ☑️
+            25 : "100", #Референсы и опыт поставок ☑️♻️
             #17 : "60" #Учебный центр (Литература) ☑️
         }
         
@@ -548,9 +564,9 @@ class Article:
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
-            #15 : ["75", "77"], #Блоги ♻️
-            18 : ["81", "82"], #Памятка ❌
-            #41 : ["98", "78", "84"] #Гид по предприятиям ❌
+            #15 : ["75", "77"], #Блоги ✔️
+            18 : ["81", "82"], #Памятка ✔️
+            41 : ["98", "78", "84"] #Гид по предприятиям ♻️ сделать сервис
         }
         '''
         #Блоги
@@ -588,6 +604,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
+
         
         
         '''
@@ -603,7 +620,7 @@ class Article:
                     self.add(inf)
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
-                    
+
         #Памятка
         # пройти по инфоблоку заголовков
         self.section_id = "82"
@@ -645,7 +662,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         
-        '''
+
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"

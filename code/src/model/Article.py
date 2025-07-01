@@ -312,7 +312,7 @@ class Article:
                 "6179" : "ЗАО «Курганспецарматура»",
                 "6178" : "ЗАО «Саратовский арматурный завод»"
             }
-            enterprise = take_value(enterpriseId)
+            enterprise = values_dict[enterpriseId]
             
             indirect_data = {
                 "industry" : industry,

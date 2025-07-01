@@ -329,15 +329,12 @@ class Article:
 
         #Благотворительные проекты
         elif self.section_id == 55:
-            {
+            property_dict = {
                 "PROPERTY_435" : "organizer",
                 "PROPERTY_347" : "phone_number"
             }
             
             indirect_data = dict_to_indirect_data(data, property_dict)
-            
-            
-
 
         else:
             indirect_data = json.dumps(data)

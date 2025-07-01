@@ -37,7 +37,7 @@ class FileModel:
         self.art_id = art_id
         self.b24_id = b24_id
 
-    def create_indexes(self):
+    def create_index_files(self):
         #создаем индексы
         files_collection.create_index(
             [
@@ -51,6 +51,9 @@ class FileModel:
             ],
             background=True
         )
+        return {"status": True}
+
+    def create_index_user_photo(self):
         user_photo_collection.create_index(
             [
                 ("id", 1),
@@ -61,27 +64,6 @@ class FileModel:
             ],
             background=True
         )
-        # files_collection.create_index(
-        #     {
-        #         "id": 1,
-        #         "original_name": 1,
-        #         "stored_name": 1,
-        #         "content_type": 1,
-        #         "article_id": 1,
-        #         "b24_id": 1,
-        #         "file_url": 1
-        #     },
-        # )
-
-        # user_photo_collection.create_index(
-        #     {
-        #         "id": 1,
-        #         "name": 1,
-        #         "format": 1,
-        #         "uuid": 1,
-        #         "b24_url": 1
-        #     }
-        # )
         return {"status": True}
 
     # блок для файлов

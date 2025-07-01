@@ -38,6 +38,7 @@ class File:
         try:
             b24 = B24()
             #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
+            filename = "___"
             try:
                 if need_all_method:
                     file_data = b24.get_all_files(self.b24_id)
@@ -335,7 +336,6 @@ class File:
         try:
 
             name, form = self.dowload_user_photo(b24_url)
-            print(uuid, name, form, 'ищем 393')
 
             #определить ссылку
             url = f"/api/user_files/{name}"
@@ -370,8 +370,16 @@ class File:
         except Exception as e:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
-       
+    
+    # Блок создания индексов
+    def index_files(self):
+        return FileModel().create_index_files()
 
+    def index_user_photo(self):
+        return FileModel().create_index_user_photo()
+
+
+        
 
 # @file_router.put("/create_indexes")
 # async def create_mongo_indexes():

@@ -515,7 +515,7 @@ class Article:
         '''
 
         # создание индексов в Mongo
-        FileModel().create_indexes()
+        File().index_files()
 
         # кастомный прогрессбар
         logg = LogsMaker()
@@ -604,6 +604,22 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
+
+        
+        
+        '''
+        #Конкурсы ЭМК 7 секция
+        self.section_id = "128"
+        competitions_info = self.get_inf()
+        if competitions_info != []:
+            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+                #art_id = inf["ID"]
+                self.section_id = 7
+                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
+                if art_DB.need_add():
+                    self.add(inf)
+                elif art_DB.update(self.make_valid_article(inf)):
+                    pass
 
         #Памятка
         # пройти по инфоблоку заголовков

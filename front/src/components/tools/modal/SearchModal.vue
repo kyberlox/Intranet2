@@ -15,7 +15,8 @@
                                     <div class="search-input">
                                         <SearchIcon class="navbar-nav__search-icon navbar-nav__search-icon--inModal" />
                                         <input :autofocus="true"
-                                               placeholder="Поиск..." />
+                                               placeholder="Поиск..."
+                                               v-model="searchTargetText" />
                                     </div>
                                     <transition name="search-results"
                                                 appear>
@@ -70,9 +71,10 @@
 
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, watchEffect } from "vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component"
 import SearchRedirectIcon from "@/assets/icons/layout/SearchRedirectIcon.svg?component"
+import Api from "@/utils/Api";
 
 interface searchResults {
     section: string,
@@ -97,6 +99,8 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const inputFocus = ref(false);
+        const searchTargetText = ref();
+
         watch((props), (newVal) => {
             if (newVal.visibleModal) {
                 inputFocus.value = true;
@@ -120,10 +124,21 @@ export default defineComponent({
             }
         ]
 
+        watch((searchTargetText), (newVal) => {
+            if (newVal) {
+                console.log(newVal);
+
+                Api.get(`/full_search?${newVal}`)
+                    .then((data) => console.log(data))
+
+            }
+        })
+
         return {
             closeModal: () => emit('closeSearchModal'),
             plug,
-            inputFocus
+            inputFocus,
+            searchTargetText
         }
     }
 })

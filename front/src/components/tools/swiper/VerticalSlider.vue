@@ -7,7 +7,7 @@
                       :key="'vertSlide' + index">
 
             <div class="swiper--vertical__bg-slide"
-                 :style="{ backgroundImage: `url('${slide.image}')` }">
+                 :style="{ backgroundImage: `url('${slide.preview_file_url}')` }">
                 <span v-if="modifiers && modifiers.includes('birthday-icon')"
                       class="birthday-icon"></span>
                 <!-- Под дни рождения -->
@@ -36,9 +36,10 @@
                                  alt="ЭМК"
                                  title="ЭМК" />
                         </div>
-                        <h3 class="section__image__list__item__title">{{ slide.name }}</h3>
-                        <RouterLink v-if="page == 'safetyTechnics'"
-                                    :to="{ name: slide.routeTo, params: { id: slide.id } }"
+                        <h3 v-if="page !== 'care'"
+                            class="section__image__list__item__title">{{ slide.name }}</h3>
+                        <RouterLink v-if="page == 'safetyTechnics' || page == 'care'"
+                                    :to="{ name: slide.routeTo ?? routeTo, params: { id: slide.id } }"
                                     class="section__image__list__item__link">
                             Читать
                         </RouterLink>
@@ -46,10 +47,10 @@
                 </div>
                 <div class="section__image__list__item__subtitle__wrapper">
                     <div class="section__image__list__item__subtitle vertical-title">
-                        {{ slide.subtitle }}
+                        {{ slide.subtitle ?? slide.name }}
                     </div>
                     <div class="section__image__list__item__subtitle vertical-subtitle">
-                        {{ slide.description }}
+                        {{ slide.description ?? 'Организатор: ' + slide.indirect_data.organizer }}
                     </div>
                 </div>
             </div>
@@ -98,6 +99,9 @@ export default defineComponent({
         },
         modifiers: {
             type: Array,
+        },
+        routeTo: {
+            type: String
         }
     },
     setup() {

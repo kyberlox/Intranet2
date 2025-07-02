@@ -1,7 +1,7 @@
 <template>
     <div class="page__title mt20">Актуальные новости</div>
-    <TagDateNavBar :years="extractYears(allNews)"
-                   @pickYear="(year) => visibleNews = showEventsByYear(allNews, year)" />
+    <TagDateNavBar :params="extractYears(allNews)"
+                   @pickFilter="(x) => filterNews(x)" />
     <div class="row">
         <GridGallery :gallery="visibleNews"
                      :type="'postPreview'"
@@ -29,6 +29,11 @@ export default defineComponent({
         const viewsData = useViewsDataStore();
         const allNews: ComputedRef<IActualNews[]> = computed(() => viewsData.getData('actualNewsData') as IActualNews[]);
         const visibleNews: Ref<IActualNews[]> = ref(allNews.value);
+
+        const filterNews = (param) => {
+            visibleNews.value = allNews.value;
+            visibleNews.value = allNews.value.filter((e) => { return e.date_creation?.includes(param) })
+        }
         onMounted(() => {
             if (allNews.value.length) return;
             useLoadingStore().setLoadingStatus(true);
@@ -45,7 +50,8 @@ export default defineComponent({
             allNews,
             visibleNews,
             extractYears,
-            showEventsByYear
+            showEventsByYear,
+            filterNews
         };
     },
 });

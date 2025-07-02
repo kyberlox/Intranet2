@@ -5,7 +5,7 @@ export const safetyTechnics: ISafetyTechnicsSlide = {
         {
             id: 1,
             name: "COVID-19",
-            image: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-1.jpg",
+            preview_file_url: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-1.jpg",
             header: "Берегите себя и своих близких",
             subtitle: "COVID-19 — острая респираторная инфекция, вызываемая коронавирусом SARS-CoV-2 (2019-nCoV)",
             description: "Как защитить своё здоровье от потенциальной угрозы",
@@ -14,7 +14,7 @@ export const safetyTechnics: ISafetyTechnicsSlide = {
         {
             id: 2,
             name: "Пожарная безопасность и эвакуация из офисного здания",
-            image: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-2.jpg",
+            preview_file_url: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-2.jpg",
             header: "При пожаре",
             subtitle: "Правила пожарной безопасности и эвакуации из офисного здания",
             description: "Схема эвакуации и что нужно делать при пожаре",
@@ -23,7 +23,7 @@ export const safetyTechnics: ISafetyTechnicsSlide = {
         {
             id: 3,
             name: "Посещение производственных площадок",
-            image: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-3.jpg",
+            preview_file_url: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-3.jpg",
             header: "Техника безопасности на производстве",
             subtitle: "Что нужно знать при посещении производственных площадок",
             description: "Правила для персонала и гостей",
@@ -55,17 +55,17 @@ export const safetyTechnicsCovidInner: ISafetyTechnicsSlide =
         {
             id: 1,
             subtitle: 'Соблюдайте социальную дистанцию',
-            image: '/src/assets/imgs/about/safetyTechnics/covid/COVID1.jpg',
+            preview_file_url: '/src/assets/imgs/about/safetyTechnics/covid/COVID1.jpg',
         },
         {
             id: 2,
             subtitle: 'Ходите в масках и используйте антисептики',
-            image: '/src/assets/imgs/about/safetyTechnics/covid/COVID2.jpg',
+            preview_file_url: '/src/assets/imgs/about/safetyTechnics/covid/COVID2.jpg',
         },
         {
             id: 3,
             subtitle: 'Старайтесь не приглашать лишних людей в офис',
-            image: '/src/assets/imgs/about/safetyTechnics/covid/COVID3.jpg',
+            preview_file_url: '/src/assets/imgs/about/safetyTechnics/covid/COVID3.jpg',
         }
     ],
     sideInfo: `<div class="news__detail__discr safety__section__discr">

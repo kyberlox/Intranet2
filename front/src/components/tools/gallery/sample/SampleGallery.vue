@@ -28,7 +28,6 @@
 <script lang="ts">
 import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
-import { blockRouteTips } from "@/assets/static/sectionTips";
 import type { IUnionEntities } from "@/interfaces/IEntities";
 import SampleGallerySkeleton from "./SampleGallerySkeleton.vue";
 
@@ -54,7 +53,6 @@ export default defineComponent({
     setup(props) {
 
         return {
-            blockRouteTips,
         }
     }
 });

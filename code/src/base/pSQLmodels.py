@@ -339,7 +339,10 @@ class UserModel():
                         for dp in dedep:
                             list_departs.append(dp.__dict__['name'])
 
-                    
+            if "uf_usr_department_main" in indirect_data:
+                dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                indirect_data["uf_usr_department_main"] = dedep[0].name
+
             indirect_data['uf_department'] = list_departs
             result['indirect_data'] = indirect_data
             
@@ -398,10 +401,12 @@ class UserModel():
         users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         for usr in users:
             user = usr.__dict__
+            
             if 112 in user['indirect_data']['uf_department']:
                 pass
             else:
                 if user['active'] and user['photo_file_id'] is not None:
+                    print(user)
                     user_info = {}
                     indirect_data = user['indirect_data']
                     list_departs = []
@@ -410,6 +415,9 @@ class UserModel():
                             dep_str = DepartmentModel(dep).find_dep_by_id()
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])
+                    if "uf_usr_department_main" in indirect_data:
+                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                        indirect_data["uf_usr_department_main"] = dedep[0].name
                             
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
@@ -449,7 +457,9 @@ class UserModel():
                             dep_str = DepartmentModel(dep).find_dep_by_id()
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])
-                            
+                    if "uf_usr_department_main" in indirect_data:
+                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                        indirect_data["uf_usr_department_main"] = dedep[0].name
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
@@ -603,7 +613,8 @@ class DepartmentModel():
             return [res]
         else:
             # return {'err': 'Нет такого департамента'}
-            return LogsMaker().warning_message('Нет такого департамента')
+            #return LogsMaker().warning_message('Нет такого департамента')
+            return []
 
         # dep = self.db.query(self.department).get(self.id)
         # result = dict()
@@ -1071,6 +1082,44 @@ class LikesModel:
         ).all()
 
         return [liker.user_id for liker in likers]
+
+    def add_like_from_b24(self, created_at) -> bool:
+        """
+        Пользователь поставил лайк статье.
+        Возвращает True, если лайк успешно добавлен, False если лайк уже существует.
+        """
+        # Проверяем, есть ли уже активный лайк
+        existing_like = self.session.query(Likes).filter(
+            Likes.user_id == self.user_id,
+            Likes.article_id == self.art_id,
+            Likes.is_active == True
+        ).first()
+
+        if existing_like:
+            return False  # Лайк уже существует
+
+        # Если лайк был, но is_active=False, обновляем его
+        # inactive_like = self.session.query(Likes).filter(
+        #     Likes.user_id == self.user_id,
+        #     Likes.article_id == self.art_id,
+        #     Likes.is_active == False
+        # ).first()
+
+        # if inactive_like:
+        #     inactive_like.is_active = True
+        #     inactive_like.created_at = datetime.utcnow()
+        # else:
+            # Создаем новый лайк
+        new_like = Likes(
+            user_id=self.user_id,
+            article_id=self.art_id,
+            is_active=True,
+            created_at=created_at
+        )
+        self.session.add(new_like)
+
+        self.session.commit()
+        return True
 
     @classmethod
     def get_popular_articles(cls, limit: int = 10) -> List[Dict[str, int]]:

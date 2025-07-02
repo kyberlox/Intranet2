@@ -13,6 +13,7 @@ import re
 import json
 import datetime
 import asyncio
+import types
 
 from fastapi import APIRouter, Body
 
@@ -1411,6 +1412,24 @@ class Article:
     def get_viewers(self):
         return ViewsModel(art_id=self.id).get_viewers()
 
+    def upload_likes(self):
+        result = [] 
+        articles_info = ArticleModel().all()
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7] # список секций где нет лайков
+        for inf in articles_info:
+            if inf.section_id not in null_list:
+                likes_info = B24().get_likes_views(inf.id)
+                
+                if likes_info != "Not found" and 'VOTES' in likes_info.keys():
+                    for vote in likes_info['VOTES']:
+                        # проверяем есть ли такие юзеры в бд
+                        user_exist = User(vote['USER_ID']).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType):
+                            continue
+                        else:
+                            LikesModel(user_id=vote['USER_ID'], art_id=inf.id).add_like_from_b24(vote['CREATED_'])
+        return {"status": True}
+
 
 #Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}")
@@ -1477,3 +1496,8 @@ def get_recent_popular_articles(days: int, limit: int):
 @article_router.get("/get_viewers/{ID}")
 def get_viewers(ID: int):
     return Article(id = ID).get_viewers()
+
+#выгрузка данных по лайкам в Б24
+@article_router.put("/put_b24_likes")
+def put_b24_likes():
+    return Article().upload_likes()

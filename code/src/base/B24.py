@@ -57,6 +57,12 @@ class B24:
 
         return link
 
+    def get_likes_views(self, art_id):
+        url = f'https://portal.emk.ru/pub/rest/d105d8c66fc049a96c58d2cc18ea171e98c7ba89a9afa6425f003e42b4d90991/getLikes.php?id={art_id}'
+        response = requests.get(url)
+        result = response.json()
+        return result
+
     '''
     def find(self, inf_id, art_id, property):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")

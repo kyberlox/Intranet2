@@ -175,7 +175,7 @@ def elastic_dump():
     res = StructureSearchModel().dump()
     return res
 
-@app.get("/full_search")
+@app.get("/api/full_search")
 def elastic_search(keyword: str):
     return search_everywhere(keyword)
 

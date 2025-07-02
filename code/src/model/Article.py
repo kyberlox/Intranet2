@@ -463,8 +463,8 @@ class Article:
                 # if art_id == 12221:
                 #     print(data, art_id)
 
-                #обрабатываются днфолтным методом битры
-                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
+                #обрабатываются дефолтным методом битры
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
                     need_all_method = False
                 try:
                     # выцепить id файла

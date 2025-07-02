@@ -36,6 +36,12 @@ def take_value(PROPERTY):
     else:
         return None
 
+def dict_to_indirect_data(data, property_value_dict):
+    res = dict()
+    for key in property_value_dict.keys():
+        if key in data:
+            res[property_value_dict[key]] = take_value(data[key])
+    return res
 
 class Article:
     def __init__(self, id=0, section_id=0):
@@ -97,7 +103,7 @@ class Article:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034"]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]
             content = None
             for key in keys:
                 if key in data:
@@ -322,6 +328,38 @@ class Article:
                 "enterpriseId" : enterpriseId
             }
 
+        #Благотворительные проекты
+        elif self.section_id == 55:
+            property_dict = {
+                "PROPERTY_435" : "organizer",
+                "PROPERTY_347" : "phone_number"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
+        #Учебный центр
+        elif self.section_id == 17:
+            property_dict = {
+                "PROPERTY_489" : "subsection_id",
+                "PROPERTY_488" : "author"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
+            subsection_id = indirect_data["subsection_id"]
+            values_dict = {
+                None : "Нет данных",
+                "339" : "Техническая литература",
+                "340" : "Обучающие материалы",
+                "1020" : "Диджитал и IT",
+                "1021" : "Психология и развитие",
+                "1761" : "Обучающие материалы: продажи B2B",
+                "1762" : "Обучающие материалы: Эффективные переговоры",
+                "1763" : "Обучающие материалы: Профессиональное планирование для регулярного менеджмента",
+            }
+            indirect_data["subsection"] = values_dict[subsection_id]
+
+
         else:
             indirect_data = json.dumps(data)
 
@@ -360,8 +398,9 @@ class Article:
             "PROPERTY_343",
             
             #Блоги
-            "PROPERTY_1023",
+            "PROPERTY_1023", 
             #"PROPERTY_1222", #ссылка на youtube
+            #"PROPERTY_1203", #ссылка на youtube
             "PROPERTY_455",
             "PROPERTY_1020",
             "PROPERTY_1246", #QR-код Земской
@@ -534,10 +573,10 @@ class Article:
             #32 : "132", # Новости организационного развития ✔️
             #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
-            55 : "56", # Благотворительные проекты ☑️ ♻️
+            #55 : "56", # Благотворительные проекты ✔️
 
-            25 : "100", #Референсы и опыт поставок ✔️
-            #17 : "60" #Учебный центр (Литература) ☑️ ♻️
+            #25 : "100", #Референсы и опыт поставок ✔️
+            17 : "60" #Учебный центр (Литература) ☑️ ♻️
         }
         
 
@@ -968,7 +1007,7 @@ class Article:
         elif self.section_id == "112":
             return User().get_new_workers()
 
-        elif self.section_id == "25":
+        elif self.section_id == "25" or self.section_id == "17":
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:

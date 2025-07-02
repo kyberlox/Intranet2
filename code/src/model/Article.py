@@ -626,7 +626,7 @@ class Article:
             self.section_id = 172
             data["TITLE"] = title_data["NAME"]
             
-            indirect_data["indirect_data"] = []
+            data["indirect_data"] = []
 
             # пройти по инфоблоку тренингов
             self.section_id = "83"

@@ -605,8 +605,42 @@ class Article:
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
             41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
-            172 : ["", ""] #Учебный центр (Проведённые тренинги)  ♻️
+            172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
         }
+
+        self.section_id = "61"
+        sec_inf_title = self.get_inf()
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
+            title_id = title_inf["ID"]
+            title_data = title_inf
+
+            # пройти по инфоблоку статей блогов
+            self.section_id = "83"
+            sec_inf_data = self.get_inf()
+            for data_inf in sec_inf_data:
+                data_title_id = list(data_inf["PROPERTY_484"].values())[0]
+                #если эта статья принадлежит иинфоблоку
+                if data_title_id == title_id:
+                    data = dict()
+
+                    #добавить все данные заголовка
+                    for key in title_data:
+                        data[key] = title_data[key]
+                    #добавить все данные статьи
+                    for key in data_inf:
+                        data[key] = data_inf[key]
+
+                    data["ID"] = title_data["ID"]
+                    data["section_id"] = 172 #Блоги
+                    self.section_id = 172
+                    data["TITLE"] = title_data["NAME"]
+
+                    #загрузить данные в таблицу
+                    artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+                    if artDB.need_add():
+                        self.add(data)
+                    elif artDB.update(self.make_valid_article(data)):
+                        pass
         '''
         #Блоги
         #пройти по инфоблоку заголовков

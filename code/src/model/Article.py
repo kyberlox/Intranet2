@@ -336,8 +336,8 @@ class Article:
             
             indirect_data = dict_to_indirect_data(data, property_dict)
 
-        #Учебный центр
-        elif self.section_id == 17:
+        #Учебный центр (Литература)
+        elif self.section_id == 175:
             property_dict = {
                 "PROPERTY_489" : "subsection_id",
                 "PROPERTY_488" : "author"
@@ -450,7 +450,6 @@ class Article:
             "PROPERTY_498",
             "PREVIEW_PICTURE",
             "PROPERTY_356",
-            "PROPERTY_1023",
         ]
         
         # находим файлы статьи
@@ -575,7 +574,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
-            17 : "60" #Учебный центр (Литература) ☑️ ♻️
+            #171 : "60" #Учебный центр (Литература) ✔️
         }
         
 
@@ -606,6 +605,7 @@ class Article:
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
             41 : ["98", "78", "84"] #Гид по предприятиям ♻️ сделать сервис
+            172 : ["", ""] #Учебный центр (Проведённые тренинги)  ♻️
         }
         '''
         #Блоги
@@ -1006,7 +1006,7 @@ class Article:
         elif self.section_id == "112":
             return User().get_new_workers()
 
-        elif self.section_id == "25" or self.section_id == "17":
+        elif self.section_id == "25" or self.section_id == "175":
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:

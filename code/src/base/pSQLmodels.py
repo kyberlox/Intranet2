@@ -1131,10 +1131,10 @@ class LikesModel:
             limit: Количество возвращаемых статей
 
         Returns:
-            Список словарей с данными статей:
+            Список словарей с данными статей:               @self.session
             [{'article_id': int, 'likes_count': int}, ...]
         """
-        popular_articles = self.session.query(
+        popular_articles = db.query(
             Likes.article_id,
             func.count(Likes.id).label('likes_count')
         ).filter(
@@ -1157,7 +1157,7 @@ class LikesModel:
         """
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
-        popular = self.session.query(
+        popular = db.query(
             Likes.article_id,
             func.count(Likes.id).label('likes_count')
         ).filter(

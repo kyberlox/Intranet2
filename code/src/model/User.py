@@ -1,4 +1,4 @@
-from src.base.pSQLmodels import UserModel
+from src.base.pSQLmodels import UserModel, LikesModel
 from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
@@ -250,27 +250,27 @@ def test_update_photo():
 # лайки и просмотры
 @users_router.put("/add_like")
 def add_like(user_id: int, art_id: int):
-    return User(user_id=user_id).add_like(art_id)
+    return User(id=user_id).add_like(art_id)
 
 @users_router.delete("/remove_like")
 def remove_like(user_id: int, art_id: int):
-    return User(user_id=user_id).remove_like(art_id)
+    return User(id=user_id).remove_like(art_id)
 
 @users_router.post("/has_liked")
 def has_liked(user_id: int, art_id: int):
-    return User(user_id=user_id).has_liked(art_id)
+    return User(id=user_id).has_liked(art_id)
 
 @users_router.get("/get_user_likes")
 def get_user_likes(user_id: int):
-    return User(user_id=user_id).get_user_likes()
+    return User(id=user_id).get_user_likes()
 
 @users_router.put("/add_view")
 def add_view(user_id: int, art_id: int):
-    return User(user_id=user_id).add_view(art_id)
+    return User(id=user_id).add_view(art_id)
 
 @users_router.get("/get_viewed_articles")
 def get_viewed_articles(user_id: int):
-    return User(user_id=user_id).get_viewed_articles()
+    return User(id=user_id).get_viewed_articles()
 
 @users_router.post("/search_indirect")
 def search_indirect(key_word):

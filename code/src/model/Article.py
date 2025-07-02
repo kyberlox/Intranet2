@@ -1467,6 +1467,15 @@ class Article:
                             continue
                         else:
                             LikesModel(user_id=vote['USER_ID'], art_id=inf.id).add_like_from_b24(vote['CREATED_'])
+
+                    #удаляем тех, кто убрал лайк
+                    b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
+                    article_likers = LikesModel(art_id=inf.id).get_article_likers()
+                    for usr in article_likers:
+                        if usr not in b24_likers:
+                            LikesModel(user_id=usr, art_id=inf.id).remove_like()
+                        else:
+                            pass
         return {"status": True}
 
 

@@ -102,7 +102,7 @@ class Article:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348", PROPERTY_371]
             content = None
             for key in keys:
                 if key in data:
@@ -358,6 +358,52 @@ class Article:
             }
             indirect_data["subsection"] = values_dict[subsection_id]
 
+        #Учебный центр (Тренинги)
+        elif self.section_id == 172:
+            
+            property_dict = {
+                "PROPERTY_369" : "event_date",
+                "PROPERTY_437" : "author",
+                "PROPERTY_432" : "participants"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+            
+            participants = []
+            for user_uuid in indirect_data["participants"]:
+                user = User(id=user_uuid).search_by_id()
+                last_name = user['last_name']
+                name = user['name']
+                second_name = user['second_name']
+
+                fio = f"{last_name} {name} {second_name}"
+                photo = user["photo_file_url"]
+                work_position = user["work_position"]
+
+                participants.append({
+                    "fio" : fio,
+                    "photo" : photo,
+                    "work_position" : work_position
+                })
+
+
+
+            reviews_props = data["reviews"]
+            reviews = []
+            if reviews_props != []:
+                for feedback_props in reviews:
+                    text = ""
+                    if "PROPERTY_486" in feedback_props:
+                        text = list(feedback_props["PROPERTY_486"].values())[0]["TEXT"]
+
+                    feedback {
+                        "author" : reviews_props["NAME"],
+                        "text" : text,
+                        "stars" : reviews_props["PROPERTY_501"],
+                    }
+
+            indirect_data["reviews"] = reviews
+            indirect_data["participants"] = participants
 
         else:
             indirect_data = json.dumps(data)

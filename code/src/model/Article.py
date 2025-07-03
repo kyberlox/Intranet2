@@ -625,7 +625,7 @@ class Article:
             data["section_id"] = 172 #Блоги
             self.section_id = 172
             data["TITLE"] = title_data["NAME"]
-            
+            print(data["ID"])
             data["indirect_data"] = []
 
             # пройти по инфоблоку тренингов

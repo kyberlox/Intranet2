@@ -632,7 +632,7 @@ class Article:
             self.section_id = "83"
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
-                data_title_id = list(data_inf["PROPERTY_484"].values())[0]
+                data_title_id = take_value(data_inf["PROPERTY_484"])
                 #если эта статья принадлежит иинфоблоку
                 if data_title_id == title_id:
                     #добавить отзывы

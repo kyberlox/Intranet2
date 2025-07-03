@@ -622,13 +622,12 @@ class Article:
                 data[key] = title_data[key]
             
             data["ID"] = title_data["ID"]
-            data["section_id"] = 172 #Блоги
-            self.section_id = 172
             data["TITLE"] = title_data["NAME"]
             print(data["ID"])
             data["indirect_data"] = []
 
             # пройти по инфоблоку тренингов
+            self.section_id = "83"
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
                 #если эта статья принадлежит иинфоблоку
@@ -637,6 +636,8 @@ class Article:
                     data["indirect_data"].append(data_inf)
 
             #загрузить данные в таблицу
+            data["section_id"] = 172
+            self.section_id = 172
             artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
             if artDB.need_add():
                 self.add(data)

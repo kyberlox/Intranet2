@@ -629,7 +629,6 @@ class Article:
             data["indirect_data"] = []
 
             # пройти по инфоблоку тренингов
-            self.section_id = "175"
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
                 #если эта статья принадлежит иинфоблоку

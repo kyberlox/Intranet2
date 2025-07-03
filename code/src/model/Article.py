@@ -624,7 +624,7 @@ class Article:
             data["ID"] = title_data["ID"]
             data["TITLE"] = title_data["NAME"]
             print(data["ID"])
-            data["indirect_data"] = []
+            data["reviews"] = []
 
             # пройти по инфоблоку тренингов
             self.section_id = "83"
@@ -633,7 +633,7 @@ class Article:
                 #если эта статья принадлежит иинфоблоку
                 if "PROPERTY_484" in data_inf and take_value(data_inf["PROPERTY_484"]) == title_id:
                     #добавить отзывы
-                    data["indirect_data"].append(data_inf)
+                    data["reviews"].append(data_inf)
 
             #загрузить данные в таблицу
             data["section_id"] = 172

@@ -632,9 +632,8 @@ class Article:
             self.section_id = "83"
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
-                data_title_id = take_value(data_inf["PROPERTY_484"])
                 #если эта статья принадлежит иинфоблоку
-                if data_title_id == title_id:
+                if "PROPERTY_484" in data_inf and take_value(data_inf["PROPERTY_484"]) == title_id:
                     #добавить отзывы
                     data["indirect_data"].append(data_inf)
 

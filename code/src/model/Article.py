@@ -374,21 +374,22 @@ class Article:
             indirect_data = dict_to_indirect_data(data, property_dict)
             print(indirect_data)
             participants = []
-            for user_uuid in indirect_data["participants"]:
-                user = User(id=user_uuid).search_by_id()
-                last_name = user['last_name']
-                name = user['name']
-                second_name = user['second_name']
+            if "participants" in indirect_data:
+                for user_uuid in indirect_data["participants"]:
+                    user = User(id=user_uuid).search_by_id()
+                    last_name = user['last_name']
+                    name = user['name']
+                    second_name = user['second_name']
 
-                fio = f"{last_name} {name} {second_name}"
-                photo = user["photo_file_url"]
-                work_position = user["indirect_data"]["work_position"]
+                    fio = f"{last_name} {name} {second_name}"
+                    photo = user["photo_file_url"]
+                    work_position = user["indirect_data"]["work_position"]
 
-                participants.append({
-                    "fio" : fio,
-                    "photo" : photo,
-                    "work_position" : work_position
-                })
+                    participants.append({
+                        "fio" : fio,
+                        "photo" : photo,
+                        "work_position" : work_position
+                    })
 
 
 

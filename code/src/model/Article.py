@@ -405,7 +405,7 @@ class Article:
                     if "NAME" in reviews_props:
                         name = reviews_props["NAME"]
                     else:
-                        print(reviews_props)
+                        print(feedback_props)
                     
                     stars = "",
                     if "PROPERTY_501" in reviews_props:

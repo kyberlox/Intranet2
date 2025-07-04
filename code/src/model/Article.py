@@ -404,8 +404,6 @@ class Article:
                     name = "",
                     if "NAME" in feedback_props:
                         name = feedback_props["NAME"]
-                    else:
-                        print(feedback_props)
                     
                     stars = "",
                     if "PROPERTY_501" in feedback_props:
@@ -416,8 +414,9 @@ class Article:
                         "text" : text,
                         "stars" : stars,
                     }
-                    print(feedback)
+                    #print(feedback)
                     reviews.append(feedback)
+                    print(reviews)
             print(reviews)
 
             indirect_data["reviews"] = reviews

@@ -396,11 +396,13 @@ class Article:
                     if "PROPERTY_486" in feedback_props:
                         text = list(feedback_props["PROPERTY_486"].values())[0]["TEXT"]
 
-                    feedback {
+                    feedback = {
                         "author" : reviews_props["NAME"],
                         "text" : text,
                         "stars" : reviews_props["PROPERTY_501"],
                     }
+                    reviews.append(feedback)
+
 
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants

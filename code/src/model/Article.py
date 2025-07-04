@@ -394,11 +394,9 @@ class Article:
 
 
             reviews_props = data["reviews"]
-            #print(reviews_props)
             reviews = []
             if reviews_props != []:
-                for feedback_props in reviews:
-                    print(feedback_props)
+                for feedback_props in reviews_props:
                     text = ""
                     if "PROPERTY_486" in feedback_props:
                         text = list(feedback_props["PROPERTY_486"].values())[0]["TEXT"]
@@ -408,9 +406,7 @@ class Article:
                         "text" : text,
                         "stars" : reviews_props["PROPERTY_501"],
                     }
-                    print(feedback)
                     reviews.append(feedback)
-            print(reviews)
 
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants

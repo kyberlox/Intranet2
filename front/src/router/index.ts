@@ -11,51 +11,56 @@ const router = createRouter({
     {
       path: '/about',
       name: 'personal',
-      component: () => import('../views/about/ourCompany/OurCompany.vue')
+      component: () => import('../views/about/ourCompany/OurCompany.vue'),
+      props: (route) => ({ breadcrumbs: [{ title: 'назад', route: 'home' }] })
     },
     {
       path: '/about/company-history',
       name: 'book-emk',
       component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
+      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/company-history/:id',
       name: 'book-emk-page',
       component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/our-people',
       name: 'our-people',
       component: () => import('@/views/about/ourPeople/OurPeople.vue'),
+      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/our-people/:id',
       name: 'ourPeopleInner',
       component: () => import('@/views/about/ourPeople/OurPeopleInner.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Наши люди', route: 'our-people' }] }),
     },
     {
       path: '/about/year-results',
       name: 'year-results',
       component: () => import('@/views/about/yearResults/YearResults.vue'),
+      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/year-results/:id',
       name: 'year-results-id',
       component: () => import('@/views/about/yearResults/YearResults.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Назад', route: 'home' }] }),
     },
     {
       path: '/about/blogs',
       name: 'blogs',
       component: () => import('@/views/about/blogs/Blogs.vue'),
+      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/blogs/:id',
       name: 'blogOf',
       component: () => import('@/views/about/blogs/BlogsAritcles.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Блоги', route: 'blogs' }] })
     },
     {
       path: '/about/blogs/:authorId/:id',
@@ -417,11 +422,6 @@ const router = createRouter({
       component: () => import('@/views/admin/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId })
     },
-    // {
-    //   path: '/about/structure',
-    //   name: 'structure',
-    //   component: () => import('@/views/about/companyStructure/CompanyStructure.vue'),
-    // },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

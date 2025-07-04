@@ -33,7 +33,6 @@ import { useblogDataStore } from "./stores/blogData";
 import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
 import { useLoadingStore } from '@/stores/loadingStore'
 import { useUserData } from "./stores/userData";
-import { useReferencesAndExpDataStore } from "./stores/ReferencesAndExpData";
 export default defineComponent({
     name: "app-layout",
     components: {
@@ -45,8 +44,6 @@ export default defineComponent({
     setup() {
         const blogData = useblogDataStore();
         const blogAuthors = computed(() => blogData.getAllAuthors)
-        const experienceStore = useReferencesAndExpDataStore();
-        const contentData = computed(() => experienceStore.getAllFactories)
 
         const route = useRoute();
         const allAuthors = ref([]);
@@ -55,9 +52,9 @@ export default defineComponent({
             if (route.fullPath.includes('blog') && !blogAuthors.value.length) {
                 getBlogAuthorsToStore(allAuthors, blogData)
             }
-            // else if (route.fullPath.includes('experience') && !contentData.value.length) {
-            //     getExperienceDataToStore();
-            // }
+            console.log(route)
+            if (route.params.breadcrumbs) {
+            }
         }, { immediate: true, deep: true })
 
         onMounted(() => {

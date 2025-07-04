@@ -18,9 +18,9 @@
                             <h3 class="conducted-training__list__item__title__one">{{ training.name }}</h3>
                             <h4 v-if="training.subsection"
                                 class="conducted-training__list__item__title__two">{{ training.subsection }}</h4>
-                            <span class="conducted-training__list__item__title__undertitle-author">{{
-                                training.indirect_data?.author }}</span>
-
+                            <span class="conducted-training__list__item__title__undertitle-author">
+                                {{ training.indirect_data?.author }}
+                            </span>
                         </div>
                         <div v-if="page !== 'announces' && page !== 'literature'"
                              class="col-12 col-md-12 col-lg-2 col-xl-2 d-flex conducted-training__list__item__review">
@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, watch } from "vue";
+import { ref, defineComponent, watch } from "vue";
 import type { ItableItem } from "@/interfaces/IEntities";
 import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
 

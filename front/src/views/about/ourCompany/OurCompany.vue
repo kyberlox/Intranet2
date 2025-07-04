@@ -1,4 +1,5 @@
 <template>
+    <Breadcrumbs :breadcrumbs="breadcrumbs" />
     <div class="row">
         <div class="col-sm-6 d-flex align-items-stretch">
             <div class="m-sm-5 emk-mission d-flex g-5 mt20">
@@ -62,7 +63,16 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.vue';
 export default defineComponent({
+    components: {
+        Breadcrumbs
+    },
+    props: {
+        breadcrumbs: {
+            type: Object
+        }
+    },
     setup() {
 
         const ourPleasures = [

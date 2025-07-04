@@ -102,7 +102,7 @@ class Article:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         else:
-            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348", PROPERTY_371]
+            keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]
             content = None
             for key in keys:
                 if key in data:
@@ -361,13 +361,25 @@ class Article:
         #Учебный центр (Тренинги)
         elif self.section_id == 172:
             
+            if "PROPERTY_371" in data["indirect_data"]:
+                if "TEXT" in data["indirect_data"]["PROPERTY_371"]:
+                    content = list(data["indirect_data"]["PROPERTY_371"]["TEXT"].values())[0]
+                    if "TYPE" in data["indirect_data"]["PROPERTY_371"]:
+                        content_type = list(data["indirect_data"]["PROPERTY_371"]["TYPE"].values())[0]
+
+                elif "TEXT" in list(data["indirect_data"]["PROPERTY_371"].values())[0]:
+                    content = list(data["indirect_data"]["PROPERTY_371"].values())[0]["TEXT"]
+                    if "TYPE" in list(data["indirect_data"]["PROPERTY_371"].values())[0]:
+                        content_type = list(data["indirect_data"]["PROPERTY_371"].values())[0]["TYPE"]
+
+
             property_dict = {
                 "PROPERTY_369" : "event_date",
                 "PROPERTY_437" : "author",
                 "PROPERTY_432" : "participants"
             }
             
-            indirect_data = dict_to_indirect_data(data, property_dict)
+            indirect_data = dict_to_indirect_data(data["indirect_data"], property_dict)
             
             participants = []
             for user_uuid in indirect_data["participants"]:

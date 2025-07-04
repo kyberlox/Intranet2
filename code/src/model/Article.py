@@ -394,6 +394,7 @@ class Article:
 
 
             reviews_props = data["reviews"]
+            print(reviews_props)
             reviews = []
             if reviews_props != []:
                 for feedback_props in reviews:

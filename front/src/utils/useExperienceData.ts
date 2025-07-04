@@ -3,7 +3,7 @@ import { type Ref, ref } from "vue";
 import Api from "./Api";
 import type { IExperience, IFormattedData } from "@/interfaces/IEntities";
 import { useReferencesAndExpDataStore } from "@/stores/ReferencesAndExpData";
-import { factoryLogoTips, sectorLogoTips } from "@/assets/static/factoryLogoTips";
+import { factoryLogoTips } from "@/assets/static/factoryLogoTips";
 export const useExperienceData = () => {
     const formatExperienceItem = (item: IExperience, formattedData: Ref<IFormattedData>) => {
         if (!item.indirect_data) return;
@@ -12,7 +12,8 @@ export const useExperienceData = () => {
         const industryTitle = item.indirect_data?.industry;
         const enterprise = item.indirect_data?.enterprise;
         const enterpriseId = item.indirect_data?.enterpriseId;
-        const docs = item.documentation.length > 0 ? item.documentation : item.images;
+        const docs = item.documentation;
+        const images = item.images;
 
         if (!industryId || !industryTitle || !enterprise || !enterpriseId) return;
 
@@ -30,11 +31,14 @@ export const useExperienceData = () => {
         if (!existingSector) {
             formattedData.value[enterpriseId].sectors.push({
                 sectorTitle: industryTitle,
-                sectorId: industryId,
-                sectorDocs: docs
+                sectorId: String(industryId),
+                sectorDocs: docs,
+                sectorImgs: images
             });
-        } else {
-            existingSector.sectorDocs.push(...docs);
+        } else if (existingSector.sectorDocs && docs) {
+            if (Array.isArray(docs) && Array.isArray(existingSector.sectorDocs)) {
+                existingSector.sectorDocs.push(...docs);
+            }
         }
     };
 
@@ -49,7 +53,7 @@ export const useExperienceData = () => {
         const formattedData: Ref<IFormattedData> = ref({});
 
         Api.get(`article/find_by/${sectionTips['референсы']}`)
-            .then((data) => data.forEach(item => formatExperienceItem(item, formattedData)));
+            .then((data: IExperience[]) => data.forEach(item => formatExperienceItem(item, formattedData)));
 
         useReferencesAndExpDataStore().setFactories(formattedData.value);
 
@@ -58,16 +62,15 @@ export const useExperienceData = () => {
 
 
     const generateSlides = (data: IFormattedData) => {
-        console.log(data);
-
-        const getLogo = (factoryId: string) => {
+        const getLogo = (factoryId: keyof typeof factoryLogoTips) => {
             return factoryLogoTips[factoryId]
         }
 
         return Object.keys(data).map(factoryId => ({
+            id: Number(factoryId),
             factoryId: Number(factoryId),
             slides: [],
-            preview_file_url: getLogo(factoryId),
+            preview_file_url: getLogo(factoryId as keyof typeof factoryLogoTips),
             name: data[factoryId].factoryName
         }));
     };

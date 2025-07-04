@@ -66,7 +66,6 @@ export default defineComponent({
         }
     },
     components: {
-        PlayVideo,
         ZoomModal,
         RichGallerySkeleton,
         ComplexGalleryCardBasic,

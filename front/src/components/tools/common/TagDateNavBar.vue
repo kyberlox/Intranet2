@@ -37,11 +37,10 @@ export default defineComponent({
     setup(props, { emit }) {
         const showparams = ref();
 
-        const pickFilter = (param) => {
+        const pickFilter = (param: string) => {
             emit('pickFilter', param);
             showparams.value = false;
         }
-
 
         return {
             tags,

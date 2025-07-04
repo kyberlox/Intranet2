@@ -1,4 +1,4 @@
-import type { IUnionEntities, IFactorySlides } from "@/interfaces/IEntities";
+import type { IUnionEntities, IFactorySlides, IFactoryData } from "@/interfaces/IEntities";
 
 export const uniqueRoutesHandle = (
     route: string,
@@ -10,11 +10,11 @@ export const uniqueRoutesHandle = (
         return { name: reRoute, params: { id: slide.id } }
     }
     else if (route === 'experienceTypes') {
-        const typedSlide = slide
+        const typedSlide = slide as IFactoryData;
         return { name: route, params: { factoryId: typedSlide?.factoryId } }
     }
     else if (route === 'experienceType') {
-        const typedSlide = slide
+        const typedSlide = slide as IFactoryData;
         return { name: route, params: { factoryId: typedSlide.factoryId, sectorId: typedSlide.sectorId } }
     }
     else if (route == 'factoryTour') {

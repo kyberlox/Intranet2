@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { IExperience, IFormattedData } from "@/interfaces/IEntities";
+import type { IFormattedData } from "@/interfaces/IEntities";
 
 export const useReferencesAndExpDataStore = defineStore('referencesAndExpData', {
     state: () => ({
@@ -15,6 +15,6 @@ export const useReferencesAndExpDataStore = defineStore('referencesAndExpData', 
     getters: {
         getAllFactories: (state) => state.allFactories,
         getCurrentFactory: (state) => (id: string) => state.allFactories[id],
-        getCurrentDocs: (state) => (id: string, sector: string) => state.allFactories[id].sectors.find(e => e.sectorId == sector)?.sectorDocs,
+        getCurrentDocs: (state) => (id: string, sector: string) => state.allFactories[id].sectors.find(e => e.sectorId == sector)?.sectorDocs || [],
     }
 });

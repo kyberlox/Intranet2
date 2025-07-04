@@ -4,7 +4,7 @@
              class="page__title">{{ pageTitle }}</div>
         <PostInner :id="id == undefined ? undefined : String(id)"
                    :type="type"
-                   :previewElement="pageTitle == 'Экскурсии' ? excursions : null" />
+                   :previewElement="pageTitle == 'Экскурсии' ? excursions : {}" />
     </div>
 </template>
 

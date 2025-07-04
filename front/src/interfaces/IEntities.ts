@@ -27,16 +27,16 @@ interface IBaseEntity {
 
     images?: string[],
     documentation?: {
-        article_id: number,
-        b24_id: string,
-        ile_url: string,
-        id: string,
-        is_archive: boolean,
-        is_preview: boolean,
-        original_name: string,
-        stored_name: string,
-        type: string
-    },
+        article_id?: number,
+        b24_id?: string,
+        file_url?: string,
+        id?: string,
+        is_archive?: boolean,
+        is_preview?: boolean,
+        original_name?: string,
+        stored_name?: string,
+        type?: string
+    }[],
     videos_native?: string[],
     videos_embed?: string[],
     videos?: string[],
@@ -59,6 +59,29 @@ interface IBaseIndirectData {
     DETAIL_TEXT?: string,
     DETAIL_TEXT_TYPE?: string,
     PREVIEW_TEXT_TYPE?: string,
+}
+
+export interface IConductedTrainings {
+    "name"?: string,
+    "section_id"?: number,
+    "active"?: boolean,
+    "content_text"?: string,
+    "indirect_data"?: {
+        "author"?: string,
+        "reviews"?: [],
+        "event_date"?: string,
+        "participants"?:
+        {
+            "fio"?: string,
+            "photo"?: string | null,
+            "work_position"?: string
+        }[],
+    },
+    "id": number,
+    "preview_text"?: string | null,
+    "content_type": string,
+    "date_creation": string | null,
+    "preview_file_url": string | null
 }
 
 export interface IActualNewsIndirectData extends IBaseIndirectData {
@@ -235,7 +258,9 @@ export interface IExperienceData extends IBaseIndirectData {
     enterprise: string,
     enterpriseId: string,
     industry: string,
-    industryId: string
+    industryId: string,
+    sectorId: string,
+    sector: string
 }
 
 export interface IFactoryData extends IBaseIndirectData {
@@ -249,7 +274,10 @@ export interface IFactoryData extends IBaseIndirectData {
     videoHref?: string[],
     href?: string,
     tourId?: string,
+    sectorId?: string,
 }
+
+
 
 export interface IOpenVacancyData extends IBaseIndirectData {
     PROPERTY_5094: string[]
@@ -275,7 +303,7 @@ export interface IExperience extends IBaseEntity {
     indirect_data?: IExperienceData
 }
 
-export interface ISafetyTechnicsSlide {
+export interface ISafetyTechnicsVertSlide {
     content?: {
         id?: number,
         name?: string,
@@ -287,11 +315,22 @@ export interface ISafetyTechnicsSlide {
         header?: string,
         description?: string,
         routeTo?: string
-    }[] | {
+        preview_file_url?: string,
+    }[],
+    evacuationContent?: {
+        images?: string[],
+    },
+    sideInfo?: string,
+}
+
+export interface ISafetyTechnicsSlide {
+    content?: {
         id?: number,
         videos?: string[],
         content_text?: string,
         images?: string[]
+        preview_file_url?: string,
+
     },
     evacuationContent?: {
         images?: string[],
@@ -301,23 +340,75 @@ export interface ISafetyTechnicsSlide {
 
 interface ISector {
     sectorTitle: string;
-    sectorDocs: {
+    sectorId: string,
+    sectorDocs?: {
+        article_id?: number,
+        b24_id?: string,
+        file_url?: string,
+        id?: string,
+        is_archive?: boolean,
+        is_preview?: boolean,
+        original_name?: string,
+        stored_name?: string,
+        type?: string
+    }[],
+    sectorImgs?: string[],
+}
+
+interface IFactoryInExpData {
+    sectors: ISector[];
+    factoryName: string;
+    factoryId: string;
+}
+
+export interface IDocument {
+    id?: string,
+    original_name?: string,
+    stored_name?: string,
+    content_type?: string,
+    type?: string,
+    article_id?: number,
+    b24_id?: string,
+    file_url?: string,
+    is_archive?: boolean,
+    is_preview?: boolean
+}
+
+export interface ItableItem {
+    id?: number,
+    name?: string,
+    author?: string,
+    score?: string,
+    stars__count?: string,
+    reviewsCount?: string,
+    date?: string,
+    subsection?: string,
+    content_text?: string,
+    indirect_data?: {
+        author?: string,
+        subsection?: string,
+        subsection_id?: string,
+    },
+    documentation?: {
+        file_url?: string,
+    }[],
+    images?: {
+        file_url?: string,
+    }[],
+    videos_native?: {
         article_id: number,
         b24_id: string,
-        ile_url: string,
+        content_type: string,
+        file_url: string,
         id: string,
         is_archive: boolean,
         is_preview: boolean,
         original_name: string,
         stored_name: string,
         type: string
-    }[]
+    }[],
 }
 
-interface IFactoryInExpData {
-    sectors: ISector[];
-    factoryName: string;
-}
 
 export interface IFormattedData {
     [factoryKey: string]: IFactoryInExpData;

@@ -19,6 +19,7 @@ export default defineComponent({
     },
     setup() {
         const slides: Ref<{
+            id: number;
             factoryId: number;
             slides: string[];
             name: string;

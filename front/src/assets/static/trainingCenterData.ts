@@ -1,4 +1,3 @@
-import type { IConductedTrainings } from '@/interfaces/IConductedTrainings';
 import ECourses from "@/assets/icons/trainingCenter/ECourses.svg?component";
 import Events from "@/assets/icons/trainingCenter/Events.svg?component";
 import Announces from "@/assets/icons/trainingCenter/Announces.svg?component";

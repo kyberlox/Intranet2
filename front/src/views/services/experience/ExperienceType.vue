@@ -29,10 +29,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, ref, watch, type Ref } from 'vue';
 import { useExperienceData } from "@/utils/useExperienceData";
 import { useReferencesAndExpDataStore } from "@/stores/ReferencesAndExpData";
-
+import type { IDocument } from "@/interfaces/IEntities";
 
 export default defineComponent({
     name: 'experienceType',
@@ -49,15 +49,16 @@ export default defineComponent({
     setup(props) {
         const { loadExperienceData } = useExperienceData();
 
-        const docs = ref([]);
+        const docs: Ref<IDocument[]> = ref([]);
         const placeName = ref('');
-
 
         const initializeData = () => {
             const data = loadExperienceData();
 
             watch(data, (newValue) => {
                 if (Object.keys(newValue).length && props.factoryId && props.sectorId) {
+                    console.log(useReferencesAndExpDataStore().getCurrentDocs(props.factoryId, props.sectorId));
+
                     docs.value = useReferencesAndExpDataStore().getCurrentDocs(props.factoryId, props.sectorId);
                     placeName.value = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId).factoryName;
                 };

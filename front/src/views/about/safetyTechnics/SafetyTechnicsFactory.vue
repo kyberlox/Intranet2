@@ -7,13 +7,11 @@
 
 <script lang="ts">
 import PostInner from "@/components/tools/common/PostInner.vue";
-import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import { defineComponent, ref } from "vue";
 import { safetyTechnicsFactoryInner } from "@/assets/static/safetyTechnics";
 export default defineComponent({
     components: {
         PostInner,
-        SwiperBlank
     },
     setup() {
         const activeIndexInModal = ref(null);

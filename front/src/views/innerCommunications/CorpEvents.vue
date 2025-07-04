@@ -3,7 +3,7 @@
     <TagDateNavBar v-if="allEvents"
                    :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
-                   @pickYear="(year) => visibleEvents = showEventsByYear(allEvents, year)" />
+                   @pickYear="(year: string) => visibleEvents = showEventsByYear(allEvents, year)" />
     <GridGallery v-if="visibleEvents"
                  :gallery="visibleEvents"
                  :routeTo="'corpEvent'" />

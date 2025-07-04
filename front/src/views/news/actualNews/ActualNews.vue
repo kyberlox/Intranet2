@@ -30,7 +30,7 @@ export default defineComponent({
         const allNews: ComputedRef<IActualNews[]> = computed(() => viewsData.getData('actualNewsData') as IActualNews[]);
         const visibleNews: Ref<IActualNews[]> = ref(allNews.value);
 
-        const filterNews = (param) => {
+        const filterNews = (param: string) => {
             visibleNews.value = allNews.value;
             visibleNews.value = allNews.value.filter((e) => { return e.date_creation?.includes(param) })
         }

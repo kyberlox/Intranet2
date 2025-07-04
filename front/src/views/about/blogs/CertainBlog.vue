@@ -9,7 +9,8 @@
 			<div v-if="currentArticle && 'name' in currentArticle"
 				 class="col-sm-9">
 				<h2>{{ currentArticle.name }}</h2>
-				<div class=" mt20"
+				<div v-if="currentArticle.content_text"
+					 class="mt20"
 					 v-html="parseMarkdown(currentArticle.content_text)">
 				</div>
 				<div v-if="getProperty(currentArticle, 'PROPERTY_1222')"

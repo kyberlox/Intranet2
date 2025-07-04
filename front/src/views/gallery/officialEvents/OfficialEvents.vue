@@ -2,7 +2,7 @@
     <div class="page__title mt20">Официальные события</div>
     <TagDateNavBar :years="extractYears(allSlides)"
                    :modifiers="'noTag'"
-                   @pickYear="(year) => visibleEvents = showEventsByYear(allSlides, year)" />
+                   @pickYear="(year: string) => visibleEvents = showEventsByYear(allSlides, year)" />
     <FlexGallery v-if="visibleEvents"
                  class="mt20"
                  :page=page

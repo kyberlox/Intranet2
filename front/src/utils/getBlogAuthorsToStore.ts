@@ -16,7 +16,7 @@ export const getBlogAuthorsToStore = (allAuthors: Ref<IBlogAuthors[]>, blogData:
                         authorAvatar: e.indirect_data.photo_file_url ?? e.preview_file_url,
                         link: e.indirect_data.link ?? null,
                         // !!! Сечас в preview_file_url приходят заводы, а в photo_file_url - фото людей, у земской приходит и preview, в нем QR !!!
-                        telegramQr: e.preview_file_url && e.indirect_data.photo_file_url ? e.preview_file_url : null
+                        telegramQr: e.preview_file_url && e.indirect_data.photo_file_url ? e.preview_file_url : ''
                     }
                     if (!uniqAuthors.length || !uniqAuthors.find((e) => e.title == newAuthor.title)) {
                         uniqAuthors.push(newAuthor)

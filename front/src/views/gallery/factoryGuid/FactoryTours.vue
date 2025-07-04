@@ -11,15 +11,14 @@
 
 <script lang="ts">
 import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { factoryTours } from "@/assets/static/referencesAndExp";
 export default {
     components: {
         FlexGallery,
     },
     setup() {
-        const slides = factoryTours;
+
         return {
-            slides,
+            slides: [],
             page: 'tours',
         };
     },

@@ -104,12 +104,12 @@ const router = createRouter({
     {
       path: '/about/trainingcenter/trainings',
       name: 'conductedTrainings',
-      component: () => import('@/views/about/trainingCenter/conductedTrainings/СonductedTrainingsInner.vue'),
+      component: () => import('@/views/about/trainingCenter/conductedTrainings/СonductedTrainings.vue'),
     },
     {
       path: '/about/trainingcenter/trainings/:id',
       name: 'conductedTraining',
-      component: () => import('@/views/about/trainingCenter/conductedTrainings/Training.vue'),
+      component: () => import('@/views/about/trainingCenter/conductedTrainings/FeedBackModal.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {

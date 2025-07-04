@@ -3,6 +3,7 @@
          class="trainings-table mt20">
 
         <div class="trainings-table__filter__wrap mt20">
+            <TagDateNavBar/>
         </div>
 
         <div class="conducted-training__list__items">
@@ -15,35 +16,41 @@
                             <h3 class="conducted-training__list__item__title__one">{{ training.name }}</h3>
                             <h4 v-if="training.subsection"
                                 class="conducted-training__list__item__title__two">{{ training.subsection }}</h4>
-                            <span class="conducted-training__list__item__title__undertitle-author"
-                                  v-if="page == 'literature'">{{ training.indirect_data.author }}</span>
+                            <span class="conducted-training__list__item__title__undertitle-author">{{
+                                training.indirect_data?.author }}</span>
 
                         </div>
                         <div v-if="page !== 'announces' && page !== 'literature'"
                              class="col-12 col-md-12 col-lg-2 col-xl-2 d-flex conducted-training__list__item__review">
-                            <div class="score-stars"
-                                 :class="[takeStarClass(training.score)]"></div>
-                            <span v-if="training.reviewsCount"
-                                  class="score-stars__count">({{ training.reviewsCount }})</span>
+                            <div v-if="training.indirect_data && training.indirect_data.reviews"
+                                 class="score-stars"
+                                 @click="openModal(training)"
+                                 :class="[takeStarClass(training.indirect_data.reviews)]"
+                                 style="cursor: pointer;"></div>
+                            <span class="score-stars__count">({{ training.indirect_data?.reviews?.length || 0 }})</span>
                         </div>
                         <div v-if="page !== 'literature'"
                              class="conducted-training__list__item__date col-12 col-md-12 col-lg-2 col-xl-2">{{
-                                training.date }}</div>
-                        <div v-if="page == 'literature'"
-                             class="conducted-training__list__item__date conducted-training__list__item__date--content col-12 col-md-12 col-lg-2 col-xl-2">
-                            {{
-                                training.content_text }}
-                        </div>
+                                training.date ?? training.indirect_data?.event_date }}</div>
 
-                        <div v-if="page !== 'literature'"
-                             class="conducted-training__list__item__author col-12 col-md-12 col-lg-3 col-xl-3">
-                            <span>Автор курса:</span>
-                            <span>{{ training.indirect_data.author }}</span>
+                        <div class="conducted-training__list__item__date conducted-training__list__item__date--content col-12 col-md-12 col-lg-2 col-xl-2"
+                             v-html="training.content_text">
                         </div>
                         <div v-if="page == 'literature'"
                              class="conducted-training__list__item__download col-12 col-md-12 col-lg-3 col-xl-3">
-                            <a download
-                               :href="training.documentation[0]?.file_url ?? training.images[0]?.file_url">Скачать.pdf</a>
+                            <a v-if="training.documentation?.length"
+                               download
+                               :href="training.documentation[0].file_url">Скачать в .pdf</a>
+                            <a v-else-if="training.images?.length"
+                               download
+                               :href="training.images[0].file_url">
+                                Скачать в .jpg
+                            </a>
+                            <a v-else-if="training.videos_native && training.videos_native.length"
+                               download
+                               :href="training.videos_native[0].file_url">
+                                Скачать в .mp4
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -51,8 +58,10 @@
         </div>
     </div>
 </template>
+
 <script lang="ts">
-import { ref, computed, defineComponent, onMounted, watch } from "vue";
+import { ref, defineComponent } from "vue";
+import type { ItableItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     props: {
@@ -61,28 +70,49 @@ export default defineComponent({
             default: "conducted",
         },
         tableElements: {
-            type: Array
+            type: Array<ItableItem>
         }
     },
 
-    setup(props) {
+    setup(props, { emit }) {
         const conductedTrainings = ref({});
-        const years = Object.keys(conductedTrainings).sort((a, b) => Number(b) - Number(a));
-        const takeStarClass = (star: number | string) => {
-            return `score-stars__${String(star)}`;
-        };
-        const renderYear = ref('2022');
+        const years = Object.keys(conductedTrainings.value).sort((a, b) => Number(b) - Number(a));
 
-        const pickFilter = (param: string) => {
-            renderYear.value = param;
-        }
+        const takeStarClass = (reviews) => {
+            if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
+                return 'score-stars__0';
+            }
+
+            let allStarsSum = 0;
+            let validReviewsCount = 0;
+
+            reviews.forEach((review) => {
+                if (review.stars && typeof review.stars === 'string') {
+                    const starValue = Number(review.stars);
+                    if (!isNaN(starValue)) {
+                        allStarsSum += starValue;
+                        validReviewsCount++;
+                    }
+                }
+            });
+
+            if (validReviewsCount === 0) {
+                return 'score-stars__0';
+            }
+
+            const averageStars = Math.round(allStarsSum / validReviewsCount);
+            return `score-stars__${averageStars}`;
+        };
+
+        const openModal = (training: ItableItem) => {
+            emit('openModal', training);
+        };
 
         return {
-            renderYear,
             years,
             conductedTrainings,
             takeStarClass,
-            pickFilter,
+            openModal
         };
     },
 })

@@ -34,7 +34,6 @@ import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
 import { useLoadingStore } from '@/stores/loadingStore'
 import { useUserData } from "./stores/userData";
 import { useReferencesAndExpDataStore } from "./stores/ReferencesAndExpData";
-import { getExperienceDataToStore } from "./utils/getExperienceDataToStore";
 export default defineComponent({
     name: "app-layout",
     components: {

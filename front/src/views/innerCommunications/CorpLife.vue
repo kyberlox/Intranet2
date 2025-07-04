@@ -2,7 +2,7 @@
     <h1 class="page__title mt20">Корпоративная жизнь</h1>
     <TagDateNavBar :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
-                   @pickYear="(year) => visibleEvents = showEventsByYear(allEvents, year)" />
+                   @pickYear="(year: string) => visibleEvents = showEventsByYear(allEvents, year)" />
     <FlexGallery class="mt10"
                  :page=page
                  :slides="visibleEvents"

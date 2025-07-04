@@ -45,7 +45,7 @@
                              v-for="(doc, index) in currentPost.documentation"
                              :key="'doc' + index">
                             <a class="news__detail__document__link"
-                               :href="doc"
+                               :href="String(doc)"
                                _blank>Открыть {{ doc }}
                                 <DocIcon />
                             </a>
@@ -71,6 +71,30 @@ import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "../gallery/complex/ComplexGallery.vue";
 
+export interface IPostInner {
+    id: number;
+    section_id?: number;
+    name?: string;
+    date_publiction?: string;
+    content_text?: string;
+    videos?: string[];
+    images?: string[];
+    reactions?: {
+        likes?: {
+            count?: number;
+        };
+    };
+    tags?: string[];
+    documentation?: string[];
+    videos_embed?: string[];
+    videos_native?: string[];
+    // Благотв
+    PROPERTY_347?: string;
+    PROPERTY_348?: { TEXT?: string }[];
+    // Афиша 
+    PROPERTY_374?: { TEXT?: string }[];
+}
+
 export default defineComponent({
     components: {
         SwiperBlank,
@@ -87,11 +111,11 @@ export default defineComponent({
             default: 'default'
         },
         previewElement: {
-            type: Object as PropType<IUnionEntities | null>
+            type: Object as PropType<IPostInner>
         }
     },
     setup(props) {
-        const currentPost = ref<IUnionEntities>();
+        const currentPost = ref<IPostInner>();
         onMounted(() => {
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
                 if (props.previewElement == null) {

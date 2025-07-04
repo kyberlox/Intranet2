@@ -12,10 +12,11 @@
 <script lang="ts">
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { useRoute } from "vue-router";
-import { defineComponent, onMounted, ref, type Ref, computed, watch } from "vue";
+import { defineComponent, onMounted, ref, type Ref, watch } from "vue";
 import { useExperienceData } from "@/utils/useExperienceData";
 import { useReferencesAndExpDataStore } from "@/stores/ReferencesAndExpData";
 import { sectorLogoTips } from "../../../assets/static/factoryLogoTips";
+import type { IDocument } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
@@ -27,13 +28,11 @@ export default defineComponent({
     setup(props) {
         const route = useRoute();
         const title = ref(route.params.title);
-        const slides: Ref<{ factoryId: number, slides: string[], name: string }[]> = ref([]);
+        const slides: Ref<{ id: number, factoryId: number, sectorId: string, name: string, attach: IDocument[], preview_file_url: string }[]> = ref([]);
 
         const { loadExperienceData } = useExperienceData();
 
-        const getLogo = (sectorId: string) => {
-            console.log(sectorId);
-
+        const getLogo = (sectorId: keyof typeof sectorLogoTips) => {
             return sectorLogoTips[sectorId];
         }
 
@@ -45,19 +44,17 @@ export default defineComponent({
                     const currentContent = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId);
 
                     slides.value = currentContent.sectors.map((sector) => ({
+                        id: Number(props.factoryId),
                         factoryId: Number(props.factoryId),
                         sectorId: sector.sectorId,
                         name: sector.sectorTitle,
-                        attach: sector.sectorDocs,
-                        preview_file_url: getLogo(sector.sectorId)
+                        attach: sector.sectorDocs ?? [],
+                        preview_file_url: getLogo(sector.sectorId as keyof typeof sectorLogoTips)
                     }));
                     console.log(slides.value);
 
                 }
             }, { deep: true, immediate: true });
-
-
-
         };
 
         onMounted(() => {

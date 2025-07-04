@@ -3,7 +3,8 @@
     <div class="d-flex flex-column">
         <div class="section__image__list__section order-1 order-md-2">
             <div class="section__image__list__items row">
-                <VerticalSlider :slides="safetyTechnicsCovidInner.content"
+                <VerticalSlider v-if="safetyTechnicsCovidInner.content"
+                                :slides="safetyTechnicsCovidInner.content"
                                 :modifiers="['needLogo']" />
 
                 <div class="col-12 col-xl-12 col-xxl-3"

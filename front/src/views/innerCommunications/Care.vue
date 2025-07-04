@@ -1,11 +1,9 @@
 <template>
     <div class="page__title mt20">Благотворительные проекты</div>
-
     <VerticalSlider :slides="careSlides"
                     :page="'care'"
                     :modifiers="['needLogo']"
                     :routeTo="'carePost'" />
-
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, computed, type ComputedRef } from "vue";
@@ -25,8 +23,6 @@ export default defineComponent({
             if (careSlides.value.length) return;
             Api.get(`article/find_by/${sectionTips['Благотворительность']}`)
                 .then((res) => {
-                    console.log(res);
-
                     useViewsDataStore().setData(res, "careData")
                 })
 

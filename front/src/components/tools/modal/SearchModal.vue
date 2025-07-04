@@ -2,8 +2,20 @@
     <transition name="modal"
                 appear>
         <div v-if="visibleModal"
-             class="modal__overlay modal__overlay--zoom"
-             @click.stop.prevent="closeModal()">
+             class="modal__overlay modal__overlay--zoom">
+            <div class="modal__overlay__close-button"
+                 @click.stop.prevent="closeModal()"
+                 type="button">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="30px"
+                     height="30px"
+                     viewBox="0 0 100 100"
+                     version="1.1">
+
+                    <path style="fill:currentColor;stroke:#222222;stroke-width:4;"
+                          d="M 20,4 3,21 33,50 3,80 20,97 49,67 79,97 95,80 65,50 95,20 80,4 50,34 z" />
+                </svg>
+            </div>
             <transition name="modal-content"
                         appear>
                 <div class="modal__wrapper modal__wrapper--zoom">
@@ -20,13 +32,15 @@
                                     </div>
                                     <transition name="search-results"
                                                 appear>
-                                        <div class="search-results">
+                                        <div class="search-results"
+                                             v-if="plug">
                                             <transition-group name="result-item"
                                                               tag="div">
                                                 <div class="search-result-block"
                                                      v-for="(item, index) in plug"
                                                      :key="index">
-                                                    <div class="search-result-block__section-title">{{ item.section }}
+                                                    <div v-if="item.content.length"
+                                                         class="search-result-block__section-title">{{ item.section }}
                                                     </div>
                                                     <div class="search-result-block-info"
                                                          v-for="(contentItem, index) in item.content"
@@ -39,8 +53,9 @@
                                                             <SearchRedirectIcon class="search-result-block-info__image"
                                                                                 v-else />
                                                         </div>
-                                                        <div class="search-result-block-info__title">
-                                                            {{ contentItem.name }}
+                                                        <div v-if="contentItem.name"
+                                                             class="search-result-block-info__title"
+                                                             v-html="highlightCharacters(contentItem.name, searchTargetText)">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -71,7 +86,7 @@
 
 
 <script lang="ts">
-import { defineComponent, ref, watch, watchEffect } from "vue";
+import { defineComponent, ref, watch, type Ref } from "vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component"
 import SearchRedirectIcon from "@/assets/icons/layout/SearchRedirectIcon.svg?component"
 import Api from "@/utils/Api";
@@ -95,11 +110,13 @@ export default defineComponent({
     },
     components: {
         SearchIcon,
-        SearchRedirectIcon
+        SearchRedirectIcon,
     },
     setup(props, { emit }) {
         const inputFocus = ref(false);
         const searchTargetText = ref();
+        const needOnlyPeoples: Ref<boolean> = ref(false);
+        const needOnlyContent: Ref<boolean> = ref(false);
 
         watch((props), (newVal) => {
             if (newVal.visibleModal) {
@@ -107,38 +124,49 @@ export default defineComponent({
             }
         })
 
-        const plug: searchResults[] = [
-            {
-                section: 'Пользователи',
-                content: [
-                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" },
-                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" }
-                ]
-            },
-            {
-                section: 'Контент',
-                content: [
-                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО", image: "https://portal.emk.ru/upload/resize_cache/disk/22f/357_204_2/vq9bw8bit78o5ga7xqxamigqc76xoy53.jpg" },
-                    { name: "ТИТЛ", href: "/", section: "ТИТЛ СЕКЦИИ НАЙДЕННОГО" }
-                ]
-            }
-        ]
+        const plug: Ref<searchResults[]> = ref([])
 
         watch((searchTargetText), (newVal) => {
             if (newVal) {
-                console.log(newVal);
-
-                Api.get(`/full_search?${newVal}`)
-                    .then((data) => console.log(data))
-
+                Api.get(`/full_search/${newVal}`)
+                    .then((data) => {
+                        plug.value = data
+                    })
             }
         })
+
+        const highlightCharacters = (text: string, searchTerm: string): string => {
+            if (!searchTerm || !text) return text;
+
+            const searchLower = searchTerm.toLowerCase();
+            const textLower = text.toLowerCase();
+            let result = '';
+            let searchIndex = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                const currentChar = text[i];
+                const currentCharLower = textLower[i];
+
+                if (searchIndex < searchLower.length &&
+                    currentCharLower === searchLower[searchIndex]) {
+                    // Символ совпадает с текущей позицией в поисковом запросе
+                    result += `<strong class="search-highlight-sequential">${currentChar}</strong>`;
+                    searchIndex++;
+                } else {
+                    result += currentChar;
+                }
+            }
+
+            return result;
+        };
+
 
         return {
             closeModal: () => emit('closeSearchModal'),
             plug,
             inputFocus,
-            searchTargetText
+            searchTargetText,
+            highlightCharacters
         }
     }
 })
@@ -178,7 +206,7 @@ export default defineComponent({
 .result-item-enter-from,
 .result-item-leave-to {
     opacity: 0;
-    transform: translateX(-30px);
+    // transform: translateX(-30px);
 }
 
 .result-item-move {
@@ -195,6 +223,21 @@ export default defineComponent({
 .search-wrapper {
     padding: 20px;
     width: 100%;
+    max-height: 700px;
+    overflow-y: scroll;
+
+}
+
+.modal__wrapper__close-btn {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+
+    &>svg {
+        color: red;
+        width: 30px;
+    }
+
 }
 
 .search-block {
@@ -306,5 +349,9 @@ export default defineComponent({
 
 .search-result-block-info:hover .search-result-block-info__image {
     transform: scale(1.05);
+}
+
+.search-highlight-char {
+    text-decoration: underline;
 }
 </style>

@@ -21,9 +21,10 @@
 <script lang="ts">
 import Api from "@/utils/Api";
 import TrainingTable from "../components/TrainingTable.vue";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, type Ref } from "vue";
 import { sectionTips } from "@/assets/static/sectionTips";
 import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
+import type { ItableItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
@@ -33,16 +34,19 @@ export default defineComponent({
     setup() {
         const literature = ref();
         const renderedLiterature = ref();
-        const authors = ref([]);
-        const sections = ref([]);
 
-        const setFilterData = (data) => {
+        const authors: Ref<string[]> = ref([]);
+        const sections: Ref<string[]> = ref([]);
+
+        const setFilterData = (data: ItableItem[]) => {
             data.map((e) => {
-                if (!authors.value.length || !authors.value.includes(e.indirect_data.author)) {
-                    authors.value.push(e.indirect_data.author)
+                if (!e.indirect_data) return;
+
+                if (!authors.value.length || (e.indirect_data.author && !authors.value.includes(e.indirect_data.author))) {
+                    authors.value.push(String(e.indirect_data.author))
                 }
-                if (!sections.value.length || !sections.value.includes(e.indirect_data.subsection)) {
-                    sections.value.push(e.indirect_data.subsection)
+                if (!sections.value.length || (e.indirect_data.subsection && !sections.value.includes(e.indirect_data.subsection))) {
+                    sections.value.push(String(e.indirect_data.subsection))
                 }
             })
         }
@@ -56,13 +60,15 @@ export default defineComponent({
                 })
         })
 
-        const pickFilter = (param, type) => {
+        const pickFilter = (param: string, type: string) => {
             renderedLiterature.value = literature.value;
             if (type == 'автор') {
-                renderedLiterature.value = renderedLiterature.value.filter((e) => { return e.indirect_data.author == param });
+                renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.author == param });
+                console.log(renderedLiterature.value);
+
             }
             else if (type == 'раздел') {
-                renderedLiterature.value = renderedLiterature.value.filter((e) => { return e.indirect_data.subsection == param });
+                renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.subsection == param });
             }
         }
 

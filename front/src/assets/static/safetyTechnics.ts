@@ -1,6 +1,6 @@
-import type { ISafetyTechnicsSlide } from "@/interfaces/IEntities";
+import type { ISafetyTechnicsSlide, ISafetyTechnicsVertSlide } from "@/interfaces/IEntities";
 
-export const safetyTechnics: ISafetyTechnicsSlide = {
+export const safetyTechnics: ISafetyTechnicsVertSlide = {
     content: [
         {
             id: 1,
@@ -49,7 +49,7 @@ export const safetyTechnics: ISafetyTechnicsSlide = {
                 Вам никогда не столкнуться с чрезвычайными ситуациями!</strong>`
 }
 
-export const safetyTechnicsCovidInner: ISafetyTechnicsSlide =
+export const safetyTechnicsCovidInner: ISafetyTechnicsVertSlide =
 {
     content: [
         {

@@ -3,7 +3,8 @@
     <div class="d-flex flex-column">
         <div class="section__image__list__section order-1 order-md-2">
             <div class="section__image__list__items row">
-                <VerticalSlider :page="'safetyTechnics'"
+                <VerticalSlider v-if="safetyTechnics.content"
+                                :page="'safetyTechnics'"
                                 :slides="safetyTechnics.content" />
                 <div class="col-12 col-xl-12 col-xxl-3">
                     <div class="news__detail__discr safety__section__discr"
@@ -20,7 +21,6 @@ import { safetyTechnics } from "@/assets/static/safetyTechnics";
 import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 export default defineComponent({
     components: {
-        safetyTechnics,
         VerticalSlider
     },
     setup() {

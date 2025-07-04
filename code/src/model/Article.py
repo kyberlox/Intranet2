@@ -409,7 +409,7 @@ class Article:
                     
                     stars = "",
                     if "PROPERTY_501" in feedback_props:
-                        stars = feedback_props["PROPERTY_501"][0]
+                        stars = feedback_props["PROPERTY_501"]
 
                     feedback = {
                         "revier" : name,

@@ -394,7 +394,7 @@ class Article:
 
 
             reviews_props = data["reviews"]
-            print(reviews_props)
+            #print(reviews_props)
             reviews = []
             if reviews_props != []:
                 for feedback_props in reviews:
@@ -408,7 +408,7 @@ class Article:
                         "stars" : reviews_props["PROPERTY_501"],
                     }
                     reviews.append(feedback)
-
+            print(reviews)
 
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants

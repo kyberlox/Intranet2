@@ -414,7 +414,6 @@ class Article:
                         "text" : text,
                         "stars" : stars,
                     }
-                    #print(feedback)
                     reviews.append(feedback)
 
             indirect_data["reviews"] = reviews

@@ -372,7 +372,7 @@ class Article:
             }
             
             indirect_data = dict_to_indirect_data(data, property_dict)
-            
+            print(indirect_data)
             participants = []
             for user_uuid in indirect_data["participants"]:
                 user = User(id=user_uuid).search_by_id()

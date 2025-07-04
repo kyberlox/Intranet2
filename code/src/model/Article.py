@@ -376,7 +376,7 @@ class Article:
             if "participants" in indirect_data:
                 for user_uuid in indirect_data["participants"]:
                     user = User(id=user_uuid).search_by_id()
-                    if user is not None
+                    if user is not None:
                         last_name = user['last_name']
                         name = user['name']
                         second_name = user['second_name']

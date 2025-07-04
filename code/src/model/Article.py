@@ -410,7 +410,7 @@ class Article:
                         stars = list(feedback_props["PROPERTY_501"].values())[0]
 
                     feedback = {
-                        "revier" : name,
+                        "reviwer" : name,
                         "text" : text,
                         "stars" : stars,
                     }

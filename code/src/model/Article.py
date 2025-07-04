@@ -416,8 +416,6 @@ class Article:
                     }
                     #print(feedback)
                     reviews.append(feedback)
-                print(reviews)
-            print(reviews)
 
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants

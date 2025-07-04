@@ -400,9 +400,21 @@ class Article:
                     text = ""
                     if "PROPERTY_486" in feedback_props:
                         text = list(feedback_props["PROPERTY_486"].values())[0]["TEXT"]
+                    
+                    name = "",
+                    if "NAME" in reviews_props:
+                        name = reviews_props["NAME"]
+                    else:
+                        print(reviews_props)
+                    
+                    stars = "",
+                    if "NAME" in reviews_props:
+                        stars = reviews_props["PROPERTY_501"]
+                    else:
+                        print(reviews_props)
 
                     feedback = {
-                        "author" : reviews_props["NAME"],
+                        "author" : name,
                         "text" : text,
                         "stars" : reviews_props["PROPERTY_501"],
                     }

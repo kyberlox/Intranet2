@@ -416,7 +416,7 @@ class Article:
                     feedback = {
                         "author" : name,
                         "text" : text,
-                        "stars" : reviews_props["PROPERTY_501"],
+                        "stars" : stars,
                     }
                     reviews.append(feedback)
 

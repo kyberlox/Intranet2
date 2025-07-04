@@ -2,7 +2,7 @@
     <div class="conducted-training__page mt20">
         <div class="page__title">Проведённые тренинги</div>
         <TrainingTable :tableElements="trainings"
-                       :page="'pastTrainings'"
+                       :page="'conductedTrainings'"
                        @openModal="(x) => handleModal('open', x)" />
         <FeedBackModal v-if="modalIsVisible == true"
                        @closeModal="handleModal('close', '')"

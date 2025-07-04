@@ -1,15 +1,17 @@
 <template>
-    <div v-if="tableElements"
+    <div v-if="visibleTrainings"
          class="trainings-table mt20">
 
-        <div class="trainings-table__filter__wrap mt20">
-            <TagDateNavBar/>
+        <div v-if="page == 'conductedTrainings'"
+             class="trainings-table__filter__wrap mt20">
+            <TagDateNavBar @pickFilter="(param) => filterBy(param)"
+                           :params="years" />
         </div>
 
         <div class="conducted-training__list__items">
             <div class="row">
                 <div class="conducted-training__list__item col-12"
-                     v-for="training in tableElements"
+                     v-for="training in visibleTrainings"
                      :key="training.id">
                     <div class="conducted-training__list__item__top row pt-3 pb-3">
                         <div class="conducted-training__list__item__title col-12 col-md-12 col-lg-5 col-xl-5">
@@ -60,23 +62,25 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
+import { ref, defineComponent, onMounted, watch } from "vue";
 import type { ItableItem } from "@/interfaces/IEntities";
+import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
 
 export default defineComponent({
     props: {
         page: {
             type: String,
-            default: "conducted",
         },
         tableElements: {
-            type: Array<ItableItem>
+            type: Array<ItableItem>,
         }
     },
-
+    components: {
+        TagDateNavBar
+    },
     setup(props, { emit }) {
-        const conductedTrainings = ref({});
-        const years = Object.keys(conductedTrainings.value).sort((a, b) => Number(b) - Number(a));
+        const visibleTrainings = ref();
+        const years = ref([]);
 
         const takeStarClass = (reviews) => {
             if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
@@ -107,12 +111,31 @@ export default defineComponent({
         const openModal = (training: ItableItem) => {
             emit('openModal', training);
         };
+        watch((props), (newVal) => {
+            if (newVal.tableElements) {
+                newVal.tableElements.forEach((e) => {
+                    const newDate = e.indirect_data.event_date.split('.')[2];
+                    if (newDate && !years.value.includes(newDate)) {
+                        years.value.push(newDate)
+                    }
+                })
+                years.value.sort((b, a) => { return a - b })
+
+                visibleTrainings.value = newVal.tableElements
+            }
+        }, { immediate: true, deep: true })
+
+        const filterBy = (param) => {
+            visibleTrainings.value = props.tableElements;
+            visibleTrainings.value = visibleTrainings.value.filter((e) => { return e.indirect_data.event_date.split('.')[2] == param })
+        }
 
         return {
             years,
-            conductedTrainings,
             takeStarClass,
-            openModal
+            openModal,
+            filterBy,
+            visibleTrainings
         };
     },
 })

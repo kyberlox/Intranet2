@@ -398,6 +398,7 @@ class Article:
             reviews = []
             if reviews_props != []:
                 for feedback_props in reviews:
+                    print(feedback_props)
                     text = ""
                     if "PROPERTY_486" in feedback_props:
                         text = list(feedback_props["PROPERTY_486"].values())[0]["TEXT"]

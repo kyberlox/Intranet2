@@ -362,16 +362,8 @@ class Article:
         elif self.section_id == 172:
             
             if "PROPERTY_371" in data:
-                if "TEXT" in data["PROPERTY_371"]:
-                    content = list(data["PROPERTY_371"]["TEXT"].values())[0]
-                    if "TYPE" in data["PROPERTY_371"]:
-                        content_type = list(data["PROPERTY_371"]["TYPE"].values())[0]
-
-                elif "TEXT" in list(data["PROPERTY_371"].values())[0]:
-                    content = list(data["PROPERTY_371"].values())[0]["TEXT"]
-                    if "TYPE" in list(data["PROPERTY_371"].values())[0]:
-                        content_type = list(data["PROPERTY_371"].values())[0]["TYPE"]
-
+                content = data["PROPERTY_371"][0]["TEXT"]
+                content_type = data["PROPERTY_371"][0]["TYPE"]
 
             property_dict = {
                 "PROPERTY_369" : "event_date",

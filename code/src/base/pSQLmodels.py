@@ -364,6 +364,7 @@ class UserModel():
 
         else:
             LogsMaker().warning_message("Invalid user id")
+            '''
             user_not_found = {
                 "id": 9999999,
                 "uuid": "",
@@ -430,7 +431,8 @@ class UserModel():
                     "uf_usr_1707225966581": False
                 }
             }
-            return user_not_found
+            '''
+            return None
 
     def find_by_uuid(self):
         user = self.db.query(self.user).filter(self.user.uuid == self.id).one()

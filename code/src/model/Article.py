@@ -382,7 +382,7 @@ class Article:
 
                 fio = f"{last_name} {name} {second_name}"
                 photo = user["photo_file_url"]
-                work_position = user["work_position"]
+                work_position = user["indirect_data"]["work_position"]
 
                 participants.append({
                     "fio" : fio,

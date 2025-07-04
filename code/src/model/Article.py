@@ -371,7 +371,7 @@ class Article:
                 "PROPERTY_432" : "participants"
             }
             
-            indirect_data = dict_to_indirect_data(data["indirect_data"], property_dict)
+            indirect_data = dict_to_indirect_data(data, property_dict)
             
             participants = []
             for user_uuid in indirect_data["participants"]:

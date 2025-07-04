@@ -427,7 +427,7 @@ class UserModel():
                     "uf_usr_1679387413613": [],
                     "uf_usr_1696592324977": [""],
                     "uf_usr_1705744824758": [""],
-                    "uf_usr_1707225966581": false
+                    "uf_usr_1707225966581": False
                 }
             }
             return user_not_found

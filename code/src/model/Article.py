@@ -407,8 +407,8 @@ class Article:
                     
                     stars = "",
                     if "PROPERTY_501" in feedback_props:
-                        print(feedback_props["PROPERTY_501"])
                         stars = list(feedback_props["PROPERTY_501"].values())[0]
+                        print(feedback_props["PROPERTY_501"], stars)
 
                     feedback = {
                         "reviewer" : name,

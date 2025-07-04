@@ -367,7 +367,7 @@ class UserModel():
             user_not_found = {
                 "id": 9999999,
                 "uuid": "",
-                "active": true,
+                "active": True,
                 "name": "Не",
                 "last_name": "Пользователь",
                 "second_name": "Найден",

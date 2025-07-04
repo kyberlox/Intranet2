@@ -409,12 +409,10 @@ class Article:
                     
                     stars = "",
                     if "PROPERTY_501" in reviews_props:
-                        stars = reviews_props["PROPERTY_501"]
-                    else:
-                        print(reviews_props)
+                        stars = reviews_props["PROPERTY_501"][0]
 
                     feedback = {
-                        "author" : name,
+                        "revier" : name,
                         "text" : text,
                         "stars" : stars,
                     }

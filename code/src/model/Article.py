@@ -407,6 +407,7 @@ class Article:
                         "text" : text,
                         "stars" : reviews_props["PROPERTY_501"],
                     }
+                    print(feedback)
                     reviews.append(feedback)
             print(reviews)
 

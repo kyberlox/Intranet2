@@ -426,6 +426,7 @@ class Article:
             file_url = File().save_by_URL(url=data["file"], art_id=self.id)
             indirect_data = {
                 "year" : data["year"],
+                "image" : img_url,
                 "pdf" : file_url,
             }
 
@@ -1132,7 +1133,6 @@ class Article:
 
 
     def search_by_section_id(self):
-        not_compress = ["25", "175", "34"]
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
             page_view = []
@@ -1153,8 +1153,10 @@ class Article:
 
         elif self.section_id == "112":
             return User().get_new_workers()
-                
-        elif self.section_id  in not_compress:
+        
+
+        
+        elif self.section_id == "25" or self.section_id == "175":
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
@@ -1191,6 +1193,11 @@ class Article:
                     active_articles.append(res)
             
             return sorted(active_articles, key=lambda x: x['id'], reverse=True)
+
+        elif self.section_id == "34":
+            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            return sorted_active_aticles
 
         else:
             active_articles = []

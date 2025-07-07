@@ -993,7 +993,7 @@ class Article:
                 "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-001.jpg",
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-001.pdf",
                 "year" : "2022",
-                "DATE_CREATE" : "2022-01-01",
+                "DATE_CREATE" : "01.01.2022",
             },
             {
                 "ID" : "342023",
@@ -1002,7 +1002,7 @@ class Article:
                 "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-002.jpg",
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-002.pdf",
                 "year" : "2023",
-                "DATE_CREATE" : "2023-01-01",
+                "DATE_CREATE" : "01.01.2023",
             },
             {
                 "ID" : "342022",
@@ -1011,7 +1011,7 @@ class Article:
                 "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-003.jpg",
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-003.pdf",
                 "year" : "2024",
-                "DATE_CREATE" : "2024-01-01",
+                "DATE_CREATE" : "01.01.2024",
             }
         ]
         for art in data:

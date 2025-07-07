@@ -1009,17 +1009,17 @@ class Article:
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-003.pdf",
                 "year" : "2024",
                 "DATE_CREATE" : "2024-01-01",
-            },
-            for gaz in data:
-                self.section_id = 34 # потом изменить
-                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
-                    self.add(art)
-                elif artDB.update(self.make_valid_article(art)):
-                    pass
-
-
+            }
         ]
+        for gaz in data:
+            self.section_id = 34 # потом изменить
+            artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(art)
+            elif artDB.update(self.make_valid_article(art)):
+                pass
+
+
 
         '''самобытные блоки'''
         # полная статика

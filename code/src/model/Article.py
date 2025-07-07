@@ -419,6 +419,14 @@ class Article:
 
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants
+        
+        #Корпоративная газета ЭМК
+        elif self.section_id == 34:
+            img_url = File().upload_by_URL(url=data["image"], art_id=self.id, is_preview=True)
+            file_url = File().upload_by_URL(url=data["file"], art_id=self.id)
+            indirect_data = {
+                "year" = data["year"]
+            }
 
         else:
             indirect_data = json.dumps(data)
@@ -625,7 +633,7 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            #13 : "149", # Наши люди ✔️
+            13 : "149", # Наши люди ✔️
             #14 : "123", #Доска почёта ☑️
             #16 : "122", # Видеоитервью ✔️
             
@@ -635,7 +643,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
-            175 : "60" #Учебный центр (Литература) ✔️
+            #175 : "60" #Учебный центр (Литература) ✔️
         }
         
 
@@ -665,10 +673,11 @@ class Article:
         sec_inf = {
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
-            41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
-            172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
+            #41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
+            #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
         }
 
+        '''
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
         sec_inf_title = self.get_inf()
@@ -704,7 +713,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
+        
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -797,9 +806,6 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
-        
-        '''
 
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
@@ -839,6 +845,8 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         '''
+
+
 
         '''
         #несколько section_id - один IBLOCK_ID
@@ -976,13 +984,50 @@ class Article:
                 pass
         '''
 
+        #Корпоративная газета
+        data = [
+            {
+                "ID" : "342022",
+                "NAME" : "№1 (2022)",
+                "imge" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-001.jpg",
+                "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-001.pdf",
+                "year" : "2022",
+                "DATE_CREATE" : "2022-01-01",
+            },
+            {
+                "ID" : "342023",
+                "NAME" : "№2 (2023)",
+                "imge" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-002.jpg",
+                "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-002.pdf",
+                "year" : "2023",
+                "DATE_CREATE" : "2023-01-01",
+            },
+            {
+                "ID" : "342022",
+                "NAME" : "№3 (2024)",
+                "imge" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-003.jpg",
+                "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-003.pdf",
+                "year" : "2024",
+                "DATE_CREATE" : "2024-01-01",
+            },
+            for gaz in data:
+                self.section_id = 34 # потом изменить
+                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                if artDB.need_add():
+                    self.add(art)
+                elif artDB.update(self.make_valid_article(art)):
+                    pass
+
+
+        ]
+
         '''самобытные блоки'''
         # полная статика
             # 11 Наша компания -> Наша компания ✔️
             # 12 История компании -> История компании ✔️
 
             # 110 Техника безопасности -> Техника безопасности ✔️
-            # 33 Корпоративная газета ЭМК -> газеты ❌
+            # 34 Корпоративная газета ЭМК -> газеты ❌
             # 41 Гид по предприятиям -> 3D тур ❌
 
         #переделки

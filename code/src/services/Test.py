@@ -22,12 +22,12 @@ class FastAPIUser(HttpUser):
     wait_time = between(1, 3)  # Пауза между запросами (1–3 сек)
 
     # Тестируем GET-эндпоинт
-    @task(3)  # Частота вызова (3 к 1 относительно POST)
+    @task(3)  # Получает файл
     def get_home(self):
         payload = random.choice(FILES_PAYLOADS)
         self.client.get("/api/{payload}")
 
-    # Тестируем POST-эндпоинт с JSON
+    # Тестируем POST-эндпоинт с JSON авторизация
     @task
     def post_data(self):
         payload = random.choice(SAMPLE_PAYLOADS)

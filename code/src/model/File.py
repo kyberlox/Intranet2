@@ -215,6 +215,7 @@ class File:
             file_path = os.path.join(STORAGE_PATH, unique_name)
 
             #скачать файл по ссылке
+            print(url)
             response = requests.get(url)
             with open(file_path, 'wb') as file:
                 file.write(response.content)

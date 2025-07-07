@@ -988,6 +988,7 @@ class Article:
         data = [
             {
                 "ID" : "342022",
+                "IBLOCK_ID" : "2022",
                 "NAME" : "№1 (2022)",
                 "imge" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-001.jpg",
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-001.pdf",
@@ -996,6 +997,7 @@ class Article:
             },
             {
                 "ID" : "342023",
+                "IBLOCK_ID" : "2023",
                 "NAME" : "№2 (2023)",
                 "imge" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-002.jpg",
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-002.pdf",
@@ -1004,6 +1006,7 @@ class Article:
             },
             {
                 "ID" : "342022",
+                "IBLOCK_ID" : "2024",
                 "NAME" : "№3 (2024)",
                 "imge" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-003.jpg",
                 "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-003.pdf",

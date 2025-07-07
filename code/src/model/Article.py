@@ -1132,6 +1132,7 @@ class Article:
 
 
     def search_by_section_id(self):
+        not_compress = ["25", "175", "34"]
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
             page_view = []
@@ -1152,8 +1153,8 @@ class Article:
 
         elif self.section_id == "112":
             return User().get_new_workers()
-
-        elif self.section_id == "25" or self.section_id == "175":
+                
+        elif self.section_id  in not_compress:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:

@@ -422,8 +422,8 @@ class Article:
         
         #Корпоративная газета ЭМК
         elif self.section_id == 34:
-            img_url = File().upload_by_URL(url=data["image"], art_id=self.id, is_preview=True)
-            file_url = File().upload_by_URL(url=data["file"], art_id=self.id)
+            img_url = File().save_by_URL(url=data["image"], art_id=self.id, is_preview=True)
+            file_url = File().save_by_URL(url=data["file"], art_id=self.id)
             indirect_data = {
                 "year" : data["year"]
             }

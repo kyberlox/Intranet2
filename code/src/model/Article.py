@@ -715,7 +715,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
+        '''
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -907,7 +907,7 @@ class Article:
             42 : ["68", "69"], #Официальные события ❌
             52 : ["68", "69"]  #Корпоративная жизнь в фото ❌
         }
-
+        
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -1024,7 +1024,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-
+        
 
 
         '''самобытные блоки'''

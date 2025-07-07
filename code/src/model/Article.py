@@ -387,7 +387,7 @@ class Article:
 
                         participants.append({
                             "fio" : fio,
-                            "photo" : photo,
+                            "image" : photo,
                             "work_position" : work_position
                         })
 

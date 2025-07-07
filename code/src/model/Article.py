@@ -387,7 +387,7 @@ class Article:
 
                         participants.append({
                             "fio" : fio,
-                            "image" : photo,
+                            "photo_file_url" : photo,
                             "work_position" : work_position
                         })
 
@@ -426,7 +426,7 @@ class Article:
             file_url = File().save_by_URL(url=data["file"], art_id=self.id)
             indirect_data = {
                 "year" : data["year"],
-                "image" : img_url,
+                "photo_file_url" : img_url,
                 "pdf" : file_url,
             }
 
@@ -715,8 +715,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-                
-        '''
+        
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"

@@ -1196,7 +1196,7 @@ class Article:
 
         elif self.section_id == "34":
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
-            sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            sorted_active_aticles = sorted(result, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles
 
         else:

@@ -425,7 +425,7 @@ class Article:
             img_url = File().upload_by_URL(url=data["image"], art_id=self.id, is_preview=True)
             file_url = File().upload_by_URL(url=data["file"], art_id=self.id)
             indirect_data = {
-                "year" = data["year"]
+                "year" : data["year"]
             }
 
         else:

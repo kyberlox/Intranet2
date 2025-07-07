@@ -1005,7 +1005,7 @@ class Article:
                 "DATE_CREATE" : "01.01.2023",
             },
             {
-                "ID" : "342022",
+                "ID" : "342024",
                 "IBLOCK_ID" : "2024",
                 "NAME" : "№3 (2024)",
                 "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-003.jpg",

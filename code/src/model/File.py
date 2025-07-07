@@ -250,7 +250,7 @@ class File:
                     #перезаписываем
                     unique_name = fl["stored_name"]
                     file_path = os.path.join(STORAGE_PATH, unique_name)
-                    response = requests.get(f"https://portal.emk.ru{url}")
+                    response = requests.get(url)
                     with open(file_path, 'wb') as file:
                         file.write(response.content)
                     

@@ -425,7 +425,8 @@ class Article:
             img_url = File().save_by_URL(url=data["image"], art_id=self.id, is_preview=True)
             file_url = File().save_by_URL(url=data["file"], art_id=self.id)
             indirect_data = {
-                "year" : data["year"]
+                "year" : data["year"],
+                "pdf" : file_url,
             }
 
         else:
@@ -1014,6 +1015,7 @@ class Article:
                 "DATE_CREATE" : "01.01.2024",
             }
         ]
+
         for art in data:
             self.section_id = 34 # потом изменить
             artDB = ArticleModel(id=art["ID"], section_id=self.section_id)

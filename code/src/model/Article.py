@@ -1011,7 +1011,7 @@ class Article:
                 "DATE_CREATE" : "2024-01-01",
             }
         ]
-        for gaz in data:
+        for art in data:
             self.section_id = 34 # потом изменить
             artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
             if artDB.need_add():

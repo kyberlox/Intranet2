@@ -6,7 +6,7 @@ from src.base.B24 import B24
 from src.services.Auth import AuthService
 from src.model.User import User
 
-
+import json
 
 
 def take_value(PROPERTY):
@@ -69,7 +69,7 @@ class Idea:
         self.user = AuthService().get_user_by_seesion_id(session_id)
 
         if self.user is not None:
-            print(self.user)
+            print(json.dump(self.user))
             self.user_uuid = self.user["user_uuid"]
             self.username = self.user["username"]
 

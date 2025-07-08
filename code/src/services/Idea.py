@@ -38,10 +38,10 @@ class Idea:
                     val = idea[prop]
                 cool_idea[key] = val
             valid_staus = {
-                "" : "",
-                "" : "",
-                "" : "",
-                "" : "",
+                "909" : "На экспертизе",
+                "910" : "В работе",
+                "912" : "Реализовано",
+                "913" : "Отказано",
             }
             cool_idea["status"] = valid_staus[cool_idea["status"]]
             ideas.append(cool_idea)

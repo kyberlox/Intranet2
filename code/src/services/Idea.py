@@ -7,6 +7,13 @@ from src.services.Auth import AuthService
 
 
 
+def take_value(PROPERTY):
+    if type(PROPERTY) == type(dict()):
+        return list(PROPERTY.values())[0]
+    elif type(PROPERTY) == type(list()):
+        return PROPERTY[0]
+    else:
+        return None
 
 class Idea:
     def __init__(self, user_id=None, user_uuid=None):
@@ -35,7 +42,7 @@ class Idea:
                 val = None
                 if prop in idea:
                     key = prop_keys[prop]
-                    val = idea[prop]
+                    val = take_value(idea[prop])
                 cool_idea[key] = val
             
             #валидирую статус идеи

@@ -12,6 +12,8 @@ class Idea:
     def __init__(self, user_id=None, user_uuid=None):
         #беру идеи из битры
         b24_ideas = Article(section_id=121).get_inf()
+
+        ideas = []
         #каждую идею
         for idea in self.b24_ideas:
             #проебразую по шаблону с нормальными ключами
@@ -19,8 +21,19 @@ class Idea:
             prop_keys = {
                 "" : ""
             }
-            ideas = []
+
+            cool_idea = dict()
             for prop in prop_keys.keys():
+                
+                val = None
+                if prop in idea:
+                    key = prop_keys[prop]
+                    val = idea[prop]
+                cool_idea[key] = val
+            
+            ideas.append(cool_idea)
+            
+
 
         self.ideas = ideas
         self.user_uuid = None

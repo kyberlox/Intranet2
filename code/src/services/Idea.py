@@ -74,6 +74,7 @@ class Idea:
 
             #получить и вывести его id
             user_inf = User(uuid = self.user_uuid).user_inf_by_uuid()
+            print(user_inf)
             return user_inf["id"]
         return None
         

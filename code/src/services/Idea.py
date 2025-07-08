@@ -66,11 +66,9 @@ class Idea:
         self.username = None
 
     def get_user(self, session_id):
-        self.user = AuthService().get_user_by_seesion_id(session_id)
+        self.user = dict(AuthService().get_user_by_seesion_id(session_id))
 
         if self.user is not None:
-            print(dict(self.user))
-            print(json.load(str(self.user)))
             self.user_uuid = self.user["user_uuid"]
             self.username = self.user["username"]
 

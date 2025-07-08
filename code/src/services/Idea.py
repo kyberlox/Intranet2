@@ -10,8 +10,19 @@ from src.service.Auth import AuthService
 
 class Idea:
     def __init__(self, user_id=None, user_uuid=None):
+        #беру идеи из битры
         b24_ideas = Article(section_id=121).get_inf()
-        
+        #каждую идею
+        for idea in self.b24_ideas:
+            #проебразую по шаблону с нормальными ключами
+            id = idea["ID"]
+            prop_keys = {
+                "" : ""
+            }
+            ideas = []
+            for prop in prop_keys.keys():
+
+        self.ideas = ideas
         self.user_uuid = None
         self.username = None
 
@@ -21,3 +32,5 @@ class Idea:
         if self.user is not None:
             self.user_uuid = self.user["user_uuid"]
             self.username = self.user["username"]
+        
+

@@ -17,9 +17,18 @@ class Idea:
         #каждую идею
         for idea in self.b24_ideas:
             #проебразую по шаблону с нормальными ключами
-            id = idea["ID"]
             prop_keys = {
-                "" : ""
+                "ID" : "id",
+                "NAME" : "name",
+                "CREATED_BY" : "user_id",
+                "CREATED_USER_NAME" : "username",
+                "DETAIL_TEXT" : "content",
+                "DATE_CREATE" : "date_create",
+                
+                "ID" : "id",
+                "ID" : "id",
+                "ID" : "id",
+                "ID" : "id",
             }
 
             cool_idea = dict()
@@ -32,7 +41,7 @@ class Idea:
                 cool_idea[key] = val
             
             ideas.append(cool_idea)
-            
+
 
 
         self.ideas = ideas
@@ -45,5 +54,17 @@ class Idea:
         if self.user is not None:
             self.user_uuid = self.user["user_uuid"]
             self.username = self.user["username"]
-        
 
+            #получить и вывести его id 
+        return None
+        
+    def get_ideas(self, session_id):
+        user_id = self.get_user(session_id)
+        if user_id is not None:
+            result = []
+            for idea in self.ideas:
+                if str(idea['user_id']) == str(user_id):
+                    result.append(idea)
+            return result
+        else:
+            return {'err' : "AuthCheckError!"}

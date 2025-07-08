@@ -75,7 +75,7 @@ class Idea:
             #получить и вывести его id
             user_inf = User(uuid = self.user_uuid).user_inf_by_uuid()
             print(user_inf)
-            return user_inf["id"]
+            return user_inf["ID"]
         return None
         
     def get_ideas(self, session_id):

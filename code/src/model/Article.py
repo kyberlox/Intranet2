@@ -8,6 +8,7 @@ from src.model.Section import Section
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
 from src.base.pSQLmodels import ViewsModel
+from src.services.Idea import Idea
 
 import re
 import json
@@ -15,7 +16,7 @@ import datetime
 import asyncio
 import types
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Request
 
 article_router = APIRouter(prefix="/article", tags=["Статьи"])
 
@@ -1136,7 +1137,7 @@ class Article:
         
 
 
-    def search_by_section_id(self):
+    def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
             page_view = []
@@ -1693,7 +1694,7 @@ def get_article(ID):
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
-def get_articles(section_id):
+def get_articles(section_id, request: Request):
     return Article(section_id = section_id).search_by_section_id()
 
 # поиск по статьям еластик

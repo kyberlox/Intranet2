@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
 from src.base.B24 import B24
-from src.service.Auth import AuthService
+from src.services.Auth import AuthService
 
 
 

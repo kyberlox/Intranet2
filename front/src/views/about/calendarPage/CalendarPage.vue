@@ -77,8 +77,8 @@ import { monthesInit } from '@/assets/static/monthes';
 import type { ICalendar } from '@/interfaces/ICalendar';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
 import Api from '@/utils/Api';
-import { dateConvert } from '@/utils/dateConvert';
-import router from '@/router';
+import { getMonth, formatDateNoTime } from '@/utils/dateConvert';
+import { useViewsDataStore } from '@/stores/viewsData';
 
 export default defineComponent({
     components: {
@@ -90,34 +90,37 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const years = Object.keys([]);
+        const router = useRouter();
         const currentYear = new Date().getFullYear();
         const currentEvents = ref();
         const visibleMonthes = ref(monthesInit);
-        const router = useRouter();
+        const yearSelect = ref(new Date().getFullYear());
+        const years = Object.keys([]);
+
+        const date = ref('');
+
+        const chosenMonth = ref();
 
         onMounted(() => {
             fetch(`https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from=${currentYear}-01-01&to=${currentYear}-12-31`)
                 .then((resp) => resp.json())
                 .then((data) => {
                     currentEvents.value = data.result;
+                    useViewsDataStore().setData(data.result, 'calendarData');
                 });
         })
 
-        const checkButtonStatus = (event: ICalendarEntity) => {
+        const checkButtonStatus = (event: ICalendar) => {
             if (event.DATE_FROM && event.ID) {
                 return 'Подробнее'
             }
             else
                 return false
         }
-        const yearSelect = ref(new Date().getFullYear());
-
-        const date = ref('');
-
-        const chosenMonth = ref();
 
         watch((props), (newVal) => {
+            console.log(newVal);
+
             if (newVal.monthId && chosenMonth.value) {
                 chosenMonth.value.map((e: HTMLElement) => {
                     if (e.getAttribute('data-month-num') == props.monthId) {
@@ -127,14 +130,6 @@ export default defineComponent({
                 })
             }
         })
-
-        const getMonth = (date: string) => {
-            return date.split('.')[1];
-        }
-
-        const formatDateNoTime = (date: string) => {
-            return date.split(' ')[0];
-        }
 
         const getEventFromMonth = (monthNum: string) => {
             const monthEvents = currentEvents.value.filter((e) => {
@@ -226,10 +221,8 @@ export default defineComponent({
     color: var(--emk-brand-color);
 }
 
-
 .calendarYear__event-btn--ovk {
     border: 1px solid #00b38c;
-
 
     &:hover {
         background: #00b38c;

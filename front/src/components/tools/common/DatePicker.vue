@@ -25,7 +25,7 @@ export default defineComponent({
         nullifyDateInput: {
             type: Boolean,
             default: false
-        }
+        },
     },
     setup(props, { emit }) {
         const dateInput = ref();

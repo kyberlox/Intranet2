@@ -15,4 +15,13 @@ export const dateConvert = (dateString: string, convertType: 'toStringType' | 't
 
         return `${day}.${month}.${year}`;
     }
+    else return ''
+}
+
+export const getMonth = (date: string) => {
+    return date.split('.')[1];
+}
+
+export const formatDateNoTime = (date: string) => {
+    return date.split(' ')[0];
 }

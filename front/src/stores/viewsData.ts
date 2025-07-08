@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem, IOurPeople, IVideoInterview, IVideoReports, ICorpNews, IOfficialEvents, IPartnerBonus } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
+import type { ICalendar } from "@/interfaces/ICalendar";
 
 interface DataState {
     homeData: MainPageCards,
@@ -15,7 +16,7 @@ interface DataState {
     corpNewsData: ICorpNews[],
     officialEventsData: IOfficialEvents[],
     partnerBonusData: IPartnerBonus[],
-
+    calendarData: ICalendar[]
     // yearResultsData: any[];
     // blogsData: any[];
     // gazettesData: any[],
@@ -27,19 +28,20 @@ export const useViewsDataStore = defineStore('viewsData', {
     state: (): DataState => ({
         homeData: [],
         ourPeopleData: [],
-        // yearResultsData: [],
-        // blogsData: [],
         videoInterviewsData: [],
         actualNewsData: [],
         corpNewsData: [],
         videoReportsData: [],
-        // gazettesData: any[],
         officialEventsData: [],
         corpEventsData: [],
         corpLifeData: [],
         afishaData: [],
         partnerBonusData: [],
         careData: [],
+        calendarData: []
+        // yearResultsData: [],
+        // blogsData: [],
+        // gazettesData: any[],
     }),
 
     actions: {

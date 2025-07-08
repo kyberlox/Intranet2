@@ -4,6 +4,8 @@ from fastapi.security import OAuth2PasswordBearer
 
 from src.base.B24 import B24
 from src.services.Auth import AuthService
+from src.model.User import User
+
 
 
 
@@ -71,6 +73,8 @@ class Idea:
             self.username = self.user["username"]
 
             #получить и вывести его id
+            user_inf = User(uuid = self.user_uuid).user_inf_by_uuid()
+            return user_inf.id
         return None
         
     def get_ideas(self, session_id):

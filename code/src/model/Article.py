@@ -1203,6 +1203,14 @@ class Article:
             sorted_active_aticles = sorted(result, key=lambda x: x['id'], reverse=True)
             return sorted_active_aticles
 
+        elif self.section_id == "8": #Есть Идея
+            ideas = Idea().get_ideas(session_id)
+            if ideas is not None:
+                sorted_active_aticles = sorted(ideas, key=lambda x: x['number'], reverse=False)
+                return sorted_active_aticles
+            else:
+                return {"err" : "Auth Err"}
+                
         else:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()

@@ -37,13 +37,17 @@ class Idea:
                     key = prop_keys[prop]
                     val = idea[prop]
                 cool_idea[key] = val
+            
+            #валидирую статус идеи
             valid_staus = {
+                None : None,
                 "909" : "На экспертизе",
                 "910" : "В работе",
                 "912" : "Реализовано",
                 "913" : "Отказано",
             }
             cool_idea["status"] = valid_staus[cool_idea["status"]]
+            #сохраняю
             ideas.append(cool_idea)
 
 
@@ -71,4 +75,4 @@ class Idea:
                     result.append(idea)
             return result
         else:
-            return {'err' : "AuthCheckError!"}
+            return None

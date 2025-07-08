@@ -23,12 +23,10 @@ class Idea:
                 "CREATED_BY" : "user_id",
                 "CREATED_USER_NAME" : "username",
                 "DETAIL_TEXT" : "content",
+                "DETAIL_TEXT_TYPE" : "content_type",
                 "DATE_CREATE" : "date_create",
-                
-                "ID" : "id",
-                "ID" : "id",
-                "ID" : "id",
-                "ID" : "id",
+                "PROPERTY_1049" : "number",
+                "PROPERTY_1117" : "status",
             }
 
             cool_idea = dict()
@@ -39,7 +37,13 @@ class Idea:
                     key = prop_keys[prop]
                     val = idea[prop]
                 cool_idea[key] = val
-            
+            valid_staus = {
+                "" : "",
+                "" : "",
+                "" : "",
+                "" : "",
+            }
+            cool_idea["status"] = valid_staus[cool_idea["status"]]
             ideas.append(cool_idea)
 
 
@@ -55,7 +59,7 @@ class Idea:
             self.user_uuid = self.user["user_uuid"]
             self.username = self.user["username"]
 
-            #получить и вывести его id 
+            #получить и вывести его id
         return None
         
     def get_ideas(self, session_id):

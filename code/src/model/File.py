@@ -202,6 +202,64 @@ class File:
                     return f"http://intranet.emk.org.ru{new_url}"
                     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    def save_by_URL(self, url, art_id, b24_id = None, is_preview = False):
+        filename = url.split("/")[-1]
+        
+        filename_parts = filename.split('.')
+        file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+
+        #тут надо проверить, нет ли такого файла уже в БД?
+        if self.need_update_url_file(art_id, filename):
+            # Генерируем уникальное имя файла
+            unique_name = str(ObjectId()) + file_ext
+            file_path = os.path.join(STORAGE_PATH, unique_name)
+
+            #скачать файл по ссылке
+            print(url)
+            response = requests.get(url)
+            with open(file_path, 'wb') as file:
+                file.write(response.content)
+            
+            content_type = response.headers.get('Content-Type', 'unknown')
+
+            result = {
+                        "original_name": filename,
+                        "stored_name": unique_name,
+                        "content_type": content_type,
+                        "article_id": art_id,
+                        "b24_id": self.b24_id,
+                        "is_archive": False,
+                        "is_preview": is_preview,
+                        "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                    }
+            
+            #записать в mongodb
+            inserted_id = FileModel().add(result)
+
+            new_url = result["file_url"]
+
+            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            return f"http://intranet.emk.org.ru{new_url}"
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+        else: #надо заменить
+            self.art_id = art_id
+            files = self.get_files_by_art_id()
+            for fl in files:
+                if fl["original_name"] == filename:
+                    #перезаписываем
+                    unique_name = fl["stored_name"]
+                    file_path = os.path.join(STORAGE_PATH, unique_name)
+                    response = requests.get(url)
+                    with open(file_path, 'wb') as file:
+                        file.write(response.content)
+                    
+                    new_url = fl["file_url"]
+
+                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    return f"http://intranet.emk.org.ru{new_url}"
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
         result = FileModel(art_id=art_id).find_all_by_art_id()

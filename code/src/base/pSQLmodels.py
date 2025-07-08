@@ -366,7 +366,76 @@ class UserModel():
             return result
 
         else:
-            return LogsMaker().warning_message("Invalid user id")
+            LogsMaker().warning_message("Invalid user id")
+            '''
+            user_not_found = {
+                "id": 9999999,
+                "uuid": "",
+                "active": True,
+                "name": "Не",
+                "last_name": "Пользователь",
+                "second_name": "Найден",
+                "email": "",
+                "personal_mobile": "",
+                "uf_phone_inner": "",
+                "personal_city": "",
+                "personal_gender": "M",
+                "personal_birthday": "2025-07-04T04:00:00",
+                "photo_file_id": None,
+                "photo_file_url": None,
+                "photo_file_b24_url": None,
+                "indirect_data": {
+                    "id": 2375,
+                    "title": "",
+                    "work_fax": "",
+                    "work_www": "",
+                    "work_zip": "",
+                    "is_online": "N",
+                    "time_zone": "Europe/Saratov",
+                    "user_type": "employee",
+                    "work_city": "",
+                    "last_login": "",
+                    "work_notes": "",
+                    "work_pager": "",
+                    "work_phone": "",
+                    "work_state": "",
+                    "timestamp_x": {},
+                    "work_street": "",
+                    "personal_fax": "",
+                    "personal_icq": "",
+                    "personal_www": "",
+                    "personal_zip": "",
+                    "work_company": "",
+                    "work_country": "0",
+                    "work_mailbox": "",
+                    "work_profile": "",
+                    "date_register": "",
+                    "uf_department": [],
+                    "work_position": "Не определено",
+                    "personal_notes": "",
+                    "personal_pager": "",
+                    "personal_phone": "",
+                    "personal_photo": "",
+                    "personal_state": "",
+                    "personal_street": "",
+                    "work_department": "",
+                    "personal_country": "0",
+                    "personal_mailbox": "",
+                    "time_zone_offset": "0",
+                    "last_activity_date": {},
+                    "uf_employment_date": "",
+                    "personal_profession": "",
+                    "uf_usr_1586854037086": "",
+                    "uf_usr_1586861567149": "",
+                    "uf_usr_1594879216192": "",
+                    "uf_usr_1679387413613": [],
+                    "uf_usr_1696592324977": [""],
+                    "uf_usr_1705744824758": [""],
+                    "uf_usr_1707225966581": False
+                }
+            }
+            '''
+            return None
 
     def find_by_uuid(self):
         user = self.db.query(self.user).filter(self.user.uuid == self.id).one()

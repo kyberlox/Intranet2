@@ -337,8 +337,8 @@ class Article:
             
             indirect_data = dict_to_indirect_data(data, property_dict)
 
-        #Учебный центр
-        elif self.section_id == 17:
+        #Учебный центр (Литература)
+        elif self.section_id == 175:
             property_dict = {
                 "PROPERTY_489" : "subsection_id",
                 "PROPERTY_488" : "author"
@@ -359,6 +359,77 @@ class Article:
             }
             indirect_data["subsection"] = values_dict[subsection_id]
 
+        #Учебный центр (Тренинги)
+        elif self.section_id == 172:
+            
+            if "PROPERTY_371" in data:
+                content = data["PROPERTY_371"][0]["TEXT"]
+                content_type = data["PROPERTY_371"][0]["TYPE"]
+
+            property_dict = {
+                "PROPERTY_369" : "event_date",
+                "PROPERTY_437" : "author",
+                "PROPERTY_432" : "participants"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+            participants = []
+            if "participants" in indirect_data:
+                for user_uuid in indirect_data["participants"]:
+                    user = User(id=user_uuid).search_by_id()
+                    if user is not None:
+                        last_name = user['last_name']
+                        name = user['name']
+                        second_name = user['second_name']
+
+                        fio = f"{last_name} {name} {second_name}"
+                        photo = user["photo_file_url"]
+                        work_position = user["indirect_data"]["work_position"]
+
+                        participants.append({
+                            "fio" : fio,
+                            "photo_file_url" : photo,
+                            "work_position" : work_position
+                        })
+
+
+
+            reviews_props = data["reviews"]
+            reviews = []
+            if reviews_props != []:
+                for feedback_props in reviews_props:
+                    text = ""
+                    if "PROPERTY_486" in feedback_props:
+                        text = list(feedback_props["PROPERTY_486"].values())[0]["TEXT"]
+                    
+                    name = "",
+                    if "NAME" in feedback_props:
+                        name = feedback_props["NAME"]
+                    
+                    stars = "",
+                    if "PROPERTY_501" in feedback_props:
+                        stars = list(feedback_props["PROPERTY_501"].values())[0]
+                        print(feedback_props["PROPERTY_501"], stars)
+
+                    feedback = {
+                        "reviewer" : name,
+                        "text" : text,
+                        "stars" : stars,
+                    }
+                    reviews.append(feedback)
+
+            indirect_data["reviews"] = reviews
+            indirect_data["participants"] = participants
+        
+        #Корпоративная газета ЭМК
+        elif self.section_id == 34:
+            img_url = File().save_by_URL(url=data["image"], art_id=self.id, is_preview=True)
+            file_url = File().save_by_URL(url=data["file"], art_id=self.id)
+            indirect_data = {
+                "year" : data["year"],
+                "photo_file_url" : img_url,
+                "pdf" : file_url,
+            }
 
         else:
             indirect_data = json.dumps(data)
@@ -451,7 +522,6 @@ class Article:
             "PROPERTY_498",
             "PREVIEW_PICTURE",
             "PROPERTY_356",
-            "PROPERTY_1023",
         ]
         
         # находим файлы статьи
@@ -465,8 +535,8 @@ class Article:
                 # if art_id == 12221:
                 #     print(data, art_id)
 
-                #обрабатываются днфолтным методом битры
-                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678"]:
+                #обрабатываются дефолтным методом битры
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
                     need_all_method = False
                 try:
                     # выцепить id файла
@@ -566,7 +636,7 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            #13 : "149", # Наши люди ✔️
+            13 : "149", # Наши люди ✔️
             #14 : "123", #Доска почёта ☑️
             16 : "122", # Видеоитервью ✔️
             
@@ -576,7 +646,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
-            17 : "60" #Учебный центр (Литература) ☑️ ♻️
+            #175 : "60" #Учебный центр (Литература) ✔️
         }
         
 
@@ -607,8 +677,46 @@ class Article:
         sec_inf = {
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
-            41 : ["98", "78", "84"] #Гид по предприятиям ♻️ сделать сервис
+            #41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
+            172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
         }
+
+        
+        #Учебный центр (Проведённые тренинги)
+        self.section_id = "61"
+        sec_inf_title = self.get_inf()
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
+            title_id = title_inf["ID"]
+            title_data = title_inf
+
+            data = dict()
+
+            #добавить все данные статьи
+            for key in title_data:
+                data[key] = title_data[key]
+            
+            data["ID"] = title_data["ID"]
+            data["TITLE"] = title_data["NAME"]
+            print(data["ID"])
+            data["reviews"] = []
+
+            # пройти по инфоблоку тренингов
+            self.section_id = "83"
+            sec_inf_data = self.get_inf()
+            for data_inf in sec_inf_data:
+                #если эта статья принадлежит иинфоблоку
+                if "PROPERTY_484" in data_inf and take_value(data_inf["PROPERTY_484"]) == title_id:
+                    #добавить отзывы
+                    data["reviews"].append(data_inf)
+
+            #загрузить данные в таблицу
+            data["section_id"] = 172
+            self.section_id = 172
+            artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(data)
+            elif artDB.update(self.make_valid_article(data)):
+                pass
         '''
         #Блоги
         #пройти по инфоблоку заголовков
@@ -702,9 +810,6 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
-        
-        '''
 
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
@@ -744,6 +849,8 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         '''
+
+
 
         '''
         #несколько section_id - один IBLOCK_ID
@@ -802,7 +909,7 @@ class Article:
             42 : ["68", "69"], #Официальные события ❌
             52 : ["68", "69"]  #Корпоративная жизнь в фото ❌
         }
-
+        
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -881,13 +988,54 @@ class Article:
                 pass
         '''
 
+        #Корпоративная газета
+        data = [
+            {
+                "ID" : "342022",
+                "IBLOCK_ID" : "2022",
+                "NAME" : "№1 (2022)",
+                "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-001.jpg",
+                "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-001.pdf",
+                "year" : "2022",
+                "DATE_CREATE" : "01.01.2022",
+            },
+            {
+                "ID" : "342023",
+                "IBLOCK_ID" : "2023",
+                "NAME" : "№2 (2023)",
+                "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-002.jpg",
+                "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-002.pdf",
+                "year" : "2023",
+                "DATE_CREATE" : "01.01.2023",
+            },
+            {
+                "ID" : "342024",
+                "IBLOCK_ID" : "2024",
+                "NAME" : "№3 (2024)",
+                "image" : "https://portal.emk.ru/intranet/news/gazeta/img/emk-003.jpg",
+                "file" : "https://portal.emk.ru/intranet/news/gazeta/pdf/emk-003.pdf",
+                "year" : "2024",
+                "DATE_CREATE" : "01.01.2024",
+            }
+        ]
+
+        for art in data:
+            self.section_id = 34 # потом изменить
+            artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(art)
+            elif artDB.update(self.make_valid_article(art)):
+                pass
+        
+
+
         '''самобытные блоки'''
         # полная статика
             # 11 Наша компания -> Наша компания ✔️
             # 12 История компании -> История компании ✔️
 
             # 110 Техника безопасности -> Техника безопасности ✔️
-            # 33 Корпоративная газета ЭМК -> газеты ❌
+            # 34 Корпоративная газета ЭМК -> газеты ❌
             # 41 Гид по предприятиям -> 3D тур ❌
 
         #переделки
@@ -1007,8 +1155,10 @@ class Article:
 
         elif self.section_id == "112":
             return User().get_new_workers()
+        
 
-        elif self.section_id == "25" or self.section_id == "17":
+        
+        elif self.section_id == "25" or self.section_id == "175":
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
@@ -1045,6 +1195,11 @@ class Article:
                     active_articles.append(res)
             
             return sorted(active_articles, key=lambda x: x['id'], reverse=True)
+
+        elif self.section_id == "34":
+            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            sorted_active_aticles = sorted(result, key=lambda x: x['id'], reverse=True)
+            return sorted_active_aticles
 
         else:
             active_articles = []

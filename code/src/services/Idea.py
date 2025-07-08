@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
-from src.model.Article import Article
+from src.base.B24 import B24
 from src.service.Auth import AuthService
 
 
@@ -11,7 +11,7 @@ from src.service.Auth import AuthService
 class Idea:
     def __init__(self, user_id=None, user_uuid=None):
         #беру идеи из битры
-        b24_ideas = Article(section_id=121).get_inf()
+        b24_ideas = B24().getInfoBlock(121)
 
         ideas = []
         #каждую идею

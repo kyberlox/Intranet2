@@ -176,8 +176,8 @@ def elastic_dump():
     return res
 
 @app.get("/api/full_search/{keyword}")
-def elastic_search(keyword: str):
-    return search_everywhere(keyword)
+def elastic_search(keyword: str, size_res: int = 20):
+    return search_everywhere(key_word=keyword, size_res=size_res)
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")
 def find(inf_id, art_id, property):

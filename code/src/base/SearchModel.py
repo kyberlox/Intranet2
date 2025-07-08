@@ -10,6 +10,8 @@ from src.model.File import File
 
 import json
 
+from typing import Optional
+
 from fastapi import APIRouter, Body
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
@@ -43,6 +45,14 @@ class UserSearchModel:
                             "filter": [
                                 "lowercase"
                             ]
+                        },
+                        "GOD_PLEASE_FUZZY_V2": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase",
+                                "ru_stemming"
+                            ]
                         }
                     },
                     "filter": {
@@ -57,26 +67,29 @@ class UserSearchModel:
                         "myngram": {
                             "type": "edge_ngram",
                             "min_gram": 2,
-                            "max_gram": 20
+                            "max_gram": 7
                         }
                     }
                 },
-                "max_ngram_diff": "20"
+                "max_ngram_diff": "7"
             },
             "mappings": {
                 "properties": {
                     "user_fio": {
                         "type": "text",
-                        "analyzer": "GOD_PLEASE",
+                        "analyzer": "GOD_PLEASE_FUZZY_V2",
                         "fields": {
                             "fuzzy": {
                                 "type": "text",
-                                "analyzer": "GOD_PLEASE_FUZZY"
+                                "analyzer": "GOD_PLEASE"
                             }
                         }
                     },
                     "email": {
-                        "type": "text"
+                        "type": "text",
+                        "fields": {
+                            "keyword": { "type": "keyword" }
+                        }
                     },
                     "phone": {
                         "type": "integer"
@@ -93,13 +106,81 @@ class UserSearchModel:
                     "work_phone": {
                         "type": "integer"
                     },
+                    "photo_file_id": {
+                        "type": "text"
+                    },
                     "indirect_data": {
                         "type": "nested",
-                        "dynamic": "true"
-                    },
-                    "usr_photo": {
-                        "type": "text"
+                        "dynamic": "true",
+                        "properties": {
+                            "work_position": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY_V2",
+                                "fields": {
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE"
+                                    }
+                                }
+                            },
+                            "uf_usr_1696592324977": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY_V2",
+                                "fields": {
+                                    "keyword": { "type": "keyword" },
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE"
+                                    }
+                                }
+                            },
+                            "uf_usr_1705744824758": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY_V2",
+                                "fields": {
+                                    "keyword": { "type": "keyword" },
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE"
+                                    }
+                                }
+                            },
+                            "uf_usr_1707225966581": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY_V2",
+                                "fields": {
+                                    "keyword": { "type": "keyword" },
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE"
+                                    }
+                                }
+                            },
+                            "uf_usr_1586853958167": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY_V2",
+                                "fields": {
+                                    "keyword": { "type": "keyword" },
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE"
+                                    }
+                                }
+                            },
+                            "uf_usr_department_main": {
+                                "type": "text",
+                                "analyzer": "GOD_PLEASE_FUZZY_V2",
+                                "fields": {
+                                    "keyword": { "type": "keyword" },
+                                    "fuzzy": {
+                                        "type": "text",
+                                        "analyzer": "GOD_PLEASE"
+                                    }
+                                }
+                            }
+                        }
                     }
+
                 },
                 "dynamic_templates": [
                     {
@@ -144,6 +225,7 @@ class UserSearchModel:
                 ]
             }
         }
+        
 
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
@@ -188,63 +270,239 @@ class UserSearchModel:
 
         return {"status": True}
 
-    def search_by_name(self, name):
-        res = elastic_client.search(
-            index='user',
-            query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "user_fio": {
-                                    "query": name,
-                                    # "boost": 2  
-                                }
-                            }
-                        },
-                        {
-                            "match": {
-                                "user_fio.fuzzy": {
-                                    "query": name,
-                                    "fuzziness": "AUTO",
-                                    # "prefix_length": 2,  
-                                    # "boost": 1
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            size=1000
-        )
+    # def search_by_name(self, name):
+    #     res = elastic_client.search(
+    #         index='user',
+    #         query={
+    #             "bool": {
+    #                 "should": [
+    #                     {
+    #                         "match": {
+    #                             "user_fio": {
+    #                                 "query": name,
+    #                                 # "boost": 2  
+    #                             }
+    #                         }
+    #                     },
+    #                     {
+    #                         "match": {
+    #                             "user_fio.fuzzy": {
+    #                                 "query": name,
+    #                                 "fuzziness": "AUTO",
+    #                                 # "prefix_length": 2,  
+    #                                 # "boost": 1
+    #                             }
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         },
+    #         size=1000
+    #     )
 
-        return res['hits']['hits']
+    #     return res['hits']['hits']
 
-    def search_model(self, jsn):
-        res = elastic_client.search(
-            index=self.index,
-            query=jsn
-            )
-        return res['hits']['hits']
+    # def search_model(self, jsn):
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         query=jsn
+    #         )
+    #     return res['hits']['hits']
     
-    def search_indirect(self, key_word):
+    # def search_indirect(self, key_word):
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         query={
+    #             "nested": {
+    #                 "path": "indirect_data",
+    #                 "query": {
+    #                     "bool": {
+    #                         "should": [
+    #                             {"match": {"indirect_data.work_position": key_word}},
+    #                             {"match": {"indirect_data.uf_usr_1705744824758": key_word}}
+    #                         ]
+    #                     }
+    #                 }
+    #             }
+    #         }
+    #     )
+    #     return res['hits']['hits']
+
+    def elasticsearch_users(self, key_word, size_res):
+        result = []
         res = elastic_client.search(
             index=self.index,
-            query={
-                "nested": {
-                    "path": "indirect_data",
-                    "query": {
-                        "bool": {
-                            "should": [
-                                {"match": {"indirect_data.work_position": key_word}},
-                                {"match": {"indirect_data.uf_usr_1705744824758": key_word}}
-                            ]
-                        }
+            body={
+                "query": {
+                    "bool": {
+                        "should": [
+                            {
+                                "bool": {
+                                    "should": [
+                                        {"match_phrase": {"user_fio": {"query": key_word, "boost": 10}}},
+                                        {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
+                                        {
+                                            "nested": {
+                                                "path": "indirect_data",
+                                                "query": {
+                                                    "bool": {
+                                                        "should": [
+                                                            {"match_phrase": {"indirect_data.work_position": {"query": key_word, "boost": 5}}},
+                                                            {"match_phrase": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5}}},
+                                                            {"match_phrase": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5}}},
+                                                            {"match_phrase": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5}}},
+                                                            {"match_phrase": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5}}},
+                                                            {"match_phrase": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5}}},
+                                                            {"match_phrase": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5}}}
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "_name": "true_search"
+                                }
+                            },
+                            {
+                                "multi_match": {
+                                    "query": key_word,
+                                    "fields": ["user_fio.fuzzy"],
+                                    "fuzziness": "AUTO",
+                                    "boost": 2  
+                                }
+                            },
+                            {
+                                "nested": {
+                                    "path": "indirect_data",
+                                    "query": {
+                                        "multi_match": {
+                                            "query": key_word,
+                                            "fields": [
+                                                "indirect_data.work_position.fuzzy",
+                                                "indirect_data.uf_usr_1705744824758.fuzzy",
+                                                "indirect_data.uf_usr_1707225966581.fuzzy",
+                                                "indirect_data.uf_usr_1696592324977.fuzzy",
+                                                "indirect_data.uf_usr_1586853958167.fuzzy",
+                                                "indirect_data.uf_usr_department_main.fuzzy",
+                                                "indirect_data.uf_usr_1586854037086.fuzzy"
+                                            ],
+                                            "fuzziness": "AUTO",
+                                            "boost": 1
+                                        }
+                                    },
+                                    "score_mode": "max"
+                                }
+                            }
+                        ]
                     }
-                }
+                },
+                "size": size_res
             }
         )
-        return res['hits']['hits']
+        users = []
+        true_search_flag = False
+        
+        for res_info in res['hits']['hits']:
+            if "matched_queries" in res_info.keys():
+                true_search_flag = True
+            #print(res_info)
+            user_info = {}
+            user_info['name'] = res_info["_source"]["user_fio"]
+            user_info['href'] = "userPage"
+            user_info['id'] = int(res_info["_id"])
+            user_info['image'] = res_info["_source"]["photo_file_id"]
+            users.append(user_info)
+        
+        sec_user = {}
+        sec_user['section'] = 'Пользователи'
+        if true_search_flag is False:
+            sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
+        sec_user['content'] = users
+        result.append(sec_user)
+        return result  #result  res['hits']['hits'] 
+
+    # def elasticsearch_users(self, key_word, size_res):
+    #     result = []
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         body={
+    #             "query": {
+    #                 "bool": {
+    #                     "should": [
+
+    #                         # точный поиск
+    #                         {"match_phrase": {"user_fio": {"query": key_word, "boost": 10, "_name": "true_search"}}}, 
+    #                         {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
+    #                         {
+    #                             "nested": {
+    #                                 "path": "indirect_data",
+    #                                 "query": {
+    #                                     "bool": {
+    #                                         "should": [
+    #                                             {"match_phrase": {"indirect_data.work_position": {"query": key_word, "boost": 5, "_name": "true_search"}}},
+    #                                             {"match_phrase": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5, "_name": "true_search"}}},
+    #                                             {"match_phrase": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5, "_name": "true_search"}}},
+    #                                             {"match_phrase": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5, "_name": "true_search"}}},
+    #                                             {"match_phrase": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5, "_name": "true_search"}}},
+    #                                             {"match_phrase": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5, "_name": "true_search"}}},
+    #                                             {"match_phrase": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5, "_name": "true_search"}}}
+    #                                         ]
+    #                                     }
+    #                                 }
+    #                             }
+    #                         },
+
+    #                         #неточный поиск
+    #                         {"multi_match": {"query": key_word, "fields": ["user_fio.fuzzy"], "fuzziness": "AUTO", "boost": 2, "_name": "search"}},
+    #                         {
+    #                             "nested": {
+    #                                 "path": "indirect_data",
+    #                                 "query": {
+    #                                     "multi_match": {
+    #                                         "query": key_word,
+    #                                         "fields": [
+    #                                             "indirect_data.work_position.fuzzy",
+    #                                             "indirect_data.uf_usr_1705744824758.fuzzy",
+    #                                             "indirect_data.uf_usr_1707225966581.fuzzy",
+    #                                             "indirect_data.uf_usr_1696592324977.fuzzy",
+    #                                             "indirect_data.uf_usr_1586853958167.fuzzy",
+    #                                             "indirect_data.uf_usr_department_main.fuzzy",
+    #                                             "indirect_data.uf_usr_1586854037086.fuzzy"
+    #                                         ],
+    #                                         "fuzziness": "AUTO",
+    #                                         "boost": 1
+    #                                     }
+    #                                 },
+    #                                 "score_mode": "max"
+    #                             }
+    #                         }
+    #                     ]
+    #                 }
+    #             },
+    #             "size": size_res
+    #         }
+    #     )
+    #     users = []
+    #     true_search_flag = False
+        
+    #     for res_info in res['hits']['hits']:
+    #         if "matched_queries" in res_info.keys():
+    #             true_search_flag = True
+    #         #print(res_info)
+    #         user_info = {}
+    #         user_info['name'] = res_info["_source"]["user_fio"]
+    #         user_info['href'] = "userPage"
+    #         user_info['id'] = int(res_info["_id"])
+    #         user_info['image'] = res_info["_source"]["photo_file_id"]
+    #         users.append(user_info)
+        
+    #     sec_user = {}
+    #     sec_user['section'] = 'Пользователи'
+    #     if true_search_flag is False:
+    #         sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
+    #     sec_user['content'] = users
+    #     result.append(sec_user)
+    #     return res['hits']['hits'] #result  res['hits']['hits'] 
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
@@ -513,14 +771,25 @@ class ArticleSearchModel:
                             "filter": [
                                 "lowercase",
                                 "ru_stop",
-                                "ru_stemming"
+                                "ru_stemming",
+                                "myngram"
                             ]
                         },
                         "GOD_PLEASE_FUZZY": {
                             "type": "custom",
                             "tokenizer": "whitespace",
                             "filter": [
-                                "lowercase"
+                                "lowercase",
+                                "ru_stemming"
+                            ]
+                        },
+                        "GOD_PLEASE_V2": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase",
+                                "ru_stop",
+                                "ru_stemming"
                             ]
                         }
                     },
@@ -532,9 +801,15 @@ class ArticleSearchModel:
                         "ru_stop": {
                             "type": "stop",
                             "stopwords": "_russian"
+                        },
+                        "myngram": {
+                            "type": "edge_ngram",
+                            "min_gram": 2,
+                            "max_gram": 10
                         }
                     }
-                }
+                },
+                "max_ngram_diff": "10"
             },
             "mappings": {
                 "properties": {
@@ -543,33 +818,42 @@ class ArticleSearchModel:
                     },
                     "title": {
                         "type": "text",
-                        "analyzer": "GOD_PLEASE",
-                        "fields": {
-                            "fuzzy": {
-                                "type": "text",
-                                "analyzer": "GOD_PLEASE_FUZZY"
-                            }
-                        }
+                        "analyzer": "GOD_PLEASE_V2",
+                        "term_vector": "with_positions_offsets",
+                        "index_options": "offsets"
+                        # "fields": {
+                        #     "fuzzy": {
+                        #         "type": "text",
+                        #         "analyzer": "GOD_PLEASE",
+                        #         "term_vector": "with_positions_offsets"
+                        #     }
+                        # }
                     },
                     "preview_text": {
                         "type": "text",
-                        "analyzer": "GOD_PLEASE",
-                        "fields": {
-                            "fuzzy": {
-                                "type": "text",
-                                "analyzer": "GOD_PLEASE_FUZZY"
-                            }
-                        }
+                        "analyzer": "GOD_PLEASE_V2",
+                        "term_vector": "with_positions_offsets",
+                        "index_options": "offsets"
+                        # "fields": {
+                        #     "fuzzy": {
+                        #         "type": "text",
+                        #         "analyzer": "GOD_PLEASE",
+                        #         "term_vector": "with_positions_offsets"
+                        #     }
+                        # }
                     },
                     "content_text": {
                         "type": "text",
-                        "analyzer": "GOD_PLEASE",
-                        "fields": {
-                            "fuzzy": {
-                                "type": "text",
-                                "analyzer": "GOD_PLEASE_FUZZY"
-                            }
-                        }
+                        "analyzer": "GOD_PLEASE_V2",
+                        "term_vector": "with_positions_offsets",
+                        "index_options": "offsets"
+                        # "fields": {
+                        #     "fuzzy": {
+                        #         "type": "text",
+                        #         "analyzer": "GOD_PLEASE",
+                        #         "term_vector": "with_positions_offsets"
+                        #     }
+                        # }
                     },
                     "content_type": {
                         "type": "text"
@@ -594,59 +878,66 @@ class ArticleSearchModel:
 
         article_SQL_data = ArticleModel().all()
         article_data_ES = []
-        for art in article_SQL_data:
+        article_action = {}
+        for article_data in article_SQL_data:
             data_row = {}
-            article_data = art.__dict__
             if article_data['active']:
-                preview_photo = None
-                #обработка превью
-                files = File(art_id = article_data['id']).get_files_by_art_id()
-                for file in files:
-                    if file["is_preview"]:
-                        url = file["file_url"]
-                        #внедряю компрессию
-                        if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
-                            preview_link = url.split("/")
-                            preview_link[-2] = "compress_image/yowai_mo"
-                            url = '/'.join(preview_link)
-                        else:
-                            preview_link = url.split("/")
-                            preview_link[-2] = "compress_image"
-                            url = '/'.join(preview_link)
-                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                        preview_photo = f"http://intranet.emk.org.ru{url}"
-                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                #находим любую картинку, если она есть
-                for file in files:
-                    if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                        url = file["file_url"]
-                        #внедряю компрессию
-                        if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
-                            preview_link = url.split("/")
-                            preview_link[-2] = "compress_image/yowai_mo"
-                            url = '/'.join(preview_link)
-                        else:
-                            preview_link = url.split("/")
-                            preview_link[-2] = "compress_image"
-                            url = '/'.join(preview_link)
-                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                        preview_photo = f"http://intranet.emk.org.ru{url}"
-                
-                data_row["section_id"] = article_data["section_id"]
-                data_row["title"] = article_data["name"]
-                data_row["preview_text"] = article_data["preview_text"]
-                data_row["content_text"] = article_data["content_text"]
-                data_row["content_type"] = article_data["content_type"]
-                data_row["preview_photo"] = preview_photo
+                if article_data['section_id'] == 16:
+                    article_data['indirect_data'] = json.loads(article_data['indirect_data'])
 
+                # обрабатываем случай с интервью Еленой Земской
+                if article_data['section_id']  == 16 and ("PROPERTY_1025" not in article_data['indirect_data'] or article_data['indirect_data']['PROPERTY_1025'] is None):
+                    continue
+                else:
+                    preview_photo = None
+                    #обработка превью
+                    files = File(art_id = article_data['id']).get_files_by_art_id()
+                    for file in files:
+                        if file["is_preview"]:
+                            url = file["file_url"]
+                            #внедряю компрессию
+                            if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image/yowai_mo"
+                                url = '/'.join(preview_link)
+                            else:
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image"
+                                url = '/'.join(preview_link)
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                            preview_photo = f"http://intranet.emk.org.ru{url}"
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                article_action = {
-                    "_index": self.index,
-                    "_op_type": "index",
-                    "_id": int(article_data['id']),
-                    "_source": data_row
-                }
+                    #находим любую картинку, если она есть
+                    for file in files:
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            #внедряю компрессию
+                            if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image/yowai_mo"
+                                url = '/'.join(preview_link)
+                            else:
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image"
+                                url = '/'.join(preview_link)
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                            preview_photo = f"http://intranet.emk.org.ru{url}"
+                    
+                    data_row["section_id"] = article_data["section_id"]
+                    data_row["title"] = article_data["name"]
+                    data_row["preview_text"] = article_data["preview_text"]
+                    data_row["content_text"] = article_data["content_text"]
+                    data_row["content_type"] = article_data["content_type"]
+                    data_row["preview_photo"] = preview_photo
+                    
+                    article_action = {
+                        "_index": self.index,
+                        "_op_type": "index",
+                        "_id": int(article_data['id']),
+                        "_source": data_row
+                    }
 
             else:
                 pass
@@ -657,139 +948,236 @@ class ArticleSearchModel:
 
         return {"status": True}
 
-    def search_by_title(self, words):
+    # def search_by_title(self, words):
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         query={
+    #             "bool": {
+    #                 "should": [
+    #                     {
+    #                         "match": {
+    #                             "title": {
+    #                                 "query": words,
+    #                                 "fuzziness": "AUTO",
+    #                                 "prefix_length": 2
+    #                                 # "boost": 2  
+    #                             }
+    #                         }
+    #                     },
+    #                     {
+    #                         "wildcard": {
+    #                             "title": {
+    #                                 "value": f"{words}*",
+    #                                 "case_insensitive": True
+    #                                 # "prefix_length": 2,  
+    #                                 # "boost": 1
+    #                             }
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         },
+    #         size=100
+    #     )
+
+    #     return res['hits']['hits']
+
+    # def search_by_preview(self, preview):
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         query={
+    #             "bool": {
+    #                 "should": [
+    #                     {
+    #                         "match": {
+    #                             "preview_text": {
+    #                                 "query": preview,
+    #                                 "fuzziness": "AUTO",
+    #                                 "prefix_length": 2
+    #                                 # "boost": 2  
+    #                             }
+    #                         }
+    #                     },
+    #                     {
+    #                         "wildcard": {
+    #                             "preview_text": {
+    #                                 "value": f"{preview}*",
+    #                                 "case_insensitive": True
+    #                                 # "prefix_length": 2,  
+    #                                 # "boost": 1
+    #                             }
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         },
+    #         size=100
+    #     )
+
+    #     return res['hits']['hits']
+
+    # def search_by_text(self, text):
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         query={
+    #             "bool": {
+    #                 "should": [
+    #                     {
+    #                         "match": {
+    #                             "content_text": {
+    #                                 "query": text,
+    #                                 "fuzziness": "AUTO",
+    #                                 "prefix_length": 2
+    #                                 # "boost": 2  
+    #                             }
+    #                         }
+    #                     },
+    #                     {
+    #                         "wildcard": {
+    #                             "content_text": {
+    #                                 "value": f"{text}*",
+    #                                 "case_insensitive": True
+    #                                 # "prefix_length": 2,  
+    #                                 # "boost": 1
+    #                             }
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         },
+    #         size=100
+    #     )
+
+    #     return res['hits']['hits']
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         query={
+    #             "bool": {
+    #                 "should": [
+    #                     {
+    #                         "match": {
+    #                             "content_text": {
+    #                                 "query": text,
+    #                                 "fuzziness": "AUTO",
+    #                                 "prefix_length": 2
+    #                                 # "boost": 2  
+    #                             }
+    #                         }
+    #                     },
+    #                     {
+    #                         "wildcard": {
+    #                             "content_text": {
+    #                                 "value": f"{text}*",
+    #                                 "case_insensitive": True
+    #                                 # "prefix_length": 2,  
+    #                                 # "boost": 1
+    #                             }
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         },
+    #         size=100
+    #     )
+
+    #     return res['hits']['hits']
+
+    
+    def elasticsearch_article(self, key_word, size_res: Optional[int] = 20):
+        result = []
         res = elastic_client.search(
             index=self.index,
-            query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "title": {
-                                    "query": words,
+            body={
+                "query": {
+                    "bool": {
+                        "should": [
+                            #точный поиск
+                            {
+                                "bool": {
+                                    "should": [
+                                        {"match_phrase": {"title": {"query": key_word,"boost": 10}}},
+                                        {"match_phrase": {"preview_text": {"query": key_word,"boost": 8}}},
+                                        {"match_phrase": {"content_text": {"query": key_word,"boost": 6}}}
+                                    ],
+                                    "_name": "true_search"
+                                }
+                            },
+                            #неточный поиск
+                            {
+                                "multi_match": {
+                                    "query": key_word,
+                                    "fields": ["title", "preview_text", "content_text"],
                                     "fuzziness": "AUTO",
-                                    "prefix_length": 2
-                                    # "boost": 2  
+                                    "boost": 2  
+                                }
+                            }, 
+                        ]
+                    }
+                },
+                "highlight": {  
+                    "type": "unified",
+                    "fields": {
+                        "title": {
+                            "highlight_query": { 
+                                "bool": {
+                                    "should": [
+                                        {"match": {"title": key_word}},
+                                        {"match": {"title": {"query": key_word, "fuzziness": "AUTO"}}}  
+
+                                    ]
                                 }
                             }
                         },
-                        {
-                            "wildcard": {
-                                "title": {
-                                    "value": f"{words}*",
-                                    "case_insensitive": True
-                                    # "prefix_length": 2,  
-                                    # "boost": 1
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            size=100
-        )
+                        "preview_text": {
+                            "highlight_query": { 
+                                "bool": {
+                                    "should": [
+                                        {"match": {"preview_text": key_word}},
+                                        {"match": {"preview_text": {"query": key_word, "fuzziness": "AUTO"}}} 
 
-        return res['hits']['hits']
-
-    def search_by_preview(self, preview):
-        res = elastic_client.search(
-            index=self.index,
-            query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "preview_text": {
-                                    "query": preview,
-                                    "fuzziness": "AUTO",
-                                    "prefix_length": 2
-                                    # "boost": 2  
+                                    ]
                                 }
                             }
                         },
-                        {
-                            "wildcard": {
-                                "preview_text": {
-                                    "value": f"{preview}*",
-                                    "case_insensitive": True
-                                    # "prefix_length": 2,  
-                                    # "boost": 1
+                        "content_text": {
+                            "highlight_query": { 
+                                "bool": {
+                                    "should": [
+                                        {"match": {"content_text": key_word}},
+                                        {"match": {"content_text": {"query": key_word, "fuzziness": "AUTO"}}}
+
+                                    ]
                                 }
                             }
                         }
-                    ]
-                }
-            },
-            size=100
+                    }
+                },
+                "size": size_res
+            }
         )
+        articles = []
+        true_search_flag = False
+        
+        for res_info in res['hits']['hits']:
+            if "matched_queries" in res_info.keys():
+                true_search_flag = True
+            art_info = {}
+            art_info['name'] = res_info["_source"]["title"]
+            art_info['href'] = res_info["_source"]["section_id"]
+            art_info['id'] = int(res_info["_id"])
+            art_info['image'] = res_info["_source"]["preview_photo"]
+            articles.append(art_info)
+        
+        sec_art = {}
+        sec_art['section'] = 'Контент'
+        if true_search_flag is False:
+            sec_art['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
+        
+        
+        sec_art['content'] = articles
+        result.append(sec_art)
 
-        return res['hits']['hits']
-
-    def search_by_text(self, text):
-        res = elastic_client.search(
-            index=self.index,
-            query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "content_text": {
-                                    "query": text,
-                                    "fuzziness": "AUTO",
-                                    "prefix_length": 2
-                                    # "boost": 2  
-                                }
-                            }
-                        },
-                        {
-                            "wildcard": {
-                                "content_text": {
-                                    "value": f"{text}*",
-                                    "case_insensitive": True
-                                    # "prefix_length": 2,  
-                                    # "boost": 1
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            size=100
-        )
-
-        return res['hits']['hits']
-        res = elastic_client.search(
-            index=self.index,
-            query={
-                "bool": {
-                    "should": [
-                        {
-                            "match": {
-                                "content_text": {
-                                    "query": text,
-                                    "fuzziness": "AUTO",
-                                    "prefix_length": 2
-                                    # "boost": 2  
-                                }
-                            }
-                        },
-                        {
-                            "wildcard": {
-                                "content_text": {
-                                    "value": f"{text}*",
-                                    "case_insensitive": True
-                                    # "prefix_length": 2,  
-                                    # "boost": 1
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            size=100
-        )
-
-        return res['hits']['hits']
+        return res['hits']['hits'] #res['hits']['hits'] result
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
@@ -797,7 +1185,7 @@ class ArticleSearchModel:
 
 
 
-def search_everywhere(key_word):
+def search_everywhere(key_word, size_res: Optional[int] = 20):
     result = []
     res = elastic_client.search(
         index=["articles", "user"],
@@ -812,59 +1200,148 @@ def search_everywhere(key_word):
                                     {
                                         "multi_match": {
                                             "query": key_word,
-                                            "fields": ["title", "preview_text", "content_text"]
+                                            "fields": ["title", "preview_text", "content_text"],
+                                            "fuzziness": "AUTO",
+                                            "boost": 10
                                         }
                                     }
                                 ]
                             }
                         },
                         {
-                            "bool": {
-                                "must": [
-                                    {"terms": {"_index": ["user"]}},
-                                    {
-                                        "bool": {
-                                            "should": [
-                                                {
-                                                    "multi_match": {
-                                                        "query": key_word,
-                                                        "fields": ["user_fio", "email", "uf_phone_inner"]
-                                                    }
-                                                },
-                                                {
-                                                    "nested": {
-                                                        "path": "indirect_data",
-                                                        "query": {
-                                                            "multi_match": {
+                        "bool": {
+                            "must": [
+                                {"term": {"_index": "user"}},
+                                {
+                                    "bool": {
+                                        "should": [
+                                            {
+                                                "bool": {
+                                                    "should": [
+                                                        
+                                                        {
+                                                            "match_phrase": {
+                                                            "user_fio": {
                                                                 "query": key_word,
-                                                                "fields": [
-                                                                    "indirect_data.work_position",
-                                                                    "indirect_data.uf_usr_1705744824758",
-                                                                    "indirect_data.uf_usr_1586854037086",
-                                                                    "indirect_data.uf_usr_1696592324977"
-                                                                ]
+                                                                "boost": 10,
+                                                                "_name": "true_search"
+                                                            }
                                                             }
                                                         },
-                                                        "score_mode": "max"
-                                                    }
+                                                        {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
+                                                        {
+                                                            "nested": {
+                                                                "path": "indirect_data",
+                                                                "query": {
+                                                                    "bool": {
+                                                                        "should": [
+                                                                            {"match_phrase": {"indirect_data.work_position": {"query": key_word, "boost": 5}}},
+                                                                            {"match_phrase": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5}}},
+                                                                            {"match_phrase": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5}}},
+                                                                            {"match_phrase": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5}}},
+                                                                            {"match_phrase": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5}}},
+                                                                            {"match_phrase": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5}}},
+                                                                            {"match_phrase": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5}}}
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "_name": "true_search"
                                                 }
-                                            ]
-                                        }
+                                            },
+                                            {
+                                                "multi_match": {
+                                                    "query": key_word,
+                                                    "fields": ["user_fio.fuzzy"],
+                                                    "fuzziness": "AUTO",
+                                                    "boost": 2  
+                                                }
+                                            },
+                                            {
+                                                "nested": {
+                                                    "path": "indirect_data",
+                                                    "query": {
+                                                        "multi_match": {
+                                                            "query": key_word,
+                                                            "fields": [
+                                                                "indirect_data.work_position.fuzzy",
+                                                                "indirect_data.uf_usr_1705744824758.fuzzy",
+                                                                "indirect_data.uf_usr_1707225966581.fuzzy",
+                                                                "indirect_data.uf_usr_1696592324977.fuzzy",
+                                                                "indirect_data.uf_usr_1586853958167.fuzzy",
+                                                                "indirect_data.uf_usr_department_main.fuzzy",
+                                                                "indirect_data.uf_usr_1586854037086.fuzzy"
+                                                            ],
+                                                            "fuzziness": "AUTO",
+                                                            "boost": 1
+                                                        }
+                                                    },
+                                                    "score_mode": "max"
+                                                }
+                                            }
+                                        ]
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
-                    ],
-                    "minimum_should_match": 1 
+                    }
+                ],
+                "minimum_should_match": 1
+            }
+        },
+        "highlight": {  
+            "type": "unified",
+            "fields": {
+                "title": {
+                    "highlight_query": { 
+                        "bool": {
+                            "should": [
+                                {"match": {"title": key_word}},
+                                {"match": {"title": {"query": key_word, "fuzziness": "AUTO"}}}  
+
+                            ]
+                        }
+                    }
+                },
+                "preview_text": {
+                    "highlight_query": { 
+                        "bool": {
+                            "should": [
+                                {"match": {"preview_text": key_word}},
+                                {"match": {"preview_text": {"query": key_word, "fuzziness": "AUTO"}}} 
+
+                            ]
+                        }
+                    }
+                },
+                "content_text": {
+                    "highlight_query": { 
+                        "bool": {
+                            "should": [
+                                {"match": {"content_text": key_word}},
+                                {"match": {"content_text": {"query": key_word, "fuzziness": "AUTO"}}}
+
+                            ]
+                        }
+                    }
                 }
             }
         },
-        size=10
+        "size": size_res
+        }
     )
+   
     users = []
     articles = []
+    true_search_flag = False
+    
     for res_info in res['hits']['hits']:
         if res_info["_index"] == 'user':
+            if "matched_queries" in res_info.keys():
+                true_search_flag = True
+            #print(res_info)
             user_info = {}
             user_info['name'] = res_info["_source"]["user_fio"]
             user_info['href'] = "userPage"
@@ -877,14 +1354,17 @@ def search_everywhere(key_word):
             art_info['href'] = res_info["_source"]["section_id"]
             art_info['id'] = int(res_info["_id"])
             art_info['image'] = res_info["_source"]["preview_photo"]
+            art_info['coincident'] = res_info['highlight']
             articles.append(art_info)
+    
     sec_user = {}
     sec_art = {}
     sec_user['section'] = 'Пользователи'
+    if true_search_flag is False:
+        sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
     sec_user['content'] = users
     sec_art['section'] = 'Контент'
     sec_art['content'] = articles
     result.append(sec_user)
     result.append(sec_art)
-
-    return result
+    return result   #result  res['hits']['hits'] 

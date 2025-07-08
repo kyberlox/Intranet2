@@ -1,4 +1,4 @@
-from src.base.pSQLmodels import UserModel
+from src.base.pSQLmodels import UserModel, LikesModel
 from src.base.SearchModel import UserSearchModel
 from src.model.File import File
 from src.base.B24 import B24
@@ -37,7 +37,7 @@ class User:
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
             #!!!!!!!!!!!!!!!!!!!!!!убрать по окончанию тестового периода!!!!!!!!!!!!!
-            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515', '682', '660', '806', '466', '763', '376', '373', '2349', '911', '552', '796', '367', '690', '618', '659', '579', '828', '4399', '4393', '4411', '292', '3218', '2081']
+            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515', '682', '660', '806', '466', '763', '376', '373', '2349', '911', '552', '796', '367', '690', '618', '659', '579', '828', '4399', '4393', '4411', '292', '3218', '2081', '489', '533', '2745']
             
             pochet = ['421', '682', '806', '376', '911', '552', '796', '810', '603', '148', '161', '832', '692', '590', '67', '533', '610', '345', '745', '372', 
             '591', '712', '72', '1399', '684', '1801', '1176', '556', '609', '580', '798', '812', '680', '930', '598', '318', '343', '82', '1566', '1141', '2111', 
@@ -87,7 +87,7 @@ class User:
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
             # print()
-            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515', '682', '373', '466', '763', '2349', '806', '660', '911', '796', '367', '659', '579', '690', '828', '4399', '4393', '4411', '292', '3218', '2081', '618']
+            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515', '682', '373', '466', '763', '2349', '806', '660', '911', '796', '367', '659', '579', '690', '828', '4399', '4393', '4411', '292', '3218', '2081', '618', '489', '533', '2745']
             pochet = ['421', '682', '806', '376', '911', '552', '796', '810', '603', '148', '161', '832', '692', '590', '67', '533', '610', '345', '745', '372', 
             '591', '712', '72', '1399', '684', '1801', '1176', '556', '609', '580', '798', '812', '680', '930', '598', '318', '343', '82', '1566', '1141', '2111', 
             '1566', '120', '1442', '58', '85', '86', '2366', '2375', '1712', '704', '707', '1440', '1023', '604', '610', '355', '363', '361', '347', '1413', '743', 
@@ -158,6 +158,9 @@ class User:
 
     def get_user_likes(self):
         return LikesModel(user_id=self.id).get_user_likes()
+        
+    def get_likes_by_uuid(self):
+        return LikesModel(user_uuid=self.uuid).has_liked_by_uuid()
     
     # просмотры
     def add_view(self, art_id):
@@ -236,12 +239,10 @@ def upload_users_to_es():
 def test_update_photo():
     return User().set_users_photo()
 
-
-
-@users_router.post("/search")
-def search_user(jsn=Body()):
-    #будет работать через elasticsearch
-    return UserSearchModel().search_model(jsn)
+# поиск по статьям еластик
+@users_router.get("/search/full_search_users/{keyword}")
+def elastic_search(keyword: str, size_res: int = 20):
+    return UserSearchModel().elasticsearch_users(key_word=keyword, size_res=size_res)
 
 @users_router.get("/test_update_photo")
 def test_update_photo():
@@ -250,32 +251,31 @@ def test_update_photo():
 # лайки и просмотры
 @users_router.put("/add_like")
 def add_like(user_id: int, art_id: int):
-    return User(user_id=user_id).add_like(art_id)
+    return User(id=user_id).add_like(art_id)
 
 @users_router.delete("/remove_like")
 def remove_like(user_id: int, art_id: int):
-    return User(user_id=user_id).remove_like(art_id)
+    return User(id=user_id).remove_like(art_id)
 
 @users_router.post("/has_liked")
 def has_liked(user_id: int, art_id: int):
-    return User(user_id=user_id).has_liked(art_id)
+    return User(id=user_id).has_liked(art_id)
 
 @users_router.get("/get_user_likes")
 def get_user_likes(user_id: int):
-    return User(user_id=user_id).get_user_likes()
+    return User(id=user_id).get_user_likes()
+    
+@users_router.get("/get_user_uuid_likes")
+def get_user_uuid_likes(user_uuid: str):
+    return User(uuid=user_uuid).get_likes_by_uuid()
 
 @users_router.put("/add_view")
 def add_view(user_id: int, art_id: int):
-    return User(user_id=user_id).add_view(art_id)
+    return User(id=user_id).add_view(art_id)
 
 @users_router.get("/get_viewed_articles")
 def get_viewed_articles(user_id: int):
-    return User(user_id=user_id).get_viewed_articles()
-
-@users_router.post("/search_indirect")
-def search_indirect(key_word):
-    #будет работать через elasticsearch
-    return UserSearchModel().search_indirect(key_word)
+    return User(id=user_id).get_viewed_articles()
 
 # запрос для получения списка пользователей у кого в эту дату ДР
 @users_router.get("/get_birthday_celebrants/{day_month}")
@@ -285,3 +285,16 @@ def birthday_celebrants(day_month: str):
 @users_router.post("/test_send_mail")
 def send_test_mail(sender: str, reciever: str, title_msg: str, file_url: str, html_content=Body(...)):
     return SendEmail(sender=sender, reciever=reciever, title_msg=title_msg, file_url=file_url, html_content=html_content).send_congratulations()
+
+
+# @users_router.post("/search_indirect")
+# def search_indirect(key_word):
+#     #будет работать через elasticsearch
+#     return UserSearchModel().search_indirect(key_word)
+
+
+
+# @users_router.post("/search")
+# def search_user(jsn=Body()):
+#     #будет работать через elasticsearch
+#     return UserSearchModel().search_model(jsn)

@@ -13,6 +13,7 @@ import re
 import json
 import datetime
 import asyncio
+import types
 
 from fastapi import APIRouter, Body
 
@@ -637,9 +638,9 @@ class Article:
         sec_inf = {
             13 : "149", # Наши люди ✔️
             #14 : "123", #Доска почёта ☑️
-            #16 : "122", # Видеоитервью ✔️
+            16 : "122", # Видеоитервью ✔️
             
-            #32 : "132", # Новости организационного развития ✔️
+            32 : "132", # Новости организационного развития ✔️
             #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ✔️
@@ -661,7 +662,8 @@ class Article:
                 for inf in infs:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
-
+                    # if self.section_id == 16:
+                    #     print('тут загуржаем', type(inf))
                     if artDB.need_add():
                         logg.warning_message(f'Добавил статью, {inf["ID"]}')
                         self.add(inf)
@@ -1204,8 +1206,13 @@ class Article:
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
                 if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
+                    
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
+
+                    #res['viewes'] = self.get_art_views()
+                    #res['likes'] = self.get_all_likes()
+                    
                     active_articles.append(res)
 
             if self.section_id == "111":
@@ -1218,6 +1225,8 @@ class Article:
             return sorted_active_aticles
     
     def main_page(self, section_id):
+
+        #null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7] # список секций где нет лайков
         #Новые сотрудники
         if section_id == 112:
             img_new_workers = []     
@@ -1303,7 +1312,7 @@ class Article:
             }# словарь-заглушка для будущей секции "Предложить идею"
             return idea_block
 
-        #
+        # Открытые вакансии
         elif section_id == 111:
             emk_competition = {
                 'id': section_id,
@@ -1318,6 +1327,7 @@ class Article:
             } # словарь-заглушка для будущей секции "Конкурсы ЭМК"
             return emk_competition
 
+        # Актуальные новости
         elif section_id == 31:
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
@@ -1330,6 +1340,13 @@ class Article:
                     date_value.append(values["name"])
                     date_value.append(values["preview_text"])
                     date_value.append(values["date_creation"])
+
+                    self.id = values["id"]
+                    viewes = self.get_art_views()
+                    likes = self.get_all_likes()
+                    date_value.append(viewes)
+                    date_value.append(likes)
+
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
@@ -1370,6 +1387,7 @@ class Article:
             second_page['images'] = business_news
             return second_page
 
+        # Видеоитервью
         elif section_id == 16:
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
@@ -1377,7 +1395,7 @@ class Article:
                 if values["active"] is False:
                         pass
                 else:
-                    if "PROPERTY_1025" not in values['indirect_data'] or values['indirect_data']['PROPERTY_1025'] is None:
+                    if "PROPERTY_1025" not in values["indirect_data"] or values["indirect_data"]["PROPERTY_1025"] is None:
                         pass
                     else:
                         date_value = [] # список для хранения необходимых данных
@@ -1385,6 +1403,13 @@ class Article:
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
                         date_value.append(values["date_creation"])
+
+                        self.id = values["id"]
+                        #viewes = self.get_art_views()
+                        #likes = self.get_all_likes()
+                        #date_value.append(self.get_art_views())
+                        #date_value.append(self.get_all_likes())
+
                         date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
@@ -1418,13 +1443,14 @@ class Article:
                     news['image'] = image_url                    
                     # сюда реакции
                     news['reactions'] = {
-                        'views': 12,
-                        'likes': { 'count': 13, 'likedByMe': 1 },
+                        'views': row[4],
+                        'likes': { 'count': row[5], 'likedByMe': 1 },
                     }
                     interview_news.append(news)
             second_page['images'] = interview_news
             return second_page
 
+        # Видеорепортажи
         elif section_id == 33:
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
@@ -1477,6 +1503,7 @@ class Article:
             second_page['images'] = video_news
             return second_page
 
+        # микс
         elif section_id == 9:
             second_page = {
                 "id": 9,
@@ -1537,6 +1564,7 @@ class Article:
 
             return afisha
         
+        # Корпоративные события
         elif section_id == 51:
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
@@ -1598,12 +1626,44 @@ class Article:
     def get_popular_articles(self, limit):
         return LikesModel().get_popular_articles(limit=limit)
 
+    
+
     def get_recent_popular_articles(self, days, limit):
         return LikesModel().get_recent_popular_articles(days=days, limit=limit)
     
     # просмотры
-    def get_viewers(self):
-        return ViewsModel(art_id=self.id).get_viewers()
+    def get_art_views(self):
+        return ViewsModel(art_id=self.id).get_art_viewes()
+
+    def upload_likes(self):
+        result = [] 
+        articles_info = ArticleModel().all()
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7] # список секций где нет лайков
+        for inf in articles_info:
+            if inf.section_id not in null_list:
+                likes_info = B24().get_likes_views(inf.id)
+                
+                if likes_info != "Not found" and 'VOTES' in likes_info.keys():
+                    for vote in likes_info['VOTES']:
+                        # проверяем есть ли такие юзеры в бд
+                        user_exist = User(vote['USER_ID']).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType):
+                            continue
+                        else:
+                            LikesModel(user_id=vote['USER_ID'], art_id=inf.id).add_like_from_b24(vote['CREATED_'])
+
+                    #удаляем тех, кто убрал лайк
+                    b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
+                    article_likers = LikesModel(art_id=inf.id).get_article_likers()
+                    for usr in article_likers:
+                        if usr not in b24_likers:
+                            LikesModel(user_id=usr, art_id=inf.id).remove_like()
+                        else:
+                            pass
+
+                ViewsModel(views_count=likes_info['VIEWS'], art_id=inf.id).add_view_b24()
+
+        return {"status": True}
 
 
 #Получить данные инфоблока из Б24
@@ -1626,20 +1686,10 @@ def get_article(ID):
 def get_articles(section_id):
     return Article(section_id = section_id).search_by_section_id()
 
-#найти статьи раздела по названию
-@article_router.post("/search/title/{title}")
-def search_articles_by_title(title): # data = Body()
-    return ArticleSearchModel().search_by_title(title)
-
-#найти статьи раздела по заголовку
-@article_router.post("/search/preview/{preview}")
-def search_articles_by_preview(preview): # data = Body()
-    return ArticleSearchModel().search_by_preview(preview)
-
-#найти статьи раздела по тексту
-@article_router.post("/search/text/{text}")
-def search_articles_by_text(text): # data = Body()
-    return ArticleSearchModel().search_by_text(text)
+# поиск по статьям еластик
+@article_router.get("/search/full_search_art/{keyword}")
+def elastic_search(keyword: str, size_res: int = 20):
+    return ArticleSearchModel().elasticsearch_article(key_word=keyword, size_res=size_res)
 
 #загрузить дату в эластик
 @article_router.put("/elastic_data")
@@ -1671,3 +1721,23 @@ def get_recent_popular_articles(days: int, limit: int):
 @article_router.get("/get_viewers/{ID}")
 def get_viewers(ID: int):
     return Article(id = ID).get_viewers()
+
+#выгрузка данных по лайкам в Б24
+@article_router.put("/put_b24_likes")
+def put_b24_likes():
+    return Article().upload_likes()
+
+# #найти статьи раздела по названию
+# @article_router.post("/search/title/{title}")
+# def search_articles_by_title(title): # data = Body()
+#     return ArticleSearchModel().search_by_title(title)
+
+# #найти статьи раздела по заголовку
+# @article_router.post("/search/preview/{preview}")
+# def search_articles_by_preview(preview): # data = Body()
+#     return ArticleSearchModel().search_by_preview(preview)
+
+# #найти статьи раздела по тексту
+# @article_router.post("/search/text/{text}")
+# def search_articles_by_text(text): # data = Body()
+#     return ArticleSearchModel().search_by_text(text)

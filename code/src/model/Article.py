@@ -43,6 +43,8 @@ def dict_to_indirect_data(data, property_value_dict):
             res[property_value_dict[key]] = take_value(data[key])
     return res
 
+
+
 class Article:
     def __init__(self, id=0, section_id=0):
         self.id = id

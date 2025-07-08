@@ -1695,7 +1695,13 @@ def get_article(ID):
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
 def get_articles(section_id, request: Request):
-    return Article(section_id = section_id).search_by_section_id()
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+            token = request.headers.get("Authorization")
+            if token is not None:
+                session_id = token
+    return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")

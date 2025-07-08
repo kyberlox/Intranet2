@@ -1701,6 +1701,7 @@ def get_articles(section_id, request: Request):
             token = request.headers.get("Authorization")
             if token is not None:
                 session_id = token
+    print(session_id)
     return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
 # поиск по статьям еластик

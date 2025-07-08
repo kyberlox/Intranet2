@@ -69,6 +69,7 @@ class Idea:
         self.user = AuthService().get_user_by_seesion_id(session_id)
 
         if self.user is not None:
+            print(self.user)
             self.user_uuid = self.user["user_uuid"]
             self.username = self.user["username"]
 

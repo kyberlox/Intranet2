@@ -74,7 +74,6 @@ class Idea:
 
             #получить и вывести его id
             user_inf = User(uuid = self.user_uuid).user_inf_by_uuid()
-            print(user_inf)
             return user_inf["ID"]
         return None
         
@@ -84,6 +83,7 @@ class Idea:
             result = []
             for idea in self.ideas:
                 if str(idea['user_id']) == str(user_id):
+                    print(idea['user_id'])
                     result.append(idea)
             return result
         else:

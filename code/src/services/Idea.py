@@ -15,7 +15,7 @@ class Idea:
 
         ideas = []
         #каждую идею
-        for idea in self.b24_ideas:
+        for idea in b24_ideas:
             #проебразую по шаблону с нормальными ключами
             prop_keys = {
                 "ID" : "id",

@@ -1200,17 +1200,17 @@ class Article:
 
         elif self.section_id == "34":
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
-            sorted_active_aticles = sorted(result, key=lambda x: x['id'], reverse=True)
-            return sorted_active_aticles
+            sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
+            return sorted_active_articles
 
         elif self.section_id == "8": #Есть Идея
             ideas = Idea().get_ideas(session_id)
             if ideas is not None:
-                sorted_active_aticles = sorted(ideas, key=lambda x: x['number'], reverse=False)
-                return sorted_active_aticles
+                sorted_active_articles = sorted(ideas, key=lambda x: x['number'], reverse=False)
+                return sorted_active_articles
             else:
                 return {"err" : "Auth Err"}
-                
+
         else:
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
@@ -1226,13 +1226,13 @@ class Article:
                     active_articles.append(res)
 
             if self.section_id == "111":
-                sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             #отдельная сортировка Памятки новому сторуднику
             elif self.section_id == "18":
-                sorted_active_aticles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
+                sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
-                sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
-            return sorted_active_aticles
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            return sorted_active_articles
     
     def main_page(self, section_id):
 

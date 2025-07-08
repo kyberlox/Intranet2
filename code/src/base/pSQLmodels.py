@@ -53,7 +53,7 @@ class User(Base):
 
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
-    views = relationship("Views", back_populates="user")
+    #views = relationship("Views", back_populates="user")
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -113,12 +113,12 @@ class Views(Base):
     __tablename__ = 'views'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
+    #user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
     article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
-    viewed_at = Column(DateTime, default=datetime.utcnow)  # Время просмотра
+    viewes_count = Column(Integer, nullable=False)  # Время просмотра
 
     # Опциональные отношения для удобства доступа
-    user = relationship("User", back_populates="views")
+    #user = relationship("User", back_populates="views")
     article = relationship("Article", back_populates="views")
 
 
@@ -958,20 +958,31 @@ class ArticleModel():
                 art.__dict__["indirect_data"] = art.indirect_data
                 new_data.append(art.__dict__)
 
-        
         return new_data
     
     def all(self):
-        res = db.query(self.article).all()
-        return res
+        data = db.query(Article).all()
+        new_data = []
+        try:
+            for art in data:
+                art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+                new_data.append(art.__dict__)
+        except:
+            for art in data:
+                art.__dict__["indirect_data"] = art.indirect_data
+                new_data.append(art.__dict__)
+
+        
+        return new_data
 
 
 
 class LikesModel:
-    def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None):
+    def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None, user_uuid: Optional[str] = None):
         self.session = db
         self.user_id = user_id
         self.art_id = art_id
+        self.user_uuid = user_uuid
 
     def add_like(self ) -> bool:
         """
@@ -1121,6 +1132,12 @@ class LikesModel:
         self.session.commit()
         return True
 
+    def has_liked_by_uuid(self): 
+        user = self.session.query(User).filter(User.uuid == self.user_uuid).subquery()
+        stmt = select(Likes.article_id).where(Likes.user_id == user.с.id)
+        result = self.session.execute(stmt).fetchall()
+        return [re for re in result]
+
     @classmethod
     def get_popular_articles(cls, limit: int = 10) -> List[Dict[str, int]]:
         """
@@ -1172,39 +1189,47 @@ class LikesModel:
         return [dict(article_id=row.article_id, likes_count=row.likes_count) for row in popular]
 
 class ViewsModel:
-    def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None):
+    def __init__(self, views_count: Optional[int] = None, art_id: Optional[int] = None):
         self.session = db
-        self.user_id = user_id
+        self.views_count = views_count
         self.art_id = art_id
 
-    def add_view(self ) -> None:
+    def add_view_b24(self ) -> None:
         """
         Добавляет запись о просмотре статьи пользователем
         """
         new_view = Views(
-            user_id=self.user_id,
             article_id=self.art_id,
-            viewed_at=datetime.utcnow()
+            viewes_count=self.views_count
         )
         self.session.add(new_view)
         self.session.commit()
-
-    def get_viewers(self) -> List[int]:
+    
+    def get_art_viewes(self):
         """
-        Возвращает список user_id пользователей, которые просмотрели статью
+        Возвращает количество просмотров у данной статьи
         """
-        viewers = self.session.query(Views.user_id).filter(
+        return self.session.query(Views.viewes_count).where(
             Views.article_id == self.art_id
-        ).distinct().all()
+        ).scalar()
+       
 
-        return [viewer[0] for viewer in viewers]
+    # def get_viewers(self) -> List[int]:
+    #     """
+    #     Возвращает список user_id пользователей, которые просмотрели статью
+    #     """
+    #     viewers = self.session.query(Views.user_id).filter(
+    #         Views.article_id == self.art_id
+    #     ).distinct().all()
 
-    def get_viewed_articles(self) -> List[int]:
-        """
-        Возвращает список art_id статей, которые просмотрел пользователь
-        """
-        articles = self.session.query(Views.article_id).filter(
-            Views.user_id == self.user_id
-        ).distinct().all()
+    #     return [viewer[0] for viewer in viewers]
 
-        return [article[0] for article in articles]
+    # def get_viewed_articles(self) -> List[int]:
+    #     """
+    #     Возвращает список art_id статей, которые просмотрел пользователь
+    #     """
+    #     articles = self.session.query(Views.article_id).filter(
+    #         Views.user_id == self.user_id
+    #     ).distinct().all()
+
+    #     return [article[0] for article in articles]

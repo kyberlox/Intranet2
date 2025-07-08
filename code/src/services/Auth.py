@@ -231,6 +231,13 @@ class AuthService:
         """
         self.redis.delete_session(session_id)
 
+    def get_user_by_seesion_id(self, session_id : str):
+        session  = AuthService().validate_session(session_id)
+        if not session :
+            return None
+        return session
+
+
 
 
 @auth_router.post("/auth")

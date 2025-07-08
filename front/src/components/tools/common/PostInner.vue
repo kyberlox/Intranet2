@@ -72,7 +72,7 @@ import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "../gallery/complex/ComplexGallery.vue";
 
 export interface IPostInner {
-    id: number;
+    id?: number;
     section_id?: number;
     name?: string;
     date_publiction?: string;

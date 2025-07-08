@@ -24,7 +24,8 @@
             {{ author.link }}
         </a>
         <img v-if="author?.telegramQr && needLink"
-             :src="author?.telegramQr" />
+             :src="author?.telegramQr"
+             alt="Ссылка на ресурс" />
     </div>
 </template>
 
@@ -44,8 +45,7 @@ export default defineComponent({
             default: false
         },
     },
-    setup(props) {
-        console.log(props)
+    setup() {
         return {
             makeSlashToBr,
         };

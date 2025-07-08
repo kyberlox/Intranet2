@@ -1,3 +1,10 @@
+export interface IReaction {
+    views: number,
+    likes: {
+        count: number,
+        likedByMe: boolean
+    }
+}
 interface IBaseEntity {
     id: number,
     section_id?: number,
@@ -8,13 +15,7 @@ interface IBaseEntity {
     active?: boolean,
     content_text?: string,
     date_publiction?: string,
-    reactions?: {
-        likes?: {
-            mine?: boolean,
-            count?: number,
-        },
-        views?: string,
-    },
+    reactions?: IReaction,
     tags?: string[],
     documents?: {
         link: string,
@@ -73,7 +74,7 @@ export interface IConductedTrainings {
         "participants"?:
         {
             "fio"?: string,
-            "photo"?: string | null,
+            "image"?: string | null,
             "work_position"?: string
         }[],
     },

@@ -49,7 +49,7 @@ export const mainMenuPoints: MainMenuPoints = [
             {
                 id: 1.7,
                 name: "Учебный центр",
-                href: "training",
+                href: "trainingcenter",
             },
             {
                 id: 1.8,

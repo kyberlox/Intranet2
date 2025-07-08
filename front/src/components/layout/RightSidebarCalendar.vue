@@ -16,7 +16,6 @@
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
-import { calendarMiniDates } from '@/assets/static/calendar';
 import DatePicker from '../tools/common/DatePicker.vue';
 import { dateConvert } from '@/utils/dateConvert';
 import { useRouter } from 'vue-router';
@@ -499,6 +498,8 @@ export default defineComponent({
             if (!target) return;
             router.push({ name: 'calendarMonth', params: { monthId: target.date.split('.')[1] } })
         }
+
+        const calendarMiniDates = [];
 
         return {
             calendarMiniDates,

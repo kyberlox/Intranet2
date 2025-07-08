@@ -12,61 +12,65 @@ const router = createRouter({
       path: '/about',
       name: 'personal',
       component: () => import('../views/about/ourCompany/OurCompany.vue'),
-      props: (route) => ({ breadcrumbs: [{ title: 'назад', route: 'home' }] })
     },
     {
       path: '/about/company-history',
       name: 'book-emk',
       component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
-      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/company-history/:id',
       name: 'book-emk-page',
       component: () => import('../views/about/companyHistory/CompanyHistory.vue'),
-      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Назад', route: 'home' }] })
+      props: (route) => ({ id: route.params.id })
     },
     {
       path: '/about/our-people',
       name: 'our-people',
       component: () => import('@/views/about/ourPeople/OurPeople.vue'),
-      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/our-people/:id',
       name: 'ourPeopleInner',
       component: () => import('@/views/about/ourPeople/OurPeopleInner.vue'),
-      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Наши люди', route: 'our-people' }] }),
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Наши люди', route: 'our-people' }]
+      }
     },
     {
       path: '/about/year-results',
       name: 'year-results',
       component: () => import('@/views/about/yearResults/YearResults.vue'),
-      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/year-results/:id',
       name: 'year-results-id',
       component: () => import('@/views/about/yearResults/YearResults.vue'),
-      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Назад', route: 'home' }] }),
+      props: (route) => ({ id: route.params.id }),
     },
     {
       path: '/about/blogs',
       name: 'blogs',
       component: () => import('@/views/about/blogs/Blogs.vue'),
-      props: (route) => ({ breadcrumbs: [{ title: 'Назад', route: 'home' }] })
     },
     {
       path: '/about/blogs/:id',
       name: 'blogOf',
       component: () => import('@/views/about/blogs/BlogsAritcles.vue'),
-      props: (route) => ({ id: route.params.id, breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Блоги', route: 'blogs' }] })
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Блоги', route: 'blogs' }]
+      }
     },
     {
       path: '/about/blogs/:authorId/:id',
       name: 'certainBlog',
       component: () => import('@/views/about/blogs/CertainBlog.vue'),
-      props: (route) => ({ authorId: route.params.authorId, id: route.params.id })
+      props: (route) => ({ authorId: route.params.authorId, id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Блоги', route: 'blogs' }]
+      }
     },
     {
       path: '/about/videoInterviews',
@@ -77,7 +81,10 @@ const router = createRouter({
       path: '/about/videoInterviews/:id',
       name: 'videoInterview',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Видеоинтервью' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Видеоинтервью' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Видеоинтервью', route: 'videoInterviews' }]
+      }
     },
     {
       path: '/about/videoreports',
@@ -85,53 +92,77 @@ const router = createRouter({
       component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
-      path: '/about/videoreport/:id',
+      path: '/about/videoreports/:id',
       name: 'videoReport',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Видео-репортажи' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Видео-репортажи' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Видео-репортажи', route: 'videoReports' }]
+      }
     },
     {
       path: '/about/trainingcenter',
-      name: 'training',
+      name: 'trainingcenter',
       component: () => import('@/views/about/trainingCenter/TrainingCenter.vue')
     },
     {
       path: '/about/trainingcenter/ecources',
       name: 'Ecources',
-      component: () => import('@/views/about/trainingCenter/ecources/Ecources.vue')
+      component: () => import('@/views/about/trainingCenter/ecources/Ecources.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
+      }
     },
     {
       path: '/about/trainingcenter/ecources/:id',
       name: 'Ecource',
       component: () => import('@/views/about/trainingCenter/ecources/CourceDescription.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }, { title: 'Курсы', route: 'Ecources' }]
+      }
     },
     {
       path: '/about/trainingcenter/trainings',
       name: 'conductedTrainings',
       component: () => import('@/views/about/trainingCenter/conductedTrainings/СonductedTrainings.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
+      }
     },
     {
       path: '/about/trainingcenter/trainings/:id',
       name: 'conductedTraining',
       component: () => import('@/views/about/trainingCenter/conductedTrainings/FeedBackModal.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }, { title: 'Тренинги', route: 'conductedTrainings' }]
+      }
     },
     {
       path: '/about/trainingcenter/announces',
       name: 'trainingAnnounces',
-      component: () => import('@/views/about/trainingCenter/announces/TrainingAnnounces.vue')
+      component: () => import('@/views/about/trainingCenter/announces/TrainingAnnounces.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
+      }
     },
     {
       path: '/about/trainingcenter/excursions',
       name: 'excursions',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ pageTitle: 'Экскурсии' })
+      props: (route) => ({ pageTitle: 'Экскурсии' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
+      }
     },
     {
       path: '/about/trainingcenter/literature',
       name: 'literature',
-      component: () => import('@/views/about/trainingCenter/literature/Literature.vue')
+      component: () => import('@/views/about/trainingCenter/literature/Literature.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
+      }
     },
     {
       path: '/about/trainingcenter/memo1c',
@@ -160,17 +191,26 @@ const router = createRouter({
     {
       path: '/about/safetytechnics/covid',
       name: 'safetytechnicsCovid',
-      component: () => import('@/views/about/safetyTechnics/SafetyTechnicsCovid.vue')
+      component: () => import('@/views/about/safetyTechnics/SafetyTechnicsCovid.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Техника безопасности', route: 'safetytechnics' }]
+      }
     },
     {
       path: '/about/safetytechnics/fire',
       name: 'safetytechnicsFire',
-      component: () => import('@/views/about/safetyTechnics/SafetyTechnicsFire.vue')
+      component: () => import('@/views/about/safetyTechnics/SafetyTechnicsFire.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Техника безопасности', route: 'safetytechnics' }]
+      }
     },
     {
       path: '/about/safetytechnics/factory',
       name: 'safetytechnicsFactory',
-      component: () => import('@/views/about/safetyTechnics/SafetyTechnicsFactory.vue')
+      component: () => import('@/views/about/safetyTechnics/SafetyTechnicsFactory.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Техника безопасности', route: 'safetytechnics' }]
+      }
     },
     {
       path: '/about/vacancies',
@@ -203,12 +243,9 @@ const router = createRouter({
       name: 'merchStoreItem',
       component: () => import('@/views/about/merchStore/MerchStoreItem.vue'),
       props: (route) => ({ id: Number(route.params.id) }),
-    },
-    {
-      path: '/about/merch/:id/test',
-      name: 'merchStoreItemTest',
-      component: () => import('@/views/about/merchStore/MerchStoreItemTest.vue'),
-      props: (route) => ({ id: Number(route.params.id) }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Магазин мерча', route: 'merchStore' }]
+      }
     },
     {
       path: '/services/selectionTep',
@@ -256,13 +293,19 @@ const router = createRouter({
       path: '/services/experience/:factoryId',
       name: 'experienceTypes',
       component: () => import('@/views/services/experience/ExperienceTypes.vue'),
-      props: (route) => ({ factoryId: route.params.factoryId })
+      props: (route) => ({ factoryId: route.params.factoryId }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Референсы', route: 'experience' }]
+      }
     },
     {
       path: '/services/experience/:factoryId/:sectorId',
       name: 'experienceType',
       component: () => import('@/views/services/experience/ExperienceType.vue'),
-      props: (route) => ({ factoryId: route.params.factoryId, sectorId: route.params.sectorId })
+      props: (route) => ({ factoryId: route.params.factoryId, sectorId: route.params.sectorId }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Референсы', route: 'experience' }]
+      }
     },
     {
       path: '/news/actual',
@@ -273,7 +316,10 @@ const router = createRouter({
       path: '/news/actual/:id',
       name: 'actualArticle',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Актуальные новости' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Актуальные новости' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Актуальные новости', route: 'actualNews' }]
+      }
     },
     {
       path: '/news/corpnews',
@@ -284,7 +330,10 @@ const router = createRouter({
       path: '/news/corpnews/:id',
       name: 'corpNewsArticle',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Новости организационного развития' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Новости организационного развития' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Новости организационного развития', route: 'corpNews' }]
+      }
     },
     {
       path: '/news/gazette',
@@ -300,20 +349,28 @@ const router = createRouter({
       path: '/gallery/factories/reports/:id',
       name: 'factoryReports',
       component: () => import('@/views/gallery/factoryGuid/FactoryReports.vue'),
-      props: (route) => ({ id: route.params.id })
-
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Гид по предприятиям', route: 'factories' }]
+      }
     },
     {
       path: '/gallery/factories/tours/:id',
       name: 'factoryTours',
       component: () => import('@/views/gallery/factoryGuid/FactoryTours.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Гид по предприятиям', route: 'factories' }]
+      }
     },
     {
       path: '/gallery/factories/tours/:id/:tourId',
       name: 'factoryTour',
       component: () => import('@/views/gallery/factoryGuid/FactoryTour.vue'),
-      props: (route) => ({ id: route.params.id, tourId: route.params.tourId })
+      props: (route) => ({ id: route.params.id, tourId: route.params.tourId }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Гид по предприятиям', route: 'factories' }]
+      }
     },
     {
       path: '/communications/officialevents',
@@ -324,8 +381,10 @@ const router = createRouter({
       path: '/communications/officialevents/:id',
       name: 'officialEvent',
       component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue'),
-      props: (route) => ({ id: route.params.id })
-
+      props: (route) => ({ id: route.params.id }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Официальные события', route: 'officialEvents' }]
+      }
     },
     {
       path: '/communications/corpevents/',
@@ -336,7 +395,10 @@ const router = createRouter({
       path: '/communications/corpevent/:id',
       name: 'corpEvent',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративные события' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративные события' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Корпоративные события', route: 'corpEvents' }]
+      }
     },
     {
       path: '/communications/corplife/',
@@ -347,7 +409,10 @@ const router = createRouter({
       path: '/communications/corplife/:id',
       name: 'corpLifeItem',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь', type: 'onlyImg' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь', type: 'onlyImg' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Корпоративная жизнь', route: 'corpLife' }]
+      }
     },
     {
       path: '/communications/announces/',
@@ -358,7 +423,10 @@ const router = createRouter({
       path: '/communications/announces/:id',
       name: 'eventAnnounce',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Афиша' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Афиша' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Афиша', route: 'eventAnnounces' }]
+      }
     },
     {
       path: '/gallery/partners/',
@@ -369,7 +437,10 @@ const router = createRouter({
       path: '/gallery/partners/:id',
       name: 'partnerPost',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Предложения партнеров' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Предложения партнеров' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Предложения партнеров', route: 'partners' }]
+      }
     },
     {
       path: '/gallery/care/',
@@ -380,7 +451,10 @@ const router = createRouter({
       path: '/gallery/care/:id',
       name: 'carePost',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Благотворительные проекты' })
+      props: (route) => ({ id: route.params.id, pageTitle: 'Благотворительные проекты' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Благотворительные проекты', route: 'care' }]
+      }
     },
     {
       path: '/user/auth',

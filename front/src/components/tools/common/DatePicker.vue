@@ -9,12 +9,12 @@
                    auto-apply
                    placeholder="Выберите дату"
                    :format="format"
+                   @cleared="$emit('clearValue')"
                    @update:model-value="handleDate" />
 </template>
 
 <script lang="ts">
-import { watch } from 'vue';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 
 export default defineComponent({
     props: {
@@ -31,13 +31,13 @@ export default defineComponent({
         const dateInput = ref();
 
         watch(() => props.nullifyDateInput, (newVal) => {
-            if (newVal == true) {
+            if (newVal) {
                 dateInput.value = null;
             }
         }, { deep: true, immediate: true })
 
 
-        const searchValue = ref("20.01.2025");
+        const searchValue = ref("");
 
         const pickDate = (date: string) => {
             searchValue.value = date;
@@ -61,11 +61,14 @@ export default defineComponent({
             else if (props.calendarType == 'monthAndYear') {
                 return `${month > 9 ? month : "0" + month}.${year}`;
             }
+            else if (props.calendarType == 'month') {
+                return `${month > 9 ? month : "0" + month}`
+            }
         };
 
         const handleDate = (date: Date) => {
             if (!date) return;
-            emit('chosenDate', format(date))
+            emit('pickDate', date)
         }
 
         return {

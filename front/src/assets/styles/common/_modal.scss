@@ -25,6 +25,10 @@
         &--fullscreen {
             width: 99%;
         }
+
+        &--pdf {
+            width: calc(100% - 20px);
+        }
     }
 
     &__overlay {

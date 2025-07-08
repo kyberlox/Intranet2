@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="postcard__form-group postcard__swiper-wrapper">
-                        <FullWidthSlider :images="slides" />
+                        <SwiperBlank :images="slides" />
                     </div>
 
                     <div class="postcard__form-group">
@@ -70,13 +70,13 @@
 </template>
 
 <script lang="ts">
-import FullWidthSlider from "@/components/tools/swiper/FullWidthSlider.vue";
 import { textAreaRowsToContent } from "@/utils/StringUtils.js";
-import { ref } from "vue";
-import { defineComponent } from "vue";
+import { ref, defineComponent } from "vue";
+import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
+
 export default defineComponent({
     name: "PostCard",
-    components: { FullWidthSlider },
+    components: { SwiperBlank },
     setup() {
         const signature = ref(`С уважением,
 Газинский Игорь Владимирович

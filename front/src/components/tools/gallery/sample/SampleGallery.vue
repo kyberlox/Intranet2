@@ -18,6 +18,7 @@
                     </div>
                     <Reactions v-if="card.reactions"
                                :reactions="card.reactions"
+                               :id="card.id"
                                :type="type" />
                 </RouterLink>
             </div>

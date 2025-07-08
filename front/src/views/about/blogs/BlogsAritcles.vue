@@ -18,6 +18,7 @@
                         <div class="news-like news-like--blog">
                             <span class="blog-date">{{ article.date_creation?.replace('T', ' ') }} //</span>
                             <Reactions v-if="article.reactions"
+                                       :id="article.id"
                                        :reactions="article.reactions"
                                        :type="'blog'" />
                         </div>

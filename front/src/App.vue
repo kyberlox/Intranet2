@@ -7,6 +7,7 @@
                 <div class="row main-layout"
                      :class="{ 'row--nomargin': !isLogin }">
                     <div class="main-content flex-grow">
+                        <Breadcrumbs />
                         <RouterView />
                     </div>
                     <div v-if="isLogin"
@@ -28,6 +29,7 @@ import { RouterView, useRoute } from "vue-router";
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/RightSidebar.vue";
 import AuthPage from "./views/user/AuthPage.vue";
+import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 
 import { useblogDataStore } from "./stores/blogData";
 import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
@@ -40,6 +42,7 @@ export default defineComponent({
         Sidebar,
         RouterView,
         AuthPage,
+        Breadcrumbs
     },
     setup() {
         const blogData = useblogDataStore();
@@ -51,9 +54,6 @@ export default defineComponent({
         watch(route, () => {
             if (route.fullPath.includes('blog') && !blogAuthors.value.length) {
                 getBlogAuthorsToStore(allAuthors, blogData)
-            }
-            console.log(route)
-            if (route.params.breadcrumbs) {
             }
         }, { immediate: true, deep: true })
 

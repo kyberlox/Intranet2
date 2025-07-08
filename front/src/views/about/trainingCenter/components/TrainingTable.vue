@@ -65,6 +65,7 @@
 import { ref, defineComponent, watch } from "vue";
 import type { ItableItem } from "@/interfaces/IEntities";
 import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
     props: {
@@ -81,6 +82,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const visibleTrainings = ref();
         const years = ref([]);
+        const route = useRoute();
 
         const takeStarClass = (reviews) => {
             if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
@@ -112,7 +114,7 @@ export default defineComponent({
             emit('openModal', training);
         };
         watch((props), (newVal) => {
-            if (newVal.tableElements) {
+            if (newVal.tableElements && route.name !== 'literature') {
                 newVal.tableElements.forEach((e) => {
                     const newDate = e.indirect_data.event_date.split('.')[2];
                     if (newDate && !years.value.includes(newDate)) {
@@ -120,9 +122,8 @@ export default defineComponent({
                     }
                 })
                 years.value.sort((b, a) => { return a - b })
-
-                visibleTrainings.value = newVal.tableElements
             }
+            visibleTrainings.value = newVal.tableElements
         }, { immediate: true, deep: true })
 
         const filterBy = (param) => {

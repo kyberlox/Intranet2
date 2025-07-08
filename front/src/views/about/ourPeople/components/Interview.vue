@@ -11,6 +11,7 @@
                         <div class="news-like">
                             <Reactions v-if="interviewInner.reactions"
                                        :reactions="interviewInner.reactions"
+                                       :id="interviewInner.id"
                                        :type="'interview'" />
                         </div>
                     </div>

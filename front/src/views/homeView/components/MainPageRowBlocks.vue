@@ -12,6 +12,7 @@
                  class="homeview__grid__card__title homeview__grid__card__title--gallery">{{ card.title }}</div>
             <Reactions v-if="card.reactions"
                        :reactions="card.reactions"
+                       :id="card.id"
                        :type="'interview'" />
         </RouterLink>
     </div>

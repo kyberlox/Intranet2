@@ -1,23 +1,22 @@
 <template>
-    <div class="col-12">
-        <div class="bx-breadcrumb">
+    <div class="col-12"
+         v-if="breadcrumbs && isVisible">
+        <div class="breadcrumb">
             <div v-for="(breadcrumb, index) in breadcrumbs"
                  :key="'bread' + index"
-                 class="bx-breadcrumb-item">
-                <RouterLink :to="{ name: breadcrumb.route }"
-                            href="/intranet/"
-                            title="Главная"
-                            itemprop="item">
-                    <span>{{ breadcrumb.title }}</span>
+                 class="breadcrumb-item">
+                <RouterLink :to="{ name: breadcrumb.route }">
+                    <span class="breadcrumb-item__title">{{ breadcrumb.title }}</span>
                 </RouterLink>
             </div>
-            <div style="clear:both"></div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed, ref, type ComputedRef } from 'vue';
+import { useRoute } from 'vue-router';
+import { watch } from 'vue';
 
 interface IBreadcrumb {
     title: string,
@@ -25,15 +24,51 @@ interface IBreadcrumb {
 }
 
 export default defineComponent({
-    props: {
-        breadcrumbs: {
-            type: Array<IBreadcrumb>
-        }
-    },
     setup() {
-        return {
+        const route = useRoute();
 
+        const breadcrumbs: ComputedRef<IBreadcrumb[]> = computed(() =>
+            route.meta?.breadcrumbs ? route.meta.breadcrumbs as IBreadcrumb[] : [{ title: 'Назад', route: 'home' }])
+
+        const isVisible = ref(false);
+
+        watch((route), (newVal) => {
+            isVisible.value = newVal.name !== 'home';
+        }, { immediate: true })
+
+        return {
+            breadcrumbs,
+            route,
+            isVisible
         }
     }
 })
 </script>
+
+<style lang="scss">
+.breadcrumb {
+    margin-top: 15px;
+
+    &-item {
+        float: left;
+        white-space: nowrap;
+        line-height: 13px;
+        vertical-align: middle;
+
+        &__title {
+            text-decoration: underline;
+
+            color: gray !important;
+            font-size: 14px;
+
+            transition: all 0.2ms;
+
+            &:hover {
+                color: var(--emk-brand-color) !important;
+            }
+        }
+
+
+    }
+}
+</style>

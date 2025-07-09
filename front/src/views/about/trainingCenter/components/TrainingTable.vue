@@ -4,7 +4,7 @@
 
         <div v-if="page == 'conductedTrainings'"
              class="trainings-table__filter__wrap mt20">
-            <TagDateNavBar @pickFilter="(param) => filterBy(param)"
+            <TagDateNavBar @pickFilter="filterBy"
                            :params="years" />
         </div>
 
@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, watch } from "vue";
+import { ref, defineComponent, watch, type Ref } from "vue";
 import type { ItableItem } from "@/interfaces/IEntities";
 import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
 import { useRoute } from "vue-router";
@@ -80,11 +80,11 @@ export default defineComponent({
         TagDateNavBar
     },
     setup(props, { emit }) {
-        const visibleTrainings = ref();
-        const years = ref([]);
+        const visibleTrainings: Ref<ItableItem[]> = ref([]);
+        const years: Ref<string[]> = ref([]);
         const route = useRoute();
 
-        const takeStarClass = (reviews) => {
+        const takeStarClass = (reviews: { stars?: string }[]) => {
             if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
                 return 'score-stars__0';
             }
@@ -114,21 +114,26 @@ export default defineComponent({
             emit('openModal', training);
         };
         watch((props), (newVal) => {
-            if (newVal.tableElements && route.name !== 'literature') {
+            if (!newVal.tableElements) return
+            if (route.name !== 'literature') {
                 newVal.tableElements.forEach((e) => {
-                    const newDate = e.indirect_data.event_date.split('.')[2];
+                    if (!e.indirect_data) return;
+                    const target = e.indirect_data.event_date;
+                    if (!target) return;
+                    const newDate = target.split('.')[2];
                     if (newDate && !years.value.includes(newDate)) {
                         years.value.push(newDate)
                     }
                 })
-                years.value.sort((b, a) => { return a - b })
+                years.value.sort((b: string, a: string) => { return Number(a) - Number(b) })
             }
             visibleTrainings.value = newVal.tableElements
         }, { immediate: true, deep: true })
 
-        const filterBy = (param) => {
+        const filterBy = (param: string) => {
+            if (!props.tableElements) return
             visibleTrainings.value = props.tableElements;
-            visibleTrainings.value = visibleTrainings.value.filter((e) => { return e.indirect_data.event_date.split('.')[2] == param })
+            visibleTrainings.value = visibleTrainings.value.filter((e) => { return e.indirect_data?.event_date ? e.indirect_data.event_date.split('.')[2] == param : '' })
         }
 
         return {

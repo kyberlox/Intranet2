@@ -68,6 +68,8 @@ export default defineComponent({
 
         const handleDate = (date: Date) => {
             if (!date) return;
+            console.log(date);
+
             emit('pickDate', date)
         }
 

@@ -69,7 +69,11 @@ export interface IConductedTrainings {
     "content_text"?: string,
     "indirect_data"?: {
         "author"?: string,
-        "reviews"?: [],
+        "reviews"?: {
+            text: string,
+            stars: string,
+            reviewer: string
+        }[],
         "event_date"?: string,
         "participants"?:
         {
@@ -389,6 +393,12 @@ export interface ItableItem {
         author?: string,
         subsection?: string,
         subsection_id?: string,
+        event_date?: string,
+        reviews?: {
+            reviewer?: string
+            text?: string,
+            stars?: string,
+        }[],
     },
     documentation?: {
         file_url?: string,

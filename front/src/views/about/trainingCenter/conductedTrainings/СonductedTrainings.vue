@@ -3,9 +3,9 @@
         <div class="page__title">Проведённые тренинги</div>
         <TrainingTable :tableElements="trainings"
                        :page="'conductedTrainings'"
-                       @openModal="(x) => handleModal('open', x)" />
+                       @openModal="handleModal" />
         <FeedBackModal v-if="modalIsVisible == true"
-                       @closeModal="handleModal('close', '')"
+                       @closeModal="handleModal('close', null)"
                        :trainingInModal="trainingInModal" />
     </div>
 </template>
@@ -25,7 +25,7 @@ export default defineComponent({
     },
     setup() {
         const trainings: Ref<IConductedTrainings[]> = ref([]);
-        const trainingInModal = ref();
+        const trainingInModal: Ref<IConductedTrainings> = ref({} as IConductedTrainings);
         const modalIsVisible = ref(false);
 
         onMounted(() => {
@@ -35,17 +35,12 @@ export default defineComponent({
                 })
         })
 
-        const handleModal = (type, item) => {
-            console.log('tip', type);
-            console.log(item);
-
-
-            if (type == 'open') {
+        const handleModal = (type: string, item: IConductedTrainings | null) => {
+            if (type == 'open' && item) {
                 trainingInModal.value = item;
                 modalIsVisible.value = true;
             }
             else {
-                console.log('zakr')
                 modalIsVisible.value = false
             }
         }

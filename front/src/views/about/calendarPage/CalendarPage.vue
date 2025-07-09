@@ -19,7 +19,7 @@
                             disable-year-select
                             :calendarType="'month'"
                             @clearValue="visibleMonthes = monthesInit"
-                            @pickDate="(i) => handleMonthChange(i)" />
+                            @pickDate="handleMonthChange" />
             </div>
         </div>
         <div class="calendarYear mt20"
@@ -34,15 +34,15 @@
                          ref=monthNodes>{{ month.name }}</div>
                     <div class="calendarYear__content">
                         <div class="calendarYear__event__wrapper"
-                             v-for="event in getEventFromMonth(month.value)"
-                             :key="event.id">
+                             v-for="(event, index) in getEventFromMonth(month.value)"
+                             :key="'event' + index">
                             <div class="calendarYear__event"
                                  ref=eventNodes
-                                 :class="{ 'calendarYear__event--chosen': event.DATE_FROM && preDate == formatDateNoTime(event.DATE_FROM) }"
-                                 :style="{ '--event-color': event.COLOR || '#f36509' }"
-                                 :data-date-target="formatDateNoTime(event.DATE_FROM)">
+                                 :class="{ 'calendarYear__event--chosen': isCalendarEvent(event) && event.DATE_FROM && preDate == formatDateNoTime(event.DATE_FROM) }"
+                                 :style="{ '--event-color': isCalendarEvent(event) && event.COLOR || '#f36509' }"
+                                 :data-date-target="isCalendarEvent(event) && formatDateNoTime(event.DATE_FROM)">
                                 <div class="calendarYear__event__dates"
-                                     v-if="event.DATE_FROM && event.DATE_TO && formatDateNoTime(event.DATE_FROM) !==
+                                     v-if="isCalendarEvent(event) && event.DATE_FROM && event.DATE_TO && formatDateNoTime(event.DATE_FROM) !==
                                         formatDateNoTime(event.DATE_TO)">
                                     <span class="calendarYear__event__date">
                                         {{
@@ -52,13 +52,15 @@
                                 </div>
                                 <div v-else
                                      class="calendarYear__event__date">
-                                    {{ event.DATE_FROM ? formatDateNoTime(event.DATE_FROM) : '' }}
+                                    {{
+                                        isCalendarEvent(event) && event.DATE_FROM ? formatDateNoTime(event.DATE_FROM) : ''
+                                    }}
                                 </div>
                                 <span class="calendarYear__event__name">
                                     {{ event.NAME }}
                                 </span>
                                 <div class="square-mark"></div>
-                                <a v-if="checkButtonStatus(event)"
+                                <a v-if="isCalendarEvent(event) && checkButtonStatus(event)"
                                    class="calendarYear__event-btn"
                                    :href="`https://portal.emk.ru/calendar/?EVENT_ID=${event.ID}EVENT_DATE=${event.DATE_FROM}`"
                                    target="_blank">
@@ -76,7 +78,7 @@
     </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch, nextTick } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch, nextTick, type ComputedRef, type Ref } from 'vue';
 import { monthesInit } from '@/assets/static/monthes';
 import type { ICalendar } from '@/interfaces/ICalendar';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
@@ -97,12 +99,14 @@ export default defineComponent({
     },
     setup(props) {
         const visibleMonthes = ref(monthesInit);
-
-
         const date = ref('');
         const monthNodes = ref();
         const eventNodes = ref();
-        const currentEvents = computed(() => useViewsDataStore().getData('calendarData'));
+        const currentEvents: ComputedRef<ICalendar[]> = computed(() => useViewsDataStore().getData('calendarData') as ICalendar[]);
+
+        const isCalendarEvent = (event: ICalendar | { NAME: string }): event is ICalendar => {
+            return 'DATE_FROM' in event;
+        };
 
         const checkButtonStatus = (event: ICalendar) => {
             if (event.DATE_FROM && event.ID) {
@@ -112,7 +116,7 @@ export default defineComponent({
                 return false
         }
 
-        const scrollToNode = async (target, nodes, attrTitle: string) => {
+        const scrollToNode = async (target: string, nodes: Ref<HTMLElement[]>, attrTitle: string) => {
             visibleMonthes.value = monthesInit;
             if (!target || !nodes.value?.length || !attrTitle) return;
 
@@ -127,7 +131,9 @@ export default defineComponent({
         }
 
         onMounted(() => {
+            if (!props.monthId) return;
             scrollToNode(props.monthId, monthNodes, 'data-month-num')
+            if (!props.preDate) return;
             scrollToNode(props.preDate, eventNodes, 'data-date-target')
 
         })
@@ -143,12 +149,16 @@ export default defineComponent({
 
         const getEventFromMonth = (monthNum: string) => {
             const monthEvents = currentEvents.value.filter((e) => {
-                return getMonth(formatDateNoTime(e.DATE_FROM)) == monthNum
+                const newDate = formatDateNoTime(e.DATE_FROM);
+                if (!newDate) return;
+
+                return getMonth(newDate) == monthNum
             })
             return monthEvents.length ? monthEvents : [{ NAME: 'В этом месяце событий нет' }]
         }
 
         const handleMonthChange = (monthValue: { month: number, year: number }) => {
+
             visibleMonthes.value = monthesInit.filter((e) => {
                 return Number(e.value) == monthValue.month + 1;
             })
@@ -166,6 +176,7 @@ export default defineComponent({
             formatDateNoTime,
             getEventFromMonth,
             handleMonthChange,
+            isCalendarEvent
         };
     },
 });

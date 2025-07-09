@@ -49,7 +49,10 @@ export default defineComponent({
                     const markerItem: Ref<ICalendarMarker> = ref({});
 
                     if (!e.DATE_FROM) return;
-                    markerItem.value.date = new Date(dateConvert(formatDateNoTime(e.DATE_FROM), 'toDateType'));
+                    const formatedDate = formatDateNoTime(e.DATE_FROM);
+                    if (!formatedDate) return;
+
+                    markerItem.value.date = new Date(dateConvert(formatedDate, 'toDateType'));
                     markerItem.value.type = 'dot';
                     markerItem.value.tooltip = [{ text: e.NAME || '', color: e.COLOR || 'orange' }];
                     markerItem.value.color = e.COLOR || 'orange';
@@ -70,7 +73,7 @@ export default defineComponent({
         const handleRouteToCurrentMonth = () => {
             router.push({ name: 'calendar' });
             setTimeout(() =>
-                router.push({ name: 'calendarMonth', params: { monthId: addZeroToMonth(new Date().getMonth()) } }), 30)
+                router.push({ name: 'calendarMonth', params: { monthId: addZeroToMonth(String(new Date().getMonth())) } }), 30)
         }
         return {
             date,

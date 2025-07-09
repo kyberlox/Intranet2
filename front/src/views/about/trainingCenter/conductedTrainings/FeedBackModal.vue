@@ -17,10 +17,11 @@
 
                 <div class="training-feedback__wrapper">
                     <div class="training-feedback"
-                         v-for="(review, index) in trainingInModal.indirect_data.reviews"
+                         v-for="(review, index) in trainingInModal?.indirect_data?.reviews"
                          :key="index">
-                        <h1>{{ review.reviewer }}</h1>
-                        <h1 v-html="review.text"></h1>
+                        <h1 v-if="review.reviewer">{{ review.reviewer }}</h1>
+                        <h1 v-if="review.text"
+                            v-html="review.text"></h1>
                     </div>
                 </div>
 
@@ -30,19 +31,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, type PropType } from 'vue';
+import type { IConductedTrainings } from '@/interfaces/IEntities';
+import { propertyCheck } from '@/utils/propertyCheck';
 
 export default defineComponent({
     props: {
         trainingInModal: {
-            type: Object
+            type: Object as PropType<IConductedTrainings>
         }
     },
-    setup(props, { emit }) {
-        console.log(props)
+    setup() {
 
         return {
-
+            propertyCheck
         }
     }
 })

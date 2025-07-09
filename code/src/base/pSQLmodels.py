@@ -1053,33 +1053,20 @@ class LikesModel:
         self.art_id = art_id
         self.user_uuid = user_uuid
 
-    def add_like(self ) -> bool:
+    def add_or_remove_like(self ) -> bool:
         """
-        Пользователь поставил лайк статье.
-        Возвращает True, если лайк успешно добавлен, False если лайк уже существует.
+        Ставит лайк статье если пользователь его еще не ставил
+        Убрает лайк со статьи
+        Меняет статус лайка
         """
         # Проверяем, есть ли уже активный лайк
         existing_like = self.session.query(Likes).filter(
             Likes.user_id == self.user_id,
-            Likes.article_id == self.art_id,
-            Likes.is_active == True
+            Likes.article_id == self.art_id
         ).first()
 
-        if existing_like:
-            return False  # Лайк уже существует
-
-        # Если лайк был, но is_active=False, обновляем его
-        inactive_like = self.session.query(Likes).filter(
-            Likes.user_id == self.user_id,
-            Likes.article_id == self.art_id,
-            Likes.is_active == False
-        ).first()
-
-        if inactive_like:
-            inactive_like.is_active = True
-            inactive_like.created_at = datetime.utcnow()
-        else:
-            # Создаем новый лайк
+        if not existing_like:
+            # создаем новый лайк если прежде никогда не стоял
             new_like = Likes(
                 user_id=self.user_id,
                 article_id=self.art_id,
@@ -1087,28 +1074,34 @@ class LikesModel:
                 created_at=datetime.utcnow()
             )
             self.session.add(new_like)
+            self.session.commit()
+            likes_count = self.get_likes_count()
 
-        self.session.commit()
-        return True
+            likes = {'count': likes_count, 'likedByMe': True}
+            
+            return likes
 
-    def remove_like(self ) -> bool:
-        """
-        Пользователь убрал лайк со статьи.
-        Возвращает True, если лайк успешно убран, False если лайка не было.
-        """
-        # Ищем активный лайк
-        like = self.session.query(Likes).filter(
-            Likes.user_id == self.user_id,
-            Likes.article_id == self.art_id,
-            Likes.is_active == True
-        ).first()
+        elif existing_like.is_active is False:
+            # если лайк не был поставлен, ставим
+            existing_like.is_active = True
+            self.session.commit()
+            likes_count = self.get_likes_count()
 
-        if not like:
-            return False  # Активного лайка не было
+            likes = {'count': likes_count, 'likedByMe': True}
+            
+            return likes
 
-        like.is_active = False
-        self.session.commit()
-        return True
+        elif existing_like.is_active is True:
+            # если лайк был поставлен, убираем
+            existing_like.is_active = False
+            self.session.commit()
+
+            likes_count = self.get_likes_count()
+
+            likes = {'count': likes_count, 'likedByMe': False}
+            
+            return likes
+
 
     def has_liked(self ) -> bool:
         """
@@ -1265,15 +1258,23 @@ class ViewsModel:
 
     def add_view_b24(self ) -> None:
         """
-        Добавляет запись о просмотре статьи пользователем
+        Добавляет запись о количестве просмотров статьи
         """
-        new_view = Views(
-            article_id=self.art_id,
-            viewes_count=self.views_count
-        )
-        self.session.add(new_view)
-        self.session.commit()
-    
+        existing_view = self.session.query(Views).where(Views.article_id == self.art_id).first()
+
+        if existing_view:
+            existing_view.viewes_count = self.views_count
+            self.session.commit()
+            return {"msg": "существует"}  # Лайк уже существует
+        else:
+            new_view = Views(
+                article_id=self.art_id,
+                viewes_count=self.views_count
+            )
+            self.session.add(new_view)
+            self.session.commit()
+            return {"msg": "добавили"}
+
     def get_art_viewes(self):
         """
         Возвращает количество просмотров у данной статьи
@@ -1281,24 +1282,23 @@ class ViewsModel:
         return self.session.query(Views.viewes_count).where(
             Views.article_id == self.art_id
         ).scalar()
-       
+    
+    def add_art_view(self):
+        """
+        Добавляет просмотр к статье и возвращает итоговое количество просмотров у статьи
+        """
+        existing_view = self.session.query(Views).where(Views.article_id == self.art_id).first()
+        if existing_view:
+            existing_view.viewes_count = existing_view.viewes_count + 1
+            self.session.commit()
+            return {"views": existing_view.viewes_count}
+        else:
+            new_view = Views(
+                article_id=self.art_id,
+                viewes_count=1
+            )
+            self.session.add(new_view)
+            self.session.commit()
+            return {"views": new_view.viewes_count}
 
-    # def get_viewers(self) -> List[int]:
-    #     """
-    #     Возвращает список user_id пользователей, которые просмотрели статью
-    #     """
-    #     viewers = self.session.query(Views.user_id).filter(
-    #         Views.article_id == self.art_id
-    #     ).distinct().all()
 
-    #     return [viewer[0] for viewer in viewers]
-
-    # def get_viewed_articles(self) -> List[int]:
-    #     """
-    #     Возвращает список art_id статей, которые просмотрел пользователь
-    #     """
-    #     articles = self.session.query(Views.article_id).filter(
-    #         Views.user_id == self.user_id
-    #     ).distinct().all()
-
-    #     return [article[0] for article in articles]

@@ -169,12 +169,6 @@ def test_file_get(file_id):
     file_data = b24.get_all_files(file_id)
     return file_data
 
-@app.get("/elastic_dump")
-def elastic_dump():
-    # res = UserSearchModel().dump()
-    res = StructureSearchModel().dump()
-    return res
-
 @app.get("/api/full_search/{keyword}")
 def elastic_search(keyword: str, size_res: int = 20):
     return search_everywhere(key_word=keyword, size_res=size_res)
@@ -250,6 +244,11 @@ def get_user(request: Request):
 
 
 
+# @app.get("/elastic_dump")
+# def elastic_dump():
+#     # res = UserSearchModel().dump()
+#     res = StructureSearchModel().dump()
+#     return res
 '''
 ! Особенные запросы
 '''

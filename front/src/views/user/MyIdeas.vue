@@ -36,12 +36,16 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted } from 'vue';
 import { ideas } from '@/assets/static/ideas';
+import Api from '@/utils/Api';
+import { sectionTips } from '@/assets/static/sectionTips';
 export default defineComponent({
     name: 'MyIdeas',
     setup() {
-
+        onMounted(() => {
+            Api.get(`article/find_by/${sectionTips['ЕстьИдея']}`)
+        })
         return {
             ideas
         };

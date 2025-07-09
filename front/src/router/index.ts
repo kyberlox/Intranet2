@@ -228,10 +228,10 @@ const router = createRouter({
       component: () => import('@/views/about/calendarPage/CalendarPage.vue')
     },
     {
-      path: '/about/calendar/:monthId',
+      path: '/about/calendar/:monthId?/:date?',
       name: 'calendarMonth',
       component: () => import('@/views/about/calendarPage/CalendarPage.vue'),
-      props: (route) => ({ monthId: route.params.monthId }),
+      props: (route) => ({ monthId: route.params.monthId, preDate: route.params.date }),
     },
     {
       path: '/about/merch',

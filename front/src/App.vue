@@ -35,6 +35,7 @@ import { useblogDataStore } from "./stores/blogData";
 import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
 import { useLoadingStore } from '@/stores/loadingStore'
 import { useUserData } from "./stores/userData";
+import { useViewsDataStore } from "./stores/viewsData";
 export default defineComponent({
     name: "app-layout",
     components: {
@@ -47,6 +48,7 @@ export default defineComponent({
     setup() {
         const blogData = useblogDataStore();
         const blogAuthors = computed(() => blogData.getAllAuthors)
+        const currentYear = new Date().getFullYear();
 
         const route = useRoute();
         const allAuthors = ref([]);
@@ -59,6 +61,11 @@ export default defineComponent({
 
         onMounted(() => {
             useUserData().initKeyFromStorage();
+            fetch(`https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from=${currentYear}-01-01&to=${currentYear}-12-31`)
+                .then((resp) => resp.json())
+                .then((data) => {
+                    useViewsDataStore().setData(data.result, 'calendarData');
+                });
         })
 
         return {

@@ -23,5 +23,10 @@ export const getMonth = (date: string) => {
 }
 
 export const formatDateNoTime = (date: string) => {
-    return date.split(' ')[0];
+    if (!date) return;
+    return date.length ? date.split(' ')[0] : date;
+}
+
+export const addZeroToMonth = (month: string) => {
+    return Number(month) < 9 ? `0${month}` : month
 }

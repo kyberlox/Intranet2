@@ -1,69 +1,74 @@
 <template>
-    <div class="page__title mt20">Календарь событий</div>
-    <div class="calendar-container">
-        <div class="calendar__meanings">
-            <div class="calendar_meaning">Основные события
-                <div class="square-mark"
-                     style="background-color: #f36509"></div>
-            </div>
-            <div class="calendar_meaning">ОВК
-                <div class="square-mark"
-                     style="background-color: #00b38c">
+    <div class="page__content"
+         v-if="currentEvents.length">
+        <div class="page__title mt20">Календарь событий</div>
+        <div class="calendar-container">
+            <div class="calendar__meanings">
+                <div class="calendar_meaning">Основные события
+                    <div class="square-mark"
+                         style="background-color: #f36509"></div>
+                </div>
+                <div class="calendar_meaning">ОВК
+                    <div class="square-mark"
+                         style="background-color: #00b38c">
+                    </div>
                 </div>
             </div>
+            <div class="datepicker__wrapper">
+                <DatePicker month-picker
+                            disable-year-select
+                            :calendarType="'month'"
+                            @clearValue="visibleMonthes = monthesInit"
+                            @pickDate="(i) => handleMonthChange(i)" />
+            </div>
         </div>
-        <div class="datepicker__wrapper">
-            <DatePicker month-picker
-                        disable-year-select
-                        :calendarType="'month'"
-                        @clearValue="clearDatePicker"
-                        @pickDate="(i) => handleMonthChange(i)" />
-        </div>
-    </div>
-    <div class="calendarYear mt20"
-         v-if="currentEvents">
-        <div class="calendarYear__item__wrapper"
-             v-for="month in visibleMonthes"
-             :key="'month' + month.value">
-            <div class="calendarYear__item">
-                <div class="calendarYear__title "
-                     :class="{ 'calendarYear__title--target': String(monthId) == month.value }"
-                     :data-month-num="month.value"
-                     ref=chosenMonth>{{ month.name }}</div>
-                <div class="calendarYear__content">
-                    <div class="calendarYear__event__wrapper"
-                         v-for="event in getEventFromMonth(month.value)"
-                         :key="event.id">
-                        <div class="calendarYear__event">
-                            <div class="calendarYear__event__dates"
-                                 v-if="event.DATE_FROM && event.DATE_TO && formatDateNoTime(event.DATE_FROM) !==
-                                    formatDateNoTime(event.DATE_TO)">
-                                <span class="calendarYear__event__date">
-                                    {{
-                                        formatDateNoTime(event.DATE_FROM) + ' - ' + formatDateNoTime(event.DATE_TO)
-                                    }}
+        <div class="calendarYear mt20"
+             v-if="currentEvents">
+            <div class="calendarYear__item__wrapper"
+                 v-for="month in visibleMonthes"
+                 :key="'month' + month.value">
+                <div class="calendarYear__item">
+                    <div class="calendarYear__title "
+                         :class="{ 'calendarYear__title--target': String(monthId) == month.value }"
+                         :data-month-num="month.value"
+                         ref=monthNodes>{{ month.name }}</div>
+                    <div class="calendarYear__content">
+                        <div class="calendarYear__event__wrapper"
+                             v-for="event in getEventFromMonth(month.value)"
+                             :key="event.id">
+                            <div class="calendarYear__event"
+                                 ref=eventNodes
+                                 :class="{ 'calendarYear__event--chosen': event.DATE_FROM && preDate == formatDateNoTime(event.DATE_FROM) }"
+                                 :style="{ '--event-color': event.COLOR || '#f36509' }"
+                                 :data-date-target="formatDateNoTime(event.DATE_FROM)">
+                                <div class="calendarYear__event__dates"
+                                     v-if="event.DATE_FROM && event.DATE_TO && formatDateNoTime(event.DATE_FROM) !==
+                                        formatDateNoTime(event.DATE_TO)">
+                                    <span class="calendarYear__event__date">
+                                        {{
+                                            formatDateNoTime(event.DATE_FROM) + ' - ' + formatDateNoTime(event.DATE_TO)
+                                        }}
+                                    </span>
+                                </div>
+                                <div v-else
+                                     class="calendarYear__event__date">
+                                    {{ event.DATE_FROM ? formatDateNoTime(event.DATE_FROM) : '' }}
+                                </div>
+                                <span class="calendarYear__event__name">
+                                    {{ event.NAME }}
                                 </span>
+                                <div class="square-mark"></div>
+                                <a v-if="checkButtonStatus(event)"
+                                   class="calendarYear__event-btn"
+                                   :href="`https://portal.emk.ru/calendar/?EVENT_ID=${event.ID}EVENT_DATE=${event.DATE_FROM}`"
+                                   target="_blank">
+                                    {{ checkButtonStatus(event) }}
+                                </a>
+                                <span class="calendarYear__event-btn calendarYear__event-btn--no-border"
+                                      v-else></span>
                             </div>
-                            <div v-else
-                                 class="calendarYear__event__date">
-                                {{ event.DATE_FROM ? formatDateNoTime(event.DATE_FROM) : '' }}
-                            </div>
-                            <span class="calendarYear__event__name">
-                                {{ event.NAME }}
-                            </span>
-                            <div class="square-mark"></div>
-                            <a v-if="checkButtonStatus(event)"
-                               class="calendarYear__event-btn"
-                               :style="{ '--event-color': event.color }"
-                               :class="[{ 'calendarYear__event-btn--ovk': event.CREATED_BY == '2857' }, { 'calendarYear__event-btn--dpm': event.CREATED_BY == '3542' && !event.COLOR }, { 'calendarYear__event-btn--custom-color': event.CREATED_BY == '3542' && event.COLOR }]"
-                               :href="`https://portal.emk.ru/calendar/?EVENT_ID=${event.ID}EVENT_DATE=${event.DATE_FROM}`"
-                               target="_blank">
-                                {{ checkButtonStatus(event) }}
-                            </a>
-                            <span class="calendarYear__event-btn calendarYear__event-btn--no-border"
-                                  v-else></span>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,12 +76,10 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, defineComponent, onMounted, ref, watch, nextTick } from 'vue';
 import { monthesInit } from '@/assets/static/monthes';
 import type { ICalendar } from '@/interfaces/ICalendar';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
-import Api from '@/utils/Api';
 import { getMonth, formatDateNoTime } from '@/utils/dateConvert';
 import { useViewsDataStore } from '@/stores/viewsData';
 
@@ -87,28 +90,19 @@ export default defineComponent({
     props: {
         monthId: {
             type: String
+        },
+        preDate: {
+            type: String
         }
     },
     setup(props) {
-        const router = useRouter();
-        const currentYear = new Date().getFullYear();
-        const currentEvents = ref();
         const visibleMonthes = ref(monthesInit);
-        const yearSelect = ref(new Date().getFullYear());
-        const years = Object.keys([]);
+
 
         const date = ref('');
-
-        const chosenMonth = ref();
-
-        onMounted(() => {
-            fetch(`https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from=${currentYear}-01-01&to=${currentYear}-12-31`)
-                .then((resp) => resp.json())
-                .then((data) => {
-                    currentEvents.value = data.result;
-                    useViewsDataStore().setData(data.result, 'calendarData');
-                });
-        })
+        const monthNodes = ref();
+        const eventNodes = ref();
+        const currentEvents = computed(() => useViewsDataStore().getData('calendarData'));
 
         const checkButtonStatus = (event: ICalendar) => {
             if (event.DATE_FROM && event.ID) {
@@ -118,18 +112,34 @@ export default defineComponent({
                 return false
         }
 
-        watch((props), (newVal) => {
-            console.log(newVal);
+        const scrollToNode = async (target, nodes, attrTitle: string) => {
+            visibleMonthes.value = monthesInit;
+            if (!target || !nodes.value?.length || !attrTitle) return;
 
-            if (newVal.monthId && chosenMonth.value) {
-                chosenMonth.value.map((e: HTMLElement) => {
-                    if (e.getAttribute('data-month-num') == props.monthId) {
-                        setTimeout(() =>
-                            e.scrollIntoView({ behavior: 'smooth', block: 'center' }), 10)
-                    }
-                })
-            }
+            await nextTick();
+
+            nodes.value.map((e: HTMLElement) => {
+                if (e.getAttribute(attrTitle) == target) {
+                    setTimeout(() =>
+                        e.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
+                }
+            })
+        }
+
+        onMounted(() => {
+            scrollToNode(props.monthId, monthNodes, 'data-month-num')
+            scrollToNode(props.preDate, eventNodes, 'data-date-target')
+
         })
+
+        watch((props), (newVal) => {
+            if (newVal.monthId && monthNodes.value?.length) {
+                scrollToNode(newVal.monthId, monthNodes, 'data-month-num')
+            }
+            else if (newVal.preDate && eventNodes.value?.length) {
+                scrollToNode(newVal.preDate, eventNodes, 'data-date-target')
+            }
+        }, { immediate: true, deep: true })
 
         const getEventFromMonth = (monthNum: string) => {
             const monthEvents = currentEvents.value.filter((e) => {
@@ -144,96 +154,19 @@ export default defineComponent({
             })
         }
 
-        const clearDatePicker = () => {
-            router.push({ name: 'calendar' })
-            visibleMonthes.value = monthesInit;
-        }
-
         return {
-            years,
             visibleMonthes,
-            currentYear,
-            yearSelect,
+            monthesInit,
             currentEvents,
             checkButtonStatus,
             date,
             getMonth,
-            chosenMonth,
+            monthNodes,
+            eventNodes,
             formatDateNoTime,
             getEventFromMonth,
             handleMonthChange,
-            clearDatePicker,
         };
     },
 });
 </script>
-
-<style lang="scss">
-.calendarYear__title--target {
-    background-color: rgba(0, 123, 255, 0.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid #007bff;
-    transition: all 0.3s ease;
-}
-
-.calendarYear__event {
-    border-bottom: 1px solid rgba(146, 140, 140, 0.237);
-    min-height: 69px;
-}
-
-.calendarYear__event__dates {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    align-items: center;
-}
-
-.calendarYear__event__date {
-    max-width: 175px;
-    min-width: 175px;
-}
-
-.calendarYear__event-btn {
-    text-align: center;
-
-    border: 1px solid var(--event-color);
-
-    &:hover {
-        background: var(--event-color) !important;
-    }
-}
-
-.calendarYear__event-btn--no-border {
-    border: none;
-}
-
-.dp--year-mode-picker {
-    display: none;
-}
-
-.datepicker__wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-}
-
-.dp__icon {
-    color: var(--emk-brand-color);
-}
-
-.calendarYear__event-btn--ovk {
-    border: 1px solid #00b38c;
-
-    &:hover {
-        background: #00b38c;
-    }
-}
-
-.calendarYear__event-btn--dpm {
-    border: 1px solid #f36509;
-
-    &:hover {
-        background: #f36509;
-    }
-}
-</style>

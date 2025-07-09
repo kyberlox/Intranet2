@@ -8,6 +8,7 @@ from src.model.Section import Section
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
 from src.base.pSQLmodels import ViewsModel
+from src.services.Idea import Idea
 
 import re
 import json
@@ -15,7 +16,7 @@ import datetime
 import asyncio
 import types
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Request
 
 article_router = APIRouter(prefix="/article", tags=["Статьи"])
 
@@ -42,6 +43,8 @@ def dict_to_indirect_data(data, property_value_dict):
         if key in data:
             res[property_value_dict[key]] = take_value(data[key])
     return res
+
+
 
 class Article:
     def __init__(self, id=0, section_id=0):
@@ -677,11 +680,11 @@ class Article:
         sec_inf = {
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
-            #41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
-            172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
+            41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
+            #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
         }
 
-        
+        '''
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
         sec_inf_title = self.get_inf()
@@ -812,6 +815,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
+        '''
 
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
@@ -850,7 +854,6 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
 
 
 
@@ -990,7 +993,7 @@ class Article:
                 pass
         '''
 
-        #Корпоративная газета
+        #Корпоративная газета ✔️
         data = [
             {
                 "ID" : "342022",
@@ -1038,7 +1041,7 @@ class Article:
 
             # 110 Техника безопасности -> Техника безопасности ✔️
             # 34 Корпоративная газета ЭМК -> газеты ❌
-            # 41 Гид по предприятиям -> 3D тур ❌
+            # 41 Гид по предприятиям -> 3D тур ♻️
 
         #переделки
             # 19 Дни рождения ✔️
@@ -1048,7 +1051,7 @@ class Article:
             # 24 Разрешительная документация и сертиффикаты ❌
             # Новые сотрудники ✔️
             # Личный кабинет ✔️
-            # Есть Идея ❌
+            # Есть Идея ✔️
 
             #РЕДАКТОРКА
 
@@ -1056,10 +1059,11 @@ class Article:
             # конфигуратор НПО Регулятор ✔️
             # DeepSeek ❌
             # VCard ✔️
-            # YandexGPT5 + Yandex ART ❌
             # система личной эффективности ❌
             # магазин мерча ❌
+
             # QR-код на САЗ ❌
+            # YandexGPT5 + Yandex ART ❌
             # Юбилей САЗ ❌
 
         # Дамп данных в эластик
@@ -1152,7 +1156,7 @@ class Article:
         
 
 
-    def search_by_section_id(self):
+    def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
             page_view = []
@@ -1216,8 +1220,16 @@ class Article:
 
         elif self.section_id == "34":
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
-            sorted_active_aticles = sorted(result, key=lambda x: x['id'], reverse=True)
-            return sorted_active_aticles
+            sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
+            return sorted_active_articles
+
+        elif self.section_id == "8": #Есть Идея
+            ideas = Idea().get_ideas(session_id)
+            if ideas is not None:
+                sorted_active_articles = sorted(ideas, key=lambda x: x['number'], reverse=False)
+                return sorted_active_articles
+            else:
+                return {"err" : "Auth Err"}
 
         else:
             null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
@@ -1243,13 +1255,13 @@ class Article:
                     active_articles.append(res)
 
             if self.section_id == "111":
-                sorted_active_aticles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             #отдельная сортировка Памятки новому сторуднику
             elif self.section_id == "18":
-                sorted_active_aticles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
+                sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
-                sorted_active_aticles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
-            return sorted_active_aticles
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            return sorted_active_articles
     
     def main_page(self, section_id):
         
@@ -1711,8 +1723,17 @@ def get_article(ID):
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
-def get_articles(section_id):
-    return Article(section_id = section_id).search_by_section_id()
+def get_articles(section_id, request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    
+    return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")

@@ -82,12 +82,10 @@ class Idea:
     def get_ideas(self, session_id):
         user_id = self.get_user(session_id)
         if user_id is not None:
-            print(user_id)
+            #print(user_id)
             result = []
             for idea in self.ideas:
-                print(idea)
                 if str(idea['user_id']) == str(user_id):
-                    print(idea['user_id'])
                     result.append(idea)
             return result
         else:

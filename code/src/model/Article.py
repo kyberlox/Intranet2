@@ -1703,8 +1703,7 @@ def get_articles(section_id, request: Request):
             session_id = token
     else:
         session_id = token
-        
-    print(session_id)
+    
     return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
 # поиск по статьям еластик

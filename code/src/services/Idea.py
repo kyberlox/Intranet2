@@ -83,6 +83,7 @@ class Idea:
             print(user_id)
             result = []
             for idea in self.ideas:
+                print(idea['user_id'])
                 if str(idea['user_id']) == str(user_id):
                     print(idea['user_id'])
                     result.append(idea)

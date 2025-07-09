@@ -10,7 +10,9 @@ import json
 
 
 def take_value(PROPERTY):
-    if type(PROPERTY) == type(dict()):
+    if type(PROPERTY) == type(str()):
+        return PROPERTY
+    elif type(PROPERTY) == type(dict()):
         return list(PROPERTY.values())[0]
     elif type(PROPERTY) == type(list()):
         return PROPERTY[0]

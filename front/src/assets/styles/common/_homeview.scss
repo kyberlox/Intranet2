@@ -58,6 +58,45 @@
                     border: none !important;
                     background: none !important;
                 }
+
+                &.lazy-loading {
+                    background-color: #f0f0f0;
+                    background-image: none !important;
+                    position: relative;
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg,
+                                transparent 0%,
+                                rgba(255, 255, 255, 0.4) 50%,
+                                transparent 100%);
+                        animation: shimmer 1.5s infinite;
+                    }
+                }
+
+                &.lazy-loaded {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+
+                &.lazy-error {
+                    background-color: #ffebee;
+                    position: relative;
+
+                    &::after {
+                        content: '⚠️';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        font-size: 2rem;
+                        opacity: 0.5;
+                    }
+                }
             }
 
             &__bg-image {
@@ -100,17 +139,11 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
 
-                &--gallery {
-                    line-clamp: 2;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-
+                &--gallery,
                 &--video {
                     display: -webkit-box;
-                    -webkit-line-clamp: 2;
                     line-clamp: 2;
+                    -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                 }

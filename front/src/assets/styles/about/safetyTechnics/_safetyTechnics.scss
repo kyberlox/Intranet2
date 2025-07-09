@@ -136,3 +136,29 @@
         }
     }
 }
+
+.evacuation {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 2px solid rgba(128, 128, 128, 0.351);
+
+    &__swiper-wrapper {
+        max-width: 50%;
+    }
+
+    &__floor {
+        color: var(--emk-brand-color);
+        text-decoration: underline;
+        cursor: pointer;
+
+        &:hover {
+            color: gray;
+        }
+
+        &:not(:first-child) {
+            margin-top: 5px;
+        }
+    }
+}

@@ -10,10 +10,28 @@
     }
 
     &>.swiper-wrapper {
+        justify-content: space-around;
+
         @include sm {
             flex-direction: column;
             gap: 10px;
         }
+    }
+
+    &__bg-slide {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: auto;
+        height: 100% !important;
+        width: 100%;
+        transition: var(--default-transition);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
     }
 }
 
@@ -28,14 +46,14 @@
     width: fit-content !important;
     max-width: 200px;
 
-    &-img {
-        min-height: 400px;
-    }
-
     @include sm {
         width: 100% !important;
         margin-left: 20px;
         margin-right: 20px;
+    }
+
+    &-img {
+        min-height: 400px;
     }
 
     &__info {
@@ -74,7 +92,7 @@
         padding: 0 !important;
         max-width: 360px;
         height: auto;
-        object-fit: contain;
+        object-fit: cover;
         cursor: pointer;
         transition: var(--default-transition);
 
@@ -87,6 +105,11 @@
             margin: auto;
         }
     }
+}
+
+// Переопределения для максимальной ширины
+.swiper--vertical-slide {
+    max-width: 100% !important;
 }
 
 // Общие стили для вертикальных элементов
@@ -105,6 +128,32 @@
     font-weight: normal;
     font-size: 12px;
     line-height: 16px;
-    color: #666666;
+    color: rgba(0, 0, 0, 0.693);
     margin-top: 5px;
+}
+
+// Стили для секций с изображениями
+.section__image__list__item {
+    &__logo {
+        max-height: 100px;
+    }
+
+    &__subtitle__wrapper {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 16px;
+        color: #000000;
+        width: 100%;
+        background: rgb(255 255 255 / 88%);
+        padding: 10px;
+    }
+
+    &__title {
+        max-width: 350px;
+    }
+
+    &__banner {
+        padding: 0px;
+        gap: 15px;
+    }
 }

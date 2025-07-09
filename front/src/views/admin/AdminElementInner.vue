@@ -469,10 +469,6 @@ export default defineComponent({
     }
   }
 
-  &__preview-content {
-    // Стили для контента превью
-  }
-
   &__actions {
     margin: auto;
     display: flex;
@@ -522,30 +518,16 @@ export default defineComponent({
       }
     }
   }
-
-  &__action-text {
-    // Стили для текста кнопок действий
-  }
 }
 
-// Deep селекторы для внешних компонентов
 :deep(.p-editor-container) {
   border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
 }
 
-:deep(.p-editor-toolbar) {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
-  padding: 8px;
-}
 
-:deep(.ql-formats button) {
-  margin-right: 5px;
-}
 
-// Анимации переходов
 .layout-change-enter-active,
 .layout-change-leave-active,
 .layout-change-toLeft-enter-active,

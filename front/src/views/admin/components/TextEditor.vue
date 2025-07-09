@@ -37,12 +37,3 @@ export default defineComponent({
     }
 });
 </script>
-<style>
-.ql-snow .ql-tooltip[data-mode='link']::before {
-    content: 'url:' !important;
-}
-
-.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-    content: 'Далее' !important;
-}
-</style>

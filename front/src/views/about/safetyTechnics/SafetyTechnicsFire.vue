@@ -12,7 +12,8 @@
                 <h4>План эвакуации по этажам</h4>
                 <div class="evacuation__floor"
                      @click="activeIndexInModal = index"
-                     v-for="(i, index) in [1, 3, 6, 7, 8, 9, 10, 11, 12]">
+                     v-for="(i, index) in [1, 3, 6, 7, 8, 9, 10, 11, 12]"
+                     :key="index">
                     {{ `Этаж ${i}` }}
                 </div>
             </div>
@@ -39,32 +40,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style lang="scss">
-.evacuation {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    padding-top: 20px;
-    border-top: 2px solid rgba(128, 128, 128, 0.351);
-
-}
-
-.evacuation__swiper-wrapper {
-    max-width: 50%;
-}
-
-.evacuation__floor {
-    color: var(--emk-brand-color);
-    text-decoration: underline;
-    cursor: pointer;
-
-    &:hover {
-        color: gray;
-    }
-
-    &:not(:first-child) {
-        margin-top: 5px;
-    }
-}
-</style>

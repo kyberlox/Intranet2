@@ -1,3 +1,7 @@
+@forward './textEditor';
+@forward './imgUploader';
+@forward './fileUploader';
+
 .admin-page {
     &__section {
         position: relative;

@@ -44,31 +44,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style lang="scss">
-.breadcrumb {
-    margin-top: 15px;
-
-    &-item {
-        float: left;
-        white-space: nowrap;
-        line-height: 13px;
-        vertical-align: middle;
-
-        &__title {
-            text-decoration: underline;
-
-            color: gray !important;
-            font-size: 14px;
-
-            transition: all 0.2ms;
-
-            &:hover {
-                color: var(--emk-brand-color) !important;
-            }
-        }
-
-
-    }
-}
-</style>

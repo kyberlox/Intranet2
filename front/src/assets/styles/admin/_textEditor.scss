@@ -1,0 +1,17 @@
+.ql-snow .ql-tooltip[data-mode='link']::before {
+    content: 'url:' !important;
+}
+
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+    content: 'Далее' !important;
+}
+
+:deep(.p-editor-toolbar) {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+}
+
+:deep(.ql-formats button) {
+    margin-right: 5px;
+}

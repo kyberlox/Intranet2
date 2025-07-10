@@ -162,7 +162,6 @@ class Article:
                 data[key] = grya
         
 
-
         #отдельно обарботаем случай Доски почета
         if self.section_id == 14:
             #соберём совою indirect_data
@@ -206,6 +205,47 @@ class Article:
                 "photo_file_url" : photo.replace("user_files", "compress_image/user"),
                 "award" : award,
                 "location" : ""
+            })
+
+        # отдельно обработаем случай конкурсов ЭМК
+        elif self.section_id == 7:
+            nomination = None
+            age_group = None
+
+            if 'PROPERTY_1071' in data:
+                if int(data['PROPERTY_1071'][0]) == 664:
+                    nomination = 'Дети от 5 до 7 лет'
+                elif int(data['PROPERTY_1071'][0]) == 1775:
+                    nomination = 'Дети от 8 до 11 лет'
+                elif int(data['PROPERTY_1071'][0]) == 1776:
+                    nomination = 'Дети от 12 до 16 лет'
+        
+
+            if 'PROPERTY_1072' in data:
+                if int(data['PROPERTY_1072'][0]) == 671:
+                    age_group = 'Дети от 5 до 7 лет'
+                elif int(data['PROPERTY_1072'][0]) == 672:
+                    age_group = 'Дети от 8 до 11 лет'
+                elif int(data['PROPERTY_1072'][0]) == 673:
+                    age_group = 'Дети от 12 до 16 лет'
+
+            #добавим лайки и просмотры PROPERTY_1073
+            if 'PROPERTY_1073' in data:
+                for user_id in data['PROPERTY_1073']:
+                     # проверяем есть ли такие юзеры в бд
+                        user_exist = User(int(user_id)).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                            continue
+                        else:
+                            LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
+
+            indirect_data = json.dumps({
+                "created_by" : data['CREATED_BY'],
+                "author" : str(data['PROPERTY_1070'][0]),
+                "nomination" : nomination,
+                "age_group" : age_group,
+                "representative_id" : int(data['PROPERTY_1074'][0]),
+                "representative_text" : str(data['PROPERTY_1075'][0])
             })
 
         #отдельно обарботаем случай Блогов
@@ -1114,6 +1154,15 @@ class Article:
                 views_count['likes'] = {'count': likes_count, 'likedByMe': has_user_liked}
                 
                 art['reactions'] = views_count
+
+        #обработаем конкурсы эмк где есть лайки, но нет просмотров
+        elif art['section_id'] == 7:
+            # вызов количества лайков
+            user_id = self.get_user_by_session_id(session_id=session_id)
+            if user_id is not None:
+                likes_count = self.get_all_likes()
+                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                art['reactions'] = {'count': likes_count, 'likedByMe': has_user_liked}
         
         return art
 
@@ -1250,9 +1299,10 @@ class Article:
                     res["preview_file_url"] = self.get_preview()
                     # сюда лайки и просмотры
 
-                    if self.section_id not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
+                    if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                         user_id = self.get_user_by_session_id(session_id=session_id)
                         if user_id is not None:
+                            print('не сработалло', type(self.section_id))
                             views_count = self.get_art_views()
                             likes_count = self.get_all_likes()
                             has_user_liked = User(id=user_id).has_liked(art_id=self.id)
@@ -1260,6 +1310,15 @@ class Article:
                             likes = {'count': likes_count, 'likedByMe': has_user_liked}
                             reactions = {'views': views_count, 'likes': likes}
                             res['reactions'] = reactions
+
+                    #обработаем конкурсы эмк где есть лайки, но нет просмотров
+                    elif res['section_id'] == 7:
+                        # вызов количества лайков
+                        user_id = self.get_user_by_session_id(session_id=session_id)
+                        if user_id is not None:
+                            likes_count = self.get_all_likes()
+                            has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                            res['reactions'] = {'count': likes_count, 'likedByMe': has_user_liked}
 
 
                     active_articles.append(res)

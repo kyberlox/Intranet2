@@ -229,6 +229,16 @@ class Article:
                 elif int(data['PROPERTY_1072'][0]) == 673:
                     age_group = 'Дети от 12 до 16 лет'
 
+            #добавим лайки и просмотры PROPERTY_1073
+            if 'PROPERTY_1073' in data:
+                for user_id in data['PROPERTY_1073']:
+                     # проверяем есть ли такие юзеры в бд
+                        user_exist = User(int(user_id)).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                            continue
+                        else:
+                            LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
+
             indirect_data = json.dumps({
                 "created_by" : data['CREATED_BY'],
                 "author" : str(data['PROPERTY_1070'][0]),
@@ -1144,6 +1154,15 @@ class Article:
                 views_count['likes'] = {'count': likes_count, 'likedByMe': has_user_liked}
                 
                 art['reactions'] = views_count
+
+        #обработаем конкурсы эмк где есть лайки, но нет просмотров
+        elif art['section_id'] == 7:
+            # вызов количества лайков
+            user_id = self.get_user_by_session_id(session_id=session_id)
+            if user_id is not None:
+                likes_count = self.get_all_likes()
+                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                art['reactions'] = {'count': likes_count, 'likedByMe': has_user_liked}
         
         return art
 
@@ -1291,6 +1310,15 @@ class Article:
                             likes = {'count': likes_count, 'likedByMe': has_user_liked}
                             reactions = {'views': views_count, 'likes': likes}
                             res['reactions'] = reactions
+
+                    #обработаем конкурсы эмк где есть лайки, но нет просмотров
+                    elif res['section_id'] == 7:
+                        # вызов количества лайков
+                        user_id = self.get_user_by_session_id(session_id=session_id)
+                        if user_id is not None:
+                            likes_count = self.get_all_likes()
+                            has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                            res['reactions'] = {'count': likes_count, 'likedByMe': has_user_liked}
 
 
                     active_articles.append(res)

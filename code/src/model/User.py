@@ -52,6 +52,9 @@ class User:
         
         status = self.set_users_photo()
 
+        #дампим данные в эластик
+        self.dump_users_data_es()
+        
         return {"status" : status}
 
     def search_by_id(self):
@@ -146,29 +149,9 @@ class User:
 
         return result
     
-    # лайки
-    def add_like(self, art_id):
-        return LikesModel(user_id=self.id, art_id=art_id).add_like()
-
-    def remove_like(self, art_id):
-        return LikesModel(user_id=self.id, art_id=art_id).remove_like()
-
     def has_liked(self, art_id):
         return LikesModel(user_id=self.id, art_id=art_id).has_liked()
 
-    def get_user_likes(self):
-        return LikesModel(user_id=self.id).get_user_likes()
-        
-    def get_likes_by_uuid(self):
-        return LikesModel(user_uuid=self.uuid).has_liked_by_uuid()
-    
-    # просмотры
-    def add_view(self, art_id):
-        return ViewsModel(user_id=self.id, art_id=art_id).add_view()
-
-    def get_viewed_articles(self):
-        return ViewsModel(user_id=self.id).get_viewed_articles()
-    
     # день рождения
     def get_birthday_celebrants(self, date):
         return UserModel().find_all_celebrants(date)
@@ -176,6 +159,14 @@ class User:
     # новые сотрудники
     def get_new_workers(self):
         return UserModel().new_workers()
+
+    # дамп данных в эластик
+    def dump_users_data_es(self):
+        return UserSearchModel().dump()
+
+    # для статистики
+    def get_user_likes(self):
+        return LikesModel(user_id=self.id).get_user_likes()
 
 '''
     # def get(self, method="user.get", params={}):
@@ -225,16 +216,6 @@ def view_user(request: Request):
 def find_by_user(id):
     return User(id).search_by_id()
 
-#Пользователя можно найти
-@users_router.post("/search/{username}")
-def search_user(username: str): # jsn=Body()
-    return UserSearchModel().search_by_name(username)
-
-#загрузить дату в ES
-@users_router.put("/elastic_data")
-def upload_users_to_es():
-    return UserSearchModel().dump()
-
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()
@@ -248,35 +229,6 @@ def elastic_search(keyword: str, size_res: int = 20):
 def test_update_photo():
     return User().set_users_photo()
 
-# лайки и просмотры
-@users_router.put("/add_like")
-def add_like(user_id: int, art_id: int):
-    return User(id=user_id).add_like(art_id)
-
-@users_router.delete("/remove_like")
-def remove_like(user_id: int, art_id: int):
-    return User(id=user_id).remove_like(art_id)
-
-@users_router.post("/has_liked")
-def has_liked(user_id: int, art_id: int):
-    return User(id=user_id).has_liked(art_id)
-
-@users_router.get("/get_user_likes")
-def get_user_likes(user_id: int):
-    return User(id=user_id).get_user_likes()
-    
-@users_router.get("/get_user_uuid_likes")
-def get_user_uuid_likes(user_uuid: str):
-    return User(uuid=user_uuid).get_likes_by_uuid()
-
-@users_router.put("/add_view")
-def add_view(user_id: int, art_id: int):
-    return User(id=user_id).add_view(art_id)
-
-@users_router.get("/get_viewed_articles")
-def get_viewed_articles(user_id: int):
-    return User(id=user_id).get_viewed_articles()
-
 # запрос для получения списка пользователей у кого в эту дату ДР
 @users_router.get("/get_birthday_celebrants/{day_month}")
 def birthday_celebrants(day_month: str):
@@ -286,6 +238,10 @@ def birthday_celebrants(day_month: str):
 def send_test_mail(sender: str, reciever: str, title_msg: str, file_url: str, html_content=Body(...)):
     return SendEmail(sender=sender, reciever=reciever, title_msg=title_msg, file_url=file_url, html_content=html_content).send_congratulations()
 
+# лайки и просмотры для статистики
+@users_router.get("/get_user_likes")
+def get_user_likes(user_id: int):
+    return User(id=user_id).get_user_likes()
 
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
@@ -298,3 +254,23 @@ def send_test_mail(sender: str, reciever: str, title_msg: str, file_url: str, ht
 # def search_user(jsn=Body()):
 #     #будет работать через elasticsearch
 #     return UserSearchModel().search_model(jsn)
+
+#Пользователя можно найти
+# @users_router.post("/search/{username}")
+# def search_user(username: str): # jsn=Body()
+#     return UserSearchModel().search_by_name(username)
+
+#загрузить дату в ES
+# @users_router.put("/elastic_data")
+# def upload_users_to_es():
+#     return UserSearchModel().dump()
+
+
+# лайки и просмотры для статистики
+# @users_router.post("/has_liked")
+# def has_liked(user_id: int, art_id: int):
+#     return User(id=user_id).has_liked(art_id)
+    
+# @users_router.get("/get_user_uuid_likes")
+# def get_user_uuid_likes(user_uuid: str):
+#     return User(uuid=user_uuid).has_liked_by_uuid()

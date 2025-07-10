@@ -9,6 +9,7 @@ from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
 from src.base.pSQLmodels import ViewsModel
 from src.services.Idea import Idea
+from src.services.Auth import AuthService
 
 import re
 import json
@@ -720,7 +721,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
+        '''
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -760,18 +761,7 @@ class Article:
         
         
         
-        #Конкурсы ЭМК 7 секция
-        self.section_id = "128"
-        competitions_info = self.get_inf()
-        if competitions_info != []:
-            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
-                #art_id = inf["ID"]
-                self.section_id = 7
-                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
-                if art_DB.need_add():
-                    self.add(inf)
-                elif art_DB.update(self.make_valid_article(inf)):
-                    pass
+        '''
 
         #Памятка
         # пройти по инфоблоку заголовков
@@ -813,7 +803,10 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
+
+ 
+
+        
 
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
@@ -853,9 +846,6 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
 
-
-
-        '''
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
@@ -983,7 +973,7 @@ class Article:
         self.section_id = "67"
         art_inf = self.get_inf()
         for art in art_inf:
-            self.section_id = 5 # потом изменить
+            self.section_id = 111 # потом изменить
             artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
             if artDB.need_add():
                 self.add(art)
@@ -1030,6 +1020,19 @@ class Article:
             elif artDB.update(self.make_valid_article(art)):
                 pass
         
+        #Конкурсы ЭМК 7 секция
+        self.section_id = "128"
+        competitions_info = self.get_inf()
+        if competitions_info != []:
+            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+                #art_id = inf["ID"]
+                self.section_id = 7
+                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
+                if art_DB.need_add():
+                    self.add(inf)
+                elif art_DB.update(self.make_valid_article(inf)):
+                    pass
+        
 
 
         '''самобытные блоки'''
@@ -1064,9 +1067,12 @@ class Article:
             # YandexGPT5 + Yandex ART ❌
             # Юбилей САЗ ❌
 
+        # Дамп данных в эластик
+        self.dump_articles_data_es()
+
         return {"status" : True}
 
-    def search_by_id(self):
+    def search_by_id(self, session_id=""):
         art = ArticleModel(id = self.id).find_by_id()
         files = File(art_id = int(self.id)).get_files_by_art_id()
         art['images'] = []
@@ -1090,6 +1096,24 @@ class Article:
                 art['documentation'].append(file)
         
         art["preview_file_url"] = self.get_preview()
+
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34, 175] # список секций где нет лайков
+
+        if art['section_id'] not in null_list:
+            user_id = self.get_user_by_session_id(session_id=session_id)
+            if user_id is not None:
+                # сюда добавить момент с лайками и просмотрами
+                views_count = self.add_art_view() 
+
+                # вызов количества лайков
+                likes_count = self.get_all_likes()
+
+                # нужно притянуть айдишник пользователя
+                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+
+                views_count['likes'] = {'count': likes_count, 'likedByMe': has_user_liked}
+                
+                art['reactions'] = views_count
         
         return art
 
@@ -1143,8 +1167,10 @@ class Article:
             main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
             page_view = []
 
+            user_id = self.get_user_by_session_id(session_id=session_id)
+
             for page in main_page: # проходимся по каждой секции
-                sec = self.main_page(page)
+                sec = self.main_page(page, user_id)
                 page_view.append(sec) 
             page_view[-3]['content'] = [page_view[-2], page_view[-1]]
             del page_view[-2:]
@@ -1214,6 +1240,7 @@ class Article:
                 return {"err" : "Auth Err"}
 
         else:
+            null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
@@ -1221,10 +1248,20 @@ class Article:
                     
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
+                    # сюда лайки и просмотры
 
-                    #res['viewes'] = self.get_art_views()
-                    #res['likes'] = self.get_all_likes()
-                    
+                    if self.section_id not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
+                        user_id = self.get_user_by_session_id(session_id=session_id)
+                        if user_id is not None:
+                            views_count = self.get_art_views()
+                            likes_count = self.get_all_likes()
+                            has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                            
+                            likes = {'count': likes_count, 'likedByMe': has_user_liked}
+                            reactions = {'views': views_count, 'likes': likes}
+                            res['reactions'] = reactions
+
+
                     active_articles.append(res)
 
             if self.section_id == "111":
@@ -1236,9 +1273,8 @@ class Article:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_articles
     
-    def main_page(self, section_id):
-
-        #null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7] # список секций где нет лайков
+    def main_page(self, section_id, user_id):
+        
         #Новые сотрудники
         if section_id == 112:
             img_new_workers = []     
@@ -1353,12 +1389,6 @@ class Article:
                     date_value.append(values["preview_text"])
                     date_value.append(values["date_creation"])
 
-                    self.id = values["id"]
-                    viewes = self.get_art_views()
-                    likes = self.get_all_likes()
-                    date_value.append(viewes)
-                    date_value.append(likes)
-
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
@@ -1391,10 +1421,15 @@ class Article:
                     # news['description'] = row[2]
                     news['image'] = image_url
                     # сюда реакции
-                    news['reactions'] = {
-                        'views': 12,
-                        'likes': { 'count': 13, 'likedByMe': 1 },
-                    }
+                    if user_id is not None:
+                        views_count = self.get_art_views()
+                        likes_count = self.get_all_likes()
+                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        
+                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
+                        reactions = {'views': views_count, 'likes': likes}
+                        
+                        news['reactions'] = reactions
                     business_news.append(news)
             second_page['images'] = business_news
             return second_page
@@ -1417,10 +1452,6 @@ class Article:
                         date_value.append(values["date_creation"])
 
                         self.id = values["id"]
-                        #viewes = self.get_art_views()
-                        #likes = self.get_all_likes()
-                        #date_value.append(self.get_art_views())
-                        #date_value.append(self.get_all_likes())
 
                         date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
@@ -1454,10 +1485,15 @@ class Article:
                     news['description'] = row[2]
                     news['image'] = image_url                    
                     # сюда реакции
-                    news['reactions'] = {
-                        'views': row[4],
-                        'likes': { 'count': row[5], 'likedByMe': 1 },
-                    }
+                    if user_id is not None:
+                        views_count = self.get_art_views()
+                        likes_count = self.get_all_likes()
+                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        
+                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
+                        reactions = {'views': views_count, 'likes': likes}
+                        
+                        news['reactions'] = reactions
                     interview_news.append(news)
             second_page['images'] = interview_news
             return second_page
@@ -1507,10 +1543,15 @@ class Article:
                     news['description'] = row[2]
                     news['image'] = image_url
                     # сюда реакции
-                    news['reactions'] = {
-                        'views': 12,
-                        'likes': { 'count': 13, 'likedByMe': 1 },
-                    }
+                    if user_id is not None:
+                        views_count = self.get_art_views()
+                        likes_count = self.get_all_likes()
+                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        
+                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
+                        reactions = {'views': views_count, 'likes': likes}
+                        
+                        news['reactions'] = reactions
                     video_news.append(news)
             second_page['images'] = video_news
             return second_page
@@ -1534,9 +1575,6 @@ class Article:
                 else:
                     date_value = [] # список для хранения необходимых данных
                     date_value.append(values["id"])
-                    # date_value.append(values["name"])
-                    # date_value.append(values["preview_text"])
-                    # date_value.append(values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
@@ -1561,14 +1599,7 @@ class Article:
                         image_url = preview_pict
                     
                     news['id'] = row[0]
-                    # news['title'] = row[1]
-                    # news['description'] = row[2]
                     news['image'] = image_url
-                    # сюда реакции
-                    # news['reactions'] = {
-                    #     'views': 12,
-                    #     'likes': { 'count': 13, 'likedByMe': 1 },
-                    # }
                     afisha_news.append(news)
 
             afisha['images'] = afisha_news
@@ -1619,10 +1650,15 @@ class Article:
                     news['description'] = row[2]
                     news['image'] = image_url
                     # сюда реакции
-                    news['reactions'] = {
-                        'views': 12,
-                        'likes': { 'count': 13, 'likedByMe': 1 },
-                    }
+                    if user_id is not None:
+                        views_count = self.get_art_views()
+                        likes_count = self.get_all_likes()
+                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        
+                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
+                        reactions = {'views': views_count, 'likes': likes}
+                        
+                        news['reactions'] = reactions
                     corpevents_news.append(news)
 
             corpevents['images'] = corpevents_news
@@ -1632,50 +1668,77 @@ class Article:
     def get_all_likes(self):
         return LikesModel(art_id=self.id).get_likes_count()
 
+    def add_like(self, session_id):
+        user_id = self.get_user_by_session_id(session_id=session_id)
+        if user_id is not None:
+            return LikesModel(user_id=user_id, art_id=self.id).add_or_remove_like()
+        return {"err" : "Auth Err"}
+
+    # просмотры
+    def get_art_views(self):
+        return ViewsModel(art_id=self.id).get_art_viewes()
+
+    def add_art_view(self):
+        return ViewsModel(art_id=self.id).add_art_view()
+
+    # дамп данных по лайкам и просмотрам из Б24
+    def upload_likes(self):
+        result = [] 
+        articles_info = ArticleModel().all()
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
+        for inf in articles_info:
+            if inf['section_id'] not in null_list:
+                likes_info = B24().get_likes_views(inf['id'])
+                
+                if likes_info != "Not found" and 'VOTES' in likes_info.keys():
+                    for vote in likes_info['VOTES']:
+                        # проверяем есть ли такие юзеры в бд
+                        user_exist = User(vote['USER_ID']).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                            continue
+                        else:
+                            LikesModel(user_id=vote['USER_ID'], art_id=inf['id']).add_like_from_b24(vote['CREATED_'])
+
+                    #удаляем тех, кто убрал лайк
+                    b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
+                    article_likers = LikesModel(art_id=inf['id']).get_article_likers()
+                    for usr in article_likers:
+                        if usr not in b24_likers:
+                            LikesModel(user_id=usr, art_id=inf['id']).remove_like()
+                        else:
+                            pass
+                
+                ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+
+        return {"status": True}
+
+    # дамп данных в эластик
+    def dump_articles_data_es(self):
+        return ArticleSearchModel().dump()
+
+    # для статистики лайки и просмотры
     def get_article_likers(self):
         return LikesModel(art_id=self.id).get_article_likers()
     
     def get_popular_articles(self, limit):
         return LikesModel().get_popular_articles(limit=limit)
 
-    
-
     def get_recent_popular_articles(self, days, limit):
         return LikesModel().get_recent_popular_articles(days=days, limit=limit)
+
+    def get_user_by_session_id(self, session_id):
+        user = dict(AuthService().get_user_by_seesion_id(session_id))
+
+        if user is not None:
+            user_uuid = user["user_uuid"]
+            username = user["username"]
+
+            #получить и вывести его id
+            user_inf = User(uuid = user_uuid).user_inf_by_uuid()
+            return user_inf["ID"]
+        return None
     
-    # просмотры
-    def get_art_views(self):
-        return ViewsModel(art_id=self.id).get_art_viewes()
-
-    def upload_likes(self):
-        result = [] 
-        articles_info = ArticleModel().all()
-        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7] # список секций где нет лайков
-        for inf in articles_info:
-            if inf.section_id not in null_list:
-                likes_info = B24().get_likes_views(inf.id)
-                
-                if likes_info != "Not found" and 'VOTES' in likes_info.keys():
-                    for vote in likes_info['VOTES']:
-                        # проверяем есть ли такие юзеры в бд
-                        user_exist = User(vote['USER_ID']).search_by_id()
-                        if isinstance(user_exist, types.CoroutineType):
-                            continue
-                        else:
-                            LikesModel(user_id=vote['USER_ID'], art_id=inf.id).add_like_from_b24(vote['CREATED_'])
-
-                    #удаляем тех, кто убрал лайк
-                    b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
-                    article_likers = LikesModel(art_id=inf.id).get_article_likers()
-                    for usr in article_likers:
-                        if usr not in b24_likers:
-                            LikesModel(user_id=usr, art_id=inf.id).remove_like()
-                        else:
-                            pass
-
-                ViewsModel(views_count=likes_info['VIEWS'], art_id=inf.id).add_view_b24()
-
-        return {"status": True}
+   
 
 
 #Получить данные инфоблока из Б24
@@ -1690,8 +1753,16 @@ def upload_articles():
 
 #найти статью по id
 @article_router.get("/find_by_ID/{ID}")
-def get_article(ID):
-    return Article(id = ID).search_by_id()
+def get_article(ID, request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    return Article(id = ID).search_by_id(session_id=session_id)
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
@@ -1707,26 +1778,31 @@ def get_articles(section_id, request: Request):
     
     return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
+@article_router.put("/add_or_remove_like/{article_id}")
+def add_or_remove_like(article_id, request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    
+    return Article(id=article_id).add_like(session_id=session_id)
+
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")
 def elastic_search(keyword: str, size_res: int = 20):
     return ArticleSearchModel().elasticsearch_article(key_word=keyword, size_res=size_res)
 
-#загрузить дату в эластик
-@article_router.put("/elastic_data")
-def upload_articles_to_es():
-    return ArticleSearchModel().dump()
 
-#найти статьи раздела
-@article_router.post("/search")
-def search_articles(data = Body()):
-    pass
+#выгрузка данных по лайкам в Б24
+@article_router.put("/put_b24_likes")
+def put_b24_likes():
+    return Article().upload_likes()
 
-#лайки и просмотры
-@article_router.get("/get_all_likes/{ID}")
-def get_all_likes(ID: int):
-    return Article(id = ID).get_all_likes()
-
+#лайки и просмотры для статистики
 @article_router.get("/get_article_likers/{ID}")
 def get_article_likers(ID: int):
     return Article(id = ID).get_article_likers()
@@ -1738,15 +1814,6 @@ def get_popular_articles(limit: int):
 @article_router.get("/get_recent_popular_articles/{days}/{limit}")
 def get_recent_popular_articles(days: int, limit: int):
     return Article().get_recent_popular_articles(days=days, limit=limit)
-
-@article_router.get("/get_viewers/{ID}")
-def get_viewers(ID: int):
-    return Article(id = ID).get_viewers()
-
-#выгрузка данных по лайкам в Б24
-@article_router.put("/put_b24_likes")
-def put_b24_likes():
-    return Article().upload_likes()
 
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
@@ -1762,3 +1829,19 @@ def put_b24_likes():
 # @article_router.post("/search/text/{text}")
 # def search_articles_by_text(text): # data = Body()
 #     return ArticleSearchModel().search_by_text(text)
+
+
+#загрузить дату в эластик
+# @article_router.put("/elastic_data")
+# def upload_articles_to_es():
+#     return ArticleSearchModel().dump()
+
+
+#лайки и просмотры для статистики
+# @article_router.get("/get_all_likes/{ID}")
+# def get_all_likes(ID: int):
+#     return Article(id = ID).get_all_likes()
+
+# @article_router.get("/get_viewers/{ID}")
+# def get_viewers(ID: int):
+#     return Article(id = ID).get_art_views()

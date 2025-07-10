@@ -149,16 +149,9 @@ class User:
 
         return result
     
-    # лайки
-    def add_like(self, art_id):
-        return LikesModel(user_id=self.id, art_id=art_id).add_or_remove_like()
-
     def has_liked(self, art_id):
         return LikesModel(user_id=self.id, art_id=art_id).has_liked()
-    
-    def has_liked_by_uuid(self):
-        return LikesModel(user_uuid=self.uuid).has_liked_by_uuid()
-    
+
     # день рождения
     def get_birthday_celebrants(self, date):
         return UserModel().find_all_celebrants(date)
@@ -235,11 +228,6 @@ def elastic_search(keyword: str, size_res: int = 20):
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()
-
-# лайки и просмотры
-@users_router.put("/add_like")
-def add_like(user_id: int, art_id: int):
-    return User(id=user_id).add_like(art_id)
 
 # запрос для получения списка пользователей у кого в эту дату ДР
 @users_router.get("/get_birthday_celebrants/{day_month}")

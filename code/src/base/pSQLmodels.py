@@ -1194,11 +1194,11 @@ class LikesModel:
         self.session.commit()
         return True
 
-    def has_liked_by_uuid(self): 
-        user = self.session.query(User).filter(User.uuid == self.user_uuid).subquery()
-        stmt = select(Likes.article_id).where(Likes.user_id == user.с.id)
-        result = self.session.execute(stmt).fetchall()
-        return [re for re in result]
+    # def has_liked_by_uuid(self): 
+    #     user = self.session.query(User).filter(User.uuid == self.user_uuid).subquery()
+    #     stmt = select(Likes.article_id).where(Likes.user_id == user.с.id)
+    #     result = self.session.execute(stmt).fetchall()
+    #     return [re for re in result]
 
     @classmethod
     def get_popular_articles(cls, limit: int = 10) -> List[Dict[str, int]]:

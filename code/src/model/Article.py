@@ -481,9 +481,11 @@ class Article:
 
         #Гид по предприятиям
         elif self.section_id == 41:
+            
             reports = data["reports"]
             tours = data["tours"]
 
+            print(reports)
             if reports != []:
                 for rep in reports:
                     act = True
@@ -499,10 +501,10 @@ class Article:
                         art_id = rep["ID"]
                         inf_id = "98"
                         is_preview = False
+                        
                         file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
                         print(file_data)
-                        if file_data is None:
-                            file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
+                        
                         url = file_data["file_url"]
                         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                         photo_file_url = f"http://intranet.emk.org.ru{url}"
@@ -535,8 +537,7 @@ class Article:
                         inf_id = "84"
                         is_preview = False
                         file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
-                        if file_data is None:
-                            file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
+                        
                         url = file_data["file_url"]
                         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                         photo_file_url = f"http://intranet.emk.org.ru{url}"

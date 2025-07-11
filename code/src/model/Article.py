@@ -853,10 +853,12 @@ class Article:
         self.section_id = "78"
         sec_inf_title = self.get_inf()
         for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 "):
-            title_id = title_inf["ID"]
-            title_data = title_inf
+            art_id = title_inf["ID"]
+            data = title_inf
+            data["reports"] = []
+            data["3Dtours"] = []
 
-            # пройти по инфоблоку статей блогов
+            # пройти по инфоблоку репортажей
             self.section_id = "98"
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
@@ -864,27 +866,52 @@ class Article:
                 data_title_id = list(data_inf["PROPERTY_671"].values())[0]
                 # если эта статья принадлежит иинфоблоку
 
-                if data_title_id == title_id:
-                    data = dict()
+                if data_title_id == art_id:
+                    dt = dict()
 
                     # добавить все данные заголовка
                     for key in title_data:
-                        data[key] = title_data[key]
+                        dt[key] = title_data[key]
                     # добавить все данные статьи
                     for key in data_inf:
-                        data[key] = data_inf[key]
+                        dt[key] = data_inf[key]
 
-                    data["ID"] = data_inf["ID"]
-                    data["section_id"] = 41 # Гид по предприятиям
-                    self.section_id = 41
-                    data["TITLE"] = title_inf["NAME"]
+                    dt["ID"] = data_inf["ID"]
+                    dt["TITLE"] = title_inf["NAME"]
 
-                    # загрузить данные в таблицу
-                    artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-                    if artDB.need_add():
-                        self.add(data)
-                    elif artDB.update(self.make_valid_article(data)):
-                        pass
+                    data["reports"].append(dt)
+                    
+            # пройти по инфоблоку репортажей
+            self.section_id = "84"
+            sec_inf_data = self.get_inf()
+            for data_inf in sec_inf_data:
+                #if "PROPERTY_671" in data_inf:
+                data_title_id = list(data_inf["PROPERTY_671"].values())[0]
+                # если эта статья принадлежит иинфоблоку
+
+                if data_title_id == art_id:
+                    dt = dict()
+
+                    # добавить все данные заголовка
+                    for key in title_data:
+                        dt[key] = title_data[key]
+                    # добавить все данные статьи
+                    for key in data_inf:
+                        dt[key] = data_inf[key]
+
+                    dt["ID"] = data_inf["ID"]
+                    dt["TITLE"] = title_inf["NAME"]
+
+                    data["3Dtours"].append(dt)
+
+            data["section_id"] = 41 # Гид по предприятиям
+            self.section_id = 41
+            # загрузить данные в таблицу
+            artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(data)
+            elif artDB.update(self.make_valid_article(data)):
+                pass
 
         '''
         #несколько section_id - один IBLOCK_ID
@@ -1022,6 +1049,7 @@ class Article:
                 pass
         '''
 
+        '''
         #Корпоративная газета ✔️
         data = [
             {
@@ -1073,6 +1101,7 @@ class Article:
                     self.add(inf)
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
+        '''
         
 
 

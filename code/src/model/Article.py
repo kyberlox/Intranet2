@@ -492,6 +492,7 @@ class Article:
                     if rep["BP_PUBLISHED"] != "Y":
                         act = False
                     
+                    '''
                     photo_file_url = None
                     if "PROPERTY_669" in rep:
                         photo = take_value(rep["PROPERTY_669"])
@@ -513,7 +514,7 @@ class Article:
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                             photo_file_url = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+                    '''
                             
                     
                     rp = {
@@ -521,7 +522,7 @@ class Article:
                         "name" : rep["NAME"],
                         "active" : act,
                         "date" : take_value(rep["PROPERTY_667"]),
-                        "photo_file_url" : photo_file_url,
+                        #"photo_file_url" : photo_file_url,
                         "link" : take_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
                     }
                     print(rp)
@@ -534,6 +535,7 @@ class Article:
                     if tour["BP_PUBLISHED"] != "Y":
                         act = False
                     
+                    '''
                     photo_file_url = None
                     if "PROPERTY_498" in tour:
                         photo = take_value(tour["PROPERTY_498"])
@@ -551,13 +553,13 @@ class Article:
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                             photo_file_url = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    
+                    '''
                     rp = {
                         "id" : tour["ID"],
                         "name" : tour["NAME"],
                         "active" : act,
                         "3D_files_path" : take_value(tour["PROPERTY_497"]),
-                        "photo_file_url" : photo_file_url
+                        #"photo_file_url" : photo_file_url
                     }
             
             indirect_data = {

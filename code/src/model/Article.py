@@ -239,8 +239,17 @@ class Article:
                 "representative_id" : int(data['PROPERTY_1074'][0]),
                 "representative_text" : str(data['PROPERTY_1075'][0])
             })
-
-            
+            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            #добавим лайки и просмотры PROPERTY_1073
+            if 'PROPERTY_1073' in data:
+                for user_id in data['PROPERTY_1073']:
+                     # проверяем есть ли такие юзеры в бд
+                        user_exist = User(int(user_id)).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                            continue
+                        else:
+                            LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
+            '''
 
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
@@ -649,16 +658,6 @@ class Article:
             return files_data
 
     def add(self, article_data):
-        #добавим лайки и просмотры PROPERTY_1073
-        if 'PROPERTY_1073' in data:
-            for user_id in data['PROPERTY_1073']:
-                # проверяем есть ли такие юзеры в бд
-                    user_exist = User(int(user_id)).search_by_id()
-                    if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-                        continue
-                    else:
-                        LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
-        
         return ArticleModel().add_article(self.make_valid_article(article_data))
 
     def uplod(self):

@@ -504,11 +504,15 @@ class Article:
                         
                         file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
                         print(file_data)
-                        
-                        url = file_data["file_url"]
-                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                        photo_file_url = f"http://intranet.emk.org.ru{url}"
-                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                        if file_data is None:
+                            photo_file_url = None
+
+                        else:
+                            url = file_data["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                            photo_file_url = f"http://intranet.emk.org.ru{url}"
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                             
                     
@@ -539,10 +543,14 @@ class Article:
                         is_preview = False
                         file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
                         
-                        url = file_data["file_url"]
-                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                        photo_file_url = f"http://intranet.emk.org.ru{url}"
-                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if file_data is None:
+                            photo_file_url = None
+
+                        else:
+                            url = file_data["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                            photo_file_url = f"http://intranet.emk.org.ru{url}"
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     
                     rp = {
                         "id" : tour["ID"],

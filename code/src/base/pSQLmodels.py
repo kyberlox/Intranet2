@@ -1059,12 +1059,13 @@ class LikesModel:
         Убрает лайк со статьи
         Меняет статус лайка
         """
+        reactions = {}
         # Проверяем, есть ли уже активный лайк
         existing_like = self.session.query(Likes).filter(
             Likes.user_id == self.user_id,
             Likes.article_id == self.art_id
         ).first()
-
+        views = ViewsModel(art_id=self.art_id).get_art_viewes()
         if not existing_like:
             # создаем новый лайк если прежде никогда не стоял
             new_like = Likes(
@@ -1078,8 +1079,9 @@ class LikesModel:
             likes_count = self.get_likes_count()
 
             likes = {'count': likes_count, 'likedByMe': True}
-            
-            return likes
+            reactions['views'] = views
+            reactions['likes'] = likes
+            return reactions
 
         elif existing_like.is_active is False:
             # если лайк не был поставлен, ставим
@@ -1088,8 +1090,9 @@ class LikesModel:
             likes_count = self.get_likes_count()
 
             likes = {'count': likes_count, 'likedByMe': True}
-            
-            return likes
+            reactions['views'] = views
+            reactions['likes'] = likes
+            return reactions
 
         elif existing_like.is_active is True:
             # если лайк был поставлен, убираем
@@ -1099,19 +1102,54 @@ class LikesModel:
             likes_count = self.get_likes_count()
 
             likes = {'count': likes_count, 'likedByMe': False}
-            
-            return likes
+            reactions['views'] = views
+            reactions['likes'] = likes
+            return reactions
 
 
     def has_liked(self ) -> bool:
         """
         Проверяет, поставил ли пользователь лайк статье.
         """
-        return self.session.query(Likes).filter(
+        reactions = {}
+        # Проверяем, есть ли уже активный лайк
+        existing_like = self.session.query(Likes).filter(
             Likes.user_id == self.user_id,
-            Likes.article_id == self.art_id,
-            Likes.is_active == True
-        ).count() > 0
+            Likes.article_id == self.art_id
+        ).first()
+        views = ViewsModel(art_id=self.art_id).get_art_viewes()
+        if not existing_like:
+            # если лайк никогда не существовал, значит False
+            likes_count = self.get_likes_count()
+
+            likes = {'count': likes_count, 'likedByMe': False}
+            reactions['views'] = views
+            reactions['likes'] = likes
+            return reactions
+
+        elif existing_like.is_active is False:
+            # если лайк не был поставлен, но когда то стоял возвращаем False
+            likes_count = self.get_likes_count()
+
+            likes = {'count': likes_count, 'likedByMe': False}
+            reactions['views'] = views
+            reactions['likes'] = likes
+            return reactions
+
+        elif existing_like.is_active is True:
+            # если лайк был поставлен, возвращаем True
+
+            likes_count = self.get_likes_count()
+
+            likes = {'count': likes_count, 'likedByMe': True}
+            reactions['views'] = views
+            reactions['likes'] = likes
+            return reactions
+        # return self.session.query(Likes).filter(
+        #     Likes.user_id == self.user_id,
+        #     Likes.article_id == self.art_id,
+        #     Likes.is_active == True
+        # ).count() > 0
 
     def get_likes_count(self ) -> int:
         """

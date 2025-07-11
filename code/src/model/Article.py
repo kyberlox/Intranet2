@@ -490,7 +490,7 @@ class Article:
                     if rep["BP_PUBLISHED"] != "Y":
                         act = False
                     
-                    photo = None
+                    photo_file_url = None
                     if "PROPERTY_669" in rep:
                         photo = take_value(rep["PROPERTY_669"])
                         #скачать и вытащить ссылку
@@ -529,7 +529,7 @@ class Article:
                     if tour["BP_PUBLISHED"] != "Y":
                         act = False
                     
-                    photo = None
+                    photo_file_url = None
                     if "PROPERTY_498" in tour:
                         photo = take_value(tour["PROPERTY_498"])
                         #скачать и вытащить ссылку

@@ -221,6 +221,7 @@ class Article:
                     nomination = 'Дети от 12 до 16 лет'
         
 
+
             if 'PROPERTY_1072' in data:
                 if int(data['PROPERTY_1072'][0]) == 671:
                     age_group = 'Дети от 5 до 7 лет'

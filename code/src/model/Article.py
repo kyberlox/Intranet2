@@ -482,12 +482,15 @@ class Article:
         #Гид по предприятиям
         elif self.section_id == 41:
             
-            reports = data["reports"]
-            tours = data["tours"]
+            report = data["reports"]
+            tour = data["tours"]
+
+            reports=[]
+            tours=[]
 
             print(reports)
-            if reports != []:
-                for rep in reports:
+            if report != []:
+                for rep in report:
                     act = True
                     if rep["BP_PUBLISHED"] != "Y":
                         act = False
@@ -525,22 +528,21 @@ class Article:
                         #"photo_file_url" : photo_file_url,
                         "link" : take_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
                     }
-                    print(rp)
 
-                    reports.append(rep)
+                    reports.append(rp)
             
-            if tours != []:
-                for tour in tours:
+            if tour != []:
+                for tr in tour:
                     act = True
-                    if tour["BP_PUBLISHED"] != "Y":
+                    if tr["BP_PUBLISHED"] != "Y":
                         act = False
                     
                     '''
                     photo_file_url = None
-                    if "PROPERTY_498" in tour:
-                        photo = take_value(tour["PROPERTY_498"])
+                    if "PROPERTY_498" in tr:
+                        photo = take_value(tr["PROPERTY_498"])
                         #скачать и вытащить ссылку
-                        art_id = tour["ID"]
+                        art_id = tr["ID"]
                         inf_id = "84"
                         is_preview = False
                         file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
@@ -554,13 +556,15 @@ class Article:
                             photo_file_url = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     '''
-                    rp = {
-                        "id" : tour["ID"],
-                        "name" : tour["NAME"],
+                    t = {
+                        "id" : tr["ID"],
+                        "name" : tr["NAME"],
                         "active" : act,
-                        "3D_files_path" : take_value(tour["PROPERTY_497"]),
+                        "3D_files_path" : take_value(tr["PROPERTY_497"]),
                         #"photo_file_url" : photo_file_url
                     }
+
+                    tours.append(t)
             
             indirect_data = {
                 "PROPERTY_463" : data["PROPERTY_463"],

@@ -493,6 +493,7 @@ class Article:
                     photo_file_url = None
                     if "PROPERTY_669" in rep:
                         photo = take_value(rep["PROPERTY_669"])
+                        print(photo)
                         #скачать и вытащить ссылку
                         files = [photo]
                         art_id = rep["ID"]

@@ -479,6 +479,45 @@ class Article:
                 "pdf" : file_url,
             }
 
+        #Гид по предприятиям
+        elif self.section_id == 41:
+            reports = data["reports"]
+            tours = data["tours"]
+
+            if reports != []:
+                for rep in reports:
+                    active = True
+                    if rep["BP_PUBLISHED"] != "Y":
+                        act = False
+                    
+                    photo = None
+                    if "PROPERTY_667" in photo:
+                        photo = teke_value(rep["PROPERTY_667"])
+                        #скачать и вытащить ссылку
+                        photo_file_url = ""
+                    
+                    rp = {
+                        "id" : rep["ID"],
+                        "name" : rep["NAME"],
+                        "active" : act,
+                        "date" : teke_value(rep["PROPERTY_667"]),
+                        "photo_file_url" : photo_file_url,
+                        "link" : teke_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
+                    }
+
+                    reports.append(rep)
+            
+            if tours != []:
+                for tour in tours:
+                    pass
+            
+            indirect_data = {
+                "PROPERTY_463" : data["PROPERTY_463"],
+                "reports" : reports,
+                "tours" : tours
+            }
+
+
         else:
             indirect_data = json.dumps(data)
 
@@ -533,6 +572,7 @@ class Article:
             #"PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
 
+            #Гид по предприятиям
             "PROPERTY_463",
 
             "PROPERTY_498",
@@ -852,11 +892,11 @@ class Article:
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
-        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 "):
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 и 84"):
             art_id = title_inf["ID"]
             data = title_inf
             data["reports"] = []
-            data["3Dtours"] = []
+            data["tours"] = []
 
             # пройти по инфоблоку репортажей
             self.section_id = "98"
@@ -895,7 +935,7 @@ class Article:
                     dt["ID"] = data_inf["ID"]
                     dt["TITLE"] = title_inf["NAME"]
 
-                    data["3Dtours"].append(dt)
+                    data["tours"].append(dt)
 
             data["section_id"] = 41 # Гид по предприятиям
             self.section_id = 41

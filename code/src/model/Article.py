@@ -506,7 +506,7 @@ class Article:
                         inf_id = "98"
                         is_preview = False
                         
-                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
+                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
                         print(file_data)
 
                         if file_data is None:
@@ -545,7 +545,7 @@ class Article:
                         art_id = tr["ID"]
                         inf_id = "84"
                         is_preview = False
-                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
+                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
                         
                         if file_data is None:
                             photo_file_url = None

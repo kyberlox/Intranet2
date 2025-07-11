@@ -492,7 +492,7 @@ class Article:
                     
                     photo = None
                     if "PROPERTY_669" in rep:
-                        photo = teke_value(rep["PROPERTY_669"])
+                        photo = take_value(rep["PROPERTY_669"])
                         #скачать и вытащить ссылку
                         files = [photo]
                         art_id = rep["ID"]
@@ -518,9 +518,9 @@ class Article:
                         "id" : rep["ID"],
                         "name" : rep["NAME"],
                         "active" : act,
-                        "date" : teke_value(rep["PROPERTY_667"]),
+                        "date" : take_value(rep["PROPERTY_667"]),
                         "photo_file_url" : photo_file_url,
-                        "link" : teke_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
+                        "link" : take_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
                     }
 
                     reports.append(rep)
@@ -533,7 +533,7 @@ class Article:
                     
                     photo = None
                     if "PROPERTY_498" in tour:
-                        photo = teke_value(tour["PROPERTY_498"])
+                        photo = take_value(tour["PROPERTY_498"])
                         #скачать и вытащить ссылку
                         files = [photo]
                         art_id = tour["ID"]
@@ -558,7 +558,7 @@ class Article:
                         "id" : tour["ID"],
                         "name" : tour["NAME"],
                         "active" : act,
-                        "3D_files_path" : teke_value(tour["PROPERTY_497"]),
+                        "3D_files_path" : take_value(tour["PROPERTY_497"]),
                         "photo_file_url" : photo_file_url
                     }
             

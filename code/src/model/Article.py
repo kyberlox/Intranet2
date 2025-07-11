@@ -609,7 +609,6 @@ class Article:
                                         files.append(f_id)
                                         if file_property in preview_file:
                                             preview_images.append(f_id)
-
                     elif type(data[file_property]) == type(str()):
                         files.append( data[file_property] )
 
@@ -761,7 +760,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
+        
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -798,10 +797,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
 
-        
-        
-        
-        '''
+
 
         #Памятка
         # пройти по инфоблоку заголовков
@@ -843,7 +839,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-
+        '''
  
 
         
@@ -886,6 +882,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
 
+        '''
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️

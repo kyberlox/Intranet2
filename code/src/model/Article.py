@@ -498,23 +498,11 @@ class Article:
                         art_id = rep["ID"]
                         inf_id = "98"
                         is_preview = False
-                        files_to_add = File().need_update_file(art_id, files)
-                        if files_to_add != []:
-                            for f_id in files_to_add:
-                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
-                                try:
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
-                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                except:
-                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
-                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                            
-                            if file_data is not None:
-                                url = file_data["file_url"]
-                                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                                photo_file_url = f"http://intranet.emk.org.ru{url}"
-                                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                        url = file_data["file_url"]
+                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                        photo_file_url = f"http://intranet.emk.org.ru{url}"
+                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                             
                     
@@ -543,23 +531,11 @@ class Article:
                         art_id = tour["ID"]
                         inf_id = "84"
                         is_preview = False
-                        files_to_add = File().need_update_file(art_id, files)
-                        if files_to_add != []:
-                            for f_id in files_to_add:
-                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
-                                try:
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
-                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                except:
-                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
-                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                            
-                            if file_data is not None:
-                                url = file_data["file_url"]
-                                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                                photo_file_url = f"http://intranet.emk.org.ru{url}"
-                                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                        url = file_data["file_url"]
+                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                        photo_file_url = f"http://intranet.emk.org.ru{url}"
+                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     
                     rp = {
                         "id" : tour["ID"],

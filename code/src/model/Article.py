@@ -520,6 +520,7 @@ class Article:
                         "photo_file_url" : photo_file_url,
                         "link" : take_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
                     }
+                    print(rp)
 
                     reports.append(rep)
             

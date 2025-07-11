@@ -486,7 +486,7 @@ class Article:
 
             if reports != []:
                 for rep in reports:
-                    active = True
+                    act = True
                     if rep["BP_PUBLISHED"] != "Y":
                         act = False
                     
@@ -525,7 +525,7 @@ class Article:
             
             if tours != []:
                 for tour in tours:
-                    active = True
+                    act = True
                     if tour["BP_PUBLISHED"] != "Y":
                         act = False
                     

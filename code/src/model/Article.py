@@ -883,7 +883,7 @@ class Article:
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
                 #if "PROPERTY_671" in data_inf:
-                data_title_id = list(data_inf["PROPERTY_671"].values())[0]
+                data_title_id = list(data_inf["PROPERTY_496"].values())[0]
                 # если эта статья принадлежит иинфоблоку
 
                 if data_title_id == art_id:

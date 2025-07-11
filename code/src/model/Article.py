@@ -491,7 +491,7 @@ class Article:
                         act = False
                     
                     photo = None
-                    if "PROPERTY_669" in photo:
+                    if "PROPERTY_669" in rep:
                         photo = teke_value(rep["PROPERTY_669"])
                         #скачать и вытащить ссылку
                         files = [photo]
@@ -532,7 +532,7 @@ class Article:
                         act = False
                     
                     photo = None
-                    if "PROPERTY_498" in photo:
+                    if "PROPERTY_498" in tour:
                         photo = teke_value(tour["PROPERTY_498"])
                         #скачать и вытащить ссылку
                         files = [photo]

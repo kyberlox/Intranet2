@@ -869,9 +869,6 @@ class Article:
                 if data_title_id == art_id:
                     dt = dict()
 
-                    # добавить все данные заголовка
-                    for key in title_data:
-                        dt[key] = title_data[key]
                     # добавить все данные статьи
                     for key in data_inf:
                         dt[key] = data_inf[key]
@@ -892,10 +889,6 @@ class Article:
                 if data_title_id == art_id:
                     dt = dict()
 
-                    # добавить все данные заголовка
-                    for key in title_data:
-                        dt[key] = title_data[key]
-                    # добавить все данные статьи
                     for key in data_inf:
                         dt[key] = data_inf[key]
 

@@ -498,7 +498,7 @@ class Article:
                         art_id = rep["ID"]
                         inf_id = "98"
                         is_preview = False
-                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
                         url = file_data["file_url"]
                         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                         photo_file_url = f"http://intranet.emk.org.ru{url}"
@@ -527,11 +527,10 @@ class Article:
                     if "PROPERTY_498" in tour:
                         photo = take_value(tour["PROPERTY_498"])
                         #скачать и вытащить ссылку
-                        files = [photo]
                         art_id = tour["ID"]
                         inf_id = "84"
                         is_preview = False
-                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, False, inf_id)
                         url = file_data["file_url"]
                         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
                         photo_file_url = f"http://intranet.emk.org.ru{url}"

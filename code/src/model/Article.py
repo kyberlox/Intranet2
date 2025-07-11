@@ -511,7 +511,7 @@ class Article:
                                     # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
                             url = file_data["file_url"]
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                            photo_file_url = = f"http://intranet.emk.org.ru{url}"
+                            photo_file_url = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                             
@@ -555,7 +555,7 @@ class Article:
                             
                             url = file_data["file_url"]
                             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                            photo_file_url = = f"http://intranet.emk.org.ru{url}"
+                            photo_file_url = f"http://intranet.emk.org.ru{url}"
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     
                     rp = {

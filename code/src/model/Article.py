@@ -221,6 +221,7 @@ class Article:
                     nomination = 'Дети от 12 до 16 лет'
         
 
+
             if 'PROPERTY_1072' in data:
                 if int(data['PROPERTY_1072'][0]) == 671:
                     age_group = 'Дети от 5 до 7 лет'
@@ -229,6 +230,17 @@ class Article:
                 elif int(data['PROPERTY_1072'][0]) == 673:
                     age_group = 'Дети от 12 до 16 лет'
 
+            
+
+            indirect_data = json.dumps({
+                "created_by" : data['CREATED_BY'],
+                "author" : str(data['PROPERTY_1070'][0]),
+                "nomination" : nomination,
+                "age_group" : age_group,
+                "representative_id" : int(data['PROPERTY_1074'][0]),
+                "representative_text" : str(data['PROPERTY_1075'][0])
+            })
+            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             #добавим лайки и просмотры PROPERTY_1073
             # if 'PROPERTY_1073' in data:
             #     for user_id in data['PROPERTY_1073']:
@@ -475,6 +487,103 @@ class Article:
                 "pdf" : file_url,
             }
 
+        #Гид по предприятиям
+        elif self.section_id == 41:
+            reports = data["reports"]
+            tours = data["tours"]
+
+            if reports != []:
+                for rep in reports:
+                    act = True
+                    if rep["BP_PUBLISHED"] != "Y":
+                        act = False
+                    
+                    photo_file_url = None
+                    if "PROPERTY_669" in rep:
+                        photo = take_value(rep["PROPERTY_669"])
+                        #скачать и вытащить ссылку
+                        files = [photo]
+                        art_id = rep["ID"]
+                        inf_id = "98"
+                        is_preview = False
+                        files_to_add = File().need_update_file(art_id, files)
+                        if files_to_add != []:
+                            for f_id in files_to_add:
+                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
+                                try:
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                                except:
+                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                            
+                            if file_data is not None:
+                                url = file_data["file_url"]
+                                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                                photo_file_url = f"http://intranet.emk.org.ru{url}"
+                                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                            
+                    
+                    rp = {
+                        "id" : rep["ID"],
+                        "name" : rep["NAME"],
+                        "active" : act,
+                        "date" : take_value(rep["PROPERTY_667"]),
+                        "photo_file_url" : photo_file_url,
+                        "link" : take_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
+                    }
+
+                    reports.append(rep)
+            
+            if tours != []:
+                for tour in tours:
+                    act = True
+                    if tour["BP_PUBLISHED"] != "Y":
+                        act = False
+                    
+                    photo_file_url = None
+                    if "PROPERTY_498" in tour:
+                        photo = take_value(tour["PROPERTY_498"])
+                        #скачать и вытащить ссылку
+                        files = [photo]
+                        art_id = tour["ID"]
+                        inf_id = "84"
+                        is_preview = False
+                        files_to_add = File().need_update_file(art_id, files)
+                        if files_to_add != []:
+                            for f_id in files_to_add:
+                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
+                                try:
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                                except:
+                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                            
+                            if file_data is not None:
+                                url = file_data["file_url"]
+                                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                                photo_file_url = f"http://intranet.emk.org.ru{url}"
+                                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    
+                    rp = {
+                        "id" : tour["ID"],
+                        "name" : tour["NAME"],
+                        "active" : act,
+                        "3D_files_path" : take_value(tour["PROPERTY_497"]),
+                        "photo_file_url" : photo_file_url
+                    }
+            
+            indirect_data = {
+                "PROPERTY_463" : data["PROPERTY_463"],
+                "reports" : reports,
+                "tours" : tours
+            }
+
+
         else:
             indirect_data = json.dumps(data)
 
@@ -529,6 +638,7 @@ class Article:
             #"PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
 
+            #Гид по предприятиям
             "PROPERTY_463",
 
             "PROPERTY_498",
@@ -609,7 +719,6 @@ class Article:
                                         files.append(f_id)
                                         if file_property in preview_file:
                                             preview_images.append(f_id)
-
                     elif type(data[file_property]) == type(str()):
                         files.append( data[file_property] )
 
@@ -761,7 +870,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
+        
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -798,10 +907,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
 
-        
-        
-        
-        '''
+
 
         #Памятка
         # пройти по инфоблоку заголовков
@@ -843,7 +949,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-
+        '''
  
 
         
@@ -852,11 +958,13 @@ class Article:
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
-        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 "):
-            title_id = title_inf["ID"]
-            title_data = title_inf
+        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 и 84"):
+            art_id = title_inf["ID"]
+            data = title_inf
+            data["reports"] = []
+            data["tours"] = []
 
-            # пройти по инфоблоку статей блогов
+            # пройти по инфоблоку репортажей
             self.section_id = "98"
             sec_inf_data = self.get_inf()
             for data_inf in sec_inf_data:
@@ -864,28 +972,47 @@ class Article:
                 data_title_id = list(data_inf["PROPERTY_671"].values())[0]
                 # если эта статья принадлежит иинфоблоку
 
-                if data_title_id == title_id:
-                    data = dict()
+                if data_title_id == art_id:
+                    dt = dict()
 
-                    # добавить все данные заголовка
-                    for key in title_data:
-                        data[key] = title_data[key]
                     # добавить все данные статьи
                     for key in data_inf:
-                        data[key] = data_inf[key]
+                        dt[key] = data_inf[key]
 
-                    data["ID"] = data_inf["ID"]
-                    data["section_id"] = 41 # Гид по предприятиям
-                    self.section_id = 41
-                    data["TITLE"] = title_inf["NAME"]
+                    dt["ID"] = data_inf["ID"]
+                    dt["TITLE"] = title_inf["NAME"]
 
-                    # загрузить данные в таблицу
-                    artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-                    if artDB.need_add():
-                        self.add(data)
-                    elif artDB.update(self.make_valid_article(data)):
-                        pass
+                    data["reports"].append(dt)
+                    
+            # пройти по инфоблоку репортажей
+            self.section_id = "84"
+            sec_inf_data = self.get_inf()
+            for data_inf in sec_inf_data:
+                #if "PROPERTY_671" in data_inf:
+                data_title_id = list(data_inf["PROPERTY_496"].values())[0]
+                # если эта статья принадлежит иинфоблоку
 
+                if data_title_id == art_id:
+                    dt = dict()
+
+                    for key in data_inf:
+                        dt[key] = data_inf[key]
+
+                    dt["ID"] = data_inf["ID"]
+                    dt["TITLE"] = title_inf["NAME"]
+
+                    data["tours"].append(dt)
+
+            data["section_id"] = 41 # Гид по предприятиям
+            self.section_id = 41
+            # загрузить данные в таблицу
+            artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+            if artDB.need_add():
+                self.add(data)
+            elif artDB.update(self.make_valid_article(data)):
+                pass
+
+        '''
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
@@ -1021,6 +1148,7 @@ class Article:
                 pass
         '''
 
+        '''
         #Корпоративная газета ✔️
         data = [
             {
@@ -1771,8 +1899,8 @@ class Article:
                             LikesModel(user_id=usr, art_id=inf['id']).remove_like()
                         else:
                             pass
-                
-                ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+
+                    ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
 
         return {"status": True}
 

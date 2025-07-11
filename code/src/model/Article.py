@@ -491,10 +491,28 @@ class Article:
                         act = False
                     
                     photo = None
-                    if "PROPERTY_667" in photo:
-                        photo = teke_value(rep["PROPERTY_667"])
+                    if "PROPERTY_669" in photo:
+                        photo = teke_value(rep["PROPERTY_669"])
                         #скачать и вытащить ссылку
-                        photo_file_url = ""
+                        files = [photo]
+                        art_id = rep["ID"]
+                        inf_id = "98"
+                        is_preview = False
+                        files_to_add = File().need_update_file(art_id, files)
+                        if files_to_add != []:
+                            for f_id in files_to_add:
+                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
+                                try:
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                                    files_data.append(file_data)
+                                except:
+                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                                    files_data.append(file_data)
+
+                            photo_file_url = files_data[0]["file_url"]
                     
                     rp = {
                         "id" : rep["ID"],
@@ -509,7 +527,40 @@ class Article:
             
             if tours != []:
                 for tour in tours:
-                    pass
+                    active = True
+                    if tour["BP_PUBLISHED"] != "Y":
+                        act = False
+                    
+                    photo = None
+                    if "PROPERTY_498" in photo:
+                        photo = teke_value(tour["PROPERTY_498"])
+                        #скачать и вытащить ссылку
+                        files = [photo]
+                        art_id = tour["ID"]
+                        inf_id = "84"
+                        is_preview = False
+                        files_to_add = File().need_update_file(art_id, files)
+                        if files_to_add != []:
+                            for f_id in files_to_add:
+                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
+                                try:
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
+                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                                    files_data.append(file_data)
+                                except:
+                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
+                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                                    files_data.append(file_data)
+                            photo_file_url = files_data[0]["file_url"]
+                    
+                    rp = {
+                        "id" : tour["ID"],
+                        "name" : tour["NAME"],
+                        "active" : act,
+                        "3D_files_path" : teke_value(tour["PROPERTY_497"]),
+                        "photo_file_url" : photo_file_url
+                    }
             
             indirect_data = {
                 "PROPERTY_463" : data["PROPERTY_463"],

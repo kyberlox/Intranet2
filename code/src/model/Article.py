@@ -989,6 +989,7 @@ class Article:
             data["section_id"] = 41 # Гид по предприятиям
             self.section_id = 41
             # загрузить данные в таблицу
+            print(data)
             artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
             if artDB.need_add():
                 self.add(data)

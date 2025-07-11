@@ -505,14 +505,12 @@ class Article:
                                 try:
                                     file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
                                     #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                    files_data.append(file_data)
                                 except:
                                     LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
                                     file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
                                     # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                    files_data.append(file_data)
 
-                            photo_file_url = files_data[0]["file_url"]
+                            photo_file_url = file_data["file_url"]
                     
                     rp = {
                         "id" : rep["ID"],
@@ -546,13 +544,11 @@ class Article:
                                 try:
                                     file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
                                     #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                    files_data.append(file_data)
                                 except:
                                     LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
                                     file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
                                     # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                    files_data.append(file_data)
-                            photo_file_url = files_data[0]["file_url"]
+                            photo_file_url = file_data["file_url"]
                     
                     rp = {
                         "id" : tour["ID"],

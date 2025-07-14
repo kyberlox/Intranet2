@@ -558,6 +558,7 @@ class Article:
                     
                     t = {
                         "id" : tr["ID"],
+                        "factory_id" : self.id,
                         "name" : tr["NAME"],
                         "active" : act,
                         "3D_files_path" : take_value(tr["PROPERTY_497"]),
@@ -818,7 +819,7 @@ class Article:
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
             41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
-            #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
+            #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ✔️
         }
 
         
@@ -942,7 +943,7 @@ class Article:
  
 
         
-        '''
+        
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"
@@ -1001,7 +1002,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
+        
 
         '''
         #несколько section_id - один IBLOCK_ID
@@ -1179,6 +1180,7 @@ class Article:
             elif artDB.update(self.make_valid_article(art)):
                 pass
         
+
         #Конкурсы ЭМК 7 секция
         self.section_id = "128"
         competitions_info = self.get_inf()
@@ -1287,7 +1289,8 @@ class Article:
                     preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
-                elif self.section_id == "55":
+                # и для гида по предприятиям 
+                elif self.section_id == "55" or self.section_id == "41":
                     return f"http://intranet.emk.org.ru{url}"
                 else:
                     preview_link = url.split("/")
@@ -1307,7 +1310,8 @@ class Article:
                     preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
-                elif self.section_id == "55":
+                # и для гида по предприятиям 
+                elif self.section_id == "55" or self.section_id == "41":
                     return f"http://intranet.emk.org.ru{url}"
                 else:
                     preview_link = url.split("/")

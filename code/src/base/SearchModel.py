@@ -1223,7 +1223,7 @@ def search_everywhere(key_word, size_res: Optional[int] = 20):
                                                     "should": [
                                                         
                                                         {
-                                                            "match_phrase": {
+                                                            "match": {
                                                             "user_fio": {
                                                                 "query": key_word,
                                                                 "boost": 10,
@@ -1238,13 +1238,13 @@ def search_everywhere(key_word, size_res: Optional[int] = 20):
                                                                 "query": {
                                                                     "bool": {
                                                                         "should": [
-                                                                            {"match_phrase": {"indirect_data.work_position": {"query": key_word, "boost": 5}}},
-                                                                            {"match_phrase": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5}}},
-                                                                            {"match_phrase": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5}}},
-                                                                            {"match_phrase": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5}}},
-                                                                            {"match_phrase": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5}}},
-                                                                            {"match_phrase": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5}}},
-                                                                            {"match_phrase": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5}}}
+                                                                            {"match": {"indirect_data.work_position": {"query": key_word, "boost": 5}}},
+                                                                            {"match": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5}}},
+                                                                            {"match": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5}}},
+                                                                            {"match": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5}}},
+                                                                            {"match": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5}}},
+                                                                            {"match": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5}}},
+                                                                            {"match": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5}}}
                                                                         ]
                                                                     }
                                                                 }
@@ -1370,4 +1370,4 @@ def search_everywhere(key_word, size_res: Optional[int] = 20):
     sec_art['content'] = articles
     result.append(sec_user)
     result.append(sec_art)
-    return result   #result  res['hits']['hits'] 
+    return res['hits']['hits']    #result  res['hits']['hits'] 

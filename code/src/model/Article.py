@@ -826,7 +826,7 @@ class Article:
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
             41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
-            #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
+            #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ✔️
         }
 
         
@@ -1306,7 +1306,8 @@ class Article:
                     preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
-                elif self.section_id == "55":
+                # и для гида по предприятиям 
+                elif self.section_id == "55" or self.section_id == "41":
                     return f"http://intranet.emk.org.ru{url}"
                 else:
                     preview_link = url.split("/")
@@ -1326,7 +1327,8 @@ class Article:
                     preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
-                elif self.section_id == "55":
+                # и для гида по предприятиям 
+                elif self.section_id == "55" or self.section_id == "41":
                     return f"http://intranet.emk.org.ru{url}"
                 else:
                     preview_link = url.split("/")

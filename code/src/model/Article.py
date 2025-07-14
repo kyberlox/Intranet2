@@ -241,15 +241,6 @@ class Article:
                 "representative_text" : str(data['PROPERTY_1075'][0])
             })
             '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
-            #добавим лайки и просмотры PROPERTY_1073
-            # if 'PROPERTY_1073' in data:
-            #     for user_id in data['PROPERTY_1073']:
-            #          # проверяем есть ли такие юзеры в бд
-            #             user_exist = User(int(user_id)).search_by_id()
-            #             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-            #                 continue
-            #             else:
-            #                 LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
 
             indirect_data = json.dumps({
                 "created_by" : data['CREATED_BY'],
@@ -257,7 +248,8 @@ class Article:
                 "nomination" : nomination,
                 "age_group" : age_group,
                 "representative_id" : int(data['PROPERTY_1074'][0]),
-                "representative_text" : str(data['PROPERTY_1075'][0])
+                "representative_text" : str(data['PROPERTY_1075'][0]),
+                "likes_from_b24": data['PROPERTY_1073']
             })
 
         #отдельно обарботаем случай Блогов
@@ -1190,18 +1182,17 @@ class Article:
         
 
         #Конкурсы ЭМК 7 секция
-        # self.section_id = "128"
-        # competitions_info = self.get_inf()
-        # if competitions_info != []:
-        #     for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
-        #         #art_id = inf["ID"]
-        #         self.section_id = 7
-        #         art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
-        #         if art_DB.need_add():
-        #             self.add(inf)
-        #         elif art_DB.update(self.make_valid_article(inf)):
-        #             pass
-
+        self.section_id = "128"
+        competitions_info = self.get_inf()
+        if competitions_info != []:
+            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+                #art_id = inf["ID"]
+                self.section_id = 7
+                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
+                if art_DB.need_add():
+                    self.add(inf)
+                elif art_DB.update(self.make_valid_article(inf)):
+                    pass
         
 
 
@@ -1272,27 +1263,18 @@ class Article:
         if art['section_id'] not in null_list:
             user_id = self.get_user_by_session_id(session_id=session_id)
             if user_id is not None:
-                # сюда добавить момент с лайками и просмотрами
-                views_count = self.add_art_view() 
-
-                # вызов количества лайков
-                likes_count = self.get_all_likes()
-
-                # нужно притянуть айдишник пользователя
+                self.add_art_view()
                 has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-
-                views_count['likes'] = {'count': likes_count, 'likedByMe': has_user_liked}
-                
-                art['reactions'] = views_count
+                art['reactions'] = has_user_liked
 
         #обработаем конкурсы эмк где есть лайки, но нет просмотров
         elif art['section_id'] == 7:
             # вызов количества лайков
+            del art['indirect_data']['likes_from_b24']
             user_id = self.get_user_by_session_id(session_id=session_id)
             if user_id is not None:
-                likes_count = self.get_all_likes()
                 has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                art['reactions'] = {'count': likes_count, 'likedByMe': has_user_liked}
+                art['reactions'] = has_user_liked
         
         return art
 
@@ -1433,23 +1415,17 @@ class Article:
                     if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                         user_id = self.get_user_by_session_id(session_id=session_id)
                         if user_id is not None:
-                            print('не сработалло', type(self.section_id))
-                            views_count = self.get_art_views()
-                            likes_count = self.get_all_likes()
                             has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                            
-                            likes = {'count': likes_count, 'likedByMe': has_user_liked}
-                            reactions = {'views': views_count, 'likes': likes}
-                            res['reactions'] = reactions
+                            res['reactions'] = has_user_liked
 
                     #обработаем конкурсы эмк где есть лайки, но нет просмотров
                     elif res['section_id'] == 7:
+                        del res['indirect_data']['likes_from_b24']
                         # вызов количества лайков
                         user_id = self.get_user_by_session_id(session_id=session_id)
                         if user_id is not None:
-                            likes_count = self.get_all_likes()
                             has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                            res['reactions'] = {'count': likes_count, 'likedByMe': has_user_liked}
+                            res['reactions'] = has_user_liked
 
 
                     active_articles.append(res)
@@ -1608,18 +1584,12 @@ class Article:
                     
                     news['id'] = row[0]
                     news['title'] = row[1]
-                    # news['description'] = row[2]
                     news['image'] = image_url
-                    # сюда реакции
+                    
                     if user_id is not None:
-                        views_count = self.get_art_views()
-                        likes_count = self.get_all_likes()
                         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                        
-                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
-                        reactions = {'views': views_count, 'likes': likes}
-                        
-                        news['reactions'] = reactions
+
+                        news['reactions'] = has_user_liked
                     business_news.append(news)
             second_page['images'] = business_news
             return second_page
@@ -1676,14 +1646,9 @@ class Article:
                     news['image'] = image_url                    
                     # сюда реакции
                     if user_id is not None:
-                        views_count = self.get_art_views()
-                        likes_count = self.get_all_likes()
                         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                        
-                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
-                        reactions = {'views': views_count, 'likes': likes}
-                        
-                        news['reactions'] = reactions
+
+                        news['reactions'] = has_user_liked
                     interview_news.append(news)
             second_page['images'] = interview_news
             return second_page
@@ -1734,14 +1699,9 @@ class Article:
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:
-                        views_count = self.get_art_views()
-                        likes_count = self.get_all_likes()
-                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)\
                         
-                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
-                        reactions = {'views': views_count, 'likes': likes}
-                        
-                        news['reactions'] = reactions
+                        news['reactions'] = has_user_liked
                     video_news.append(news)
             second_page['images'] = video_news
             return second_page
@@ -1841,14 +1801,9 @@ class Article:
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:
-                        views_count = self.get_art_views()
-                        likes_count = self.get_all_likes()
                         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
                         
-                        likes = {'count': likes_count, 'likedByMe': has_user_liked}
-                        reactions = {'views': views_count, 'likes': likes}
-                        
-                        news['reactions'] = reactions
+                        news['reactions'] = has_user_liked
                     corpevents_news.append(news)
 
             corpevents['images'] = corpevents_news
@@ -1905,6 +1860,23 @@ class Article:
                             pass
 
                     ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+            elif inf['section_id'] == 7:
+                if isinstance(inf['indirect_data'], str):
+                    inf['indirect_data'] = json.loads(inf['indirect_data'])
+
+                if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
+                    for user_id in inf['indirect_data']['likes_from_b24']:
+                        user_exist = User(int(user_id)).search_by_id()
+                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                            continue
+                        else:
+                            has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
+                            if has_usr_liked['likes']['likedByMe']:
+                                continue
+                            else:
+                                LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
+                            # прописать удаление из indirect_data лайков
+                        
 
         return {"status": True}
 

@@ -9,6 +9,8 @@ from src.base.mongodb import FileModel
 from src.model.Article import Article
 from src.model.File import File
 
+import json
+
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 class Editor:

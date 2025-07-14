@@ -77,12 +77,12 @@
                                 </div>
                                 <div class="search-footer">
                                     <div class="search-footer-block"
-                                         v-for="radio in radioGroup"
-                                         :key="'radio' + radio.id">
-                                        <label :for="radio.name">{{ radio.title }}</label>
-                                        <RadioButton :name="radio.name"
-                                                     :checked="radio.value"
-                                                     @change="setRadioActive(radio.id)" />
+                                         v-for="(point, index) in searchTypes"
+                                         :key="'radio' + index"
+                                         @click="selectedSearchType = point.value">
+                                        <span class="search-footer-block__title"
+                                              :class="{ 'search-footer-block__title--active': selectedSearchType == point.value }">{{
+                                                point.title }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -96,13 +96,12 @@
 
 
 <script lang="ts">
-import { defineComponent, ref, watch, type Ref } from "vue";
+import { defineComponent, ref, type Ref } from "vue";
 import { watchDebounced } from '@vueuse/core'
 
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component"
 import SearchRedirectIcon from "@/assets/icons/layout/SearchRedirectIcon.svg?component"
 import Api from "@/utils/Api";
-import { RadioButton, RadioButtonClasses } from "primevue";
 
 interface searchResults {
     section: string,
@@ -124,27 +123,16 @@ export default defineComponent({
     components: {
         SearchIcon,
         SearchRedirectIcon,
-        RadioButton
     },
     setup(props, { emit }) {
-        const inputFocus = ref(false);
         const searchTargetText = ref();
-        const needOnlyPeoples: Ref<boolean> = ref(false);
-        const needOnlyContent: Ref<boolean> = ref(false);
-
-        watch((props), (newVal) => {
-            if (newVal.visibleModal) {
-                inputFocus.value = true;
-            }
-        })
-
+        const selectedSearchType = ref('full_search');
         const searchResult: Ref<searchResults[]> = ref([])
 
         watchDebounced((searchTargetText), (newVal) => {
             if (newVal) {
-                const needSearchRoute = needOnlyPeoples.value ? 'full_search_users' : needOnlyContent.value ? 'full_search_art' : 'full_search';
                 searchResult.value.length = 0;
-                Api.get(`/${needSearchRoute}/${newVal}`)
+                Api.get(`/${selectedSearchType.value}/${newVal}`)
                     .then((data) => {
                         searchResult.value = data
                     })
@@ -189,47 +177,20 @@ export default defineComponent({
             return newFormat;
         }
 
-        const radioGroup = ref([{
-            id: 1,
-            title: 'По сотрудникам',
-            name: 'peopleSearch',
-            model: 'needOnlyPeoples',
-            value: false
-        },
-        {
-            id: 2,
-            title: 'По контенту',
-            name: 'contentSearch',
-            model: 'needOnlyContent',
-            value: false
-        },
-        {
-            id: 3,
-            title: 'Общий',
-            name: 'fullSearch',
-            model: '',
-            value: true
-        }])
-
-        const setRadioActive = (id) => {
-            radioGroup.value.map((e) => {
-                e.value = false;
-            })
-            const target = radioGroup.value.find((e) => { return e.id == id });
-            target.value = !target?.value
-        }
+        const searchTypes = [
+            { value: 'full_search_users', title: 'По сотрудникам' },
+            { value: 'full_search_art', title: 'По контенту' },
+            { value: 'full_search', title: 'Общий' }
+        ];
 
         return {
             closeModal: () => emit('closeSearchModal'),
             searchResult,
-            inputFocus,
             searchTargetText,
             highlightCharacters,
             formatHighlight,
-            needOnlyPeoples,
-            needOnlyContent,
-            radioGroup,
-            setRadioActive
+            searchTypes,
+            selectedSearchType
         }
     }
 })
@@ -443,144 +404,20 @@ export default defineComponent({
     min-width: 120px;
 }
 
-// _______________________
 
-// Стилизация радиокнопок PrimeVue
-.search-footer-block {
-    display: flex;
-    flex-direction: row-reverse;
-    gap: 8px;
-    align-items: center;
+.search-footer-block__title {
+    cursor: pointer;
+    transition: 0.1s all ease-in-out;
+    border-bottom: 1px solid white;
 
-    label {
-        font-size: 14px;
-        color: #374151;
-        cursor: pointer;
-        transition: color 0.2s ease;
-
-        &:hover {
-            color: var(--emk-brand-color);
-        }
+    &:hover {
+        border-bottom: 1px solid var(--emk-brand-color);
+        color: black;
     }
 
-    // Стилизация контейнера радиокнопки
-    .p-radiobutton {
-        .p-radiobutton-box {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #d1d5db;
-            border-radius: 50%;
-            background: white;
-            transition: all 0.2s ease;
-            position: relative;
-
-            &:hover {
-                border-color: var(--emk-brand-color);
-                box-shadow: 0 0 0 3px rgba(var(--emk-brand-color-rgb), 0.1);
-            }
-
-            // Внутренний кружок (когда выбрано)
-            .p-radiobutton-icon {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background: var(--emk-brand-color);
-                transform: scale(0);
-                transition: transform 0.15s ease;
-            }
-        }
-
-        // Состояние когда радиокнопка выбрана
-        &.p-radiobutton-checked {
-            .p-radiobutton-box {
-                border-color: var(--emk-brand-color);
-                background: white;
-
-                .p-radiobutton-icon {
-                    transform: scale(1);
-                }
-            }
-        }
-
-        // Состояние фокуса
-        &.p-focus {
-            .p-radiobutton-box {
-                box-shadow: 0 0 0 3px rgba(var(--emk-brand-color-rgb), 0.2);
-            }
-        }
-
-        // Состояние при наведении
-        &:not(.p-disabled):hover {
-            .p-radiobutton-box {
-                border-color: var(--emk-brand-color);
-            }
-        }
-
-        // Отключенное состояние
-        &.p-disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-
-            .p-radiobutton-box {
-                background: #f3f4f6;
-                border-color: #d1d5db;
-            }
-        }
+    &--active {
+        color: black;
+        border-bottom: 1px solid var(--emk-brand-color);
     }
-}
-
-// Альтернативный стиль с более современным дизайном
-.search-footer-block--modern {
-    .p-radiobutton {
-        .p-radiobutton-box {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e5e7eb;
-            background: #f9fafb;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
-            &:hover {
-                background: white;
-                border-color: var(--emk-brand-color);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .p-radiobutton-icon {
-                width: 10px;
-                height: 10px;
-                background: linear-gradient(135deg, var(--emk-brand-color), #3b82f6);
-            }
-        }
-
-        &.p-radiobutton-checked {
-            .p-radiobutton-box {
-                background: white;
-                border-color: var(--emk-brand-color);
-                box-shadow: 0 2px 4px rgba(var(--emk-brand-color-rgb), 0.2);
-            }
-        }
-    }
-}
-
-// Дополнительные стили для анимации
-@keyframes radioCheck {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    50% {
-        transform: scale(1.2);
-        opacity: 0.8;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.p-radiobutton-checked .p-radiobutton-icon {
-    animation: radioCheck 0.2s ease-out;
 }
 </style>

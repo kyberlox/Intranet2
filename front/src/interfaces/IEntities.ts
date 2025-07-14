@@ -1,7 +1,3 @@
-export interface ILikes {
-    count: number,
-    likedByMe: boolean
-}
 
 export interface IReaction {
     views: number,

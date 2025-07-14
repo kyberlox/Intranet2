@@ -28,7 +28,7 @@ import ViewsIcon from "@/assets/icons/posts/ViewsIcon.svg?component";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import { defineComponent, ref, type Ref, type PropType, onMounted } from "vue";
 import Api from "@/utils/Api";
-import type { IReaction, ILikes } from "@/interfaces/IEntities";
+import type { IReaction } from "@/interfaces/IEntities";
 import { type AxiosResponse } from "axios";
 
 export default defineComponent({
@@ -56,15 +56,16 @@ export default defineComponent({
     },
     setup(props) {
         onMounted(() => {
-            console.log('1')
+            Api.get(`article/has_user_liked/${props.id}`)
+                .then(data => { console.log(data); newTypeReaction.value = data })
         })
 
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
 
         const setLike = (id: number) => {
             Api.put(`article/add_or_remove_like/${id}`)
-                .then((data: AxiosResponse<ILikes>) => {
-                    newTypeReaction.value.likes = data.data
+                .then((data: AxiosResponse<IReaction>) => {
+                    newTypeReaction.value = data.data
                 })
         }
 

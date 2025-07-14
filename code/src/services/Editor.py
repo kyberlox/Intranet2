@@ -18,11 +18,6 @@ class Editor:
     Article = Article()
     File = File()
     LogsMaker = LogsMaker()
-
-    #словарь полей
-    fields_data_file = open("./src/base/fields.json", "r")
-    self.fields = json.load(fields_data_file)
-    fields_data_file.close()
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал

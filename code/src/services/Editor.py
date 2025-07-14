@@ -31,7 +31,7 @@ class Editor:
 
         #словарь полей
         fields_data_file = open("./src/base/fields.json", "r")
-        self.fields = json.load(section_data_file)
+        self.fields = json.load(fields_data_file)
         fields_data_file.close()
     
     def rendering():

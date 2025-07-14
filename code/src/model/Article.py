@@ -1187,6 +1187,7 @@ class Article:
             elif artDB.update(self.make_valid_article(art)):
                 pass
         
+
         #Конкурсы ЭМК 7 секция
         # self.section_id = "128"
         # competitions_info = self.get_inf()
@@ -1199,6 +1200,7 @@ class Article:
         #             self.add(inf)
         #         elif art_DB.update(self.make_valid_article(inf)):
         #             pass
+
         
 
 

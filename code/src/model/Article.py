@@ -489,41 +489,43 @@ class Article:
 
         #Гид по предприятиям
         elif self.section_id == 41:
-            reports = data["reports"]
-            tours = data["tours"]
+            
+            report = data["reports"]
+            tour = data["tours"]
 
-            if reports != []:
-                for rep in reports:
+            reports=[]
+            tours=[]
+
+            print(reports)
+            if report != []:
+                for rep in report:
                     act = True
                     if rep["BP_PUBLISHED"] != "Y":
                         act = False
                     
+                    
                     photo_file_url = None
                     if "PROPERTY_669" in rep:
                         photo = take_value(rep["PROPERTY_669"])
+                        print(photo)
                         #скачать и вытащить ссылку
                         files = [photo]
                         art_id = rep["ID"]
                         inf_id = "98"
                         is_preview = False
-                        files_to_add = File().need_update_file(art_id, files)
-                        if files_to_add != []:
-                            for f_id in files_to_add:
-                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
-                                try:
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
-                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                except:
-                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
-                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                            
-                            if file_data is not None:
-                                url = file_data["file_url"]
-                                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                                photo_file_url = f"http://intranet.emk.org.ru{url}"
-                                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        
+                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
+                        print(file_data)
 
+                        if file_data is None:
+                            photo_file_url = None
+
+                        else:
+                            url = file_data["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                            photo_file_url = f"http://intranet.emk.org.ru{url}"
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    
                             
                     
                     rp = {
@@ -535,47 +537,42 @@ class Article:
                         "link" : take_value(rep["PROPERTY_670"]) #!!!!!!!!!!!!!! сслыка на youtube
                     }
 
-                    reports.append(rep)
+                    reports.append(rp)
             
-            if tours != []:
-                for tour in tours:
+            if tour != []:
+                for tr in tour:
                     act = True
-                    if tour["BP_PUBLISHED"] != "Y":
+                    if tr["BP_PUBLISHED"] != "Y":
                         act = False
                     
+                    
                     photo_file_url = None
-                    if "PROPERTY_498" in tour:
-                        photo = take_value(tour["PROPERTY_498"])
+                    if "PROPERTY_498" in tr:
+                        photo = take_value(tr["PROPERTY_498"])
                         #скачать и вытащить ссылку
-                        files = [photo]
-                        art_id = tour["ID"]
+                        art_id = tr["ID"]
                         inf_id = "84"
                         is_preview = False
-                        files_to_add = File().need_update_file(art_id, files)
-                        if files_to_add != []:
-                            for f_id in files_to_add:
-                                print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {False}")
-                                try:
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, False, inf_id)
-                                    #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                                except:
-                                    LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {True}")
-                                    file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
-                                    # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                            
-                            if file_data is not None:
-                                url = file_data["file_url"]
-                                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                                photo_file_url = f"http://intranet.emk.org.ru{url}"
-                                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
+                        
+                        if file_data is None:
+                            photo_file_url = None
+
+                        else:
+                            url = file_data["file_url"]
+                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                            photo_file_url = f"http://intranet.emk.org.ru{url}"
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     
-                    rp = {
-                        "id" : tour["ID"],
-                        "name" : tour["NAME"],
+                    t = {
+                        "id" : tr["ID"],
+                        "name" : tr["NAME"],
                         "active" : act,
-                        "3D_files_path" : take_value(tour["PROPERTY_497"]),
+                        "3D_files_path" : take_value(tr["PROPERTY_497"]),
                         "photo_file_url" : photo_file_url
                     }
+
+                    tours.append(t)
             
             indirect_data = {
                 "PROPERTY_463" : data["PROPERTY_463"],
@@ -1006,6 +1003,7 @@ class Article:
             data["section_id"] = 41 # Гид по предприятиям
             self.section_id = 41
             # загрузить данные в таблицу
+            print(data)
             artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
             if artDB.need_add():
                 self.add(data)

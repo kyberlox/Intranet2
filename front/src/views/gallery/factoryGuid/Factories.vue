@@ -22,12 +22,6 @@ export default defineComponent({
     setup() {
         const factoryGuidData = useFactoryGuidDataStore();
         const factoriesSlides: ComputedRef<IFactoryGuidSlides[]> = computed(() => factoryGuidData.getAllFactories as IFactoryGuidSlides[]);
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['гидПредприятия']}`)
-                .then((data) => {
-                    factoryGuidData.setAllFactories(data)
-                })
-        })
         return {
             factoriesSlides,
         };

@@ -367,7 +367,7 @@ const router = createRouter({
       path: '/gallery/factories/tours/:id/:tourId',
       name: 'factoryTour',
       component: () => import('@/views/gallery/factoryGuid/FactoryTour.vue'),
-      props: (route) => ({ id: route.params.id, tourId: route.params.tourId }),
+      props: (route) => ({ id: route.params.tourId, factoryId: route.params.id }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Гид по предприятиям', route: 'factories' }]
       }

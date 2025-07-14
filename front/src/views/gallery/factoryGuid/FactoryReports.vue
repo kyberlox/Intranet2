@@ -24,9 +24,6 @@ export default defineComponent({
         const factoryGuidData = useFactoryGuidDataStore();
         const factoryReports = computed(() => factoryGuidData.getFactoryReports(Number(props.id)));
 
-        onMounted(() => {
-
-        })
         return {
             factoryReports
         };

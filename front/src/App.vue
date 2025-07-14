@@ -36,6 +36,7 @@ import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
 import { useLoadingStore } from '@/stores/loadingStore'
 import { useUserData } from "./stores/userData";
 import { useViewsDataStore } from "./stores/viewsData";
+import { prefetchSection } from "./utils/prefetchSection";
 export default defineComponent({
     name: "app-layout",
     components: {
@@ -56,6 +57,8 @@ export default defineComponent({
         watch(route, () => {
             if (route.fullPath.includes('blog') && !blogAuthors.value.length) {
                 getBlogAuthorsToStore(allAuthors, blogData)
+            } else if (route.fullPath.includes('factories')) {
+                prefetchSection('factoryGuid')
             }
         }, { immediate: true, deep: true })
 

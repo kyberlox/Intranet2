@@ -19,7 +19,7 @@ export const uniqueRoutesHandle = (
     }
     else if (route == 'factoryTour') {
         const typedSlide = slide as IFactorySlides
-        return { name: route, params: { id: slide.id, tourId: typedSlide?.indirect_data?.tourId } }
+        return { name: route, params: { id: typedSlide.factory_id, tourId: typedSlide.id } }
     }
     else if (route === 'officialEvents') {
         const typedSlide = slide as IFactorySlides

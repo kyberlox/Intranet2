@@ -882,9 +882,12 @@ class ArticleSearchModel:
         for article_data in article_SQL_data:
             data_row = {}
             if article_data['active']:
-
-                if article_data['section_id'] == 16:
+                
+                if isinstance(article_data['indirect_data'], str):
                     article_data['indirect_data'] = json.loads(article_data['indirect_data'])
+                # if article_data['section_id'] == 16:
+                #     print(article_data['id'], type(article_data['indirect_data']))
+                #     article_data['indirect_data'] = json.loads(article_data['indirect_data'])
 
                 # обрабатываем случай с интервью Еленой Земской
                 if article_data['section_id']  == 16 and ("PROPERTY_1025" not in article_data['indirect_data'] or article_data['indirect_data']['PROPERTY_1025'] is None):

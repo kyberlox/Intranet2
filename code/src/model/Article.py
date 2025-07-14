@@ -240,17 +240,25 @@ class Article:
                 "representative_id" : int(data['PROPERTY_1074'][0]),
                 "representative_text" : str(data['PROPERTY_1075'][0])
             })
-            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
             #добавим лайки и просмотры PROPERTY_1073
-            if 'PROPERTY_1073' in data:
-                for user_id in data['PROPERTY_1073']:
-                     # проверяем есть ли такие юзеры в бд
-                        user_exist = User(int(user_id)).search_by_id()
-                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-                            continue
-                        else:
-                            LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
-            '''
+            # if 'PROPERTY_1073' in data:
+            #     for user_id in data['PROPERTY_1073']:
+            #          # проверяем есть ли такие юзеры в бд
+            #             user_exist = User(int(user_id)).search_by_id()
+            #             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+            #                 continue
+            #             else:
+            #                 LikesModel(user_id=int(user_id), art_id=int(data['ID'])).add_or_remove_like()
+
+            indirect_data = json.dumps({
+                "created_by" : data['CREATED_BY'],
+                "author" : str(data['PROPERTY_1070'][0]),
+                "nomination" : nomination,
+                "age_group" : age_group,
+                "representative_id" : int(data['PROPERTY_1074'][0]),
+                "representative_text" : str(data['PROPERTY_1075'][0])
+            })
 
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
@@ -804,8 +812,6 @@ class Article:
                 for inf in infs:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
-                    # if self.section_id == 16:
-                    #     print('тут загуржаем', type(inf))
                     if artDB.need_add():
                         logg.warning_message(f'Добавил статью, {inf["ID"]}')
                         self.add(inf)
@@ -823,6 +829,7 @@ class Article:
             #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
         }
 
+        
         '''
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
@@ -859,7 +866,8 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
+        '''
+        '''
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -895,9 +903,9 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
+        '''
 
-
-
+        '''
         #Памятка
         # пройти по инфоблоку заголовков
         self.section_id = "82"
@@ -942,7 +950,7 @@ class Article:
  
 
         
-
+        '''
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"
@@ -1001,6 +1009,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
+        '''
 
         '''
         #несколько section_id - один IBLOCK_ID
@@ -1050,9 +1059,7 @@ class Article:
                     # сюда надо что-то дописать
                     pass
         '''
-                
-
-
+   
         '''
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
@@ -1091,8 +1098,10 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
+        '''
+        
 
-
+        '''
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1138,7 +1147,7 @@ class Article:
                 pass
         '''
 
-        '''
+        
         #Корпоративная газета ✔️
         data = [
             {
@@ -1179,18 +1188,17 @@ class Article:
                 pass
         
         #Конкурсы ЭМК 7 секция
-        self.section_id = "128"
-        competitions_info = self.get_inf()
-        if competitions_info != []:
-            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
-                #art_id = inf["ID"]
-                self.section_id = 7
-                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
-                if art_DB.need_add():
-                    self.add(inf)
-                elif art_DB.update(self.make_valid_article(inf)):
-                    pass
-        '''
+        # self.section_id = "128"
+        # competitions_info = self.get_inf()
+        # if competitions_info != []:
+        #     for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+        #         #art_id = inf["ID"]
+        #         self.section_id = 7
+        #         art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
+        #         if art_DB.need_add():
+        #             self.add(inf)
+        #         elif art_DB.update(self.make_valid_article(inf)):
+        #             pass
         
 
 
@@ -1417,7 +1425,6 @@ class Article:
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()
                     # сюда лайки и просмотры
-
                     if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                         user_id = self.get_user_by_session_id(session_id=session_id)
                         if user_id is not None:
@@ -1851,6 +1858,12 @@ class Article:
         if user_id is not None:
             return LikesModel(user_id=user_id, art_id=self.id).add_or_remove_like()
         return {"err" : "Auth Err"}
+    
+    def has_user_liked(self, session_id):
+        user_id = self.get_user_by_session_id(session_id=session_id)
+        if user_id is not None:
+            return LikesModel(user_id=user_id, art_id=self.id).has_liked()
+        return {"err" : "Auth Err"}
 
     # просмотры
     def get_art_views(self):
@@ -1968,6 +1981,19 @@ def add_or_remove_like(article_id, request: Request):
         session_id = token
     
     return Article(id=article_id).add_like(session_id=session_id)
+
+@article_router.get("/has_user_liked/{article_id}")
+def has_user_liked(article_id, request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    
+    return Article(id=article_id).has_user_liked(session_id=session_id)
 
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")

@@ -1169,6 +1169,7 @@ class ArticleSearchModel:
             art_info['href'] = res_info["_source"]["section_id"]
             art_info['id'] = int(res_info["_id"])
             art_info['image'] = res_info["_source"]["preview_photo"]
+            art_info['coincident'] = res_info['highlight']
             articles.append(art_info)
         
         sec_art = {}

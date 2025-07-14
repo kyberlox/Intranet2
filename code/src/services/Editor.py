@@ -13,9 +13,9 @@ editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 class Editor:
     #тут можно объявить классы лоя работы со статьями и файлами
-    self.Article = Article()
-    self.File = File()
-    self.LogsMaker = LogsMaker()
+    Article = Article()
+    File = File()
+    LogsMaker = LogsMaker()
 
     #словарь полей
     fields_data_file = open("./src/base/fields.json", "r")
@@ -26,12 +26,17 @@ class Editor:
         self.id = id #в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
         self.art_id = art_id
         self.section_id = section_id
+
+        #словарь полей
+        fields_data_file = open("./src/base/fields.json", "r")
+        self.fields = json.load(section_data_file)
+        fields_data_file.close()
     
     def rendering():
         if self.art_id is None:
-            return self.LogsMaker.warning_message("Укажите id статьи")
+            return LogsMaker.warning_message("Укажите id статьи")
         # вытащить основные поля из psql
-        self.Article.id = self.art_id
+        Article.id = self.art_id
         # вытащить поля из psql -> idirect_data
         # протащить через словарь полей
         # вытащить файлы 
@@ -39,12 +44,12 @@ class Editor:
     
     def add():
         if self.section_id is None:
-            return self.LogsMaker.warning_message("Укажите id раздела")
+            return LogsMaker.warning_message("Укажите id раздела")
         #собрать поля статей раздела
     
     def update():
         if self.art_id is None:
-            return self.LogsMaker.warning_message("Укажите id статьи")
+            return LogsMaker.warning_message("Укажите id статьи")
         # перезаписать основные поля из psql
         # перезаписать поля из psql -> idirect_data
         # перезаписать файлы 

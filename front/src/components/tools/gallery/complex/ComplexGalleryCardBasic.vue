@@ -4,7 +4,7 @@
         <div class="flexGallery__card__img-wrapper"
              :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
             <div class="flexGallery__card__img"
-                 v-lazy-load="slide.preview_file_url">
+                 v-lazy-load="slide.preview_file_url ?? slide.photo_file_url">
             </div>
         </div>
         <div v-if="slide.name"

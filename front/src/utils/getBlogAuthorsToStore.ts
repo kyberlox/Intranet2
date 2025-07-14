@@ -1,11 +1,12 @@
 import Api from "./Api"
-import type { Ref } from "vue"
 import { sectionTips } from "@/assets/static/sectionTips"
 import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
-import type { useblogDataStore } from "@/stores/blogData"
+import { useblogDataStore } from "@/stores/blogData"
 
-export const getBlogAuthorsToStore = (allAuthors: Ref<IBlogAuthors[]>, blogData: ReturnType<typeof useblogDataStore>) => {
+export const getBlogAuthorsToStore = () => {
+    const blogsData = useblogDataStore();
     const uniqAuthors: IBlogAuthors[] = [];
+
     Api.get(`article/find_by/${sectionTips['Блоги']}`)
         .then(res => {
             res.map((e: IBlog) => {
@@ -21,11 +22,10 @@ export const getBlogAuthorsToStore = (allAuthors: Ref<IBlogAuthors[]>, blogData:
                     if (!uniqAuthors.length || !uniqAuthors.find((e) => e.title == newAuthor.title)) {
                         uniqAuthors.push(newAuthor)
                     }
-                    allAuthors.value = uniqAuthors;
                 }
             })
 
-            blogData.setAllBlogs(res);
-            blogData.setAuthors(allAuthors.value);
+            blogsData.setAllBlogs(res);
+            blogsData.setAuthors(uniqAuthors);
         })
 }

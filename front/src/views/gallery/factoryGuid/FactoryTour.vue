@@ -25,9 +25,6 @@ export default defineComponent({
         const factoryGuid = useFactoryGuidDataStore();
         const currentTour = computed(() => factoryGuid.getFactoryTour(Number(props.factoryId), String(props.id)))
 
-        console.log(currentTour.value?.["3D_files_path"]);
-
-
         const folder = ref('');
         const swf = ref();
         const xml = ref();

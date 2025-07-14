@@ -566,6 +566,7 @@ class Article:
                     
                     t = {
                         "id" : tr["ID"],
+                        "factory_id" : self.id,
                         "name" : tr["NAME"],
                         "active" : act,
                         "3D_files_path" : take_value(tr["PROPERTY_497"]),
@@ -950,7 +951,7 @@ class Article:
  
 
         
-        '''
+        
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"
@@ -1009,7 +1010,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
+        
 
         '''
         #несколько section_id - один IBLOCK_ID

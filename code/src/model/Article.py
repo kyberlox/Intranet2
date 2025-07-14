@@ -240,7 +240,7 @@ class Article:
                 "representative_id" : int(data['PROPERTY_1074'][0]),
                 "representative_text" : str(data['PROPERTY_1075'][0])
             })
-            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
             #добавим лайки и просмотры PROPERTY_1073
             # if 'PROPERTY_1073' in data:
             #     for user_id in data['PROPERTY_1073']:
@@ -812,8 +812,6 @@ class Article:
                 for inf in infs:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
-                    # if self.section_id == 16:
-                    #     print('тут загуржаем', type(inf))
                     if artDB.need_add():
                         logg.warning_message(f'Добавил статью, {inf["ID"]}')
                         self.add(inf)
@@ -831,6 +829,7 @@ class Article:
             #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ♻️
         }
 
+        
         '''
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
@@ -867,7 +866,8 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
+        '''
+        '''
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -903,9 +903,9 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
+        '''
 
-
-
+        '''
         #Памятка
         # пройти по инфоблоку заголовков
         self.section_id = "82"
@@ -950,7 +950,7 @@ class Article:
  
 
         
-
+        '''
         #Гид по предприятиям
         # пройти по инфоблоку заголовков
         self.section_id = "78"
@@ -1009,6 +1009,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
+        '''
 
         '''
         #несколько section_id - один IBLOCK_ID
@@ -1058,9 +1059,7 @@ class Article:
                     # сюда надо что-то дописать
                     pass
         '''
-                
-
-
+   
         '''
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
@@ -1099,8 +1098,10 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
+        '''
+        
 
-
+        '''
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1146,7 +1147,7 @@ class Article:
                 pass
         '''
 
-        '''
+        
         #Корпоративная газета ✔️
         data = [
             {

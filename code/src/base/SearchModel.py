@@ -339,7 +339,7 @@ class UserSearchModel:
                             {
                                 "bool": {
                                     "should": [
-                                        {"match_phrase": {"user_fio": {"query": key_word, "boost": 10}}},
+                                        {"match": {"user_fio": {"query": key_word, "boost": 10}}},
                                         {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
                                         {
                                             "nested": {
@@ -347,13 +347,13 @@ class UserSearchModel:
                                                 "query": {
                                                     "bool": {
                                                         "should": [
-                                                            {"match_phrase": {"indirect_data.work_position": {"query": key_word, "boost": 5}}},
-                                                            {"match_phrase": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5}}},
-                                                            {"match_phrase": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5}}},
-                                                            {"match_phrase": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5}}},
-                                                            {"match_phrase": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5}}},
-                                                            {"match_phrase": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5}}},
-                                                            {"match_phrase": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5}}}
+                                                            {"match": {"indirect_data.work_position": {"query": key_word, "boost": 5}}},
+                                                            {"match": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5}}},
+                                                            {"match": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5}}},
+                                                            {"match": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5}}},
+                                                            {"match": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5}}},
+                                                            {"match": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5}}},
+                                                            {"match": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5}}}
                                                         ]
                                                     }
                                                 }
@@ -1098,9 +1098,9 @@ class ArticleSearchModel:
                             {
                                 "bool": {
                                     "should": [
-                                        {"match_phrase": {"title": {"query": key_word,"boost": 10}}},
-                                        {"match_phrase": {"preview_text": {"query": key_word,"boost": 8}}},
-                                        {"match_phrase": {"content_text": {"query": key_word,"boost": 6}}}
+                                        {"match": {"title": {"query": key_word,"boost": 10}}},
+                                        {"match": {"preview_text": {"query": key_word,"boost": 8}}},
+                                        {"match": {"content_text": {"query": key_word,"boost": 6}}}
                                     ],
                                     "_name": "true_search"
                                 }
@@ -1180,7 +1180,7 @@ class ArticleSearchModel:
         sec_art['content'] = articles
         result.append(sec_art)
 
-        return res['hits']['hits'] #res['hits']['hits'] result
+        return result #res['hits']['hits'] result
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
@@ -1188,7 +1188,7 @@ class ArticleSearchModel:
 
 
 
-def search_everywhere(key_word, size_res: Optional[int] = 20):
+def search_everywhere(key_word): # , size_res: Optional[int] = 40
     result = []
     res = elastic_client.search(
         index=["articles", "user"],
@@ -1332,33 +1332,38 @@ def search_everywhere(key_word, size_res: Optional[int] = 20):
                 }
             }
         },
-        "size": size_res
+        "size": 1000
         }
     )
    
     users = []
     articles = []
     true_search_flag = False
-    
+    count_users = 0
+    count_art = 0
     for res_info in res['hits']['hits']:
         if res_info["_index"] == 'user':
-            if "matched_queries" in res_info.keys():
-                true_search_flag = True
-            #print(res_info)
-            user_info = {}
-            user_info['name'] = res_info["_source"]["user_fio"]
-            user_info['href'] = "userPage"
-            user_info['id'] = int(res_info["_id"])
-            user_info['image'] = res_info["_source"]["photo_file_id"]
-            users.append(user_info)
+            count_users += 1
+            if count_users <= 10:
+                if "matched_queries" in res_info.keys():
+                    true_search_flag = True
+                #print(res_info)
+                user_info = {}
+                user_info['name'] = res_info["_source"]["user_fio"]
+                user_info['href'] = "userPage"
+                user_info['id'] = int(res_info["_id"])
+                user_info['image'] = res_info["_source"]["photo_file_id"]
+                users.append(user_info)
         elif res_info["_index"] == 'articles':
-            art_info = {}
-            art_info['name'] = res_info["_source"]["title"]
-            art_info['href'] = res_info["_source"]["section_id"]
-            art_info['id'] = int(res_info["_id"])
-            art_info['image'] = res_info["_source"]["preview_photo"]
-            art_info['coincident'] = res_info['highlight']
-            articles.append(art_info)
+            count_art += 1
+            if count_art <= 10:
+                art_info = {}
+                art_info['name'] = res_info["_source"]["title"]
+                art_info['href'] = res_info["_source"]["section_id"]
+                art_info['id'] = int(res_info["_id"])
+                art_info['image'] = res_info["_source"]["preview_photo"]
+                art_info['coincident'] = res_info['highlight']
+                articles.append(art_info)
     
     sec_user = {}
     sec_art = {}
@@ -1370,4 +1375,4 @@ def search_everywhere(key_word, size_res: Optional[int] = 20):
     sec_art['content'] = articles
     result.append(sec_user)
     result.append(sec_art)
-    return res['hits']['hits']    #result  res['hits']['hits'] 
+    return result    #result  res['hits']['hits'] 

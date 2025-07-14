@@ -9,74 +9,88 @@
             внутрикорпоративными событиями.</p>
         <p>Мы всегда открыты к новым идеям и готовы выслушать каждого сотрудника. Давайте работать вместе и делать нашу
             компанию еще лучше!</p>
-        <form class="col-sm-6 needs-validation"
-              id="feedback-form">
-            <input type="hidden"
-                   name="section-id"
-                   value="319">
-            <div class="form-floating mb-3">
+        <div class="col-sm-6">
+            <form @submit.stop.prevent="sendIdea"
+                  class="form-floating new-idea__form mb-3">
                 <input type="text"
                        class="form-control"
-                       name="form-subject"
-                       id="form-subject">
+                       v-model="messageTheme" />
                 <label for="form-subject">Тема</label>
                 <div class="invalid-feedback">
                     Обязательно укажите тему сообщения
                 </div>
-            </div>
-            <div class="form-floating mb-3">
-                <textarea class="form-control"
-                          placeholder="Добавьте сообщение"
-                          name="form-message"
-                          id="form-message"
-                          style="height: 200px"></textarea>
-                <label for="form-message">Сообщение</label>
-                <div class="invalid-feedback">
-                    Это поле обязательно для заполнения
+
+                <div class="form-floating  mb-3">
+                    <textarea class="form-control"
+                              placeholder="Добавьте сообщение"
+                              style="height: 200px"
+                              v-model="messageText"></textarea>
+                    <label for="form-message">Сообщение</label>
+                    <div class="invalid-feedback">
+                        Это поле обязательно для заполнения
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label for="formFile"
-                       class="form-label">Добавить файл</label>
-                <input class="form-control"
-                       name="attachments-files"
-                       type="file"
-                       id="formFile">
-            </div>
-            <div class="mb-3">
-                <button type="submit"
-                        id="form-submit"
-                        class="btn btn-primary">
-                    <span class="spinner-border spinner-border-sm"
-                          style="display: none"
-                          role="status"
-                          aria-hidden="true"></span>
-                    Отправить
-                </button>
-            </div>
-        </form>
-
-        <div id="thanks"
-             class=""
-             style="display: none">
-            <p>Благодарим Вас за отправку формы обратной связи! Мы обязательно рассмотрим Ваше сообщение и постараемся
-                ответить на него как можно скорее. Если у Вас есть какие-либо дополнительные вопросы или пожелания, не
-                стесняйтесь обращаться к нам в любое время.</p>
+                <div class="mb-3">
+                    <label for="formFile"
+                           class="form-label">Добавить файл</label>
+                    <input class="form-control"
+                           name="attachments-files"
+                           type="file"
+                           @change="handleMessageFileLoad">
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary">
+                        Отправить
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div id="error"
-             class=""
-             style="display: none">
-            <p>Ошибка! Что-то пошло не так. Сообщите о проблеме разработчику на Email: matrenin.d.e@emk.ru</p>
-        </div>
-
     </div>
 </template>
 
-<style>
-.form-floating>.form-control:focus,
-.form-floating>.form-control:not(:placeholder-shown) {
-    padding-top: 1.625rem;
-    padding-bottom: .625rem;
+<script lang="ts">
+import Api from '@/utils/Api';
+import { ref, type Ref, defineComponent } from 'vue';
+export default defineComponent({
+    setup() {
+        const messageText: Ref<string> = ref('');
+        const messageTheme: Ref<string> = ref('');
+        const messageFile: Ref<File> = ref();
+
+        const handleMessageFileLoad = (e: Event) => {
+            const target = e?.target as HTMLInputElement
+            if (!target || !target.files) return;
+            messageFile.value = target.files[0];
+
+        }
+
+
+        const sendIdea = () => {
+            const formData = new FormData();
+            formData.append('messageTheme', messageTheme.value)
+            formData.append('messageText', messageText.value)
+            formData.append('messageFile', messageFile.value)
+            console.log(messageFile.value)
+            console.log('FormData содержит:');
+            for (const [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            Api.post('ds', formData);
+        }
+
+        return {
+            messageText,
+            messageTheme,
+            handleMessageFileLoad,
+            sendIdea
+        }
+    }
+})
+</script>
+<style lang="scss">
+.new-idea__form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 </style>

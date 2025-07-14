@@ -12,6 +12,15 @@
             <span v-if="getProperty(slide as IAfishaItem, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
             <span>{{ slide.name }}</span>
         </div>
+        <div class="flexGallery__card__buttons"
+             v-if="modifiers.includes('buttons')">
+            <RouterLink v-if="slide.indirect_data?.reports.length"
+                        :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
+                        class="primary-button primary-button--rounder">Репортажи</RouterLink>
+            <RouterLink v-if="slide.indirect_data?.tours.length"
+                        :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
+                        class="primary-button primary-button--rounder">3D-Туры</RouterLink>
+        </div>
     </RouterLink>
 </template>
 

@@ -2,6 +2,7 @@
     <div class="flexGallery"
          v-if="slides?.length">
         <div v-for="(slide, index) in slides"
+             class="flexGallery__wrapper"
              :key="index">
             <ComplexGalleryCardBasic v-if="checkCardType(slide) == 'basic'"
                                      :slide="slide"
@@ -9,16 +10,12 @@
                                      :routeTo="routeTo"
                                      :setCardDate="setCardDate" />
 
-            <ComplexGalleryCardWithButtons v-else-if="checkCardType(slide) == 'withButtons'"
-                                           :slide="slide"
-                                           :routeTo="routeTo" />
-
             <ComplexGalleryCardOnlyImg v-else-if="checkCardType(slide) == 'onlyImg'"
                                        :slide="slide"
                                        @callModal="callModal" />
 
             <ComplexGalleryCardVideo v-else-if="checkCardType(slide) == 'videoCard'"
-                                     :slides="slides"
+                                     :slide="slide"
                                      :routeTo="routeTo"
                                      @callModal="callModal" />
         </div>
@@ -40,7 +37,6 @@ import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IAfishaItem, IUnionEntities } from "@/interfaces/IEntities";
 import RichGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
-import ComplexGalleryCardWithButtons from "./ComplexGalleryCardButtons.vue";
 import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
 import ComplexGalleryCardVideo from "./ComplexGalleryCardVideo.vue";
 
@@ -69,7 +65,6 @@ export default defineComponent({
         ZoomModal,
         RichGallerySkeleton,
         ComplexGalleryCardBasic,
-        ComplexGalleryCardWithButtons,
         ComplexGalleryCardOnlyImg,
         ComplexGalleryCardVideo
     },
@@ -79,11 +74,13 @@ export default defineComponent({
         const modalIsOpen = ref(false);
         const activeIndex = ref(0);
 
-        const callModal = (src: string[], type: 'video' | 'img', imgIndex?: number) => {
+        const callModal = (src: string[] | string, type: 'video' | 'img', imgIndex?: number) => {
             if (!src) return;
             if (type == 'video') {
                 modalImg.value = '';
                 modalVideo.value = src;
+                console.log(src);
+
             }
             else if (type == 'img') {
                 if (typeof imgIndex !== 'number' && !imgIndex) return;
@@ -100,22 +97,21 @@ export default defineComponent({
         }
 
         const checkCardType = (slide: IUnionEntities) => {
+
             if (!slide.videoHref && !props.modifiers.includes('noRoute') &&
-                !props.modifiers.includes('buttons') &&
                 props.routeTo) {
+                // чек на отсутствие внутренных ссылок у репортажей и 3д туров
+                if (slide.section_id == 41 && (!slide.indirect_data.reports.length && !slide.indirect_data.tours.length)) return false;
                 return 'basic';
             }
-            else if (props.routeTo &&
-                props.modifiers.includes('buttons') &&
-                (slide.indirect_data && ('reportages' in slide.indirect_data || 'tours' in slide.indirect_data))) {
-                return 'withButtons'
+            else if (slide?.indirect_data && ('videoHref' in slide.indirect_data && slide.indirect_data.videoHref) || slide.link) {
+                return 'videoCard'
             }
+
             else if (props.modifiers.includes('noRoute') && slide.images) {
                 return 'onlyImg'
             }
-            else if (slide?.indirect_data && 'videoHref' in slide.indirect_data && slide.indirect_data.videoHref) {
-                return 'videoCard'
-            }
+
         }
 
         return {

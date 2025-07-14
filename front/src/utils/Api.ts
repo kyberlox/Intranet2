@@ -9,7 +9,7 @@ const authKey = computed(() => useUserData().getAuthKey);
 const api = axios.create({
     baseURL: VITE_API_URL,
     withCredentials: true,
-    headers: { 'Content-Type': 'application/json' }
+    // headers: { 'Content-Type': 'application/json' }
 });
 
 // добавляю токен
@@ -33,5 +33,9 @@ export default class Api {
 
     static async post(url: string, data: IAuth) {
         return (await api.post(url, data)).data;
+    }
+
+    static async put(url: string) {
+        return (await api.put(url))
     }
 }

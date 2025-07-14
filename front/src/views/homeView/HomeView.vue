@@ -13,9 +13,10 @@
                 <!-- Для отдельных постов в одну строку -->
                 <div v-else-if="item.type == 'fullRowBlock'"
                      class="homeview__grid__cards--fullRowBlock">
-                    <span class="homeview__grid__card__group-title">
+                    <RouterLink :to="{ name: item.sectionId }"
+                                class="homeview__grid__card__group-title">
                         {{ item.title }}
-                    </span>
+                    </RouterLink>
                     <div class="homeview__grid">
                         <MainPageRowBlocks v-for="(block, index) in item.images"
                                            :card="block"

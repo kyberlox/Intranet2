@@ -11,11 +11,11 @@ export const uniqueRoutesHandle = (
     }
     else if (route === 'experienceTypes') {
         const typedSlide = slide as IFactoryData;
-        return { name: route, params: { factoryId: typedSlide?.factoryId } }
+        return { name: route, params: { factoryId: typedSlide?.id } }
     }
     else if (route === 'experienceType') {
         const typedSlide = slide as IFactoryData;
-        return { name: route, params: { factoryId: typedSlide.factoryId, sectorId: typedSlide.sectorId } }
+        return { name: route, params: { factoryId: typedSlide.id, sectorId: typedSlide.sectorId } }
     }
     else if (route == 'factoryTour') {
         const typedSlide = slide as IFactorySlides

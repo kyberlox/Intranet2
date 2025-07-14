@@ -1,3 +1,8 @@
+export interface ILikes {
+    count: number,
+    likedByMe: boolean
+}
+
 export interface IReaction {
     views: number,
     likes: {
@@ -268,21 +273,27 @@ export interface IExperienceData extends IBaseIndirectData {
     sector: string
 }
 
-export interface IFactoryData extends IBaseIndirectData {
-    PREVIEW_PICTURE?: string,
-    hrefTitle?: string,
-    reportages?: boolean,
-    reportsHref?: string,
-    tours?: boolean,
-    toursHref?: string,
-    factoryId?: number,
-    videoHref?: string[],
-    href?: string,
-    tourId?: string,
-    sectorId?: string,
+export interface IFactoryDataTours {
+    id?: string;
+    name?: string;
+    active?: boolean;
+    '3D_files_path'?: string;
+    photo_file_url?: string;
 }
 
+export interface IFactoryDataReports {
+    id?: string,
+    date?: string,
+    link?: string,
+    name?: string,
+    active?: boolean,
+    photo_file_url?: string
+}
 
+export interface IFactoryGuidData extends IBaseIndirectData {
+    tours?: IFactoryDataTours[],
+    reports?: IFactoryDataReports[]
+}
 
 export interface IOpenVacancyData extends IBaseIndirectData {
     PROPERTY_5094: string[]
@@ -469,8 +480,8 @@ export interface IForNewWorker extends IBaseEntity {
     indirect_data?: IForNewWorkerData
 }
 
-export interface IFactorySlides extends IBaseEntity {
-    indirect_data?: IFactoryData
+export interface IFactoryGuidSlides extends IBaseEntity {
+    indirect_data?: IFactoryGuidData
 }
 
 export interface IOpenVacancy extends IBaseEntity {
@@ -501,7 +512,7 @@ export interface IUnionEntities extends IBaseEntity {
     IOfficialEventsData |
     IPartnerBonusData |
     IForNewWorkerData |
-    IFactoryData |
+    IFactoryGuidData |
     IOpenVacancyData |
     ISafetyTechnicsSlide
 }
@@ -522,6 +533,6 @@ export type IUnionEntitiesData =
     IOfficialEventsData |
     IPartnerBonusData |
     IForNewWorkerData |
-    IFactoryData |
+    IFactoryGuidData |
     IOpenVacancyData |
     ISafetyTechnicsSlide

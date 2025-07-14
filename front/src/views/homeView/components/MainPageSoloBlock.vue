@@ -1,17 +1,29 @@
 <template>
     <div class="homeview__grid__card homeview__grid__card--soloblock d-flex flex-column">
-        <div class="homeview__grid__card__group-title">{{ card.title }}</div>
+        <RouterLink :to="{ name: card.href }"
+                    class="homeview__grid__card__group-title">
+            {{ card.title }}
+        </RouterLink>
         <div class="homeview__grid__card__image">
             <swiper v-bind="sliderConfig"
                     @swiper="swiperOn">
-                <swiper-slide v-for="(slide, index) in card.images"
+                <swiper-slide v-if="!card.images.length"
+                              v-lazy-load="chooseImgPlug()"
+                              class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
+                </swiper-slide>
+                <swiper-slide v-else
+                              v-for="(slide, index) in card.images"
                               :key="'postImg' + index"
                               class="homeview__grid__card__image__swiper-slide">
-                    <RouterLink class="
-                                homeview__grid__card__link
+                    <RouterLink v-if="slide.image"
+                                class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
                                 :to="{ name: card.href ?? slide.href }"
                                 v-lazy-load="slide.image" />
+                    <div v-else
+                         class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug"
+                         v-lazy-load="chooseImgPlug()">
+                    </div>
                 </swiper-slide>
             </swiper>
         </div>
@@ -27,6 +39,7 @@ import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent } from "vue";
 import { RouterLink } from "vue-router";
 import { useSwiperconf } from "@/utils/useSwiperConf";
+import { chooseImgPlug } from "@/utils/chooseImgPlug";
 
 export default defineComponent({
     components: {
@@ -40,7 +53,7 @@ export default defineComponent({
             required: true,
         }
     },
-    setup(props) {
+    setup() {
         return {
             swiperOn: useSwiperconf('main').swiperOn,
             slideNext: useSwiperconf('main').slideNext,
@@ -49,7 +62,8 @@ export default defineComponent({
             swiperInstance: useSwiperconf('main').swiperInstance,
             isEnd: useSwiperconf('main').isEnd,
             isBeginning: useSwiperconf('main').isBeginning,
-            repairVideoUrl
+            repairVideoUrl,
+            chooseImgPlug
         };
     },
 })

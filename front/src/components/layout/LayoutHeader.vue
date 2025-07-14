@@ -6,12 +6,7 @@
                     <div class="row">
                         <div class="col-4 col-md-5 d-lg-none d-flex align-items-center justify-content-sm-start">
                             <button class="navbar-toggler"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#navbarScroll"
-                                    aria-controls="navbarScroll"
-                                    aria-expanded="false"
-                                    aria-label="Toggle navigation">
+                                    type="button">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                         </div>
@@ -28,18 +23,19 @@
                         <div
                              class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
                             <div class="navbar-collapse collapse">
-                                <hr class="col-12 col-md-12 d-lg-none mt-4 mt-md-0" />
                                 <ul class="navbar-nav m-auto">
                                     <li class="nav-item dropdown"
+                                        @mouseleave="handleDropdown('close', point.id)"
                                         :class="{ 'dropdown--opened': point.id == activeDrop }"
                                         v-for="point in mainMenuPoints"
                                         :key="'point' + point.id">
                                         <div class="nav-link nav-link--main-points dropdown-toggle"
                                              :to="{ name: point.href }"
-                                             @click="openDropdown(point.id)">
+                                             @mouseenter="handleDropdown('open', point.id)">
                                             {{ point.name }}
                                         </div>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu"
+                                            @mouseleave="handleDropdown('close', point.id)">
                                             <li v-for="subpoint in point.subPoints"
                                                 :key="'subpoint' + point.name + subpoint.id"
                                                 class="dropdown__item"
@@ -114,11 +110,12 @@ export default defineComponent({
         const router = useRouter();
         const activeDrop = ref<null | number>(null);
 
-        const openDropdown = (id: number) => {
-            if (id == activeDrop.value) {
-                activeDrop.value = null;
-            }
-            activeDrop.value = id;
+        const handleDropdown = (type: 'open' | 'close', id: number) => {
+            // if (id == activeDrop.value) {
+            //     activeDrop.value = null;
+            // }
+            // else
+            return type == 'open' ? activeDrop.value = id : activeDrop.value = null
         };
 
         const handleDropDownClick = (point: ISubPoint) => {
@@ -134,7 +131,7 @@ export default defineComponent({
         return {
             handleDropDownClick,
             mainMenuPoints,
-            openDropdown,
+            handleDropdown,
             activeDrop,
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
             visibleSidebar,

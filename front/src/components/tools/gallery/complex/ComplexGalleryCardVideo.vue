@@ -1,12 +1,11 @@
 <template>
-    <div class="flexGallery__card flexGallery__card--official-events"
-         v-for="(slide, index) in slides"
-         :key="'video' + index">
+    <div class="flexGallery__card flexGallery__card--official-events">
         <div class="flexGallery__card__img-wrapper">
-            <div class="flexGallery__card__img"
-                 v-lazy-load="slide.preview_file_url">
+            <div v-if="slide.link"
+                 class="flexGallery__card__img"
+                 v-lazy-load="slide?.preview_file_url || slide.photo_file_url"
+                 @click="callModal(slide)">
             </div>
-            <PlayVideo class="flexGallery__card__play-video-icon" />
         </div>
         <div v-if="slide.name"
              class="flexGallery__card__title">{{ slide.name }}</div>
@@ -14,15 +13,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, type PropType } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import type { IUnionEntities } from "@/interfaces/IEntities";
+import { type IFactoryDataReports } from "@/interfaces/IEntities";
+
 
 export default defineComponent({
     name: 'ComplexGalleryCardBasic',
     props: {
-        slides: {
-            type: Array<IUnionEntities>,
+        slide: {
+            type: Object as PropType<IFactoryDataReports>,
             required: true
         },
         routeTo: {
@@ -30,10 +30,12 @@ export default defineComponent({
             default: undefined
         },
     },
+    emits: ['callModal'],
     setup(props, { emit }) {
+
         return {
             uniqueRoutesHandle,
-            // callModal: (slides: string) => emit('callModal', slides, 'video')
+            callModal: (slide: IFactoryDataReports) => emit('callModal', slide.link, 'video')
         }
     }
 })

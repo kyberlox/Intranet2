@@ -24,9 +24,9 @@
                               class="news__detail__date">{{ currentPost.date_publiction }}</span>
                         <div v-if="currentPost.reactions"
                              class="news__detail__like-wrapper">
-                            <LikeIcon class="news__detail__like-icon" />
-                            <span v-if="currentPost.reactions.likes"
-                                  class="news__detail__like-count"> {{ currentPost.reactions.likes.count }}</span>
+                            <Reactions :id="currentPost.id"
+                                       :reactions="currentPost.reactions"
+                                       :type="'postPreview'" />
                         </div>
                     </div>
                     <div v-if="currentPost.tags"
@@ -70,6 +70,8 @@ import type { IUnionEntities, IAfishaItem, ICareSlide } from "@/interfaces/IEnti
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "../gallery/complex/ComplexGallery.vue";
+import Reactions from "./Reactions.vue";
+import PostPreview from "@/views/PostPreview.vue";
 
 export interface IPostInner {
     id?: number;
@@ -100,7 +102,8 @@ export default defineComponent({
         SwiperBlank,
         LikeIcon,
         DocIcon,
-        FlexGallery
+        FlexGallery,
+        Reactions
     },
     props: {
         id: {

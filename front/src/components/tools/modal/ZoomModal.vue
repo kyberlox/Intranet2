@@ -38,7 +38,7 @@ import FullWidthSlider from "@/components/tools/swiper/FullWidthSlider.vue";
 export default {
     props: {
         image: {
-            type: Array as PropType<string[]>,
+            type: [Array, String] as PropType<string[] | string>,
         },
         video: {
             type: String,

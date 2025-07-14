@@ -1,7 +1,7 @@
 <template>
     <div class="homeview__grid__card__group-buttons"
          :class="{ 'homeview__grid__card__group--blog': type == 'blog' }">
-        <div v-if="type !== 'interview' && type !== 'blog'"
+        <div v-if="needReadMoreBtn"
              class="homeview__grid__card__group-buttons__more-button">{{ type == "video" ? "Смотреть" : "Читать далее"
             }}</div>
         <div v-if="newTypeReaction"
@@ -26,9 +26,10 @@
 <script lang="ts">
 import ViewsIcon from "@/assets/icons/posts/ViewsIcon.svg?component";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
-import { defineComponent, ref, type Ref, type PropType } from "vue";
+import { defineComponent, ref, type Ref, type PropType, onMounted } from "vue";
 import Api from "@/utils/Api";
-import type { IReaction } from "@/interfaces/IEntities";
+import type { IReaction, ILikes } from "@/interfaces/IEntities";
+import { type AxiosResponse } from "axios";
 
 export default defineComponent({
     components: {
@@ -45,18 +46,25 @@ export default defineComponent({
             required: true,
         },
         type: {
-            type: String,
+            type: String as PropType<'postPreview' | 'blog' | 'video' | 'interview'>,
             required: true,
         },
+        needReadMoreBtn: {
+            type: Boolean,
+            default: false
+        }
     },
     setup(props) {
+        onMounted(() => {
+            console.log('1')
+        })
+
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
 
         const setLike = (id: number) => {
-            Api.get(`plugtosetlike/${id}`)
-                .then((data: IReaction) => {
-                    console.log(data);
-                    newTypeReaction.value = data
+            Api.put(`article/add_or_remove_like/${id}`)
+                .then((data: AxiosResponse<ILikes>) => {
+                    newTypeReaction.value.likes = data.data
                 })
         }
 

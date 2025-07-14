@@ -29,6 +29,8 @@ from src.base.B24 import B24
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
 
+from src.services.Editor import Editor, editor_router
+
 
 from typing import Awaitable, Callable, Optional
 
@@ -51,6 +53,8 @@ app.include_router(article_router, prefix="/api")
 app.include_router(file_router, prefix="/api")
 app.include_router(vcard_app, prefix="/api")
 app.include_router(search_router, prefix="/api")
+
+app.include_router(editor_router, prefix="/api")
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(compress_router, prefix="/api")

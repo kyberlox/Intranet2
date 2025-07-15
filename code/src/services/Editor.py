@@ -14,10 +14,7 @@ import json
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 class Editor:
-    #тут можно объявить классы лоя работы со статьями и файлами
-    ArticleModel = ArticleModel()
-    File = File()
-    LogsMaker = LogsMaker()
+    
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал

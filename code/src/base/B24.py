@@ -6,7 +6,7 @@ import requests
 
 #import asyncio
 
-b24_router = APIRouter(prefix="/editor", tags=["Битрикс24"])
+b24_router = APIRouter(prefix="/b24", tags=["Битрикс24"])
 
 class B24:
     def __init__(self):

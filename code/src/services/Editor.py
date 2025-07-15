@@ -76,6 +76,7 @@ class Editor:
 
 
         # вытащить файлы
+        files=[]
         
         # вывести
         return {"fields" : field, "files" : files}

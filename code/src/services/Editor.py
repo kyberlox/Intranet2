@@ -97,7 +97,9 @@ class Editor:
         # сохранить
 
     def get_files(self ):
-        return File(art_id = self.art_id).get_files_by_art_id()
+        files = File(art_id = self.art_id).get_files_by_art_id()
+        print(files)
+        return files
     
     def delete_file(self, file_id):
         pass

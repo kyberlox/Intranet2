@@ -107,10 +107,12 @@
     }
 }
 
+// Переопределения для максимальной ширины
 .swiper--vertical-slide {
     max-width: 100% !important;
 }
 
+// Общие стили для вертикальных элементов
 .vertical-title {
     font-style: normal;
     font-weight: bold;
@@ -130,6 +132,7 @@
     margin-top: 5px;
 }
 
+// Стили для секций с изображениями
 .section__image__list__item {
     &__logo {
         max-height: 100px;

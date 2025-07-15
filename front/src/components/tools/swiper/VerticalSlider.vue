@@ -3,13 +3,12 @@
             v-bind="sliderConfig"
             @swiper="swiperOn">
         <swiper-slide class="swiper--vertical-slide"
+                      :class="{ 'swiper--vertical-slide--care': page == 'care' }"
                       v-for="(slide, index) in slides"
                       :key="'vertSlide' + index">
 
-            <div class="swiper--vertical__bg-slide"
-                 :style="{ backgroundImage: `url('${slide.preview_file_url ?? slide.image}')` }">
-
-                <!-- Под технику безопасности-->
+            <div :class="{ 'swiper--vertical__bg-slide': page !== 'care' }"
+                 :style="{ backgroundImage: `url('${slide.preview_file_url}')` }">
                 <div v-if="page == 'safetyTechnics' || (modifiers && modifiers.includes('needLogo'))"
                      class="section__image__list__item__banner">
                     <span class="section__image__list__item__banner__inner">
@@ -46,6 +45,22 @@
                 </div>
             </div>
         </swiper-slide>
+        <div class="swiper-navigation__buttons-group swiper-navigation__buttons-group--birthday"
+             v-if="!isBeginning || !isEnd">
+            <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
+                    :class="{ 'swiper-pagination__button--disabled': isBeginning }"
+                    @click="slidePrev"
+                    :disabled="isBeginning">
+                <ArrowLeft />
+            </button>
+            <div class="swiper-navigation__buttons-group__pagination"></div>
+            <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
+                    :class="{ 'swiper-pagination__button--disabled': isEnd }"
+                    @click="slideNext"
+                    :disabled="isEnd">
+                <ArrowRight />
+            </button>
+        </div>
     </swiper>
 </template>
 
@@ -56,12 +71,15 @@ import "swiper/css/navigation";
 import { defineComponent } from "vue";
 import { useSwiperconf } from "@/utils/useSwiperConf";
 import { type IVerticalSlide } from "@/interfaces/IVerticalSlide";
-
+import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
+import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 
 export default defineComponent({
     components: {
         Swiper,
         SwiperSlide,
+        ArrowLeft,
+        ArrowRight
     },
     props: {
         slides: {
@@ -79,15 +97,16 @@ export default defineComponent({
         }
     },
     setup() {
+        const swiperConf = useSwiperconf('vertical');
 
         return {
-            swiperOn: useSwiperconf('vertical').swiperOn,
-            slideNext: useSwiperconf('vertical').slideNext,
-            slidePrev: useSwiperconf('vertical').slidePrev,
-            sliderConfig: useSwiperconf('vertical').sliderConfig,
-            swiperInstance: useSwiperconf('vertical').swiperInstance,
-            isEnd: useSwiperconf('vertical').isEnd,
-            isBeginning: useSwiperconf('vertical').isBeginning,
+            swiperOn: swiperConf.swiperOn,
+            slideNext: swiperConf.slideNext,
+            slidePrev: swiperConf.slidePrev,
+            sliderConfig: swiperConf.sliderConfig,
+            swiperInstance: swiperConf.swiperInstance,
+            isEnd: swiperConf.isEnd,
+            isBeginning: swiperConf.isBeginning,
         };
     },
 });
@@ -100,5 +119,9 @@ export default defineComponent({
 
 .swiper--vertical-slide__department {
     max-width: 150px;
+}
+
+.swiper--vertical-slide--care {
+    height: min-content !important;
 }
 </style>

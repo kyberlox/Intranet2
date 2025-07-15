@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
+import { onMounted, ref, watch, nextTick, defineComponent, watchEffect } from "vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
@@ -143,6 +143,8 @@ export default defineComponent({
                 .then((data) => slidesForBirthday.value = data)
         })
 
+
+
         watch((searchValue), (newVal) => {
             if (!newVal) return;
             Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
@@ -152,7 +154,9 @@ export default defineComponent({
         const dateFromDatepicker = ref();
         const nullifyDateInput = ref(false);
 
+
         const swiperConf = useSwiperconf('vertical');
+
 
         return {
             slidesForBirthday,
@@ -164,13 +168,12 @@ export default defineComponent({
             pickDate,
             dateFromDatepicker,
             nullifyDateInput,
-
+            isEnd: swiperConf.isEnd,
             swiperOn: swiperConf.swiperOn,
             slideNext: swiperConf.slideNext,
             slidePrev: swiperConf.slidePrev,
             sliderConfig: swiperConf.sliderConfig,
             swiperInstance: swiperConf.swiperInstance,
-            isEnd: swiperConf.isEnd,
             isBeginning: swiperConf.isBeginning,
         };
     },

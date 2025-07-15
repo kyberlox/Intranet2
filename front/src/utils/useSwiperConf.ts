@@ -3,7 +3,6 @@ import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
 import { nextTick, ref } from 'vue';
 
 export const useSwiperconf = (type: string, activeIndex?: number) => {
@@ -12,17 +11,12 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
     const isEnd = ref(false);
 
     const swiperOn = (swiper: SwiperType) => {
-        console.log(swiper);
-
         swiperInstance.value = swiper;
 
         nextTick(() => {
             if (swiperInstance.value) {
                 isBeginning.value = swiperInstance.value.isBeginning;
                 isEnd.value = swiperInstance.value.isEnd;
-                console.log(isBeginning);
-                console.log(isEnd);
-
             }
         });
 
@@ -32,24 +26,24 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                 isEnd.value = swiperInstance.value.isEnd;
             }
         });
+
+        swiper.on("breakpoint", () => {
+            nextTick(() => {
+                if (swiperInstance.value) {
+                    isBeginning.value = swiperInstance.value.isBeginning;
+                    isEnd.value = swiperInstance.value.isEnd;
+                }
+            })
+        })
     };
 
     const slideNext = () => {
-        console.log(swiperInstance);
-
         swiperInstance.value?.slideNext();
-        if (swiperInstance.value) {
-            isBeginning.value = swiperInstance.value.isBeginning;
-            isEnd.value = swiperInstance.value.isEnd;
-        }
+
     };
 
     const slidePrev = () => {
-        if (swiperInstance.value) {
-            swiperInstance.value.slidePrev();
-            isBeginning.value = swiperInstance.value.isBeginning;
-            isEnd.value = swiperInstance.value.isEnd;
-        }
+        swiperInstance.value?.slidePrev();
     };
 
     const slidesPerViewDefine = (type: string) => {
@@ -63,12 +57,47 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
         }
     }
 
+    const getBreakpoints = (type: string) => {
+        switch (type) {
+            case 'vertical':
+                return {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 8
+                    },
+                    480: {
+                        slidesPerView: 1,
+                        spaceBetween: 10
+                    },
+                    768: {
+                        slidesPerView: 1,
+                        spaceBetween: 12,
+                    },
+                    1024: {
+                        slidesPerView: 1,
+                        spaceBetween: 16
+                    },
+                    1200: {
+                        slidesPerView: 2,
+                        spaceBetween: 12
+                    },
+                    1400: {
+                        slidesPerView: 2,
+                    },
+                    1920: {
+                        slidesPerView: 3
+                    }
+                }
+            default:
+                break;
+        }
+    }
+
     const sliderConfig = {
         modules: type == 'vertical' ? [Navigation, Pagination] : [Navigation, Autoplay, Pagination],
         slidesPerView: slidesPerViewDefine(type),
         initialSlide: type == 'fullWidth' ? activeIndex : 0,
         spaceBetween: type == 'main' ? 2 : 12,
-        speed: 0,
         autoplay:
             type !== "postInner"
                 ? {
@@ -76,34 +105,7 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                     disableOnInteraction: false,
                 }
                 : false,
-        breakpoints: {
-            320: {
-                slidesPerView: 1,
-                spaceBetween: 8
-            },
-            480: {
-                slidesPerView: 1,
-                spaceBetween: 10
-            },
-            768: {
-                slidesPerView: 1,
-                spaceBetween: 12,
-            },
-            1024: {
-                slidesPerView: 1,
-                spaceBetween: 16
-            },
-            1200: {
-                slidesPerView: 2,
-                spaceBetween: 12
-            },
-            1400: {
-                slidesPerView: 3,
-            },
-            1800: {
-                slidesPerView: 3,
-            }
-        }
+        breakpoints: getBreakpoints(type)
     };
 
     return {

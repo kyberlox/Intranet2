@@ -14,7 +14,10 @@ import json
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 class Editor:
-    
+    #тут можно объявить классы лоя работы со статьями и файлами
+    ArticleModel = ArticleModel()
+    File = File()
+    LogsMaker = LogsMaker()
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
@@ -30,8 +33,7 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
         # вытащить основные поля из psql
-        ArticleModel.id = self.art_id
-        art = ArticleModel.find_by_id()
+        art = ArticleModel(id = self.art_id).find_by_id()
         keys = []
         for k in art.keys():
             if k not in keys and k != "indirect_data":

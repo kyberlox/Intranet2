@@ -1857,7 +1857,7 @@ class Article:
                     article_likers = LikesModel(art_id=inf['id']).get_article_likers()
                     for usr in article_likers:
                         if usr not in b24_likers:
-                            LikesModel(user_id=usr, art_id=inf['id']).remove_like()
+                            LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
                         else:
                             pass
 

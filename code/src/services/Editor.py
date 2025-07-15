@@ -127,7 +127,6 @@ class Editor:
             file_list.append(file_info)
 
         #разбить по категориям
-        result = []
         result['images'] = []
         result['videos_native'] = []
         result['videos_embed'] = []

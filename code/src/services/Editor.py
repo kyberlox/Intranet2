@@ -97,7 +97,7 @@ class Editor:
         # сохранить
 
     def get_files(self ):
-        files = File(art_id = self.art_id).get_files_by_art_id()
+        files = FileModel(art_id=self.art_id).find_all_by_art_id()
         print(files)
         return files
     

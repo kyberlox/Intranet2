@@ -24,7 +24,7 @@ from src.services.LogsMaker import LogsMaker
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere
 
-from src.base.B24 import B24, b24_b24_router
+from src.base.B24 import B24, b24_router
 
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router

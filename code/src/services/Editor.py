@@ -177,7 +177,7 @@ async def updt(art_id ):
 
 #добавить статью
 @editor_router.get("/add/{section_id}")
-async def get_form(section_id):
+async def get_form(section_id : int):
     return Editor(section_id=section_id).get_format()
 
 @editor_router.post("/add")

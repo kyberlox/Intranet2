@@ -95,7 +95,7 @@ class Editor:
         # перезаписать файлы 
         # сохранить
 
-    def get_files(self, file_id):
+    def get_files(self ):
         return File(art_id = self.art_id).get_files_by_art_id()
     
     def delete_file(self, file_id):

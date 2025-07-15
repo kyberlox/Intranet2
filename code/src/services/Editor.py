@@ -98,6 +98,7 @@ class Editor:
 
     def get_files(self ):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
+        file_list = []
         for file in file_data:
             file_info = {}
             file_info["id"] = str(file["_id"])

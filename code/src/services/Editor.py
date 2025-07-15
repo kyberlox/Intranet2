@@ -156,7 +156,7 @@ async def set_new(data = Body()):
 
 #посмотреть все файлы статьи
 @editor_router.get("/rendering/files/{art_id}")
-async def render(art_id ):
+async def render(art_id : int):
     return Editor(art_id=art_id).get_files()
 
 #заменить файл

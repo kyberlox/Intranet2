@@ -82,8 +82,20 @@ class Editor:
     
     def get_format(self ):
         #собрать поля статьи
-        res = ArticleModel(section_id = self.section_id).find_by_section_id()
-        return res
+        section = ArticleModel(section_id = self.section_id).find_by_section_id()
+        art_keys = []
+        for art in section:
+            for k in art.keys():
+                if k not in art_keys and k != "indirect_data":
+                    art_keys.append(k)
+
+            # вытащить поля из psql -> indirect_data
+            if "indirect_data" in art:
+                for k in art["indirect_data"].keys():
+                    if k not in art_keys:
+                        art_keys.append(k)
+
+        return art_keys
 
     def add(self, data : dict):
         if self.section_id is None:

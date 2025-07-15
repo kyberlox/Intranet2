@@ -1,7 +1,5 @@
 export const repairVideoUrl = (url: string): string | false => {
     if (!url) return '/';
-    console.log(url);
-
     let cleanUrl = url;
 
     const youtubePatterns = ["youtu.be/", "watch?v=", "/shorts/", "youtube.com/embed/"];
@@ -15,18 +13,12 @@ export const repairVideoUrl = (url: string): string | false => {
     else
         youtubePatterns.forEach((item) => {
             const keyIndex = url.indexOf(item);
-
             if (keyIndex == -1) return;
-
             const videoId = url.substring(keyIndex + item.length).split("&")[0];
-            console.log(url);
-
-            console.log(videoId);
 
             cleanUrl = `https://www.youtube.com/embed/${videoId}`;
             return cleanUrl;
         })
-    console.log(cleanUrl)
     return cleanUrl
 }
 

@@ -43,7 +43,6 @@ export default defineComponent({
                      await Api.post('auth_router/auth', { login: "abobus", password: "1" })
                             .then((resp) => {
                                    if (resp.session_id) {
-                                          console.log(resp);
 
                                           localStorage.setItem('authKey', resp.session_id);
                                           useUserData().setAuthKey(resp.session_id);

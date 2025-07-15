@@ -2,7 +2,9 @@
     <div class="homeview__grid__card__group-buttons"
          :class="{ 'homeview__grid__card__group--blog': type == 'blog' }">
         <div v-if="needReadMoreBtn"
-             class="homeview__grid__card__group-buttons__more-button">{{ type == "video" ? "Смотреть" : "Читать далее"
+             class="homeview__grid__card__group-buttons__more-button">
+            {{
+                type == "video" ? "Смотреть" : "Читать далее"
             }}</div>
         <div v-if="newTypeReaction"
              class="homeview__grid__card__group-buttons__reaction-buttons">
@@ -21,7 +23,6 @@
         </div>
     </div>
 </template>
-
 
 <script lang="ts">
 import ViewsIcon from "@/assets/icons/posts/ViewsIcon.svg?component";
@@ -57,7 +58,7 @@ export default defineComponent({
     setup(props) {
         onMounted(() => {
             Api.get(`article/has_user_liked/${props.id}`)
-                .then(data => { console.log(data); newTypeReaction.value = data })
+                .then(data => { newTypeReaction.value = data })
         })
 
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);

@@ -79,8 +79,6 @@ export default defineComponent({
             if (type == 'video') {
                 modalImg.value = '';
                 modalVideo.value = src;
-                console.log(src);
-
             }
             else if (type == 'img') {
                 if (typeof imgIndex !== 'number' && !imgIndex) return;

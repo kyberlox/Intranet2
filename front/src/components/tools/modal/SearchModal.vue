@@ -40,8 +40,10 @@
                                                      v-for="(item, index) in searchResult"
                                                      :key="index">
                                                     <div v-if="item.content.length"
-                                                         class="search-result-block__section-title">{{ item.section }}
+                                                         class="search-result-block__section-title">
+                                                        {{ item.section }}
                                                     </div>
+                                                    <span>{{ item.msg }}</span>
                                                     <div class="search-result-block-info"
                                                          v-for="(contentItem, index) in item.content"
                                                          :key="index">
@@ -56,7 +58,7 @@
                                                         <div class="search-result-block-info__text-block">
                                                             <div v-if="contentItem.name"
                                                                  class="search-result-block-info__title"
-                                                                 v-html="contentItem.name">
+                                                                 v-html="highlightCharacters(contentItem.name, searchTargetText)">
                                                             </div>
                                                             <div v-if="contentItem.coincident">
                                                                 <div v-if="contentItem.coincident?.preview_text"
@@ -94,11 +96,9 @@
     </transition>
 </template>
 
-
 <script lang="ts">
-import { defineComponent, ref, type Ref } from "vue";
+import { defineComponent, ref, type Ref, watch } from "vue";
 import { watchDebounced } from '@vueuse/core'
-
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component"
 import SearchRedirectIcon from "@/assets/icons/layout/SearchRedirectIcon.svg?component"
 import Api from "@/utils/Api";
@@ -130,41 +130,34 @@ export default defineComponent({
         const searchResult: Ref<searchResults[]> = ref([])
 
         watchDebounced((searchTargetText), (newVal) => {
-            if (newVal) {
-                searchResult.value.length = 0;
-                Api.get(`/${selectedSearchType.value}/${newVal}`)
-                    .then((data) => {
-                        searchResult.value = data
-                    })
-            }
-        }, { debounce: 500, maxWait: 1500 })
+            if (!newVal) return;
+            getSearchResult();
+        }, { debounce: 500, maxWait: 1500 });
+
+        watch((selectedSearchType), (newVal) => {
+            if (!newVal) return;
+            getSearchResult();
+        }, { deep: true });
+
+        const getSearchResult = () => {
+            searchResult.value.length = 0;
+            Api.get(`/${selectedSearchType.value}/${searchTargetText.value}`)
+                .then((data) => {
+                    searchResult.value = data
+                })
+        }
 
         const highlightCharacters = (text: string, searchTerm: string): string => {
             if (!searchTerm || !text) return text;
 
-            const searchLower = searchTerm.toLowerCase();
-            const textLower = text.toLowerCase();
-            let result = '';
-            let searchIndex = 0;
+            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-            for (let i = 0; i < text.length; i++) {
-                const currentChar = text[i];
-                const currentCharLower = textLower[i];
+            const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
 
-                if (searchIndex < searchLower.length &&
-                    currentCharLower === searchLower[searchIndex]) {
-                    // Символ совпадает с текущей позицией в поисковом запросе
-                    result += `<strong class="search-highlight-sequential">${currentChar}</strong>`;
-                    searchIndex++;
-                } else {
-                    result += currentChar;
-                }
-            }
-
-            return result;
+            return text.replace(regex, '<strong class="search-highlight-sequential">$1</strong>');
         };
 
-        const formatHighlight = (text) => {
+        const formatHighlight = (text: string) => {
             if (!text) return;
             let newFormat = text;
             if (String(text).includes('<b>')) {
@@ -178,8 +171,8 @@ export default defineComponent({
         }
 
         const searchTypes = [
-            { value: 'full_search_users', title: 'По сотрудникам' },
-            { value: 'full_search_art', title: 'По контенту' },
+            { value: 'users/search/full_search_users', title: 'По сотрудникам' },
+            { value: 'article/search/full_search_art', title: 'По контенту' },
             { value: 'full_search', title: 'Общий' }
         ];
 
@@ -419,5 +412,9 @@ export default defineComponent({
         color: black;
         border-bottom: 1px solid var(--emk-brand-color);
     }
+}
+
+.search-highlight-sequential {
+    color: #535151fc;
 }
 </style>

@@ -51,7 +51,6 @@ export default defineComponent({
                         attach: sector.sectorDocs ?? [],
                         preview_file_url: getLogo(sector.sectorId as keyof typeof sectorLogoTips)
                     }));
-                    console.log(slides.value);
 
                 }
             }, { deep: true, immediate: true });

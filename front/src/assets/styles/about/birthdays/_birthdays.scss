@@ -75,7 +75,6 @@
     }
 
     &__workers-slider {
-        margin-bottom: 15px;
         width: min-content;
         flex-grow: 1;
 
@@ -118,5 +117,86 @@
         @include sm {
             right: 46px;
         }
+    }
+}
+
+.birthday__page-content {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+
+    @include sm {
+        flex-direction: column;
+    }
+}
+
+.birthday__page__swiper {
+    width: 100%;
+    margin: 0;
+    height: 100% !important;
+}
+
+
+.birthday__static__greetings {
+    text-align: right;
+}
+
+.birthday__page__swiper__wrapper {
+    flex: 1;
+    max-width: calc(100% - 341px);
+    min-height: 100%;
+    position: relative;
+
+    @include sm {
+        max-width: 100% !important;
+    }
+
+}
+
+.birthday__page__swiper__slide {
+    height: 100%;
+    object-fit: contain;
+    background-size: cover;
+    background-position-x: center;
+    display: flex;
+
+    @include sm {
+        min-height: 600px !important;
+    }
+
+
+}
+
+.birthday__page__swiper__slide__title {
+    font-weight: bold;
+}
+
+.birthday__page__swiper__slide__subtitle {
+    margin-top: 2px;
+}
+
+.birthday__page__swiper__slide__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    font-size: 12px;
+    padding: 6px;
+    background: white;
+    margin-top: auto;
+    width: 100%;
+}
+
+.swiper-navigation__buttons-group--birthday {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    width: 100%;
+    margin: auto;
+    padding: 0 10px;
+
+    @include sm {
+        display: flex !important;
     }
 }

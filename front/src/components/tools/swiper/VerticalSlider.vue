@@ -7,24 +7,10 @@
                       :key="'vertSlide' + index">
 
             <div class="swiper--vertical__bg-slide"
-                 :style="{ backgroundImage: `url('${slide.preview_file_url}')` }">
-                <span v-if="modifiers && modifiers.includes('birthday-icon')"
-                      class="birthday-icon"></span>
-                <!-- Под дни рождения -->
-                <div class="swiper--vertical-slide__info"
-                     v-if="page == 'birthdays'">
-                    <div class="swiper--vertical-slide__name vertical-title">{{ slide.name ?? slide.user_fio }}</div>
-                    <div class="swiper--vertical-slide__position vertical-subtitle">
-                        {{ slide.position ? slide.position : "" }}
-                    </div>
-                    <div v-for="(item, index) in slide.department"
-                         :key="index + 'dep'"
-                         class="swiper--vertical-slide__department">
-                        {{ item }}
-                    </div>
-                </div>
+                 :style="{ backgroundImage: `url('${slide.preview_file_url ?? slide.image}')` }">
+
                 <!-- Под технику безопасности-->
-                <div v-else-if="page == 'safetyTechnics' || (modifiers && modifiers.includes('needLogo'))"
+                <div v-if="page == 'safetyTechnics' || (modifiers && modifiers.includes('needLogo'))"
                      class="section__image__list__item__banner">
                     <span class="section__image__list__item__banner__inner">
                         <span v-if="page == 'safetyTechnics'"
@@ -49,74 +35,33 @@
                     <div class="section__image__list__item__subtitle vertical-title">
                         {{ slide.subtitle ?? slide.name }}
                     </div>
-                    <div class="section__image__list__item__subtitle vertical-subtitle">
-                        {{ slide.description ?? 'Организатор: ' + slide.indirect_data?.organizer }}
+                    <div v-if="slide.description"
+                         class="section__image__list__item__subtitle vertical-subtitle">
+                        {{ slide.description }}
+                    </div>
+                    <div v-if="slide.indirect_data?.organizer"
+                         class="section__image__list__item__subtitle vertical-subtitle">
+                        {{ 'Организатор: ' + slide.indirect_data?.organizer }}
                     </div>
                 </div>
             </div>
         </swiper-slide>
     </swiper>
-
-    <div v-if="slides.length >= 3 && page == 'birthdays'"
-         class="swiper-navigation__buttons-group">
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
-                :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                @click="slidePrev">
-            <ArrowLeft />
-        </button>
-        <div class="swiper-navigation__buttons-group__pagination"></div>
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
-                :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                @click="slideNext">
-            <ArrowRight />
-        </button>
-    </div>
 </template>
 
 <script lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
-import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
-import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 import { defineComponent } from "vue";
 import { useSwiperconf } from "@/utils/useSwiperConf";
+import { type IVerticalSlide } from "@/interfaces/IVerticalSlide";
 
-interface IVerticalSlide {
-    header?: string,
-    preview_file_url?: string,
-    name?: string,
-    user_fio?: string,
-    position?: string,
-    department?: string,
-    routeTo?: string,
-    id?: number,
-    subtitle?: string,
-    description?: string,
-    indirect_data?: {
-        organizer?: string,
-
-        // для благотворительных
-        PROPERTY_342?: string[],
-        PROPERTY_343?: string[],
-        PROPERTY_344?: string[],
-        PROPERTY_435?: string[],
-        PROPERTY_347?: string[],
-        PROPERTY_348?:
-        {
-            TYPE?: string,
-            TEXT?: string
-        }[],
-        PROPERTY_349?: string[],
-    }
-}
 
 export default defineComponent({
     components: {
         Swiper,
         SwiperSlide,
-        ArrowLeft,
-        ArrowRight,
     },
     props: {
         slides: {
@@ -147,3 +92,13 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.swiper {
+    height: 100%;
+}
+
+.swiper--vertical-slide__department {
+    max-width: 150px;
+}
+</style>

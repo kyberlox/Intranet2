@@ -19,10 +19,33 @@
         </div>
     </div>
     <div class="birthday__workers-grid">
-        <div class="row birthday__page-content">
-            <div class="birthday__workers-slider">
-                <VerticalSlider :page="'birthdays'"
-                                :slides="slidesForBirthday" />
+        <div class="birthday__page-content">
+            <div class="birthday__page__swiper__wrapper"
+                 v-if="slidesForBirthday.length">
+                <swiper class="birthday__page__swiper"
+                        v-bind="sliderConfig"
+                        @swiper="swiperOn">
+                    <swiper-slide v-for="(slide, index) in slidesForBirthday"
+                                  :key="'vertSlide' + index">
+                        <BirthdaySlide :slide="slide" />
+                    </swiper-slide>
+                </swiper>
+                <div class="swiper-navigation__buttons-group swiper-navigation__buttons-group--birthday"
+                     v-if="!isBeginning || !isEnd">
+                    <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
+                            :class="{ 'swiper-pagination__button--disabled': isBeginning }"
+                            @click="slidePrev"
+                            :disabled="isBeginning">
+                        <ArrowLeft />
+                    </button>
+                    <div class="swiper-navigation__buttons-group__pagination"></div>
+                    <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
+                            :class="{ 'swiper-pagination__button--disabled': isEnd }"
+                            @click="slideNext"
+                            :disabled="isEnd">
+                        <ArrowRight />
+                    </button>
+                </div>
             </div>
             <div class="birthday__static__greetings">
                 <img @click="openModal(['https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488'])"
@@ -37,19 +60,32 @@
                    @close="hiddenModal = true; imageInModal = '';" />
     </Transition>
 </template>
+
 <script lang="ts">
 import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
-import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
+import { useSwiperconf } from "@/utils/useSwiperConf";
+
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/navigation";
+import BirthdaySlide from "./components/birthdaySlide.vue";
+import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
+import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
+
 export default defineComponent({
     components: {
-        VerticalSlider,
-        ZoomModal,
         DatePicker,
+        Swiper,
+        SwiperSlide,
+        BirthdaySlide,
+        ArrowLeft,
+        ArrowRight,
+        ZoomModal
     },
     setup() {
         const slidesForBirthday = ref([]);
@@ -73,10 +109,8 @@ export default defineComponent({
         }
 
         const today = new Date();
-
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
 
@@ -104,7 +138,6 @@ export default defineComponent({
             },
         ];
 
-
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['ДниРождения']}`)
                 .then((data) => slidesForBirthday.value = data)
@@ -117,8 +150,9 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         const dateFromDatepicker = ref();
-
         const nullifyDateInput = ref(false);
+
+        const swiperConf = useSwiperconf('vertical');
 
         return {
             slidesForBirthday,
@@ -129,7 +163,15 @@ export default defineComponent({
             searchValue,
             pickDate,
             dateFromDatepicker,
-            nullifyDateInput
+            nullifyDateInput,
+
+            swiperOn: swiperConf.swiperOn,
+            slideNext: swiperConf.slideNext,
+            slidePrev: swiperConf.slidePrev,
+            sliderConfig: swiperConf.sliderConfig,
+            swiperInstance: swiperConf.swiperInstance,
+            isEnd: swiperConf.isEnd,
+            isBeginning: swiperConf.isBeginning,
         };
     },
 });

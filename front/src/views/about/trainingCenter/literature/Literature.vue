@@ -64,8 +64,6 @@ export default defineComponent({
             renderedLiterature.value = literature.value;
             if (type == 'автор') {
                 renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.author == param });
-                console.log(renderedLiterature.value);
-
             }
             else if (type == 'раздел') {
                 renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.subsection == param });

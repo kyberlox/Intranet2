@@ -21,8 +21,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar') 
         case 'calendar':
             if (!useViewsDataStore().getData('calendarData').length) {
                 const currentYear = new Date().getFullYear();
-                fetch(`https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from=${currentYear}-01-01&to=${currentYear}-12-31`)
-                    .then((resp) => resp.json())
+                Api.get(`b24/calendar/${currentYear}-01-01}/${currentYear}-12-31`)
                     .then((data) => {
                         useViewsDataStore().setData(data.result, 'calendarData');
                     });

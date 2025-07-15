@@ -57,8 +57,6 @@ export default defineComponent({
 
             watch(data, (newValue) => {
                 if (Object.keys(newValue).length && props.factoryId && props.sectorId) {
-                    console.log(useReferencesAndExpDataStore().getCurrentDocs(props.factoryId, props.sectorId));
-
                     docs.value = useReferencesAndExpDataStore().getCurrentDocs(props.factoryId, props.sectorId);
                     placeName.value = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId).factoryName;
                 };

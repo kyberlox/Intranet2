@@ -76,7 +76,7 @@ class Editor:
 
 
         # вытащить файлы
-        files=[]
+        files=self.get_files()
         
         # вывести
         return {"fields" : field, "files" : files}

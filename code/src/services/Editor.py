@@ -56,7 +56,7 @@ class Editor:
                         "name" : self.fields[k],
                         "value" : art[k],
                         "field" : k,
-                        "data_type" : type(art[k])
+                        #"data_type" : type(art[k])
                         })
                 elif k in art["indirect_data"]:
                     field.append({
@@ -70,7 +70,7 @@ class Editor:
             notEditble = ["id", "section_id", "date_creation"]
             if f["field"] in notEditble:
                 f["disabled"] = True
-                
+
 
 
         # вытащить файлы 

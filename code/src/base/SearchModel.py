@@ -521,7 +521,7 @@ class StructureSearchModel:
             "settings": {
                 "analysis": {
                     "analyzer": {
-                        "GOD_PLEASE": {
+                        "GOD_PLEASE_FUZZY": {
                             "type": "custom",
                             "tokenizer": "whitespace",
                             "filter": [
@@ -531,11 +531,21 @@ class StructureSearchModel:
                                 "myngram"
                             ]
                         },
-                        "GOD_PLEASE_FUZZY": {
+                        "GOD_PLEASE": {
                             "type": "custom",
                             "tokenizer": "whitespace",
                             "filter": [
-                                "lowercase"
+                                "lowercase",
+                                "ru_stemming"
+                            ]
+                        },
+                        "DEPART__FILTER": {
+                            "type": "custom",
+                            "tokenizer": "whitespace",
+                            "filter": [
+                                "lowercase",
+                                "ru_stop",
+                                "ru_stemming"
                             ]
                         }
                     },
@@ -551,11 +561,11 @@ class StructureSearchModel:
                         "myngram": {
                             "type": "edge_ngram",
                             "min_gram": 2,
-                            "max_gram": 20
+                            "max_gram": 7
                         }
                     }
                 },
-                "max_ngram_diff": "20"
+                "max_ngram_diff": "10"
             },
             "mappings": {
                 "properties": {
@@ -599,7 +609,7 @@ class StructureSearchModel:
                             },
                             "user_position": {
                                 "type": "text",
-                                "search_analyzer": "standard",
+                                "analyzer": "GOD_PLEASE",
                                 "fields": {
                                     "fuzzy": {
                                         "type": "text",
@@ -631,8 +641,7 @@ class StructureSearchModel:
             users_list = []
             department_data = dep.__dict__
             list_for_deps.append(department_data['id'])
-            users = self.UsDepModel(
-                id=department_data['id']).find_user_by_dep_id()  # берём id всех пользователей департамента
+            users = self.UsDepModel(id=department_data['id']).find_user_by_dep_id()  # берём id всех пользователей департамента
             if isinstance(users, list):
                 for usr in users:
                     user_data = {}
@@ -748,6 +757,9 @@ class StructureSearchModel:
             size=1000
         )
         return res['hits']['hits']
+
+    def elasticsearch_structure(self, key_word, size_res: Optional[int] = 20):
+        pass
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
@@ -1202,13 +1214,32 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
                                 "must": [
                                     {"terms": {"_index": ["articles"]}},
                                     {
-                                        "multi_match": {
-                                            "query": key_word,
-                                            "fields": ["title", "preview_text", "content_text"],
-                                            "fuzziness": "AUTO",
-                                            "boost": 10
+                                        "bool": {
+                                            "should": [
+                                                #точный поиск
+                                                {
+                                                    "bool": {
+                                                        "should": [
+                                                            {"match": {"title": {"query": key_word,"boost": 10}}},
+                                                            {"match": {"preview_text": {"query": key_word,"boost": 8}}},
+                                                            {"match": {"content_text": {"query": key_word,"boost": 6}}}
+                                                        ],
+                                                        "_name": "true_search"
+                                                    }
+                                                },
+                                                #неточный поиск
+                                                {
+                                                    "multi_match": {
+                                                        "query": key_word,
+                                                        "fields": ["title", "preview_text", "content_text"],
+                                                        "fuzziness": "AUTO",
+                                                        "boost": 2  
+                                                    }
+                                                }, 
+                                            ]
                                         }
                                     }
+                                    
                                 ]
                             }
                         },
@@ -1339,7 +1370,8 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
    
     users = []
     articles = []
-    true_search_flag = False
+    true_user_search_flag = False
+    true_art_search_flag = False
     count_users = 0
     count_art = 0
     for res_info in res['hits']['hits']:
@@ -1347,7 +1379,7 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
             count_users += 1
             if count_users <= 10:
                 if "matched_queries" in res_info.keys():
-                    true_search_flag = True
+                    true_user_search_flag = True
                 #print(res_info)
                 user_info = {}
                 user_info['name'] = res_info["_source"]["user_fio"]
@@ -1358,6 +1390,8 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
         elif res_info["_index"] == 'articles':
             count_art += 1
             if count_art <= 10:
+                if "matched_queries" in res_info.keys():
+                    true_art_search_flag = True
                 art_info = {}
                 art_info['name'] = res_info["_source"]["title"]
                 art_info['href'] = res_info["_source"]["section_id"]
@@ -1369,10 +1403,12 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
     sec_user = {}
     sec_art = {}
     sec_user['section'] = 'Пользователи'
-    if true_search_flag is False:
-        sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
+    if true_user_search_flag is False:
+        sec_user['msg'] = 'Точных совпадений по пользователям не нашлось, возможно вы имели ввиду:'
     sec_user['content'] = users
     sec_art['section'] = 'Контент'
+    if true_art_search_flag is False:
+        sec_art['msg'] = 'Точных совпадений по контенту не нашлось, возможно вы имели ввиду:'
     sec_art['content'] = articles
     result.append(sec_user)
     result.append(sec_art)

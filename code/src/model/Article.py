@@ -1278,6 +1278,8 @@ class Article:
         
         return art
 
+
+
     def get_preview(self):
         files = File(art_id = int(self.id)).get_files_by_art_id()
         for file in files:
@@ -1855,7 +1857,7 @@ class Article:
                     article_likers = LikesModel(art_id=inf['id']).get_article_likers()
                     for usr in article_likers:
                         if usr not in b24_likers:
-                            LikesModel(user_id=usr, art_id=inf['id']).remove_like()
+                            LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
                         else:
                             pass
 

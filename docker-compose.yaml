@@ -78,7 +78,6 @@ services:
     image: nginx:alpine
     container_name: nginx
     depends_on:
-      # `fastapi`Because the service (container) needs to be started first`depends_on`Is specified
       - fastapi
       #- frontend
     ports:

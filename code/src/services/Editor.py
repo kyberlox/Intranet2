@@ -94,6 +94,10 @@ class Editor:
                 for k in art["indirect_data"].keys():
                     if k not in art_keys:
                         art_keys.append(k)
+        
+        for k in art_keys:
+            if k in self.fields:
+            
 
         return art_keys
 

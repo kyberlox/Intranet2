@@ -106,4 +106,5 @@ class Idea:
 
 @idea_router.post("/new/")
 async def calendar_event(data = Body()):
+    print(data)
     return Idea().add(data)

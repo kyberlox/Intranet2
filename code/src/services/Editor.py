@@ -14,10 +14,6 @@ import json
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 class Editor:
-    #тут можно объявить классы лоя работы со статьями и файлами
-    ArticleModel = ArticleModel()
-    File = File()
-    LogsMaker = LogsMaker()
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
@@ -51,31 +47,38 @@ class Editor:
         field = []
         for k in art_keys:
             if k in self.fields:
+
+                # забираю занчение
+                val = None
                 if k in art:
-                    field.append({
-                        "name" : self.fields[k],
-                        "value" : art[k],
-                        "field" : k,
-                        #"data_type" : type(art[k])
-                        })
+                    val = art[k]
                 elif k in art["indirect_data"]:
-                    field.append({
-                        "name" : self.fields[k],
-                        "value" : art["indirect_data"][k],
-                        "field" : k,
-                        #"data_type" : type(art[k])
-                        })
+                    val = art["indirect_data"][k]
+                
+                data_type = str(type(i)).split('\'')[1]
 
-        for f in field:
-            notEditble = ["id", "section_id", "date_creation"]
-            if f["field"] in notEditble:
-                f["disabled"] = True
+                # экземпляр поля
+                fl = {
+                    "name" : self.fields[k],
+                    "value" : val,
+                    "field" : k,
+                    "data_type" : data_type
+                }
+
+                # проверяю редактируемость
+                notEditble = ["id", "section_id", "date_creation"]
+                if k in notEditble or val is None:
+                    fl["disabled"] = True
+
+                #загрузил
+                field.append(fl)
+        
 
 
-
-        # вытащить файлы 
+        # вытащить файлы
+        
         # вывести
-        return field
+        return {"fields" : field, "files" : files}
     
     def add(self, data : dict):
         if self.section_id is None:
@@ -92,8 +95,8 @@ class Editor:
         # перезаписать файлы 
         # сохранить
 
-    def delete_file(self, file_id):
-        pass
+    def get_files(self, file_id):
+        return File(art_id = self.art_id).get_files_by_art_id()
     
     def delete_file(self, file_id):
         pass
@@ -123,7 +126,7 @@ async def set_new(data = Body()):
 #посмотреть все файлы статьи
 @editor_router.get("/rendering/files/{art_id}")
 async def render(art_id ):
-    return await Editor(art_id=art_id).rendering()
+    return await Editor(art_id=art_id).get_files()
 
 #заменить файл
 @editor_router.put("/update/file/{art_id}/{f_id}")

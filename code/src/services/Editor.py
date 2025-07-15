@@ -72,8 +72,6 @@ class Editor:
 
                 #загрузил
                 field.append(fl)
-        
-
 
         # вытащить файлы
         files=self.get_files()

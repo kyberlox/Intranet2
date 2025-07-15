@@ -32,24 +32,42 @@ class Editor:
     def rendering(self ):
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
+        
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
-        
-        keys = []
+
+        art_keys = []
         for k in art.keys():
             if k not in keys and k != "indirect_data":
-                keys.append(k)
-            
+                art_keys.append(k)
 
         # вытащить поля из psql -> indirect_data
         if "indirect_data" in art:
             for k in art["indirect_data"].keys():
                 if k not in keys:
-                    keys.append(k)
+                    art_keys.append(k)
+
         # протащить через словарь полей
+        field = []
+        for k in art_keys:
+            if k in self.fields:
+                if k in art:
+                    field.append({
+                        "name" : self.fields[k],
+                        "value" : art[k],
+                        "field" : k
+                        })
+                elif k in art["indirect_data"]:
+                    field.append({
+                        "name" : self.fields[k],
+                        "value" : art["indirect_data"][k],
+                        "field" : k
+                        })
+
+
         # вытащить файлы 
         # вывести
-        return keys
+        return field
     
     def add(self, data : dict):
         if self.section_id is None:

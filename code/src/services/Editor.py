@@ -38,13 +38,13 @@ class Editor:
 
         art_keys = []
         for k in art.keys():
-            if k not in keys and k != "indirect_data":
+            if k not in art_keys and k != "indirect_data":
                 art_keys.append(k)
 
         # вытащить поля из psql -> indirect_data
         if "indirect_data" in art:
             for k in art["indirect_data"].keys():
-                if k not in keys:
+                if k not in art_keys:
                     art_keys.append(k)
 
         # протащить через словарь полей

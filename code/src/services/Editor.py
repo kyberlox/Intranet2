@@ -1,6 +1,5 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
 
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import ArticleModel

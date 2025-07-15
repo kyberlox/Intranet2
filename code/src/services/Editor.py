@@ -95,11 +95,12 @@ class Editor:
                     if k not in art_keys:
                         art_keys.append(k)
         
+        result = []
         for k in art_keys:
             if k in self.fields:
-            
+                result.append(k)
 
-        return art_keys
+        return result
 
     def add(self, data : dict):
         if self.section_id is None:

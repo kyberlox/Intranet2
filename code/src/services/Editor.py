@@ -83,7 +83,7 @@ class Editor:
     def get_format(self ):
         #собрать поля статьи
         res = ArticleModel(section_id = self.section_id).find_by_section_id()
-        return 
+        return res
 
     def add(self, data : dict):
         if self.section_id is None:

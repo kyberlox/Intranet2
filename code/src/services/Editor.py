@@ -34,13 +34,13 @@ class Editor:
             return LogsMaker.warning_message("Укажите id статьи")
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
+        
         keys = []
         for k in art.keys():
             if k not in keys and k != "indirect_data":
                 keys.append(k)
-        if keys == []:
-            return []
             
+
         # вытащить поля из psql -> indirect_data
         if "indirect_data" in art:
             for k in art["indirect_data"].keys():

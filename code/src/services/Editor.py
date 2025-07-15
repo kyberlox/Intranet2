@@ -126,9 +126,27 @@ class Editor:
 
             file_list.append(file_info)
 
+        #разбить по категориям
+        result = []
+        result['images'] = []
+        result['videos_native'] = []
+        result['videos_embed'] = []
+        result['documentation'] = []
         
+        for file in file_list:
+            #файлы делятся по категориям
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                url = file["file_url"]
+                result['images'].append(file)
+            elif "video" in file["content_type"]:
+                url = file["file_url"]
+                result['videos_native'].append(file)
+            elif "link" in file["content_type"]:
+                result['videos_embed'].append(file)
+            else:
+                result['documentation'].append(file)
 
-        return file_list
+        return result
 
     
     def delete_file(self, file_id):

@@ -1014,7 +1014,7 @@ class ArticleModel():
             if art is not None:
                 art.__dict__["indirect_data"] = art.indirect_data
             else:
-                art.__dict__ = dict()
+                return dict()
         return art.__dict__
 
     def find_by_section_id(self):

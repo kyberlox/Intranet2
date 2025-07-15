@@ -1011,10 +1011,10 @@ class ArticleModel():
         try:
             art.__dict__["indirect_data"] = json.loads(art.indirect_data)
         except:
-            if art.indirect_data is not None:
+            if art is not None:
                 art.__dict__["indirect_data"] = art.indirect_data
             else:
-                art.__dict__["indirect_data"] = dict()
+                art.__dict__ = dict()
         return art.__dict__
 
     def find_by_section_id(self):

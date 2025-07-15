@@ -28,6 +28,7 @@ from src.base.B24 import B24, b24_router
 
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
+from src.services.Idea import idea_router
 
 from src.services.Editor import Editor, editor_router
 

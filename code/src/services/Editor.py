@@ -74,6 +74,7 @@ class Editor:
                 field.append(fl)
 
         # вытащить файлы
+        self.art_id = int(self.art_id)
         files=self.get_files()
         
         # вывести

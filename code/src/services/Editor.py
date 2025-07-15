@@ -55,7 +55,7 @@ class Editor:
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]
                 
-                data_type = str(type(i)).split('\'')[1]
+                data_type = str(type(val)).split('\'')[1]
 
                 # экземпляр поля
                 fl = {

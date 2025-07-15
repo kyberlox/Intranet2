@@ -1278,6 +1278,8 @@ class Article:
         
         return art
 
+
+
     def get_preview(self):
         files = File(art_id = int(self.id)).get_files_by_art_id()
         for file in files:

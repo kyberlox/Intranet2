@@ -484,9 +484,7 @@ class UserModel():
                             dep_str = DepartmentModel(dep).find_dep_by_id()
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])
-                    if "uf_usr_department_main" in indirect_data:
-                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
-                        indirect_data["uf_usr_department_main"] = dedep[0].name
+                    
                             
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
@@ -499,6 +497,9 @@ class UserModel():
                         user_info['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
+                    if "uf_usr_department_main" in indirect_data:
+                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                        user_info['uf_usr_department_main'] = dedep[0].name
                     user_info['image'] =  f'http://intranet.emk.org.ru{user_image['URL']}'
                     
                     normal_list.append(user_info)
@@ -758,7 +759,8 @@ class UsDepModel():
                     for dep_frm_usr in departs_from_users_table:
                         if isinstance(dep_frm_usr, int):
                             if dep_frm_usr not in departs:
-                                return {'err' : [{'такого департамента из таблицы users нет в таблице departments' : dep_frm_usr}]}
+                                #print({'err' : [{'такого департамента из таблицы users нет в таблице departments' : dep_frm_usr}]}) 
+                                continue
                             # если есть
                             else:
                                 pass

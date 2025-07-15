@@ -13,14 +13,14 @@ editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 class Editor:
     #тут можно объявить классы лоя работы со статьями и файлами
-    Article = Article()
-    File = File()
-    LogsMaker = LogsMaker()
+    # Article = Article()
+    # File = File()
+    # LogsMaker = LogsMaker()
 
-    #словарь полей
-    fields_data_file = open("./src/base/fields.json", "r")
-    self.fields = json.load(section_data_file)
-    fields_data_file.close()
+    # #словарь полей
+    # fields_data_file = open("./src/base/fields.json", "r")
+    # self.fields = json.load(section_data_file)
+    # fields_data_file.close()
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал

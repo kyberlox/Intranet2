@@ -78,7 +78,7 @@ class Editor:
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id ):
-    return await Editor(art_id=art_id).rendering()
+    return Editor(art_id=art_id).rendering()
 
 #изменить статью
 @editor_router.put("/update/{art_id}")

@@ -1,12 +1,14 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
 
 from src.base.B24 import B24
 from src.services.Auth import AuthService
 from src.model.User import User
 
 import json
+
+idea_router = APIRouter(prefix="/idea", tags=["Битрикс24"])
+
 
 
 def take_value(PROPERTY):
@@ -99,3 +101,9 @@ class Idea:
                 max_id = int(idea['num'])
         incr = max_id + 1
         B24().send_idea(incr, fields)
+
+
+
+@idea_router.post("/new/")
+async def calendar_event(data = Body()):
+    return Idea().add(data)

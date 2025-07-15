@@ -300,6 +300,7 @@ class File:
 
     def get_files_by_art_id(self):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
+        print(file_data)
         file_list = []
         
         if not file_data:

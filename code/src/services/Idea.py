@@ -94,7 +94,7 @@ class Idea:
         else:
             return None
     
-    def add(fields):
+    def add(self, fields):
         #получить значение инкремента
         max_id = 0
         for idea in self.ideas:
@@ -108,5 +108,5 @@ class Idea:
 @idea_router.post("/new/")
 def calendar_event(data = Body()):
     print(data)
-    return data
-    #return Idea().add(dict(data))
+    #return data
+    return Idea().add(dict(data))

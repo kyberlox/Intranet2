@@ -1,9 +1,10 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
-from fastapi.responses import JSONResponse
 
 from src.base.B24 import B24
 from src.services.Auth import AuthService
 from src.model.User import User
+
+from src.services.LogsMaker import LogsMaker
 
 import json
 
@@ -106,5 +107,5 @@ class Idea:
 
 @idea_router.post("/new/")
 def calendar_event(data = Body()):
-    print(data)
+    LogsMaker.warning_message(data)
     return Idea().add(dict(data))

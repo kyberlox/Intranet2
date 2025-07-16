@@ -79,7 +79,7 @@ class B24:
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/")
         params = {
             "IBLOCK_TYPE_ID" : "lists",
-            "IBLOCK_ID" : 121,
+            "IBLOCK_ID" : "121",
             "ELEMENT_CODE" : el_code,
             "FIELDS" : fields
         }

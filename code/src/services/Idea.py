@@ -46,7 +46,7 @@ class Idea:
             for prop in prop_keys.keys():
                 
                 val = None
-                if prop in idea:
+                if prop in idea.keys():
                     key = prop_keys[prop]
                     val = take_value(idea[prop])
                 cool_idea[key] = val

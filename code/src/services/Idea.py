@@ -66,8 +66,6 @@ class Idea:
             #сохраняю
             ideas.append(cool_idea)
 
-
-
         self.ideas = ideas
         self.user_uuid = None
         self.username = None

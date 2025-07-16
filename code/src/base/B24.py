@@ -25,7 +25,7 @@ class B24:
 
     def getInfoBlock(self, id):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
-        result = await self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
+        result = self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
         return result
 
 
@@ -83,7 +83,7 @@ class B24:
         #https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]=$ID
 
 @b24_router.get("/calendar/{date_from}/{date_to}")
-async def calendar_event(date_from, date_to):
+def calendar_event(date_from, date_to):
     url = f"https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}"
     response = requests.get(url)
     result = response.json()

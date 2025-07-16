@@ -107,5 +107,5 @@ class Idea:
 
 @idea_router.post("/new/")
 def calendar_event(data = Body()):
-    LogsMaker.warning_message(str(data))
+    LogsMaker().warning_message(str(data))
     return Idea().add(dict(data))

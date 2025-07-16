@@ -26,9 +26,12 @@ class Idea:
         #беру идеи из битры
         b24_ideas = B24().getInfoBlock(121)
 
+        
+
         ideas = []
         #каждую идею
         for idea in b24_ideas:
+            print(idea)
             #проебразую по шаблону с нормальными ключами
             prop_keys = {
                 "ID" : "id",
@@ -46,7 +49,7 @@ class Idea:
             for prop in prop_keys.keys():
                 
                 val = None
-                if prop in idea.keys():
+                if prop in idea:
                     key = prop_keys[prop]
                     val = take_value(idea[prop])
                 cool_idea[key] = val

@@ -98,8 +98,8 @@ class Idea:
         #получить значение инкремента
         max_id = 0
         for idea in self.ideas:
-            if int(idea['num']) > max_id:
-                max_id = int(idea['num'])
+            if int(idea['number']) > max_id:
+                max_id = int(idea['number'])
         incr = max_id + 1
         B24().send_idea(incr, fields)
 

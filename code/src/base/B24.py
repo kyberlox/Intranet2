@@ -89,6 +89,7 @@ class B24:
             return result
         except Exception as e:
             print(f"Не удалось добавить элемент: {e}")
+            return e
         #https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]=$ID
 
 @b24_router.get("/calendar/{date_from}/{date_to}")

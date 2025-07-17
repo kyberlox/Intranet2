@@ -105,7 +105,7 @@ class B24:
                 'Content-Type': "Multipart/form-data"
             }
             
-            response = requests.post(url, headers=headers)
+            response = requests.post(url)
         
             return response.json()
         else:

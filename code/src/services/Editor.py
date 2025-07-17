@@ -97,7 +97,7 @@ class Editor:
         
         result = []
         for k in art_keys:
-            if k in self.fields:
+            if k in self.fields.keys():
                 result.append(k)
 
         return result

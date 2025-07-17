@@ -102,7 +102,7 @@ class B24:
             base_name = fields["base_name"]
             url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
             headers = {
-                'Content-Type': multipart_data.content_type
+                'Content-Type': "Multipart/form-data"
             }
             
             response = requests.post(url, headers=headers)

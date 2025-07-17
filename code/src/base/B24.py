@@ -93,6 +93,7 @@ class B24:
             return e
         '''
         #https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]=$ID
+        
         name = fields["NAME"]
         cont_text = fields["DETAIL_TEXT"]
         uid = fields["CREATED_BY"]
@@ -100,13 +101,20 @@ class B24:
             base = fields["base"]
             base_name = fields["base_name"]
             url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
+            headers = {
+                'Content-Type': multipart_data.content_type
+            }
+            
+            response = requests.post(url, headers=headers)
+        
+        return response.json()
         else:
             url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]=909&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
-        print(url)
-        response = requests.get(url)
-        #result = response.json()
-        #return result
-        return response
+            print(url)
+            response = requests.get(url)
+            #result = response.json()
+            #return result
+            return response
 
 
 @b24_router.get("/calendar/{date_from}/{date_to}")

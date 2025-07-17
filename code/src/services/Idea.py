@@ -1,12 +1,15 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
-from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
 
 from src.base.B24 import B24
 from src.services.Auth import AuthService
 from src.model.User import User
 
+from src.services.LogsMaker import LogsMaker
+
 import json
+
+idea_router = APIRouter(prefix="/idea", tags=["Битрикс24"])
+
 
 
 def take_value(PROPERTY):
@@ -23,6 +26,8 @@ class Idea:
     def __init__(self, user_id=None, user_uuid=None):
         #беру идеи из битры
         b24_ideas = B24().getInfoBlock(121)
+
+        
 
         ideas = []
         #каждую идею
@@ -61,8 +66,6 @@ class Idea:
             #сохраняю
             ideas.append(cool_idea)
 
-
-
         self.ideas = ideas
         self.user_uuid = None
         self.username = None
@@ -90,3 +93,20 @@ class Idea:
             return result
         else:
             return None
+    
+    def add(self, fields):
+        #получить значение инкремента
+        max_id = 0
+        for idea in self.ideas:
+            if int(idea['number']) > max_id:
+                max_id = int(idea['number'])
+        incr = max_id + 101
+        B24().send_idea(incr, fields)
+
+
+
+@idea_router.post("/new/")
+def calendar_event(data = Body()):
+    print(data)
+    #return data
+    return Idea().add(dict(data))

@@ -1,6 +1,5 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 from fastapi.responses import JSONResponse
-from fastapi.security import OAuth2PasswordBearer
 
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import ArticleModel
@@ -80,17 +79,43 @@ class Editor:
         # вывести
         return {"fields" : field, "files" : files}
     
+    
+    def get_format(self ):
+        #собрать поля статьи
+        section = ArticleModel(section_id = self.section_id).find_by_section_id()
+        art_keys = []
+        for art in section:
+            for k in art.keys():
+                if k not in art_keys and k != "indirect_data":
+                    art_keys.append(k)
+
+            # вытащить поля из psql -> indirect_data
+            if "indirect_data" in art:
+                for k in art["indirect_data"].keys():
+                    if k not in art_keys:
+                        art_keys.append(k)
+        
+        result = []
+        for k in art_keys:
+            if k in self.fields:
+                result.append(k)
+
+        return result
+
     def add(self, data : dict):
         if self.section_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
-        #собрать поля статей раздела
+        
         #валидировать данные data
         #добавить статью
     
+
+
     def update(self ):
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
         # перезаписать основные поля из psql
+
         # перезаписать поля из psql -> idirect_data
         # перезаписать файлы 
         # сохранить
@@ -149,7 +174,7 @@ class Editor:
         return result
 
     
-    def delete_file(self, file_id):
+    def change_file(self, file_id):
         pass
     
     def delete_file(self, file_id):
@@ -165,9 +190,13 @@ async def render(art_id ):
 #изменить статью
 @editor_router.put("/update/{art_id}")
 async def updt(art_id ):
-    return await Editor(art_id=art_id).update()
+    return Editor(art_id=art_id).update()
 
 #добавить статью
+@editor_router.get("/add/{section_id}")
+async def get_form(section_id : int):
+    return Editor(section_id=section_id).get_format()
+
 @editor_router.post("/add")
 async def set_new(data = Body()):
     return await Editor().add(data())

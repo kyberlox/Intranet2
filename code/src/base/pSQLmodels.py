@@ -1042,8 +1042,9 @@ class ArticleModel():
                 new_data.append(art.__dict__)
         except:
             for art in data:
-                art.__dict__["indirect_data"] = art.indirect_data
-                new_data.append(art.__dict__)
+                if art is not None:
+                    art.__dict__["indirect_data"] = art.indirect_data
+                    new_data.append(art.__dict__)
 
         return new_data
     

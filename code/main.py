@@ -24,10 +24,11 @@ from src.services.LogsMaker import LogsMaker
 
 from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere
 
-from src.base.B24 import B24
+from src.base.B24 import B24, b24_router
 
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
+from src.services.Idea import idea_router
 
 from src.services.Editor import Editor, editor_router
 
@@ -58,6 +59,9 @@ app.include_router(editor_router, prefix="/api")
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(compress_router, prefix="/api")
+
+app.include_router(b24_router, prefix="/api")
+app.include_router(idea_router, prefix="/api")
 
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
@@ -245,7 +249,6 @@ def total_update():
 @app.get("/api/view/menu", tags=["Меню", "View"])
 def get_user(request: Request):
     return templates.TemplateResponse(name="index.html", context={"request": request})
-
 
 
 # @app.get("/elastic_dump")

@@ -1,6 +1,12 @@
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
+from fastapi.responses import JSONResponse
+
 from bitrix24 import Bitrix24
 import requests
+
 #import asyncio
+
+b24_router = APIRouter(prefix="/b24", tags=["Битрикс24"])
 
 class B24:
     def __init__(self):
@@ -63,65 +69,48 @@ class B24:
         result = response.json()
         return result
 
-    '''
-    def find(self, inf_id, art_id, property):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
-        result = self.bx24.callMethod(f"lists.field.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={inf_id}&FIELD_ID={property}")
+
+
+    '''Проксирую запросы в битру'''
+    def send_idea(self, incr : int, fields : dict):
+        #el_code = f"intranet2_{incr}"
+
+        #url = "https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE=test3&FIELDS%5BPROPERTY_1049%5D=test_number&FIELDS%5BNAME%5D=test_name&FIELDS%5BDETAIL_TEXT%5D=test_text&FIELDS%5BCREATED_BY%5D=user_id&FIELDS%5BPROPERTY_1027%5D=test_file"
+        '''
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/")
+        params = {
+            "IBLOCK_TYPE_ID" : "lists",
+            "IBLOCK_ID" : "121",
+            "ELEMENT_CODE" : el_code,
+            "FIELDS" : fields
+        }
+        try:
+            result = self.bx24.callMethod('lists.element.add', params)
+            print(f"Элемент успешно добавлен с ID: {result['ELEMENT_ID']}")
+            return result
+        except Exception as e:
+            print(f"Не удалось добавить элемент: {e}")
+            return e
+        '''
+        #https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]=$ID
+        name = fields["NAME"]
+        cont_text = fields["DETAIL_TEXT"]
+        uid = fields["CREATED_BY"]
+        if "base" in fields:
+            base = fields["base"]
+            base_name = fields["base_name"]
+            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
+        else:
+            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]=909&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+        
+        response = requests.get(url)
+        result = response.json()
         return result
-    '''
-
-    #async def getUsers(self):
-        #result = await self.bx24.callMethod('user.get')
-        #return result
-
-'''
-    def getUserKeys(self):
-        result = self.bx24.callMethod('user.get')
-        Keys = []
-        for usr_dt in result:
-            for key in usr_dt.keys():
-                if key not in Keys:
-                    Keys.append(key)
-        return Keys
-
-    #функция выводит все возможные варианты значения параметра пользователя:
-    def variant_key_user(self, key = "WORK_POSITION"):
-        usrs = self.getUsers()
-        i = 0
-        variants = []
-        for usr in usrs:
-            if key in usr and (usr[key] != "") and  ('LAST_NAME' in usr and 'NAME' in usr and 'SECOND_NAME' in usr):
-                val = usr[key]
-                fio = f"{usr['LAST_NAME']} {usr['NAME']} {usr['SECOND_NAME']}"
-                if val[-1:] == " ":
-                    val = val[:-1]
-
-                if not variants:
-                    i += 1
-                    print("###", i)
-                    variants = [{
-                        "Номер": i,
-                        "Должность": val,
-                        "ФИО сотрудников": [fio]
-                    }]
-                else:
-                    need_add = True
-                    for sotr in variants:
-                        if sotr["Должность"] == val:
-                            sotr["ФИО сотрудников"].append(fio)
-                            need_add = False
-
-                    if need_add:
-                        i += 1
-                        print(i, val)
-                        sotr = {
-                            "Номер": i,
-                            "Должность": val,
-                            "ФИО сотрудников": [fio]
-                        }
-                        variants.append(sotr)
 
 
-
-        return variants
-'''
+@b24_router.get("/calendar/{date_from}/{date_to}")
+def calendar_event(date_from, date_to):
+    url = f"https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}"
+    response = requests.get(url)
+    result = response.json()
+    return result

@@ -1,4 +1,5 @@
 from src.base.pSQLmodels import UsDepModel
+from src.base.SearchModel import StructureSearchModel
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
 
@@ -27,7 +28,7 @@ class UsDep:
         for usr in logg.progress(data, "Загрузка данных связей пользователей и подразделений "):
             if usr['ID'] is not None:
                 result[int(usr['ID'])] = usr['UF_DEPARTMENT']
-        
+        StructureSearchModel().dump()
         return {"status" : UserSQL.put_uf_depart(result)}
         
     def search_usdep_by_id(self):
@@ -40,6 +41,11 @@ def get_user():
     return UsDep().get_usr_dep()
 
 #Пользователя и его департамент можно выгрузить
-@usdep_router.get("/{id}")
+@usdep_router.get("/find_by/{id}")
 def get_usdepart(id):
     return UsDep(id).search_usdep_by_id()
+
+#поиск по id подразделения
+@usdep_router.get("/get_structure_by_dep_id/{parent_id}")
+def get_structure_by_dep_id(parent_id: int):
+    return StructureSearchModel().get_structure_by_id(parent_id)

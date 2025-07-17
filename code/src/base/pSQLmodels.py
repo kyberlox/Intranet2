@@ -696,6 +696,18 @@ class DepartmentModel():
         # else:
         #     return {'err': 'Нет такого департамента'}
     
+    def find_deps_by_father_id(self, father_id):
+        result = []
+        #null_depart = self.db.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
+        #res = self.db.query(self.department).filter(self.department.father_id == father_id).all()
+        res = self.db.execute(select(self.department).where(self.department.father_id == father_id)).scalars().all()
+        if res is not None:
+            return res
+        else:
+            # return {'err': 'Нет такого департамента'}
+            #return LogsMaker().warning_message('Нет такого департамента')
+            return []
+
     def all(self):
         return self.db.query(self.department).all()
 
@@ -745,7 +757,8 @@ class UsDepModel():
 
             # если такого пользователя нет в таблице users - ошибка
             if us_dep_key not in users:
-                return {'err' : [{'Пользователя нет в таблице users' : us_dep_key}]}
+                #return {'err' : [{'Пользователя нет в таблице users' : us_dep_key}]}
+                continue
             else:
                 # если есть такой пользователь в таблице users - проверяем есть ли он в таблице usdep
                 if us_dep_key not in users_from_usdep_table:

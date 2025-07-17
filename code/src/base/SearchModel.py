@@ -511,9 +511,9 @@ class UserSearchModel:
 
 class StructureSearchModel:
     def __init__(self):
-        self.DepartmentModel = DepartmentModel
-        self.UsDepModel = UsDepModel
-        self.UserModel = UserModel
+        #self.DepartmentModel = DepartmentModel
+        #self.UsDepModel = UsDepModel
+        #self.UserModel = UserModel
         self.index = 'departs'
 
     def create_index(self):
@@ -547,6 +547,16 @@ class StructureSearchModel:
                                 "ru_stop",
                                 "ru_stemming"
                             ]
+                        },
+                        "id_depart": {
+                            "type": "custom",
+                            "tokenizer": "path_tokenizer"
+                        }
+                    },
+                    "tokenizer": {
+                        "path_tokenizer": {
+                        "type": "pattern",
+                        "pattern": "\\."
                         }
                     },
                     "filter": {
@@ -569,11 +579,8 @@ class StructureSearchModel:
             },
             "mappings": {
                 "properties": {
-                    "join_field": {
-                        "type": "join",
-                        "relations": {
-                            "department": "section_of_theese_depart"
-                        }
+                    "id": {
+                        "type": "integer"
                     },
                     "name": {
                         "type": "text",
@@ -581,15 +588,19 @@ class StructureSearchModel:
                         "fields": {
                             "fuzzy": {
                                 "type": "text",
-                                "analyzer": "GOD_PLEASE_FUZZY"
+                                "analyzer": "DEPART__FILTER"
                             }
                         }
                     },
-                    "dep_id_for_sort": {
-                        "type": "integer"
-                    },
                     "user_head_id": {
                         "type": "integer"
+                    },
+                    "father_id": {
+                        "type": "integer"
+                    },
+                    "path_depart": {
+                        "type": "text",
+                        "analyzer": "id_depart"
                     },
                     "users": {
                         "type": "nested",  # изменили тип с object
@@ -613,7 +624,7 @@ class StructureSearchModel:
                                 "fields": {
                                     "fuzzy": {
                                         "type": "text",
-                                        "analyzer": "GOD_PLEASE_FUZZY"
+                                        "analyzer": "DEPART__FILTER"
                                     }
                                 }
                             }
@@ -633,19 +644,29 @@ class StructureSearchModel:
             pass
         self.create_index()
 
-        list_for_deps = []
-
-        dep_data = []  # список
-        dep_sql_data = self.DepartmentModel().all()
-        for dep in dep_sql_data:
-            users_list = []
-            department_data = dep.__dict__
-            list_for_deps.append(department_data['id'])
-            users = self.UsDepModel(id=department_data['id']).find_user_by_dep_id()  # берём id всех пользователей департамента
-            if isinstance(users, list):
-                for usr in users:
+        #list_for_deps = []
+        dep_data_ES = [] # список для bulk
+        dep_data = {}  # словарь для данных
+        usr_sql_data = UserModel().all()
+        
+        """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления верхушки айсберга⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+        # находим верхушку айсберга, ее father_id будет None
+        #list_children = DepartmentModel().find_deps_by_father_id(53)
+        N_0 = DepartmentModel().find_deps_by_father_id(None)[0]
+        path_N_0_depart = str(N_0.id) # путь для департамента
+        dep_data['id'] = N_0.id
+        dep_data['name'] = N_0.name
+        dep_data['user_head_id'] = N_0.user_head_id
+        dep_data['father_id'] = N_0.father_id
+        dep_data['path_depart'] = path_N_0_depart
+        """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+        users_list = []
+        users = UsDepModel(id=N_0.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+        if isinstance(users, list):
+            for usr in usr_sql_data:
+                user = usr.__dict__
+                if user['id'] in users:
                     user_data = {}
-                    user = self.UserModel(Id=usr).find_by_id()
                     if user['active'] is True:
                         user_data['user_id'] = user['id']
 
@@ -661,105 +682,354 @@ class StructureSearchModel:
                             pass
 
                         users_list.append(user_data)
-                    else:
-                        pass
+        """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+        dep_data['users'] = users_list
+        
+
+        data_action = {
+                    "_index": self.index,
+                    "_op_type": "index",
+                    "_id": N_0.id,
+                    "_source": dep_data
+        }
+        dep_data_ES.append(data_action)
+        """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+        #print(dep_data_ES) 
+        """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления первого разветвления⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+        N_1_list = DepartmentModel().find_deps_by_father_id(N_0.id)
+        for N_1 in N_1_list:
+            path_N_1_depart = str(N_1.id)
+            dep_data = {}
+            dep_data['id'] = N_1.id
+            dep_data['name'] = N_1.name
+            dep_data['user_head_id'] = N_1.user_head_id
+            dep_data['father_id'] = N_1.father_id
+            dep_data['path_depart'] = path_N_0_depart + '.' + path_N_1_depart
+            """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+            users_list = []
+            users = UsDepModel(id=N_1.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+            if isinstance(users, list):
+                for usr in usr_sql_data:
+                    user = usr.__dict__
+                    if user['id'] in users:
+                        user_data = {}
+                        if user['active'] is True:
+                            user_data['user_id'] = user['id']
+
+                            if user['second_name'] is not None or user['second_name'] != '':
+                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                            else:
+                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                            if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                'work_position'] != '':
+                                user_data['user_position'] = user['indirect_data']['work_position']
+                            else:
+                                pass
+
+                            users_list.append(user_data)
+            """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+            dep_data['users'] = users_list
+            data_action = {
+                    "_index": self.index,
+                    "_op_type": "index",
+                    "_id": N_1.id,
+                    "_source": dep_data
+            }
+            dep_data_ES.append(data_action)
+            #второе разветвление
+            N_2_list = DepartmentModel().find_deps_by_father_id(N_1.id)
+            if N_2_list == []:
+                continue
             else:
-                pass
-            depart = {
-                "join_field": {"name": "department", "parent": department_data["father_id"]},
-                # поле "name" забиваем "department"
-                # если этот департамент чей-то родитель и "section_of_theese_depart" если он ребеноки подотделов больше нет
-                "name": department_data["name"],
-                "dep_id_for_sort": department_data['id'],
-                "user_head_id": department_data["user_head_id"],
-                "users": users_list
-            }
+                for N_2 in N_2_list:
+                    path_N_2_depart = str(N_2.id)
+                    dep_data = {}
+                    dep_data['id'] = N_2.id
+                    dep_data['name'] = N_2.name
+                    dep_data['user_head_id'] = N_2.user_head_id
+                    dep_data['father_id'] = N_2.father_id
+                    dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart
+                    """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+                    users_list = []
+                    users = UsDepModel(id=N_2.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                    if isinstance(users, list):
+                        for usr in usr_sql_data:
+                            user = usr.__dict__
+                            if user['id'] in users:
+                                user_data = {}
+                                if user['active'] is True:
+                                    user_data['user_id'] = user['id']
 
-            elastic_client.index(index=self.index, id=department_data['id'], body=depart)
+                                    if user['second_name'] is not None or user['second_name'] != '':
+                                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                    else:
+                                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
 
-        return {'status': True}
+                                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                        'work_position'] != '':
+                                        user_data['user_position'] = user['indirect_data']['work_position']
+                                    else:
+                                        pass
 
-    async def index_structure_dep(department_id: str):
-        # Получаем данные из PostgreSQL
-        department = await DepartmentModel(self.id).find_dep_by_id()
-        if "user_head_id" in department.keys() and department["user_head_id"] is not None:
-            user = await UserModel(department["user_head_id"]).find_by_id()
-            full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
-            leader = {
-                "id": user['id'],
-                "name": full_name,
-                "photo_url": user['photo_file_url']
-            }
-
-        user_dep_relations = UsDepModel(department['id']).find_user_by_dep_id()
-        users = []
-        for relation in user_dep_relations:
-            # тут сложности из-за неочевидной структуры в случае когда один пользователь занимает несколько должностей
-            user = await UserModel(relation).find_user_by_dep_id()
-
-            full_name = f"{user['second_name']} {user['name']} {user['last_name']}"
-            # position = 
-            users.append({
-                "id": user['id'],
-                "name": full_name,
-                # "position" : position
-            })
-
-    def search_by_username(self, name):
-        res = elastic_client.search(
-            index=self.index,
-            query={
-                "nested": {
-                    "path": "users",
-                    "query": {
-                        "match": {
-                            "users.user_fio": name
-                        }
-                    },
-                    "inner_hits": {}
-                }
-            },
-            size=10
-        )
-        return res['hits']['hits']
-
-    def search_by_position(self, pos):
-        res = elastic_client.search(
-            index=self.index,
-            query={
-                "nested": {
-                    "path": "users",
-                    "query": {
-                        "match": {
-                            "users.user_position": pos
-                        }
-                    },
-                    "inner_hits": {}
-                }
-            },
-            size=10
-        )
-        return res['hits']['hits']
-
-    def get_structure(self):
-        res = elastic_client.search(
-            index=self.index,
-            query={
-                "match_all": {}
-            },
-            sort=[
-                {
-                    "dep_id_for_sort": {
-                        "order": "asc"  # "desc" использовать если хотим по убыванию
+                                    users_list.append(user_data)
+                    """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+                    dep_data['users'] = users_list
+                    data_action = {
+                            "_index": self.index,
+                            "_op_type": "index",
+                            "_id": N_2.id,
+                            "_source": dep_data
                     }
-                }
-            ],
-            size=1000
-        )
-        return res['hits']['hits']
+                    dep_data_ES.append(data_action)
 
-    def elasticsearch_structure(self, key_word, size_res: Optional[int] = 20):
-        pass
+                    #третье разветвление
+                    N_3_list = DepartmentModel().find_deps_by_father_id(N_2.id)
+                    if N_3_list == []:
+                        continue
+                    else:
+                        for N_3 in N_3_list:
+                            path_N_3_depart = str(N_3.id)
+                            dep_data = {}
+                            dep_data['id'] = N_3.id
+                            dep_data['name'] = N_3.name
+                            dep_data['user_head_id'] = N_3.user_head_id
+                            dep_data['father_id'] = N_3.father_id
+                            dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart
+                            """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+                            users_list = []
+                            users = UsDepModel(id=N_3.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                            if isinstance(users, list):
+                                for usr in usr_sql_data:
+                                    user = usr.__dict__
+                                    if user['id'] in users:
+                                        user_data = {}
+                                        if user['active'] is True:
+                                            user_data['user_id'] = user['id']
+
+                                            if user['second_name'] is not None or user['second_name'] != '':
+                                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                            else:
+                                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                                            if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                                'work_position'] != '':
+                                                user_data['user_position'] = user['indirect_data']['work_position']
+                                            else:
+                                                pass
+
+                                            users_list.append(user_data)
+                            """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+                            dep_data['users'] = users_list
+                            data_action = {
+                                    "_index": self.index,
+                                    "_op_type": "index",
+                                    "_id": N_3.id,
+                                    "_source": dep_data
+                            }
+                            dep_data_ES.append(data_action)
+                            N_4_list = DepartmentModel().find_deps_by_father_id(N_3.id)
+                            if N_4_list == []:
+                                continue
+                            else:
+                                for N_4 in N_4_list:
+                                    path_N_4_depart = str(N_4.id)
+                                    dep_data = {}
+                                    dep_data['id'] = N_4.id
+                                    dep_data['name'] = N_4.name
+                                    dep_data['user_head_id'] = N_4.user_head_id
+                                    dep_data['father_id'] = N_4.father_id
+                                    dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart
+                                    """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+                                    users_list = []
+                                    users = UsDepModel(id=N_4.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                    if isinstance(users, list):
+                                        for usr in usr_sql_data:
+                                            user = usr.__dict__
+                                            if user['id'] in users:
+                                                user_data = {}
+                                                if user['active'] is True:
+                                                    user_data['user_id'] = user['id']
+
+                                                    if user['second_name'] is not None or user['second_name'] != '':
+                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                    else:
+                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                                                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                                        'work_position'] != '':
+                                                        user_data['user_position'] = user['indirect_data']['work_position']
+                                                    else:
+                                                        pass
+
+                                                    users_list.append(user_data)
+                                    """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+                                    dep_data['users'] = users_list
+                                    data_action = {
+                                            "_index": self.index,
+                                            "_op_type": "index",
+                                            "_id": N_4.id,
+                                            "_source": dep_data
+                                    }
+                                    dep_data_ES.append(data_action)
+                                    N_5_list = DepartmentModel().find_deps_by_father_id(N_4.id)
+                                    if N_5_list == []:
+                                        continue
+                                    else:
+                                        for N_5 in N_5_list:
+                                            path_N_5_depart = str(N_5.id)
+                                            dep_data = {}
+                                            dep_data['id'] = N_5.id
+                                            dep_data['name'] = N_5.name
+                                            dep_data['user_head_id'] = N_5.user_head_id
+                                            dep_data['father_id'] = N_5.father_id
+                                            dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart + '.' + path_N_5_depart
+                                            """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+                                            users_list = []
+                                            users = UsDepModel(id=N_5.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                            if isinstance(users, list):
+                                                for usr in usr_sql_data:
+                                                    user = usr.__dict__
+                                                    if user['id'] in users:
+                                                        user_data = {}
+                                                        if user['active'] is True:
+                                                            user_data['user_id'] = user['id']
+
+                                                            if user['second_name'] is not None or user['second_name'] != '':
+                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                            else:
+                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                                                            if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                                                'work_position'] != '':
+                                                                user_data['user_position'] = user['indirect_data']['work_position']
+                                                            else:
+                                                                pass
+
+                                                            users_list.append(user_data)
+                                            """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+                                            dep_data['users'] = users_list
+                                            data_action = {
+                                                    "_index": self.index,
+                                                    "_op_type": "index",
+                                                    "_id": N_5.id,
+                                                    "_source": dep_data
+                                            }
+                                            dep_data_ES.append(data_action)
+                                            N_6_list = DepartmentModel().find_deps_by_father_id(N_5.id)
+                                            if N_6_list == []:
+                                                continue
+                                            else:
+                                                for N_6 in N_6_list:
+                                                    path_N_6_depart = str(N_6.id)
+                                                    dep_data = {}
+                                                    dep_data['id'] = N_6.id
+                                                    dep_data['name'] = N_6.name
+                                                    dep_data['user_head_id'] = N_6.user_head_id
+                                                    dep_data['father_id'] = N_6.father_id
+                                                    dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart + '.' + path_N_5_depart + '.' + path_N_6_depart
+                                                    """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+                                                    users_list = []
+                                                    users = UsDepModel(id=N_6.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                                    if isinstance(users, list):
+                                                        for usr in usr_sql_data:
+                                                            user = usr.__dict__
+                                                            if user['id'] in users:
+                                                                user_data = {}
+                                                                if user['active'] is True:
+                                                                    user_data['user_id'] = user['id']
+
+                                                                    if user['second_name'] is not None or user['second_name'] != '':
+                                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                                    else:
+                                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                                                                    if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                                                        'work_position'] != '':
+                                                                        user_data['user_position'] = user['indirect_data']['work_position']
+                                                                    else:
+                                                                        pass
+
+                                                                    users_list.append(user_data)
+                                                    """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+                                                    dep_data['users'] = users_list
+                                                    data_action = {
+                                                            "_index": self.index,
+                                                            "_op_type": "index",
+                                                            "_id": N_6.id,
+                                                            "_source": dep_data
+                                                    }
+                                                    dep_data_ES.append(data_action)
+                                                    N_7_list = DepartmentModel().find_deps_by_father_id(N_6.id)
+                                                    if N_7_list == []:
+                                                        print('мы закончили')
+                                                        continue
+                                                    else:
+                                                        for N_7 in N_7_list:
+                                                            print('мы не закончили', N_7)
+                                                            path_N_7_depart = str(N_7.id)
+                                                            dep_data = {}
+                                                            dep_data['id'] = N_7.id
+                                                            dep_data['name'] = N_7.name
+                                                            dep_data['user_head_id'] = N_7.user_head_id
+                                                            dep_data['father_id'] = N_7.father_id
+                                                            dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart + '.' + path_N_5_depart + '.' + path_N_6_depart + '.' + path_N_7_depart
+                                                            """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
+                                                            users_list = []
+                                                            users = UsDepModel(id=N_7.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                                            if isinstance(users, list):
+                                                                for usr in usr_sql_data:
+                                                                    user = usr.__dict__
+                                                                    if user['id'] in users:
+                                                                        user_data = {}
+                                                                        if user['active'] is True:
+                                                                            user_data['user_id'] = user['id']
+
+                                                                            if user['second_name'] is not None or user['second_name'] != '':
+                                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                                            else:
+                                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+
+                                                                            if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
+                                                                                'work_position'] != '':
+                                                                                user_data['user_position'] = user['indirect_data']['work_position']
+                                                                            else:
+                                                                                pass
+
+                                                                            users_list.append(user_data)
+                                                            """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
+                                                            dep_data['users'] = users_list
+                                                            data_action = {
+                                                                    "_index": self.index,
+                                                                    "_op_type": "index",
+                                                                    "_id": N_7.id,
+                                                                    "_source": dep_data
+                                                            }
+                                                            dep_data_ES.append(data_action)
+        helpers.bulk(elastic_client, dep_data_ES)
+        return {"status": True}
+        
+
+            
+        # article_action = {
+        #                 "_index": self.index,
+        #                 "_op_type": "index",
+        #                 "_id": int(article_data['id']),
+        #                 "_source": data_row
+        #             }
+
+        #     else:
+        #         pass
+
+        #     article_data_ES.append(article_action)
+
+        # helpers.bulk(elastic_client, article_data_ES)
+
+
+    def get_structure_by_id(self, parent_id=None):
+        query = {"match": {"path_depart": parent_id}}
+        res = elastic_client.search(index=self.index, query=query, size=1000)
+        return res['hits']['hits']
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)

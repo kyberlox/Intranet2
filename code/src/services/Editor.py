@@ -95,10 +95,11 @@ class Editor:
                     if k not in art_keys:
                         art_keys.append(k)
         
-        result = []
+        result = dict()
         for k in art_keys:
-            if k in self.fields.keys():
+            if k["name"] in self.fields.keys():
                 result.append(k)
+
 
         return result
 

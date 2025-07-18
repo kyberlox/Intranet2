@@ -117,7 +117,7 @@ class Editor:
                     for k in art["indirect_data"].keys():
                         fields_names = [f["field"] for f in fields]
                         if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                                field = {
+                            field = {
                                 "name" : self.fields[k], #хватай имя
                                 "field" : k, #хватай поле
                                 "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных

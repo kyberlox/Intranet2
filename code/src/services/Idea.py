@@ -101,14 +101,14 @@ class Idea:
         #получить значение инкремента
         print(self.ideas[-1])
 
-        '''
+        
         max_id = 0
         
         for idea in self.ideas:
-            if int(idea['number']) > max_id:
+            if idea['number'] is not None int(idea['number']) > max_id:
                 max_id = int(idea['number'])
         incr = max_id + 1
-        '''
+        
 
         #incr = int(self.ideas[-1]['number']) + 1
         #print(incr)

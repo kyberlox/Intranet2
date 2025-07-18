@@ -73,7 +73,7 @@ class B24:
 
     '''Проксирую запросы в битру'''
     def send_idea(self, incr : int, fields : dict):
-        #el_code = f"intranet2_{incr}"
+        el_code = f"intranet2_{incr}"
 
         #url = "https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE=test3&FIELDS%5BPROPERTY_1049%5D=test_number&FIELDS%5BNAME%5D=test_name&FIELDS%5BDETAIL_TEXT%5D=test_text&FIELDS%5BCREATED_BY%5D=user_id&FIELDS%5BPROPERTY_1027%5D=test_file"
         '''
@@ -115,9 +115,9 @@ class B24:
             data = {
                 'IBLOCK_TYPE_ID': 'lists',
                 'IBLOCK_ID': '121',
-                'ELEMENT_CODE': 'NEW',
+                'ELEMENT_CODE': el_code,
                 'FIELDS[NAME]': name,
-                'FIELDS[PROPERTY_1049]' : str(incr),
+                'FIELDS[PROPERTY_1049]' : incr,
                 'FIELDS[PROPERTY_1117]' : "909",
                 'FIELDS[DETAIL_TEXT]' : cont_text,
                 'FIELDS[CREATED_BY]'  : uid,

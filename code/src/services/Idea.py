@@ -49,13 +49,11 @@ class Idea:
             
             cool_idea = dict()
             for prop in prop_keys.keys():
-                print(prop)
+                key = prop_keys[prop]
                 val = None
                 if prop in idea.keys():
-                    key = prop_keys[prop]
                     val = take_value(idea[prop])
-                    print(key, val)
-                print(key, val)
+
                 cool_idea[key] = val
             
             

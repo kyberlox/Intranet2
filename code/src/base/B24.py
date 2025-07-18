@@ -122,4 +122,4 @@ def calendar_event(date_from, date_to):
     url = f"https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}"
     response = requests.get(url)
     result = response.json()
-    return result.text
+    return result

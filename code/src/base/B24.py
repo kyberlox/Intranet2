@@ -138,10 +138,11 @@ class B24:
             print(url)
             response = requests.get(url)
         
-        print(response.json())
+        print(response)
+        ID = response.json()['result']
             
-        #bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
-        return response.json()
+        bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
+        return bis_url
 
 
 @b24_router.get("/calendar/{date_from}/{date_to}")

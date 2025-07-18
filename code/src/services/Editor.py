@@ -139,14 +139,14 @@ class Editor:
             
             # беру ключи словаря
             for f_key in files.keys():
-                # ЕСЛИ ключ ещё не записан в files и там не пустой массив
-                if f_key not in files and art["files"][f_key] != []:
-                    files.append(f_key)
+                # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
+                if f_key not in files_keys and files[f_key] != []:
+                    files_keys.append(f_key)
             
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
 
-        return {"fields" : fields, "files" : files}
+        return {"fields" : fields, "files" : files_keys}
 
     def add(self, data : dict):
         if self.section_id is None:

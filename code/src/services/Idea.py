@@ -116,8 +116,8 @@ class Idea:
 
         incr = int(self.ideas[-1]['number']) + 1
         print(incr)
-        B24().send_idea(incr, fields)
-
+        res = B24().send_idea(incr, fields)
+        return res
 
 
 @idea_router.post("/new/")

@@ -117,7 +117,7 @@ class B24:
                 'IBLOCK_ID': '121',
                 'ELEMENT_CODE': 'NEW',
                 'FIELDS[NAME]': name,
-                'FIELDS[PROPERTY_1049]' : str(incr),
+                'FIELDS[PROPERTY_1049]' : incr,
                 'FIELDS[PROPERTY_1117]' : "908",
                 'FIELDS[DETAIL_TEXT]' : cont_text,
                 'FIELDS[CREATED_BY]'  : uid,

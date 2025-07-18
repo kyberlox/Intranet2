@@ -118,7 +118,7 @@ class B24:
                 'ELEMENT_CODE': 'incr',
                 'FIELDS[NAME]': name,
                 'FIELDS[PROPERTY_1049]' : str(incr),
-                'FIELDS[PROPERTY_1049]' : '909',
+                'FIELDS[PROPERTY_1117]' : '909',
                 'FIELDS[DETAIL_TEXT]' : cont_text,
                 'FIELDS[CREATED_BY]'  : uid,
                 'FIELDS[PROPERTY_1027][fileName]'  : base_name,
@@ -134,7 +134,7 @@ class B24:
         
             return response.json()
         else:
-            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]=909&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1117]=909&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
             print(url)
             response = requests.get(url)
             #result = response.json()

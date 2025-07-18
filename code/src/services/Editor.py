@@ -83,6 +83,7 @@ class Editor:
     def get_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
+        
         art_keys = []
         for art in section:
             for k in art.keys():

@@ -10,6 +10,7 @@
     "preview_text" : "Аннотация",
     "year" : "год",
     "uuid" : "ID пользователя",
+    "photo_file_url" : "Фотография (URL)",
     "position" : "Должность",
     "department" : "Подразделение",
     "award" : "Награда",

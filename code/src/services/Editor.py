@@ -134,7 +134,7 @@ class Editor:
                                         field["data_type"] = "str"
             
             #теперь проверим какие файлы бывают у статей раздела
-            self.art_id = int(self.art_id)
+            self.art_id = int(art['id'])
             files=self.get_files()
             
             # беру ключи словаря

@@ -56,6 +56,7 @@ class Idea:
             
             #валидирую статус идеи
             valid_staus = {
+                "908" : "Отправлено",
                 "909" : "На экспертизе",
                 "910" : "В работе",
                 "912" : "Реализовано",
@@ -64,7 +65,7 @@ class Idea:
 
             if "status" in cool_idea.keys():
                 cool_idea["status"] = valid_staus[cool_idea["status"]]
-                
+
             #сохраняю
             ideas.append(cool_idea)
 

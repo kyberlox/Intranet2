@@ -105,7 +105,7 @@ class Idea:
         max_id = 0
         
         for idea in self.ideas:
-            if idea['number'] is not None int(idea['number']) > max_id:
+            if idea['number'] is not None and int(idea['number']) > max_id:
                 max_id = int(idea['number'])
         incr = max_id + 1
         

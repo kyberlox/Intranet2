@@ -100,6 +100,7 @@ class Idea:
     def add(self, fields):
         #получить значение инкремента
         max_id = 0
+        print(self.ideas[-1])
         for idea in self.ideas:
             if int(idea['number']) > max_id:
                 max_id = int(idea['number'])

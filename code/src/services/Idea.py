@@ -63,8 +63,8 @@ class Idea:
                 "913" : "Отказано",
             }
 
-            if "status" in cool_idea.keys():
-                cool_idea["status"] = valid_staus[cool_idea["status"]]
+            
+            cool_idea["status"] = valid_staus[cool_idea["status"]]
 
             #сохраняю
             ideas.append(cool_idea)

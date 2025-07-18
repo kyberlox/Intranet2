@@ -118,7 +118,7 @@ class B24:
                 'ELEMENT_CODE': 'NEW',
                 'FIELDS[NAME]': name,
                 'FIELDS[PROPERTY_1049]' : str(incr),
-                'FIELDS[PROPERTY_1117]' : "908",
+                'FIELDS[PROPERTY_1117]' : "909",
                 'FIELDS[DETAIL_TEXT]' : cont_text,
                 'FIELDS[CREATED_BY]'  : uid,
                 'FIELDS[PROPERTY_1027][fileName]'  : base_name,

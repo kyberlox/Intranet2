@@ -63,6 +63,7 @@ class Idea:
                 "912" : "Реализовано",
                 "913" : "Отказано",
             }
+            print(cool_idea)
 
             if "status" in cool_idea:
                 cool_idea["status"] = valid_staus[cool_idea["status"]]

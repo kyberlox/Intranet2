@@ -12,6 +12,9 @@ import json
 
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
+def get_type(value):
+    return str(type(value)).split('\'')[1]
+
 class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
@@ -54,7 +57,7 @@ class Editor:
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]
                 
-                data_type = str(type(val)).split('\'')[1]
+                data_type = get_type(val)
 
                 # экземпляр поля
                 fl = {
@@ -85,24 +88,55 @@ class Editor:
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
         
         art_keys = []
+        fields = []
+        #иду по всем статьям раздела
         for art in section:
+            #иду по всем полям статьи
             for k in art.keys():
-                if k not in art_keys and k != "indirect_data":
-                    art_keys.append(k)
+                #если такого поля ещё нет
+                fields_names = [f["field"] for f in fields]
+                if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                    field = {
+                        "name" : self.fields[k], #хватай имя
+                        "field" : k, #хватай поле
+                        "data_type" : get_type(art[k]) #хватай тип данных
+                    }
+                    fields.append(field)
+                #если есть
+                else:
+                    #если тип не совпадает - вписать тот, который не None
+                    for field in fields:
+                        if field["data_type"] != get_type(art[k]):
+                            if field["data_type"] == "NoneType":
+                                field["data_type"] = get_type(art[k])
+                            elif get_type(art[k]) != "NoneType":
+                                field["data_type"] = "str"
 
-            # вытащить поля из psql -> indirect_data
-            if "indirect_data" in art:
-                for k in art["indirect_data"].keys():
-                    if k not in art_keys:
-                        art_keys.append(k)
-        
-        result = dict()
-        for k in art_keys:
-            if k["name"] in self.fields.keys():
-                result.append(k)
+                # вытащить поля из psql -> indirect_data
+                if "indirect_data" in art:
+                    for k in art["indirect_data"].keys():
+                        fields_names = [f["field"] for f in fields]
+                        if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                            field = {
+                            "name" : self.fields[k], #хватай имя
+                            "field" : k, #хватай поле
+                            "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных
+                        }
+                        fields.append(field)
+                    #если есть
+                    else:
+                        #если тип не совпадает - вписать тот, который не None
+                        for field in fields:
+                            if field["data_type"] != get_type(art["indirect_data"][k]):
+                                if field["data_type"] == "NoneType":
+                                    field["data_type"] = get_type(art["indirect_data"][k])
+                                elif get_type(art["indirect_data"][k]) != "NoneType":
+                                    field["data_type"] = "str"
 
+            
+        files = []
 
-        return result
+        return {"fields" : fields, "files" : files}
 
     def add(self, data : dict):
         if self.section_id is None:

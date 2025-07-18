@@ -129,7 +129,6 @@ class B24:
             headers = {
                 'Content-Type': "application/x-www-form-urlencoded"
             }
-
                             
             response  = requests.post(api_url, data=data, headers=headers)
         

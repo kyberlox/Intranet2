@@ -113,6 +113,7 @@ class Editor:
                                 field["data_type"] = "str"
 
                 # вытащить поля из psql -> indirect_data
+                '''
                 if "indirect_data" in art:
                     for k in art["indirect_data"].keys():
                         fields_names = [f["field"] for f in fields]
@@ -132,7 +133,7 @@ class Editor:
                                     field["data_type"] = get_type(art["indirect_data"][k])
                                 elif get_type(art["indirect_data"][k]) != "NoneType":
                                     field["data_type"] = "str"
-
+                '''
             
         files = []
 

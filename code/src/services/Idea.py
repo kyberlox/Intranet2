@@ -55,6 +55,8 @@ class Idea:
                     val = take_value(idea[prop])
                 cool_idea[key] = val
             
+            print(cool_idea)
+
             #валидирую статус идеи
             valid_staus = {
                 None : None,
@@ -63,13 +65,13 @@ class Idea:
                 "912" : "Реализовано",
                 "913" : "Отказано",
             }
+
             print(cool_idea)
 
             if "status" in cool_idea:
                 cool_idea["status"] = valid_staus[cool_idea["status"]]
 
             #сохраняю
-            print(cool_idea)
             ideas.append(cool_idea)
 
         self.ideas = ideas

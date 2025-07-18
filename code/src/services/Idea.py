@@ -31,7 +31,6 @@ class Idea:
 
         ideas = []
         #каждую идею
-        print(take_value(b24_ideas[-1]['PROPERTY_1049']))
         for idea in b24_ideas:
             #проебразую по шаблону с нормальными ключами
             prop_keys = {
@@ -54,8 +53,6 @@ class Idea:
                 if prop in idea.keys():
                     key = prop_keys[prop]
                     val = take_value(idea[prop])
-                if prop == 'PROPERTY_1049':
-                    print(key, val)
                 cool_idea[key] = val
             
             #валидирую статус идеи
@@ -71,6 +68,7 @@ class Idea:
                 cool_idea["status"] = valid_staus[cool_idea["status"]]
 
             #сохраняю
+            print(cool_idea)
             ideas.append(cool_idea)
 
         self.ideas = ideas

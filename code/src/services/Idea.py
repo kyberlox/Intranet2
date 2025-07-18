@@ -31,7 +31,7 @@ class Idea:
 
         ideas = []
         #каждую идею
-        print(b24_ideas[-1])
+        print(take_value(b24_ideas[-1]['PROPERTY_1049']))
         for idea in b24_ideas:
             #проебразую по шаблону с нормальными ключами
             prop_keys = {

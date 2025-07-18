@@ -103,7 +103,7 @@ class Idea:
         for idea in self.ideas:
             if int(idea['number']) > max_id:
                 max_id = int(idea['number'])
-        incr = max_id + 101
+        incr = max_id + 1
         B24().send_idea(incr, fields)
 
 

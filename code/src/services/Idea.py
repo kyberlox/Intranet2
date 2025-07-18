@@ -53,9 +53,11 @@ class Idea:
                 if prop in idea.keys():
                     key = prop_keys[prop]
                     val = take_value(idea[prop])
+                    print(key, val)
+                print(key, val)
                 cool_idea[key] = val
             
-            print(cool_idea)
+            
 
             #валидирую статус идеи
             valid_staus = {
@@ -65,8 +67,6 @@ class Idea:
                 "912" : "Реализовано",
                 "913" : "Отказано",
             }
-
-            print(cool_idea)
 
             if "status" in cool_idea:
                 cool_idea["status"] = valid_staus[cool_idea["status"]]

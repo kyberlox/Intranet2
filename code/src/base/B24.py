@@ -98,16 +98,41 @@ class B24:
         cont_text = fields["DETAIL_TEXT"]
         uid = fields["CREATED_BY"]
         if "base" in fields:
+            '''
             base = fields["base"]
             base_name = fields["base_name"]
             url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
             headers = {
                 'Content-Type': "Multipart/form-data"
             }
-            
+
             response = requests.post(url)
+            '''
+
+            api_url = "https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add"
+            base = fields["base"]
+            base_name = fields["base_name"]
+            data = {
+                'IBLOCK_TYPE_ID': 'lists',
+                'IBLOCK_ID': '121',
+                'ELEMENT_CODE': 'incr',
+                'FIELDS[NAME]': name,
+                'FIELDS[PROPERTY_1049]' : str(incr),
+                'FIELDS[PROPERTY_1049]' : '909',
+                'FIELDS[DETAIL_TEXT]' : cont_text,
+                'FIELDS[CREATED_BY]'  : uid,
+                'FIELDS[PROPERTY_1027][fileName]'  : base_name,
+                'FIELDS[PROPERTY_1027][fileData]' : base
+            }
+
+            headers = {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+
+                            
+            response  = requests.post(api_url, data=data, headers=headers)
         
-            return response
+            return response.json()
         else:
             url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]=909&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
             print(url)

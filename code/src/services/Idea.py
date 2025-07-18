@@ -42,12 +42,13 @@ class Idea:
                 "DETAIL_TEXT_TYPE" : "content_type",
                 "DATE_CREATE" : "date_create",
                 "PROPERTY_1049" : "number",
-                "PROPERTY_1117" : "status",
+                "PROPERTY_1117" : "status"
             }
+
+            print(idea[-1])
 
             cool_idea = dict()
             for prop in prop_keys.keys():
-                
                 val = None
                 if prop in idea.keys():
                     key = prop_keys[prop]

@@ -54,6 +54,8 @@ class Idea:
                 if prop in idea.keys():
                     key = prop_keys[prop]
                     val = take_value(idea[prop])
+                if prop == 'PROPERTY_1049':
+                    print(key, val)
                 cool_idea[key] = val
             
             #валидирую статус идеи

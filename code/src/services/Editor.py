@@ -88,7 +88,7 @@ class Editor:
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
         
         fields = []
-        files = []
+        files_keys = []
         #иду по всем статьям раздела
         for art in section:
             #иду по всем полям статьи
@@ -134,14 +134,17 @@ class Editor:
                                         field["data_type"] = "str"
             
             #теперь проверим какие файлы бывают у статей раздела
-            if "files" in art.keys():
-                print("yes")
-                # беру ключи словаря
-                for f_key in art["files"]:
-                    # ЕСЛИ ключ ещё не записан в files и там не пустой массив
-                    if f_key not in files and art["files"][f_key] != []:
-                        files.append(f_key)
- 
+            self.art_id = int(self.art_id)
+            files=self.get_files()
+            
+            # беру ключи словаря
+            for f_key in files.keys():
+                # ЕСЛИ ключ ещё не записан в files и там не пустой массив
+                if f_key not in files and art["files"][f_key] != []:
+                    files.append(f_key)
+            
+            #if "photo_file_url" in art.keys():
+                # "Фотография (URL)",
 
         return {"fields" : fields, "files" : files}
 

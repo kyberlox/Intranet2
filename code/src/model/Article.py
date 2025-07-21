@@ -339,7 +339,7 @@ class Article:
         
         #видеоинтервью
         elif self.section_id == 16:
-            author = []
+            author = None
             if "PROPERTY_1026" in data:
                 author = data["PROPERTY_1026"]
             
@@ -397,12 +397,11 @@ class Article:
 
         #Актуальные новости и Корпоративные события
         elif self.section_id == 31 or self.section_id == 51:
-            property_dict = {
-                "PROPERTY_294" : "author",
-                "" : ""
-            }
+            author = None
+            if "PROPERTY_294" in data:
+                author = data["PROPERTY_294"]
             
-            indirect_data = dict_to_indirect_data(data, property_dict)
+            indirect_data = {"author" : author}
 
         #Благотворительные проекты
         elif self.section_id == 55:
@@ -652,6 +651,10 @@ class Article:
             #"PROPERTY_679",
 
             "PROPERTY_476",
+            
+            # Актуальные новости и Корпоративные события
+            "PROPERTY_491",
+            "PROPERTY_664", #ссылка на youtube
 
             #"PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
@@ -707,6 +710,11 @@ class Article:
             if file_property in data:
                 # if art_id == 12221:
                 #     print(data, art_id)
+                
+                #ссылки 
+                if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
+                    link = take_value(data[file_property])
+                    File(b24_id=f"link_{art_id}").add_link(link)
 
                 #обрабатываются дефолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:

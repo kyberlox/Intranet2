@@ -712,7 +712,7 @@ class Article:
                 #     print(data, art_id)
                 
                 #ссылки 
-                if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
+                if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670"]:
                     link = take_value(data[file_property])
                     File(b24_id=f"link_{art_id}").add_link(link, art_id)
 

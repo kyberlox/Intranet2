@@ -208,12 +208,12 @@ class Article:
             })
 
         #Наши люди
-        elif self.section_id == 13:
+        '''elif self.section_id == 13:
             user_uuids = []
             if "PROPERTY_1235" in data:
                 user_uuids = data["PROPERTY_1235"]
             
-            indirect_data = {"user_uuids" : user_uuids}
+            indirect_data = {"user_uuids" : user_uuids}'''
 
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
@@ -336,12 +336,12 @@ class Article:
                     indirect_data[key] = data[key]
         
         #видеоинтервью
-        elif self.section_id == 16:
+        '''elif self.section_id == 16:
             author = []
             if "PROPERTY_1026" in data:
                 author = data["PROPERTY_1026"]
             
-            indirect_data = {"author" : author}
+            indirect_data = {"author" : author}'''
 
         #отдельно забираю сортировку для Памятки Новому Сотруднику
         elif self.section_id == 18:

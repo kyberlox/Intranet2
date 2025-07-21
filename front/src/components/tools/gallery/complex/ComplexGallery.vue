@@ -42,16 +42,45 @@ import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
 import ComplexGalleryCardVideo from "./ComplexGalleryCardVideo.vue";
 
 interface IComplexGallery {
-    id: number,
+    id?: number,
     section_id?: number,
     indirect_data?: {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],
         videoHref?: string,
+
+        // Бонусы партнеров
+        PROPERTY_341?: string[],
+        PROPERTY_337?: string[],
+        PROPERTY_338?: string[],
+        PROPERTY_340?: string[],
+        PROPERTY_439?: string[],
+        // _______________________
+        // Афиша
+        PROPERTY_375?: string[],
+        // ___________________________
+        // Официальные события 
+        PROPERTY_665?: string[],
+        PROPERTY_403?: string[],
+        PROPERTY_398?: string[],
+        PROPERTY_399?: string[],
+        PROPERTY_400?: string[],
+        PROPERTY_401?: string[],
+        PROPERTY_402?: string[],
+        date_creation?: string
+        // _______________________________
+        // Корпоративная жизнь
+        PROPERTY_666?: string[],
+        PROPERTY_405?: string[],
+        PROPERTY_406?: string[],
+        PROPERTY_407?: string[],
+        PROPERTY_409?: string[],
+        PROPERTY_408?: string[],
+        // ______________________________
     },
     videoHref?: string,
     link?: string,
-    images?: string[]
+    images?: string[],
 }
 
 export default defineComponent({
@@ -104,7 +133,7 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        const setCardDate = (slide: { '"PROPERTY_375"': string[], "PROPERTY_438": string[] }) => {
+        const setCardDate = (slide: { indirect_data?: { "PROPERTY_375"?: string[], "PROPERTY_438"?: string[] } }) => {
             return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
         }
 

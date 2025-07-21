@@ -17,7 +17,7 @@ export const uniqueRoutesHandle = (
         return { name: reRoute, params: { id: slide.id } }
     }
     else if (route === 'experienceTypes') {
-        return { name: route, params: { slide: slide?.id } }
+        return { name: route, params: { factoryId: slide?.id } }
     }
     else if (route === 'experienceType') {
         return { name: route, params: { factoryId: slide.id, sectorId: slide.sectorId } }

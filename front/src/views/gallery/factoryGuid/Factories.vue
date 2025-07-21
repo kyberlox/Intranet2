@@ -8,10 +8,8 @@
 </template>
 
 <script lang="ts">
-import { sectionTips } from "@/assets/static/sectionTips";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import Api from "@/utils/Api";
-import { defineComponent, onMounted, computed, type ComputedRef } from "vue";
+import { defineComponent, computed, type ComputedRef } from "vue";
 import type { IFactoryGuidSlides } from "@/interfaces/IEntities";
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
 

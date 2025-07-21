@@ -4,7 +4,7 @@ export const factoryLogoTips =
     "6184": "/src/assets/imgs/factories/technosfeta.png",
     "6183": "/src/assets/imgs/factories/armatom.png",
     "6182": "/src/assets/imgs/factories/tep.png",
-    "6181": "undefined",
+    "6181": "/src/assets/imgs/factories/techPromArma.png",
     "6180": "/src/assets/imgs/factories/regulator.png",
     "6179": "/src/assets/imgs/factories/kurgan.png",
     "6178": "/src/assets/imgs/factories/saz.png"

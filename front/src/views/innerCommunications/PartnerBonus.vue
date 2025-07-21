@@ -1,12 +1,12 @@
 <template>
     <div class="page__title mt20">Предложения партнеров</div>
-    <FlexGallery class="mt20"
-                 :page=page
-                 :slides="bonusesSlides"
-                 :routeTo="'partnerPost'" />
+    <ComplexGallery class="mt20"
+                    :page=page
+                    :slides="bonusesSlides"
+                    :routeTo="'partnerPost'" />
 </template>
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
 import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
@@ -16,7 +16,7 @@ import type { IPartnerBonus } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
-        FlexGallery
+        ComplexGallery
     },
     setup() {
         const bonusesSlides: ComputedRef<IPartnerBonus[]> = computed(() => useViewsDataStore().getData('partnerBonusData') as IPartnerBonus[]);

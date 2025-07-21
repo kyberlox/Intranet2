@@ -30,7 +30,8 @@
                                     <strong>{{ currentUser.last_name + " " + currentUser.name + " " +
                                         currentUser.second_name }}</strong><br>
                                     <span class="fw-light">{{ currentUser.indirect_data.work_position }}</span><br>
-                                    <span v-for="item in currentUser.indirect_data.uf_usr_1696592324977">
+                                    <span v-for="(item, index) in currentUser.indirect_data.uf_usr_1696592324977"
+                                          :key="'depart' + index">
                                         {{ item }}
                                     </span>
                                 </div>
@@ -38,9 +39,10 @@
                         </div>
                         <div class="row mb-3 justify-content-center">
                             <div class="col-sm-10 col-print-12">
-                                <h2 class="page__title text-center">#{{ textContent.number }} {{ textContent.name }}
+                                <h2 class="page__title text-center">#{{ textContent?.number }} {{ textContent?.name }}
                                 </h2>
-                                <div class="mb-3"
+                                <div v-if="textContent?.content"
+                                     class="mb-3"
                                      id="detail-text"
                                      style="text-align: justify">
                                     {{ textContent.content }}
@@ -89,8 +91,6 @@ export default {
         CloseIcon
     },
     setup(props, { emit }) {
-        console.log(props.currentUser.value);
-
         return {
             close: () => emit("close"),
             repairVideoUrl,

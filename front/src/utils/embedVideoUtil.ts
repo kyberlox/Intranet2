@@ -1,6 +1,7 @@
 export const repairVideoUrl = (url: string): string | false => {
     if (!url) return '/';
     let cleanUrl = url;
+    console.log(url);
 
     const youtubePatterns = ["youtu.be/", "watch?v=", "/shorts/", "youtube.com/embed/"];
 

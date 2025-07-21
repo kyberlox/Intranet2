@@ -4,12 +4,32 @@ import Announces from "@/assets/icons/trainingCenter/Announces.svg?component";
 import Excursions from "@/assets/icons/trainingCenter/Excursions.svg?component";
 import Literature from "@/assets/icons/trainingCenter/Literature.svg?component";
 import Memo1C from "@/assets/icons/trainingCenter/Memo1C.svg?component";
+import type { Component } from "vue";
 
-import type { ITrainingSections } from "@/interfaces/ITrainingSections";
+interface IEcourcesPreview {
+    name: string;
+    items: {
+        id: number;
+        name: string;
+        href: string;
+    }[];
+}
+interface IAllCources {
+    id: number;
+    name: string;
+    img: string;
+    structure: string[];
+    additionalInfo: {
+        title: string, text: string
+    }[];
+}
 
-import type { IAllCources } from "@/interfaces/IAllCources";
 
-import type { IEcourcesPreview } from "@/interfaces/IEcourcesPreview";
+interface ITrainingSections {
+    name: string;
+    link: string;
+    component: Component | string;
+}
 
 // список курсов
 export const cources: IEcourcesPreview[] = [

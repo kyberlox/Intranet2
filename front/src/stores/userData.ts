@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { IUser } from "@/interfaces/IEntities";
 
 export const useUserData = defineStore('userData', {
     state: () => ({
@@ -24,7 +25,7 @@ export const useUserData = defineStore('userData', {
             this.authKey = String(storedAuthKey);
             this.isLogin = true;
         },
-        setUserInfo(userData) {
+        setUserInfo(userData: IUser) {
             this.user = userData;
         },
         logOut() {

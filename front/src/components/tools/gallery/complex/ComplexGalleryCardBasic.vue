@@ -41,7 +41,10 @@ interface IComplexGalleryCardBasic {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],
         href?: string,
-    }
+        // ИЗБАВИТЬСЯ
+        PROPERTY_375?: string[],
+        PROPERTY_438?: string[]
+    },
 }
 
 export default defineComponent({

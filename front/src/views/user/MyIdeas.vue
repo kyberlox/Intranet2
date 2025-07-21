@@ -18,7 +18,7 @@
                         <th>Название</th>
                         <th>Статус</th>
                     </tr>
-                    <tr v-for="idea in ideas.sort((a, b) => b.number - a.number)"
+                    <tr v-for="idea in ideas.sort((a, b) => Number(b.number) - Number(a.number))"
                         :key="idea.id"
                         class="table__idea"
                         @click="callModal(idea)">
@@ -38,11 +38,13 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from 'vue';
+import { defineComponent, onMounted, ref, computed, type Ref } from 'vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
 import { useUserData } from '@/stores/userData';
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
+import { type IIdeaData } from '@/interfaces/IEntities';
+
 export default defineComponent({
     name: 'MyIdeas',
     components: {
@@ -51,11 +53,11 @@ export default defineComponent({
     setup() {
         const currentUser = computed(() => useUserData().getUser)
 
-        const ideas = ref();
+        const ideas: Ref<IIdeaData[]> = ref([]);
         const ideaInModal = ref();
         const modalIsVisible = ref(false);
 
-        const callModal = (idea) => {
+        const callModal = (idea: IIdeaData) => {
             ideaInModal.value = idea;
             modalIsVisible.value = true;
         }

@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, computed } from "vue";
+import { defineComponent, computed } from "vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
 

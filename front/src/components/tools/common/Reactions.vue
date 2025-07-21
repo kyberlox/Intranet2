@@ -47,7 +47,7 @@ export default defineComponent({
             required: true,
         },
         type: {
-            type: String as PropType<'postPreview' | 'blog' | 'video' | 'interview'>,
+            type: String as PropType<'postPreview' | 'blog' | 'video' | 'interview' | 'ourPeople'>,
             required: true,
         },
         needReadMoreBtn: {

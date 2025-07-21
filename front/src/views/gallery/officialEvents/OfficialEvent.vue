@@ -2,49 +2,30 @@
     <div class="experience__page mt20">
         <div class="page__title">Официальные события</div>
         <div class="page__title__details">{{ title }}</div>
-        <FlexGallery class="mt20"
-                     :page=page
-                     :modifiers="modifiers"
-                     :slides="formattedSlides" />
+        <ComplexGallery class="mt20"
+                        :page=page
+                        :modifiers="modifiers"
+                        :slides="formattedSlides" />
     </div>
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { officialEventSlide } from "@/assets/static/officialEventsSlides";
-import { defineComponent, computed } from "vue";
-
-export interface INewsSlide {
-    id: number;
-    name?: string;
-    title?: string;
-    href?: string;
-    hrefId?: string;
-    hrefTitle?: string;
-    videoHref?: string[];
-    img?: string | string[];
-    reportages?: boolean;
-    reportsHref?: string;
-    tours?: boolean;
-    toursHref?: string;
-}
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { defineComponent, computed, type Ref, ref } from "vue";
+import type { IOfficialEvents } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
-        FlexGallery,
+        ComplexGallery,
     },
     setup() {
-        const slides = officialEventSlide
+        const slides: Ref<IOfficialEvents[]> = ref([]);
 
         const formattedSlides = computed(() => {
-            return slides.slides.map((imgUrl: string) => {
-                return {
-                    img: imgUrl
-                } as INewsSlide;
-            });
+            return ''
         });
         return {
-            title: slides.title,
+            title: slides.value.title,
             formattedSlides,
             page: 'officialEvent',
             modifiers: ['noRoute']

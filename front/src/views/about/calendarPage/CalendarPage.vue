@@ -80,7 +80,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch, nextTick, type ComputedRef, type Ref } from 'vue';
 import { monthesInit } from '@/assets/static/monthes';
-import type { ICalendar } from '@/interfaces/ICalendar';
+import type { ICalendar } from '@/interfaces/entities/ICalendar';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
 import { getMonth, formatDateNoTime } from '@/utils/dateConvert';
 import { useViewsDataStore } from '@/stores/viewsData';

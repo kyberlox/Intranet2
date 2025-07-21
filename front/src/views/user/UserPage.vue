@@ -117,64 +117,7 @@ import { defineComponent, ref } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
-
-interface IUser {
-    "id": number,
-    "uuid": string,
-    "active": boolean,
-    "name": string,
-    "last_name": string,
-    "second_name": string,
-    "email": string,
-    "personal_mobile": string,
-    "uf_phone_inner": string,
-    "personal_city": string,
-    "personal_gender": string,
-    "personal_birthday": string,
-    "indirect_data": {
-        "id": number,
-        "title": string,
-        "work_www": string,
-        "work_zip": string,
-        "is_online": string,
-        "time_zone": string,
-        "user_type": string,
-        "work_city": string,
-        "last_login": string,
-        "work_notes": string,
-        "work_pager": string,
-        "work_phone": string,
-        "work_state": string,
-        "timestamp_x": {},
-        "work_street": string,
-        "personal_fax": string,
-        "personal_icq": string,
-        "work_company": string,
-        "work_country": string,
-        "work_mailbox": string,
-        "work_profile": string,
-        "date_register": string,
-        "uf_department": string[],
-        "work_position": string,
-        "personal_notes": string,
-        "personal_pager": string,
-        "personal_photo": string,
-        "work_department": string,
-        "personal_country": string,
-        "time_zone_offset": string,
-        "last_activity_date": {},
-        "uf_employment_date": string,
-        "personal_profession": string,
-        "uf_usr_1586854037086": string,
-        "uf_usr_1586861567149": string,
-        "uf_usr_1594879216192": string,
-        "uf_usr_1679387413613": string[],
-        "uf_usr_1696592324977": string[],
-        "uf_usr_1705744824758": string[],
-        "uf_usr_1707225966581": string[] | boolean,
-        "fio"?: string
-    }
-}
+import { type IUser } from '@/interfaces/IEntities';
 
 export default defineComponent({
     props: {
@@ -187,7 +130,6 @@ export default defineComponent({
     },
     setup(props) {
         const user = ref();
-        // const myId = computed(() => useUserData().getMyId)
         const modalIsOpen = ref(false);
         watch(props, (newVal) => {
             if (newVal) {

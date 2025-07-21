@@ -35,7 +35,7 @@
                          class="news__detail__phone-care">
                         Телефон организатора:
                         <br />
-                        {{ getProperty(currentPost, 'PROPERTY_347') }}
+                        {{ getProperty(currentPost, "PROPERTY_347") }}
                     </div>
                     <div class="news__detail__discr"
                          v-html="currentPost.content_text"></div>
@@ -66,7 +66,7 @@ import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type Ref, onMounted, ref, type PropType } from "vue";
-import type { IUnionEntities, IAfishaItem, ICareSlide } from "@/interfaces/IEntities";
+import type { IAfishaItem } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "../gallery/complex/ComplexGallery.vue";
@@ -91,11 +91,18 @@ export interface IPostInner {
     documentation?: string[];
     videos_embed?: string[];
     videos_native?: string[];
-    // Благотв
-    PROPERTY_347?: string;
-    PROPERTY_348?: { TEXT?: string }[];
-    // Афиша 
-    PROPERTY_374?: { TEXT?: string }[];
+
+    indirect_data?: {
+        // Благотв
+        PROPERTY_347?: string[];
+        PROPERTY_348?: {
+            TEXT?: string
+        }[];
+        // Афиша 
+        PROPERTY_374?: {
+            TEXT?: string
+        }[];
+    }
 }
 
 export default defineComponent({
@@ -133,13 +140,13 @@ export default defineComponent({
                     .then((res) => {
                         currentPost.value = res;
                         if (!currentPost.value) return;
-                        changeToPostStandart(currentPost as Ref<IUnionEntities>, res);
+                        changeToPostStandart(currentPost as Ref<IPostInner>, res);
                     })
         })
 
-        const changeToPostStandart = (target: Ref<IUnionEntities>, res: IUnionEntities) => {
+        const changeToPostStandart = (target: Ref<IPostInner>, res: IPostInner) => {
             if (target.value == undefined) return;
-            const property348Text = getProperty(target.value as ICareSlide, 'PROPERTY_348')?.TEXT;
+            const property348Text = getProperty(target.value as IPostInner, 'PROPERTY_348')?.TEXT;
             const property374Text = getProperty(target.value as IAfishaItem, 'PROPERTY_374')?.TEXT;
             if (property348Text) {
                 target.value.content_text = property348Text;

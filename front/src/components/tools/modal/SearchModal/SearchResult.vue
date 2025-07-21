@@ -86,7 +86,7 @@ export default defineComponent({
             return newFormat;
         }
 
-        const handleSearchRoute = (item) => {
+        const handleSearchRoute = (item: { href: string, id: number }) => {
             emit('closeModal')
             return { name: item.href, params: { id: item.id } }
         }

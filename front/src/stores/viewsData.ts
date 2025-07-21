@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
-import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem, IOurPeople, IVideoInterview, IVideoReports, ICorpNews, IOfficialEvents, IPartnerBonus, IFactorySlides } from "@/interfaces/IEntities";
+import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem, IOurPeople, IVideoInterview, IVideoReports, ICorpNews, IOfficialEvents, IPartnerBonus, IFactoryGuidSlides } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
-import type { ICalendar } from "@/interfaces/ICalendar";
+import type { ICalendar } from "@/interfaces/entities/ICalendar";
 
 interface DataState {
     homeData: MainPageCards,
@@ -17,7 +17,7 @@ interface DataState {
     officialEventsData: IOfficialEvents[],
     partnerBonusData: IPartnerBonus[],
     calendarData: ICalendar[],
-    factoryGuidData: IFactorySlides[],
+    factoryGuidData: IFactoryGuidSlides[],
     // yearResultsData: any[];
     // blogsData: any[];
     // gazettesData: any[],

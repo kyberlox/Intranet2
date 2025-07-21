@@ -73,7 +73,7 @@ import { useSwiperconf } from "@/utils/useSwiperConf";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
-import BirthdaySlide from "./components/birthdaySlide.vue";
+import BirthdaySlide from "./components/BirthdaySlide.vue";
 import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
 import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 

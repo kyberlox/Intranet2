@@ -18,7 +18,7 @@ import { defineComponent, ref, type Ref, computed, type ComputedRef, watch } fro
 import DatePicker from '../tools/common/DatePicker.vue';
 import { dateConvert, formatDateNoTime, addZeroToMonth } from '@/utils/dateConvert';
 import { useRouter, useRoute } from 'vue-router';
-import type { ICalendar } from '@/interfaces/ICalendar';
+import type { ICalendar } from '@/interfaces/entities/ICalendar';
 import { useViewsDataStore } from '@/stores/viewsData';
 
 interface ICalendarMarker {

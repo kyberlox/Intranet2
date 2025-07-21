@@ -34,6 +34,7 @@ export interface FullRowBlock {
     title: string;
     href?: string;
     images: BlockImage[];
+    sectionId: string;
 }
 
 export interface MixedRowBlockContent {

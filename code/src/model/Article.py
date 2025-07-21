@@ -215,7 +215,6 @@ class Article:
             
             indirect_data = {
                 "user_uuids" : user_uuids,
-
                 }
 
         # отдельно обработаем случай конкурсов ЭМК
@@ -339,7 +338,13 @@ class Article:
                     indirect_data[key] = data[key]
         
         #видеоинтервью
-        
+        elif self.section_id == 16:
+            author = []
+            if "PROPERTY_1026" in data:
+                author = data["PROPERTY_1026"]
+            
+            indirect_data = {"author" : author}
+
 
         #отдельно забираю сортировку для Памятки Новому Сотруднику
         elif self.section_id == 18:

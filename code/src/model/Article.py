@@ -957,6 +957,7 @@ class Article:
         
         
         #Гид по предприятиям
+        '''
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
@@ -1016,7 +1017,7 @@ class Article:
                 pass
         
 
-        '''
+        
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
@@ -1154,6 +1155,7 @@ class Article:
 
         
         #Корпоративная газета ✔️
+        '''
         data = [
             {
                 "ID" : "342022",
@@ -1191,9 +1193,10 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        
+        '''
 
         #Конкурсы ЭМК 7 секция
+        '''
         self.section_id = "128"
         competitions_info = self.get_inf()
         if competitions_info != []:
@@ -1205,7 +1208,7 @@ class Article:
                     self.add(inf)
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
-        
+        '''
 
 
         '''самобытные блоки'''

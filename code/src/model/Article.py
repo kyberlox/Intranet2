@@ -719,6 +719,8 @@ class Article:
                 #обрабатываются дефолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
                     need_all_method = False
+                elif file_property in ["PROPERTY_491"]:
+                    need_all_method = True
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка

@@ -3,7 +3,7 @@
         <div class="flexGallery__card__img-wrapper">
             <div v-if="slide.link"
                  class="flexGallery__card__img"
-                 v-lazy-load="slide?.preview_file_url || slide.photo_file_url"
+                 v-lazy-load="slide.preview_file_url ?? slide.photo_file_url"
                  @click="callModal(slide)">
             </div>
         </div>
@@ -15,14 +15,19 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import { type IFactoryDataReports } from "@/interfaces/IEntities";
 
+interface IComplexCardVideo {
+    link?: string,
+    preview_file_url?: string,
+    photo_file_url?: string,
+    name?: string
+}
 
 export default defineComponent({
     name: 'ComplexGalleryCardBasic',
     props: {
         slide: {
-            type: Object as PropType<IFactoryDataReports>,
+            type: Object as PropType<IComplexCardVideo>,
             required: true
         },
         routeTo: {
@@ -35,7 +40,7 @@ export default defineComponent({
 
         return {
             uniqueRoutesHandle,
-            callModal: (slide: IFactoryDataReports) => emit('callModal', slide.link, 'video')
+            callModal: (slide: IComplexCardVideo) => emit('callModal', slide.link, 'video')
         }
     }
 })

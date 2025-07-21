@@ -42,6 +42,8 @@
         align-items: center;
         justify-content: center;
         z-index: 50;
+        padding: 0;
+        margin: 0;
 
         &__close-button {
             position: absolute;
@@ -131,7 +133,6 @@
     }
 
     &__body {
-        padding: 1rem;
 
         &--review {
             padding: 20px;
@@ -243,6 +244,24 @@
 
             >label>span {
                 margin-right: 5px;
+            }
+        }
+    }
+
+    &__text {
+        padding: 70px;
+
+        &__content {
+            background: white;
+            border-radius: 25px;
+            padding: 50px 0;
+            max-width: 1000px;
+            margin: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            &__user-photo {
+                max-width: 350px;
             }
         }
     }

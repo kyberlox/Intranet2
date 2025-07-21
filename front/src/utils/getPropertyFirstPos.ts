@@ -1,12 +1,7 @@
-import type { IUnionEntitiesData, IUnionEntities } from "@/interfaces/IEntities";
-
-export const getProperty = <T extends IUnionEntitiesData>(
-    object: IUnionEntities,
-    field: keyof T
-) => {
+export const getProperty = (object, field) => {
     if (!object.indirect_data) return;
 
-    const indirectData = object.indirect_data as T;
+    const indirectData = object.indirect_data;
 
     if (indirectData && field in indirectData) {
         const value = indirectData[field];

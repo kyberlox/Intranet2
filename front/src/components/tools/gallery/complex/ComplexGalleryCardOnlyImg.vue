@@ -13,16 +13,18 @@
     </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { IUnionEntities } from "@/interfaces/IEntities";
+
+interface IComplexGalleryCardOnlyImg {
+    images?: string[]
+}
 
 export default defineComponent({
     name: 'ComplexGalleryCardBasic',
     props: {
         slide: {
-            type: Object as PropType<IUnionEntities>,
+            type: Object as PropType<IComplexGalleryCardOnlyImg>,
             required: true
         },
     },

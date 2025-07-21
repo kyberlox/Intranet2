@@ -9,15 +9,15 @@
         </div>
         <div v-if="slide.name"
              class="flexGallery__card__title flexGallery__card__title--text-date">
-            <span v-if="getProperty(slide as IAfishaItem, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+            <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
             <span>{{ slide.name }}</span>
         </div>
         <div class="flexGallery__card__buttons"
              v-if="modifiers.includes('buttons')">
-            <RouterLink v-if="slide.indirect_data?.reports.length"
+            <RouterLink v-if="slide.indirect_data?.reports?.length"
                         :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
                         class="primary-button primary-button--rounder">Репортажи</RouterLink>
-            <RouterLink v-if="slide.indirect_data?.tours.length"
+            <RouterLink v-if="slide.indirect_data?.tours?.length"
                         :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
                         class="primary-button primary-button--rounder">3D-Туры</RouterLink>
         </div>
@@ -28,13 +28,27 @@
 import { defineComponent, type PropType } from "vue";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import type { IAfishaItem, IUnionEntities } from "@/interfaces/IEntities";
+import type { IFactoryDataTours, IFactoryDataReports } from "@/interfaces/IEntities";
+
+interface IComplexGalleryCardBasic {
+    id?: number,
+    sectorId?: string,
+    factory_id?: string,
+    preview_file_url?: string,
+    photo_file_url?: string,
+    name?: string,
+    indirect_data?: {
+        reports?: IFactoryDataReports[],
+        tours?: IFactoryDataTours[],
+        href?: string,
+    }
+}
 
 export default defineComponent({
     name: 'ComplexGalleryCardBasic',
     props: {
         slide: {
-            type: Object as PropType<IUnionEntities>,
+            type: Object as PropType<IComplexGalleryCardBasic>,
             required: true
         },
         modifiers: {
@@ -46,7 +60,7 @@ export default defineComponent({
             default: undefined
         },
         setCardDate: {
-            type: Function as PropType<(slide: IUnionEntities) => string>,
+            type: Function as PropType<(slide: IComplexGalleryCardBasic) => string>,
             required: true
         }
     },

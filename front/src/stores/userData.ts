@@ -4,6 +4,7 @@ export const useUserData = defineStore('userData', {
     state: () => ({
         myId: 2366,
         authKey: '',
+        user: {},
         isLogin: false
     }),
 
@@ -23,6 +24,9 @@ export const useUserData = defineStore('userData', {
             this.authKey = String(storedAuthKey);
             this.isLogin = true;
         },
+        setUserInfo(userData) {
+            this.user = userData;
+        },
         logOut() {
             this.authKey = '';
             this.isLogin = false;
@@ -33,6 +37,7 @@ export const useUserData = defineStore('userData', {
     getters: {
         getMyId: (state) => state.myId,
         getIsLogin: (state) => state.isLogin,
-        getAuthKey: (state) => state.authKey
+        getAuthKey: (state) => state.authKey,
+        getUser: (state) => state.user
     }
 });

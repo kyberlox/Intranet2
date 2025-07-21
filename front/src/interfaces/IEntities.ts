@@ -510,7 +510,8 @@ export interface IUnionEntities extends IBaseEntity {
     IForNewWorkerData |
     IFactoryGuidData |
     IOpenVacancyData |
-    ISafetyTechnicsSlide
+    ISafetyTechnicsSlide |
+    IFactoryDataReports
 }
 
 // ЮНИОН внутреннего индиректа
@@ -531,4 +532,5 @@ export type IUnionEntitiesData =
     IForNewWorkerData |
     IFactoryGuidData |
     IOpenVacancyData |
-    ISafetyTechnicsSlide
+    ISafetyTechnicsSlide |
+    IFactoryDataReports

@@ -50,12 +50,12 @@ export default defineComponent({
         watch(route, () => {
             const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
             const blogsRoutes = ['blogs', 'blogOf', 'certainBlog'];
-
+            prefetchSection('user');
             prefetchSection('calendar');
 
-            if (blogsRoutes.includes(route.name)) {
+            if (blogsRoutes.includes(String(route.name))) {
                 prefetchSection('blogs')
-            } else if (factoryGuidRoutes.includes(route.name)) {
+            } else if (factoryGuidRoutes.includes(String(route.name))) {
                 prefetchSection('factoryGuid')
             }
         }, { immediate: true, deep: true })

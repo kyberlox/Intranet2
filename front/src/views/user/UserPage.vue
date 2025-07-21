@@ -56,7 +56,8 @@
                                 <div class="personal__user__property__items__uf_usr_1705744824758"
                                      v-if="user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length">
                                     <h3>Отдел</h3>
-                                    <span v-for="item in user.indirect_data.uf_usr_1705744824758">
+                                    <span v-for="(item, index) in user.indirect_data.uf_usr_1705744824758"
+                                          :key="'dep' + index">
                                         {{ item }}
                                     </span>
                                 </div>
@@ -112,7 +113,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue';
+import { defineComponent, ref } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';

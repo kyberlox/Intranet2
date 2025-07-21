@@ -5,6 +5,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import PrimeVue from 'primevue/config';
 import FileUpload from 'primevue/fileupload';
+import ToastService from 'primevue/toastservice';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -22,6 +23,7 @@ app.component('FileUpload', FileUpload);
 
 app.use(createPinia())
     .use(router)
+    .use(ToastService)
     .use(PrimeVue, {
         locale: {
             upload: 'Загрузить',

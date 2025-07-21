@@ -7,13 +7,13 @@
                     :key="'picker' + nav.id"
                     class="birthday__chain-nav__item"
                     :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
-                    @click="pickDate(nav.value, true);">{{ nav.text }}</li>
+                    @click="pickDate(nav.value, true)">{{ nav.text }}</li>
             </ul>
         </div>
     </div>
     <div class="birthday__date-picker-wrapper mt20">
         <div class="col-12 col-md-2 mb-3">
-            <DatePicker @chosenDate="(date) => pickDate(date)"
+            <DatePicker @pickDate="(date) => pickDate(date)"
                         :calendarType="'dayAndMonth'"
                         :nullifyDateInput="nullifyDateInput" />
         </div>
@@ -48,8 +48,8 @@
                 </div>
             </div>
             <div class="birthday__static__greetings">
-                <img @click="openModal(['https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488'])"
-                     src="https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488"
+                <img @click="openModal(['/src/assets/imgs/plugs/birthdayPlug.jpg'])"
+                     src="/src/assets/imgs/plugs/birthdayPlug.jpg"
                      alt="поздравление" />
             </div>
         </div>
@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted, ref, watch, nextTick, defineComponent, watchEffect } from "vue";
+import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
@@ -88,8 +88,18 @@ export default defineComponent({
         ZoomModal
     },
     setup() {
+        const today = new Date();
+        const yesterday = new Date(today);
+        const tomorrow = new Date(today);
+
+        const formatDate = (date: Date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${day}.${month}`;
+        };
+
         const slidesForBirthday = ref([]);
-        const searchValue = ref();
+        const searchValue = ref(formatDate(today));
         const imageInModal = ref();
         const hiddenModal = ref(true);
 
@@ -98,8 +108,8 @@ export default defineComponent({
             hiddenModal.value = false;
         };
 
-        const pickDate = (target: string, needNulify: boolean = false) => {
-            searchValue.value = target;
+        const pickDate = (target: string | Date, needNulify: boolean = false) => {
+            searchValue.value = String(target).length > 5 ? formatDate(target as Date) : String(target);
             if (needNulify) {
                 nullifyDateInput.value = true;
             }
@@ -108,17 +118,8 @@ export default defineComponent({
             });
         }
 
-        const today = new Date();
-        const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
-
-        const formatDate = (date: Date) => {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            return `${day}.${month}`;
-        };
 
         const fastDayNavigation = [
             {
@@ -143,8 +144,6 @@ export default defineComponent({
                 .then((data) => slidesForBirthday.value = data)
         })
 
-
-
         watch((searchValue), (newVal) => {
             if (!newVal) return;
             Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
@@ -154,9 +153,7 @@ export default defineComponent({
         const dateFromDatepicker = ref();
         const nullifyDateInput = ref(false);
 
-
         const swiperConf = useSwiperconf('vertical');
-
 
         return {
             slidesForBirthday,

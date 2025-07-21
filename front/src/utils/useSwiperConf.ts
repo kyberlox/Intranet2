@@ -20,6 +20,13 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
             }
         });
 
+        swiper.on("update", () => {
+            if (swiperInstance.value) {
+                isBeginning.value = swiperInstance.value.isBeginning;
+                isEnd.value = swiperInstance.value.isEnd;
+            }
+        })
+
         swiper.on("slideChange", () => {
             if (swiperInstance.value) {
                 isBeginning.value = swiperInstance.value.isBeginning;
@@ -39,7 +46,6 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
 
     const slideNext = () => {
         swiperInstance.value?.slideNext();
-
     };
 
     const slidePrev = () => {

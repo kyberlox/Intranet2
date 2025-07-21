@@ -2,7 +2,7 @@ import { sectionTips } from "@/assets/static/sectionTips";
 import { type Ref, ref } from "vue";
 import Api from "./Api";
 import type { IExperience, IFormattedData } from "@/interfaces/IEntities";
-import { useReferencesAndExpDataStore } from "@/stores/ReferencesAndExpData";
+import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
 import { factoryLogoTips } from "@/assets/static/factoryLogoTips";
 export const useExperienceData = () => {
     const formatExperienceItem = (item: IExperience, formattedData: Ref<IFormattedData>) => {

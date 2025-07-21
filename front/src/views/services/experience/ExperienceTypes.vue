@@ -14,7 +14,7 @@ import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vu
 import { useRoute } from "vue-router";
 import { defineComponent, onMounted, ref, type Ref, watch } from "vue";
 import { useExperienceData } from "@/utils/useExperienceData";
-import { useReferencesAndExpDataStore } from "@/stores/ReferencesAndExpData";
+import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
 import { sectorLogoTips } from "../../../assets/static/factoryLogoTips";
 import type { IDocument } from "@/interfaces/IEntities";
 

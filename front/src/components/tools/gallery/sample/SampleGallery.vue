@@ -40,7 +40,7 @@ export default defineComponent({
             required: true,
         },
         type: {
-            type: String,
+            type: String as PropType<"postPreview" | "blog" | "video" | "interview">,
             default: 'gallery',
         },
         routeTo: {
@@ -51,7 +51,7 @@ export default defineComponent({
         Reactions,
         SampleGallerySkeleton
     },
-    setup(props) {
+    setup() {
 
         return {
         }

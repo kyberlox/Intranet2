@@ -4,10 +4,18 @@ import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
 import { getBlogAuthorsToStore } from "./getBlogAuthorsToStore";
 import { useblogDataStore } from "@/stores/blogData";
 import { useViewsDataStore } from "@/stores/viewsData";
-export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar') => {
+import { useUserData } from "@/stores/userData";
+export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user') => {
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
-        case ('factoryGuid'):
+        case 'user':
+            if (!Object.keys(useUserData().getUser).length)
+                Api.get(`users/find_by/${useUserData().getMyId}`)
+                    .then((res) => {
+                        useUserData().setUserInfo(res);
+                    })
+            break;
+        case 'factoryGuid':
             if (!factoryGuidData.getAllFactories.length)
                 Api.get(`article/find_by/${sectionTips['гидПредприятия']}`)
                     .then((data) => {

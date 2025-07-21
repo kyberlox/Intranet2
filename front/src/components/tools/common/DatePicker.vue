@@ -17,6 +17,7 @@
 import { defineComponent, ref, watch } from 'vue';
 
 export default defineComponent({
+    name: 'DatePicker',
     props: {
         calendarType: {
             type: String,

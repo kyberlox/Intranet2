@@ -24,7 +24,7 @@
                               class="news__detail__date">{{ currentPost.date_publiction }}</span>
                         <div v-if="currentPost.reactions"
                              class="news__detail__like-wrapper">
-                            <Reactions :id="currentPost.id"
+                            <Reactions :id="Number(currentPost.id)"
                                        :reactions="currentPost.reactions"
                                        :type="'postPreview'" />
                         </div>
@@ -71,7 +71,6 @@ import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import FlexGallery from "../gallery/complex/ComplexGallery.vue";
 import Reactions from "./Reactions.vue";
-import PostPreview from "@/views/PostPreview.vue";
 
 export interface IPostInner {
     id?: number;
@@ -82,9 +81,11 @@ export interface IPostInner {
     videos?: string[];
     images?: string[];
     reactions?: {
-        likes?: {
-            count?: number;
-        };
+        views: number,
+        likes: {
+            count: number,
+            likedByMe: boolean
+        }
     };
     tags?: string[];
     documentation?: string[];
@@ -98,6 +99,7 @@ export interface IPostInner {
 }
 
 export default defineComponent({
+    name: 'PostInner',
     components: {
         SwiperBlank,
         LikeIcon,

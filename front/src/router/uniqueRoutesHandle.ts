@@ -1,8 +1,15 @@
-import type { IUnionEntities, IFactorySlides, IFactoryData } from "@/interfaces/IEntities";
+interface ISlideForUniqueRoute {
+    id?: number,
+    sectorId?: string,
+    factory_id?: string,
+    indirect_data?: {
+        href?: string
+    }
+}
 
 export const uniqueRoutesHandle = (
     route: string,
-    slide: IUnionEntities,
+    slide: ISlideForUniqueRoute,
     idForRoute?: number | null,
     reRoute?: string
 ) => {
@@ -10,20 +17,16 @@ export const uniqueRoutesHandle = (
         return { name: reRoute, params: { id: slide.id } }
     }
     else if (route === 'experienceTypes') {
-        const typedSlide = slide as IFactoryData;
-        return { name: route, params: { factoryId: typedSlide?.id } }
+        return { name: route, params: { slide: slide?.id } }
     }
     else if (route === 'experienceType') {
-        const typedSlide = slide as IFactoryData;
-        return { name: route, params: { factoryId: typedSlide.id, sectorId: typedSlide.sectorId } }
+        return { name: route, params: { factoryId: slide.id, sectorId: slide.sectorId } }
     }
     else if (route == 'factoryTour') {
-        const typedSlide = slide as IFactorySlides
-        return { name: route, params: { id: typedSlide.factory_id, tourId: typedSlide.id } }
+        return { name: route, params: { id: slide.factory_id, tourId: slide.id } }
     }
     else if (route === 'officialEvents') {
-        const typedSlide = slide as IFactorySlides
-        return { name: 'officialEvent', params: { id: typedSlide?.indirect_data?.href } }
+        return { name: 'officialEvent', params: { id: slide?.indirect_data?.href } }
     }
     else if (route == 'ideasPage' || route == 'auth' || route == 'admin') {
         return ({ name: route })

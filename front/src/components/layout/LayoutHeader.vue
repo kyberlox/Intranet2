@@ -85,7 +85,7 @@ import { usePageDataStore } from "@/stores/pageData";
 import { useRoute, useRouter } from "vue-router";
 import SidebarLk from "./TopRightSidebar.vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
-import SearchModal from "@/components/tools/modal/SearchModal.vue";
+import SearchModal from "@/components/tools/modal/SearchModal/SearchModal.vue";
 export default defineComponent({
     components: {
         SidebarLk,

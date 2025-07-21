@@ -121,7 +121,7 @@ class File:
 
 
     def add_link(self, link, art_id):
-        unique_name = link.split("/")[-2]
+        filename = link.split("/")[-2]
         data = {
             "original_name": link,
             "stored_name": filename,

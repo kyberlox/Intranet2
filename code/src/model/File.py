@@ -134,9 +134,9 @@ class File:
         }
             
         #записать в mongodb
-        inserted_id = FileModel().add(result)
+        inserted_id = FileModel().add(data)
 
-        new_url = result["file_url"]
+        new_url = data["file_url"]
 
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
         return link

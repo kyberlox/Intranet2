@@ -717,7 +717,7 @@ class Article:
                     File(b24_id=f"link_{art_id}").add_link(link, art_id)
 
                 #обрабатываются дефолтным методом битры
-                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
+                if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366", "PROPERTY_491"]:
                     need_all_method = False
                 try:
                     # выцепить id файла

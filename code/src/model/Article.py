@@ -337,7 +337,11 @@ class Article:
         
         #видеоинтервью
         elif self.section_id == 16:
-            indirect_data = {}
+            author = []
+            if "PROPERTY_1026" in data:
+                author = data["PROPERTY_1026"]
+            
+            indirect_data = {"author" : author}
 
         #отдельно забираю сортировку для Памятки Новому Сотруднику
         elif self.section_id == 18:

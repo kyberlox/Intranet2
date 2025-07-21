@@ -714,7 +714,7 @@ class Article:
                 #ссылки 
                 if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
                     link = take_value(data[file_property])
-                    File(b24_id=f"link_{art_id}").add_link(link)
+                    File(b24_id=f"link_{art_id}").add_link(link, art_id)
 
                 #обрабатываются дефолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:

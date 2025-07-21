@@ -209,7 +209,7 @@ class Article:
 
         #Наши люди
         elif self.section_id == 13:
-            user_uuids = []
+            user_uuids = None
             if "PROPERTY_1235" in data:
                 user_uuids = data["PROPERTY_1235"]
             
@@ -1426,13 +1426,13 @@ class Article:
                 return sorted_active_articles
             else:
                 return {"err" : "Auth Err"}
-
+        
         else:
             null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
-                if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
+                if res['active']:
                     
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()

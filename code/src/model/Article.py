@@ -208,7 +208,15 @@ class Article:
             })
 
         #Наши люди
-        
+        elif self.section_id == 13:
+            user_uuids = []
+            if "PROPERTY_1235" in data:
+                user_uuids = data["PROPERTY_1235"]
+            
+            indirect_data = {
+                "user_uuids" : user_uuids,
+
+                }
 
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
@@ -671,6 +679,7 @@ class Article:
             "PROPERTY_463",
             "PROPERTY_498",
             "PREVIEW_PICTURE",
+            "B24_PREVIEW_FILES",
             "PROPERTY_356",
         ]
         

@@ -395,6 +395,15 @@ class Article:
                 "enterpriseId" : enterpriseId
             }
 
+        #Актуальные новости и Корпоративные события
+        elif self.section_id == 31 or self.section_id == 51:
+            property_dict = {
+                "PROPERTY_294" : "author",
+                "" : ""
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
         #Благотворительные проекты
         elif self.section_id == 55:
             property_dict = {
@@ -592,7 +601,7 @@ class Article:
                 "tours" : tours
             }
 
-
+        #
         else:
             indirect_data = json.dumps(data)
 

@@ -211,7 +211,7 @@ class Article:
         elif self.section_id == 13:
             user_uuids = []
             if "PROPERTY_1235" in data:
-                user_uuids = take_value(data["PROPERTY_1235"])
+                user_uuids = data["PROPERTY_1235"]
             
             indirect_data = {"user_uuids" : user_uuids}
 

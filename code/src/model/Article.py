@@ -720,7 +720,7 @@ class Article:
             "PROPERTY_409"
         ]
 
-        default_flase [
+        default_flase = [
             "PROPERTY_289",
             "PROPERTY_400",
             "PROPERTY_373",

@@ -605,6 +605,10 @@ class Article:
                 "tours" : tours
             }
 
+        #Галерея фото и видео
+        elif self.section_id == 42 or self.section_id == 52:
+            indirect_data = dict()
+        
         #Предложения партнеров
         elif self.section_id == 54:
 
@@ -649,8 +653,8 @@ class Article:
             
             #Блоги
             "PROPERTY_1023", 
-            #"PROPERTY_1222", #ссылка на youtube
-            #"PROPERTY_1203", #ссылка на youtube
+            "PROPERTY_1222", #ссылка на youtube
+            "PROPERTY_1203", #ссылка на youtube
             "PROPERTY_455",
             "PROPERTY_1020",
             "PROPERTY_1246", #QR-код Земской
@@ -682,7 +686,7 @@ class Article:
             #"PROPERTY_402",
             "PROPERTY_407",
 
-            #"PROPERTY_409", #!!! сслыка на ютуб !!!
+            "PROPERTY_409", #!!! сслыка на ютуб !!!
 
             "PROPERTY_476",
             "PROPERTY_1025",

@@ -716,7 +716,7 @@ class Article:
         # находим файлы статьи
         files = []
         preview_images = []
-        
+        files_data = []
         #собираем данные о файлах
         for file_property in files_propertys:
             need_all_method = True

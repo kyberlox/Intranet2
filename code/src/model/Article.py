@@ -607,8 +607,8 @@ class Article:
 
         #Предложения партнеров
         elif self.section_id == 54:
-            
-            indirect_data = {}
+
+            indirect_data = dict()
 
         else:
             indirect_data = json.dumps(data)

@@ -605,7 +605,11 @@ class Article:
                 "tours" : tours
             }
 
-        #
+        #Предложения партнеров
+        elif self.section_id == 54:
+            
+            indirect_data = {}
+
         else:
             indirect_data = json.dumps(data)
 

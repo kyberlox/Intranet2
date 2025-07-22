@@ -764,11 +764,13 @@ class Article:
                     
                     if files_to_add != []:
                         for f_id in files:
-                            print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            
                             try:
+                                print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, True, inf_id)
                                 files_data.append(file_data)
                             except:
+                                print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
                                 files_data.append(file_data) 
                     

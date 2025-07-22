@@ -6,7 +6,8 @@
                     <div class="row">
                         <div class="col-4 col-md-5 d-lg-none d-flex align-items-center justify-content-sm-start">
                             <button class="navbar-toggler"
-                                    type="button">
+                                    type="button"
+                                    @click="toggleMobileMenu">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                         </div>
@@ -22,7 +23,8 @@
 
                         <div
                              class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
-                            <div class="navbar-collapse collapse">
+                            <div class="navbar-collapse collapse"
+                                 :class="{ 'show': isMobileMenuOpen }">
                                 <ul class="navbar-nav m-auto">
                                     <li class="nav-item dropdown"
                                         @mouseleave="handleDropdown('close', point.id)"
@@ -53,19 +55,25 @@
                             </div>
                         </div>
 
-                        <div class="order-2 order-lg-3 col-4 col-md-5 col-lg-2 mt-3 mb-4 mt-md-0 mb-md-0 d-flex align-items-center justify-content-end"
-                             @click="visibleSidebar = true">
+                        <div
+                             class="order-2 order-lg-3 col-4 col-md-5 col-lg-2 mt-3 mb-4 mt-md-0 mb-md-0 d-flex align-items-center justify-content-end header__right-top">
+
                             <div class="header__user"
-                                 title="Газинский Игорь Владимирович | ">
-                                <button class="header__user__button"
-                                        type="button">
+                                 @click="visibleSidebar = true">
+                                <div class="">
+                                    <div class="header__points-balance__wrapper">
+                                        <div class="header__points-balance"
+                                             title="Ваши баллы">
+                                            100
+                                        </div>
+                                    </div>
                                     <img class="header__user__block__img"
                                          src="/src/assets/avatarGI.png"
                                          alt="Ваша фотография" />
                                     <div class="header__user__block__title d-none d-lg-flex">
                                         <span class="header__user__block__name">Газинский Игорь Владимирович</span>
                                     </div>
-                                </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -96,6 +104,7 @@ export default defineComponent({
         const pageDataStore = usePageDataStore();
         const route = useRoute();
         const visibleSidebar = ref(false);
+        const isMobileMenuOpen = ref(false);
 
         watch(
             () => route.name,
@@ -135,8 +144,32 @@ export default defineComponent({
             activeDrop,
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
             visibleSidebar,
-            visibleSearchModal
+            visibleSearchModal,
+            toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,
+            isMobileMenuOpen
         };
     },
 });
 </script>
+
+<style>
+.header__points-balance__wrapper {}
+
+.header__points-balance {
+    border: 1px solid var(--emk-brand-color);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+        background: var(--emk-brand-color);
+        color: white;
+    }
+}
+
+.header__right-top {
+    gap: 10px;
+}
+</style>

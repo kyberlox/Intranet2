@@ -3,16 +3,16 @@
     <TagDateNavBar :years="extractYears(allEvents)"
                    :modifiers="'noTag'"
                    @pickYear="(year: string) => visibleEvents = showEventsByYear(allEvents, year)" />
-    <FlexGallery class="mt10"
-                 :page=page
-                 :slides="visibleEvents"
-                 :routeTo="'corpLifeItem'"
-                 :onlyImg="true" />
+    <ComplexGallery class="mt10"
+                    :page=page
+                    :slides="visibleEvents"
+                    :routeTo="'corpLifeItem'"
+                    :onlyImg="true" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
 import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
-import FlexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, ref, onMounted, computed, type ComputedRef, type Ref } from "vue";
 import { extractYears } from '@/utils/extractYearsFromPosts';
@@ -24,7 +24,7 @@ import type { ICorpLife } from '@/interfaces/IEntities';
 export default defineComponent({
     components: {
         TagDateNavBar,
-        FlexGallery
+        ComplexGallery
     },
     setup() {
         const allEvents: ComputedRef<ICorpLife[]> = computed(() => useViewsDataStore().getData('corpLifeData') as ICorpLife[]);

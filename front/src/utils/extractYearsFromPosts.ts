@@ -1,6 +1,6 @@
-import type { IOfficialEvents, ICorpEventsItem, ICorpLife, IActualNews } from "@/interfaces/IEntities";
+import type { IBaseEntity, ICorpLife, INews } from "@/interfaces/IEntities";
 
-export const extractYears = (objects: IOfficialEvents[] | ICorpEventsItem[] | ICorpLife[] | IActualNews[]) => {
+export const extractYears = (objects: IBaseEntity[] | ICorpLife[] | INews[]) => {
     const years: string[] = [];
     objects.map((e) => {
         if (e.date_creation) {

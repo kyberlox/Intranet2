@@ -14,7 +14,7 @@ import TagDateNavBar from '@/components/tools/common/TagDateNavBar.vue';
 import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef } from 'vue';
-import type { IActualNews } from '@/interfaces/IEntities';
+import type { INews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
@@ -27,8 +27,8 @@ export default defineComponent({
     },
     setup() {
         const viewsData = useViewsDataStore();
-        const allNews: ComputedRef<IActualNews[]> = computed(() => viewsData.getData('actualNewsData') as IActualNews[]);
-        const visibleNews: Ref<IActualNews[]> = ref(allNews.value);
+        const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData('actualNewsData') as INews[]);
+        const visibleNews: Ref<INews[]> = ref(allNews.value);
 
         const filterNews = (param: string) => {
             visibleNews.value = allNews.value;

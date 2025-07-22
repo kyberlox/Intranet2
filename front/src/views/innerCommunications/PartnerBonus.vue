@@ -12,14 +12,14 @@ import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
-import type { IPartnerBonus } from "@/interfaces/IEntities";
+import type { IBaseEntity } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
         ComplexGallery
     },
     setup() {
-        const bonusesSlides: ComputedRef<IPartnerBonus[]> = computed(() => useViewsDataStore().getData('partnerBonusData') as IPartnerBonus[]);
+        const bonusesSlides: ComputedRef<IBaseEntity[]> = computed(() => useViewsDataStore().getData('partnerBonusData') as IBaseEntity[]);
         onMounted(() => {
             if (bonusesSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);

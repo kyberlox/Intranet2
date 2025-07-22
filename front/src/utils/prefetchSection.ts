@@ -17,7 +17,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             break;
         case 'factoryGuid':
             if (!factoryGuidData.getAllFactories.length)
-                Api.get(`article/find_by/${sectionTips['гидПредприятия']}`)
+                Api.get(`article/find_by/${sectionTips['гидПредприятиям']}`)
                     .then((data) => {
                         factoryGuidData.setAllFactories(data)
                     })

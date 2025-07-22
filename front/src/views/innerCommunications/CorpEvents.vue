@@ -16,7 +16,7 @@ import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { extractYears } from "@/utils/extractYearsFromPosts";
-import type { ICorpEventsItem } from "@/interfaces/IEntities";
+import type { INews } from "@/interfaces/IEntities";
 import { showEventsByYear } from "@/utils/showEventsByYear";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
@@ -27,10 +27,9 @@ export default defineComponent({
         pageTitle: String,
         id: Number,
     },
-
     setup() {
-        const allEvents: ComputedRef<ICorpEventsItem[]> = computed(() => useViewsDataStore().getData('corpEventsData') as ICorpEventsItem[]);
-        const visibleEvents = ref<ICorpEventsItem[]>(allEvents.value);
+        const allEvents: ComputedRef<INews[]> = computed(() => useViewsDataStore().getData('corpEventsData') as INews[]);
+        const visibleEvents = ref<INews[]>(allEvents.value);
         onMounted(() => {
             if (allEvents.value.length) return;
             useLoadingStore().setLoadingStatus(true);

@@ -1,6 +1,6 @@
 export interface ISafetyTechnicsVertSlide {
     content?: {
-        id?: number,
+        id: number,
         name?: string,
         image?: string,
         images?: string[],
@@ -20,7 +20,7 @@ export interface ISafetyTechnicsVertSlide {
 
 export interface ISafetyTechnicsSlide {
     content?: {
-        id?: number,
+        id: number,
         videos?: string[],
         content_text?: string,
         images?: string[]

@@ -54,9 +54,9 @@
                 </div>
             </div>
         </div>
-        <FlexGallery v-else-if="type !== 'adminPreview'"
-                     :slides="[]"
-                     :modifiers="['noRoute']" />
+        <ComplexGallery v-else-if="type !== 'adminPreview'"
+                        :slides="[]"
+                        :modifiers="['noRoute']" />
     </div>
 </template>
 
@@ -66,32 +66,13 @@ import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type Ref, onMounted, ref, type PropType } from "vue";
-import type { IAfishaItem } from "@/interfaces/IEntities";
+import type { IAfishaItem, IBaseEntity } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { getProperty } from "@/utils/getPropertyFirstPos";
-import FlexGallery from "../gallery/complex/ComplexGallery.vue";
+import ComplexGallery from "../gallery/complex/ComplexGallery.vue";
 import Reactions from "./Reactions.vue";
 
-export interface IPostInner {
-    id?: number;
-    section_id?: number;
-    name?: string;
-    date_publiction?: string;
-    content_text?: string;
-    videos?: string[];
-    images?: string[];
-    reactions?: {
-        views: number,
-        likes: {
-            count: number,
-            likedByMe: boolean
-        }
-    };
-    tags?: string[];
-    documentation?: string[];
-    videos_embed?: string[];
-    videos_native?: string[];
-
+export interface IPostInner extends IBaseEntity {
     indirect_data?: {
         // Благотв
         PROPERTY_347?: string[];
@@ -111,7 +92,7 @@ export default defineComponent({
         SwiperBlank,
         LikeIcon,
         DocIcon,
-        FlexGallery,
+        ComplexGallery,
         Reactions
     },
     props: {

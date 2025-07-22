@@ -25,7 +25,6 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { IConductedTrainings } from '@/interfaces/IEntities';
-import { propertyCheck } from '@/utils/propertyCheck';
 import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component'
 
 export default defineComponent({
@@ -38,9 +37,7 @@ export default defineComponent({
         CloseIcon
     },
     setup() {
-
         return {
-            propertyCheck
         }
     }
 })

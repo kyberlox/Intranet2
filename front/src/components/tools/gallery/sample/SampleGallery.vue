@@ -31,20 +31,13 @@
 import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, type PropType } from "vue";
 import SampleGallerySkeleton from "./SampleGallerySkeleton.vue";
-import type { IReaction } from "@/interfaces/IEntities";
-
-interface ISampleGallerySlide {
-    id?: number,
-    preview_file_url?: string,
-    name?: string,
-    reactions?: IReaction
-}
+import type { IBaseEntity } from "@/interfaces/IEntities";
 
 export default defineComponent({
     name: 'SampleGallery',
     props: {
         gallery: {
-            type: Object as PropType<ISampleGallerySlide[]>,
+            type: Object as PropType<IBaseEntity[]>,
             required: true,
         },
         type: {

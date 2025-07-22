@@ -43,7 +43,8 @@ export interface IBaseEntity {
     videos_native?: string[],
     videos_embed?: string[],
     videos?: string[],
-    preview_file_url?: string
+    preview_file_url?: string,
+    photo_file_url?: string
 }
 
 export interface IBaseIndirectData {

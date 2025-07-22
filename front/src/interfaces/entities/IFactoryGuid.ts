@@ -16,7 +16,7 @@ interface IFactoryGuidData extends IBaseIndirectData {
 
 
 export interface IFactoryDataTours {
-    id?: string;
+    id: number;
     name?: string;
     active?: boolean;
     '3D_files_path'?: string;
@@ -24,7 +24,7 @@ export interface IFactoryDataTours {
 }
 
 export interface IFactoryDataReports {
-    id?: string,
+    id: number,
     date?: string,
     link?: string,
     name?: string,

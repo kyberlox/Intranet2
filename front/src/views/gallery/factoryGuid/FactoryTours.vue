@@ -1,7 +1,6 @@
 <template>
     <div class="factory-reports__page mt20">
-        <div class="page__title">3D-тур
-        </div>
+        <div class="page__title">3D-тур </div>
         <ComplexGallery :slides="factoryTours"
                         :routeTo="'factoryTour'" />
 

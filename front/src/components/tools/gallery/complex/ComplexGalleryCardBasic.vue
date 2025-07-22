@@ -28,15 +28,9 @@
 import { defineComponent, type PropType } from "vue";
 import { getProperty } from "@/utils/getPropertyFirstPos";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import type { IFactoryDataTours, IFactoryDataReports } from "@/interfaces/IEntities";
+import type { IFactoryDataTours, IFactoryDataReports, IBaseEntity } from "@/interfaces/IEntities";
 
-interface IComplexGalleryCardBasic {
-    id?: number,
-    sectorId?: string,
-    factory_id?: string,
-    preview_file_url?: string,
-    photo_file_url?: string,
-    name?: string,
+interface IComplexGalleryCardBasic extends IBaseEntity {
     indirect_data?: {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],

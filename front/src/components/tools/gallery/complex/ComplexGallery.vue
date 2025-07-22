@@ -42,7 +42,7 @@ import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
 import ComplexGalleryCardVideo from "./ComplexGalleryCardVideo.vue";
 
 interface IComplexGallery {
-    id?: number,
+    id: number,
     section_id?: number,
     indirect_data?: {
         reports?: IFactoryDataReports[],
@@ -59,16 +59,6 @@ interface IComplexGallery {
         // Афиша
         PROPERTY_375?: string[],
         // ___________________________
-        // Официальные события 
-        PROPERTY_665?: string[],
-        PROPERTY_403?: string[],
-        PROPERTY_398?: string[],
-        PROPERTY_399?: string[],
-        PROPERTY_400?: string[],
-        PROPERTY_401?: string[],
-        PROPERTY_402?: string[],
-        date_creation?: string
-        // _______________________________
         // Корпоративная жизнь
         PROPERTY_666?: string[],
         PROPERTY_405?: string[],

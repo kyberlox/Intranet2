@@ -29,6 +29,8 @@ export default defineComponent({
         },
     },
     setup(props, { emit }) {
+        console.log(props);
+
         return {
             callModal: (slides: string[], index: number) => emit('callModal', slides, 'img', index)
         }

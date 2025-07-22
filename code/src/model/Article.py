@@ -637,6 +637,192 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
+        files_propertys = [
+            "PREVIEW_PICTURE",
+            "DETAIL_PICTURE",
+
+            "PROPERTY_372",
+            "PROPERTY_373",
+
+            "PROPERTY_337",
+            "PROPERTY_338",
+
+            "PROPERTY_342",
+            "PROPERTY_343",
+            
+            #Блоги
+            "PROPERTY_1023", 
+            "PROPERTY_1222", #ссылка на youtube
+            "PROPERTY_1203", #ссылка на youtube
+            "PROPERTY_455",
+            "PROPERTY_1020",
+            "PROPERTY_1246", #QR-код Земской
+            
+            #Референсы
+            "PROPERTY_678",
+            #"PROPERTY_679",
+
+            "PROPERTY_476",
+            
+            # Актуальные новости и Корпоративные события
+            "PROPERTY_491",
+            "PROPERTY_664", #ссылка на youtube
+
+            #"PROPERTY_670", #!!! сслыка на ютуб !!!
+            "PROPERTY_669",
+
+            #Гид по предприятиям
+            "PROPERTY_463",
+
+            "PROPERTY_498",
+
+            "PROPERTY_289",
+            # "PROPERTY_296",
+
+            "PROPERTY_399",
+
+            "PROPERTY_400",
+            #"PROPERTY_402",
+            "PROPERTY_407",
+
+            "PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            "PROPERTY_476",
+            "PROPERTY_1025",
+            "PROPERTY_356",
+
+            #вложения
+            "PROPERTY_478",
+            "PROPERTY_491",
+            "PROPERTY_366",
+        ]
+
+        preview_file = [
+            "PROPERTY_399",
+            "PROPERTY_407",
+            "PROPERTY_372",
+            "PROPERTY_337",
+            "PROPERTY_342",
+            "PROPERTY_476",
+            "PROPERTY_669",
+            "PROPERTY_463",
+            "PROPERTY_498",
+            "PREVIEW_PICTURE",
+            "B24_PREVIEW_FILES",
+            "PROPERTY_356",
+        ]
+
+        link_prop = [
+            "PROPERTY_664",
+            "PROPERTY_1222",
+            "PROPERTY_1203",
+            "PROPERTY_670",
+            "PROPERTY_409"
+        ]
+
+        default_flase [
+            "PROPERTY_289",
+            "PROPERTY_400",
+            "PROPERTY_373",
+            "PROPERTY_678",
+            "PROPERTY_366"
+        ]
+        
+        files_data = []
+        #прохожу по всем проперти статьи
+        for file_property in files_propertys:
+            #если это файловый проперти
+            if file_property in data:
+                #если это ссылка
+                if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  проверка есть ли в битре такая ссылка или нет
+                    link = take_value(data[file_property])
+                    f_res = File(b24_id=f"link_{art_id}").add_link(link, art_id)
+                    files_data.append(f_res)
+
+                #если это файл превью
+                elif file_property in preview_file:
+                    
+                    preview_images = []
+                    if type(data[file_property]) == type(dict()):
+                        for file_id in data[file_property].values():
+                            if type(file_id) == type(str()):
+                                preview_images.append(file_id)
+                            elif type(file_id) == type(list()):
+                                for f_id in file_id:
+                                    preview_images.append(f_id)
+                    elif type(data[file_property]) == type(list()):
+                        for dct in data[file_property]:
+                            for file_id in dct.values():
+                                if type(file_id) == type(str()):
+                                    preview_images.append(file_id)
+                                elif type(file_id) == type(list()):
+                                    for f_id in file_id:
+                                        preview_images.append(f_id)
+                    
+                    files_to_add = File().need_update_file(art_id, preview_images)
+                    
+                    if files_to_add != []:
+                        for f_id in files:
+                            print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            try:
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, True, True, inf_id)
+                                files_data.append(file_data)
+                            except:
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
+                                files_data.append(file_data) 
+                    
+                    
+                    
+                    elif type(data[file_property]) == type(str()):
+                        files.append( data[file_property] )
+
+                        if file_property in preview_file:
+                            preview_images.append(data[file_property])
+                
+                #остальные файлы
+                else:
+                    need_all_method = True
+                    if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
+                        need_all_method = False
+                    
+                    files = []
+                    if type(data[file_property]) == type(dict()):
+                        for file_id in data[file_property].values():
+                            if type(file_id) == type(str()):
+                                files.append(file_id)
+                            elif type(file_id) == type(list()):
+                                for f_id in file_id:
+                                    files.append(f_id)
+                    elif type(data[file_property]) == type(list()):
+                        for dct in data[file_property]:
+                            for file_id in dct.values():
+                                if type(file_id) == type(str()):
+                                    files.append(file_id)
+                                elif type(file_id) == type(list()):
+                                    for f_id in file_id:
+                                        files.append(f_id)
+                    
+                    files_to_add = File().need_update_file(art_id, files)
+                    
+                    if files_to_add != []:
+                        for f_id in files:
+                            print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            try:
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
+                                files_data.append(file_data)
+                            except:
+                                print(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, False, not need_all_method, inf_id)
+                                files_data.append(file_data)
+                    
+
+
+        return files_data        
+
+
+
+    def old_search_files(self, inf_id, art_id, data):
         
         files_propertys = [
             "PREVIEW_PICTURE",
@@ -712,6 +898,8 @@ class Article:
             "B24_PREVIEW_FILES",
             "PROPERTY_356",
         ]
+
+        
         
         # находим файлы статьи
         files = []

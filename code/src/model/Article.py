@@ -759,6 +759,8 @@ class Article:
                                 elif type(file_id) == type(list()):
                                     for f_id in file_id:
                                         preview_images.append(f_id)
+                    elif type(data[file_property]) == type(str()):
+                        preview_images.append(data[file_property])
                     
                     files_to_add = File().need_update_file(art_id, preview_images)
                     
@@ -773,14 +775,6 @@ class Article:
                                 print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
                                 files_data.append(file_data) 
-                    
-                    
-                    
-                    elif type(data[file_property]) == type(str()):
-                        files.append( data[file_property] )
-
-                        if file_property in preview_file:
-                            preview_images.append(data[file_property])
                 
                 #остальные файлы
                 else:
@@ -804,6 +798,8 @@ class Article:
                                 elif type(file_id) == type(list()):
                                     for f_id in file_id:
                                         files.append(f_id)
+                    elif type(data[file_property]) == type(str()):
+                        files.append(data[file_property])
                     
                     files_to_add = File().need_update_file(art_id, files)
                     

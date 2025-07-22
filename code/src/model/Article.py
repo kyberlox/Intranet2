@@ -496,6 +496,11 @@ class Article:
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants
         
+        #Новости организационного развития
+        elif self.section_id == 32:
+
+            indirect_data = {}
+
         #Корпоративная газета ЭМК
         elif self.section_id == 34:
             img_url = File().save_by_URL(url=data["image"], art_id=self.id, is_preview=True)

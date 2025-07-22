@@ -716,10 +716,10 @@ class Article:
         # находим файлы статьи
         files = []
         preview_images = []
-        need_all_method = True
+        
         #собираем данные о файлах
         for file_property in files_propertys:
-            
+            need_all_method = True
             if file_property in data:
                 # if art_id == 12221:
                 #     print(data, art_id)
@@ -773,36 +773,30 @@ class Article:
                 except Exception as e:
                     return LogsMaker().error_message(e)
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
-        
-        if files == []:
-            return []
-        else:
-            files_data = []
-            #проеверяем, нужно ли обновить файлы?
-            # if art_id == 12221:
-            #     print(f'{files} проверяет на обновлениеб {preview_images} - сработали ли?')
+            
+            if files != []:
+                
+                files_data = []
+                #проеверяем, нужно ли обновить файлы?
+                # if art_id == 12221:
+                #     print(f'{files} проверяет на обновлениеб {preview_images} - сработали ли?')
 
-            files_to_add = File().need_update_file(art_id, files)
+                files_to_add = File().need_update_file(art_id, files)
 
-            if files_to_add != []:
-                for f_id in files:
-                    print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
-                    try:
-                        is_preview = f_id in preview_images
-                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
-                        #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                        files_data.append(file_data)
-                    except:
-                        LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
-                        is_preview = f_id in preview_images
-                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
-                        # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                        files_data.append(file_data)
-
-
-            else:
-                pass
-                #print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
+                if files_to_add != []:
+                    for f_id in files:
+                        print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                        try:
+                            is_preview = f_id in preview_images
+                            file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
+                            #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                            files_data.append(file_data)
+                        except:
+                            LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
+                            is_preview = f_id in preview_images
+                            file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                            # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                            files_data.append(file_data)
 
             return files_data
 
@@ -1057,7 +1051,6 @@ class Article:
                 pass
         '''
 
-        '''
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
@@ -1104,7 +1097,6 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        '''
 
    
         

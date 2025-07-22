@@ -1101,6 +1101,7 @@ class Article:
                     # сюда надо что-то дописать
                     pass
         '''
+
    
         
         #несколько section_id - несколько IBLOCK_ID
@@ -1143,7 +1144,7 @@ class Article:
         
         
 
-        '''
+        
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1187,7 +1188,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
+        
 
         
         #Корпоративная газета ✔️

@@ -45,8 +45,8 @@
                              v-for="(doc, index) in currentPost.documentation"
                              :key="'doc' + index">
                             <a class="news__detail__document__link"
-                               :href="String(doc)"
-                               _blank>Открыть {{ doc }}
+                               :href="String(doc.file_url)"
+                               _blank>Открыть {{ doc.original_name }}
                                 <DocIcon />
                             </a>
                         </div>

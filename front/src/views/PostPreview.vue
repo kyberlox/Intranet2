@@ -17,7 +17,7 @@ export default defineComponent({
     name: "PostPreview",
     props: {
         id: {
-            type: String || undefined,
+            type: String,
         },
         pageTitle: {
             type: String,

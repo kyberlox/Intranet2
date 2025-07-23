@@ -7,7 +7,7 @@ export interface IUser {
     second_name: string,
     email: string,
     personal_mobile: string,
-    uf_phone_inner: string,
+    uf_phone_inner: number,
     personal_city: string,
     personal_gender: string,
     personal_birthday: string,
@@ -25,6 +25,7 @@ export interface IUser {
         work_pager: string,
         work_phone: string,
         work_state: string,
+        timestamp_x: unknown,
         work_street: string,
         personal_fax: string,
         personal_icq: string,
@@ -41,6 +42,7 @@ export interface IUser {
         work_department: string,
         personal_country: string,
         time_zone_offset: string,
+        last_activity_date: unknown,
         uf_employment_date: string,
         personal_profession: string,
         uf_usr_1586854037086: string,
@@ -49,7 +51,9 @@ export interface IUser {
         uf_usr_1679387413613: string[],
         uf_usr_1696592324977: string[],
         uf_usr_1705744824758: string[],
-        uf_usr_1707225966581: string[] | boolean,
-        fio?: string
-    }
+        uf_usr_1707225966581: boolean,
+    },
+    photo_file_id: string,
+    photo_file_url: string,
+    photo_file_b24_url: string
 }

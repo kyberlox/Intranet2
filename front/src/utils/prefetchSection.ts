@@ -9,11 +9,11 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
         case 'user':
-            if (!Object.keys(useUserData().getUser).length)
-                Api.get(`users/find_by/${useUserData().getMyId}`)
-                    .then((res) => {
-                        useUserData().setUserInfo(res);
-                    })
+            if (Object.keys(useUserData().getUser).length) return
+            Api.get(`users/find_by/${useUserData().getMyId}`)
+                .then((res) => {
+                    useUserData().setUserInfo(res);
+                })
             break;
         case 'factoryGuid':
             if (!factoryGuidData.getAllFactories.length)

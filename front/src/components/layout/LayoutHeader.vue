@@ -24,11 +24,12 @@
                         <div
                              class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
                             <div class="navbar-collapse collapse"
-                                 :class="{ 'show': isMobileMenuOpen }">
+                                 :class="{ 'show': isMobileMenuOpen && isMobileScreen }">
                                 <ul class="navbar-nav m-auto">
                                     <li class="nav-item dropdown"
                                         @mouseleave="handleDropdown('close', point.id)"
-                                        :class="{ 'dropdown--opened': point.id == activeDrop }"
+                                        :class="[{ 'dropdown--opened': point.id == activeDrop || isMobileScreen },
+                                        { 'dropdown--mobile': isMobileScreen }]"
                                         v-for="point in mainMenuPoints"
                                         :key="'point' + point.id">
                                         <div class="nav-link nav-link--main-points dropdown-toggle"
@@ -42,7 +43,7 @@
                                                 :key="'subpoint' + point.name + subpoint.id"
                                                 class="dropdown__item"
                                                 :class="{ 'dropdown__item--active': currentRoute == subpoint.href }"
-                                                @click="handleDropDownClick(subpoint)">
+                                                @click="handleDropDownItemClick(subpoint)">
                                                 {{ subpoint.name }}
                                             </li>
                                         </ul>
@@ -60,15 +61,15 @@
 
                             <div class="header__user"
                                  @click="visibleSidebar = true">
-                                <div class="">
-                                    <div class="header__points-balance__wrapper">
-                                        <div class="header__points-balance"
-                                             title="Ваши баллы">
-                                            100
-                                        </div>
+                                <div class="header__points-balance__wrapper">
+                                    <div class="header__points-balance"
+                                         title="Ваши баллы">
+                                        100
                                     </div>
+                                </div>
+                                <div class="header__user__block">
                                     <img class="header__user__block__img"
-                                         src="/src/assets/avatarGI.png"
+                                         :src="userAvatar"
                                          alt="Ваша фотография" />
                                     <div class="header__user__block__title d-none d-lg-flex">
                                         <span class="header__user__block__name">Газинский Игорь Владимирович</span>
@@ -94,6 +95,10 @@ import { useRoute, useRouter } from "vue-router";
 import SidebarLk from "./TopRightSidebar.vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
 import SearchModal from "@/components/tools/modal/SearchModal/SearchModal.vue";
+import { useUserData } from "@/stores/userData";
+import { useWindowSize } from '@vueuse/core'
+import { screenCheck } from "@/utils/screenCheck";
+
 export default defineComponent({
     components: {
         SidebarLk,
@@ -105,6 +110,10 @@ export default defineComponent({
         const route = useRoute();
         const visibleSidebar = ref(false);
         const isMobileMenuOpen = ref(false);
+        const visibleSearchModal = ref(false);
+        const router = useRouter();
+        const activeDrop = ref<null | number>(null);
+        const { width } = useWindowSize()
 
         watch(
             () => route.name,
@@ -116,18 +125,11 @@ export default defineComponent({
             }
         )
 
-        const router = useRouter();
-        const activeDrop = ref<null | number>(null);
-
         const handleDropdown = (type: 'open' | 'close', id: number) => {
-            // if (id == activeDrop.value) {
-            //     activeDrop.value = null;
-            // }
-            // else
             return type == 'open' ? activeDrop.value = id : activeDrop.value = null
         };
 
-        const handleDropDownClick = (point: ISubPoint) => {
+        const handleDropDownItemClick = (point: ISubPoint) => {
             activeDrop.value = null;
 
             router.push({
@@ -135,41 +137,19 @@ export default defineComponent({
             });
         };
 
-        const visibleSearchModal = ref(false);
-
         return {
-            handleDropDownClick,
             mainMenuPoints,
-            handleDropdown,
             activeDrop,
-            currentRoute: computed(() => pageDataStore.getCurrentRoute),
             visibleSidebar,
             visibleSearchModal,
+            isMobileMenuOpen,
+            handleDropdown,
+            handleDropDownItemClick,
+            userAvatar: computed(() => useUserData().getPhoto),
+            currentRoute: computed(() => pageDataStore.getCurrentRoute),
+            isMobileScreen: computed(() => ['sm', 'md'].includes(screenCheck(width))),
             toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,
-            isMobileMenuOpen
         };
     },
 });
 </script>
-
-<style>
-.header__points-balance__wrapper {}
-
-.header__points-balance {
-    border: 1px solid var(--emk-brand-color);
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: 0.2s;
-
-    &:hover {
-        background: var(--emk-brand-color);
-        color: white;
-    }
-}
-
-.header__right-top {
-    gap: 10px;
-}
-</style>

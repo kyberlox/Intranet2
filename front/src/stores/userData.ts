@@ -5,7 +5,7 @@ export const useUserData = defineStore('userData', {
     state: () => ({
         myId: 2366,
         authKey: '',
-        user: {},
+        user: {} as IUser,
         isLogin: false
     }),
 
@@ -39,6 +39,7 @@ export const useUserData = defineStore('userData', {
         getMyId: (state) => state.myId,
         getIsLogin: (state) => state.isLogin,
         getAuthKey: (state) => state.authKey,
-        getUser: (state) => state.user
+        getUser: (state) => state.user,
+        getPhoto: (state) => state.user.photo_file_url
     }
 });

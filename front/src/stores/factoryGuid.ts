@@ -19,6 +19,6 @@ export const useFactoryGuidDataStore = defineStore('FactoryGuidData', {
         getCurrentFactory: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId),
         getFactoryReports: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.reports,
         getFactoryTours: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.tours,
-        getFactoryTour: (state) => (factoryId: number, tourId: string) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.tours?.find((e) => e.id == tourId)
+        getFactoryTour: (state) => (factoryId: number, tourId: string) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.tours?.find((e) => e.id == Number(tourId))
     }
 });

@@ -15,7 +15,7 @@
                 class="job-list">
                 <li v-for="job in jobList"
                     :key="job.id">
-                    <a :href="job.indirect_data.link"
+                    <a :href="job?.indirect_data?.link"
                        target="_blank"
                        class="job-link">
                         {{ job.name }}

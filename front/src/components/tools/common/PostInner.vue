@@ -74,11 +74,11 @@ import Reactions from "./Reactions.vue";
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {
         // Благотв
-        organizer: string,
-        phone_number: string
+        organizer?: string,
+        phone_number?: string
         // Афиша 
-        date_from: string,
-        date_to: string,
+        date_from?: string,
+        date_to?: string,
     }
 }
 

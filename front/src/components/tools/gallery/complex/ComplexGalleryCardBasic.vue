@@ -34,8 +34,8 @@ interface IComplexGalleryCardBasic extends IBaseEntity {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],
         href?: string,
-        date_from: string,
-        date_to: string
+        date_from?: string,
+        date_to?: string
     },
 }
 
@@ -54,10 +54,6 @@ export default defineComponent({
             type: String,
             default: undefined
         },
-        setCardDate: {
-            type: Function as PropType<(slide: IComplexGalleryCardBasic) => string>,
-            required: true
-        }
     },
     setup() {
 

@@ -2,7 +2,8 @@
     <div v-for="(image, index) in slide.images"
          :key="index"
          class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
-        <img @click="callModal(slide.images, index)"
+        <img v-if="slide.images"
+             @click="callModal(slide.images, index)"
              class="flexGallery__card__img"
              v-lazy-load="image"
              alt="slide" />

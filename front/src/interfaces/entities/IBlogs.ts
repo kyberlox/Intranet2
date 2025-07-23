@@ -6,6 +6,7 @@ export interface IBlogData extends IBaseIndirectData {
     TITLE?: string,
     photo_file_url: string,
     link: string,
+    youtube_link: string,
 }
 
 export interface IBlogArticleData extends IBaseIndirectData {

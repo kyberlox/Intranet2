@@ -207,6 +207,16 @@ class Article:
                 "location" : ""
             })
 
+        #Наши люди
+        elif self.section_id == 13:
+            user_uuids = None
+            if "PROPERTY_1235" in data:
+                user_uuids = data["PROPERTY_1235"]
+            
+            indirect_data = {
+                "user_uuids" : user_uuids,
+                }
+
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
             nomination = None
@@ -327,6 +337,15 @@ class Article:
                 if key in data:
                     indirect_data[key] = data[key]
         
+        #видеоинтервью
+        elif self.section_id == 16:
+            author = None
+            if "PROPERTY_1026" in data:
+                author = data["PROPERTY_1026"]
+            
+            indirect_data = {"author" : author}
+
+
         #отдельно забираю сортировку для Памятки Новому Сотруднику
         elif self.section_id == 18:
             sort = None
@@ -375,6 +394,14 @@ class Article:
                 "enterprise" : enterprise,
                 "enterpriseId" : enterpriseId
             }
+
+        #Актуальные новости и Корпоративные события
+        elif self.section_id == 31 or self.section_id == 51:
+            author = None
+            if "PROPERTY_294" in data:
+                author = data["PROPERTY_294"]
+            
+            indirect_data = {"author" : author}
 
         #Благотворительные проекты
         elif self.section_id == 55:
@@ -469,6 +496,11 @@ class Article:
             indirect_data["reviews"] = reviews
             indirect_data["participants"] = participants
         
+        #Новости организационного развития
+        elif self.section_id == 32:
+
+            indirect_data = dict()
+
         #Корпоративная газета ЭМК
         elif self.section_id == 34:
             img_url = File().save_by_URL(url=data["image"], art_id=self.id, is_preview=True)
@@ -573,6 +605,14 @@ class Article:
                 "tours" : tours
             }
 
+        #Галерея фото и видео
+        elif self.section_id == 42 or self.section_id == 52:
+            indirect_data = dict()
+        
+        #Предложения партнеров
+        elif self.section_id == 54:
+
+            indirect_data = dict()
 
         else:
             indirect_data = json.dumps(data)
@@ -597,7 +637,6 @@ class Article:
         return article_data
 
     def search_files(self, inf_id, art_id, data):
-        
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
@@ -613,8 +652,8 @@ class Article:
             
             #Блоги
             "PROPERTY_1023", 
-            #"PROPERTY_1222", #ссылка на youtube
-            #"PROPERTY_1203", #ссылка на youtube
+            "PROPERTY_1222", #ссылка на youtube
+            "PROPERTY_1203", #ссылка на youtube
             "PROPERTY_455",
             "PROPERTY_1020",
             "PROPERTY_1246", #QR-код Земской
@@ -624,6 +663,10 @@ class Article:
             #"PROPERTY_679",
 
             "PROPERTY_476",
+            
+            # Актуальные новости и Корпоративные события
+            "PROPERTY_491",
+            "PROPERTY_664", #ссылка на youtube
 
             #"PROPERTY_670", #!!! сслыка на ютуб !!!
             "PROPERTY_669",
@@ -642,7 +685,7 @@ class Article:
             #"PROPERTY_402",
             "PROPERTY_407",
 
-            #"PROPERTY_409", #!!! сслыка на ютуб !!!
+            "PROPERTY_409", #!!! сслыка на ютуб !!!
 
             "PROPERTY_476",
             "PROPERTY_1025",
@@ -665,23 +708,218 @@ class Article:
             "PROPERTY_463",
             "PROPERTY_498",
             "PREVIEW_PICTURE",
+            "B24_PREVIEW_FILES",
             "PROPERTY_356",
         ]
+
+        link_prop = [
+            "PROPERTY_664",
+            "PROPERTY_1222",
+            "PROPERTY_1203",
+            "PROPERTY_670",
+            "PROPERTY_409"
+        ]
+
+        default_flase = [
+            "PROPERTY_289",
+            "PROPERTY_400",
+            "PROPERTY_373",
+            "PROPERTY_678",
+            "PROPERTY_366"
+        ]
+        
+        files_data = []
+        #прохожу по всем проперти статьи
+        for file_property in files_propertys:
+            #если это файловый проперти
+            if file_property in data:
+                #если это ссылка
+                if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
+                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  проверка есть ли в битре такая ссылка или нет
+                    link = take_value(data[file_property])
+                    f_res = File(b24_id=f"link_{art_id}").add_link(link, art_id)
+                    files_data.append(f_res)
+
+                #если это файл превью
+                elif file_property in preview_file:
+                    
+                    preview_images = []
+                    if type(data[file_property]) == type(dict()):
+                        for file_id in data[file_property].values():
+                            if type(file_id) == type(str()):
+                                preview_images.append(file_id)
+                            elif type(file_id) == type(list()):
+                                for f_id in file_id:
+                                    preview_images.append(f_id)
+                    elif type(data[file_property]) == type(list()):
+                        for dct in data[file_property]:
+                            for file_id in dct.values():
+                                if type(file_id) == type(str()):
+                                    preview_images.append(file_id)
+                                elif type(file_id) == type(list()):
+                                    for f_id in file_id:
+                                        preview_images.append(f_id)
+                    elif type(data[file_property]) == type(str()):
+                        preview_images.append(data[file_property])
+                    
+                    files_to_add = File().need_update_file(art_id, preview_images)
+                    
+                    if files_to_add != []:
+                        for f_id in files:
+                            
+                            try:
+                                print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, True, True, inf_id)
+                                files_data.append(file_data)
+                            except:
+                                print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
+                                files_data.append(file_data) 
+                
+                #остальные файлы
+                else:
+                    need_all_method = True
+                    if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
+                        need_all_method = False
+                    
+                    files = []
+                    if type(data[file_property]) == type(dict()):
+                        for file_id in data[file_property].values():
+                            if type(file_id) == type(str()):
+                                files.append(file_id)
+                            elif type(file_id) == type(list()):
+                                for f_id in file_id:
+                                    files.append(f_id)
+                    elif type(data[file_property]) == type(list()):
+                        for dct in data[file_property]:
+                            for file_id in dct.values():
+                                if type(file_id) == type(str()):
+                                    files.append(file_id)
+                                elif type(file_id) == type(list()):
+                                    for f_id in file_id:
+                                        files.append(f_id)
+                    elif type(data[file_property]) == type(str()):
+                        files.append(data[file_property])
+                    
+                    files_to_add = File().need_update_file(art_id, files)
+                    
+                    if files_to_add != []:
+                        for f_id in files:
+                            print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            try:
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
+                                files_data.append(file_data)
+                            except:
+                                print(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
+                                file_data = File(b24_id=f_id).upload_inf_art(art_id, False, not need_all_method, inf_id)
+                                files_data.append(file_data)
+                    
+
+
+        return files_data        
+
+
+
+    def old_search_files(self, inf_id, art_id, data):
+        
+        files_propertys = [
+            "PREVIEW_PICTURE",
+            "DETAIL_PICTURE",
+
+            "PROPERTY_372",
+            "PROPERTY_373",
+
+            "PROPERTY_337",
+            "PROPERTY_338",
+
+            "PROPERTY_342",
+            "PROPERTY_343",
+            
+            #Блоги
+            "PROPERTY_1023", 
+            "PROPERTY_1222", #ссылка на youtube
+            "PROPERTY_1203", #ссылка на youtube
+            "PROPERTY_455",
+            "PROPERTY_1020",
+            "PROPERTY_1246", #QR-код Земской
+            
+            #Референсы
+            "PROPERTY_678",
+            #"PROPERTY_679",
+
+            "PROPERTY_476",
+            
+            # Актуальные новости и Корпоративные события
+            "PROPERTY_491",
+            "PROPERTY_664", #ссылка на youtube
+
+            #"PROPERTY_670", #!!! сслыка на ютуб !!!
+            "PROPERTY_669",
+
+            #Гид по предприятиям
+            "PROPERTY_463",
+
+            "PROPERTY_498",
+
+            "PROPERTY_289",
+            # "PROPERTY_296",
+
+            "PROPERTY_399",
+
+            "PROPERTY_400",
+            #"PROPERTY_402",
+            "PROPERTY_407",
+
+            "PROPERTY_409", #!!! сслыка на ютуб !!!
+
+            "PROPERTY_476",
+            "PROPERTY_1025",
+            "PROPERTY_356",
+
+            #вложения
+            "PROPERTY_478",
+            "PROPERTY_491",
+            "PROPERTY_366",
+        ]
+
+        preview_file = [
+            "PROPERTY_399",
+            "PROPERTY_407",
+            "PROPERTY_372",
+            "PROPERTY_337",
+            "PROPERTY_342",
+            "PROPERTY_476",
+            "PROPERTY_669",
+            "PROPERTY_463",
+            "PROPERTY_498",
+            "PREVIEW_PICTURE",
+            "B24_PREVIEW_FILES",
+            "PROPERTY_356",
+        ]
+
+        
         
         # находим файлы статьи
         files = []
         preview_images = []
-        need_all_method = True
+        files_data = []
         #собираем данные о файлах
         for file_property in files_propertys:
-            
+            need_all_method = True
             if file_property in data:
                 # if art_id == 12221:
                 #     print(data, art_id)
+                
+                #ссылки 
+                if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
+                    link = take_value(data[file_property])
+                    File(b24_id=f"link_{art_id}").add_link(link, art_id)
 
                 #обрабатываются дефолтным методом битры
                 if file_property in ["PROPERTY_289", "PROPERTY_400", "PROPERTY_373", "PROPERTY_678", "PROPERTY_366"]:
                     need_all_method = False
+                elif file_property in ["PROPERTY_491"]:
+                    need_all_method = True
                 try:
                     # выцепить id файла
                     # "PREVIEW_PICTURE" не обрабатывается, тип - строка
@@ -721,36 +959,30 @@ class Article:
                 except Exception as e:
                     return LogsMaker().error_message(e)
                     # print("Ошибка обработки в инфоблоке", sec_inf[i], "в поле", file_property)
-        
-        if files == []:
-            return []
-        else:
-            files_data = []
-            #проеверяем, нужно ли обновить файлы?
-            # if art_id == 12221:
-            #     print(f'{files} проверяет на обновлениеб {preview_images} - сработали ли?')
+            
+            if files != []:
+                
+                files_data = []
+                #проеверяем, нужно ли обновить файлы?
+                # if art_id == 12221:
+                #     print(f'{files} проверяет на обновлениеб {preview_images} - сработали ли?')
 
-            files_to_add = File().need_update_file(art_id, files)
+                files_to_add = File().need_update_file(art_id, files)
 
-            if files_to_add != []:
-                for f_id in files:
-                    print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
-                    try:
-                        is_preview = f_id in preview_images
-                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
-                        #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                        files_data.append(file_data)
-                    except:
-                        LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
-                        is_preview = f_id in preview_images
-                        file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
-                        # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
-                        files_data.append(file_data)
-
-
-            else:
-                pass
-                #print(f'добавлять/обновалять не нужно {art_id} - статья, {inf_id} - инфоблок')
+                if files_to_add != []:
+                    for f_id in files:
+                        print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                        try:
+                            is_preview = f_id in preview_images
+                            file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, need_all_method, inf_id)
+                            #sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                            files_data.append(file_data)
+                        except:
+                            LogsMaker().warning_message(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
+                            is_preview = f_id in preview_images
+                            file_data = File(b24_id=f_id).upload_inf_art(art_id, is_preview, True, inf_id)
+                            # sprint(f'{f_id} файл добавлен в монго', art_id, inf_id)
+                            files_data.append(file_data)
 
             return files_data
 
@@ -781,9 +1013,9 @@ class Article:
         sec_inf = {
             13 : "149", # Наши люди ✔️
             #14 : "123", #Доска почёта ☑️
-            16 : "122", # Видеоитервью ✔️
+            #16 : "122", # Видеоитервью ✔️
             
-            32 : "132", # Новости организационного развития ✔️
+            #32 : "132", # Новости организационного развития ✔️
             #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ✔️
@@ -818,7 +1050,7 @@ class Article:
         sec_inf = {
             #15 : ["75", "77"], #Блоги ✔️
             #18 : ["81", "82"], #Памятка ✔️
-            41 : ["98", "78", "84"], #Гид по предприятиям ♻️ сделать сервис
+            #41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
             #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ✔️
         }
 
@@ -945,6 +1177,7 @@ class Article:
         
         
         #Гид по предприятиям
+        '''
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
@@ -1002,9 +1235,8 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
-
         '''
+
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
@@ -1051,9 +1283,9 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        '''
+
    
-        '''
+        
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
             42 : ["68", "69"], #Официальные события ❌
@@ -1091,10 +1323,10 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        '''
+        
         
 
-        '''
+        
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1138,10 +1370,11 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
+        
 
         
         #Корпоративная газета ✔️
+        '''
         data = [
             {
                 "ID" : "342022",
@@ -1179,9 +1412,10 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        
+        '''
 
         #Конкурсы ЭМК 7 секция
+        '''
         self.section_id = "128"
         competitions_info = self.get_inf()
         if competitions_info != []:
@@ -1193,7 +1427,7 @@ class Article:
                     self.add(inf)
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
-        
+        '''
 
 
         '''самобытные блоки'''
@@ -1202,8 +1436,8 @@ class Article:
             # 12 История компании -> История компании ✔️
 
             # 110 Техника безопасности -> Техника безопасности ✔️
-            # 34 Корпоративная газета ЭМК -> газеты ❌
-            # 41 Гид по предприятиям -> 3D тур ♻️
+            # 34 Корпоративная газета ЭМК -> газеты ✔️
+            # 41 Гид по предприятиям -> 3D тур ✔️
 
         #переделки
             # 19 Дни рождения ✔️
@@ -1403,13 +1637,13 @@ class Article:
                 return sorted_active_articles
             else:
                 return {"err" : "Auth Err"}
-
+        
         else:
             null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
-                if not (self.section_id == "16" and ("PROPERTY_1025" not in res['indirect_data'] or res['indirect_data']['PROPERTY_1025'] is None)) and res['active']:
+                if res['active']:
                     
                     self.id = res["id"]
                     res["preview_file_url"] = self.get_preview()

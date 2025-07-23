@@ -120,6 +120,27 @@ class File:
 
 
 
+    def add_link(self, link, art_id):
+        filename = link.split("/")[-2]
+        data = {
+            "original_name": link,
+            "stored_name": filename,
+            "content_type": "link",
+            "article_id": art_id,
+            "b24_id": self.b24_id,
+            "is_archive": False,
+            "is_preview": False,
+            "file_url": link  # Прямой URL
+        }
+            
+        #записать в mongodb
+        inserted_id = FileModel().add(data)
+
+        new_url = data["file_url"]
+
+        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+        return link
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     def need_update_url_file(self,  art_id, filename):
@@ -319,7 +340,7 @@ class File:
                     elif "video" in file["content_type"]:
                         file_info["type"] = "video"
                     elif "link" in file["content_type"]:
-                        file_infofile_info["type"] = "video_embed"
+                        file_info["type"] = "video_embed"
                     else:
                         file_info["type"] = "documentation"
 

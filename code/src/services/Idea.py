@@ -42,18 +42,22 @@ class Idea:
                 "DETAIL_TEXT_TYPE" : "content_type",
                 "DATE_CREATE" : "date_create",
                 "PROPERTY_1049" : "number",
-                "PROPERTY_1117" : "status",
+                "PROPERTY_1117" : "status"
             }
 
+            
+            
             cool_idea = dict()
             for prop in prop_keys.keys():
-                
+                key = prop_keys[prop]
                 val = None
-                if prop in idea:
-                    key = prop_keys[prop]
+                if prop in idea.keys():
                     val = take_value(idea[prop])
+
                 cool_idea[key] = val
             
+            
+
             #валидирую статус идеи
             valid_staus = {
                 None : None,
@@ -62,7 +66,10 @@ class Idea:
                 "912" : "Реализовано",
                 "913" : "Отказано",
             }
-            cool_idea["status"] = valid_staus[cool_idea["status"]]
+
+            if "status" in cool_idea:
+                cool_idea["status"] = valid_staus[cool_idea["status"]]
+
             #сохраняю
             ideas.append(cool_idea)
 
@@ -96,17 +103,25 @@ class Idea:
     
     def add(self, fields):
         #получить значение инкремента
+        print(self.ideas[-1])
+
+        '''
         max_id = 0
+        
         for idea in self.ideas:
             if int(idea['number']) > max_id:
                 max_id = int(idea['number'])
-        incr = max_id + 101
-        B24().send_idea(incr, fields)
+        incr = max_id + 1
+        '''
 
+        incr = int(self.ideas[-1]['number']) + 1
+        print(incr)
+        res = B24().send_idea(incr, fields)
+        return res
 
 
 @idea_router.post("/new/")
 def calendar_event(data = Body()):
-    print(data)
+    #print(data)
     #return data
     return Idea().add(dict(data))

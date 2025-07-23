@@ -73,7 +73,7 @@ class B24:
 
     '''Проксирую запросы в битру'''
     def send_idea(self, incr : int, fields : dict):
-        #el_code = f"intranet2_{incr}"
+        el_code = f"intranet2_{incr}"
 
         #url = "https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE=test3&FIELDS%5BPROPERTY_1049%5D=test_number&FIELDS%5BNAME%5D=test_name&FIELDS%5BDETAIL_TEXT%5D=test_text&FIELDS%5BCREATED_BY%5D=user_id&FIELDS%5BPROPERTY_1027%5D=test_file"
         '''
@@ -93,19 +93,57 @@ class B24:
             return e
         '''
         #https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]=$ID
+        
         name = fields["NAME"]
         cont_text = fields["DETAIL_TEXT"]
         uid = fields["CREATED_BY"]
         if "base" in fields:
+            '''
             base = fields["base"]
             base_name = fields["base_name"]
             url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
+            headers = {
+                'Content-Type': "Multipart/form-data"
+            }
+
+            response = requests.post(url)
+            '''
+
+            api_url = "https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add"
+            base = fields["base"]
+            base_name = fields["base_name"]
+            data = {
+                'IBLOCK_TYPE_ID': 'lists',
+                'IBLOCK_ID': '121',
+                "IBLOCK_SECTION_ID": "319",
+                'ELEMENT_CODE': el_code,
+                'FIELDS[NAME]': name,
+                'FIELDS[PROPERTY_1049]' : incr,
+                #'FIELDS[PROPERTY_1117]' : "909",
+                'FIELDS[DETAIL_TEXT]' : cont_text,
+                'FIELDS[CREATED_BY]'  : uid,
+                'FIELDS[PROPERTY_1027][fileName]'  : base_name,
+                'FIELDS[PROPERTY_1027][fileData]' : base
+            }
+
+            headers = {
+                'Content-Type': "application/x-www-form-urlencoded"
+            }
+                            
+            response  = requests.post(api_url, data=data, headers=headers)
+            
+
         else:
-            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]=909&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+            response = requests.post(url)
         
-        response = requests.get(url)
-        result = response.json()
-        return result
+        ID = response.json()['result']
+            
+        bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
+        
+        bis_response = requests.get(bis_url)
+
+        return {"create_idea" : response.json(), "create_bis_log" : bis_response.json()}
 
 
 @b24_router.get("/calendar/{date_from}/{date_to}")

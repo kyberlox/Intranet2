@@ -607,6 +607,7 @@ class Article:
 
         #Галерея фото и видео
         elif self.section_id == 42 or self.section_id == 52:
+            list(art["PROPERTY_403"].values())[0]
             indirect_data = dict()
         
         #Предложения партнеров
@@ -1235,7 +1236,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
+        
 
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
@@ -1283,7 +1284,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-
+        '''
    
         
         #несколько section_id - несколько IBLOCK_ID
@@ -1306,7 +1307,7 @@ class Article:
                     self.section_id = 42
                 elif pre_section_id == "323":
                     art["section_id"] = 52  # Корпоративная жизнь в фото
-                    self.section_id = 42
+                    self.section_id = 52
 
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():

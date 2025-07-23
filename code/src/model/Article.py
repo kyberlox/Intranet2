@@ -618,6 +618,13 @@ class Article:
             
             indirect_data = dict_to_indirect_data(data, property_dict)
 
+        #Вакансии (приведи друга)
+        elif self.section_id == 53:
+            property_dict = {
+                "PROPERTY_5094" : "link"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
 
         #Предложения партнеров
         elif self.section_id == 54:
@@ -1026,7 +1033,7 @@ class Article:
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
+            #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ✔️
 
@@ -1336,7 +1343,7 @@ class Article:
         '''
         
 
-        
+        '''
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1369,7 +1376,8 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        
+        '''
+
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()

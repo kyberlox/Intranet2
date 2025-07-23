@@ -609,6 +609,16 @@ class Article:
         elif self.section_id == 42 or self.section_id == 52:
             indirect_data = dict()
         
+        #Афиша
+        elif self.section_id == 53:
+            property_dict = {
+                "PROPERTY_375" : "date_from",
+                "PROPERTY_438" : "date_to"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
+
         #Предложения партнеров
         elif self.section_id == 54:
 

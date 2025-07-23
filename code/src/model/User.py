@@ -48,7 +48,7 @@ class User:
             cool_users += pochet
             if usr_data['ID'] in cool_users:
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            UserSQL.upsert_user(usr_data)
+                UserSQL.upsert_user(usr_data)
         
         status = self.set_users_photo()
 

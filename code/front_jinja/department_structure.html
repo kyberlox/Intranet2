@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Структура: {{ root_department.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .tree { list-style-type: none; padding-left: 20px; }
+        .department { margin: 10px 0; padding-left: 15px; border-left: 2px solid #ddd; }
+        .current-dep { 
+            border-left: 3px solid #3498db; 
+            background-color: #f0f8ff;
+            padding: 8px;
+            margin: 10px 0;
+        }
+        .department-name { 
+            font-weight: bold; 
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        .users-list { 
+            list-style: none; 
+            padding-left: 20px; 
+            margin-top: 8px;
+        }
+        .user { 
+            margin: 5px 0; 
+            padding: 5px 8px;
+            background: #f5f5f5; 
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .user-name { font-weight: 500; }
+        .user-position { color: #666; }
+        .toggle { 
+            color: #3498db; 
+            cursor: pointer; 
+            margin-left: 8px;
+            font-size: 0.9em;
+        }
+        .no-users { 
+            color: #777; 
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        h1 { color: #2c3e50; }
+        .path { 
+            color: #7f8c8d; 
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .children { 
+            list-style-type: none; 
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ root_department.name }} (ID: {{ root_department.id }})</h1>
+    {% if root_department.path_depart %}
+    <div class="path">Путь: {{ root_department.path_depart }}</div>
+    {% endif %}
+    
+    <div class="current-dep">
+        <div class="department-name">
+            Текущее подразделение
+            {% if root_department.users %}
+                <span class="toggle" onclick="toggleUsers('current-users')">[+]</span>
+            {% else %}
+                <span class="no-users">Нет сотрудников</span>
+            {% endif %}
+        </div>
+        
+        {% if root_department.users %}
+        <ul id="current-users" class="users-list">
+            {% for user in root_department.users %}
+            <li class="user">
+                <span class="user-name">{{ user.user_fio }}</span>
+                <span class="user-position">{{ user.user_position or "Должность не указана" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    
+    <h2>Подчиненные подразделения</h2>
+    {% if root_department.children %}
+        <ul class="tree">
+            {% for child in root_department.children %}
+                {% include "department_node.html" %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="no-users">Нет подчиненных подразделений</div>
+    {% endif %}
+
+    <script>
+    function toggleUsers(id) {
+        const element = document.getElementById(id);
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+            event.target.textContent = '[-]';
+        } else {
+            element.style.display = 'none';
+            event.target.textContent = '[+]';
+        }
+    }
+    
+    function toggleChildren(id) {
+        const element = document.getElementById(id);
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+            event.target.textContent = '[-]';
+        } else {
+            element.style.display = 'none';
+            event.target.textContent = '[+]';
+        }
+    }
+    
+    // Показываем сотрудников текущего подразделения по умолчанию
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUsers = document.getElementById('current-users');
+        if (currentUsers) currentUsers.style.display = 'block';
+    });
+    </script>
+</body>
+</html>

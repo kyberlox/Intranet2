@@ -31,11 +31,11 @@
                     </div>
                     <div v-if="currentPost.tags"
                          class="tags"></div>
-                    <div v-if="getProperty(currentPost, 'PROPERTY_347')"
+                    <div v-if="currentPost.indirect_data?.phone_number"
                          class="news__detail__phone-care">
                         Телефон организатора:
                         <br />
-                        {{ getProperty(currentPost, "PROPERTY_347") }}
+                        {{ currentPost.indirect_data?.phone_number }}
                     </div>
                     <div class="news__detail__discr"
                          v-html="currentPost.content_text"></div>
@@ -55,7 +55,7 @@
             </div>
         </div>
         <ComplexGallery v-else-if="type !== 'adminPreview'"
-                        :slides="[]"
+                        :slides="[{ id: 1, images: currentPost?.images }]"
                         :modifiers="['noRoute']" />
     </div>
 </template>
@@ -66,23 +66,19 @@ import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type Ref, onMounted, ref, type PropType } from "vue";
-import type { IAfishaItem, IBaseEntity } from "@/interfaces/IEntities";
+import type { IBaseEntity } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
-import { getProperty } from "@/utils/getPropertyFirstPos";
 import ComplexGallery from "../gallery/complex/ComplexGallery.vue";
 import Reactions from "./Reactions.vue";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {
         // Благотв
-        PROPERTY_347?: string[];
-        PROPERTY_348?: {
-            TEXT?: string
-        }[];
+        organizer: string,
+        phone_number: string
         // Афиша 
-        PROPERTY_374?: {
-            TEXT?: string
-        }[];
+        date_from: string,
+        date_to: string,
     }
 }
 
@@ -127,14 +123,8 @@ export default defineComponent({
 
         const changeToPostStandart = (target: Ref<IPostInner>, res: IPostInner) => {
             if (target.value == undefined) return;
-            const property348Text = getProperty(target.value as IPostInner, 'PROPERTY_348')?.TEXT;
-            const property374Text = getProperty(target.value as IAfishaItem, 'PROPERTY_374')?.TEXT;
-            if (property348Text) {
-                target.value.content_text = property348Text;
-            }
-            else if (property374Text) {
-                target.value.content_text = property374Text;
-            }
+
+            target.value.content_text = target.value.indirect_data?.date_from + ' - ' + target.value.indirect_data?.date_to;
 
             if (res.videos_embed || res.videos_native) {
                 const embedVideos = res.videos_embed || [];
@@ -146,7 +136,6 @@ export default defineComponent({
 
         return {
             currentPost,
-            getProperty,
         }
     },
 })

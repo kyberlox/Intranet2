@@ -9,8 +9,7 @@ export interface IBlogData extends IBaseIndirectData {
 }
 
 export interface IBlogArticleData extends IBaseIndirectData {
-    PROPERTY_1222?: string[],
-    PROPERTY_1239?: string[],
+    youtube_link?: string
 }
 
 export interface IBlogAuthors {

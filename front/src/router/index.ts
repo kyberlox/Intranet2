@@ -482,7 +482,7 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/admin/AdminPanel.vue')
+      component: () => import('@/views/admin/AdminSidebar.vue')
     },
     {
       path: '/admin/:id',

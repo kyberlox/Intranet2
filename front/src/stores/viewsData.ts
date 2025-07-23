@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { INews, IAfishaItem, ICareSlide, ICorpLife, IOurPeople, IVideoInterview, IVideoReports, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
+import type { INews, IAfishaItem, ICareSlide, IOurPeople, IVideoInterview, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 import type { ICalendar } from "@/interfaces/entities/ICalendar";
 
@@ -8,11 +8,11 @@ interface DataState {
     ourPeopleData: IOurPeople[],
     actualNewsData: INews[],
     corpEventsData: INews[],
-    corpLifeData: ICorpLife[],
+    corpLifeData: IBaseEntity[],
     afishaData: IAfishaItem[],
     careData: ICareSlide[],
     videoInterviewsData: IVideoInterview[],
-    videoReportsData: IVideoReports[],
+    videoReportsData: INews[],
     corpNewsData: INews[],
     officialEventsData: IBaseEntity[],
     partnerBonusData: IBaseEntity[],

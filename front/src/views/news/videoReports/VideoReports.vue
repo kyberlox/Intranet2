@@ -12,12 +12,12 @@ import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
-import type { IVideoReports } from "@/interfaces/IEntities";
+import type { INews } from "@/interfaces/IEntities";
 export default defineComponent({
     components: { GridGallery },
     setup() {
         const viewsData = useViewsDataStore();
-        const videoReports: ComputedRef<IVideoReports[]> = computed(() => viewsData.getData('videoReportsData') as IVideoReports[]);
+        const videoReports: ComputedRef<INews[]> = computed(() => viewsData.getData('videoReportsData') as INews[]);
         onMounted(() => {
             if (videoReports.value.length) return;
             useLoadingStore().setLoadingStatus(true);

@@ -7,8 +7,7 @@
             <ComplexGalleryCardBasic v-if="checkCardType(slide) == 'basic'"
                                      :slide="slide"
                                      :modifiers="modifiers"
-                                     :routeTo="routeTo"
-                                     :setCardDate="setCardDate" />
+                                     :routeTo="routeTo" />
 
             <ComplexGalleryCardOnlyImg v-else-if="checkCardType(slide) == 'onlyImg'"
                                        :slide="slide"
@@ -25,7 +24,7 @@
                    v-if="modalIsOpen == true"
                    @close="modalIsOpen = false" />
     </div>
-    <RichGallerySkeleton v-else />
+    <ComplexGallerySkeleton v-else />
 </template>
 
 
@@ -33,10 +32,9 @@
 import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
-import { getProperty } from "@/utils/getPropertyFirstPos";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IFactoryDataTours, IFactoryDataReports } from "@/interfaces/IEntities";
-import RichGallerySkeleton from "./ComplexGallerySkeleton.vue";
+import ComplexGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
 import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
 import ComplexGalleryCardVideo from "./ComplexGalleryCardVideo.vue";
@@ -48,25 +46,6 @@ interface IComplexGallery {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],
         videoHref?: string,
-
-        // Бонусы партнеров
-        PROPERTY_341?: string[],
-        PROPERTY_337?: string[],
-        PROPERTY_338?: string[],
-        PROPERTY_340?: string[],
-        PROPERTY_439?: string[],
-        // _______________________
-        // Афиша
-        PROPERTY_375?: string[],
-        // ___________________________
-        // Корпоративная жизнь
-        PROPERTY_666?: string[],
-        PROPERTY_405?: string[],
-        PROPERTY_406?: string[],
-        PROPERTY_407?: string[],
-        PROPERTY_409?: string[],
-        PROPERTY_408?: string[],
-        // ______________________________
     },
     videoHref?: string,
     link?: string,
@@ -96,7 +75,7 @@ export default defineComponent({
     },
     components: {
         ZoomModal,
-        RichGallerySkeleton,
+        ComplexGallerySkeleton,
         ComplexGalleryCardBasic,
         ComplexGalleryCardOnlyImg,
         ComplexGalleryCardVideo
@@ -121,10 +100,6 @@ export default defineComponent({
                 activeIndex.value = imgIndex;
             }
             modalIsOpen.value = true;
-        }
-
-        const setCardDate = (slide: { indirect_data?: { "PROPERTY_375"?: string[], "PROPERTY_438"?: string[] } }) => {
-            return getProperty(slide, "PROPERTY_375") + ' - ' + getProperty(slide, "PROPERTY_438");
         }
 
         const checkCardType = (slide: IComplexGallery) => {
@@ -152,9 +127,7 @@ export default defineComponent({
             uniqueRoutesHandle,
             modalIsOpen,
             activeIndex,
-            getProperty,
             checkCardType,
-            setCardDate
         }
     }
 })

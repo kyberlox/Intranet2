@@ -1,16 +1,13 @@
 <template>
-    <div class="flexGallery__card
-                 flexGallery__card--official-events">
-        <div v-for="(image, index) in slide.images"
-             :key="index"
-             class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
-            <img v-if="slide.images?.length"
-                 @click="callModal(slide.images, index)"
-                 class="flexGallery__card__img"
-                 v-lazy-load="image"
-                 alt="slide" />
-        </div>
+    <div v-for="(image, index) in slide.images"
+         :key="index"
+         class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
+        <img @click="callModal(slide.images, index)"
+             class="flexGallery__card__img"
+             v-lazy-load="image"
+             alt="slide" />
     </div>
+
 </template>
 
 <script lang="ts">
@@ -21,7 +18,7 @@ interface IComplexGalleryCardOnlyImg {
 }
 
 export default defineComponent({
-    name: 'ComplexGalleryCardBasic',
+    name: 'ComplexGalleryCardOnlyImg',
     props: {
         slide: {
             type: Object as PropType<IComplexGalleryCardOnlyImg>,
@@ -29,7 +26,7 @@ export default defineComponent({
         },
     },
     setup(props, { emit }) {
-        console.log(props);
+        console.log('d');
 
         return {
             callModal: (slides: string[], index: number) => emit('callModal', slides, 'img', index)

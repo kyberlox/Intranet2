@@ -19,7 +19,7 @@ import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from "@/utils/showEventsByYear";
 import { useViewsDataStore } from '@/stores/viewsData';
 import { useLoadingStore } from '@/stores/loadingStore';
-import type { ICorpLife } from '@/interfaces/IEntities';
+import type { IBaseEntity } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
@@ -27,8 +27,8 @@ export default defineComponent({
         ComplexGallery
     },
     setup() {
-        const allEvents: ComputedRef<ICorpLife[]> = computed(() => useViewsDataStore().getData('corpLifeData') as ICorpLife[]);
-        const visibleEvents: Ref<ICorpLife[]> = ref(allEvents.value);
+        const allEvents: ComputedRef<IBaseEntity[]> = computed(() => useViewsDataStore().getData('corpLifeData') as IBaseEntity[]);
+        const visibleEvents: Ref<IBaseEntity[]> = ref(allEvents.value);
         onMounted(() => {
             if (allEvents.value.length) return;
             useLoadingStore().setLoadingStatus(true);

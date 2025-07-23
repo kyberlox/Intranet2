@@ -1,7 +1,7 @@
 import type { IBaseIndirectData, IBaseEntity } from "./IBase"
 
 export interface IOpenVacancyData extends IBaseIndirectData {
-    PROPERTY_5094: string[]
+    link: string
 }
 
 export interface IOpenVacancy extends IBaseEntity {

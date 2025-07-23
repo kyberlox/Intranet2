@@ -9,7 +9,7 @@
         </div>
         <div v-if="slide.name"
              class="flexGallery__card__title flexGallery__card__title--text-date">
-            <span v-if="getProperty(slide, 'PROPERTY_375')"> {{ setCardDate(slide) }}</span>
+            <span> {{ checkCardDate(slide) }}</span>
             <span>{{ slide.name }}</span>
         </div>
         <div class="flexGallery__card__buttons"
@@ -26,7 +26,6 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import { getProperty } from "@/utils/getPropertyFirstPos";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IFactoryDataTours, IFactoryDataReports, IBaseEntity } from "@/interfaces/IEntities";
 
@@ -35,9 +34,8 @@ interface IComplexGalleryCardBasic extends IBaseEntity {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],
         href?: string,
-        // ИЗБАВИТЬСЯ
-        PROPERTY_375?: string[],
-        PROPERTY_438?: string[]
+        date_from: string,
+        date_to: string
     },
 }
 
@@ -62,9 +60,18 @@ export default defineComponent({
         }
     },
     setup() {
+
+        const checkCardDate = (slide: IComplexGalleryCardBasic) => {
+            if (!slide.indirect_data?.date_from) return;
+            if (slide.indirect_data.date_to && slide.indirect_data.date_to! === slide.indirect_data.date_from) {
+                return `${slide.indirect_data.date_from} - ${slide.indirect_data.date_to}`
+            }
+            else return slide.indirect_data.date_from
+        }
+
         return {
             uniqueRoutesHandle,
-            getProperty,
+            checkCardDate
         }
     }
 })

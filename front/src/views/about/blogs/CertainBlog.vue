@@ -13,11 +13,11 @@
 					 class="mt20"
 					 v-html="parseMarkdown(currentArticle.content_text)">
 				</div>
-				<div v-if="getProperty(currentArticle, 'PROPERTY_1222')"
+				<div v-if="(currentArticle.indirect_data?.youtube_link)"
 					 class="blog-list__video__wrapper">
 					<iframe style="width: 100%; min-height: 480px;"
 							id="you-player"
-							:src="getProperty(currentArticle, 'PROPERTY_1222')"
+							:src="currentArticle.indirect_data?.youtube_link"
 							title="YouTube video player"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 							allowfullscreen></iframe>
@@ -32,7 +32,6 @@ import BlogAvatar from "./components/BlogAvatar.vue";
 import { defineComponent, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import { parseMarkdown } from "@/utils/useMarkdown";
-import { getProperty } from "@/utils/getPropertyFirstPos";
 export default defineComponent({
 	components: { BlogAvatar },
 	props: {
@@ -54,7 +53,6 @@ export default defineComponent({
 			targetAuthor,
 			currentArticle,
 			parseMarkdown,
-			getProperty
 		};
 	},
 });

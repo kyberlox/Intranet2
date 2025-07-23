@@ -607,7 +607,6 @@ class Article:
 
         #Галерея фото и видео
         elif self.section_id == 42 or self.section_id == 52:
-            list(art["PROPERTY_403"].values())[0]
             indirect_data = dict()
         
         #Предложения партнеров

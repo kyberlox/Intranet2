@@ -297,7 +297,9 @@ class Article:
             if "PROPERTY_1247" in data:
                 link = take_value(data["PROPERTY_1247"])
             
-            
+            YouTube = None
+            if "PROPERTY_1222" in data:
+                YouTube = take_value(data["PROPERTY_1222"])
 
             #отдельно обрабатываем файлы
             if "PROPERTY_1239" in data:
@@ -322,6 +324,7 @@ class Article:
                 "author_uuid" : uuid,
                 "company" : company, 
                 "link" : link,
+                "youtube_link" : YouTube,
                 "photo_file_url" : photo,
             }
             

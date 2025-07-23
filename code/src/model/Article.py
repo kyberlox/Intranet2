@@ -765,7 +765,7 @@ class Article:
                     files_to_add = File().need_update_file(art_id, preview_images)
                     
                     if files_to_add != []:
-                        for f_id in files:
+                        for f_id in files_to_add:
                             
                             try:
                                 print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
@@ -804,7 +804,7 @@ class Article:
                     files_to_add = File().need_update_file(art_id, files)
                     
                     if files_to_add != []:
-                        for f_id in files:
+                        for f_id in files_to_add:
                             print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
                             try:
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)

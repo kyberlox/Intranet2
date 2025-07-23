@@ -1070,7 +1070,7 @@ class Article:
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
             #15 : ["75", "77"], #Блоги ✔️
-            18 : ["81", "82"], #Памятка ✔️
+            #18 : ["81", "82"], #Памятка ✔️
             #41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
             #172 : ["61", "83"] #Учебный центр (Проведённые тренинги)  ✔️
         }
@@ -1153,6 +1153,7 @@ class Article:
         '''
 
         #Памятка
+        '''
         # пройти по инфоблоку заголовков
         self.section_id = "82"
         sec_inf_title = self.get_inf()
@@ -1192,7 +1193,7 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
- 
+        '''
 
         
         
@@ -1255,7 +1256,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
+        '''
 
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
@@ -1303,13 +1304,12 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        '''
    
         '''
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
-            42 : ["68", "69"], #Официальные события ❌
-            52 : ["68", "69"]  #Корпоративная жизнь в фото ❌
+            42 : ["68", "69"], #Официальные события ✔️
+            52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
         
         # Фотогалерея

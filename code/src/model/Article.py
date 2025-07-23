@@ -619,7 +619,7 @@ class Article:
             indirect_data = dict_to_indirect_data(data, property_dict)
 
         #Вакансии (приведи друга)
-        elif self.section_id == 53:
+        elif self.section_id == 111:
             property_dict = {
                 "PROPERTY_5094" : "link"
             }

@@ -1285,7 +1285,7 @@ class Article:
                     pass
         '''
    
-        
+        '''
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
             42 : ["68", "69"], #Официальные события ❌
@@ -1323,7 +1323,7 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        
+        '''
         
 
         

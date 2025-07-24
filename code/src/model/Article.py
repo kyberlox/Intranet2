@@ -1009,6 +1009,9 @@ class Article:
 
     def add(self, article_data):
         return ArticleModel().add_article(self.make_valid_article(article_data))
+    
+    def set_new(self, article_data):
+        return ArticleModel().add_article(article_data)
 
     def uplod(self):
         '''

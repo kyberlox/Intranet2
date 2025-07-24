@@ -196,24 +196,38 @@ class Editor:
         if self.section_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
+        art = dict()
+        indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
             #если это редактируемый параметр
             if key not in self.notEditble:
                 #если это один из основных параметров
+                if key in self.fundamental:
                     #фиксирую
-                    #отдельно проверяю дату
+                    art[key] = data[key]    
+
                 #если это часть indirect_data
-                pass
-        
+                else:
+                    indirect_data[key] = data[key]  
+
+        art["indirect_data"] = indirect_data
+
+        #отдельно проверяю дату публикации
+        if "date_publiction" in art and art["date_publiction"] is not None:
+            art["date_publiction"] = make_date_valid(art["date_publiction"])
+
         #вписываю значения нередактируемы параметров сам:
-        section_id = data["section_id"]
-        date_creation = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
-
-
-        #добавить статью
+        art["section_id"] = data["section_id"]
+        art["date_creation"] = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
+        art["content_type"] = data["content_type"]
 
         #добавить файлы к статье
+
+        #добавить статью
+        return Article().set_new(art)
+
+       
         
 
 

@@ -166,7 +166,7 @@ class Editor:
                 # "Фотография (URL)",
 
         #добавить варианты значения поля
-        for field in fields
+        for field in fields:
             if field["name"] in self.variable:
                 values = []
                 for art in section:

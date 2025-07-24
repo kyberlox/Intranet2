@@ -23,7 +23,9 @@ class Editor:
         self.art_id = art_id
         self.section_id = section_id
 
-        self.variable = ["active"]
+        self.variable = {
+            "active" : [True, False]
+        }
 
         #словарь полей
         fields_data_file = open("./src/base/fields.json", "r")
@@ -167,14 +169,8 @@ class Editor:
 
         #добавить варианты значения поля
         for field in fields:
-            
-            if field["field"] in self.variable:
-                print(field["name"])
-                values = []
-                for art in section:
-                    if art[field["field"]] not in values:
-                        values.append(art[field["field"]])
-                field["values"] = values
+            if field["field"] in self.variable.keys():
+                field["values"] = self.variable[field["field"]]
 
 
         return {"fields" : fields, "files" : files_keys}

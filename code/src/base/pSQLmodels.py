@@ -993,12 +993,12 @@ class ArticleModel():
             if key not in ["ID", "_sa_instance_state"]:
                 if key not in db_art:
                     self.reassembly(article_data)
-                    LogsMaker().warning_message(f'{db_art['id']} добавить {key} = {article_data[key]}')
+                    LogsMaker().warning_message(f"{db_art['id']} добавить {key} = {article_data[key]}")
                     # print(db_art['id'], "добавить", key, "=", article_data[key])
                     return True
                 elif article_data[key] != db_art[key]:
                     self.reassembly(article_data)
-                    LogsMaker().warning_message(f'{db_art['id']} {key} {db_art[key]} --> {article_data[key]}')
+                    LogsMaker().warning_message(f"{db_art['id']} {key} {db_art[key]} --> {article_data[key]}")
                     # print(db_art['id'], key, db_art[key], "-->", article_data[key])
                     return True
                 else:

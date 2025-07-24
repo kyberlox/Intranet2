@@ -6,6 +6,7 @@ from src.base.pSQLmodels import ArticleModel
 from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.Article import Article
+from src.model.Section import Section
 from src.model.File import File
 
 import json
@@ -26,6 +27,16 @@ class Editor:
         fields_data_file = open("./src/base/fields.json", "r")
         self.fields = json.load(fields_data_file)
         fields_data_file.close()
+    
+    def get_sections(self):
+        all_sections = Section().get_all()
+        valid_id = [13, 14, 15, 16, 172, 175, 18, 110, 111, 31, 32, 34, 41, 42, 51, 52, 55]
+        edited_sections = []
+        for sec in all_sections:
+            if sec["id"] not in valid_id:
+                edited_sections.append(sec)
+        return edited_sections
+
     
     def rendering(self ):
         if self.art_id is None:
@@ -229,6 +240,10 @@ class Editor:
 
 
 #рендеринг статьи
+@editor_router.get("/edit_sections/")
+async def get_edit_sections():
+    return Editor().get_sections()
+
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id ):
     return Editor(art_id=art_id).rendering()

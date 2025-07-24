@@ -839,7 +839,7 @@ class Article:
 
         return files_data        
 
-
+        
 
     def old_search_files(self, inf_id, art_id, data):
         

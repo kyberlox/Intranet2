@@ -226,7 +226,7 @@ class Editor:
 
         #вписываю значения нередактируемы параметров сам:
         art["section_id"] = self.section_id
-        art["date_creation"] = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
+        art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
         if "content_type" in data:
             art["content_type"] = data["content_type"]
         else:

@@ -15,5 +15,7 @@
     "position" : "Должность",
     "department" : "Подразделение",
     "award" : "Награда",
-    "location" : "Локация"
+    "location" : "Локация",
+    "organizer" : "Организатор",
+    "phone_number" : "Номер телефона"
 }

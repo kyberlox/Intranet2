@@ -23,6 +23,8 @@ class Editor:
         self.art_id = art_id
         self.section_id = section_id
 
+        self.notEditble = ["id", "section_id", "date_creation"]
+
         self.variable = {
             "active" : [True, False]
         }
@@ -83,8 +85,7 @@ class Editor:
                 }
 
                 # проверяю редактируемость
-                notEditble = ["id", "section_id", "date_creation"]
-                if k in notEditble or val is None:
+                if k in self.notEditble or val is None:
                     fl["disabled"] = True
 
                 #загрузил
@@ -167,19 +168,25 @@ class Editor:
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
 
-        #добавить варианты значения поля
+        #пост обработка
         for field in fields:
+            # если значения варьируются
             if field["field"] in self.variable.keys():
                 field["values"] = self.variable[field["field"]]
 
+            # если поле нередаактируемое
+            if field["field"] in self.notEditble:
+                    field["disabled"] = True
 
         return {"fields" : fields, "files" : files_keys}
 
     def add(self, data : dict):
         if self.section_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
-        
+
         #валидировать данные data
+
+
         #добавить статью
     
 

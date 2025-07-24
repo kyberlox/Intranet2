@@ -193,6 +193,7 @@ class Editor:
         return {"fields" : fields, "files" : files_keys}
 
     def add(self, data : dict):
+        self.section_id = int(data["section_id"])
         if self.section_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
@@ -218,7 +219,7 @@ class Editor:
             art["date_publiction"] = make_date_valid(art["date_publiction"])
 
         #вписываю значения нередактируемы параметров сам:
-        art["section_id"] = data["section_id"]
+        art["section_id"] = self.section_id
         art["date_creation"] = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
         art["content_type"] = data["content_type"]
 

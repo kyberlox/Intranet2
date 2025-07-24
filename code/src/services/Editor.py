@@ -23,7 +23,9 @@ class Editor:
         self.art_id = art_id
         self.section_id = section_id
 
-        self.notEditble = ["id", "section_id", "date_creation"]
+        self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
+
+        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
 
         self.variable = {
             "active" : [True, False]
@@ -185,10 +187,15 @@ class Editor:
             return LogsMaker.warning_message("Укажите id раздела")
 
         #валидировать данные data
-
+        for key_val in data:
+            #если это нередактируемый параметр
+                #вписываю значение сам
+            #если это один из основных параметров
+                #фиксирую
+            #если это часть 
 
         #добавить статью
-    
+
 
 
     def update(self ):

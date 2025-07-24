@@ -28,7 +28,8 @@ class Editor:
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
 
         self.variable = {
-            "active" : [True, False]
+            "active" : [True, False],
+            "content_type" : ["HTML", "Markdown", None]
         }
 
         #словарь полей

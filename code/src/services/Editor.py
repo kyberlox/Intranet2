@@ -13,6 +13,15 @@ import json
 
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
+def make_date_valid(date):
+    if date is not None:
+        try:
+            return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+        except:
+            return datetime.datetime.strptime(date, '%d.%m.%Y')
+    else:
+        return None
+
 def get_type(value):
     return str(type(value)).split('\'')[1]
 
@@ -188,15 +197,22 @@ class Editor:
             return LogsMaker.warning_message("Укажите id раздела")
 
         #валидировать данные data
-        for key_val in data:
-            #если это нередактируемый параметр
-                #вписываю значение сам
-            #если это один из основных параметров
-                #фиксирую
-            #если это часть
-            pass
+        for key in data.keys():
+            #если это редактируемый параметр
+            if key not in self.notEditble:
+                #если это один из основных параметров
+                    #фиксирую
+                    #отдельно проверяю дату
+                #если это часть
+        
+        #вписываю значения нередактируемы параметров сам:
+        section_id = data["section_id"]
+        date_creation = datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')
+
 
         #добавить статью
+
+        #добавить файлы к статье
         
 
 

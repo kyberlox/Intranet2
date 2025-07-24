@@ -33,7 +33,7 @@ class Editor:
         valid_id = [13, 14, 15, 16, 172, 175, 18, 110, 111, 31, 32, 34, 41, 42, 51, 52, 55]
         edited_sections = []
         for sec in all_sections:
-            if sec["id"] not in valid_id:
+            if sec["id"] in valid_id:
                 edited_sections.append(sec)
         return edited_sections
 

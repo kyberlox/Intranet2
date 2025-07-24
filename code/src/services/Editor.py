@@ -325,7 +325,7 @@ async def get_form(section_id : int):
 
 @editor_router.post("/add")
 async def set_new(data = Body()):
-    return Editor().add(data())
+    return Editor().add(data)
 
 @editor_router.delete("/del/{art_id}")
 async def del_art(art_id : int):
@@ -346,4 +346,4 @@ async def updt(art_id ):
 #добавить файл в статью
 @editor_router.post("/add/file/{art_id}/{f_id}")
 async def set_new(data = Body()):
-    return await Editor().add(data())
+    return await Editor().add(data)

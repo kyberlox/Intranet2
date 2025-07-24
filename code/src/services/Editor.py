@@ -209,7 +209,7 @@ class Editor:
             elif "video" in file["content_type"]:
                 file_info["type"] = "video"
             elif "link" in file["content_type"]:
-                file_infofile_info["type"] = "video_embed"
+                file_info["type"] = "video_embed"
             else:
                 file_info["type"] = "documentation"
 

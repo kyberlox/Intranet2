@@ -1005,7 +1005,9 @@ class ArticleModel():
                     return False
 
     def remove(self ):
-        return db.query(Article).filter(Article.id == self.id).delete()
+        #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
+        #return db.query(Article).filter(Article.id == self.id).delete()
+        return db.query(Article).get(self.id).delete()
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

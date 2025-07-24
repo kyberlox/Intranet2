@@ -340,7 +340,7 @@ async def set_new(data = Body()):
 
 @editor_router.delete("/del/{art_id}")
 async def del_art(art_id : int):
-    return Editor(art_id=art_id).delete_art()
+    return Editor(art_id=int(art_id)).delete_art()
 
 
 

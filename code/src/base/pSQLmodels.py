@@ -1004,7 +1004,8 @@ class ArticleModel():
                 else:
                     return False
 
-
+    def remove(self ):
+        return db.query(Article).get(self.id).delete()
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

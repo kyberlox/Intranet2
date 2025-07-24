@@ -227,7 +227,8 @@ class Editor:
         #добавить статью
         return Article().set_new(art)
 
-       
+    def delete_art(self, ):
+        return Article(id = self.art_id).delete()
         
 
 
@@ -309,12 +310,12 @@ async def get_edit_sections():
     return Editor().get_sections()
 
 @editor_router.get("/rendering/{art_id}")
-async def render(art_id ):
+async def render(art_id : int ):
     return Editor(art_id=art_id).rendering()
 
 #изменить статью
 @editor_router.put("/update/{art_id}")
-async def updt(art_id ):
+async def updt(art_id : int):
     return Editor(art_id=art_id).update()
 
 #добавить статью
@@ -324,7 +325,11 @@ async def get_form(section_id : int):
 
 @editor_router.post("/add")
 async def set_new(data = Body()):
-    return await Editor().add(data())
+    return Editor().add(data())
+
+@editor_router.delete("/del/{art_id}")
+async def del_art(art_id : int):
+    return Editor(art_id=art_id).del_art()
 
 
 

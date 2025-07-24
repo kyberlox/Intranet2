@@ -1537,7 +1537,8 @@ class Article:
         
         return art
 
-
+    def delete(self):
+        return ArticleModel(id = self.id).remove()
 
     def get_preview(self):
         files = File(art_id = int(self.id)).get_files_by_art_id()

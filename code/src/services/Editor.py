@@ -23,6 +23,8 @@ class Editor:
         self.art_id = art_id
         self.section_id = section_id
 
+        self.variable = ["active"]
+
         #словарь полей
         fields_data_file = open("./src/base/fields.json", "r")
         self.fields = json.load(fields_data_file)
@@ -104,6 +106,8 @@ class Editor:
         for art in section:
             #иду по всем полям статьи
             for k in art.keys():
+                values = []
+
                 #если такого поля ещё нет
                 fields_names = [f["field"] for f in fields]
                 if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
@@ -143,7 +147,11 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-            
+
+                
+
+                    
+
             #теперь проверим какие файлы бывают у статей раздела
             self.art_id = int(art['id'])
             files=self.get_files()
@@ -156,6 +164,16 @@ class Editor:
             
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
+
+        #добавить варианты значения поля
+        for field in fields
+            if field["name"] in self.variable:
+                values = []
+                for art in section:
+                    if art[field["field"]] not in values:
+                        values.append(art[field["field"]])
+                field["values"] = values
+
 
         return {"fields" : fields, "files" : files_keys}
 

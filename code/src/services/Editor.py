@@ -221,7 +221,7 @@ class Editor:
 
         #отдельно перевожу стоку в билевое значение для active
         if type(art["active"]) == type(str()):
-            art["active"] = if art["active"] == 'true' or art["active"] == 'True'
+            art["active"] = True if (art["active"] == 'true' or art["active"] == 'True') else False
             
 
         #вписываю значения нередактируемы параметров сам:

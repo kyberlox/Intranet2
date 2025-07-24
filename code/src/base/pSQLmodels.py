@@ -983,7 +983,7 @@ class ArticleModel():
 
     def reassembly(self, article_data):
         #удалить статью
-        db.query(Article).get(self.id).delete()
+        db.query(Article).get(self.id).delete() #### !!!!!!!!!!! не сработает
         #залить заново
         self.add_article(article_data)
 

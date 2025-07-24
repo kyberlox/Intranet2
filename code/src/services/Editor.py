@@ -167,7 +167,9 @@ class Editor:
 
         #добавить варианты значения поля
         for field in fields:
-            if field["name"] in self.variable:
+            
+            if field["field"] in self.variable:
+                print(field["name"])
                 values = []
                 for art in section:
                     if art[field["field"]] not in values:

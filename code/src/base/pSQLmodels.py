@@ -958,6 +958,8 @@ class ArticleModel():
         self.section_id = section_id
         self.article = Article
 
+        self.db = SessionLocal()
+
     def add_article(self, article_data):
         article = Article(**article_data)
         db.add(article)
@@ -1007,7 +1009,7 @@ class ArticleModel():
     def remove(self ):
         #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
         #return db.query(Article).filter(Article.id == self.id).delete()
-        return db.execute(delete(Article).where(Article.id == self.id))
+        return self.db.execute(delete(Article).where(Article.id == self.id))
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

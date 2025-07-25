@@ -297,7 +297,9 @@ class Article:
             if "PROPERTY_1247" in data:
                 link = take_value(data["PROPERTY_1247"])
             
-            
+            YouTube = None
+            if "PROPERTY_1222" in data:
+                YouTube = take_value(data["PROPERTY_1222"])
 
             #отдельно обрабатываем файлы
             if "PROPERTY_1239" in data:
@@ -322,11 +324,13 @@ class Article:
                 "author_uuid" : uuid,
                 "company" : company, 
                 "link" : link,
+                "youtube_link" : YouTube,
                 "photo_file_url" : photo,
             }
             
             
             #файлы для Интранета ???сработает??? - да
+            
             keys = [
                 "PROPERTY_1023", #фото превью
                 "PROPERTY_1222", #ссылка на youtube
@@ -609,6 +613,23 @@ class Article:
         elif self.section_id == 42 or self.section_id == 52:
             indirect_data = dict()
         
+        #Афиша
+        elif self.section_id == 53:
+            property_dict = {
+                "PROPERTY_375" : "date_from",
+                "PROPERTY_438" : "date_to"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
+        #Вакансии (приведи друга)
+        elif self.section_id == 111:
+            property_dict = {
+                "PROPERTY_5094" : "link"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
+
         #Предложения партнеров
         elif self.section_id == 54:
 
@@ -765,7 +786,7 @@ class Article:
                     files_to_add = File().need_update_file(art_id, preview_images)
                     
                     if files_to_add != []:
-                        for f_id in files:
+                        for f_id in files_to_add:
                             
                             try:
                                 print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
@@ -804,7 +825,7 @@ class Article:
                     files_to_add = File().need_update_file(art_id, files)
                     
                     if files_to_add != []:
-                        for f_id in files:
+                        for f_id in files_to_add:
                             print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
                             try:
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
@@ -818,7 +839,7 @@ class Article:
 
         return files_data        
 
-
+        
 
     def old_search_files(self, inf_id, art_id, data):
         
@@ -988,6 +1009,9 @@ class Article:
 
     def add(self, article_data):
         return ArticleModel().add_article(self.make_valid_article(article_data))
+    
+    def set_new(self, article_data):
+        return ArticleModel().add_article(article_data)
 
     def uplod(self):
         '''
@@ -1011,8 +1035,8 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            13 : "149", # Наши люди ✔️
-            #14 : "123", #Доска почёта ☑️
+            #13 : "149", # Наши люди ✔️
+            #14 : "123", # Доска почёта ☑️
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
@@ -1021,7 +1045,7 @@ class Article:
             #55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
-            #175 : "60" #Учебный центр (Литература) ✔️
+            #175 : "60" # Учебный центр (Литература) ✔️
         }
         
 
@@ -1092,6 +1116,7 @@ class Article:
             elif artDB.update(self.make_valid_article(data)):
                 pass
         '''
+        
         '''
         #Блоги
         #пройти по инфоблоку заголовков
@@ -1130,8 +1155,8 @@ class Article:
                         pass
         '''
 
-        '''
         #Памятка
+        '''
         # пройти по инфоблоку заголовков
         self.section_id = "82"
         sec_inf_title = self.get_inf()
@@ -1172,7 +1197,6 @@ class Article:
                     elif artDB.update(self.make_valid_article(data)):
                         pass
         '''
- 
 
         
         
@@ -1283,13 +1307,12 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-
    
-        
+        '''
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
-            42 : ["68", "69"], #Официальные события ❌
-            52 : ["68", "69"]  #Корпоративная жизнь в фото ❌
+            42 : ["68", "69"], #Официальные события ✔️
+            52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
         
         # Фотогалерея
@@ -1306,7 +1329,7 @@ class Article:
                     self.section_id = 42
                 elif pre_section_id == "323":
                     art["section_id"] = 52  # Корпоративная жизнь в фото
-                    self.section_id = 42
+                    self.section_id = 52
 
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
@@ -1323,10 +1346,10 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        
+        '''
         
 
-        
+        '''
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1359,7 +1382,9 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        
+        '''
+
+        '''
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()
@@ -1370,7 +1395,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        
+        '''
 
         
         #Корпоративная газета ✔️
@@ -1512,7 +1537,8 @@ class Article:
         
         return art
 
-
+    def delete(self):
+        return ArticleModel(id = self.id).remove()
 
     def get_preview(self):
         files = File(art_id = int(self.id)).get_files_by_art_id()

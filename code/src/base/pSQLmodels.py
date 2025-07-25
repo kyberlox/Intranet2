@@ -996,6 +996,8 @@ class ArticleModel():
         self.section_id = section_id
         self.article = Article
 
+        self.db = SessionLocal()
+
     def add_article(self, article_data):
         article = Article(**article_data)
         db.add(article)
@@ -1021,7 +1023,7 @@ class ArticleModel():
 
     def reassembly(self, article_data):
         #удалить статью
-        db.query(Article).get(self.id).delete()
+        db.query(Article).get(self.id).delete() #### !!!!!!!!!!! не сработает
         #залить заново
         self.add_article(article_data)
 
@@ -1031,18 +1033,21 @@ class ArticleModel():
             if key not in ["ID", "_sa_instance_state"]:
                 if key not in db_art:
                     self.reassembly(article_data)
-                    LogsMaker().warning_message(f'{db_art['id']} добавить {key} = {article_data[key]}')
+                    LogsMaker().warning_message(f"{db_art['id']} добавить {key} = {article_data[key]}")
                     # print(db_art['id'], "добавить", key, "=", article_data[key])
                     return True
                 elif article_data[key] != db_art[key]:
                     self.reassembly(article_data)
-                    LogsMaker().warning_message(f'{db_art['id']} {key} {db_art[key]} --> {article_data[key]}')
+                    LogsMaker().warning_message(f"{db_art['id']} {key} {db_art[key]} --> {article_data[key]}")
                     # print(db_art['id'], key, db_art[key], "-->", article_data[key])
                     return True
                 else:
                     return False
 
-
+    def remove(self ):
+        #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
+        #return db.query(Article).filter(Article.id == self.id).delete()
+        return self.db.execute(delete(Article).where(Article.id == self.id))
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

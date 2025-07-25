@@ -2,17 +2,20 @@
     "id" : "ID",
     "section_id" : "ID раздела",
     "name" : "Название статьи",
-    "content_text" : "Содержимое",
-    "content_type" : "Тип форматирования",
     "active" : "Активна",
     "date_publiction" : "Дата публикации",
     "date_creation" : "Дата создания",
     "preview_text" : "Аннотация",
+    "content_type" : "Тип форматирования",
+    "content_text" : "Содержимое",
+
     "year" : "год",
     "uuid" : "ID пользователя",
     "photo_file_url" : "Фотография (URL)",
     "position" : "Должность",
     "department" : "Подразделение",
     "award" : "Награда",
-    "location" : "Локация"
+    "location" : "Локация",
+    "organizer" : "Организатор",
+    "phone_number" : "Номер телефона"
 }

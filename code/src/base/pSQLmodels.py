@@ -53,7 +53,7 @@ class User(Base):
 
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
-    uservissionsroot = relationship("UserVissionsRoot", back_populates="user")
+    uservisionsroot = relationship("UservisionsRoot", back_populates="user")
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -121,27 +121,27 @@ class Views(Base):
     #user = relationship("User", back_populates="views")
     article = relationship("Article", back_populates="views")
 
-class FieldVission(Base):
+class Fieldvision(Base):
     """
     Класс для хранения области видимости
     """
-    __tablename__ = 'fieldvission'
+    __tablename__ = 'fieldvision'
     id = Column(Integer, primary_key=True)
-    vission_name = Column(Text, nullable=True)
+    vision_name = Column(Text, nullable=True)
 
-    uservissionsroot = relationship("UserVissionsRoot", back_populates="fieldvission")
+    uservisionsroot = relationship("UservisionsRoot", back_populates="fieldvision")
 
-class UserVissionsRoot(Base):
+class UservisionsRoot(Base):
     """
     Класс для хранения области видимости
     """
-    __tablename__ = 'uservissionsroot'
+    __tablename__ = 'uservisionsroot'
     id = Column(Integer, primary_key=True)
-    vission_id = Column(Integer, ForeignKey('fieldvission.id', ondelete="CASCADE"), nullable=True)
+    vision_id = Column(Integer, ForeignKey('fieldvision.id', ondelete="CASCADE"), nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
-    fieldvission = relationship("FieldVission", back_populates="uservissionsroot")
-    user = relationship("User", back_populates="uservissionsroot")
+    fieldvision = relationship("Fieldvision", back_populates="uservisionsroot")
+    user = relationship("User", back_populates="uservisionsroot")
 
 
 
@@ -1387,84 +1387,84 @@ class ViewsModel:
             return {"views": new_view.viewes_count}
 
 
-class FieldVissionModel:
-    def __init__(self, vission_name: str = '', id: int = 0):
+class FieldvisionModel:
+    def __init__(self, vision_name: str = '', id: int = 0):
         self.session = db
-        self.vission_name = vission_name
+        self.vision_name = vision_name
         self.id = id
 
-    def add_field_vission(self):
-        existing_vission = self.session.query(FieldVission).filter(FieldVission.vission_name == self.vission_name).first()
-        if existing_vission:
+    def add_field_vision(self):
+        existing_vision = self.session.query(Fieldvision).filter(Fieldvision.vision_name == self.vision_name).first()
+        if existing_vision:
             return {"msg": "Уже создано"}
         
-        new_vission = FieldVission(vission_name=self.vission_name)
-        self.session.add(new_vission)
+        new_vision = Fieldvision(vision_name=self.vision_name)
+        self.session.add(new_vision)
         self.session.commit()
-        return self.session.query(FieldVission).filter(FieldVission.vission_name == self.vission_name).first()
+        return self.session.query(Fieldvision).filter(Fieldvision.vision_name == self.vision_name).first()
 
-    def remove_field_vission(self):
-        existing_vission = self.session.query(FieldVission).filter(FieldVission.id == self.id).first()
-        if existing_vission:
-            self.session.query(FieldVission).filter(FieldVission.id == self.id).delete()
+    def remove_field_vision(self):
+        existing_vision = self.session.query(Fieldvision).filter(Fieldvision.id == self.id).first()
+        if existing_vision:
+            self.session.query(Fieldvision).filter(Fieldvision.id == self.id).delete()
             self.session.commit()
             return {"msg": "Удалено"}
         return {"msg": "Такой области не существует"}
     
-    def find_vission_by_id(self):
-        existing_vission = self.session.query(FieldVission).filter(FieldVission.id == self.id).first()
-        if existing_vission:
-            return existing_vission
-        return {"msg": "такого vission_id не существует"}
+    def find_vision_by_id(self):
+        existing_vision = self.session.query(Fieldvision).filter(Fieldvision.id == self.id).first()
+        if existing_vision:
+            return existing_vision
+        return {"msg": "такого vision_id не существует"}
     
-    def find_all_vissions(self):
-        return self.session.query(FieldVission).all()
+    def find_all_visions(self):
+        return self.session.query(Fieldvision).all()
 
 
-class UserVissionsRootModel:
-    def __init__(self, id: int = 0, vission_id: int = 0, user_id: int = 0):
+class UservisionsRootModel:
+    def __init__(self, id: int = 0, vision_id: int = 0, user_id: int = 0):
         self.session = db
         self.id = id
-        self.vission_id = vission_id
+        self.vision_id = vision_id
         self.user_id = user_id
 
-    def upload_user_to_vission(self):
-        existing_user = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == self.user_id).first()
+    def upload_user_to_vision(self):
+        existing_user = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == self.user_id).first()
         if existing_user:
             return {"msg": f"пользователь {self.user_id} уже сущетсвует в данной области видимости"}
-        new_user = UserVissionsRoot(vission_id=self.vission_id, user_id=self.user_id)
+        new_user = UservisionsRoot(vision_id=self.vision_id, user_id=self.user_id)
         self.session.add(new_user)
         self.session.commit()
         return {"msg": "Добавлен"}
     
-    def upload_users_to_vission(self, user_data):
+    def upload_users_to_vision(self, user_data):
         for user in user_data:
             existing_user = self.session.query(User).filter(User.id == user, User.active == True).first()
             #print
             if existing_user:
-                existing_user_in_vission = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == user).first()
-                if existing_user_in_vission:
+                existing_user_in_vision = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == user).first()
+                if existing_user_in_vision:
                     #return {"msg": f"пользователь {self.user_id} уже сущетсвует в данной области видимости"}
                     continue
                 else:
-                    new_user = UserVissionsRoot(vission_id=self.vission_id, user_id=user)
+                    new_user = UservisionsRoot(vision_id=self.vision_id, user_id=user)
                     self.session.add(new_user)
                     self.session.commit()
         return {"status": True}
     
-    def remove_user_from_vission(self):
-        existing_user = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == self.user_id).first()
+    def remove_user_from_vision(self):
+        existing_user = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == self.user_id).first()
         if existing_user:
-            self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == self.user_id).delete()
+            self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == self.user_id).delete()
             self.session.commit()
             return {"msg": f"пользователь {self.user_id} удален из области видимости"}
         return {"msg": f"пользователя {self.user_id} не существует в данной области видимости"}
     
-    def find_users_in_vission(self):
+    def find_users_in_vision(self):
         result = []
-        existing_vission = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id).first()
-        if existing_vission:
-            users_in_vis = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id).all()
+        existing_vision = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).first()
+        if existing_vision:
+            users_in_vis = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
             for user in users_in_vis:
                 general_info = {}
                 user_info = UserModel(Id=user.user_id).find_by_id()
@@ -1476,4 +1476,4 @@ class UserVissionsRootModel:
                 general_info['photo'] = user_info['photo_file_url']
                 result.append(general_info)
             return result
-        return {"msg": "такого vission_id не существует"}
+        return {"msg": "такого vision_id не существует"}

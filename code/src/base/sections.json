@@ -2,7 +2,8 @@
   {
     "id" : 0,
     "name" : "Главная страница",
-    "parent_id" : null
+    "parent_id" : null,
+    "sectionHref": "home"
   },
 
   {
@@ -13,94 +14,119 @@
   {
     "id" : 11,
     "name" : "Наша компания",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "personal"
   },
   {
     "id" : 12,
     "name" : "История компании",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "book-emk",
+    "subsectionHref": "book-emk-page"
   },
   {
     "id" : 13,
     "name" : "Наши люди",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "our-people",
+    "subsectionHref": "ourPeopleInner"
   },
   {
     "id" : 14,
     "name" : "Доска почёта",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "year-results",
+    "subsectionHref": "year-results-id"
   },
   {
     "id" : 15,
     "name" : "Блоги",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "blogs",
+    "subsectionHref": "certainBlog"
   },
   {
     "id" : 16,
     "name" : "Видеоитервью",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "videoInterviews",
+    "subsectionHref": "videoInterview"
   },
   {
     "id" : 17,
     "name" : "Учебный центр",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "trainingcenter"
   },
 
   {
     "id" : 171,
-    "name" : "Элкетронные курсы",
-    "parent_id" : 17
+    "name" : "Электронные курсы",
+    "parent_id" : 17,
+    "sectionHref": "Ecources",
+    "subsectionHref": "Ecource"
   },
   {
     "id" : 172,
     "name" : "Проведённые тренинги",
-    "parent_id" : 17
+    "parent_id" : 17,
+    "sectionHref": "conductedTrainings",
+    "subsectionHref": "conductedTraining"
   },
   {
     "id" : 173,
     "name" : "Анонс учебных программ",
-    "parent_id" : 17
+    "parent_id" : 17,
+    "sectionHref": "trainingAnnounces"
   },
   {
     "id" : 174,
     "name" : "Экскурсии",
-    "parent_id" : 17
+    "parent_id" : 17,
+    "sectionHref": "excursions"
   },
   {
     "id" : 175,
     "name" : "Учебные пособия и литература ЭМК",
-    "parent_id" : 17
+    "parent_id" : 17,
+    "sectionHref": "literature"
   },
   {
     "id" : 176,
     "name" : "Инструкция по работе с 1С",
-    "parent_id" : 17
+    "parent_id" : 17,
+    "sectionHref": "memo1c"
   },
 
   {
     "id" : 18,
     "name" : "Памятка новому сотруднику",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "forNewWorker"
   },
   {
     "id" : 19,
     "name" : "Дни рождения",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "birthdays"
   },
   {
     "id" : 110,
     "name" : "Техника безопасности",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "safetytechnics"
   },
   {
     "id" : 111,
     "name" : "Открытые вакансии",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "vacancies"
   },
   {
     "id" : 112,
     "name" : "Новые сотрудники",
-    "parent_id" : 1
+    "parent_id" : 1,
+    "sectionHref": "newWorkers"
   },
 
 
@@ -117,12 +143,14 @@
   {
     "id" : 22,
     "name" : "Поздравительная открытка",
-    "parent_id" : 2
+    "parent_id" : 2,
+    "sectionHref": "postcard"
   },
   {
     "id" : 23,
     "name" : "ChatGPT",
-    "parent_id" : 2
+    "parent_id" : 2,
+    "sectionHref": "chatgpt"
   },
   {
     "id" : 24,
@@ -132,7 +160,8 @@
   {
     "id" : 25,
     "name" : "Референсы и опыт поставок",
-    "parent_id" : 2
+    "parent_id" : 2,
+    "sectionHref": "experience"
   },
  
 
@@ -144,22 +173,29 @@
   {
     "id" : 31,
     "name" : "Актуальные новости",
-    "parent_id" : 3
+    "parent_id" : 3,
+    "sectionHref": "actualNews",
+    "subsectionHref": "actualArticle"
   },
   {
     "id" : 32,
     "name" : "Новости организационного развития",
-    "parent_id" : 3
+    "parent_id" : 3,
+    "sectionHref": "corpNews",
+    "subsectionHref": "corpNewsArticle"
   },
   {
     "id" : 33,
     "name" : "Видеорепортажи",
-    "parent_id" : 3
+    "parent_id" : 3,
+    "sectionHref": "videoReports",
+    "subsectionHref": "videoReport"
   },
   {
     "id" : 34,
     "name" : "Корпоративная газета ЭМК",
-    "parent_id" : 3
+    "parent_id" : 3,
+    "sectionHref": "gazette"
   },
 
   {
@@ -170,12 +206,15 @@
   {
     "id" : 41,
     "name" : "Гид по предприятиям",
-    "parent_id" : 4
+    "parent_id" : 4,
+    "sectionHref": "factories"
   },
   {
     "id" : 42,
     "name" : "Официальные события",
-    "parent_id" : 4
+    "parent_id" : 4,
+    "sectionHref": "officialEvents",
+    "subsectionHref": "officialEvent"
   },
 
   {
@@ -186,27 +225,37 @@
   {
     "id" : 51,
     "name" : "Корпоративные события",
-    "parent_id" : 5
+    "parent_id" : 5,
+    "sectionHref": "corpEvents",
+    "subsectionHref": "corpEvent"
   },
   {
     "id" : 52,
     "name" : "Корпоративная жизнь в фото",
-    "parent_id" : 5
+    "parent_id" : 5,
+    "sectionHref": "corpLife",
+    "subsectionHref": "corpLifeItem"
   },
   {
     "id" : 53,
     "name" : "Афиша",
-    "parent_id" : 5
+    "parent_id" : 5,
+    "sectionHref": "eventAnnounces",
+    "subsectionHref": "eventAnnounce"
   },
   {
     "id" : 54,
     "name" : "Предложения партнёров",
-    "parent_id" : 5
+    "parent_id" : 5,
+    "sectionHref": "partners",
+    "subsectionHref": "partnerPost"
   },
   {
     "id" : 55,
     "name" : "Благотворительные проекты",
-    "parent_id" : 5
+    "parent_id" : 5,
+    "sectionHref": "care",
+    "subsectionHref": "carePost"
   },
   
   {

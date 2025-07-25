@@ -1,4 +1,4 @@
-from src.base.pSQLmodels import FieldVissionModel, UserVissionsRootModel
+from src.base.pSQLmodels import FieldvisionModel, UservisionsRootModel
 from src.base.SearchModel import StructureSearchModel, UserSearchModel
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
@@ -13,9 +13,9 @@ from fastapi import APIRouter, Request
 fieldsvisions_router = APIRouter(prefix="/fields_visions", tags=["Сервис области видимости"])
 
 class Visions:
-    def __init__(self, vission_name: str = '', vission_id: int = 0, user_id: int = 0):
-        self.vission_name = vission_name
-        self.vission_id = vission_id
+    def __init__(self, vision_name: str = '', vision_id: int = 0, user_id: int = 0):
+        self.vision_name = vision_name
+        self.vision_id = vision_id
         self.user_id = user_id
 
     def get_all_directors(self):
@@ -27,34 +27,34 @@ class Visions:
     def get_dep_structure_by_name(self, name):
         return StructureSearchModel().get_structure_by_name(name)
     
-    def create_new_vission(self):
-        return FieldVissionModel(vission_name=self.vission_name).add_field_vission()
+    def create_new_vision(self):
+        return FieldvisionModel(vision_name=self.vision_name).add_field_vision()
     
-    def get_vission_by_id(self):
-        return FieldVissionModel(id=self.vission_id).find_vission_by_id()
+    def get_vision_by_id(self):
+        return FieldvisionModel(id=self.vision_id).find_vision_by_id()
 
-    def delete_vission(self):
-        return FieldVissionModel(id=self.vission_id).remove_field_vission()
+    def delete_vision(self):
+        return FieldvisionModel(id=self.vision_id).remove_field_vision()
     
-    def get_all_vissions(self):
-        return FieldVissionModel().find_all_vissions()
+    def get_all_visions(self):
+        return FieldvisionModel().find_all_visions()
 
-    def add_user_to_vission(self):
-        return UserVissionsRootModel(vission_id=self.vission_id, user_id=self.user_id).upload_user_to_vission()
+    def add_user_to_vision(self):
+        return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).upload_user_to_vision()
 
-    def add_users_list_to_vission(self, dep_id):
+    def add_users_list_to_vision(self, dep_id):
         all_dep_users = []
         dep = self.get_dep_structure(dep_id)
         for de in dep:
             for user in de['users']:
                 all_dep_users.append(user['user_id'])
-        return UserVissionsRootModel(vission_id=self.vission_id).upload_users_to_vission(all_dep_users)
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
     
-    def delete_user_from_vission(self):
-        return UserVissionsRootModel(vission_id=self.vission_id, user_id=self.user_id).remove_user_from_vission()
+    def delete_user_from_vision(self):
+        return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).remove_user_from_vision()
 
-    def get_users_in_vission(self):
-        return UserVissionsRootModel(vission_id=self.vission_id).find_users_in_vission()
+    def get_users_in_vision(self):
+        return UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision()
 
 
 @fieldsvisions_router.get("/get_all_directors")
@@ -69,30 +69,30 @@ def get_dep_structure(parent_id: int):
 def get_dep_structure_by_name(word: str):
     return Visions().get_dep_structure_by_name(word)
 
-@fieldsvisions_router.get("/get_all_vissions")
-def get_all_vissions():
-    return Visions().get_all_vissions()
+@fieldsvisions_router.get("/get_all_visions")
+def get_all_visions():
+    return Visions().get_all_visions()
 
-@fieldsvisions_router.put("/create_new_vission/{vission_name}")
-def create_new_vission(vission_name: str):
-    return Visions(vission_name).create_new_vission()
+@fieldsvisions_router.put("/create_new_vision/{vision_name}")
+def create_new_vision(vision_name: str):
+    return Visions(vision_name).create_new_vision()
 
-@fieldsvisions_router.delete("/delete_vission/{vission_id}")
-def delete_vission(vission_id: int):
-    return Visions(vission_id).delete_vission()
+@fieldsvisions_router.delete("/delete_vision/{vision_id}")
+def delete_vision(vision_id: int):
+    return Visions(vision_id).delete_vision()
 
-@fieldsvisions_router.put("/add_user_to_vission/{vission_id}/{user_id}")
-def add_user_to_vission(vission_id: int, user_id: int):
-    return Visions(vission_id=vission_id, user_id=user_id).add_user_to_vission()
+@fieldsvisions_router.put("/add_user_to_vision/{vision_id}/{user_id}")
+def add_user_to_vision(vision_id: int, user_id: int):
+    return Visions(vision_id=vision_id, user_id=user_id).add_user_to_vision()
 
-@fieldsvisions_router.put("/add_users_list_to_vission/{vission_id}/{dep_id}")
-def add_users_list_to_vission(vission_id: int, dep_id: int):
-    return Visions(vission_id=vission_id).add_users_list_to_vission(dep_id)
+@fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}/{dep_id}")
+def add_users_list_to_vision(vision_id: int, dep_id: int):
+    return Visions(vision_id=vision_id).add_users_list_to_vision(dep_id)
 
-@fieldsvisions_router.delete("/delete_user_from_vission/{vission_id}/{user_id}")
-def delete_user_from_vission(vission_id: int, user_id: int):
-    return Visions(vission_id=vission_id, user_id=user_id).delete_user_from_vission()
+@fieldsvisions_router.delete("/delete_user_from_vision/{vision_id}/{user_id}")
+def delete_user_from_vision(vision_id: int, user_id: int):
+    return Visions(vision_id=vision_id, user_id=user_id).delete_user_from_vision()
 
-@fieldsvisions_router.get("/get_users_in_vission/{vission_id}")
-def get_users_in_vission(vission_id: int):
-    return Visions(vission_id=vission_id).get_users_in_vission()
+@fieldsvisions_router.get("/get_users_in_vision/{vision_id}")
+def get_users_in_vision(vision_id: int):
+    return Visions(vision_id=vision_id).get_users_in_vision()

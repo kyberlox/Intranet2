@@ -1026,10 +1026,80 @@ class StructureSearchModel:
         # helpers.bulk(elastic_client, article_data_ES)
 
 
-    def get_structure_by_id(self, parent_id=None):
+    # def get_structure_by_id(self, parent_id=None): # для html страницы
+    #     query = {"match": {"path_depart": parent_id}}
+    #     res = elastic_client.search(index=self.index, query=query, size=1000)
+    #     return res['hits']['hits']
+    def get_directors(self):
+        all_directors = []
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "match_all": {}
+            },
+            sort=[
+                {
+                    "id": {
+                        "order": "asc"  # "desc" использовать если хотим по убыванию
+                    }
+                }
+            ],
+            size=1000
+        )
+        for re in res['hits']['hits']:
+            for user in re['_source']['users']:
+                if user['user_id'] == re['_source']['user_head_id']:
+                    user['department_id'] = re['_source']['id']
+                    user['department'] = re['_source']['name']
+                    all_directors.append(user)
+                    break
+        return all_directors
+
+
+    def get_structure_by_parent_id(self, parent_id=None): 
+        result = []
         query = {"match": {"path_depart": parent_id}}
-        res = elastic_client.search(index=self.index, query=query, size=1000)
-        return res['hits']['hits']
+        res = elastic_client.search(index=self.index, query=query)
+        for re in res['hits']['hits']:
+            depart = {}
+            users_id = []
+            depart['id'] = re['_source']['id']
+            depart['name'] = re['_source']['name']
+            depart['user_head_id'] = re['_source']['user_head_id']
+            depart['father_id'] = re['_source']['father_id']
+            # for user in re['_source']['users']:
+            #     users_id.append(user['user_id'])
+            # depart['users'] = users_id
+            depart['users'] = re['_source']['users']
+            result.append(depart)
+        return result
+
+    def get_structure_by_name(self, word):
+        result = []
+        res = elastic_client.search(
+            index=self.index,
+            query={
+                "bool": {
+                    "should": [
+                        {"match": {"name": {"query": word,"boost": 10}}},
+                        {"multi_match": {"query": word, "fields": ["name"], "fuzziness": "AUTO", "boost": 2}}
+                    ]
+                }
+            }
+        )
+        for re in res['hits']['hits']:
+            depart = {}
+            users_id = []
+            depart['id'] = re['_source']['id']
+            depart['name'] = re['_source']['name']
+            depart['user_head_id'] = re['_source']['user_head_id']
+            depart['father_id'] = re['_source']['father_id']
+            # for user in re['_source']['users']:
+            #     users_id.append(user['user_id'])
+            # depart['users'] = users_id
+            depart['users'] = re['_source']['users']
+            result.append(depart)
+        return result
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)

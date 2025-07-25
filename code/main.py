@@ -32,6 +32,8 @@ from src.services.Idea import idea_router
 
 from src.services.Editor import Editor, editor_router
 
+from src.services.FieldsVisions import Visions, fieldsvisions_router
+
 
 from typing import Awaitable, Callable, Optional
 
@@ -62,6 +64,7 @@ app.include_router(compress_router, prefix="/api")
 
 app.include_router(b24_router, prefix="/api")
 app.include_router(idea_router, prefix="/api")
+app.include_router(fieldsvisions_router, prefix="/api")
 
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
@@ -161,9 +164,9 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 
-@app.get("/test/{ID}")
-def test(ID):
-    return Article(section_id=ID).get_inf()
+@app.get("/get_directors_by_elastic")
+def get_directors():
+    return StructureSearchModel().get_directors()
 
 @app.get("/get_file/{inf_id}/{file_id}")
 def test_file_get(inf_id, file_id):

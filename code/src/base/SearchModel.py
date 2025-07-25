@@ -1386,7 +1386,7 @@ class ArticleSearchModel:
                 true_search_flag = True
             art_info = {}
             art_info['name'] = res_info["_source"]["title"]
-            section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
+            section_href = next((s.get('subsectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
             art_info['href'] = section_href
             art_info['id'] = int(res_info["_id"])
             art_info['image'] = res_info["_source"]["preview_photo"]

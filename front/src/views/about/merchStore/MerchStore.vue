@@ -7,131 +7,140 @@
                      v-for="item in storePlug"
                      :key="item.id">
                     <div class="merchStore__grid__item__info">
-                        <div class="merchStore__grid__item__image"
-                             :style="{ backgroundImage: `url(${item.image})` }">
-                        </div>
+                        <HoverGallery :images="item.images"
+                                      :showIndicators="true" />
                     </div>
                     <div class="merchStore__grid__item__title">
                         {{ item.title }}
                     </div>
-                    <div>
-                        <div
-                             class="merchStore__grid__item__price merchStore__grid__item__info__item__price merchStore__grid__item__info__item">
-                            <span class="count-text"> {{ item.price }} </span> эмк-коинов
-                        </div>
-
-                        <div class="merchStore__grid__item__count merchStore__grid__item__info__item">
-                            <span class="count-text">{{ item.count }}</span> шт. осталось
-                        </div>
-                    </div>
-                    <div class="merchStore__grid__item__action">
-                        <button class="primary-button merchStore__grid__item__button">
-                            Оформить
-                        </button>
-                        <RouterLink :to="{ name: 'merchStoreItem', params: { id: 1 } }"
-                                    class="primary-button merchStore__grid__item__button">
-                            К товару
-                        </RouterLink>
+                    <div
+                         class="merchStore__grid__item__price merchStore__grid__item__info__item__price merchStore__grid__item__info__item">
+                        <span class=""> {{ item.price }} </span> эмк-коинов
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import type { Swiper as SwiperType } from 'swiper';
+import { Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { defineComponent, ref } from 'vue';
+import HoverGallery from './components/HoverGallery.vue';
 
 export default defineComponent({
+    components: {
+        HoverGallery
+    },
     setup() {
+
         const storePlug = [
             {
                 id: 9,
                 title: 'Подушка для самолета',
-                image: '/imgs/merchStore/9pod.png',
+                images: ['/imgs/merchStore/9pod.png', '/imgs/merchStore/10futb.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 10,
                 title: 'Футболка с резиной (черная)',
-                image: '/imgs/merchStore/10futb.png',
+                images: ['/imgs/merchStore/10futb.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 11,
                 title: 'Футболка с резиной (белая)',
-                image: '/imgs/merchStore/11futb.png',
+                images: ['/imgs/merchStore/11futb.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 12,
                 title: 'Худи (черный)',
-                image: '/imgs/merchStore/12hoodie.png',
+                images: ['/imgs/merchStore/12hoodie.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 1,
                 title: 'Зонт складной (черный)',
-                image: '/imgs/merchStore/1zont.png',
+                images: ['/imgs/merchStore/1zont.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 2,
                 title: 'Внешний аккумулятор',
-                image: '/imgs/merchStore/2zont.png',
+                images: ['/imgs/merchStore/2zont.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 3,
                 title: 'Спортивная сумка',
-                image: '/imgs/merchStore/3sumka.png',
+                images: ['/imgs/merchStore/3sumka.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 4,
                 title: 'Панама',
-                image: '/imgs/merchStore/4panama.png',
+                images: ['/imgs/merchStore/4panama.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 5,
                 title: 'Бутылка для воды (стекло)',
-                image: '/imgs/merchStore/5voda.png',
+                images: ['/imgs/merchStore/5voda.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 6,
                 title: 'Бутылка для воды (пластик)',
-                image: '/imgs/merchStore/6voda.png',
+                images: ['/imgs/merchStore/6voda.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 7,
                 title: 'Вечный карандаш',
-                image: '/imgs/merchStore/7karandash.png',
+                images: ['/imgs/merchStore/7karandash.png'],
                 price: '1000',
                 count: '1'
             },
             {
                 id: 8,
                 title: 'Сумка',
-                image: '/imgs/merchStore/8sumka.png',
+                images: ['/imgs/merchStore/8sumka.png'],
                 price: '1000',
                 count: '1'
             },
         ]
+
+
+        const sliderConfig = {
+            modules: [Pagination],
+            slidesPerView: 1,
+        };
+
+        const swiperInstance = ref<SwiperType | null>(null);
+
+        const swiperOn = (swiper: SwiperType) => {
+            swiperInstance.value = swiper;
+        }
         return {
-            storePlug
+            storePlug,
+            sliderConfig,
+            swiperOn
         }
     }
 })

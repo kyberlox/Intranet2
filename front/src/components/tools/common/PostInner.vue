@@ -21,7 +21,8 @@
                     </div>
                     <div class="news__detail">
                         <span v-if="currentPost.date_publiction"
-                              class="news__detail__date">{{ currentPost.date_publiction }}</span>
+                              class="news__detail__date">{{ currentPost.date_publiction
+                            }}</span>
                         <div v-if="currentPost.reactions"
                              class="news__detail__like-wrapper">
                             <Reactions :id="Number(currentPost.id)"
@@ -65,7 +66,7 @@
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { defineComponent, type Ref, onMounted, ref, type PropType } from "vue";
+import { defineComponent, type Ref, onMounted, ref, type PropType, watch } from "vue";
 import type { IBaseEntity } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import ComplexGallery from "../gallery/complex/ComplexGallery.vue";
@@ -100,15 +101,17 @@ export default defineComponent({
             default: 'default'
         },
         previewElement: {
-            type: Object as PropType<IPostInner>
+            type: (Object as PropType<IPostInner>) || null
         }
     },
     setup(props) {
         const currentPost = ref<IPostInner>();
-        onMounted(() => {
+        watch((props), () => {
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
                 if (props.previewElement == null) {
                     currentPost.value = undefined;
+                    console.log(1);
+
                 }
                 else currentPost.value = props.previewElement
             }
@@ -119,7 +122,7 @@ export default defineComponent({
                         if (!currentPost.value) return;
                         changeToPostStandart(currentPost as Ref<IPostInner>, res);
                     })
-        })
+        }, { immediate: true, deep: true })
 
         const changeToPostStandart = (target: Ref<IPostInner>, res: IPostInner) => {
             if (target.value == undefined) return;

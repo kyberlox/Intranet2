@@ -10,7 +10,7 @@
 
 
 <script lang="ts">
-import { defineComponent, ref, watchEffect } from 'vue';
+import { defineComponent, ref } from 'vue';
 import Editor from 'primevue/editor';
 
 export default defineComponent({

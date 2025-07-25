@@ -487,14 +487,20 @@ const router = createRouter({
     {
       path: '/admin/:id',
       name: 'adminBlockInner',
-      component: () => import('@/views/admin/AdminBlockInner.vue'),
+      component: () => import('@/views/admin/AdminContent.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {
       path: '/admin/:id/:elementId',
-      name: 'adminElementInner',
+      name: 'adminElementInnerEdit',
       component: () => import('@/views/admin/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId })
+    },
+    {
+      path: '/admin/:id/new',
+      name: 'adminElementInnerAdd',
+      component: () => import('@/views/admin/AdminElementInner.vue'),
+      props: (route) => ({ id: route.params.id, type: 'new' })
     },
   ],
   scrollBehavior() {

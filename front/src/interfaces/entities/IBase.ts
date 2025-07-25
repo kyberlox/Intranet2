@@ -19,10 +19,6 @@ export interface IBaseEntity {
     date_publiction?: string,
     reactions?: IReaction,
     tags?: string[],
-    documents?: {
-        link: string,
-        name: string,
-    },
 
     reportages?: boolean,
     tours?: boolean,

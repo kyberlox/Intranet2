@@ -7,9 +7,7 @@
 }
 
 :deep(.p-editor-toolbar) {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-    padding: 8px;
+    display: none;
 }
 
 :deep(.ql-formats button) {

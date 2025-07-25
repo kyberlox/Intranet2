@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 
 export default defineComponent({
     name: 'DatePicker',
@@ -65,12 +65,20 @@ export default defineComponent({
             else if (props.calendarType == 'month') {
                 return `${month > 9 ? month : "0" + month}`
             }
+            else if (props.calendarType == 'full') {
+                return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
+            }
         };
 
         const handleDate = (date: Date) => {
             if (!date) return;
             emit('pickDate', date)
         }
+
+        onMounted(() => {
+            handleDate(dateInput.value);
+            dateInput.value = new Date();
+        })
 
         return {
             dateInput,

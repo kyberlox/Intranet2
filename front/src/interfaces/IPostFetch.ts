@@ -10,3 +10,4 @@ export interface IPostIdea {
     base_name?: string,
     base?: string
 }
+

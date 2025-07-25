@@ -1,16 +1,5 @@
 <template>
   <div class="admin-element-inner">
-    <div class="admin-element-inner__type-buttons">
-      <button class="admin-element-inner__type-button"
-              @click="handleTypeClick('news')"> К новостям </button>
-      <button class="admin-element-inner__type-button"
-              @click="handleTypeClick('blogs')"> К блогам </button>
-      <button class="admin-element-inner__type-button"
-              @click="handleTypeClick('interview')"> К интервью </button>
-      <button class="admin-element-inner__type-button"
-              @click="handleTypeClick('noPreview')"> Без превью </button>
-    </div>
-
     <Transition :name="previewFullWidth ? 'layout-change' : 'layout-change-toLeft'"
                 mode="out-in">
       <div class="admin-element-inner__wrapper admin-element-inner__wrapper--mt20"
@@ -21,92 +10,44 @@
               { 'admin-element-inner__editor--preview-full-width': previewFullWidth },
               { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
             ]">
-          <div v-for="(item, index) in sampleEvent"
+          <div v-for="(item, index) in newElementSkeleton"
                class="admin-element-inner__field"
                :class="{ 'admin-element-inner__field--preview-full-width': previewFullWidth }"
                :key="index">
-            <div v-if="item.type == 'date' && item.name"
-                 class="admin-element-inner__field-content admin-element-inner__field-content--no-transition">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <DatePicker class="admin-element-inner__date-picker"
-                          v-model="currentItem[item.name]" />
+
+            <AdminComponentDatePicker v-if="inputComponentChecker(item) == 'datePicker'"
+                                      :item="item"
+                                      @pick="(value: string) => handleEmitValueChange(item, value)" />
+
+            <AdminComponentSelect v-else-if="inputComponentChecker(item) == 'select'"
+                                  :item="item"
+                                  @pick="(value: string) => handleEmitValueChange(item, value)" />
+
+
+            <AdminComponentTextarea v-else-if="inputComponentChecker(item) == 'textArea'"
+                                    :item="item"
+                                    @pick="(value: string) => handleEmitValueChange(item, value)" />
+
+
+            <AdminComponentInput v-else-if="inputComponentChecker(item) == 'input'"
+                                 :item="item"
+                                 @pick="(value: string) => handleEmitValueChange(item, value)" />
+
+
+            <AdminComponentImagePicker v-else-if="inputComponentChecker(item) == 'image'"
+                                       :item="item" />
+
+            <AdminComponentDocPicker v-else-if="inputComponentChecker(item) == 'docs'"
+                                     :item="item" />
+
+            <div v-else-if="inputComponentChecker(item) == 'auto'"
+                 class="admin-element-inner__field-content">
+              <p v-if="item.name"
+                 class="admin-element-inner__field-title">{{ item.name }}</p>
+              <p v-if="item.value"
+                 class="admin-element-inner__field-value">{{ item.value }}</p>
             </div>
 
-            <div v-else-if="item.type == 'select' && item.name"
-                 class="admin-element-inner__field-content">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <select class="admin-element-inner__select"
-                      v-model="currentItem[item.name]">
-                <option class="admin-element-inner__select-option"
-                        v-for="(option, index) in item.options"
-                        :key=index>
-                  {{ option }}
-                </option>
-              </select>
-            </div>
-
-            <div v-else-if="item.type == 'textWithRedact' && item.name"
-                 class="admin-element-inner__field-content">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <TextEditor class="admin-element-inner__text-editor"
-                          v-model="currentItem[item.name]" />
-            </div>
-
-            <div v-else-if="item.type == 'auto'"
-                 class="admin-element-inner__field-content">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <p class="admin-element-inner__field-value">{{ item.value }}</p>
-            </div>
-
-            <div v-else-if="item.type == 'text' && item.name"
-                 class="admin-element-inner__field-content">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <input class="admin-element-inner__input"
-                     v-model="currentItem[item.name]"
-                     :disabled="Boolean(item.disabled)" />
-            </div>
-
-            <div v-else-if="item.type == 'img'"
-                 class="admin-element-inner__field-content">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <div class="admin-element-inner__gallery">
-                <div v-for="(itemInner, index) in item.value"
-                     :key="index"
-                     class="admin-element-inner__gallery-card">
-                  <img v-if="typeof itemInner == 'string'"
-                       :src="itemInner"
-                       class="admin-element-inner__gallery-image"
-                       alt="Изображение элемента" />
-                  <div v-if="typeof itemInner == 'string'"
-                       class="admin-element-inner__gallery-actions">
-                    <button class="admin-element-inner__gallery-button admin-element-inner__gallery-button--view"
-                            @click.prevent="goToImage(itemInner)">
-                      <ZoomIcon />
-                    </button>
-                    <button class="admin-element-inner__gallery-button admin-element-inner__gallery-button--delete"
-                            @click.prevent="removeItem(itemInner)">
-                      <CloseIcon />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <ImgUploader class="admin-element-inner__img-uploader" />
-            </div>
-
-            <div v-else-if="item.type == 'doc'"
-                 class="admin-element-inner__field-content">
-              <p class="admin-element-inner__field-title">{{ item.title }}</p>
-              <div class="admin-element-inner__documents">
-                <a v-for="(item, index) in currentItem.documents"
-                   class="admin-element-inner__document-link"
-                   :key="index"
-                   :href="item"
-                   target='_blank'>
-                  {{ item }}
-                </a>
-              </div>
-              <FileUploader class="admin-element-inner__file-uploader" />
-            </div>
           </div>
         </div>
 
@@ -122,9 +63,9 @@
                         @click="previewFullWidth = !previewFullWidth" />
           </Transition>
 
-          <PostInner v-if="currentItem.id && activeType == 'news'"
+          <PostInner v-if="newData && activeType == 'news'"
                      class="admin-element-inner__preview-content"
-                     :previewElement="currentItem"
+                     :previewElement="newData"
                      :type="'adminPreview'" />
           <Interview v-if="activeType == 'interview'"
                      class="admin-element-inner__preview-content"
@@ -139,12 +80,14 @@
     </Transition>
 
     <div class="admin-element-inner__actions">
-      <button class="admin-element-inner__action-button admin-element-inner__action-button--save">
+      <button @click="applyNewData"
+              class="admin-element-inner__action-button admin-element-inner__action-button--save">
         <span class="admin-element-inner__action-text">Сохранить</span>
       </button>
-      <button class="admin-element-inner__action-button admin-element-inner__action-button--cancel">
+      <RouterLink :to="{ name: 'admin' }"
+                  class="admin-element-inner__action-button admin-element-inner__action-button--cancel">
         <span class="admin-element-inner__action-text">Отменить</span>
-      </button>
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -152,37 +95,41 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
-import TextEditor from './components/TextEditor.vue';
-import ImgUploader from './components/ImgUploader.vue';
-import FileUploader from './components/FileUploader.vue';
-import CloseIcon from "@/assets/icons/admin/CloseIcon.svg?component";
+import Api from '@/utils/Api';
+
 import LayoutLeft from "@/assets/icons/admin/LayoutLeft.svg?component";
 import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
-import { sampleEvent } from '@/assets/static/adminPagePlugs';
-import DatePicker from '@/components/tools/common/DatePicker.vue';
+
 import PostInner from '@/components/tools/common/PostInner.vue';
 import Interview from '@/views/about/ourPeople/components/Interview.vue';
 import CertainBlog from '../about/blogs/CertainBlog.vue';
-import ZoomIcon from '@/assets/icons/admin/ZoomIcon.svg?component'
+
+import AdminComponentSelect from './components/AdminComponentSelect.vue';
+import AdminComponentTextarea from './components/AdminComponentTextarea.vue';
+import AdminComponentDatePicker from './components/AdminComponentDatePicker.vue';
+import AdminComponentInput from './components/AdminComponentInput.vue';
+import AdminComponentImagePicker from './components/AdminComponentImagePicker.vue';
+import AdminComponentDocPicker from './components/AdminComponentDocPicker.vue';
+
+import { type IPostInner } from '@/components/tools/common/PostInner.vue';
+import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
+import { chooseImgPlug } from '@/utils/chooseImgPlug';
 
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
-interface IAdminElement extends Record<string, AdminElementValue> {
-  id: number;
-}
 
 export default defineComponent({
   components: {
-    TextEditor,
-    FileUploader,
-    ImgUploader,
-    CloseIcon,
     LayoutLeft,
     LayoutTop,
-    DatePicker,
     PostInner,
     Interview,
     CertainBlog,
-    ZoomIcon
+    AdminComponentTextarea,
+    AdminComponentSelect,
+    AdminComponentDatePicker,
+    AdminComponentInput,
+    AdminComponentImagePicker,
+    AdminComponentDocPicker
   },
   props: {
     id: {
@@ -190,46 +137,73 @@ export default defineComponent({
     },
     elementId: {
       type: String
+    },
+    type: {
+      type: String,
+      default: 'edit'
     }
   },
+
   setup(props) {
+    const newElementSkeleton: Ref<IAdminListItem[]> = ref([]);
     const events = ref<Event[]>([]);
     const router = useRouter();
-    const currentItem: Ref<IAdminElement> = ref({ id: 0 });
-    const previewItem = ref();
     const previewFullWidth = ref(false);
+    const activeType = ref('news');
+
+    const currentItem: Ref<IPostInner> = ref({ id: 0 });
+    const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()] });
+
+    const inputComponentChecker = (item: IAdminListItem) => {
+      if (item.disabled) return;
+      switch (true) {
+        case item.data_type == 'str' && String(item.field)?.includes('date'):
+          return 'datePicker'
+        case item.data_type == 'str' && 'values' in item:
+          return 'select'
+        case item.data_type == 'str' && item.field !== 'name' && !String(item.field).includes('url'):
+          return 'textArea'
+        case item.data_type == 'str':
+          return 'input'
+        case item.data_type == 'image':
+          return 'image'
+        case item.data_type == 'doc':
+          return 'docs'
+        default:
+          return 'auto';
+      }
+    }
 
     onMounted(() => {
-      sampleEvent.map((e) => {
-        if (!e.name) return;
-        currentItem.value[e.name] = e.value;
-      })
-
-      previewItem.value = {
-        indirect_data: currentItem.value
+      if (props.type == 'new') {
+        Api.get(`/editor/add/${props.id}`)
+          .then((data) => { newElementSkeleton.value = data.fields })
       }
     })
 
-    const removeItem = (e: string) => {
-      alert('udalit ' + e);
+    const applyNewData = () => {
+      Api.post('/editor/add', newData.value)
     }
 
-    const activeType = ref('news');
-
-    const handleTypeClick = (type: string) => {
-      activeType.value = type;
-    }
-
+    const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
+      if (item.field) {
+        newData.value = {
+          ...newData.value,
+          [item.field]: value
+        };
+      }
+    };
     return {
       events,
-      sampleEvent,
       router,
-      goToImage: (e: string) => window.open(e, '_blank'),
-      removeItem,
       currentItem,
       previewFullWidth,
-      handleTypeClick,
-      activeType
+      activeType,
+      newElementSkeleton,
+      inputComponentChecker,
+      newData,
+      applyNewData,
+      handleEmitValueChange
     };
   }
 });
@@ -276,7 +250,7 @@ export default defineComponent({
   &__editor {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
     min-width: 33%;
 
     &--preview-full-width {
@@ -296,6 +270,10 @@ export default defineComponent({
     min-width: 250px;
     max-width: 500px;
     width: 100%;
+
+    &:empty {
+      display: none;
+    }
 
     &--preview-full-width {
       max-width: 50%;

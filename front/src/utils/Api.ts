@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { useUserData } from "@/stores/userData";
 import { computed } from "vue";
 import type { IPostIdea, IAuth } from '@/interfaces/IPostFetch';
+import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 const authKey = computed(() => useUserData().getAuthKey);
@@ -31,11 +32,15 @@ export default class Api {
         }
     }
 
-    static async post(url: string, data: IAuth | IPostIdea) {
+    static async post(url: string, data: IAuth | IPostIdea | IPostInner) {
         return (await api.post(url, data)).data;
     }
 
     static async put(url: string) {
         return (await api.put(url))
+    }
+
+    static async delete(url: string) {
+        return (await api.delete(url))
     }
 }

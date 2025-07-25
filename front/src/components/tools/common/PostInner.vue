@@ -126,9 +126,9 @@ export default defineComponent({
 
         const changeToPostStandart = (target: Ref<IPostInner>, res: IPostInner) => {
             if (target.value == undefined) return;
-
-            target.value.content_text = target.value.indirect_data?.date_from + ' - ' + target.value.indirect_data?.date_to;
-
+            if (target.value.section_id == 52) {
+                target.value.content_text = target.value.indirect_data?.date_from + ' - ' + target.value.indirect_data?.date_to;
+            }
             if (res.videos_embed || res.videos_native) {
                 const embedVideos = res.videos_embed || [];
                 const nativeVideos = res.videos_native || [];

@@ -1,83 +1,82 @@
 <template>
   <div class="admin-element-inner">
-    <Transition :name="previewFullWidth ? 'layout-change' : 'layout-change-toLeft'"
-                mode="out-in">
-      <div class="admin-element-inner__wrapper admin-element-inner__wrapper--mt20"
-           :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth }"
-           :key="previewFullWidth ? 'fullwidth' : 'normal'">
-        <div class="admin-element-inner__editor"
-             :class="[
-              { 'admin-element-inner__editor--preview-full-width': previewFullWidth },
-              { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
-            ]">
-          <div v-for="(item, index) in newElementSkeleton"
-               class="admin-element-inner__field"
-               :class="{ 'admin-element-inner__field--preview-full-width': previewFullWidth }"
-               :key="index">
+    <div class="admin-element-inner__wrapper admin-element-inner__wrapper--mt20"
+         :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth }">
+      <div v-if="newElementSkeleton.length"
+           class="admin-element-inner__editor"
+           :class="[
+            { 'admin-element-inner__editor--preview-full-width': previewFullWidth },
+            { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
+          ]">
+        <div v-for="(item, index) in newElementSkeleton"
+             class="admin-element-inner__field"
+             :class="{ 'admin-element-inner__field--preview-full-width': previewFullWidth }"
+             :key="index">
 
-            <AdminComponentDatePicker v-if="inputComponentChecker(item) == 'datePicker'"
-                                      :item="item"
-                                      @pick="(value: string) => handleEmitValueChange(item, value)" />
-
-            <AdminComponentSelect v-else-if="inputComponentChecker(item) == 'select'"
-                                  :item="item"
-                                  @pick="(value: string) => handleEmitValueChange(item, value)" />
-
-
-            <AdminComponentTextarea v-else-if="inputComponentChecker(item) == 'textArea'"
+          <AdminComponentDatePicker v-if="inputComponentChecker(item) == 'datePicker'"
                                     :item="item"
                                     @pick="(value: string) => handleEmitValueChange(item, value)" />
 
+          <AdminComponentSelect v-else-if="inputComponentChecker(item) == 'select'"
+                                :item="item"
+                                @pick="(value: string) => handleEmitValueChange(item, value)" />
 
-            <AdminComponentInput v-else-if="inputComponentChecker(item) == 'input'"
-                                 :item="item"
-                                 @pick="(value: string) => handleEmitValueChange(item, value)" />
+          <AdminComponentTextarea v-else-if="inputComponentChecker(item) == 'textArea'"
+                                  :item="item"
+                                  @pick="(value: string) => handleEmitValueChange(item, value)" />
 
+          <AdminComponentInput v-else-if="inputComponentChecker(item) == 'input'"
+                               :item="item"
+                               @pick="(value: string) => handleEmitValueChange(item, value)" />
 
-            <AdminComponentImagePicker v-else-if="inputComponentChecker(item) == 'image'"
-                                       :item="item" />
-
-            <AdminComponentDocPicker v-else-if="inputComponentChecker(item) == 'docs'"
+          <AdminComponentImagePicker v-else-if="inputComponentChecker(item) == 'image'"
                                      :item="item" />
 
-            <div v-else-if="inputComponentChecker(item) == 'auto'"
-                 class="admin-element-inner__field-content">
-              <p v-if="item.name"
-                 class="admin-element-inner__field-title">{{ item.name }}</p>
-              <p v-if="item.value"
-                 class="admin-element-inner__field-value">{{ item.value }}</p>
-            </div>
+          <AdminComponentDocPicker v-else-if="inputComponentChecker(item) == 'docs'"
+                                   :item="item" />
 
+          <div v-else-if="inputComponentChecker(item) == 'auto'"
+               class="admin-element-inner__field-content">
+            <p v-if="item.name"
+               class="admin-element-inner__field-title">{{ item.name }}</p>
+            <p v-if="item.value"
+               class="admin-element-inner__field-value">{{ item.value }}</p>
           </div>
-        </div>
 
-        <div class="admin-element-inner__preview"
-             :class="{ 'admin-element-inner__preview--full-width': previewFullWidth }">
-          <Transition name="layout-change"
-                      mode="out-in">
-            <LayoutTop v-if="previewFullWidth"
-                       class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
-                       @click="previewFullWidth = !previewFullWidth" />
-            <LayoutLeft v-else
-                        class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
-                        @click="previewFullWidth = !previewFullWidth" />
-          </Transition>
-
-          <PostInner v-if="newData && activeType == 'news'"
-                     class="admin-element-inner__preview-content"
-                     :previewElement="newData"
-                     :type="'adminPreview'" />
-          <Interview v-if="activeType == 'interview'"
-                     class="admin-element-inner__preview-content"
-                     :interviewInner="currentItem" />
-          <CertainBlog v-if="activeType == 'blogs'"
-                       class="admin-element-inner__preview-content"
-                       :interviewInner="currentItem"
-                       :id="String(15238)"
-                       :authorId="String(157)" />
         </div>
       </div>
-    </Transition>
+      <div class="admin-element-inner__editor "
+           v-else>
+        <Loader class="admin-element-inner__editor__loader loader" />
+      </div>
+
+
+      <div class="admin-element-inner__preview"
+           :class="{ 'admin-element-inner__preview--full-width': previewFullWidth }">
+        <Transition name="layout-change"
+                    mode="out-in">
+          <LayoutTop v-if="previewFullWidth"
+                     class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
+                     @click="previewFullWidth = !previewFullWidth" />
+          <LayoutLeft v-else
+                      class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
+                      @click="previewFullWidth = !previewFullWidth" />
+        </Transition>
+
+        <PostInner v-if="newData && activeType == 'news'"
+                   class="admin-element-inner__preview-content"
+                   :previewElement="newData"
+                   :type="'adminPreview'" />
+        <Interview v-if="activeType == 'interview'"
+                   class="admin-element-inner__preview-content"
+                   :interviewInner="currentItem" />
+        <CertainBlog v-if="activeType == 'blogs'"
+                     class="admin-element-inner__preview-content"
+                     :interviewInner="currentItem"
+                     :id="String(15238)"
+                     :authorId="String(157)" />
+      </div>
+    </div>
 
     <div class="admin-element-inner__actions">
       <button @click="applyNewData"
@@ -114,6 +113,7 @@ import AdminComponentDocPicker from './components/AdminComponentDocPicker.vue';
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
+import Loader from '@/components/layout/Loader.vue';
 
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
@@ -121,6 +121,7 @@ export default defineComponent({
   components: {
     LayoutLeft,
     LayoutTop,
+    Loader,
     PostInner,
     Interview,
     CertainBlog,
@@ -237,6 +238,8 @@ export default defineComponent({
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    transition: flex-direction 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      gap 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     &--mt20 {
       margin-top: 20px;
@@ -244,6 +247,7 @@ export default defineComponent({
 
     &--preview-full-width {
       flex-direction: column-reverse;
+      gap: 20px;
     }
   }
 
@@ -252,12 +256,15 @@ export default defineComponent({
     flex-direction: column;
     gap: 15px;
     min-width: 33%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center top;
 
     &--preview-full-width {
       align-items: center;
       align-content: center;
       border-top: 1px solid gainsboro;
       padding-top: 40px;
+      transform: translateY(0);
     }
 
     &--no-preview {
@@ -271,16 +278,20 @@ export default defineComponent({
     max-width: 500px;
     width: 100%;
 
+
     &:empty {
       display: none;
     }
 
     &--preview-full-width {
       max-width: 50%;
+      transform: scale(0.95);
     }
   }
 
   &__field-content {
+    transition: all 0.3s ease;
+
     &--no-transition {
       transition: none !important;
     }
@@ -327,10 +338,6 @@ export default defineComponent({
     background-position: right 12px center;
     background-size: 10px;
     padding-right: 30px;
-  }
-
-  &__select-option {
-    // Стили для опций селекта
   }
 
   &__date-picker {
@@ -426,10 +433,13 @@ export default defineComponent({
     height: fit-content;
     position: sticky;
     top: 100px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center top;
 
     &--full-width {
       position: relative;
       top: auto;
+      transform: translateY(0);
     }
   }
 
@@ -504,24 +514,18 @@ export default defineComponent({
   width: 100%;
 }
 
-
-
 .layout-change-enter-active,
-.layout-change-leave-active,
-.layout-change-toLeft-enter-active,
-.layout-change-toLeft-leave-active {
+.layout-change-leave-active {
   transition: all 0.2s ease;
 }
 
 .layout-change-enter-from,
 .layout-change-leave-to {
-  opacity: 0.7;
-  transform: translateX(-30px);
+  opacity: 0;
+  transform: scale(0.8);
 }
 
-.layout-change-toLeft-enter-from,
-.layout-change-toLeft-leave-to {
-  opacity: 0.7;
-  transform: translateX(30px);
+.admin-element-inner__editor__loader {
+  margin: auto;
 }
 </style>

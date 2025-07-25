@@ -53,7 +53,7 @@ class User(Base):
 
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
-    #views = relationship("Views", back_populates="user")
+    uservissionsroot = relationship("UserVissionsRoot", back_populates="user")
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -120,6 +120,29 @@ class Views(Base):
     # Опциональные отношения для удобства доступа
     #user = relationship("User", back_populates="views")
     article = relationship("Article", back_populates="views")
+
+class FieldVission(Base):
+    """
+    Класс для хранения области видимости
+    """
+    __tablename__ = 'fieldvission'
+    id = Column(Integer, primary_key=True)
+    vission_name = Column(Text, nullable=True)
+
+    uservissionsroot = relationship("UserVissionsRoot", back_populates="fieldvission")
+
+class UserVissionsRoot(Base):
+    """
+    Класс для хранения области видимости
+    """
+    __tablename__ = 'uservissionsroot'
+    id = Column(Integer, primary_key=True)
+    vission_id = Column(Integer, ForeignKey('fieldvission.id', ondelete="CASCADE"), nullable=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    fieldvission = relationship("FieldVission", back_populates="uservissionsroot")
+    user = relationship("User", back_populates="uservissionsroot")
+
 
 
 metadata = MetaData()
@@ -484,9 +507,7 @@ class UserModel():
                             dep_str = DepartmentModel(dep).find_dep_by_id()
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])
-                    if "uf_usr_department_main" in indirect_data:
-                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
-                        indirect_data["uf_usr_department_main"] = dedep[0].name
+                    
                             
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
@@ -499,6 +520,9 @@ class UserModel():
                         user_info['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
+                    if "uf_usr_department_main" in indirect_data:
+                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                        user_info['uf_usr_department_main'] = dedep[0].name
                     user_info['image'] =  f'http://intranet.emk.org.ru{user_image['URL']}'
                     
                     normal_list.append(user_info)
@@ -695,6 +719,18 @@ class DepartmentModel():
         # else:
         #     return {'err': 'Нет такого департамента'}
     
+    def find_deps_by_father_id(self, father_id):
+        result = []
+        #null_depart = self.db.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
+        #res = self.db.query(self.department).filter(self.department.father_id == father_id).all()
+        res = self.db.execute(select(self.department).where(self.department.father_id == father_id)).scalars().all()
+        if res is not None:
+            return res
+        else:
+            # return {'err': 'Нет такого департамента'}
+            #return LogsMaker().warning_message('Нет такого департамента')
+            return []
+
     def all(self):
         return self.db.query(self.department).all()
 
@@ -744,7 +780,8 @@ class UsDepModel():
 
             # если такого пользователя нет в таблице users - ошибка
             if us_dep_key not in users:
-                return {'err' : [{'Пользователя нет в таблице users' : us_dep_key}]}
+                #return {'err' : [{'Пользователя нет в таблице users' : us_dep_key}]}
+                continue
             else:
                 # если есть такой пользователь в таблице users - проверяем есть ли он в таблице usdep
                 if us_dep_key not in users_from_usdep_table:
@@ -758,7 +795,8 @@ class UsDepModel():
                     for dep_frm_usr in departs_from_users_table:
                         if isinstance(dep_frm_usr, int):
                             if dep_frm_usr not in departs:
-                                return {'err' : [{'такого департамента из таблицы users нет в таблице departments' : dep_frm_usr}]}
+                                #print({'err' : [{'такого департамента из таблицы users нет в таблице departments' : dep_frm_usr}]}) 
+                                continue
                             # если есть
                             else:
                                 pass
@@ -1349,3 +1387,93 @@ class ViewsModel:
             return {"views": new_view.viewes_count}
 
 
+class FieldVissionModel:
+    def __init__(self, vission_name: str = '', id: int = 0):
+        self.session = db
+        self.vission_name = vission_name
+        self.id = id
+
+    def add_field_vission(self):
+        existing_vission = self.session.query(FieldVission).filter(FieldVission.vission_name == self.vission_name).first()
+        if existing_vission:
+            return {"msg": "Уже создано"}
+        
+        new_vission = FieldVission(vission_name=self.vission_name)
+        self.session.add(new_vission)
+        self.session.commit()
+        return self.session.query(FieldVission).filter(FieldVission.vission_name == self.vission_name).first()
+
+    def remove_field_vission(self):
+        existing_vission = self.session.query(FieldVission).filter(FieldVission.id == self.id).first()
+        if existing_vission:
+            self.session.query(FieldVission).filter(FieldVission.id == self.id).delete()
+            self.session.commit()
+            return {"msg": "Удалено"}
+        return {"msg": "Такой области не существует"}
+    
+    def find_vission_by_id(self):
+        existing_vission = self.session.query(FieldVission).filter(FieldVission.id == self.id).first()
+        if existing_vission:
+            return existing_vission
+        return {"msg": "такого vission_id не существует"}
+    
+    def find_all_vissions(self):
+        return self.session.query(FieldVission).all()
+
+
+class UserVissionsRootModel:
+    def __init__(self, id: int = 0, vission_id: int = 0, user_id: int = 0):
+        self.session = db
+        self.id = id
+        self.vission_id = vission_id
+        self.user_id = user_id
+
+    def upload_user_to_vission(self):
+        existing_user = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == self.user_id).first()
+        if existing_user:
+            return {"msg": f"пользователь {self.user_id} уже сущетсвует в данной области видимости"}
+        new_user = UserVissionsRoot(vission_id=self.vission_id, user_id=self.user_id)
+        self.session.add(new_user)
+        self.session.commit()
+        return {"msg": "Добавлен"}
+    
+    def upload_users_to_vission(self, user_data):
+        for user in user_data:
+            existing_user = self.session.query(User).filter(User.id == user, User.active == True).first()
+            #print
+            if existing_user:
+                existing_user_in_vission = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == user).first()
+                if existing_user_in_vission:
+                    #return {"msg": f"пользователь {self.user_id} уже сущетсвует в данной области видимости"}
+                    continue
+                else:
+                    new_user = UserVissionsRoot(vission_id=self.vission_id, user_id=user)
+                    self.session.add(new_user)
+                    self.session.commit()
+        return {"status": True}
+    
+    def remove_user_from_vission(self):
+        existing_user = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == self.user_id).first()
+        if existing_user:
+            self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id, UserVissionsRoot.user_id == self.user_id).delete()
+            self.session.commit()
+            return {"msg": f"пользователь {self.user_id} удален из области видимости"}
+        return {"msg": f"пользователя {self.user_id} не существует в данной области видимости"}
+    
+    def find_users_in_vission(self):
+        result = []
+        existing_vission = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id).first()
+        if existing_vission:
+            users_in_vis = self.session.query(UserVissionsRoot).filter(UserVissionsRoot.vission_id == self.vission_id).all()
+            for user in users_in_vis:
+                general_info = {}
+                user_info = UserModel(Id=user.user_id).find_by_id()
+                general_info['id'] = user_info['id']
+                general_info['name'] = user_info['name']
+                general_info['last_name'] = user_info['last_name']
+                general_info['second_name'] = user_info['second_name']
+                general_info['post'] = user_info['indirect_data']['work_position']
+                general_info['photo'] = user_info['photo_file_url']
+                result.append(general_info)
+            return result
+        return {"msg": "такого vission_id не существует"}

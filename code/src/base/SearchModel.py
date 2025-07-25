@@ -18,6 +18,8 @@ search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту
 
 elastic_client = Elasticsearch('http://elastic:9200')
 
+with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
+    sections = json.load(f)
 
 class UserSearchModel:
     def __init__(self):
@@ -1303,141 +1305,7 @@ class ArticleSearchModel:
 
         return {"status": True}
 
-    # def search_by_title(self, words):
-    #     res = elastic_client.search(
-    #         index=self.index,
-    #         query={
-    #             "bool": {
-    #                 "should": [
-    #                     {
-    #                         "match": {
-    #                             "title": {
-    #                                 "query": words,
-    #                                 "fuzziness": "AUTO",
-    #                                 "prefix_length": 2
-    #                                 # "boost": 2  
-    #                             }
-    #                         }
-    #                     },
-    #                     {
-    #                         "wildcard": {
-    #                             "title": {
-    #                                 "value": f"{words}*",
-    #                                 "case_insensitive": True
-    #                                 # "prefix_length": 2,  
-    #                                 # "boost": 1
-    #                             }
-    #                         }
-    #                     }
-    #                 ]
-    #             }
-    #         },
-    #         size=100
-    #     )
-
-    #     return res['hits']['hits']
-
-    # def search_by_preview(self, preview):
-    #     res = elastic_client.search(
-    #         index=self.index,
-    #         query={
-    #             "bool": {
-    #                 "should": [
-    #                     {
-    #                         "match": {
-    #                             "preview_text": {
-    #                                 "query": preview,
-    #                                 "fuzziness": "AUTO",
-    #                                 "prefix_length": 2
-    #                                 # "boost": 2  
-    #                             }
-    #                         }
-    #                     },
-    #                     {
-    #                         "wildcard": {
-    #                             "preview_text": {
-    #                                 "value": f"{preview}*",
-    #                                 "case_insensitive": True
-    #                                 # "prefix_length": 2,  
-    #                                 # "boost": 1
-    #                             }
-    #                         }
-    #                     }
-    #                 ]
-    #             }
-    #         },
-    #         size=100
-    #     )
-
-    #     return res['hits']['hits']
-
-    # def search_by_text(self, text):
-    #     res = elastic_client.search(
-    #         index=self.index,
-    #         query={
-    #             "bool": {
-    #                 "should": [
-    #                     {
-    #                         "match": {
-    #                             "content_text": {
-    #                                 "query": text,
-    #                                 "fuzziness": "AUTO",
-    #                                 "prefix_length": 2
-    #                                 # "boost": 2  
-    #                             }
-    #                         }
-    #                     },
-    #                     {
-    #                         "wildcard": {
-    #                             "content_text": {
-    #                                 "value": f"{text}*",
-    #                                 "case_insensitive": True
-    #                                 # "prefix_length": 2,  
-    #                                 # "boost": 1
-    #                             }
-    #                         }
-    #                     }
-    #                 ]
-    #             }
-    #         },
-    #         size=100
-    #     )
-
-    #     return res['hits']['hits']
-    #     res = elastic_client.search(
-    #         index=self.index,
-    #         query={
-    #             "bool": {
-    #                 "should": [
-    #                     {
-    #                         "match": {
-    #                             "content_text": {
-    #                                 "query": text,
-    #                                 "fuzziness": "AUTO",
-    #                                 "prefix_length": 2
-    #                                 # "boost": 2  
-    #                             }
-    #                         }
-    #                     },
-    #                     {
-    #                         "wildcard": {
-    #                             "content_text": {
-    #                                 "value": f"{text}*",
-    #                                 "case_insensitive": True
-    #                                 # "prefix_length": 2,  
-    #                                 # "boost": 1
-    #                             }
-    #                         }
-    #                     }
-    #                 ]
-    #             }
-    #         },
-    #         size=100
-    #     )
-
-    #     return res['hits']['hits']
-
-    
+       
     def elasticsearch_article(self, key_word, size_res: Optional[int] = 20):
         result = []
         res = elastic_client.search(
@@ -1518,7 +1386,8 @@ class ArticleSearchModel:
                 true_search_flag = True
             art_info = {}
             art_info['name'] = res_info["_source"]["title"]
-            art_info['href'] = res_info["_source"]["section_id"]
+            section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
+            art_info['href'] = section_href
             art_info['id'] = int(res_info["_id"])
             art_info['image'] = res_info["_source"]["preview_photo"]
             art_info['coincident'] = res_info['highlight']

@@ -1048,7 +1048,7 @@ class ArticleModel():
         #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
         #return db.query(Article).filter(Article.id == self.id).delete()
         #return self.db.execute(delete(Article).where(Article.id == self.id))
-        return db.query(Article).filter_by(id=self.id).delete()
+        return db.query(Person).filter(Person.id==2).first()
 
         
 

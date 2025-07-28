@@ -1173,7 +1173,7 @@ class ArticleSearchModel:
                         if file["is_preview"]:
                             url = file["file_url"]
                             #внедряю компрессию
-                            if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
+                            if article_data['section_id'] == 18: #отдельный алгоритм для памятки новому сотруднику
                                 preview_link = url.split("/")
                                 preview_link[-2] = "compress_image/yowai_mo"
                                 url = '/'.join(preview_link)
@@ -1190,7 +1190,7 @@ class ArticleSearchModel:
                         if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                             url = file["file_url"]
                             #внедряю компрессию
-                            if article_data['section_id'] == "18": #отдельный алгоритм для памятки новому сотруднику
+                            if article_data['section_id'] == 18: #отдельный алгоритм для памятки новому сотруднику
                                 preview_link = url.split("/")
                                 preview_link[-2] = "compress_image/yowai_mo"
                                 url = '/'.join(preview_link)
@@ -1202,6 +1202,8 @@ class ArticleSearchModel:
                             preview_photo = f"http://intranet.emk.org.ru{url}"
                     
                     data_row["section_id"] = article_data["section_id"]
+                    if article_data["section_id"] == 15:
+                        data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
                     data_row["title"] = article_data["name"]
                     data_row["preview_text"] = article_data["preview_text"]
                     data_row["content_text"] = article_data["content_text"]
@@ -1308,6 +1310,8 @@ class ArticleSearchModel:
             section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
             art_info['sectionHref'] = section_href
             art_info['id'] = int(res_info["_id"])
+            if "authorId" in res_info["_source"].keys():
+                art_info['authorId'] = res_info["_source"]["authorId"]
             art_info['image'] = res_info["_source"]["preview_photo"]
             art_info['coincident'] = res_info['highlight']
             articles.append(art_info)
@@ -1525,6 +1529,8 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
                 section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
                 art_info['sectionHref'] = section_href
                 art_info['id'] = int(res_info["_id"])
+                if "authorId" in res_info["_source"].keys():
+                    art_info['authorId'] = res_info["_source"]["authorId"]
                 art_info['image'] = res_info["_source"]["preview_photo"]
                 art_info['coincident'] = res_info['highlight']
                 articles.append(art_info)

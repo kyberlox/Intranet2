@@ -1051,7 +1051,7 @@ class ArticleModel():
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
         art = db.query(Article).filter(Article.id==int(self.id))
         print(art)
-        return art
+        #return art
 
         
 

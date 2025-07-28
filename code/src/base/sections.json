@@ -42,7 +42,7 @@
   },
   {
     "id" : 16,
-    "name" : "Видеоитервью",
+    "name" : "Видеоинтервью",
     "parent_id" : 1,
     "sectionHref": "videoInterview"
   },

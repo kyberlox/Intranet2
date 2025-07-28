@@ -47,7 +47,7 @@ class Editor:
         self.fields = json.load(fields_data_file)
         fields_data_file.close()
     
-    def get_sections(self):
+    def get_sections(self ):
         all_sections = Section().get_all()
         valid_id = [13, 14, 15, 16, 172, 175, 18, 110, 111, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55]
         edited_sections = []
@@ -56,6 +56,8 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
+    def section_rendering(self ):
+        return Article(section_id = self.section_id).all_serch_by_date()
     
     def rendering(self ):
         if self.art_id is None:
@@ -96,6 +98,10 @@ class Editor:
                     "field" : k,
                     "data_type" : data_type
                 }
+
+                # если значения варьируются
+                if k in self.variable.keys():
+                    fl["values"] = self.variable[k]
 
                 # проверяю редактируемость
                 if k in self.notEditble or val is None:
@@ -241,7 +247,7 @@ class Editor:
     def delete_art(self, ):
         return Article(id = self.art_id).delete()
         
-
+    
 
 
     def update(self, data : dict):
@@ -344,6 +350,10 @@ async def get_edit_sections():
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id : int ):
     return Editor(art_id=art_id).rendering()
+
+@editor_router.get("/section_rendering/{sec_id}")
+async def sec_render(sec_id):
+    return Editor(section_id = sec_id).section_rendering()
 
 #изменить статью
 @editor_router.post("/update/{art_id}")

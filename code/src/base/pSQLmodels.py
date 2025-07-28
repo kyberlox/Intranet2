@@ -1050,9 +1050,13 @@ class ArticleModel():
         #return db.query(Article).filter(Article.id == self.id).delete()
         #return self.db.execute(delete(Article).where(Article.id == self.id))
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
-        db.query(Article).filter(Article.id==int(self.id)).delete()
-        db.commit()
-        return True
+        art = db.query(Article).get(self.id)
+        if art is not None:
+            db.query(Article).filter(Article.id==int(self.id)).delete()
+            db.commit()
+            return True
+        else:
+            return False
 
         
 

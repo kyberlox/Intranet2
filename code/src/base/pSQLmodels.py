@@ -1026,6 +1026,7 @@ class ArticleModel():
         db.query(Article).get(self.id).delete() #### !!!!!!!!!!! не сработает
         #залить заново
         self.add_article(article_data)
+        db.commit()
 
     def update(self, article_data):
         db_art = db.query(Article).get(self.id).__dict__

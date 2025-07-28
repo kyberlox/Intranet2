@@ -244,14 +244,34 @@ class Editor:
 
 
 
-    def update(self ):
+    def update(self, data : dict):
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
-        # перезаписать основные поля из psql
 
-        # перезаписать поля из psql -> idirect_data
+        # получаю текущие значения
+        # вытащить основные поля из psql
+        art = ArticleModel(id = self.art_id).find_by_id()
+
+
+        # вытаскию новые значения
+        #валидировать данные data
+        for key in data.keys():
+            #если это редактируемый параметр
+            if key not in self.notEditble:
+                #если это один из основных параметров
+                if key in self.fundamental:
+                    #фиксирую
+                    art[key] = data[key]
+
+                #если это часть indirect_data
+                else:
+                    indirect_data[key] = data[key]
+        
+        print(art)
+
         # перезаписать файлы 
         # сохранить
+        #ArticleModel(id = self.art_id).update(art)
 
     def get_files(self ):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()

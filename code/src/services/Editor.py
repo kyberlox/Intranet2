@@ -251,6 +251,8 @@ class Editor:
         # получаю текущие значения
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
+        if "_sa_instance_state" in art:
+            art.pop("_sa_instance_state")
 
         # вытаскию новые значения
         #валидировать данные data

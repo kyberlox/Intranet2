@@ -252,7 +252,6 @@ class Editor:
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
 
-
         # вытаскию новые значения
         #валидировать данные data
         for key in data.keys():
@@ -265,13 +264,13 @@ class Editor:
 
                 #если это часть indirect_data
                 else:
-                    indirect_data[key] = data[key]
+                    art["indirect_data"][key] = data[key]
         
         print(art)
 
         # перезаписать файлы 
         # сохранить
-        #ArticleModel(id = self.art_id).update(art)
+        return ArticleModel(id = self.art_id).update(art)
 
     def get_files(self ):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()

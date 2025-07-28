@@ -1027,8 +1027,9 @@ class ArticleModel():
         #залить заново
         self.add_article(article_data)
         db.commit()
+        return True
 
-    def update(self, article_data):
+    '''def update(self, article_data):
         db_art = db.query(Article).get(self.id).__dict__
         for key in article_data:
             if key not in ["ID", "_sa_instance_state"]:
@@ -1043,7 +1044,7 @@ class ArticleModel():
                     # print(db_art['id'], key, db_art[key], "-->", article_data[key])
                     return True
                 else:
-                    return False
+                    return False'''
 
     def remove(self ):
         #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))

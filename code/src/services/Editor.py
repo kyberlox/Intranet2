@@ -346,8 +346,8 @@ async def render(art_id : int ):
 
 #изменить статью
 @editor_router.put("/update/{art_id}")
-async def updt(art_id : int):
-    return Editor(art_id=art_id).update()
+async def updt(art_id : int, data = Body()):
+    return Editor(art_id=art_id).update(data)
 
 #добавить статью
 @editor_router.get("/add/{section_id}")

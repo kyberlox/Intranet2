@@ -345,7 +345,7 @@ async def render(art_id : int ):
     return Editor(art_id=art_id).rendering()
 
 #изменить статью
-@editor_router.put("/update/{art_id}")
+@editor_router.post("/update/{art_id}")
 async def updt(art_id : int, data = Body()):
     return Editor(art_id=art_id).update(data)
 

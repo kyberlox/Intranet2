@@ -1023,7 +1023,7 @@ class ArticleModel():
 
     def update(self, article_data):
         #удалить статью
-        db.query(Article).get(self.id).delete() #### !!!!!!!!!!! не сработает
+        db.query(Article).filter(Article.id==int(self.id)).delete()
         #залить заново
         self.add_article(article_data)
         db.commit()

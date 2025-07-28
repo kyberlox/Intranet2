@@ -57,7 +57,11 @@ class Editor:
         return edited_sections
 
     def section_rendering(self ):
-        return Article(section_id = self.section_id).all_serch_by_date()
+        result = Article(section_id = self.section_id).all_serch_by_date()
+        for art in result:
+            self.id = art["id"]
+            art["preview_file_url"] = Article(id = int(self.id)).get_preview()
+        return result
     
     def rendering(self ):
         if self.art_id is None:

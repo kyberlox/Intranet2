@@ -1021,7 +1021,7 @@ class ArticleModel():
         else:
             return True
 
-    def reassembly(self, article_data):
+    def update(self, article_data):
         #удалить статью
         db.query(Article).get(self.id).delete() #### !!!!!!!!!!! не сработает
         #залить заново

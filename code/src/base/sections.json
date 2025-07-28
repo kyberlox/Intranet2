@@ -5,7 +5,6 @@
     "parent_id" : null,
     "sectionHref": "home"
   },
-
   {
     "id" : 1,
     "name" : "О нас",
@@ -21,36 +20,31 @@
     "id" : 12,
     "name" : "История компании",
     "parent_id" : 1,
-    "sectionHref": "book-emk",
-    "subsectionHref": "book-emk-page"
+    "sectionHref": "book-emk"
   },
   {
     "id" : 13,
     "name" : "Наши люди",
     "parent_id" : 1,
-    "sectionHref": "our-people",
-    "subsectionHref": "ourPeopleInner"
+    "sectionHref": "ourPeopleInner"
   },
   {
     "id" : 14,
     "name" : "Доска почёта",
     "parent_id" : 1,
-    "sectionHref": "year-results",
-    "subsectionHref": "year-results-id"
+    "sectionHref": "year-results-id"
   },
   {
     "id" : 15,
     "name" : "Блоги",
     "parent_id" : 1,
-    "sectionHref": "blogs",
-    "subsectionHref": "certainBlog"
+    "sectionHref": "certainBlog"
   },
   {
     "id" : 16,
     "name" : "Видеоитервью",
     "parent_id" : 1,
-    "sectionHref": "videoInterviews",
-    "subsectionHref": "videoInterview"
+    "sectionHref": "videoInterview"
   },
   {
     "id" : 17,
@@ -63,15 +57,13 @@
     "id" : 171,
     "name" : "Электронные курсы",
     "parent_id" : 17,
-    "sectionHref": "Ecources",
-    "subsectionHref": "Ecource"
+    "sectionHref": "Ecource"
   },
   {
     "id" : 172,
     "name" : "Проведённые тренинги",
     "parent_id" : 17,
-    "sectionHref": "conductedTrainings",
-    "subsectionHref": "conductedTraining"
+    "sectionHref": "conductedTraining"
   },
   {
     "id" : 173,
@@ -128,8 +120,6 @@
     "parent_id" : 1,
     "sectionHref": "newWorkers"
   },
-
-
   {
     "id" : 2,
     "name" : "Сервисы",
@@ -163,8 +153,6 @@
     "parent_id" : 2,
     "sectionHref": "experience"
   },
- 
-
   {
     "id" : 3,
     "name" : "Новости",
@@ -174,22 +162,19 @@
     "id" : 31,
     "name" : "Актуальные новости",
     "parent_id" : 3,
-    "sectionHref": "actualNews",
-    "subsectionHref": "actualArticle"
+    "sectionHref": "actualArticle"
   },
   {
     "id" : 32,
     "name" : "Новости организационного развития",
     "parent_id" : 3,
-    "sectionHref": "corpNews",
-    "subsectionHref": "corpNewsArticle"
+    "sectionHref": "corpNewsArticle"
   },
   {
     "id" : 33,
     "name" : "Видеорепортажи",
     "parent_id" : 3,
-    "sectionHref": "videoReports",
-    "subsectionHref": "videoReport"
+    "sectionHref": "videoReport"
   },
   {
     "id" : 34,
@@ -197,7 +182,6 @@
     "parent_id" : 3,
     "sectionHref": "gazette"
   },
-
   {
     "id" : 4,
     "name" : "Галерея",
@@ -207,16 +191,15 @@
     "id" : 41,
     "name" : "Гид по предприятиям",
     "parent_id" : 4,
-    "sectionHref": "factories"
+    "tourHref": "factoryTour",
+    "reportHref": "factoryReports"
   },
   {
     "id" : 42,
     "name" : "Официальные события",
     "parent_id" : 4,
-    "sectionHref": "officialEvents",
-    "subsectionHref": "officialEvent"
+    "sectionHref": "officialEvent"
   },
-
   {
     "id" : 5,
     "name" : "Внутренние коммуникации",
@@ -226,38 +209,32 @@
     "id" : 51,
     "name" : "Корпоративные события",
     "parent_id" : 5,
-    "sectionHref": "corpEvents",
-    "subsectionHref": "corpEvent"
+    "sectionHref": "corpEvent"
   },
   {
     "id" : 52,
     "name" : "Корпоративная жизнь в фото",
     "parent_id" : 5,
-    "sectionHref": "corpLife",
-    "subsectionHref": "corpLifeItem"
+    "sectionHref": "corpLifeItem"
   },
   {
     "id" : 53,
     "name" : "Афиша",
     "parent_id" : 5,
-    "sectionHref": "eventAnnounces",
-    "subsectionHref": "eventAnnounce"
+    "sectionHref": "eventAnnounce"
   },
   {
     "id" : 54,
     "name" : "Предложения партнёров",
     "parent_id" : 5,
-    "sectionHref": "partners",
-    "subsectionHref": "partnerPost"
+    "sectionHref": "partnerPost"
   },
   {
     "id" : 55,
     "name" : "Благотворительные проекты",
     "parent_id" : 5,
-    "sectionHref": "care",
-    "subsectionHref": "carePost"
+    "sectionHref": "carePost"
   },
-  
   {
     "id" : 6,
     "name" : "Уже НЕ актуальные новости",
@@ -273,5 +250,4 @@
     "name" : "Есть Идея",
     "parent_id" : 2
   }
-
 ]

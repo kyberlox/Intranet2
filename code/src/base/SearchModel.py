@@ -410,7 +410,7 @@ class UserSearchModel:
             #print(res_info)
             user_info = {}
             user_info['name'] = res_info["_source"]["user_fio"]
-            user_info['href'] = "userPage"
+            user_info['sectionHref'] = "userPage"
             user_info['id'] = int(res_info["_id"])
             user_info['image'] = res_info["_source"]["photo_file_id"]
             users.append(user_info)
@@ -423,88 +423,7 @@ class UserSearchModel:
         result.append(sec_user)
         return result  #result  res['hits']['hits'] 
 
-    # def elasticsearch_users(self, key_word, size_res):
-    #     result = []
-    #     res = elastic_client.search(
-    #         index=self.index,
-    #         body={
-    #             "query": {
-    #                 "bool": {
-    #                     "should": [
 
-    #                         # точный поиск
-    #                         {"match_phrase": {"user_fio": {"query": key_word, "boost": 10, "_name": "true_search"}}}, 
-    #                         {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
-    #                         {
-    #                             "nested": {
-    #                                 "path": "indirect_data",
-    #                                 "query": {
-    #                                     "bool": {
-    #                                         "should": [
-    #                                             {"match_phrase": {"indirect_data.work_position": {"query": key_word, "boost": 5, "_name": "true_search"}}},
-    #                                             {"match_phrase": {"indirect_data.uf_usr_1705744824758": {"query": key_word, "boost": 5, "_name": "true_search"}}},
-    #                                             {"match_phrase": {"indirect_data.uf_usr_1707225966581": {"query": key_word, "boost": 5, "_name": "true_search"}}},
-    #                                             {"match_phrase": {"indirect_data.uf_usr_1696592324977": {"query": key_word, "boost": 5, "_name": "true_search"}}},
-    #                                             {"match_phrase": {"indirect_data.uf_usr_1586853958167": {"query": key_word, "boost": 5, "_name": "true_search"}}},
-    #                                             {"match_phrase": {"indirect_data.uf_usr_department_main": {"query": key_word, "boost": 5, "_name": "true_search"}}},
-    #                                             {"match_phrase": {"indirect_data.uf_usr_1586854037086": {"query": key_word, "boost": 5, "_name": "true_search"}}}
-    #                                         ]
-    #                                     }
-    #                                 }
-    #                             }
-    #                         },
-
-    #                         #неточный поиск
-    #                         {"multi_match": {"query": key_word, "fields": ["user_fio.fuzzy"], "fuzziness": "AUTO", "boost": 2, "_name": "search"}},
-    #                         {
-    #                             "nested": {
-    #                                 "path": "indirect_data",
-    #                                 "query": {
-    #                                     "multi_match": {
-    #                                         "query": key_word,
-    #                                         "fields": [
-    #                                             "indirect_data.work_position.fuzzy",
-    #                                             "indirect_data.uf_usr_1705744824758.fuzzy",
-    #                                             "indirect_data.uf_usr_1707225966581.fuzzy",
-    #                                             "indirect_data.uf_usr_1696592324977.fuzzy",
-    #                                             "indirect_data.uf_usr_1586853958167.fuzzy",
-    #                                             "indirect_data.uf_usr_department_main.fuzzy",
-    #                                             "indirect_data.uf_usr_1586854037086.fuzzy"
-    #                                         ],
-    #                                         "fuzziness": "AUTO",
-    #                                         "boost": 1
-    #                                     }
-    #                                 },
-    #                                 "score_mode": "max"
-    #                             }
-    #                         }
-    #                     ]
-    #                 }
-    #             },
-    #             "size": size_res
-    #         }
-    #     )
-    #     users = []
-    #     true_search_flag = False
-        
-    #     for res_info in res['hits']['hits']:
-    #         if "matched_queries" in res_info.keys():
-    #             true_search_flag = True
-    #         #print(res_info)
-    #         user_info = {}
-    #         user_info['name'] = res_info["_source"]["user_fio"]
-    #         user_info['href'] = "userPage"
-    #         user_info['id'] = int(res_info["_id"])
-    #         user_info['image'] = res_info["_source"]["photo_file_id"]
-    #         users.append(user_info)
-        
-    #     sec_user = {}
-    #     sec_user['section'] = 'Пользователи'
-    #     if true_search_flag is False:
-    #         sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
-    #     sec_user['content'] = users
-    #     result.append(sec_user)
-    #     return res['hits']['hits'] #result  res['hits']['hits'] 
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
@@ -1386,8 +1305,8 @@ class ArticleSearchModel:
                 true_search_flag = True
             art_info = {}
             art_info['name'] = res_info["_source"]["title"]
-            section_href = next((s.get('subsectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
-            art_info['href'] = section_href
+            section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
+            art_info['sectionHref'] = section_href
             art_info['id'] = int(res_info["_id"])
             art_info['image'] = res_info["_source"]["preview_photo"]
             art_info['coincident'] = res_info['highlight']
@@ -1592,7 +1511,7 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
                 #print(res_info)
                 user_info = {}
                 user_info['name'] = res_info["_source"]["user_fio"]
-                user_info['href'] = "userPage"
+                user_info['sectionHref'] = "userPage"
                 user_info['id'] = int(res_info["_id"])
                 user_info['image'] = res_info["_source"]["photo_file_id"]
                 users.append(user_info)
@@ -1603,7 +1522,8 @@ def search_everywhere(key_word): # , size_res: Optional[int] = 40
                     true_art_search_flag = True
                 art_info = {}
                 art_info['name'] = res_info["_source"]["title"]
-                art_info['href'] = res_info["_source"]["section_id"]
+                section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
+                art_info['sectionHref'] = section_href
                 art_info['id'] = int(res_info["_id"])
                 art_info['image'] = res_info["_source"]["preview_photo"]
                 art_info['coincident'] = res_info['highlight']

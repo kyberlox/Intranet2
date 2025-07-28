@@ -1049,9 +1049,9 @@ class ArticleModel():
         #return db.query(Article).filter(Article.id == self.id).delete()
         #return self.db.execute(delete(Article).where(Article.id == self.id))
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
-        #art = db.query(Article).filter(Article.id==int(self.id))
-        #print(art)
-        return db.query(Article).filter(Article.id == self.id).delete()
+        art = db.query(Article).filter(Article.id==int(self.id))
+        print(art)
+        return art
 
         
 

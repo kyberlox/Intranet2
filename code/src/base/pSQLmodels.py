@@ -1047,7 +1047,10 @@ class ArticleModel():
     def remove(self ):
         #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
         #return db.query(Article).filter(Article.id == self.id).delete()
-        return self.db.execute(delete(Article).where(Article.id == self.id))
+        #return self.db.execute(delete(Article).where(Article.id == self.id))
+        self.article.query.filter_by(id=self.id).delete()
+
+        
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

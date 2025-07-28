@@ -1050,8 +1050,9 @@ class ArticleModel():
         #return self.db.execute(delete(Article).where(Article.id == self.id))
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
         art = db.query(Article).filter(Article.id==int(self.id))
-        print(art)
-        #return art
+        db.delete(art)  # удаляем объект
+        db.commit()
+        return True
 
         
 

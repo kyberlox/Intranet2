@@ -1,7 +1,7 @@
 <template>
     <div class="admin-element-inner__field-content">
-        <p class="admin-element-inner__field-title">{{ item?.name }}</p>
-        <input class="admin-element-inner__input"
+        <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
+        <input class="admin-element-inner__input fs-m"
                v-model="value"
                @input="handleValuePick"
                :disabled="Boolean(item?.disabled)" />
@@ -20,7 +20,7 @@ export default defineComponent({
         },
     },
     setup(props, { emit }) {
-        const value = ref();
+        const value = ref(props.item?.value);
         return {
             value,
             handleValuePick: () => emit('pick', value.value)

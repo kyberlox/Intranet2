@@ -1,7 +1,7 @@
 <template>
     <div class="admin-element-inner__field-content">
-        <p class="admin-element-inner__field-title">{{ item?.name }}</p>
-        <TextEditor class="admin-element-inner__text-editor"
+        <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
+        <TextEditor class="admin-element-inner__text-editor fs-m"
                     v-model="value"
                     @vue:updated="handleValuePick" />
     </div>
@@ -26,7 +26,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const value = ref(props.inputValue);
+        const value = ref(props.item?.value);
         return {
             value,
             handleValuePick: () => emit('pick', value.value)

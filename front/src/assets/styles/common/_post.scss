@@ -60,6 +60,9 @@
             text-align: justify;
 
             &>p {
+
+                min-height: 1ch;
+
                 &>img {
                     max-width: 100%;
                 }

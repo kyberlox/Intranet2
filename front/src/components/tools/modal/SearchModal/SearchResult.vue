@@ -14,6 +14,7 @@
                 <RouterLink class="search-result-block-info"
                             v-for="(contentItem, index) in item.content"
                             :key="index"
+                            @click="$emit('closeModal')"
                             :to="handleSearchRoute(contentItem)">
                     <div class="search-result-block-info__image-wrapper">
                         <img class="search-result-block-info__image"
@@ -86,9 +87,12 @@ export default defineComponent({
             return newFormat;
         }
 
-        const handleSearchRoute = (item: { href: string, id: number }) => {
-            emit('closeModal')
-            return { name: item.href, params: { id: item.id } }
+        const handleSearchRoute = (item: { sectionHref: string, id: number, authorId?: number }) => {
+            if (item.sectionHref == 'certainBlog') {
+                return { name: item.sectionHref, params: { id: item.id, authorId: item.authorId } }
+            }
+            else
+                return { name: item.sectionHref, params: { id: item.id } }
         }
 
         return {

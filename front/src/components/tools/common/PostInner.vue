@@ -38,7 +38,8 @@
                         <br />
                         {{ currentPost.indirect_data?.phone_number }}
                     </div>
-                    <div class="news__detail__discr"
+                    <div v-if="currentPost.content_text"
+                         class="news__detail__discr"
                          v-html="currentPost.content_text"></div>
                     <div v-if="currentPost.documentation"
                          class="news__detail__documents">
@@ -71,6 +72,7 @@ import type { IBaseEntity } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import ComplexGallery from "../gallery/complex/ComplexGallery.vue";
 import Reactions from "./Reactions.vue";
+import { parseMarkdown } from "@/utils/useMarkdown";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {
@@ -139,6 +141,7 @@ export default defineComponent({
 
         return {
             currentPost,
+            parseMarkdown
         }
     },
 })

@@ -38,6 +38,7 @@
 import { defineComponent, ref } from "vue";
 import { textAreaRowsToContent } from "@/utils/StringUtils.js";
 export default defineComponent({
+    emits: ['closeModal', 'showToast'],
     setup(props, { emit }) {
         const grade = [1, 2, 3, 4, 5];
         const handleReviewSubmit = () => {

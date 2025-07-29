@@ -1,3 +1,5 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
 .personal {
     &__user {
         &__photo {
@@ -68,6 +70,10 @@
             margin-bottom: 10px;
             align-items: center;
 
+            @include sm {
+                margin-top: 20px;
+            }
+
             &__title {
                 font-weight: 600;
                 font-size: 18px;
@@ -84,6 +90,8 @@
             gap: 50px;
 
             &__items {
+                max-width: 300px;
+
                 & h3 {
                     font-size: 12px;
                     line-height: 16px;

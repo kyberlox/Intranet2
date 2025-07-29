@@ -13,3 +13,20 @@
 :deep(.ql-formats button) {
     margin-right: 5px;
 }
+
+.ql-editor {
+    font-size: medium !important;
+}
+
+:root {
+    --p-editor-toolbar-item-hover-color: black;
+    --p-editor-toolbar-item-color: black;
+    --p-editor-toolbar-item-hover-color: grey;
+    --p-editor-toolbar-item-active-color: orange;
+    --p-editor-toolbar-border-color: grey;
+    --p-editor-toolbar-border-color: grey;
+
+    --p-editor-overlay-background: rgba(128, 128, 128, 0.136);
+
+    --p-editor-content-background: rgb(249 249 249);
+}

@@ -8,6 +8,8 @@
 @forward './userPage';
 @forward './auth';
 @forward './breadcrumbs';
+@forward './loader';
+@forward './toast';
 
 @forward './swipers/_swipers';
 @forward './modules/_modules';
@@ -81,4 +83,12 @@ p {
 
 .flex-grow {
     flex-grow: 1;
+}
+
+.fs-l {
+    font-size: large !important;
+}
+
+.fs-m {
+    font-size: medium !important;
 }

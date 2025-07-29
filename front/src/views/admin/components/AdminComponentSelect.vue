@@ -13,8 +13,6 @@
     </div>
 </template>
 
-
-
 <script lang="ts">
 import { defineComponent, type PropType, ref } from 'vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';

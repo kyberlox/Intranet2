@@ -10,7 +10,6 @@ const authKey = computed(() => useUserData().getAuthKey);
 const api = axios.create({
     baseURL: VITE_API_URL,
     withCredentials: true,
-    // headers: { 'Content-Type': 'application/json' }
 });
 
 // добавляю токен

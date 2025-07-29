@@ -12,7 +12,6 @@
 import { defineComponent } from "vue";
 import PostInner from "@/components/tools/common/PostInner.vue";
 import { excursions } from "@/assets/static/trainingCenterData";
-import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 
 export default defineComponent({
     name: "PostPreview",

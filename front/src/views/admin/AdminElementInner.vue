@@ -80,12 +80,13 @@
 
     <div class="admin-element-inner__actions">
       <button @click="applyNewData"
+              :disabled="buttonIsDisabled"
               class="admin-element-inner__action-button admin-element-inner__action-button--save">
         <span class="admin-element-inner__action-text">Сохранить</span>
       </button>
-      <RouterLink :to="{ name: 'admin' }"
+      <RouterLink :to="{ name: 'adminBlockInner', params: { id: id } }"
                   class="admin-element-inner__action-button admin-element-inner__action-button--cancel">
-        <span class="admin-element-inner__action-text">Отменить</span>
+        <span class="admin-element-inner__action-text">Назад</span>
       </RouterLink>
     </div>
   </div>
@@ -144,16 +145,18 @@ export default defineComponent({
       default: 'edit'
     }
   },
-
-  setup(props) {
+  emits: ['showToast'],
+  setup(props, { emit }) {
     const newElementSkeleton: Ref<IAdminListItem[]> = ref([]);
     const events = ref<Event[]>([]);
     const router = useRouter();
     const previewFullWidth = ref(false);
     const activeType = ref('news');
+    const buttonIsDisabled = ref(false);
+    const isCreateNew = ref(true);
 
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
-    const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()] });
+    const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()], section_id: Number(props.id) });
 
     const inputComponentChecker = (item: IAdminListItem) => {
       if (item.disabled) return;
@@ -162,7 +165,7 @@ export default defineComponent({
           return 'datePicker'
         case item.data_type == 'str' && 'values' in item:
           return 'select'
-        case item.data_type == 'str' && item.field !== 'name' && !String(item.field).includes('url'):
+        case item.data_type == 'str' && item.field?.includes('text'):
           return 'textArea'
         case item.data_type == 'str':
           return 'input'
@@ -178,12 +181,39 @@ export default defineComponent({
     onMounted(() => {
       if (props.type == 'new') {
         Api.get(`/editor/add/${props.id}`)
-          .then((data) => { newElementSkeleton.value = data.fields })
+          .then((data) => {
+            isCreateNew.value = true;
+            newElementSkeleton.value = data.fields;
+          })
       }
+      else Api.get(`/editor/rendering/${props.elementId}`)
+        .then((data) => {
+          isCreateNew.value = false;
+          newElementSkeleton.value = data.fields;
+        })
     })
 
     const applyNewData = () => {
-      Api.post('/editor/add', newData.value)
+      buttonIsDisabled.value = true;
+      Api.post(isCreateNew.value ? '/editor/add' : `editor/update/${props.elementId}`, newData.value)
+        .then((data) => {
+          if (!data) {
+            emit('showToast', 'error', 'Что-то пошло не так, попробуйте повторить позже');
+          }
+          else
+            emit('showToast', 'success', 'Элемент успешно добавлен');
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
+          }
+          else
+            emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+        })
+        .finally(() => {
+          router.push({ name: 'adminBlockInner', params: { id: props.id } })
+          buttonIsDisabled.value = false;
+        })
     }
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
@@ -194,6 +224,7 @@ export default defineComponent({
         };
       }
     };
+
     return {
       events,
       router,
@@ -201,6 +232,7 @@ export default defineComponent({
       previewFullWidth,
       activeType,
       newElementSkeleton,
+      buttonIsDisabled,
       inputComponentChecker,
       newData,
       applyNewData,
@@ -477,6 +509,14 @@ export default defineComponent({
     transition: all 0.2s ease;
     min-width: 120px;
 
+    &--disabled {
+      background-color: #66666644;
+
+      &:hover {
+        background-color: #66666644;
+      }
+    }
+
     &:hover {
       transform: translateY(-1px);
     }
@@ -500,6 +540,7 @@ export default defineComponent({
       background-color: #f5f5f5;
       color: #333;
       border: 1px solid #ddd;
+      text-align: center;
 
       &:hover {
         background-color: #e8e8e8;

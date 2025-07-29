@@ -60,7 +60,6 @@
                 </div>
             </Form>
         </div>
-        <Toast position="bottom-right" />
     </div>
 </template>
 
@@ -70,19 +69,17 @@ import { ref, type Ref, defineComponent } from 'vue';
 import { useBase64 } from '@vueuse/core'
 import { shallowRef } from 'vue'
 import { type IPostIdea } from '@/interfaces/IPostFetch';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
 import { Field, Form, ErrorMessage, type GenericObject } from 'vee-validate';
 
 export default defineComponent({
     name: 'NewIdea',
     components: {
-        Toast,
         Field,
         Form,
         ErrorMessage
     },
-    setup() {
+    emits: ['showToast'],
+    setup(props, { emit }) {
         const messageText: Ref<string> = ref('');
         const messageTheme: Ref<string> = ref('');
         const messageFile = shallowRef<File>();
@@ -101,7 +98,6 @@ export default defineComponent({
         };
 
         const buttonsIsDisabled = ref(false);
-        const toast = useToast();
 
         const sendIdea = (values: GenericObject) => {
             buttonsIsDisabled.value = true;
@@ -118,18 +114,22 @@ export default defineComponent({
 
             Api.post('/idea/new/', formData)
                 .then((data) => {
-                    if (!data) {
-                        show('error', 'Что-то пошло не так, попробуйте повторить позже');
-                    } else {
+                    if (!data || Boolean(data.data) == false) {
+                        emit('showToast', 'error', 'Что-то пошло не так, попробуйте обновить страницу и повторить или сообщите в поддержку сайта (5182/5185)');
+                    }
+                    else {
                         clearForm();
-                        show('success', 'Идея успешно отправлена, спасибо!');
+                        emit('showToast', 'success', 'Идея успешно отправлена! Спасибо!');
                     }
                 })
+                .catch((error) => {
+                    if (error.response?.status === 401) {
+                        emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
+                    }
+                    else
+                        emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+                })
                 .finally(() => buttonsIsDisabled.value = false)
-        };
-
-        const show = (type: string, text: string) => {
-            toast.add({ severity: type, summary: type, detail: text, life: 13000 });
         };
 
         const clearForm = () => {
@@ -154,7 +154,6 @@ export default defineComponent({
             formRef,
             handleMessageFileLoad,
             sendIdea,
-            show,
             isRequired,
             greetings: `<p>Добро пожаловать на страницу обратной связи нашего внутрикорпоративного сайта
             Интранет!</p>
@@ -207,42 +206,6 @@ export default defineComponent({
     padding: 1rem 0.75rem !important;
 }
 
-/* Остальные стили Toast */
-.p-toast {
-    z-index: 9999;
-}
-
-.p-toast-message {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 10px;
-    gap: 5px;
-}
-
-.p-toast-message-success {
-    background: #16a34aad !important;
-    border: 1px solid #c3e6cb !important;
-    color: black !important;
-}
-
-.p-toast-message-error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-}
-
-.p-toast-summary {
-    display: none;
-}
-
-.p-toast-detail {
-    margin: 0;
-    line-height: 1.4;
-}
-
-.p-icon {
-    margin: auto !important;
-}
 
 .form-floating>label {
     opacity: 0.6;

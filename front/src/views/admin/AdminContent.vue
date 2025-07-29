@@ -58,23 +58,24 @@
                        class="admin-block-inner__card-description"
                        v-html="item.content_text"></p>
                     <div class="admin-block-inner__card-meta">
-                      <span v-if="item.active"
-                            class="admin-block-inner__card-status"
+                      <span class="admin-block-inner__card-status"
                             :class="`admin-block-inner__card-status--${item.active}`">
                         {{ getStatusText(Boolean(item.active)) }}
                       </span>
-                      <span v-if="item.date_publiction"
-                            class="admin-block-inner__card-date">
-                        {{ useDateFormat(item.date_publiction, 'DD.MM.YYYY') }}
-                      </span>
-                      <span v-else-if="item.date_creation"
-                            class="admin-block-inner__card-date">
-                        {{ useDateFormat(item.date_creation, 'DD.MM.YYYY') }}
-                      </span>
-                      <span v-if="item.indirect_data?.TITLE"
-                            class="admin-block-inner__card-date">
-                        {{ item.indirect_data?.TITLE }}
-                      </span>
+                      <div class="d-flex flex-column mt20">
+                        <span v-if="item.indirect_data?.TITLE"
+                              class="admin-block-inner__card-date">
+                          {{ item.indirect_data?.TITLE }}
+                        </span>
+                        <span v-if="item.date_publiction"
+                              class="admin-block-inner__card-date">
+                          {{ useDateFormat(item.date_publiction, 'DD.MM.YYYY') }}
+                        </span>
+                        <span v-else-if="item.date_creation"
+                              class="admin-block-inner__card-date">
+                          {{ useDateFormat(item.date_creation, 'DD.MM.YYYY') }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -138,7 +139,8 @@ export default defineComponent({
       type: String
     }
   },
-  setup(props) {
+  emits: ['showToast'],
+  setup(props, { emit }) {
     const route = useRoute();
     const items = ref<SectionItem[]>([]);
     const searchQuery = ref('');
@@ -157,17 +159,38 @@ export default defineComponent({
       return status ? 'Активен' : 'В архиве'
     };
 
-    watch((props), () => {
+    const itemsInit = () => {
       items.value.length = 0;
       isLoading.value = true;
       sectionId.value = route.params.id;
-      Api.get(`/article/find_by/${sectionId.value}`)
+      Api.get(`/editor/section_rendering/${sectionId.value}`)
         .then((data) => items.value = data)
         .finally(() => isLoading.value = false)
+    }
+
+    watch((props), () => {
+      itemsInit();
     }, { immediate: true, deep: true });
 
     const removeItem = (id: number) => {
       Api.delete(`editor/del/${id}`)
+        .then((data) => {
+          if (!data || Boolean(data.data) == false) {
+            emit('showToast', 'error', 'Что-то пошло не так, попробуйте обновить страницу и повторить или сообщите в поддержку сайта (5182/5185)');
+          }
+          else
+            emit('showToast', 'success', 'Элемент успешно удален');
+        })
+        .catch((error) => {
+          if (error.response?.status === 401) {
+            emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
+          }
+          else
+            emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+        })
+        .finally(() => {
+          itemsInit();
+        })
     }
 
     return {

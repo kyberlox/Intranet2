@@ -145,6 +145,12 @@ class B24:
 
         return {"create_idea" : response.json(), "create_bis_log" : bis_response.json()}
 
+    def get_calendar(date_from, date_to):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/")
+        result = self.bx24.callMethod(f'calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}')
+        return result
+
+
 
 @b24_router.get("/calendar/{date_from}/{date_to}")
 def calendar_event(date_from, date_to):
@@ -154,6 +160,5 @@ def calendar_event(date_from, date_to):
     result = response.json()
     return result
     '''
-    self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/")
-    result = self.bx24.callMethod(f'calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}')
-    return result
+    return B24().get_calendar(date_from, date_to)
+    

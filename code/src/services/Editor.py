@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, File#, Header
 from fastapi.responses import JSONResponse
+from typing import List
 
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import ArticleModel
@@ -248,12 +249,9 @@ class Editor:
         #добавить статью
         return Article().set_new(art)
 
-    def delete_art(self, ):
+    def delete_art(self ):
         return Article(id = self.art_id).delete()
         
-    
-
-
     def update(self, data : dict):
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
@@ -337,13 +335,6 @@ class Editor:
 
         return result
 
-    
-    def change_file(self, file_id):
-        pass
-    
-    def delete_file(self, file_id):
-        pass
-
 
 
 #рендеринг статьи
@@ -377,19 +368,36 @@ async def set_new(data = Body()):
 async def del_art(art_id : int):
     return Editor(art_id=int(art_id)).delete_art()
 
-
-
 #посмотреть все файлы статьи
 @editor_router.get("/rendering/files/{art_id}")
 async def render(art_id : int):
     return Editor(art_id=art_id).get_files()
 
-#заменить файл
-@editor_router.put("/update/file/{art_id}/{f_id}")
-async def updt(art_id ):
-    return await Editor(art_id=art_id).update()
 
-#добавить файл в статью
-@editor_router.post("/add/file/{art_id}/{f_id}")
-async def set_new(data = Body()):
-    return await Editor().add(data)
+### тестирую работу с файлами
+@editor_router.post("/uploadfiles/")
+async def create_upload_files(files: List[UploadFile] = File(...)):
+    try:
+        # Обработка каждого файла
+        file_infos = []
+        for file in files:
+            # Здесь можно сохранить файл или обработать его содержимое
+            contents = await file.read()
+            file_info = {
+                "filename": file.filename,
+                "content_type": file.content_type,
+                "size": len(contents)
+            }
+            file_infos.append(file_info)
+            
+            # Если нужно сохранить файл на диск
+            # with open(f"uploads/{file.filename}", "wb") as f:
+            #     f.write(contents)
+            
+        return JSONResponse({
+            "status": "success",
+            "files": file_infos,
+            "count": len(files)
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

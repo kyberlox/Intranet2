@@ -113,6 +113,11 @@ import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
 import EditIcon from "@/assets/icons/admin/EditIcon.svg?component"
 import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component"
 
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/utils/UseToastСompose';
+import { handleApiResponse } from '@/utils/ApiResponseCheck';
+import { handleApiError } from '@/utils/ApiResponseCheck';
+
 interface SectionItem {
   id: number;
   preview_file_url?: string,
@@ -132,20 +137,22 @@ export default defineComponent({
     Loader,
     SearchIcon,
     EditIcon,
-    RemoveIcon
+    RemoveIcon,
   },
   props: {
     id: {
       type: String
     }
   },
-  emits: ['showToast'],
-  setup(props, { emit }) {
+  setup(props) {
     const route = useRoute();
     const items = ref<SectionItem[]>([]);
     const searchQuery = ref('');
     const isLoading = ref(false);
     const sectionId = ref();
+
+    const toastInstance = useToast();
+    const toast = useToastCompose(toastInstance);
 
     const filteredItems = computed(() => {
       if (!searchQuery.value) return items.value;
@@ -175,18 +182,10 @@ export default defineComponent({
     const removeItem = (id: number) => {
       Api.delete(`editor/del/${id}`)
         .then((data) => {
-          if (!data || Boolean(data.data) == false) {
-            emit('showToast', 'error', 'Что-то пошло не так, попробуйте обновить страницу и повторить или сообщите в поддержку сайта (5182/5185)');
-          }
-          else
-            emit('showToast', 'success', 'Элемент успешно удален');
+          handleApiResponse(data, toast, 'trySupportError', 'adminDeleteSuccess')
         })
         .catch((error) => {
-          if (error.response?.status === 401) {
-            emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
-          }
-          else
-            emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+          handleApiError(error, toast)
         })
         .finally(() => {
           itemsInit();

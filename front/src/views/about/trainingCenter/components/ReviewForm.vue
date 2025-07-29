@@ -38,21 +38,19 @@
 import { defineComponent, ref } from "vue";
 import { textAreaRowsToContent } from "@/utils/StringUtils.js";
 export default defineComponent({
-    emits: ['closeModal', 'showToast'],
+    name: 'reviewForm',
+    emits: ['closeModal'],
     setup(props, { emit }) {
         const grade = [1, 2, 3, 4, 5];
         const handleReviewSubmit = () => {
             emit("closeModal");
-            emit("showToast", "Отзыв успешно отправлен");
         };
         const reviewText = ref('');
         return {
             grade,
-            closeModal: () => {
-                emit("closeModal");
-            },
-            handleReviewSubmit,
             reviewText,
+            closeModal: () => emit("closeModal"),
+            handleReviewSubmit,
             textAreaRowsToContent
         };
     },

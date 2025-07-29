@@ -115,6 +115,11 @@ import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
 import Loader from '@/components/layout/Loader.vue';
+import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/utils/UseToastСompose';
+
 
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
@@ -131,7 +136,7 @@ export default defineComponent({
     AdminComponentDatePicker,
     AdminComponentInput,
     AdminComponentImagePicker,
-    AdminComponentDocPicker
+    AdminComponentDocPicker,
   },
   props: {
     id: {
@@ -145,8 +150,7 @@ export default defineComponent({
       default: 'edit'
     }
   },
-  emits: ['showToast'],
-  setup(props, { emit }) {
+  setup(props) {
     const newElementSkeleton: Ref<IAdminListItem[]> = ref([]);
     const events = ref<Event[]>([]);
     const router = useRouter();
@@ -154,6 +158,9 @@ export default defineComponent({
     const activeType = ref('news');
     const buttonIsDisabled = ref(false);
     const isCreateNew = ref(true);
+
+    const toastInstance = useToast();
+    const toast = useToastCompose(toastInstance);
 
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
     const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()], section_id: Number(props.id) });
@@ -197,21 +204,13 @@ export default defineComponent({
       buttonIsDisabled.value = true;
       Api.post(isCreateNew.value ? '/editor/add' : `editor/update/${props.elementId}`, newData.value)
         .then((data) => {
-          if (!data) {
-            emit('showToast', 'error', 'Что-то пошло не так, попробуйте повторить позже');
-          }
-          else
-            emit('showToast', 'success', 'Элемент успешно добавлен');
+          handleApiResponse(data, toast, 'trySupportError', 'adminAddElementSuccess')
+          router.push({ name: 'adminBlockInner', params: { id: props.id } })
         })
         .catch((error) => {
-          if (error.response?.status === 401) {
-            emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
-          }
-          else
-            emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+          handleApiError(error, toast)
         })
         .finally(() => {
-          router.push({ name: 'adminBlockInner', params: { id: props.id } })
           buttonIsDisabled.value = false;
         })
     }

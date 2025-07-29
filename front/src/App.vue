@@ -8,7 +8,7 @@
                      :class="{ 'row--nomargin': !isLogin }">
                     <div class="main-content flex-grow">
                         <Breadcrumbs />
-                        <RouterView @showToast="(errorType: string, text: string) => showToast(errorType, text)" />
+                        <RouterView />
                     </div>
                     <div v-if="isLogin"
                          class="main-sidebar flex-shrink d-print-none">
@@ -21,13 +21,14 @@
     <div v-else>
         <AuthPage />
     </div>
-    <Toast position="bottom-right" />
+    <Toast :position="'bottom-right'" />
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 
+import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/RightSidebar.vue";
 import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
@@ -35,10 +36,6 @@ import AuthPage from "./views/user/AuthPage.vue";
 
 import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./utils/prefetchSection";
-
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-
 
 export default defineComponent({
     name: "app-layout",
@@ -70,14 +67,8 @@ export default defineComponent({
             useUserData().initKeyFromStorage();
         })
 
-        const toast = useToast();
-        const showToast = (type: string, text: string) => {
-            toast.add({ severity: type, summary: '', detail: text, life: 13000 });
-        };
-
         return {
             isLogin: computed(() => useUserData().getIsLogin),
-            showToast
         }
     }
 })

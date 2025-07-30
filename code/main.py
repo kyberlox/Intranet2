@@ -46,7 +46,7 @@ import time
 
 import asyncio
 
-app = FastAPI()
+app = FastAPI(timeout=60*5)
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")

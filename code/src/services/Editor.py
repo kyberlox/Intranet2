@@ -131,7 +131,7 @@ class Editor:
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
         
         fields = []
-        files_keys = []
+        files_keys = dict()
         #иду по всем статьям раздела
         for art in section:
             #иду по всем полям статьи
@@ -189,8 +189,8 @@ class Editor:
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys and files[f_key] != []:
-                    files_keys.append(f_key)
+                if f_key not in files_keys.keys() and files[f_key] != []:
+                    files_keys[f_key] = []
             
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",

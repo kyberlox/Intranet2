@@ -25,7 +25,10 @@ def make_date_valid(date):
         return None
 
 def get_type(value):
-    return str(type(value)).split('\'')[1]
+    tp = str(type(value)).split('\'')[1]
+    if tp == "NoneType":
+        tp = "str"
+    return tp
 
 class Editor:
     

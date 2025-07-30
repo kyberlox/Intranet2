@@ -30,3 +30,7 @@ export const formatDateNoTime = (date: string) => {
 export const addZeroToMonth = (month: string) => {
     return Number(month) < 9 ? `0${month}` : month
 }
+
+export const removeYear = (date: string) => {
+    return date.split('.')[0] + '.' + date.split('.')[1];
+}

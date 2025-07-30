@@ -51,6 +51,21 @@
         max-width: fit-content;
         margin: 10px auto 20px auto;
     }
+
+    &__custom-marker {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 8px;
+        width: 8px;
+        border-radius: 100%;
+
+        &__wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    }
 }
 
 .calendarYear {
@@ -69,8 +84,8 @@
         transition: 0.2s;
 
         &--chosen {
-            background: var(--event-color);
-            color: white;
+            background: rgba(from var(--event-color) r g b / 0.8);
+            color: black;
         }
 
         &__dates {

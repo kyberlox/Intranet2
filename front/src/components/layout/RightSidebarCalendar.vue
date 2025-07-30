@@ -2,9 +2,10 @@
     <div class="calendar__wrapper">
         <DatePicker inline
                     v-model="date"
-                    @date-update="dateClicked"
+                    @markerClick="(item: ICalendarMarker) => dateClicked(item)"
                     :markers="markers"
-                    calendarType="monthAndYear" />
+                    calendarType="monthAndYear">
+        </DatePicker>
         <div class="calendar__button__wrapper">
             <div @click="handleRouteToCurrentMonth"
                  class="primary-button">
@@ -17,30 +18,47 @@
 import { defineComponent, ref, type Ref, computed, type ComputedRef, watch } from 'vue';
 import DatePicker from '../tools/common/DatePicker.vue';
 import { dateConvert, formatDateNoTime, addZeroToMonth } from '@/utils/dateConvert';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import type { ICalendar } from '@/interfaces/entities/ICalendar';
 import { useViewsDataStore } from '@/stores/viewsData';
 
-interface ICalendarMarker {
+export interface ICalendarMarker {
     color?: string,
     date?: Date,
     type?: string,
     tooltip?: {
         text?: string,
         color?: string
-    }[]
+    }[],
+    ID: string,
+    DATE_FROM: string,
+    DATE_TO: string | null
 }
 
 export default defineComponent({
     components: { DatePicker },
     setup() {
         const markers: Ref<ICalendarMarker[]> = ref([]);
-        const route = useRoute();
         const router = useRouter();
         const viewsStore = useViewsDataStore();
         const date = ref(new Date());
+        const route = useRoute();
 
         const calendarData: ComputedRef<ICalendar[]> = computed(() => viewsStore.getData('calendarData') as ICalendar[]);
+
+        const createMarker = (
+            date: Date,
+            type: string,
+            event: ICalendar,
+        ): ICalendarMarker => ({
+            date: new Date(date),
+            type,
+            tooltip: [{ text: event.NAME || '', color: event.COLOR || 'orange' }],
+            color: event.COLOR || 'orange',
+            DATE_FROM: event.DATE_FROM,
+            ID: event.ID,
+            DATE_TO: event.DATE_TO ?? null
+        });
 
         const formatDateDMY = (dateString: string): Date => {
             const [datePart, timePart] = dateString.split(' ');
@@ -61,28 +79,15 @@ export default defineComponent({
             return dates;
         };
 
-        const createMarker = (
-            date: Date,
-            type: string,
-            event: ICalendar
-        ): ICalendarMarker => ({
-            date: new Date(date),
-            type,
-            tooltip: [{ text: event.NAME || '', color: event.COLOR || 'orange' }],
-            color: event.COLOR || 'orange'
-        });
-
-        const createCalendarEvent = (event: ICalendar): ICalendarMarker[] => {
-            const eventMarkers: ICalendarMarker[] = [];
-
-            if (!event.DATE_FROM) return eventMarkers;
+        const createCalendarEvent = (event: ICalendar) => {
+            if (!event.DATE_FROM) return;
 
             const formattedStartDate = formatDateNoTime(event.DATE_FROM);
-            if (!formattedStartDate) return eventMarkers;
+            if (!formattedStartDate) return;
 
             const startDate = new Date(dateConvert(formattedStartDate, 'toDateType'));
 
-            eventMarkers.push(createMarker(startDate, 'dot', event));
+            markers.value.push(createMarker(startDate, 'dot', event));
 
             if (event.DATE_TO && formatDateNoTime(event.DATE_FROM) !== formatDateNoTime(event.DATE_TO)) {
                 const dateRange = generateDateRange(event.DATE_FROM, event.DATE_TO);
@@ -94,27 +99,25 @@ export default defineComponent({
 
                     const markerType = dotType ? 'dot' : 'line';
 
-                    eventMarkers.push(createMarker(date, markerType, event));
+                    markers.value.push(createMarker(date, markerType, event));
                 });
             }
-            return eventMarkers;
         };
 
+        watch((calendarData), (newVal) => {
+            if (!newVal) return;
+            newVal.map((e) => {
+                createCalendarEvent(e);
+            })
+        }, { immediate: true, deep: true })
 
-        const dateClicked = (pickedDate: string) => {
-            const target = calendarData.value.find((event) =>
-                formatDateNoTime(event.DATE_FROM) === dateConvert(pickedDate, 'toStringType')
-            );
-
-            if (!target) return;
-
-            const targetDate = formatDateNoTime(target.DATE_FROM);
-            if (route.params?.date !== targetDate) {
-                router.push({
-                    name: 'calendarMonth',
-                    params: { date: targetDate }
-                });
-            }
+        const dateClicked = (marker: ICalendarMarker) => {
+            const target = marker.ID;
+            if (!target || route.params.eventId == target) return;
+            router.push({
+                name: 'calendarMonth',
+                params: { eventId: target }
+            });
         };
 
         const handleRouteToCurrentMonth = () => {

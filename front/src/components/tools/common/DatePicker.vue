@@ -9,12 +9,24 @@
                    auto-apply
                    placeholder="Выберите дату"
                    :format="format"
+                   :markers="markers"
                    @cleared="$emit('clearValue')"
-                   @update:model-value="handleDate" />
+                   @update:model-value="handleDate">
+        <template #marker="{ marker }">
+            <div class="custom-marker__wrapper"
+                 @click="$emit('markerClick', marker)">
+                <span class="custom-marker"
+                      :style="{ backgroundColor: marker.color }">
+                    <span>{{ marker.tooltip.name }}</span>
+                </span>
+            </div>
+        </template>
+    </VueDatePicker>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch } from 'vue';
+import { type ICalendarMarker } from '@/components/layout/RightSidebarCalendar.vue';
 
 export default defineComponent({
     name: 'DatePicker',
@@ -27,6 +39,9 @@ export default defineComponent({
             type: Boolean,
             default: false
         },
+        markers: {
+            type: Array<ICalendarMarker>
+        }
     },
     setup(props, { emit }) {
         const dateInput = ref();

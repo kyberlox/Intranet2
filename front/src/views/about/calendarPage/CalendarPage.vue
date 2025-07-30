@@ -1,9 +1,9 @@
 <template>
     <div class="page__content"
-         v-if="currentEvents.length">
+         v-if="currentEvents?.length">
         <div class="page__title mt20">Календарь событий</div>
         <div class="calendar-container">
-            <div class="calendar__meanings">
+            <!-- <div class="calendar__meanings">
                 <div class="calendar_meaning">Основные события
                     <div class="square-mark"
                          style="background-color: #f36509"></div>
@@ -13,7 +13,7 @@
                          style="background-color: #00b38c">
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="datepicker__wrapper">
                 <DatePicker month-picker
                             disable-year-select
@@ -38,9 +38,10 @@
                              :key="'event' + index">
                             <div class="calendarYear__event"
                                  ref=eventNodes
-                                 :class="{ 'calendarYear__event--chosen': isCalendarEvent(event) && event.DATE_FROM && preDate == formatDateNoTime(event.DATE_FROM) }"
+                                 :class="{ 'calendarYear__event--chosen': isCalendarEvent(event) && event.DATE_FROM && preDate == event.ID }"
                                  :style="{ '--event-color': isCalendarEvent(event) && event.COLOR || '#f36509' }"
-                                 :data-date-target="isCalendarEvent(event) && formatDateNoTime(event.DATE_FROM)">
+                                 :data-event-id="'ID' in event ? event.ID : ''"
+                                 :data-date-target="'DATE_TO' in event ? event.DATE_TO : ''">
                                 <div class="calendarYear__event__dates"
                                      v-if="isCalendarEvent(event) && event.DATE_FROM && event.DATE_TO && formatDateNoTime(event.DATE_FROM) !==
                                         formatDateNoTime(event.DATE_TO)">
@@ -52,9 +53,7 @@
                                 </div>
                                 <div v-else
                                      class="calendarYear__event__date">
-                                    {{
-                                        isCalendarEvent(event) && event.DATE_FROM ? formatDateNoTime(event.DATE_FROM) : ''
-                                    }}
+                                    {{ formatDateNoTime('DATE_FROM' in event ? event.DATE_FROM : '') }}
                                 </div>
                                 <span class="calendarYear__event__name">
                                     {{ event.NAME }}
@@ -143,7 +142,7 @@ export default defineComponent({
                 scrollToNode(newVal.monthId, monthNodes, 'data-month-num')
             }
             else if (newVal.preDate && eventNodes.value?.length) {
-                scrollToNode(newVal.preDate, eventNodes, 'data-date-target')
+                scrollToNode(newVal.preDate, eventNodes, 'data-event-id')
             }
         }, { immediate: true, deep: true })
 
@@ -151,14 +150,13 @@ export default defineComponent({
             const monthEvents = currentEvents.value.filter((e) => {
                 const newDate = formatDateNoTime(e.DATE_FROM);
                 if (!newDate) return;
-
                 return getMonth(newDate) == monthNum
             })
-            return monthEvents.length ? monthEvents : [{ NAME: 'В этом месяце событий нет' }]
+
+            return monthEvents.length ? monthEvents.sort((a, b) => (formatDateNoTime(a.DATE_FROM) ?? '1').localeCompare((formatDateNoTime(b.DATE_FROM) ?? '0'))) : [{ NAME: 'В этом месяце событий нет' }]
         }
 
         const handleMonthChange = (monthValue: { month: number, year: number }) => {
-
             visibleMonthes.value = monthesInit.filter((e) => {
                 return Number(e.value) == monthValue.month + 1;
             })

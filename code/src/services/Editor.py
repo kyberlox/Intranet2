@@ -379,7 +379,7 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/uploadfiles")
-async def create_upload_files(files: List[UploadFile] = File(...)):
+async def create_upload_files(files: List[UploadFile] ):
     try:
         # Обработка каждого файла
         file_infos = []

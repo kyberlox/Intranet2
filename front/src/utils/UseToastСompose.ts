@@ -15,7 +15,8 @@ const messages: messages = {
     },
     success: {
         adminDeleteSuccess: 'Элемент успешно удален',
-        adminAddElementSuccess: 'Элемент успешно добавлен'
+        adminAddElementSuccess: 'Элемент успешно добавлен',
+        adminApdateElementSuccess: 'Элемент успешно обновлен',
     }
 }
 

@@ -200,11 +200,11 @@ export default defineComponent({
         })
     })
 
-    const applyNewData = () => {
+    const applyNewData = async () => {
       buttonIsDisabled.value = true;
-      Api.post(isCreateNew.value ? '/editor/add' : `editor/update/${props.elementId}`, newData.value)
+      await Api.post(isCreateNew.value ? '/editor/add' : `editor/update/${props.elementId}`, newData.value)
         .then((data) => {
-          handleApiResponse(data, toast, 'trySupportError', 'adminAddElementSuccess')
+          handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminApdateElementSuccess')
           router.push({ name: 'adminBlockInner', params: { id: props.id } })
         })
         .catch((error) => {

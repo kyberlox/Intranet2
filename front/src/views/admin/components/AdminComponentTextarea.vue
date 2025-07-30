@@ -11,7 +11,7 @@
 import { defineComponent, type PropType, ref } from 'vue';
 import TextEditor from './TextEditor.vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
-
+import { parseMarkdown } from '@/utils/useMarkdown';
 
 export default defineComponent({
     components: {
@@ -29,7 +29,8 @@ export default defineComponent({
         const value = ref(props.item?.value);
         return {
             value,
-            handleValuePick: () => emit('pick', value.value)
+            handleValuePick: () => emit('pick', value.value?.replaceAll('&nbsp;', ' ')),
+            parseMarkdown
         }
     }
 })

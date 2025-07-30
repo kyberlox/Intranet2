@@ -4,6 +4,7 @@
         <input class="admin-element-inner__input fs-m"
                v-model="value"
                @input="handleValuePick"
+               :type="item?.field?.includes('number') ? 'number' : 'text'"
                :disabled="Boolean(item?.disabled)" />
     </div>
 </template>

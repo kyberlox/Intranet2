@@ -1,6 +1,5 @@
 <template>
-    <Editor v-model="editorValue"
-            :modules="editorModules"
+    <Editor :modules="editorModules"
             editorStyle="height: 350px">
         <template v-slot:toolbar>
             <span class="ql-formats"></span>
@@ -10,7 +9,7 @@
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import Editor from 'primevue/editor';
 
 export default defineComponent({
@@ -18,8 +17,6 @@ export default defineComponent({
         Editor
     },
     setup() {
-        const editorValue = ref();
-
         const editorModules = {
             toolbar: [
                 ['bold', 'italic', 'underline'],
@@ -31,7 +28,6 @@ export default defineComponent({
         };
 
         return {
-            editorValue,
             editorModules
         };
     }

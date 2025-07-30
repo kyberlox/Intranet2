@@ -13,9 +13,9 @@
                    @cleared="$emit('clearValue')"
                    @update:model-value="handleDate">
         <template #marker="{ marker }">
-            <div class="custom-marker__wrapper"
+            <div class="calendar__custom-marker__wrapper"
                  @click="$emit('markerClick', marker)">
-                <span class="custom-marker"
+                <span class="calendar__custom-marker"
                       :style="{ backgroundColor: marker.color }">
                     <span>{{ marker.tooltip.name }}</span>
                 </span>

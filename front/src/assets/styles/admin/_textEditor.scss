@@ -26,7 +26,11 @@
     --p-editor-toolbar-border-color: grey;
     --p-editor-toolbar-border-color: grey;
 
-    --p-editor-overlay-background: rgba(128, 128, 128, 0.136);
+    // --p-editor-overlay-background: rgba(128, 128, 128, 0.136);
 
     --p-editor-content-background: rgb(249 249 249);
+}
+
+.ql-toolbar.ql-snow .ql-formats {
+    margin-inline-end: 0px !important;
 }

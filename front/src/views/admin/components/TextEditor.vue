@@ -22,8 +22,8 @@ export default defineComponent({
                 ['bold', 'italic', 'underline'],
                 [{ 'color': [] }],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                [{ 'align': [] }],
-                ['link', 'image']
+
+                ['link']
             ]
         };
 

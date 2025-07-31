@@ -41,6 +41,9 @@ export default defineComponent({
         },
         markers: {
             type: Array<ICalendarMarker>
+        },
+        defaultData: {
+            type: String
         }
     },
     setup(props, { emit }) {
@@ -51,7 +54,6 @@ export default defineComponent({
                 dateInput.value = null;
             }
         }, { deep: true, immediate: true })
-
 
         const searchValue = ref("");
 
@@ -92,7 +94,11 @@ export default defineComponent({
 
         onMounted(() => {
             handleDate(dateInput.value);
-            dateInput.value = new Date();
+            if (props.defaultData) {
+                dateInput.value = new Date(props.defaultData);
+            }
+            else
+                dateInput.value = new Date();
         })
 
         return {

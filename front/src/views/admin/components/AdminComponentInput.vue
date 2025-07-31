@@ -4,13 +4,13 @@
         <input class="admin-element-inner__input fs-m"
                v-model="value"
                @input="handleValuePick"
-               :type="item?.field?.includes('number') ? 'number' : 'text'"
+               :type="'text'"
                :disabled="Boolean(item?.disabled)" />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, ref } from 'vue';
+import { defineComponent, onMounted, type PropType, ref } from 'vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
 
 
@@ -22,9 +22,15 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const value = ref(props.item?.value);
+        const handleValuePick = () => { emit('pick', value.value) };
+
+        onMounted(() => {
+            handleValuePick();
+        })
+
         return {
             value,
-            handleValuePick: () => emit('pick', value.value)
+            handleValuePick
         }
     }
 })

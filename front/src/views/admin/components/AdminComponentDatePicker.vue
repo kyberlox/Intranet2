@@ -1,9 +1,10 @@
 <template>
     <div class="admin-element-inner__field-content admin-element-inner__field-content--no-transition">
-        <p class="admin-element-inner__field-title">{{ item?.name }}</p>
+        <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
         <DatePicker class="admin-element-inner__date-picker"
                     :disable-year-select="false"
                     :calendarType="'full'"
+                    :defaultData="item?.value"
                     @pickDate="(date: string) => { handleValuePick(useDateFormat(date, 'DD.MM.YYYY HH:mm:ss')) }"
                     @clearValue="() => value = ''" />
     </div>
@@ -26,7 +27,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const value = ref();
+        const value = ref(props.item?.value);
 
         return {
             value,

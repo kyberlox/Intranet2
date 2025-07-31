@@ -7,6 +7,18 @@ export interface IReaction {
     }
 }
 
+export interface IBXFileType {
+    article_id?: number,
+    b24_id?: string,
+    file_url?: string,
+    id?: string,
+    is_archive?: boolean,
+    is_preview?: boolean,
+    original_name?: string,
+    stored_name?: string,
+    type?: string
+}
+
 export interface IBaseEntity {
     id: number,
     section_id?: number,
@@ -25,17 +37,7 @@ export interface IBaseEntity {
     videoHref?: string,
 
     images?: string[],
-    documentation?: {
-        article_id?: number,
-        b24_id?: string,
-        file_url?: string,
-        id?: string,
-        is_archive?: boolean,
-        is_preview?: boolean,
-        original_name?: string,
-        stored_name?: string,
-        type?: string
-    }[],
+    documentation?: IFileType[],
     videos_native?: string[],
     videos_embed?: string[],
     videos?: string[],

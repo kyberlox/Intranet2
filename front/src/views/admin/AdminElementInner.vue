@@ -1,16 +1,15 @@
 <template>
   <div class="admin-element-inner">
-    <div class="admin-element-inner__wrapper admin-element-inner__wrapper--mt20"
-         :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth }">
+    <div class="admin-element-inner__wrapper mt20"
+         :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth || isMobileScreen }">
       <div v-if="newElementSkeleton.length"
            class="admin-element-inner__editor"
            :class="[
-            { 'admin-element-inner__editor--preview-full-width': previewFullWidth },
+            { 'admin-element-inner__editor--preview-full-width': previewFullWidth || isMobileScreen },
             { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
           ]">
         <div v-for="(item, index) in newElementSkeleton"
              class="admin-element-inner__field"
-             :class="{ 'admin-element-inner__field--preview-full-width': previewFullWidth }"
              :key="index">
 
           <AdminComponentDatePicker v-if="inputComponentChecker(item) == 'datePicker'"
@@ -29,12 +28,6 @@
                                :item="item"
                                @pick="(value: string) => handleEmitValueChange(item, value)" />
 
-          <AdminComponentImagePicker v-else-if="inputComponentChecker(item) == 'image'"
-                                     :item="item" />
-
-          <AdminComponentDocPicker v-else-if="inputComponentChecker(item) == 'docs'"
-                                   :item="item" />
-
           <div v-else-if="inputComponentChecker(item) == 'auto'"
                class="admin-element-inner__field-content">
             <p v-if="item.name"
@@ -42,9 +35,34 @@
             <p v-if="item.value"
                class="admin-element-inner__field-value">{{ item.value }}</p>
           </div>
+        </div>
 
+        <div class="admin-element-inner__field">
+          <AdminComponentInput v-if="newElementFiles.videos_embed"
+                               :item="{ name: 'Видео с источников', field: 'videos_embed', value: newElementFiles.videos_embed[0].original_name }"
+                               @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
+        </div>
+        <div class="admin-element-inner__field"
+             v-if="newElementFiles.images">
+          <p class="admin-element-inner__field-title fs-l">Изображения </p>
+          <FileUploader @upload="(e) => handleUpload(e)"
+                        :uploadType="'img'"
+                        :existFiles="newData.images" />
+        </div>
+        <div class="admin-element-inner__field "
+             v-if="newElementFiles.documentation">
+          <p class="admin-element-inner__field-title fs-l">Дополнительные файлы </p>
+          <FileUploader :uploadType="'docs'" />
+        </div>
+        <div class="admin-element-inner__field "
+             v-if="newElementFiles.videos_native">
+          <p class="admin-element-inner__field-title fs-l">Видео </p>
+          <FileUploader :uploadType="'videoNative'"
+                        :existFiles="newData.videos_native" />
         </div>
       </div>
+
+
       <div class="admin-element-inner__editor "
            v-else>
         <Loader class="admin-element-inner__editor__loader loader" />
@@ -52,19 +70,19 @@
 
 
       <div class="admin-element-inner__preview"
-           :class="{ 'admin-element-inner__preview--full-width': previewFullWidth }">
+           :class="{ 'admin-element-inner__preview--full-width': previewFullWidth || isMobileScreen }">
         <Transition name="layout-change"
                     mode="out-in">
-          <LayoutTop v-if="previewFullWidth"
+          <LayoutTop v-if="previewFullWidth && !isMobileScreen"
                      class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
                      @click="previewFullWidth = !previewFullWidth" />
-          <LayoutLeft v-else
+          <LayoutLeft v-else-if="!isMobileScreen"
                       class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
                       @click="previewFullWidth = !previewFullWidth" />
         </Transition>
 
         <PostInner v-if="newData && activeType == 'news'"
-                   class="admin-element-inner__preview-content"
+                   class="admin-element-inner__preview-content mt30"
                    :previewElement="newData"
                    :type="'adminPreview'" />
         <Interview v-if="activeType == 'interview'"
@@ -93,7 +111,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref } from 'vue';
+import { defineComponent, onMounted, ref, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 
@@ -108,17 +126,18 @@ import AdminComponentSelect from './components/AdminComponentSelect.vue';
 import AdminComponentTextarea from './components/AdminComponentTextarea.vue';
 import AdminComponentDatePicker from './components/AdminComponentDatePicker.vue';
 import AdminComponentInput from './components/AdminComponentInput.vue';
-import AdminComponentImagePicker from './components/AdminComponentImagePicker.vue';
-import AdminComponentDocPicker from './components/AdminComponentDocPicker.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
-
+import FileUploader from './components/FileUploader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/utils/UseToastСompose';
+import { type IBXFileType } from "@/interfaces/IEntities";
+import { screenCheck } from '@/utils/screenCheck';
+import { useWindowSize } from '@vueuse/core'
 
 
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
@@ -135,8 +154,7 @@ export default defineComponent({
     AdminComponentSelect,
     AdminComponentDatePicker,
     AdminComponentInput,
-    AdminComponentImagePicker,
-    AdminComponentDocPicker,
+    FileUploader
   },
   props: {
     id: {
@@ -158,19 +176,23 @@ export default defineComponent({
     const activeType = ref('news');
     const buttonIsDisabled = ref(false);
     const isCreateNew = ref(true);
+    const { width } = useWindowSize()
+
+    const newElementFiles = ref();
 
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
 
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
-    const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()], section_id: Number(props.id) });
+    const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()], section_id: Number(props.id), videos_embed: [] });
+    const isMobileScreen = computed(() => ['sm'].includes(screenCheck(width)));
 
     const inputComponentChecker = (item: IAdminListItem) => {
       if (item.disabled) return;
       switch (true) {
-        case item.data_type == 'str' && String(item.field)?.includes('date'):
+        case (item.data_type == 'str' || item.data_type == 'datetime.datetime') && String(item.field)?.includes('date'):
           return 'datePicker'
-        case item.data_type == 'str' && 'values' in item:
+        case (item.data_type == 'str' || item.data_type == 'bool') && 'values' in item:
           return 'select'
         case item.data_type == 'str' && item.field?.includes('text'):
           return 'textArea'
@@ -191,12 +213,22 @@ export default defineComponent({
           .then((data) => {
             isCreateNew.value = true;
             newElementSkeleton.value = data.fields;
+            newElementFiles.value = data.files;
           })
       }
       else Api.get(`/editor/rendering/${props.elementId}`)
         .then((data) => {
           isCreateNew.value = false;
           newElementSkeleton.value = data.fields;
+          newElementFiles.value = data.files;
+          if (data.files.images.length) {
+            newData.value.images = [];
+            data.files.images.map((e: IBXFileType) => { if (e.file_url) newData.value.images?.push(e.file_url) })
+          }
+          if (data.files.videos_native.length) {
+            newData.value.videos_native = [];
+            data.files.videos_native.map((e: IBXFileType) => { if (e.file_url) newData.value.videos_native?.push(e.file_url) })
+          }
         })
     })
 
@@ -215,6 +247,14 @@ export default defineComponent({
         })
     }
 
+    const handleUpload = (e) => {
+      const fileToUpload = e.file;
+      const formData = new FormData();
+      formData.append('file', [fileToUpload])
+      Api.post('/editor/uploadfiles', formData)
+        .then((data) => console.log(data))
+    }
+
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
       if (item.field) {
         newData.value = {
@@ -223,6 +263,8 @@ export default defineComponent({
         };
       }
     };
+
+
 
     return {
       events,
@@ -234,8 +276,11 @@ export default defineComponent({
       buttonIsDisabled,
       inputComponentChecker,
       newData,
+      newElementFiles,
       applyNewData,
-      handleEmitValueChange
+      handleEmitValueChange,
+      handleUpload,
+      isMobileScreen
     };
   }
 });
@@ -271,10 +316,6 @@ export default defineComponent({
     padding: 20px;
     transition: flex-direction 0.4s cubic-bezier(0.4, 0, 0.2, 1),
       gap 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &--mt20 {
-      margin-top: 20px;
-    }
 
     &--preview-full-width {
       flex-direction: column-reverse;
@@ -326,13 +367,6 @@ export default defineComponent({
     &--no-transition {
       transition: none !important;
     }
-  }
-
-  &__field-title {
-    margin: 0;
-    padding: 0;
-    font-weight: 500;
-    margin-bottom: 8px;
   }
 
   &__field-value {
@@ -470,7 +504,7 @@ export default defineComponent({
     &--full-width {
       position: relative;
       top: auto;
-      transform: translateY(0);
+      // transform: translateY(0);
     }
   }
 
@@ -567,5 +601,9 @@ export default defineComponent({
 
 .admin-element-inner__editor__loader {
   margin: auto;
+}
+
+.file-uploader {
+  margin-top: 5px !important;
 }
 </style>

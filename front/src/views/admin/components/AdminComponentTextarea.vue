@@ -3,6 +3,7 @@
         <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
         <TextEditor class="admin-element-inner__text-editor fs-m"
                     v-model="value"
+                    @vue:mounted="handleValuePick"
                     @vue:updated="handleValuePick" />
     </div>
 </template>

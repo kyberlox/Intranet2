@@ -10,33 +10,36 @@
             <input ref="fileInput"
                    type="file"
                    class="file-uploader__input"
-                   :accept="acceptedFileTypes"
                    @change="handleFileSelect"
                    multiple />
 
-            <div v-if="!uploadedVideos.length"
+            <div v-if="!uploadedFiles.length"
                  class="file-uploader__placeholder">
                 <p class="file-uploader__text">Перетащите файл сюда или нажмите для выбора</p>
-                <!-- <p class="file-uploader__hint">Поддерживаемые форматы: MP4, PNG, JPEG, WMV</p> -->
             </div>
 
-            <div v-else-if="uploadType == 'video'"
-                 class="file-uploader__preview-list">
-                <div v-for="(video, index) in uploadedVideos"
+            <div class="file-uploader__preview-list"
+                 :class="{ 'file-uploader__preview-list--video': uploadType == 'videoNative' }">
+                <div v-for="(item, index) in existFiles"
                      :key="index"
                      class="file-uploader__preview-item">
-                    <video class="file-uploader__preview-video"
-                           :src="video.url"
-                           controls
-                           preload="metadata">
+                    <video v-if="uploadType == 'videoNative'"
+                           @click.stop.prevent=""
+                           class="file-uploader__preview-video"
+                           :src="item"
+                           controls>
                         Ваш браузер не поддерживает видео.
                     </video>
-                    <div class="file-uploader__preview-info">
-                        <span class="file-uploader__preview-name">{{ video.name }}</span>
-                        <span class="file-uploader__preview-size">{{ formatFileSize(video.size) }}</span>
+                    <img v-if="uploadType == 'img'"
+                         class="file-uploader__preview-img"
+                         :src="item" />
+                    <div v-if="uploadType == 'docs'">
+                        <h3>документ</h3>
                     </div>
+
                     <button class="file-uploader__remove-btn"
                             @click.stop="removeVideo(index)">
+                        <RemoveIcon />
                     </button>
                 </div>
             </div>
@@ -59,10 +62,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, type PropType, type Ref } from 'vue';
+import { allowedTypes } from '@/assets/static/uploadAllowedTypes';
+import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
 
-
-interface VideoFile {
+interface IFileToUpload {
     name: string;
     size: number;
     url: string;
@@ -73,43 +77,30 @@ export default defineComponent({
     name: 'VideoUploader',
     props: {
         uploadType: {
-            type: String,
+            type: String as PropType<'img' | 'docs' | 'videoNative'>,
             default: 'img'
+        },
+        existFiles: {
+            type: Array<string>
         }
+    },
+    components: {
+        RemoveIcon
     },
     emits: ['upload', 'remove'],
     setup(props, { emit }) {
         const fileInput = ref<HTMLInputElement>();
-        const uploadedVideos = ref<VideoFile[]>([]);
+        const uploadedFiles = ref<IFileToUpload[]>([]);
         const isDragOver = ref(false);
         const isUploading = ref(true);
         const uploadProgress = ref(0);
         const error = ref('');
 
-        const acceptedFileTypes = computed(() => {
-            switch (props.uploadType) {
-                case 'video':
-                    return 'video/*';
-                case 'doc':
-                    return '.pdf,.doc,.docx,.txt,.rtf,.odt';
-                case 'img':
-                    return 'image/*';
-                default:
-                    return '*';
-            }
-        });
-
-        const maxFileSize = 100 * 1024 * 1024; // 100MB
-        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/webm'];
+        const allowedType: Ref<string[]> = ref(allowedTypes[props.uploadType]);
 
         const validateFile = (file: File): boolean => {
-            if (!allowedTypes.includes(file.type)) {
+            if (!allowedType.value.includes(file.type)) {
                 error.value = 'Неподдерживаемый формат файла';
-                return false;
-            }
-
-            if (file.size > maxFileSize) {
-                error.value = 'Файл слишком большой (максимум 100MB)';
                 return false;
             }
 
@@ -122,14 +113,14 @@ export default defineComponent({
 
             fileArray.forEach(file => {
                 if (validateFile(file)) {
-                    const videoFile: VideoFile = {
+                    const videoFile: IFileToUpload = {
                         name: file.name,
                         size: file.size,
                         url: URL.createObjectURL(file),
                         file: file
                     };
 
-                    uploadedVideos.value.push(videoFile);
+                    uploadedFiles.value.push(videoFile);
                     emit('upload', videoFile);
                 }
             });
@@ -165,23 +156,15 @@ export default defineComponent({
         };
 
         const removeVideo = (index: number) => {
-            const video = uploadedVideos.value[index];
-            URL.revokeObjectURL(video.url);
-            uploadedVideos.value.splice(index, 1);
-            emit('remove', video);
-        };
-
-        const formatFileSize = (bytes: number): string => {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            const file = uploadedFiles.value[index];
+            URL.revokeObjectURL(file.url);
+            uploadedFiles.value.splice(index, 1);
+            emit('remove', file);
         };
 
         return {
             fileInput,
-            uploadedVideos,
+            uploadedFiles,
             isDragOver,
             isUploading,
             uploadProgress,
@@ -192,8 +175,6 @@ export default defineComponent({
             handleDragLeave,
             triggerFileInput,
             removeVideo,
-            formatFileSize,
-            acceptedFileTypes
         };
     }
 });

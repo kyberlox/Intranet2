@@ -2,7 +2,7 @@
     &__drop-zone {
         border: 2px dashed #ddd;
         border-radius: 8px;
-        padding: 40px 20px;
+        padding: 30px 20px;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -49,9 +49,14 @@
     }
 
     &__preview-list {
+        margin-top: 10px;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 20px;
+
+        &--video {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
     }
 
     &__preview-item {
@@ -60,11 +65,20 @@
         border-radius: 8px;
         overflow: hidden;
         background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+
+        &>img {
+            max-width: 100%;
+
+        }
     }
 
     &__preview-video {
         width: 100%;
-        height: 200px;
+        // height: 200px;
         object-fit: cover;
     }
 

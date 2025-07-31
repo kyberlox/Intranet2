@@ -6,7 +6,7 @@
         <swiper-slide v-for="(image, index) in images"
                       :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
                       :key="'postImg' + index">
-            <img :src="image"
+            <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : image"
                  alt="изображение слайдера"
                  @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>

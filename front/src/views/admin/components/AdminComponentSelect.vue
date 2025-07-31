@@ -24,10 +24,11 @@ export default defineComponent({
         },
     },
     setup(props, { emit }) {
-        const value = ref();
+        const value = ref(props.item?.value);
+
         return {
             value,
-            handleValuePick: () => emit('pick', value.value)
+            handleValuePick: () => { emit('pick', value.value) }
         }
     }
 })

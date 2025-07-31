@@ -3,11 +3,15 @@
         Новые сотрудники
     </h2>
     <div class="row mb-5 mt20">
-        <div class="birthday__page__swiper__wrapper vertical-swiper__wrapper"
+        <div class="newWorkers__page-swiper__wrapper pos-rel"
              v-if="newWorkers.length">
-            <swiper class="birthday__page__swiper"
+            <swiper class="newWorkers__page__swiper"
                     v-bind="sliderConfig"
                     @swiper="swiperOn">
+                <swiper-slide v-for="(slide, index) in newWorkers"
+                              :key="'vertSlide' + index">
+                    <VerticalSliderSlide :slide="slide" />
+                </swiper-slide>
                 <swiper-slide v-for="(slide, index) in newWorkers"
                               :key="'vertSlide' + index">
                     <VerticalSliderSlide :slide="slide" />

@@ -40,34 +40,37 @@
 
     &-navigation {
         &__buttons {
-            &-group {
+            &-group__button {
+                color: #FFF;
                 display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                margin-top: 15px;
-                text-align: center;
+                cursor: pointer;
+                border-radius: 100%;
                 align-items: center;
+                justify-content: center;
+                width: 45px;
+                height: 42px;
+                background: #ef7f1b;
+                outline: none;
+                border: none;
+                margin-top: 10px;
 
-                @include sm {
-                    display: none;
+                position: absolute;
+                z-index: 2;
+
+                &--prev {
+                    left: 0;
+                    top: 40%;
+                    transform: translateY(-40%);
                 }
 
-                &__button {
-                    color: #FFF;
-                    display: flex;
-                    cursor: pointer;
-                    border-radius: 100%;
-                    align-items: center;
-                    justify-content: center;
-                    width: 45px;
-                    height: 42px;
-                    background: #ef7f1b;
-                    outline: none;
-                    border: none;
+                &--next {
+                    right: 0;
+                    top: 40%;
+                    transform: translateY(-40%);
+                }
 
-                    &>svg {
-                        width: 18px;
-                    }
+                &>svg {
+                    width: 18px;
                 }
             }
         }

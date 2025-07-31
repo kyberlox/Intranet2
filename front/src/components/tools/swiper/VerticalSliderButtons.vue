@@ -1,20 +1,18 @@
 <template>
-    <div class="swiper-navigation__buttons-group swiper-navigation__buttons-group--birthday"
-         v-if="!isBeginning || !isEnd">
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
-                :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                @click="slidePrev"
-                :disabled="isBeginning">
-            <ArrowLeft />
-        </button>
-        <div class="swiper-navigation__buttons-group__pagination"></div>
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
-                :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                @click="slideNext"
-                :disabled="isEnd">
-            <ArrowRight />
-        </button>
-    </div>
+    <button v-if="!isBeginning || !isEnd"
+            class="swiper-navigation__buttons-group__button swiper-navigation__buttons-group__button--prev"
+            :class="{ 'swiper-pagination__button--disabled': isBeginning }"
+            :disabled="isBeginning"
+            @click="slidePrev">
+        <ArrowLeft />
+    </button>
+    <button v-if="!isBeginning || !isEnd"
+            class="swiper-navigation__buttons-group__button swiper-navigation__buttons-group__button--next"
+            :class="{ 'swiper-pagination__button--disabled': isEnd }"
+            @click="slideNext"
+            :disabled="isEnd">
+        <ArrowRight />
+    </button>
 </template>
 
 <script lang="ts">

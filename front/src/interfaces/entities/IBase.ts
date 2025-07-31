@@ -37,9 +37,9 @@ export interface IBaseEntity {
     videoHref?: string,
 
     images?: string[],
-    documentation?: IFileType[],
+    documentation?: IBXFileType[],
     videos_native?: string[],
-    videos_embed?: string[],
+    videos_embed?: IBXFileType[],
     videos?: string[],
     preview_file_url?: string,
     photo_file_url?: string

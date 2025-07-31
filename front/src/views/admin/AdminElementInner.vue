@@ -39,7 +39,7 @@
 
         <div class="admin-element-inner__field">
           <AdminComponentInput v-if="newElementFiles.videos_embed"
-                               :item="{ name: 'Видео с источников', field: 'videos_embed', value: newElementFiles.videos_embed[0].original_name }"
+                               :item="{ name: 'Видео с источников', field: 'videos_embed', value: newElementFiles?.videos_embed[0]?.original_name ?? undefined }"
                                @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
         </div>
         <div class="admin-element-inner__field"
@@ -52,7 +52,8 @@
         <div class="admin-element-inner__field "
              v-if="newElementFiles.documentation">
           <p class="admin-element-inner__field-title fs-l">Дополнительные файлы </p>
-          <FileUploader :uploadType="'docs'" />
+          <FileUploader :uploadType="'docs'"
+                        :existFiles="newData.documentation" />
         </div>
         <div class="admin-element-inner__field "
              v-if="newElementFiles.videos_native">
@@ -139,7 +140,6 @@ import { type IBXFileType } from "@/interfaces/IEntities";
 import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
 
-
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
 export default defineComponent({
@@ -154,7 +154,7 @@ export default defineComponent({
     AdminComponentSelect,
     AdminComponentDatePicker,
     AdminComponentInput,
-    FileUploader
+    FileUploader,
   },
   props: {
     id: {
@@ -229,6 +229,10 @@ export default defineComponent({
             newData.value.videos_native = [];
             data.files.videos_native.map((e: IBXFileType) => { if (e.file_url) newData.value.videos_native?.push(e.file_url) })
           }
+          if (data.files.documentation.length) {
+            newData.value.documentation = [];
+            data.files.documentation.map((e: IBXFileType) => { newData.value.documentation?.push(e) })
+          }
         })
     })
 
@@ -263,8 +267,6 @@ export default defineComponent({
         };
       }
     };
-
-
 
     return {
       events,

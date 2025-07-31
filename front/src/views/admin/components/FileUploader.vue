@@ -33,8 +33,10 @@
                     <img v-if="uploadType == 'img'"
                          class="file-uploader__preview-img"
                          :src="item" />
-                    <div v-if="uploadType == 'docs'">
-                        <h3>документ</h3>
+                    <div class="file-uploader__preview-doc"
+                         v-if="uploadType == 'docs'">
+                        <span v-if="item.original_name">{{ item.original_name }}</span>
+                        <DocIcon />
                     </div>
 
                     <button class="file-uploader__remove-btn"
@@ -65,6 +67,7 @@
 import { defineComponent, ref, type PropType, type Ref } from 'vue';
 import { allowedTypes } from '@/assets/static/uploadAllowedTypes';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
+import DocIcon from '@/assets/icons/posts/DocIcon.svg?component'
 
 interface IFileToUpload {
     name: string;
@@ -85,7 +88,8 @@ export default defineComponent({
         }
     },
     components: {
-        RemoveIcon
+        RemoveIcon,
+        DocIcon
     },
     emits: ['upload', 'remove'],
     setup(props, { emit }) {

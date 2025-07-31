@@ -3,7 +3,8 @@
         <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
              class="row">
             <div class="col-12 col-lg-6 mb-2">
-                <SwiperBlank :videos="currentPost?.videos ? currentPost.videos : undefined"
+                <SwiperBlank :videosNative="currentPost?.videos_native"
+                             :videosEmbed="currentPost?.videos_embed"
                              :images="currentPost?.images ? currentPost.images : undefined"
                              :sectionId="currentPost?.section_id" />
             </div>
@@ -112,8 +113,6 @@ export default defineComponent({
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
                 if (props.previewElement == null) {
                     currentPost.value = undefined;
-                    console.log(1);
-
                 }
                 else currentPost.value = props.previewElement
             }
@@ -126,16 +125,12 @@ export default defineComponent({
                     })
         }, { immediate: true, deep: true })
 
-        const changeToPostStandart = (target: Ref<IPostInner>, res: IPostInner) => {
+        const changeToPostStandart = (target: Ref<IPostInner>) => {
             if (target.value == undefined) return;
             if (target.value.section_id == 52) {
                 target.value.content_text = target.value.indirect_data?.date_from + ' - ' + target.value.indirect_data?.date_to;
             }
-            if (res.videos_embed || res.videos_native) {
-                const embedVideos = res.videos_embed || [];
-                const nativeVideos = res.videos_native || [];
-                target.value.videos = embedVideos.concat(nativeVideos);
-            }
+
             return target
         }
 

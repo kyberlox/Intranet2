@@ -11,13 +11,26 @@
                  @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>
 
-        <!-- для video -->
-        <swiper-slide v-for="(video, index) in videos"
+        <!-- для встроенных video -->
+        <swiper-slide v-for="(video, index) in videosEmbed"
+                      :key="'postVideo' + index">
+            <iframe v-if="video && video.file_url"
+                    width="100%"
+                    height="500px"
+                    :title="'Видеоконтент'"
+                    :src="String(repairVideoUrl(video?.file_url))"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+        </swiper-slide>
+
+        <!-- для загруженных video -->
+        <swiper-slide v-for="(video, index) in videosNative"
                       :key="'postVideo' + index">
             <iframe width="100%"
                     height="500px"
                     :title="'Видеоконтент'"
-                    :src="String(repairVideoUrl(video))"
+                    :src="String((video))"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
             </iframe>
@@ -25,7 +38,7 @@
 
     </swiper>
     <div class="swiper-navigation__buttons-group"
-         v-if="(images && images.length > 1) || (videos && videos.length > 1) || images && videos && images.length + videos.length > 1">
+         v-if="(images && images.length > 1) || (videosNative && videosNative.length > 1) || images && videosNative && images.length + videosNative.length > 1">
         <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
                 :class="{ 'swiper-pagination__button--disabled': isBeginning }"
                 @click="slidePrev">
@@ -52,7 +65,7 @@ import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType, ref, watch } from "vue";
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { useSwiperconf } from "@/utils/useSwiperConf";
-
+import { type IBXFileType } from "@/interfaces/IEntities";
 export default defineComponent({
     name: 'SwiperBlank',
     components: {
@@ -80,7 +93,13 @@ export default defineComponent({
         },
         activeIndexInModal: {
             type: Number
-        }
+        },
+        videosNative: {
+            type: Array<string>
+        },
+        videosEmbed: {
+            type: Array<IBXFileType>
+        },
     },
     setup(props) {
         const modalIsVisible = ref(false);

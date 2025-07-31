@@ -22,7 +22,7 @@ from src.model.File import File, file_router
 from src.services.VCard import vcard_app
 from src.services.LogsMaker import LogsMaker
 
-from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere
+from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere, ArticleSearchModel
 
 from src.base.B24 import B24, b24_router
 
@@ -34,6 +34,7 @@ from src.services.Editor import Editor, editor_router
 
 from src.services.FieldsVisions import Visions, fieldsvisions_router
 
+from src.model.Tag import Tag, tag_router
 
 from typing import Awaitable, Callable, Optional
 
@@ -46,7 +47,7 @@ import time
 
 import asyncio
 
-app = FastAPI(timeout=60*5)
+app = FastAPI() #timeout=60*5
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")
@@ -65,6 +66,7 @@ app.include_router(compress_router, prefix="/api")
 app.include_router(b24_router, prefix="/api")
 app.include_router(idea_router, prefix="/api")
 app.include_router(fieldsvisions_router, prefix="/api")
+app.include_router(tag_router, prefix="/api")
 
 
 app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
@@ -164,9 +166,15 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 
-@app.get("/get_directors_by_elastic")
-def get_directors():
-    return StructureSearchModel().get_directors()
+@app.get("/get_test_elastic/{word}")
+def get_test_elastic(word: str):
+    return StructureSearchModel().get_structure_by_name(word)
+
+@app.get("/get_sec_data/{section_id}")
+def test_sec_data(section_id):
+    b24 = B24()
+    sec_data = b24.getInfoBlock(section_id)
+    return sec_data
 
 @app.get("/get_file/{inf_id}/{file_id}")
 def test_file_get(inf_id, file_id):
@@ -181,8 +189,15 @@ def test_file_get(file_id):
     return file_data
 
 @app.get("/api/full_search/{keyword}")
-def elastic_search(keyword: str): # , size_res: int = 20
-    return search_everywhere(key_word=keyword) # , size_res=size_res
+def elastic_search(keyword: str): 
+    return search_everywhere(key_word=keyword) 
+
+@app.put("/api/full_elastic_dump")
+def elastic_dump(): 
+    UserSearchModel().dump()
+    StructureSearchModel().dump()
+    ArticleSearchModel().dump()
+    return {"status": True}
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")
 def find(inf_id, art_id, property):

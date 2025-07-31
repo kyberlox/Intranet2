@@ -30,6 +30,7 @@ interface IBirthdaySlide {
 }
 
 export default defineComponent({
+    name: 'verticalSliderSlide',
     props: {
         slide: {
             type: Object as PropType<IBirthdaySlide>

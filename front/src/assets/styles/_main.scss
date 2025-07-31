@@ -7,6 +7,7 @@
 @forward './services/_services';
 @forward './news/news';
 @forward './admin/admin';
+@forward './views/views';
 @use '@/assets/styles/mixins/_mixins.scss' as *;
 
 

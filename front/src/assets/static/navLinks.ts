@@ -81,6 +81,11 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: "Магазин мерча",
                 href: "merchStore",
             },
+            {
+                id: 1.14,
+                name: 'Новые сотрудники',
+                href: 'newWorkers'
+            }
         ],
     },
     {

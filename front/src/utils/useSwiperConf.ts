@@ -58,6 +58,8 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                 return 1;
             case 'vertical':
                 return 3;
+            case 'newWorkers':
+                return 4;
             default:
                 return "auto" as const;
         }
@@ -76,11 +78,11 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                         spaceBetween: 10
                     },
                     768: {
-                        slidesPerView: 1,
+                        slidesPerView: 2,
                         spaceBetween: 12,
                     },
                     1024: {
-                        slidesPerView: 1,
+                        slidesPerView: 2,
                         spaceBetween: 16
                     },
                     1200: {

@@ -27,25 +27,13 @@
                         @swiper="swiperOn">
                     <swiper-slide v-for="(slide, index) in slidesForBirthday"
                                   :key="'vertSlide' + index">
-                        <BirthdaySlide :slide="slide" />
+                        <VerticalSliderSlide :slide="slide" />
                     </swiper-slide>
                 </swiper>
-                <div class="swiper-navigation__buttons-group swiper-navigation__buttons-group--birthday"
-                     v-if="!isBeginning || !isEnd">
-                    <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
-                            :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                            @click="slidePrev"
-                            :disabled="isBeginning">
-                        <ArrowLeft />
-                    </button>
-                    <div class="swiper-navigation__buttons-group__pagination"></div>
-                    <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
-                            :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                            @click="slideNext"
-                            :disabled="isEnd">
-                        <ArrowRight />
-                    </button>
-                </div>
+                <VerticalSliderButtons :isBeginning="isBeginning"
+                                       :isEnd="isEnd"
+                                       @slideNext="slideNext"
+                                       @slidePrev="slidePrev" />
             </div>
             <div class="birthday__static__greetings">
                 <img @click="openModal(['/src/assets/imgs/plugs/birthdayPlug.jpg'])"
@@ -73,18 +61,17 @@ import { useSwiperconf } from "@/utils/useSwiperConf";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
-import BirthdaySlide from "./components/BirthdaySlide.vue";
-import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
-import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
+import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
+import VerticalSliderButtons from '@/components/tools/swiper/VerticalSliderButtons.vue';
+
 
 export default defineComponent({
     components: {
         DatePicker,
         Swiper,
         SwiperSlide,
-        BirthdaySlide,
-        ArrowLeft,
-        ArrowRight,
+        VerticalSliderSlide,
+        VerticalSliderButtons,
         ZoomModal
     },
     setup() {

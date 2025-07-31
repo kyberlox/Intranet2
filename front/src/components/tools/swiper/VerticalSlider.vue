@@ -45,22 +45,10 @@
                 </div>
             </div>
         </swiper-slide>
-        <div class="swiper-navigation__buttons-group swiper-navigation__buttons-group--birthday"
-             v-if="!isBeginning || !isEnd">
-            <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
-                    :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                    @click="slidePrev"
-                    :disabled="isBeginning">
-                <ArrowLeft />
-            </button>
-            <div class="swiper-navigation__buttons-group__pagination"></div>
-            <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
-                    :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                    @click="slideNext"
-                    :disabled="isEnd">
-                <ArrowRight />
-            </button>
-        </div>
+        <VerticalSliderButtons :isEnd="isEnd"
+                               :isBeginning="isBeginning"
+                               @slidePrev="slidePrev"
+                               @slideNex="slideNext" />
     </swiper>
 </template>
 
@@ -70,8 +58,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { defineComponent } from "vue";
 import { useSwiperconf } from "@/utils/useSwiperConf";
-import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
-import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
+import VerticalSliderButtons from '@/components/tools/swiper/VerticalSliderButtons.vue';
 
 interface IVerticalSlide {
     header?: string,
@@ -96,8 +83,7 @@ export default defineComponent({
     components: {
         Swiper,
         SwiperSlide,
-        ArrowLeft,
-        ArrowRight
+        VerticalSliderButtons
     },
     props: {
         slides: {

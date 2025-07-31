@@ -5,6 +5,7 @@ from src.base.mongodb import FileModel
 from src.model.File import File
 from src.model.User import User
 from src.model.Section import Section
+from src.model.Tag import Tag
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import LikesModel
 from src.base.pSQLmodels import ViewsModel
@@ -401,11 +402,22 @@ class Article:
 
         #Актуальные новости и Корпоративные события
         elif self.section_id == 31 or self.section_id == 51:
+            indirect_data = {}
             author = None
             if "PROPERTY_294" in data:
                 author = data["PROPERTY_294"]
+            else:
+                pass
+
+            if "PROPERTY_1116" in data and self.section_id == 31:
+                tags = []
+                for value in data['PROPERTY_1116']:
+                    existing_tag = Tag(id=int(value)).get_tag_by_id()
+                    if existing_tag:
+                        tags.append(existing_tag.id)
+                indirect_data['tags'] = tags
             
-            indirect_data = {"author" : author}
+            indirect_data["author"] = author
 
         #Благотворительные проекты
         elif self.section_id == 55:
@@ -1266,6 +1278,7 @@ class Article:
             31 : "50", #Актуальные новости ✔️
             51 : "50"  #Корпоративные события ✔️
         }
+
 
         # пройти по инфоблоку
         self.section_id = "50"
@@ -2168,7 +2181,8 @@ class Article:
             return user_inf["ID"]
         return None
     
-   
+    def search_articles_by_tags(tag_id):
+        return Tag(id=tag_id).get_articles_by_tag_id()
 
 
 #Получить данные инфоблока из Б24
@@ -2258,6 +2272,9 @@ def get_popular_articles(limit: int):
 def get_recent_popular_articles(days: int, limit: int):
     return Article().get_recent_popular_articles(days=days, limit=limit)
 
+@article_router.get("get_articles_by_tag_id/{tag_id}")
+def get_articles_by_tag_id(tag_id: int):
+    return Article().search_articles_by_tags()
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
 # def search_articles_by_title(title): # data = Body()

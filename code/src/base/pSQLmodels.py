@@ -96,8 +96,8 @@ class Article(Base):
 class Likes(Base):
     __tablename__ = 'likes'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
-    article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)  # ID пользователя
+    article_id = Column(Integer, ForeignKey('article.id', ondelete="CASCADE"), nullable=False)  # ID статьи
     created_at = Column(DateTime, default=datetime.utcnow)  # Время создания лайка
     is_active = Column(Boolean, default=True)  # Флаг активности лайка (можно убирать лайки)
 
@@ -114,7 +114,7 @@ class Views(Base):
 
     id = Column(Integer, primary_key=True)
     #user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
-    article_id = Column(Integer, ForeignKey('article.id'), nullable=False)  # ID статьи
+    article_id = Column(Integer, ForeignKey('article.id', ondelete="CASCADE"), nullable=False)  # ID статьи
     viewes_count = Column(Integer, nullable=False)  # Время просмотра
 
     # Опциональные отношения для удобства доступа
@@ -143,7 +143,13 @@ class UservisionsRoot(Base):
     fieldvision = relationship("Fieldvision", back_populates="uservisionsroot")
     user = relationship("User", back_populates="uservisionsroot")
 
-
+class Tags(Base):
+    """
+    Класс для хранения тэгов статей
+    """
+    __tablename__ = 'tags'
+    id = Column(Integer, primary_key=True)
+    tag_name = Column(Text, nullable=True)
 
 metadata = MetaData()
 
@@ -515,15 +521,15 @@ class UserModel():
                     user_image = File(user['photo_file_id']).get_users_photo()
                     user_info['id'] = user['id']
                     if user['second_name'] == '' or user['second_name'] is None:
-                        user_info['user_fio'] = f'{user['last_name']} {user['name']}'
+                        user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
                     else:
-                        user_info['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                        user_info['user_fio'] = f'{user["last_name"]} {user["name"]} {user["second_name"]}'
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
                     if "uf_usr_department_main" in indirect_data:
                         dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                         user_info['uf_usr_department_main'] = dedep[0].name
-                    user_info['image'] =  f'http://intranet.emk.org.ru{user_image['URL']}'
+                    user_info['image'] =  f'http://intranet.emk.org.ru{user_image["URL"]}'
                     
                     normal_list.append(user_info)
         return normal_list
@@ -565,7 +571,7 @@ class UserModel():
                         user_info['user_fio'] = f'{user[2]} {user[3]} {user[4]}'
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
-                    user_info['image'] = f'http://intranet.emk.org.ru{user_image['URL']}'
+                    user_info['image'] = f'http://intranet.emk.org.ru{user_image["URL"]}'
                     users.append(user_info)
         return users
     """
@@ -1477,3 +1483,48 @@ class UservisionsRootModel:
                 result.append(general_info)
             return result
         return {"msg": "такого vision_id не существует"}
+
+class TagsModel:
+    def __init__(self, id: int = 0, tag_name: str = ''):
+        self.session = db
+        self.id = id
+        self.tag_name = tag_name
+
+    def create_tag(self):
+        existing_tag = self.session.query(Tags).filter(Tags.tag_name == self.tag_name).first()
+        if existing_tag:
+            return {"msg": "Такой тэг уже существует"}
+        new_tag = Tags(tag_name=self.tag_name)
+        self.session.add(new_tag)
+        self.session.commit()
+        return {"msg": "Добавлен"}
+    
+    def find_tag_by_id(self):
+        existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()
+        if existing_tag:
+            return existing_tag
+        return {"msg": "отсутствует такой тэг"}
+
+    def remove_tag(self):
+        existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()
+        if existing_tag:
+            self.session.query(Tags).filter(Tags.id == self.id).delete()
+            self.session.commit()
+            return {"msg": "удален"}
+        return {"msg": "отсутствует такой тэг"}
+    
+    def create_b24_tag(self):
+        existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()
+        if existing_tag:
+            return {"msg": "Такой тэг уже существует"}
+        new_tag = Tags(id=self.id, tag_name=self.tag_name)
+        self.session.add(new_tag)
+        self.session.commit()
+        return {"msg": "Добавлен"}
+    
+    def find_articles_by_tag_id(self):
+        articles = self.session.query(Article).filter(Article.indirect_data['tags'].contains([self.id]), Article.active == True).all()
+        if articles:
+            return articles
+        return {'msg': 'хуйня какая то'}
+

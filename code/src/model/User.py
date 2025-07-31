@@ -12,6 +12,8 @@ from fastapi import APIRouter, Body, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
+import time
+
 
 
 templates = Jinja2Templates(directory="./front_jinja")
@@ -49,9 +51,7 @@ class User:
             #if usr_data['ID'] in cool_users:
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             UserSQL.upsert_user(usr_data)
-        
         status = self.set_users_photo()
-
         #дампим данные в эластик
         self.dump_users_data_es()
         
@@ -86,7 +86,6 @@ class User:
         data = b24.getUsers()
         # кастомный прогрессбар
         logg = LogsMaker()
-
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
             # print()
@@ -102,24 +101,22 @@ class User:
                 #if usr_data['ID'] in cool_users:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
-                if 'PERSONAL_PHOTO' in usr_data and 'id' in UserModel(uuid).find_by_id().keys():
-
+                psql_user = UserModel(uuid).find_by_id()
+                if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                     b24_url = usr_data['PERSONAL_PHOTO']
-                    #print(b24_url)
                     #проверим url первоисточника текущей аватарки
-                    psql_user = UserModel(uuid).find_by_id()
                     if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
-
+                        #срабатывает это условие и уходит в else
                         #cтарую фотку - в архив
                         if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
                             old_file_id = psql_user['photo_file_id']
                             File(id = old_file_id).delete_user_img()
-                        
                         #если есть несоответствие - скачать новую
                         file_data = File().add_user_img(b24_url, uuid)
-
                         #обновить данные в pSQL
                         UserModel(uuid).set_user_photo(file_data['id'])
+                    else:
+                        continue
                         
             #вывести отчет по изменениях
             

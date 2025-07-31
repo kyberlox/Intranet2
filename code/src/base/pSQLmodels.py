@@ -238,7 +238,7 @@ class UserModel():
                                 need_update = True
                                 new_params.append(column)
                                 user.__dict__[column] = dt_new
-                                print(user.id , column, dt_new)
+                                #print(user.id , column, dt_new)
                         else:
                             need_update = True
                             new_params.append(column)
@@ -246,7 +246,7 @@ class UserModel():
                                 user.__dict__[column] = "NULL"
                             else:
                                 user.__dict__[column] = f"\'{user_data.get(column)}\'"
-                            print(user.id, column, user_data.get(column))
+                            #print(user.id, column, user_data.get(column))
 
                 # если есть изменения - внести
                 if need_update:
@@ -267,7 +267,7 @@ class UserModel():
                             #изменить, если требуется
                             need_update_indirect_data = True
                             user.indirect_data[key] = user_data[key]
-                            print(key, user.indirect_data[key])
+                            #print(key, user.indirect_data[key])
 
                 # если есть изменения - внести
                 if need_update_indirect_data:
@@ -391,10 +391,11 @@ class UserModel():
                 result['photo_file_id'] = None
                 result['photo_file_url'] = None
                 result['photo_file_b24_url'] = None
-                
+            self.db.close()    
             return result
 
         else:
+            self.db.close() 
             LogsMaker().warning_message("Invalid user id")
             '''
             user_not_found = {
@@ -543,7 +544,6 @@ class UserModel():
         for res in result:
             
             user = list(res)
-            
             if 112 in user[6]['uf_department']:
                 pass
             else:

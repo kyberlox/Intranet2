@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, File#, Header
 from fastapi.responses import JSONResponse
+from typing import List
 
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import ArticleModel
@@ -24,7 +25,10 @@ def make_date_valid(date):
         return None
 
 def get_type(value):
-    return str(type(value)).split('\'')[1]
+    tp = str(type(value)).split('\'')[1]
+    if tp == "NoneType":
+        tp = "str"
+    return tp
 
 class Editor:
     
@@ -47,7 +51,7 @@ class Editor:
         self.fields = json.load(fields_data_file)
         fields_data_file.close()
     
-    def get_sections(self):
+    def get_sections(self ):
         all_sections = Section().get_all()
         valid_id = [13, 14, 15, 16, 172, 175, 18, 110, 111, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55]
         edited_sections = []
@@ -56,6 +60,12 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
+    def section_rendering(self ):
+        result = Article(section_id = self.section_id).all_serch_by_date()
+        for art in result:
+            self.id = art["id"]
+            art["preview_file_url"] = Article(id = int(self.id)).get_preview()
+        return result
     
     def rendering(self ):
         if self.art_id is None:
@@ -97,8 +107,12 @@ class Editor:
                     "data_type" : data_type
                 }
 
+                # если значения варьируются
+                if k in self.variable.keys():
+                    fl["values"] = self.variable[k]
+
                 # проверяю редактируемость
-                if k in self.notEditble or val is None:
+                if k in self.notEditble:
                     fl["disabled"] = True
 
                 #загрузил
@@ -117,7 +131,7 @@ class Editor:
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
         
         fields = []
-        files_keys = []
+        files_keys = dict()
         #иду по всем статьям раздела
         for art in section:
             #иду по всем полям статьи
@@ -175,8 +189,8 @@ class Editor:
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys and files[f_key] != []:
-                    files_keys.append(f_key)
+                if f_key not in files_keys.keys() and files[f_key] != []:
+                    files_keys[f_key] = []
             
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
@@ -238,20 +252,38 @@ class Editor:
         #добавить статью
         return Article().set_new(art)
 
-    def delete_art(self, ):
+    def delete_art(self ):
         return Article(id = self.art_id).delete()
         
-
-
-
-    def update(self ):
+    def update(self, data : dict):
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
-        # перезаписать основные поля из psql
 
-        # перезаписать поля из psql -> idirect_data
+        # получаю текущие значения
+        # вытащить основные поля из psql
+        art = ArticleModel(id = self.art_id).find_by_id()
+        if "_sa_instance_state" in art:
+            art.pop("_sa_instance_state")
+
+        # вытаскию новые значения
+        #валидировать данные data
+        for key in data.keys():
+            #если это редактируемый параметр
+            if key not in self.notEditble:
+                #если это один из основных параметров
+                if key in self.fundamental:
+                    #фиксирую
+                    art[key] = data[key]
+
+                #если это часть indirect_data
+                else:
+                    art["indirect_data"][key] = data[key]
+        
+        print(art)
+
         # перезаписать файлы 
         # сохранить
+        return ArticleModel(id = self.art_id).update(art)
 
     def get_files(self ):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
@@ -306,13 +338,6 @@ class Editor:
 
         return result
 
-    
-    def change_file(self, file_id):
-        pass
-    
-    def delete_file(self, file_id):
-        pass
-
 
 
 #рендеринг статьи
@@ -324,10 +349,14 @@ async def get_edit_sections():
 async def render(art_id : int ):
     return Editor(art_id=art_id).rendering()
 
+@editor_router.get("/section_rendering/{sec_id}")
+async def sec_render(sec_id):
+    return Editor(section_id = sec_id).section_rendering()
+
 #изменить статью
-@editor_router.put("/update/{art_id}")
-async def updt(art_id : int):
-    return Editor(art_id=art_id).update()
+@editor_router.post("/update/{art_id}")
+async def updt(art_id : int, data = Body()):
+    return Editor(art_id=art_id).update(data)
 
 #добавить статью
 @editor_router.get("/add/{section_id}")
@@ -342,19 +371,36 @@ async def set_new(data = Body()):
 async def del_art(art_id : int):
     return Editor(art_id=int(art_id)).delete_art()
 
-
-
 #посмотреть все файлы статьи
 @editor_router.get("/rendering/files/{art_id}")
 async def render(art_id : int):
     return Editor(art_id=art_id).get_files()
 
-#заменить файл
-@editor_router.put("/update/file/{art_id}/{f_id}")
-async def updt(art_id ):
-    return await Editor(art_id=art_id).update()
 
-#добавить файл в статью
-@editor_router.post("/add/file/{art_id}/{f_id}")
-async def set_new(data = Body()):
-    return await Editor().add(data)
+### тестирую работу с файлами
+@editor_router.post("/uploadfiles")
+async def create_upload_files(files: List[UploadFile] ):
+    try:
+        # Обработка каждого файла
+        file_infos = []
+        for file in files:
+            # Здесь можно сохранить файл или обработать его содержимое
+            contents = await file.read()
+            file_info = {
+                "filename": file.filename,
+                "content_type": file.content_type,
+                "size": len(contents)
+            }
+            file_infos.append(file_info)
+            
+            # Если нужно сохранить файл на диск
+            # with open(f"uploads/{file.filename}", "wb") as f:
+            #     f.write(contents)
+            
+        return JSONResponse({
+            "status": "success",
+            "files": file_infos,
+            "count": len(files)
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

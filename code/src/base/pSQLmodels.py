@@ -1027,13 +1027,15 @@ class ArticleModel():
         else:
             return True
 
-    def reassembly(self, article_data):
+    def update(self, article_data):
         #удалить статью
-        db.query(Article).get(self.id).delete() #### !!!!!!!!!!! не сработает
+        db.query(Article).filter(Article.id==int(self.id)).delete()
         #залить заново
         self.add_article(article_data)
+        db.commit()
+        return True
 
-    def update(self, article_data):
+    '''def update(self, article_data):
         db_art = db.query(Article).get(self.id).__dict__
         for key in article_data:
             if key not in ["ID", "_sa_instance_state"]:
@@ -1048,12 +1050,22 @@ class ArticleModel():
                     # print(db_art['id'], key, db_art[key], "-->", article_data[key])
                     return True
                 else:
-                    return False
+                    return False'''
 
     def remove(self ):
         #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
         #return db.query(Article).filter(Article.id == self.id).delete()
-        return self.db.execute(delete(Article).where(Article.id == self.id))
+        #return self.db.execute(delete(Article).where(Article.id == self.id))
+        #test = db.query(Article).filter(Article.id==int(self.id)).first()
+        art = db.query(Article).get(self.id)
+        if art is not None:
+            db.query(Article).filter(Article.id==int(self.id)).delete()
+            db.commit()
+            return True
+        else:
+            return False
+
+        
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

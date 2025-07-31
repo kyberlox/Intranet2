@@ -1052,7 +1052,7 @@ class Article:
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
-            #53 : "62", # Афиша ✔️
+            53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ✔️
 
@@ -1714,6 +1714,12 @@ class Article:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             return sorted_active_articles
     
+    def all_serch_by_date(self ):
+        result = ArticleModel(section_id = self.section_id).find_by_section_id()
+        sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
+        return sorted_active_articles
+
+
     def main_page(self, section_id, user_id):
         
         #Новые сотрудники

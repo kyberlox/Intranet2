@@ -1539,7 +1539,10 @@ class Article:
             elif "link" in file["content_type"]:
                 art['videos_embed'].append(file)
             else:
-                art['documentation'].append(file)
+                url = file["file_url"]
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!!!!
+                art['documentation'].append(f"http://intranet.emk.org.ru{url}")
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         art["preview_file_url"] = self.get_preview()
         
@@ -2216,6 +2219,7 @@ class Article:
         result = Tag(id=tag_id).get_articles_by_tag_id()
         sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
         return sorted_active_articles
+
 
 
 #Получить данные инфоблока из Б24

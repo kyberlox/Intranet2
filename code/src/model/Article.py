@@ -424,7 +424,7 @@ class Article:
             property_dict = {
                 "PROPERTY_435" : "organizer",
                 "PROPERTY_347" : "phone_number",
-                "PROPERTY_347" : "theme"
+                "PROPERTY_344" : "theme"
             }
             
             indirect_data = dict_to_indirect_data(data, property_dict)

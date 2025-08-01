@@ -4,7 +4,7 @@
          class="care__section">
         <div v-for="(item, index) in careSlides"
              :key="'safe' + index"
-             class="safetyTechnics__card">
+             class="vertical__card__wrapper">
             <VerticalCard :card="item"
                           :page="'care'"
                           :modifiers="['needLogo']"
@@ -19,7 +19,6 @@ import { sectionTips } from "@/assets/static/sectionTips";
 import type { ICareSlide } from "@/interfaces/IEntities";
 import { useViewsDataStore } from "@/stores/viewsData";
 import VerticalCard from "@/components/tools/common/VerticalCard.vue";
-
 
 export default defineComponent({
     components: {
@@ -42,3 +41,10 @@ export default defineComponent({
     },
 });
 </script>
+
+<style>
+.vertical__card {
+    width: 100%;
+    background-size: cover;
+}
+</style>

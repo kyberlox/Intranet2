@@ -64,7 +64,7 @@
 <script lang="ts">
 import { ref, defineComponent, watch, type Ref } from "vue";
 import type { ItableItem } from "@/interfaces/IEntities";
-import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
+import TagDateNavBar from "@/components/tools/common/DateFilterBlock.vue";
 import { useRoute } from "vue-router";
 
 export default defineComponent({

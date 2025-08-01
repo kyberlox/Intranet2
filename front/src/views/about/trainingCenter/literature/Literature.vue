@@ -23,7 +23,7 @@ import Api from "@/utils/Api";
 import TrainingTable from "../components/TrainingTable.vue";
 import { defineComponent, onMounted, ref, type Ref } from "vue";
 import { sectionTips } from "@/assets/static/sectionTips";
-import TagDateNavBar from "@/components/tools/common/TagDateNavBar.vue";
+import TagDateNavBar from "@/components/tools/common/DateFilterBlock.vue";
 import type { ItableItem } from "@/interfaces/IEntities";
 
 export default defineComponent({

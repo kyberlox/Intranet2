@@ -46,7 +46,7 @@ interface IComplexGallery {
         reports?: IFactoryDataReports[],
         tours?: IFactoryDataTours[],
         videoHref?: string,
-        data_from?: string,
+        date_from?: string,
         date_to?: string
     },
     videoHref?: string,

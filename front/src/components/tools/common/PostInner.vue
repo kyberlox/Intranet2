@@ -1,7 +1,7 @@
 <template>
     <div class="post-inner__page__wrapper mt20">
         <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
-             class="row">
+             class="row row-gap-50">
             <div class="col-12 col-lg-6 mb-2 pos-rel">
                 <SwiperBlank :videosNative="currentPost?.videos_native"
                              :videosEmbed="currentPost?.videos_embed"
@@ -31,8 +31,18 @@
                                        :type="'postPreview'" />
                         </div>
                     </div>
-                    <div v-if="currentPost.tags"
-                         class="tags"></div>
+                    <div v-if="currentPost.indirect_data && 'tags' in currentPost.indirect_data"
+                         class="tags">
+                        <div v-for="tag in currentPost.indirect_data.tags"
+                             :key="tag.id"
+                             class="tag__wrapper ">
+                            <div class="tag section__item__link btn-air"
+                                 @click="$emit('pickTag', tag.id)">
+                                #{{ tag.tag_name }}
+                            </div>
+
+                        </div>
+                    </div>
                     <div v-if="currentPost.indirect_data?.phone_number"
                          class="news__detail__phone-care">
                         Телефон организатора:

@@ -34,6 +34,7 @@ export default defineComponent({
             default: 'center'
         }
     },
+    emits: ['slidePrev', 'slideNext'],
     components: {
         ArrowLeft,
         ArrowRight

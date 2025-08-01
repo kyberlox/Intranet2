@@ -254,7 +254,7 @@ export default defineComponent({
     const handleUpload = (e) => {
       const fileToUpload = e.file;
       const formData = new FormData();
-      formData.append('file', [fileToUpload])
+      formData.append('files', fileToUpload)
       Api.post('/editor/uploadfiles', formData)
         .then((data) => console.log(data))
     }

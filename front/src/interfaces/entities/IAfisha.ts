@@ -1,7 +1,7 @@
 import type { IBaseIndirectData, IBaseEntity } from "./IBase"
 
 export interface IAfishaItemIndirectData extends IBaseIndirectData {
-    data_from?: string,
+    date_from?: string,
     date_to?: string,
 }
 

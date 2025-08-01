@@ -11,6 +11,7 @@
 @forward './loader';
 @forward './toast';
 @forward './vertical-card';
+@forward './tags';
 
 @forward './swipers/_swipers';
 @forward './modules/_modules';
@@ -100,4 +101,8 @@ p {
 
 .pos-rel {
     position: relative;
+}
+
+.row-gap-50 {
+    row-gap: 50px;
 }

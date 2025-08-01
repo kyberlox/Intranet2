@@ -128,23 +128,30 @@ export default defineComponent({
 
 .hover-gallery__indicators {
     position: absolute;
-    top: 10px;
+    /* top: 5px; */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 5px;
+    width: 100%;
     z-index: 3;
+    padding: 5px;
+    max-width: 55px;
 }
 
 .hover-gallery__indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: background-color 0.2s ease;
+    /* width: 8px; */
+    /* height: 8px; */
+    /* border-radius: 50%; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
+    /* transition: background-color 0.2s ease; */
+    width: 100%;
+    background: #728989;
+    height: 3px;
 }
 
 .hover-gallery__indicator.active {
-    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid var(--emk-brand-color);
+
 }
 </style>

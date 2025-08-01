@@ -37,20 +37,12 @@
         </swiper-slide>
 
     </swiper>
-    <div class="swiper-navigation__buttons-group"
-         v-if="(images && images.length > 1) || (videosNative && videosNative.length > 1) || images && videosNative && images.length + videosNative.length > 1">
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
-                :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                @click="slidePrev">
-            <ArrowLeft />
-        </button>
-        <div class="swiper-navigation__buttons-group__pagination"></div>
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
-                :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                @click="slideNext">
-            <ArrowRight />
-        </button>
-    </div>
+    <SwiperButtons :isBeginning="isBeginning"
+                   :isEnd="isEnd"
+                   :buttonsPos="'bottom'"
+                   @slideNext="slideNext"
+                   @slidePrev="slidePrev" />
+
     <ZoomModal v-if="modalIsVisible"
                :image="images"
                :activeIndex="activeIndex"
@@ -59,21 +51,19 @@
 
 <script lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
-import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
-import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType, ref, watch } from "vue";
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { useSwiperconf } from "@/utils/useSwiperConf";
 import { type IBXFileType } from "@/interfaces/IEntities";
+import SwiperButtons from "./SwiperButtons.vue";
 export default defineComponent({
     name: 'SwiperBlank',
     components: {
         Swiper,
         SwiperSlide,
-        ArrowLeft,
-        ArrowRight,
-        ZoomModal
+        ZoomModal,
+        SwiperButtons
     },
     props: {
         images: {

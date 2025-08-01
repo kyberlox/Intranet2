@@ -69,6 +69,12 @@
                     transform: translateY(-40%);
                 }
 
+                &--bottom {
+                    top: auto;
+                    transform: none;
+                    margin: 5px;
+                }
+
                 &>svg {
                     width: 18px;
                 }

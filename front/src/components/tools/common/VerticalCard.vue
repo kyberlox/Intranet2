@@ -13,8 +13,8 @@
                          alt="ЭМК"
                          title="ЭМК" />
                 </div>
-                <h3 v-if="page !== 'care'"
-                    class="vertical-card__image__list__item__title">{{ card.name }}</h3>
+                <h3 class="vertical-card__image__list__item__title">{{ page == 'safetyTechnics' ? card.name :
+                    card.description }}</h3>
                 <RouterLink v-if="page == 'safetyTechnics' || page == 'care'"
                             :to="{ name: card.routeTo ?? routeTo, params: { id: card.id } }"
                             class="vertical-card__image__list__item__link">
@@ -55,7 +55,8 @@ interface IVerticalCard {
     indirect_data?: {
         // для благотворительных
         organizer: string,
-        phone_number: string
+        phone_number: string,
+        theme: string,
     }
 }
 

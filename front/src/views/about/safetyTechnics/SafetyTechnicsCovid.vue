@@ -3,7 +3,7 @@
     <div class="d-flex flex-column">
         <div class="section__image__list__section order-1 order-md-2">
             <div class="section__image__list__items row">
-                <div class="safety__section col-xxl-9">
+                <div class="safety__section safety__section__card-grid col-xxl-9">
                     <div v-for="(item, index) in safetyTechnicsCovidInner.content"
                          :key="'safe' + index"
                          class="safetyTechnics__card">

@@ -30,10 +30,10 @@
                         <VerticalSliderSlide :slide="slide" />
                     </swiper-slide>
                 </swiper>
-                <VerticalSliderButtons :isBeginning="isBeginning"
-                                       :isEnd="isEnd"
-                                       @slideNext="slideNext"
-                                       @slidePrev="slidePrev" />
+                <SwiperButtons :isBeginning="isBeginning"
+                               :isEnd="isEnd"
+                               @slideNext="slideNext"
+                               @slidePrev="slidePrev" />
             </div>
             <div class="birthday__static__greetings">
                 <img @click="openModal(['/src/assets/imgs/plugs/birthdayPlug.jpg'])"
@@ -62,7 +62,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
-import VerticalSliderButtons from '@/components/tools/swiper/VerticalSliderButtons.vue';
+import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 
 
 export default defineComponent({
@@ -71,7 +71,7 @@ export default defineComponent({
         Swiper,
         SwiperSlide,
         VerticalSliderSlide,
-        VerticalSliderButtons,
+        SwiperButtons,
         ZoomModal
     },
     setup() {

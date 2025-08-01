@@ -12,16 +12,12 @@
                               :key="'vertSlide' + index">
                     <VerticalSliderSlide :slide="slide" />
                 </swiper-slide>
-                <swiper-slide v-for="(slide, index) in newWorkers"
-                              :key="'vertSlide' + index">
-                    <VerticalSliderSlide :slide="slide" />
-                </swiper-slide>
             </swiper>
 
-            <VerticalSliderButtons :isBeginning="isBeginning"
-                                   :isEnd="isEnd"
-                                   @slideNext="slideNext"
-                                   @slidePrev="slidePrev" />
+            <SwiperButtons :isBeginning="isBeginning"
+                           :isEnd="isEnd"
+                           @slideNext="slideNext"
+                           @slidePrev="slidePrev" />
         </div>
     </div>
 </template>
@@ -32,16 +28,15 @@ import Api from '@/utils/Api';
 import { defineComponent, onMounted, ref } from 'vue';
 import { useSwiperconf } from '@/utils/useSwiperConf';
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
-import VerticalSliderButtons from '@/components/tools/swiper/VerticalSliderButtons.vue';
+import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
 
-
 export default defineComponent({
     name: "newWorkers",
     components: {
-        VerticalSliderButtons,
+        SwiperButtons,
         VerticalSliderSlide,
         Swiper,
         SwiperSlide

@@ -2,7 +2,7 @@
     <div class="post-inner__page__wrapper mt20">
         <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
              class="row">
-            <div class="col-12 col-lg-6 mb-2">
+            <div class="col-12 col-lg-6 mb-2 pos-rel">
                 <SwiperBlank :videosNative="currentPost?.videos_native"
                              :videosEmbed="currentPost?.videos_embed"
                              :images="currentPost?.images ? currentPost.images : undefined"

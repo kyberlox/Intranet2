@@ -3,13 +3,14 @@
     <div class="d-flex flex-column">
         <div class="section__image__list__section order-1 order-md-2">
             <div class="section__image__list__items row">
-                <div class="safety__section col-xxl-9">
+                <div class="safety__section safety__section__card-grid  col-xxl-9">
                     <div v-for="(item, index) in safetyTechnics.content"
                          :key="'safe' + index"
                          class="safetyTechnics__card">
                         <VerticalCard :card="item"
                                       :page="'safetyTechnics'"
-                                      :modifiers="['needLogo']" />
+                                      :modifiers="['needLogo']"
+                                      :routeTo="item.routeTo" />
                     </div>
                 </div>
                 <div class="col-12 col-xl-12 col-xxl-3">

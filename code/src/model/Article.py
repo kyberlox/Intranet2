@@ -864,7 +864,7 @@ class Article:
 
         return files_data        
 
-        
+
 
     def old_search_files(self, inf_id, art_id, data):
         
@@ -1751,7 +1751,6 @@ class Article:
         result = ArticleModel(section_id = self.section_id).find_by_section_id()
         sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
         return sorted_active_articles
-
 
     def main_page(self, section_id, user_id):
         

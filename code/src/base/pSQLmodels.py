@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, ForeignKey, desc, func, Date
+from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, ForeignKey, desc, func, Date, or_
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
@@ -1535,8 +1535,9 @@ class TagsModel:
         return {"msg": "Добавлен"}
     
     def find_articles_by_tag_id(self):
-        articles = self.session.query(Article).filter(Article.indirect_data['tags'].contains([self.id]), Article.active == True).all()
+        articles = self.session.query(Article).filter(Article.indirect_data["tags"].contains([self.id]), Article.active == True, or_(Article.section_id == 31, Article.section_id == 33)).all()
+        self.session.close()
         if articles:
             return articles
-        return {'msg': 'хуйня какая то'}
-
+        return {'msg': ' какая то'}
+    

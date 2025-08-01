@@ -24,7 +24,13 @@ class Tag:
     def get_articles_by_tag_id(self):
         return TagsModel(id=self.id).find_articles_by_tag_id()
 
+    def get_all_tags(self):
+        return TagsModel().all_tags()
 
 @tag_router.put("/upload_b24_tags/{id}/{tag_name}")
 def upload_b24_tags(id: int, tag_name: str):
     return Tag(id=id, tag_name=tag_name).add_b24_tag()
+
+@tag_router.get("/get_tags")
+def get_tags():
+    return Tag().get_all_tags()

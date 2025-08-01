@@ -1541,3 +1541,9 @@ class TagsModel:
             return articles
         return {'msg': ' какая то'}
     
+    def all_tags(self):
+        tags = self.session.query(Tags).all()
+        if tags:
+            return tags
+        return {"msg": "отсуствуют"}
+    

@@ -423,7 +423,8 @@ class Article:
         elif self.section_id == 55:
             property_dict = {
                 "PROPERTY_435" : "organizer",
-                "PROPERTY_347" : "phone_number"
+                "PROPERTY_347" : "phone_number",
+                "PROPERTY_347" : "theme"
             }
             
             indirect_data = dict_to_indirect_data(data, property_dict)
@@ -1064,9 +1065,9 @@ class Article:
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
+            #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
-            #55 : "56", # Благотворительные проекты ✔️
+            55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
             #175 : "60" # Учебный центр (Литература) ✔️

@@ -1549,7 +1549,8 @@ class Article:
                     tag = {}
                     tag_name = Tag(id=tag_id).get_tag_by_id().tag_name
                     if tag_name:
-                        tag[tag_id] = tag_name
+                        tag['id'] = tag_id
+                        tag['tag_name'] = tag_name
                         tags.append(tag)
                 art['indirect_data']['tags'] = tags
 
@@ -2211,10 +2212,26 @@ class Article:
             return user_inf["ID"]
         return None
     
-    def search_articles_by_tags(self, tag_id):
-        result = Tag(id=tag_id).get_articles_by_tag_id()
+    def search_articles_by_tags(self, tag_id, session_id=''):
+        user_id = self.get_user_by_session_id(session_id=session_id)
+        result = Tag(id=tag_id).get_articles_by_tag_id(self.section_id)
         sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
-        return sorted_active_articles
+        res = []
+        for art in sorted_active_articles:
+            self.id = art.id
+            art = art.__dict__
+            
+            preview_pict = self.get_preview()
+        
+            art['preview_file_url'] = preview_pict
+            if user_id is not None:
+                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+
+                art['reactions'] = has_user_liked
+            res.append(art)
+
+
+        return res
 
 
 #Получить данные инфоблока из Б24
@@ -2304,9 +2321,18 @@ def get_popular_articles(limit: int):
 def get_recent_popular_articles(days: int, limit: int):
     return Article().get_recent_popular_articles(days=days, limit=limit)
 
-@article_router.get("get_articles_by_tag_id/{tag_id}")
-def get_articles_by_tag_id(tag_id: int):
-    return Article().search_articles_by_tags(tag_id)
+@article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}")
+def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    return Article(section_id=section_id).search_articles_by_tags(tag_id, session_id=session_id)
+
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
 # def search_articles_by_title(title): # data = Body()

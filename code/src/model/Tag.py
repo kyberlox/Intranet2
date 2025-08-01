@@ -21,8 +21,8 @@ class Tag:
     def add_b24_tag(self):
         return TagsModel(id=self.id, tag_name=self.tag_name).create_b24_tag()
     
-    def get_articles_by_tag_id(self):
-        return TagsModel(id=self.id).find_articles_by_tag_id()
+    def get_articles_by_tag_id(self, section_id):
+        return TagsModel(id=self.id).find_articles_by_tag_id(section_id)
 
     def get_all_tags(self):
         return TagsModel().all_tags()
@@ -34,3 +34,7 @@ def upload_b24_tags(id: int, tag_name: str):
 @tag_router.get("/get_tags")
 def get_tags():
     return Tag().get_all_tags()
+    
+@tag_router.put("/add_tag/{tag_name}")
+def add_tag(tag_name: str):
+    return Tag(tag_name=tag_name).add_tag()

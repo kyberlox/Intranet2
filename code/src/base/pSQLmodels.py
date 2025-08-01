@@ -1534,8 +1534,8 @@ class TagsModel:
         self.session.commit()
         return {"msg": "Добавлен"}
     
-    def find_articles_by_tag_id(self):
-        articles = self.session.query(Article).filter(Article.indirect_data["tags"].contains([self.id]), Article.active == True, or_(Article.section_id == 31, Article.section_id == 33)).all()
+    def find_articles_by_tag_id(self, section_id):
+        articles = self.session.query(Article).filter(Article.indirect_data["tags"].contains([self.id]), Article.active == True, Article.section_id == section_id).all()
         self.session.close()
         if articles:
             return articles

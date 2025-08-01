@@ -2314,7 +2314,7 @@ def get_popular_articles(limit: int):
 def get_recent_popular_articles(days: int, limit: int):
     return Article().get_recent_popular_articles(days=days, limit=limit)
 
-@article_router.get("get_articles_by_tag_id/{tag_id}")
+@article_router.get("/get_articles_by_tag_id/{tag_id}")
 def get_articles_by_tag_id(tag_id: int):
     return Article().search_articles_by_tags(tag_id)
 # #найти статьи раздела по названию

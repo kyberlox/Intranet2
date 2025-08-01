@@ -647,8 +647,20 @@ class Article:
 
             indirect_data = dict()
 
+        #Видеорепортажи
+        elif self.section_id == 33:
+            if "PROPERTY_1116" in data:
+                indirect_data = data
+                tags = []
+                for value in data['PROPERTY_1116']:
+                    existing_tag = Tag(id=int(value)).get_tag_by_id()
+                    if existing_tag:
+                        tags.append(existing_tag.id)
+                indirect_data['tags'] = tags
+
         else:
             indirect_data = json.dumps(data)
+
 
         article_data = {
             "id" : self.id,
@@ -1529,6 +1541,18 @@ class Article:
                 art['documentation'].append(file)
         
         art["preview_file_url"] = self.get_preview()
+        
+        if art['section_id'] == 31 or art['section_id'] == 33:
+            if 'tags' in art['indirect_data']:
+                tags = []
+                for tag_id in art['indirect_data']['tags']:
+                    tag = {}
+                    tag_name = Tag(id=tag_id).get_tag_by_id().tag_name
+                    if tag_name:
+                        tag[tag_id] = tag_name
+                        tags.append(tag)
+                art['indirect_data']['tags'] = tags
+
 
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34, 175] # список секций где нет лайков
 
@@ -2187,8 +2211,10 @@ class Article:
             return user_inf["ID"]
         return None
     
-    def search_articles_by_tags(tag_id):
-        return Tag(id=tag_id).get_articles_by_tag_id()
+    def search_articles_by_tags(self, tag_id):
+        result = Tag(id=tag_id).get_articles_by_tag_id()
+        sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
+        return sorted_active_articles
 
 
 #Получить данные инфоблока из Б24
@@ -2280,7 +2306,7 @@ def get_recent_popular_articles(days: int, limit: int):
 
 @article_router.get("get_articles_by_tag_id/{tag_id}")
 def get_articles_by_tag_id(tag_id: int):
-    return Article().search_articles_by_tags()
+    return Article().search_articles_by_tags(tag_id)
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
 # def search_articles_by_title(title): # data = Body()

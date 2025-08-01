@@ -119,7 +119,6 @@ class File:
 
 
 
-
     def add_link(self, link, art_id):
         filename = link.split("/")[-2]
         data = {
@@ -141,7 +140,6 @@ class File:
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
         return link
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
     def need_update_url_file(self,  art_id, filename):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
@@ -442,7 +440,15 @@ class File:
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
 
-
+    def edit_add_file(self):
+        pass
+    
+    def edit_del_file(self):
+        pass
+    
+    def edit_chenge_file(self):
+        pass
+        
         
 
 # @file_router.put("/create_indexes")

@@ -423,7 +423,8 @@ class Article:
         elif self.section_id == 55:
             property_dict = {
                 "PROPERTY_435" : "organizer",
-                "PROPERTY_347" : "phone_number"
+                "PROPERTY_347" : "phone_number",
+                "PROPERTY_344" : "theme"
             }
             
             indirect_data = dict_to_indirect_data(data, property_dict)
@@ -863,7 +864,7 @@ class Article:
 
         return files_data        
 
-        
+
 
     def old_search_files(self, inf_id, art_id, data):
         
@@ -1064,9 +1065,9 @@ class Article:
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
+            #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
-            #55 : "56", # Благотворительные проекты ✔️
+            55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
             #175 : "60" # Учебный центр (Литература) ✔️
@@ -1529,16 +1530,24 @@ class Article:
             #файлы делятся по категориям
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
+                file["file_url"] = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                art['images'].append(f"http://intranet.emk.org.ru{url}")
+                art['images'].append(file)
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
                 url = file["file_url"]
-                art['videos_native'].append(f"http://intranet.emk.org.ru{url}")
+                file["file_url"] = f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!!!!
+                art['videos_native'].append(file)
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "link" in file["content_type"]:
                 art['videos_embed'].append(file)
             else:
+                url = file["file_url"]
+                file["file_url"] = f"http://intranet.emk.org.ru{url}"
+                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!!!!
                 art['documentation'].append(file)
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         art["preview_file_url"] = self.get_preview()
         
@@ -1743,7 +1752,6 @@ class Article:
         result = ArticleModel(section_id = self.section_id).find_by_section_id()
         sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
         return sorted_active_articles
-
 
     def main_page(self, section_id, user_id):
         
@@ -2230,8 +2238,8 @@ class Article:
                 art['reactions'] = has_user_liked
             res.append(art)
 
-
         return res
+
 
 
 #Получить данные инфоблока из Б24

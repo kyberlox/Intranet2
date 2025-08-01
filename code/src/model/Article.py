@@ -1546,7 +1546,7 @@ class Article:
                 url = file["file_url"]
                 file["file_url"] = f"http://intranet.emk.org.ru{url}"
                 #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!!!!
-                art['documentation'].append(file")
+                art['documentation'].append(file)
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         art["preview_file_url"] = self.get_preview()

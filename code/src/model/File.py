@@ -459,9 +459,9 @@ class File:
         
 
         file_info = {
-            "original_name": file.filename,
+            "original_name": unique_name,
             "stored_name": unique_name,
-            "content_type": file.content_type,
+            "content_type": str(file.content_type),
             "article_id": self.art_id,
             "b24_id": None,
             "is_archive": False,

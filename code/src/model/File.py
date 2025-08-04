@@ -451,13 +451,12 @@ class File:
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         unique_name = str(ObjectId()) + file_ext
-        print(unique_name)
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Если нужно сохранить файл на диск
         with open(file_path, "wb") as f:
              f.write(contents)
-        file.file.close()
+        
 
         file_info = {
             "original_name": file.filename,
@@ -469,6 +468,8 @@ class File:
             "is_preview" : False,
             "file_url": f"/api/files/{unique_name}"
         }
+
+        file.file.close()
 
         inserted_id = FileModel().add(file_info)
 

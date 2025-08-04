@@ -457,10 +457,11 @@ class File:
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
-        inserted_id = FileModel().add(data)
+        # Если нужно сохранить файл на диск
+        with open(file_path, "wb") as f:
+             f.write(contents)
 
         file_info = {
-            "id": str(inserted_id),
             "original_name": file.filename,
             "stored_name": unique_name,
             "content_type": file.content_type,
@@ -471,9 +472,9 @@ class File:
             "file_url": f"/api/files/{unique_name}"
         }
 
-        # Если нужно сохранить файл на диск
-        with open(file_path, "wb") as f:
-             f.write(contents)
+        inserted_id = FileModel().add(file_info)
+
+        file_info["id"] = str(inserted_id)
             
         return file_info
     

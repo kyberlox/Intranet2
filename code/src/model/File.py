@@ -477,10 +477,6 @@ class File:
             
         return file_info
     
-    def editor_del_file(self, file : webFile):
-        #отправить в архив
-        pass
-    
     def editor_chenge_file(self, file : webFile):
         #найти файл
         #заменить id и отправить предыдущую версию в архив

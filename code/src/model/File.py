@@ -472,6 +472,12 @@ class File:
 
         inserted_id = FileModel().add(file_info)
 
+        # Проверяем, что inserted_id можно преобразовать в строку
+        if hasattr(inserted_id, "__str__"):
+            inserted_id_str = str(inserted_id)
+        else:
+            inserted_id_str = str(inserted_id)  # На крайний случай
+
         #file_info["id"] = str(inserted_id)
         #return file_info
 

@@ -8,7 +8,7 @@ from src.base.SearchModel import ArticleSearchModel
 from src.base.mongodb import FileModel
 from src.model.Article import Article
 from src.model.Section import Section
-from src.model.File import File
+from src.model.File import File as storeFile
 
 import json
 import datetime
@@ -385,22 +385,13 @@ async def create_upload_files(files: List[UploadFile] ):
         file_infos = []
         for file in files:
             # Здесь можно сохранить файл или обработать его содержимое
-            contents = await file.read()
-            file_info = {
-                "filename": file.filename,
-                "content_type": file.content_type,
-                "size": len(contents)
-            }
-            file_infos.append(file_info)
-            
-            # Если нужно сохранить файл на диск
-            # with open(f"uploads/{file.filename}", "wb") as f:
-            #     f.write(contents)
-            
+            f_inf = storeFile(art_id).editor_add_file(file=file)
+            file_infos.append(f_inf)
+        
         return JSONResponse({
-            "status": "success",
-            "files": file_infos,
-            "count": len(files)
+            "status": "success"
+            "files": file_infos
         })
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -2,6 +2,9 @@ from src.base.mongodb import FileModel
 from src.base.B24 import B24
 from src.services.LogsMaker import LogsMaker
 
+from fastapi import FastAPI, UploadFile
+from fastapi import File as webFile
+
 from bson.objectid import ObjectId
 import requests
 import os
@@ -440,15 +443,46 @@ class File:
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
 
-    def edit_add_file(self):
-        pass
-    
-    def edit_del_file(self):
-        pass
-    
-    def edit_chenge_file(self):
-        pass
+    def editor_add_file(self, file : webFile, is_preview = False, ):
+        contents = await file.read()
+        file_info = {
+            "filename": file.filename,
+            "content_type": file.content_type,
+            "size": len(contents)
+        }
+
+        file_info
         
+        # Генерируем уникальное имя файла
+        unique_name = str(ObjectId()) + file_ext
+        file_path = os.path.join(STORAGE_PATH, unique_name)
+
+        inserted_id = FileModel().add(data)
+
+        file_info = {
+            "id": str(inserted_id),
+            "original_name": file.filename,
+            "stored_name": unique_name,
+            "content_type": file.content_type,
+            "article_id": self.art_id,
+            "b24_id": None,
+            "is_archive": False,
+            "is_preview" : is_preview,
+            "file_url": f"/api/files/{unique_name}"
+        }
+
+        # Если нужно сохранить файл на диск
+        # with open(file_path, "wb") as f:
+        #     f.write(contents)
+            
+        return file_info
+    
+    def editor_del_file(self, file : webFile):
+        pass
+    
+    def editor_chenge_file(self, file : webFile):
+        pass
+
         
 
 # @file_router.put("/create_indexes")

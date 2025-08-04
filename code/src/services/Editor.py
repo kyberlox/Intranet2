@@ -392,7 +392,7 @@ async def create_file(file: UploadFile, art_id : int):
     #art_id = int(data["art_id"])
     print(art_id)
     # Здесь можно сохранить файл или обработать его содержимое
-    f_inf = storeFile(int(art_id)).editor_add_file(file=file)
+    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
             
     return f_inf
 

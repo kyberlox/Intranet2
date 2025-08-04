@@ -461,7 +461,7 @@ class File:
             "original_name": filename,
             "stored_name": unique_name,
             "content_type": str(file.content_type),
-            "article_id": int(self.art_id),
+            "article_id": self.art_id,
             "b24_id": None,
             "is_archive": False,
             "is_preview" : False,

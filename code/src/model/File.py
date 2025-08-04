@@ -444,7 +444,7 @@ class File:
 
     def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
-        contents = file.file.read()
+        
         
         # Генерируем уникальное имя файла
         filename = file.filename
@@ -454,8 +454,10 @@ class File:
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Если нужно сохранить файл на диск
-        with open(file_path, "wb") as f:
-             f.write(contents)
+        with file.file:
+            contents = file.file.read()
+            with open(file_path, "wb") as f:
+                f.write(contents)
 
         file_info = {
             "original_name": filename,
@@ -468,9 +470,10 @@ class File:
             "file_url": f"/api/files/{unique_name}"
         }
 
-        file.file.close()
-
         inserted_id = FileModel().add(file_info)
+
+        #file_info["id"] = str(inserted_id)
+        #return file_info
 
         return {
             **file_info,

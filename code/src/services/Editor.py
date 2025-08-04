@@ -386,11 +386,13 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-async def create_file(art_id : int, file: UploadFile):
-    # Здесь можно сохранить файл или обработать его содержимое
-    f_inf = storeFile(art_id).editor_add_file(file=file)
-        
-    return f_inf
+async def create_file(data = Body(), file: UploadFile):
+    if "art_id" in data:
+        art_id = data["art_id"]
+        # Здесь можно сохранить файл или обработать его содержимое
+        f_inf = storeFile(art_id).editor_add_file(file=file)
+            
+        return f_inf
 
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):

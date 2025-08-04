@@ -456,6 +456,7 @@ class File:
         # Если нужно сохранить файл на диск
         with open(file_path, "wb") as f:
              f.write(contents)
+        file.file.close()
 
         file_info = {
             "original_name": file.filename,

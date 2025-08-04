@@ -18,7 +18,8 @@
                     <Reactions v-if="card.reactions && card.id"
                                :reactions="card.reactions"
                                :id="card.id"
-                               :type="type" />
+                               :type="type"
+                               :modifiers="modifiers" />
                 </RouterLink>
             </div>
         </div>
@@ -47,6 +48,9 @@ export default defineComponent({
         routeTo: {
             type: String,
         },
+        modifiers: {
+            type: Array<string>
+        }
     },
     components: {
         Reactions,

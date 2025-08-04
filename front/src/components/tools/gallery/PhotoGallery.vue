@@ -17,7 +17,6 @@
 import { defineComponent, type PropType } from "vue";
 
 interface PhotoGallerySlide {
-
     images?: string[]
 }
 

@@ -4,7 +4,7 @@
          @mouseleave="resetToFirstImage">
 
         <div class="hover-gallery__indicators"
-             v-if="showIndicators">
+             v-if="showIndicators && images.length > 1">
             <div v-for="(image, index) in images"
                  :key="index"
                  class="hover-gallery__indicator"
@@ -18,7 +18,8 @@
                  class="hover-gallery__image" />
         </div>
 
-        <div class="hover-gallery__zones">
+        <div class="hover-gallery__zones"
+             v-if="images.length > 1">
             <div v-for="(image, index) in images"
                  :key="index"
                  class="hover-gallery__zone"
@@ -93,23 +94,29 @@ export default defineComponent({
 .hover-gallery {
     position: relative;
     width: 100%;
-    height: 200px;
-    /* Настройте под ваши нужды */
+    max-width: 300px;
     overflow: hidden;
+    text-align: center;
     cursor: pointer;
 }
 
 .hover-gallery__image-container {
-    width: 100%;
+    /* width: 100%;
     height: 100%;
     position: relative;
+    aspect-ratio: 1;
+    max-width: 300px;
+    max-height: 300px; */
 }
 
 .hover-gallery__image {
     width: 100%;
     height: 100%;
+    /* max-width: 300px;
+    max-height: 300px; */
     object-fit: cover;
     transition: opacity 0.2s ease;
+    aspect-ratio: 1;
 }
 
 .hover-gallery__zones {
@@ -128,30 +135,23 @@ export default defineComponent({
 
 .hover-gallery__indicators {
     position: absolute;
-    /* top: 5px; */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 5px;
     width: 100%;
     z-index: 3;
-    padding: 5px;
-    max-width: 55px;
+    padding: 10px;
+    max-width: 90%;
 }
 
 .hover-gallery__indicator {
-    /* width: 8px; */
-    /* height: 8px; */
-    /* border-radius: 50%; */
-    /* background-color: rgba(255, 255, 255, 0.5); */
-    /* transition: background-color 0.2s ease; */
     width: 100%;
-    background: #728989;
+    background: #6363639c;
     height: 3px;
 }
 
 .hover-gallery__indicator.active {
-    border: 1px solid var(--emk-brand-color);
-
+    background: var(--emk-brand-color);
 }
 </style>

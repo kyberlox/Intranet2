@@ -53,12 +53,16 @@ export default defineComponent({
         needReadMoreBtn: {
             type: Boolean,
             default: false
+        },
+        modifiers: {
+            type: Array<string>
         }
     },
     setup(props) {
         onMounted(() => {
+            if (props.modifiers?.includes('noReactionUpdates')) return;
             Api.get(`article/has_user_liked/${props.id}`)
-                .then(data => { newTypeReaction.value = data })
+                .then(data => { newTypeReaction.value = data });
         })
 
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);

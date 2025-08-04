@@ -11,7 +11,7 @@
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
-import TagDateNavBar from '@/components/tools/common/DateFilterBlock.vue';
+import TagDateNavBar from '@/components/tools/common/DateFilter.vue';
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, ref, onMounted, computed, type ComputedRef, type Ref } from "vue";

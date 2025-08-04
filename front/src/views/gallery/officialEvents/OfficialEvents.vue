@@ -10,7 +10,7 @@
                     :routeTo="'officialEvent'" />
 </template>
 <script lang="ts">
-import TagDateNavBar from '@/components/tools/common/DateFilterBlock.vue';
+import TagDateNavBar from '@/components/tools/common/DateFilter.vue';
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { computed, defineComponent, onMounted, ref, type Ref } from 'vue';
 import Api from '@/utils/Api';

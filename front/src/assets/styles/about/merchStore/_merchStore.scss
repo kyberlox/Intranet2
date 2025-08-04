@@ -187,15 +187,17 @@
 
     &__grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 32px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 40px;
         padding: 0;
+        justify-items: center;
 
         &__wrapper {
             padding: 14px;
         }
 
         &__item {
+            width: fit-content;
             // background: #ffffff;
             // border-radius: 16px;
             // box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);

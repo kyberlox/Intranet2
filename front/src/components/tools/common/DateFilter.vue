@@ -5,7 +5,7 @@
                 <div class="dropdown-wrapper tagDateNavBar__dropdown-wrapper">
                     <button @click="showparams = !showparams"
                             class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
-                        {{ buttonText ?? 'Год публикации' }}
+                        {{ (buttonText && buttonText?.length > 0) ? buttonText : 'Год публикации' }}
                     </button>
                     <transition name="fade">
                         <ul class="dropdown__menu tagDateNavBar__dropdown__menu"
@@ -15,6 +15,10 @@
                                 :key="index"
                                 @click="pickFilter(param)">
                                 <div class="dropdown__item tagDateNavBar__dropdown__item">{{ param }}</div>
+                            </li>
+                            <li class="dropdown__item-wrapper tagDateNavBar__dropdown__item-wrapper"
+                                @click="pickFilter('')">
+                                <div class="dropdown__item tagDateNavBar__dropdown__item">Очистить</div>
                             </li>
                         </ul>
                     </transition>

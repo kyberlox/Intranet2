@@ -394,7 +394,7 @@ async def create_file(file: UploadFile, art_id):
     # Здесь можно сохранить файл или обработать его содержимое
     f_inf = storeFile(art_id).editor_add_file(file=file)
             
-        return f_inf
+    return f_inf
 
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):

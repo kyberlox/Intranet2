@@ -446,7 +446,7 @@ class File:
         contents = file.read()
         
         # Генерируем уникальное имя файла
-        filename = file.filename
+        filename = file.file.filename
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         unique_name = str(ObjectId()) + file_ext
@@ -454,7 +454,7 @@ class File:
 
         # Если нужно сохранить файл на диск
         with open(file_path, "wb") as f:
-             f.write(contents.encode('utf-8'))
+             f.write(contents)
 
         file_info = {
             "original_name": file.filename,

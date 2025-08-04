@@ -479,6 +479,7 @@ class File:
     
     def editor_del_file(self, file : webFile):
         #отправить в архив
+        pass
     
     def editor_chenge_file(self, file : webFile):
         #найти файл

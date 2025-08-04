@@ -389,7 +389,7 @@ async def render(art_id : int):
 async def create_file(file: UploadFile, art_id):
     #data = json.loads(jsn)
     #if "art_id" in data:
-    art_id = int(data["art_id"])
+    #art_id = int(data["art_id"])
     print(art_id)
     # Здесь можно сохранить файл или обработать его содержимое
     f_inf = storeFile(art_id).editor_add_file(file=file)

@@ -454,7 +454,7 @@ class File:
 
         # Если нужно сохранить файл на диск
         with open(file_path, "wb") as f:
-             f.write(file.read())
+             f.write(contents.encode('utf-8'))
 
         file_info = {
             "original_name": file.filename,

@@ -389,7 +389,7 @@ async def create_upload_files(files: List[UploadFile] ):
             file_infos.append(f_inf)
         
         return JSONResponse({
-            "status": "success"
+            "status": "success",
             "files": file_infos
         })
         

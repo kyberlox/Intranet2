@@ -1526,13 +1526,18 @@ class TagsModel:
         return {"msg": "отсутствует такой тэг"}
     
     def create_b24_tag(self):
-        existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()
-        if existing_tag:
-            return {"msg": "Такой тэг уже существует"}
-        new_tag = Tags(id=self.id, tag_name=self.tag_name)
-        self.session.add(new_tag)
-        self.session.commit()
-        return {"msg": "Добавлен"}
+        with open('./src/base/current_tags.json', mode='r', encoding='UTF-8') as f:
+            cur_tags = json.load(f)
+        for tag in cur_tags:
+            existing_tag = self.session.query(Tags).filter(Tags.id == tag['id']).first()
+            if existing_tag:
+                continue
+            else:
+                new_tag = Tags(id=tag['id'], tag_name=tag['name'])
+                self.session.add(new_tag)
+                self.session.commit()
+        self.session.close()
+        return {"msg": "Добавлены"}
     
     def find_articles_by_tag_id(self, section_id):
         articles = self.session.query(Article).filter(Article.indirect_data["tags"].contains([self.id]), Article.active == True, Article.section_id == section_id).all()

@@ -443,7 +443,7 @@ class File:
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
 
-    def editor_add_file(self, file : webFile, is_preview = False, ):
+    async def editor_add_file(self, file : webFile, is_preview = False, ):
         contents = await file.read()
         file_info = {
             "filename": file.filename,

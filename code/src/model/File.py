@@ -444,13 +444,6 @@ class File:
 
     def editor_add_file(self, file : webFile, is_preview = False, ):
         contents = file.read()
-        file_info = {
-            "filename": file.filename,
-            "content_type": file.content_type,
-            "size": len(contents)
-        }
-
-        file_info
         
         # Генерируем уникальное имя файла
         unique_name = str(ObjectId()) + file_ext
@@ -458,7 +451,7 @@ class File:
 
         # Если нужно сохранить файл на диск
         with open(file_path, "wb") as f:
-             f.write(contents)
+             f.write(file.read())
 
         file_info = {
             "original_name": file.filename,

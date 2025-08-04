@@ -443,10 +443,10 @@ class File:
         return FileModel().create_index_user_photo()
 
     def editor_add_file(self, file : webFile, is_preview = False, ):
-        contents = file.read()
+        contents = file.file.read()
         
         # Генерируем уникальное имя файла
-        filename = file.file.filename
+        filename = file.filename
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         unique_name = str(ObjectId()) + file_ext

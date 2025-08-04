@@ -380,7 +380,10 @@ async def render(art_id : int):
 ### тестирую работу с файлами
 @editor_router.post("/upload_file")
 async def create_file(file: Annotated[bytes, File()]):
-    return {"file_size": len(file)}
+    # Здесь можно сохранить файл или обработать его содержимое
+    f_inf = storeFile(art_id).editor_add_file(file=file)
+        
+    return JSONResponse(f_inf)
 
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):

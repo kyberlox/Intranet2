@@ -456,10 +456,9 @@ class File:
         # Если нужно сохранить файл на диск
         with open(file_path, "wb") as f:
              f.write(contents)
-        
 
         file_info = {
-            "original_name": unique_name,
+            "original_name": filename,
             "stored_name": unique_name,
             "content_type": str(file.content_type),
             "article_id": self.art_id,

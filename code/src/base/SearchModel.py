@@ -14,6 +14,13 @@ from typing import Optional
 
 from fastapi import APIRouter, Body
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
+
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
 elastic_client = Elasticsearch('http://elastic:9200')
@@ -260,7 +267,7 @@ class UserSearchModel:
                         if param in data.keys():
                             if param == "photo_file_id" and data['photo_file_id'] is not None:
                                 file_inf = File(data['photo_file_id']).get_users_photo()
-                                data_row[param] = f"http://intranet.emk.org.ru{file_inf['URL']}"
+                                data_row[param] = f"{DOMAIN}{file_inf['URL']}"
                             else:
                                 data_row[param] = data[param]
                         else:
@@ -1181,9 +1188,8 @@ class ArticleSearchModel:
                                 preview_link = url.split("/")
                                 preview_link[-2] = "compress_image"
                                 url = '/'.join(preview_link)
-                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                            preview_photo = f"http://intranet.emk.org.ru{url}"
-                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            
+                            preview_photo = f"{DOMAIN}{url}"
 
                     #находим любую картинку, если она есть
                     for file in files:
@@ -1198,8 +1204,8 @@ class ArticleSearchModel:
                                 preview_link = url.split("/")
                                 preview_link[-2] = "compress_image"
                                 url = '/'.join(preview_link)
-                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                            preview_photo = f"http://intranet.emk.org.ru{url}"
+                            
+                            preview_photo = f"{DOMAIN}{url}"
                     
                     data_row["section_id"] = article_data["section_id"]
                     if article_data["section_id"] == 15:

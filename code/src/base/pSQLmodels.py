@@ -21,6 +21,8 @@ from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 
+DOMAIN = os.getenv('DOMAIN')
+
 user = os.getenv('user')
 pswd = os.getenv('pswd')
 
@@ -383,9 +385,8 @@ class UserModel():
 
                 #вывод URL фотографии пользователя
                 url = photo_inf['URL']
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                result['photo_file_url'] = f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                result['photo_file_url'] = f"{DOMAIN}{url}"
+                
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
@@ -530,7 +531,7 @@ class UserModel():
                     if "uf_usr_department_main" in indirect_data:
                         dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                         user_info['uf_usr_department_main'] = dedep[0].name
-                    user_info['image'] =  f'http://intranet.emk.org.ru{user_image["URL"]}'
+                    user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
                     
                     normal_list.append(user_info)
         return normal_list
@@ -571,7 +572,7 @@ class UserModel():
                         user_info['user_fio'] = f'{user[2]} {user[3]} {user[4]}'
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
-                    user_info['image'] = f'http://intranet.emk.org.ru{user_image["URL"]}'
+                    user_info['image'] = f'{DOMAIN}{user_image["URL"]}'
                     users.append(user_info)
         return users
     """

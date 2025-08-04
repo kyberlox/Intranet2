@@ -1,6 +1,6 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, File#, Header
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, File
 from fastapi.responses import JSONResponse
-from typing import List
+from typing import Annotated, List
 
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import ArticleModel
@@ -12,6 +12,13 @@ from src.model.File import File as storeFile
 
 import json
 import datetime
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
 
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
@@ -308,9 +315,9 @@ class Editor:
             file_info["article_id"] = file["article_id"]
             file_info["b24_id"] = file["b24_id"]
             url = file["file_url"]
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-            file_info["file_url"] = f"http://intranet.emk.org.ru{url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            file_info["file_url"] = f"{DOMAIN}{url}"
+            
             file_info["is_archive"] = file["is_archive"]
             file_info["is_preview"] = file["is_preview"]
 
@@ -378,7 +385,18 @@ async def render(art_id : int):
 
 
 ### тестирую работу с файлами
-@editor_router.post("/uploadfiles")
+@editor_router.post("/upload_file/{art_id}")
+async def create_file(file: UploadFile, art_id : int):
+    #data = json.loads(jsn)
+    #if "art_id" in data:
+    #art_id = int(data["art_id"])
+    print(art_id)
+    # Здесь можно сохранить файл или обработать его содержимое
+    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
+            
+    return f_inf
+
+@editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):
     try:
         # Обработка каждого файла
@@ -388,10 +406,7 @@ async def create_upload_files(files: List[UploadFile] ):
             f_inf = storeFile(art_id).editor_add_file(file=file)
             file_infos.append(f_inf)
         
-        return JSONResponse({
-            "status": "success",
-            "files": file_infos
-        })
+        return JSONResponse(file_infos)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

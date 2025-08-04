@@ -19,6 +19,12 @@ import asyncio
 import types
 
 from fastapi import APIRouter, Body, Request
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
 
 article_router = APIRouter(prefix="/article", tags=["Статьи"])
 
@@ -563,9 +569,7 @@ class Article:
 
                         else:
                             url = file_data["file_url"]
-                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                            photo_file_url = f"http://intranet.emk.org.ru{url}"
-                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            photo_file_url = f"{DOMAIN}{url}"
                     
                             
                     
@@ -601,9 +605,7 @@ class Article:
 
                         else:
                             url = file_data["file_url"]
-                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                            photo_file_url = f"http://intranet.emk.org.ru{url}"
-                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            photo_file_url = f"{DOMAIN}{url}"
                     
                     t = {
                         "id" : tr["ID"],
@@ -1530,24 +1532,18 @@ class Article:
             #файлы делятся по категориям
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
-                file["file_url"] = f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
+                file["file_url"] = f"{DOMAIN}{url}"
                 art['images'].append(file)
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "video" in file["content_type"]:
                 url = file["file_url"]
-                file["file_url"] = f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!!!!
+                file["file_url"] = f"{DOMAIN}{url}"
                 art['videos_native'].append(file)
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             elif "link" in file["content_type"]:
                 art['videos_embed'].append(file)
             else:
                 url = file["file_url"]
-                file["file_url"] = f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!!!!
+                file["file_url"] = f"{DOMAIN}{url}"
                 art['documentation'].append(file)
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         art["preview_file_url"] = self.get_preview()
         
@@ -1600,14 +1596,13 @@ class Article:
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
                 elif self.section_id == "55" or self.section_id == "41":
-                    return f"http://intranet.emk.org.ru{url}"
+                    return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
                     url = '/'.join(preview_link)
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                return f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                
+                return f"{DOMAIN}{url}"
 
         #находим любую картинку, если она есть
         for file in files:
@@ -1621,14 +1616,12 @@ class Article:
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
                 elif self.section_id == "55" or self.section_id == "41":
-                    return f"http://intranet.emk.org.ru{url}"
+                    return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
                     url = '/'.join(preview_link)
-                #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                return f"http://intranet.emk.org.ru{url}"
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                return f"{DOMAIN}{url}"
         
         return None
         
@@ -1679,9 +1672,7 @@ class Article:
 
                         
                         url = file["file_url"]
-                        #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-                        file["file_url"] = f"http://intranet.emk.org.ru{url}"
-                        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        file["file_url"] = f"{DOMAIN}{url}"
 
                         #файлы делятся по категориям
                         if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:

@@ -11,10 +11,17 @@ import os
 
 from fastapi import APIRouter, Body, UploadFile, HTTPException
 
-file_router = APIRouter(prefix="/file", tags=["Файлы"])
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
 
 STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
+
+file_router = APIRouter(prefix="/file", tags=["Файлы"])
 
 class File:
     def __init__(self, id=None, art_id =None, b24_id=None):
@@ -201,10 +208,8 @@ class File:
             inserted_id = FileModel().add(result)
 
             new_url = result["file_url"]
-
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-            return f"http://intranet.emk.org.ru{new_url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            return f"{DOMAIN}{new_url}"
             
         else: #надо заменить
             self.art_id = art_id
@@ -214,15 +219,13 @@ class File:
                     #перезаписываем
                     unique_name = fl["stored_name"]
                     file_path = os.path.join(STORAGE_PATH, unique_name)
-                    response = requests.get(f"https://portal.emk.ru{url}")
+                    response = requests.get(f"{DOMAIN}{url}")
                     with open(file_path, 'wb') as file:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
-
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    return f"http://intranet.emk.org.ru{new_url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    
+                    return f"{DOMAIN}{new_url}"
 
     def save_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
@@ -259,10 +262,8 @@ class File:
             inserted_id = FileModel().add(result)
 
             new_url = result["file_url"]
-
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-            return f"http://intranet.emk.org.ru{new_url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            return f"{DOMAIN}{new_url}"
             
         else: #надо заменить
             self.art_id = art_id
@@ -277,10 +278,8 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
-
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    return f"http://intranet.emk.org.ru{new_url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    
+                    return f"{DOMAIN}{new_url}"
 
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
@@ -443,45 +442,64 @@ class File:
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
 
-    async def editor_add_file(self, file : webFile, is_preview = False, ):
-        contents = await file.read()
-        file_info = {
-            "filename": file.filename,
-            "content_type": file.content_type,
-            "size": len(contents)
-        }
-
-        file_info
+    def editor_add_file(self, file : webFile):
+        #!!!!!!!внедрить проверки
+        
         
         # Генерируем уникальное имя файла
+        filename = file.filename
+        filename_parts = filename.split('.')
+        file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
-        inserted_id = FileModel().add(data)
+        # Если нужно сохранить файл на диск
+        #with file.file:
+            #contents = file.file.read()
+            #with open(file_path, "wb") as f:
+                #f.write(contents)
 
         file_info = {
-            "id": str(inserted_id),
-            "original_name": file.filename,
+            "original_name": filename,
             "stored_name": unique_name,
-            "content_type": file.content_type,
-            "article_id": self.art_id,
+            "content_type": str(file.content_type),
+            "article_id": int(self.art_id),
             "b24_id": None,
             "is_archive": False,
-            "is_preview" : is_preview,
+            "is_preview" : False,
             "file_url": f"/api/files/{unique_name}"
         }
 
-        # Если нужно сохранить файл на диск
-        # with open(file_path, "wb") as f:
-        #     f.write(contents)
-            
-        return file_info
-    
-    def editor_del_file(self, file : webFile):
-        pass
+        inserted_id = FileModel().add(file_info)
+
+        # Проверяем, что inserted_id можно преобразовать в строку
+        if hasattr(inserted_id, "__str__"):
+            inserted_id_str = str(inserted_id)
+        else:
+            inserted_id_str = str(inserted_id)  # На крайний случай
+
+        #file_info["id"] = str(inserted_id)
+        #return file_info
+
+        return {
+            **file_info,
+            "id": str(inserted_id)
+        }
     
     def editor_chenge_file(self, file : webFile):
+        #найти файл
+        #заменить id и отправить предыдущую версию в архив
+        #скачать под старым id
+        #заменить метданные
         pass
+    
+    def set_is_preview(self ):
+        #найти статью файла
+        #проверить есть ли в ней первью
+        #заменить, если есть
+        #найти файл сделать его превью
+        pass
+
 
         
 

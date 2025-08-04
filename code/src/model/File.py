@@ -472,9 +472,10 @@ class File:
 
         inserted_id = FileModel().add(file_info)
 
-        file_info["id"] = str(inserted_id)
-            
-        return file_info
+        return {
+            **file_info,
+            "id": str(inserted_id)
+        }
     
     def editor_chenge_file(self, file : webFile):
         #найти файл

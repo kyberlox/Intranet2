@@ -42,10 +42,17 @@ from PIL import Image
 from io import BytesIO
 
 import os
+from dotenv import load_dotenv
 
 import time
 
 import asyncio
+
+
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
 
 app = FastAPI() #timeout=60*5
 
@@ -75,6 +82,7 @@ templates = Jinja2Templates(directory="./front_jinja")
 
 origins = [
     "http://localhost:8000",
+    DOMAIN,
     "http://intranet.emk.org.ru:8000",
     "http://intranet.emk.org.ru"
 ]

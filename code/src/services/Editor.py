@@ -316,7 +316,7 @@ class Editor:
             file_info["b24_id"] = file["b24_id"]
             url = file["file_url"]
             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!
-            file_info["file_url"] = f"http://intranet.emk.org.ru{url}"
+            file_info["file_url"] = f"{DOMAIN}{url}"
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             file_info["is_archive"] = file["is_archive"]
             file_info["is_preview"] = file["is_preview"]

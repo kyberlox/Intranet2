@@ -210,7 +210,7 @@ class File:
             new_url = result["file_url"]
 
             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-            return f"http://intranet.emk.org.ru{new_url}"
+            return f"{DOMAIN}{new_url}"
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
         else: #надо заменить
@@ -221,14 +221,14 @@ class File:
                     #перезаписываем
                     unique_name = fl["stored_name"]
                     file_path = os.path.join(STORAGE_PATH, unique_name)
-                    response = requests.get(f"https://portal.emk.ru{url}")
+                    response = requests.get(f"{DOMAIN}{url}")
                     with open(file_path, 'wb') as file:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
 
                     #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    return f"http://intranet.emk.org.ru{new_url}"
+                    return f"{DOMAIN}{new_url}"
                     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def save_by_URL(self, url, art_id, b24_id = None, is_preview = False):
@@ -268,7 +268,7 @@ class File:
             new_url = result["file_url"]
 
             #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-            return f"http://intranet.emk.org.ru{new_url}"
+            return f"{DOMAIN}{new_url}"
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
         else: #надо заменить
@@ -286,7 +286,7 @@ class File:
                     new_url = fl["file_url"]
 
                     #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
-                    return f"http://intranet.emk.org.ru{new_url}"
+                    return f"{DOMAIN}{new_url}"
                     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def need_update_file(self,  art_id, files_id):

@@ -472,16 +472,19 @@ class File:
         }
 
         # Если нужно сохранить файл на диск
-        # with open(file_path, "wb") as f:
-        #     f.write(contents)
+        with open(file_path, "wb") as f:
+             f.write(contents)
             
         return file_info
     
     def editor_del_file(self, file : webFile):
-        pass
+        #отправить в архив
     
     def editor_chenge_file(self, file : webFile):
-        pass
+        #найти файл
+        #заменить id и отправить предыдущую версию в архив
+        #скачать под старым id
+        #заменить метданные
     
     def set_is_preview(self ):
         #найти статью файла

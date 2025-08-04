@@ -482,6 +482,13 @@ class File:
     
     def editor_chenge_file(self, file : webFile):
         pass
+    
+    def set_is_preview(self ):
+        #найти статью файла
+        #проверить есть ли в ней первью
+        #заменить, если есть
+        #найти файл сделать его превью
+
 
         
 

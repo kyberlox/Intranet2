@@ -21,6 +21,8 @@ from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 
+DOMAIN = os.getenv('DOMAIN')
+
 user = os.getenv('user')
 pswd = os.getenv('pswd')
 

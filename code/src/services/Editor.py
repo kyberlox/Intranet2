@@ -13,6 +13,13 @@ from src.model.File import File as storeFile
 import json
 import datetime
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
+
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
 def make_date_valid(date):

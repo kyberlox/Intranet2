@@ -14,6 +14,13 @@ from typing import Optional
 
 from fastapi import APIRouter, Body
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
+
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
 elastic_client = Elasticsearch('http://elastic:9200')

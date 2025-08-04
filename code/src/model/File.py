@@ -11,10 +11,17 @@ import os
 
 from fastapi import APIRouter, Body, UploadFile, HTTPException
 
-file_router = APIRouter(prefix="/file", tags=["Файлы"])
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
 
 STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
+
+file_router = APIRouter(prefix="/file", tags=["Файлы"])
 
 class File:
     def __init__(self, id=None, art_id =None, b24_id=None):

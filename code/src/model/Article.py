@@ -19,6 +19,12 @@ import asyncio
 import types
 
 from fastapi import APIRouter, Body, Request
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('DOMAIN')
 
 article_router = APIRouter(prefix="/article", tags=["Статьи"])
 

@@ -465,7 +465,7 @@ class File:
             "article_id": self.art_id,
             "b24_id": None,
             "is_archive": False,
-            "is_preview" : is_preview,
+            "is_preview" : False,
             "file_url": f"/api/files/{unique_name}"
         }
 

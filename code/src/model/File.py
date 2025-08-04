@@ -449,7 +449,7 @@ class File:
         # Генерируем уникальное имя файла
         filename = file.filename
         filename_parts = filename.split('.')
-        file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+        file_ext = '.' + filename_parts[-2] if len(filename_parts) > 1 else ''
         print(file_ext)
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)

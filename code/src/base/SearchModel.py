@@ -1188,9 +1188,8 @@ class ArticleSearchModel:
                                 preview_link = url.split("/")
                                 preview_link[-2] = "compress_image"
                                 url = '/'.join(preview_link)
-                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                            
                             preview_photo = f"{DOMAIN}{url}"
-                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                     #находим любую картинку, если она есть
                     for file in files:
@@ -1205,7 +1204,7 @@ class ArticleSearchModel:
                                 preview_link = url.split("/")
                                 preview_link[-2] = "compress_image"
                                 url = '/'.join(preview_link)
-                            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                            
                             preview_photo = f"{DOMAIN}{url}"
                     
                     data_row["section_id"] = article_data["section_id"]

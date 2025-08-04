@@ -208,10 +208,8 @@ class File:
             inserted_id = FileModel().add(result)
 
             new_url = result["file_url"]
-
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            
             return f"{DOMAIN}{new_url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
         else: #надо заменить
             self.art_id = art_id
@@ -226,10 +224,8 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
-
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    
                     return f"{DOMAIN}{new_url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def save_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
@@ -266,10 +262,8 @@ class File:
             inserted_id = FileModel().add(result)
 
             new_url = result["file_url"]
-
-            #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+            
             return f"{DOMAIN}{new_url}"
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
         else: #надо заменить
             self.art_id = art_id
@@ -284,10 +278,8 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
-
-                    #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
+                    
                     return f"{DOMAIN}{new_url}"
-                    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def need_update_file(self,  art_id, files_id):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, File#, Header
 from fastapi.responses import JSONResponse
-from typing import List
+from typing import Annotated, List
 
 from src.services.LogsMaker import LogsMaker
 from src.base.pSQLmodels import ArticleModel

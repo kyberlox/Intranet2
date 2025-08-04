@@ -1539,11 +1539,11 @@ class TagsModel:
         self.session.close()
         if articles:
             return articles
-        return {'msg': ' какая то'}
+        return []
     
     def all_tags(self):
         tags = self.session.query(Tags).all()
         if tags:
             return tags
-        return {"msg": "отсуствуют"}
+        return []
     

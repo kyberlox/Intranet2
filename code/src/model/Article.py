@@ -2223,22 +2223,25 @@ class Article:
     def search_articles_by_tags(self, tag_id, session_id=''):
         user_id = self.get_user_by_session_id(session_id=session_id)
         result = Tag(id=tag_id).get_articles_by_tag_id(self.section_id)
-        sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
-        res = []
-        for art in sorted_active_articles:
-            self.id = art.id
-            art = art.__dict__
+        if result != []:
+            sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
+            res = []
+            for art in sorted_active_articles:
+                self.id = art.id
+                art = art.__dict__
+                
+                preview_pict = self.get_preview()
             
-            preview_pict = self.get_preview()
-        
-            art['preview_file_url'] = preview_pict
-            if user_id is not None:
-                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                art['preview_file_url'] = preview_pict
+                if user_id is not None:
+                    has_user_liked = User(id=user_id).has_liked(art_id=self.id)
 
-                art['reactions'] = has_user_liked
-            res.append(art)
+                    art['reactions'] = has_user_liked
+                res.append(art)
 
-        return res
+            return res
+        else:
+            return result
 
 
 

@@ -454,10 +454,10 @@ class File:
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Если нужно сохранить файл на диск
-        with file.file:
-            contents = file.file.read()
-            with open(file_path, "wb") as f:
-                f.write(contents)
+        #with file.file:
+            #contents = file.file.read()
+            #with open(file_path, "wb") as f:
+                #f.write(contents)
 
         file_info = {
             "original_name": filename,

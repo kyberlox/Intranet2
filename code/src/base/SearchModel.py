@@ -1161,7 +1161,7 @@ class ArticleSearchModel:
         article_action = {}
         for article_data in article_SQL_data:
             data_row = {}
-            if article_data['active'] and article_data['section_id'] != 6:
+            if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
                 
                 if isinstance(article_data['indirect_data'], str):
                     article_data['indirect_data'] = json.loads(article_data['indirect_data'])

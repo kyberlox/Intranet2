@@ -378,7 +378,11 @@ async def render(art_id : int):
 
 
 ### тестирую работу с файлами
-@editor_router.post("/uploadfiles")
+@editor_router.post("/upload_file")
+async def create_file(file: Annotated[bytes, File()]):
+    return {"file_size": len(file)}
+    
+@editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):
     try:
         # Обработка каждого файла

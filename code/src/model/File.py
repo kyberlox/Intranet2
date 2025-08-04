@@ -444,7 +444,7 @@ class File:
         return FileModel().create_index_user_photo()
 
     def editor_add_file(self, file : webFile, is_preview = False, ):
-        contents = await file.read()
+        contents = file.read()
         file_info = {
             "filename": file.filename,
             "content_type": file.content_type,

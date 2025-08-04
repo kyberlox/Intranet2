@@ -386,8 +386,9 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-async def create_file(file: UploadFile, data = Body(),):
-    if "art_id" in json.loads(data):
+async def create_file(jsn: UploadFile, data = Body(),):
+    data = json.loads(jsn)
+    if "art_id" in data:
         art_id = int(data["art_id"])
         print(art_id)
         # Здесь можно сохранить файл или обработать его содержимое

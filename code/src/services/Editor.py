@@ -381,7 +381,7 @@ async def render(art_id : int):
 @editor_router.post("/upload_file")
 async def create_file(file: Annotated[bytes, File()]):
     return {"file_size": len(file)}
-    
+
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):
     try:
@@ -392,10 +392,7 @@ async def create_upload_files(files: List[UploadFile] ):
             f_inf = storeFile(art_id).editor_add_file(file=file)
             file_infos.append(f_inf)
         
-        return JSONResponse({
-            "status": "success"
-            "files": file_infos
-        })
+        return JSONResponse(file_infos)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

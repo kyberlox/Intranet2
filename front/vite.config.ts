@@ -38,12 +38,12 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 5173,
-    allowedHosts: ['http://intranet1-dmz.imp.int/', 'http://testrcube1-a66.imp.int/']
+    allowedHosts: true
   },
   preview: {
     host: "0.0.0.0",
     port: 5173,
-    allowedHosts: ['http://intranet1-dmz.imp.int/', 'http://testrcube1-a66.imp.int/']
+    allowedHosts: true
   },
 
 })

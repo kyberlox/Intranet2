@@ -232,6 +232,12 @@ def total_users_update():
     time_start = time.time()
     status = False
 
+    print("Обновление информации о подразделениях")
+    if Department().fetch_departments_data()["status"]:
+        print("Успешно!")
+    else:
+        print("Ошибка!")
+
     print("Обновление информации о пользователях")
     if User().fetch_users_data()["status"]:
         status += 1

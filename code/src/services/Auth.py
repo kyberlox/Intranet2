@@ -15,6 +15,7 @@ from src.base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 from src.model.User import User
 
+import json
 
 
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизвция"])

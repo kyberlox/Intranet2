@@ -99,7 +99,7 @@ class AuthService:
         try:
 
             #доступ админа
-            if username in os.getenv("user") and password = os.getenv("pswd"):
+            if username in os.getenv("user") and password == os.getenv("pswd"):
                 return {'GUID': "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"}
 
             server = Server(self.ldap_server, get_info=ALL)

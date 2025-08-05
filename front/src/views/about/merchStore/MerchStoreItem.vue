@@ -1,0 +1,74 @@
+<template>
+    <div class="merchStoreItem__wrapper">
+        <div class="merchStoreItem mt20">
+            <div class="merchStoreItem__images__wrapper">
+                <SwiperBlank :images="merchItemPlug.images" />
+            </div>
+            <div class="merchStoreItem__info">
+                <div class="merchStoreItem__info__category">{{ merchItemPlug.category }}</div>
+                <div class="merchStoreItem__info__title">
+                    {{ merchItemPlug.title }}
+                </div>
+                <div class="merchStoreItem__info__description"
+                     v-html="merchItemPlug.description">
+                </div>
+                <div class="merchStoreItem__info__sizes__title">
+                    Размер
+                </div>
+                <div class="merchStoreItem__info__sizes">
+                    <div class="merchStoreItem__info__size"
+                         v-for="item in merchItemPlug.sizes"
+                         :key="'size' + item">
+                        {{ item }}
+                    </div>
+                </div>
+
+                <div class="merchStoreItem__info__price">
+                    <span class="count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
+                </div>
+
+                <div class="merchStoreItem__info__count">
+                    <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
+                </div>
+                <div class="merchStoreItem__action__wrapper">
+                    <div class="merchStoreItem__action__button">
+                        Оформить
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import SwiperBlank from '@/components/tools/swiper/SwiperBlank.vue';
+import { defineComponent } from 'vue';
+export default defineComponent({
+    props: {
+        id: {
+            type: Number,
+            default: 1
+        },
+    },
+    components: {
+        SwiperBlank
+    },
+    setup() {
+        const merchItemPlug = {
+            id: 1,
+            title: 'Панама',
+            price: '1000',
+            count: '1',
+            images: ['/imgs/merchStore/10futb.png', '/imgs/merchStore/2.png', '/imgs/merchStore/1.png', '/imgs/merchStore/2.png'],
+            sizes: ['s', 'm', 'l', 'xl', 'xxl'],
+            description: 'Стильная хлопковая панамка с широкими полями для максимальной защиты от солнца. Выполнена из дышащего материала премиум-качества с влагоотводящей подкладкой. Идеально подходит для пляжного отдыха, рыбалки и активного отдыха на природе. Регулируемый размер благодаря внутренней тесьме.',
+            category: 'Головные уборы',
+            colors: ['оранжевый-черный'],
+            material: '100% хлопок',
+        }
+        return {
+            merchItemPlug
+        }
+    }
+})
+</script>

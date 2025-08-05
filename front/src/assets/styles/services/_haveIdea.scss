@@ -1,0 +1,10 @@
+.table__idea {
+    transition: 0.2ms;
+    cursor: pointer;
+
+    &:hover {
+        >td {
+            color: var(--emk-brand-color);
+        }
+    }
+}

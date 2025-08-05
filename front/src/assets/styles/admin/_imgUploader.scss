@@ -1,0 +1,38 @@
+.p-fileupload-file-thumbnail {
+    flex-grow: 1;
+}
+
+.p-badge {
+    width: 100%;
+}
+
+.p-fileupload-choose-button,
+.p-fileupload-upload-button,
+.p-fileupload-cancel-button {
+    cursor: pointer !important;
+}
+
+.p-fileupload-choose-button {
+    &:hover {
+        color: green !important;
+    }
+}
+
+.p-fileupload-upload-button {
+    &:hover {
+        color: orange !important;
+    }
+}
+
+.p-fileupload-cancel-button {
+    &:hover {
+        color: red !important;
+    }
+}
+
+.p-button-danger {
+    &:hover {
+        color: red !important;
+    }
+
+}

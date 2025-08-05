@@ -1,0 +1,117 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
+.refer-page {
+    display: flex;
+    gap: 30px;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+
+    &__wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+
+        @include md {
+            max-width: 400px;
+        }
+
+        @include sm {
+            max-width: 100%;
+        }
+    }
+}
+
+.refer-page__img {
+    background-size: contain !important;
+    background-color: white;
+    width: 100%;
+    aspect-ratio: 4 / 6;
+}
+
+.jobWrapper {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    max-height: 800px;
+    padding-right: 15px;
+    scrollbar-width: thin;
+}
+
+.jobs-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+
+    &+ul {
+        padding: 0;
+    }
+}
+
+.jobs-header h2 {
+    color: #333;
+    font-size: 24px;
+    margin: 0;
+}
+
+.job-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-list li {
+    margin-bottom: 10px;
+}
+
+.job-link {
+    display: block;
+    text-decoration: none;
+    color: #2c3e50;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #F5821F;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.job-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-left-color: #F5821F;
+    color: #F5821F;
+}
+
+.job-link--nohover {
+    transform: none !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+    border-left-color: #F5821F !important;
+    color: #2c3e50 !important;
+}
+
+
+
+@media (max-width: 1400px) {
+    .jobWrapper {
+        max-height: 650px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .jobWrapper {
+        max-height: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .refer-page {
+        flex-direction: column;
+        max-height: none;
+    }
+
+}

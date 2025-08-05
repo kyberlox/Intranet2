@@ -29,3 +29,7 @@ coverage
 
 *.tsbuildinfo
 *:Zone.Identifier
+
+push.sh
+pull.shs
+/code/files_db

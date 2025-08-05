@@ -1,0 +1,165 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
+.header {
+    background: linear-gradient(180deg, #ececec 38.13%, #fcfcfc 66.26%, #fbfbfb 76.34%, #e8e8e8 100%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    z-index: 40;
+
+    &__logo {
+        width: 90px;
+        height: 60px;
+        background: url('@/assets/imgs/emkLogo.webp') no-repeat center;
+        background-size: contain;
+        border-radius: 15px;
+        position: relative;
+    }
+
+    &__user {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+
+        &__block {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            &__title {
+                display: flex;
+                flex-direction: column;
+                margin: 0 0 0 8px;
+                position: relative;
+            }
+
+            &__img {
+                box-sizing: border-box;
+                border-radius: 16px;
+                width: 32px;
+                height: 32px;
+            }
+
+            &__name {
+                font-weight: bold;
+                font-size: 12px;
+                line-height: 16px;
+                color: #303030;
+            }
+        }
+
+        &__button {
+            box-sizing: border-box;
+            align-items: center;
+            display: flex;
+            position: relative;
+            border: none;
+            padding: 0;
+            margin: 0;
+            background: transparent;
+            gap: 5px;
+        }
+    }
+
+    &__points-balance {
+        border: 1px solid var(--emk-brand-color);
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+            background: var(--emk-brand-color);
+            color: white;
+        }
+    }
+
+    &__right-top {
+        gap: 10px;
+    }
+}
+
+.navbar {
+    &-collapse {
+        height: 100%;
+    }
+
+    &-nav {
+        column-gap: 15px;
+        color: rgba(0, 0, 0, .55);
+        font-size: 0.9rem;
+        align-items: center;
+        height: 100%;
+
+        @include lg {
+            column-gap: 0px;
+        }
+
+        &__search-icon {
+            width: 35px;
+            cursor: pointer;
+            transition: 0.2s all;
+
+            &:hover {
+                color: var(--emk-brand-color);
+            }
+        }
+    }
+}
+
+.nav-link {
+    &--main-points {
+        &::after {
+            color: var(--emk-brand-color);
+            vertical-align: 0.23em;
+            margin-left: 7px;
+        }
+    }
+}
+
+.dropdown {
+    cursor: pointer;
+
+    &--opened {
+        >.dropdown-menu {
+            display: block;
+        }
+    }
+
+    &--mobile {
+        width: 100%;
+    }
+
+    &__item {
+        display: block;
+        width: 100%;
+        padding: .25rem 1rem;
+        clear: both;
+        font-weight: 400;
+        color: #212529;
+        text-align: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--emk-brand-color);
+        }
+
+        &--active {
+            color: #fff;
+            text-decoration: none;
+            background-color: var(--emk-brand-color);
+
+            &:hover {
+                background: #fff;
+                color: var(--emk-brand-color);
+            }
+        }
+    }
+}

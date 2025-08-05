@@ -1,0 +1,51 @@
+export interface ICalendar {
+    "ID": string,
+    "PARENT_ID": string,
+    "ACTIVE": string,
+    "DELETED": string,
+    "CAL_TYPE": string,
+    "OWNER_ID": string,
+    "NAME": string,
+    "DATE_FROM": string,
+    "DATE_TO": string,
+    // "ORIGINAL_DATE_FROM": null,
+    "EVENT_TYPE": null,
+    "CREATED_BY": string,
+    "DATE_CREATE": string,
+    "TIMESTAMP_X": string,
+    "DESCRIPTION": string,
+    // "DT_FROM": null,
+    // "DT_TO": null,
+    "PRIVATE_EVENT": string,
+    "ACCESSIBILITY": string,
+    "IMPORTANCE": string,
+    "IS_MEETING": boolean,
+    "MEETING_STATUS": string,
+    "MEETING_HOST": string,
+    "MEETING": {
+        "NOTIFY": boolean,
+        "MEETING_CREATOR": number,
+        "REINVITE": boolean,
+        "ALLOW_INVITE": boolean,
+        "HIDE_GUESTS": boolean,
+        "HOST_NAME": string,
+    },
+    "LOCATION": string,
+
+    "COLOR": string,
+    "TEXT_COLOR": string,
+    "DATE_FROM_FORMATTED": string,
+    "DATE_TO_FORMATTED": string,
+    "ATTENDEE_LIST": {
+        "id": number,
+        "entryId": string,
+        "status": string
+    }[],
+    "attendeesEntityList":
+    {
+        "entityId": string,
+        "id": number
+    }[],
+    "~DATE_FROM": string,
+    "~DATE_TO": string,
+}

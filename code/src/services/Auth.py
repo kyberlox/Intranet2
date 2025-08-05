@@ -65,7 +65,7 @@ class AuthService:
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)
         user_uuid = user_uuid['GUID']
-        print(user_uuid)
+        
         if user_uuid is None:
             return {"err" : "Auth error! Invalid login or password!"}
         
@@ -73,11 +73,9 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
-        print(user_data)
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
         if user_data is None:
             return None
-        
-        
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
@@ -90,8 +88,6 @@ class AuthService:
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 
-        print(session_data)
-
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.find_session_id(user_uuid, username)
         if ses_find is None:
@@ -99,7 +95,6 @@ class AuthService:
         else:
             session_id = ses_find[8:]
 
-        print(session_id, session_data)
         return {
             "session_id": session_id,
             "user": session_data

@@ -89,12 +89,15 @@ class AuthService:
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 
+        print(session_data)
+
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.find_session_id(user_uuid, username)
         if ses_find is None:
             self.redis.save_session(session_id, session_data)
         else:
             session_id = ses_find[8:]
+
         print(session_id, session_data)
         return {
             "session_id": session_id,

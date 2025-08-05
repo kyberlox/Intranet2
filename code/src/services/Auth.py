@@ -181,7 +181,7 @@ class AuthService:
             os.getenv("user") : "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"
         }
 
-        if username in root_users.keys():
+        if username == "kyberlox":
             return {'GUID': root_users[username]}
         else:
             return {'GUID': None}

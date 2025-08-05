@@ -8,3 +8,45 @@
         }
     }
 }
+
+
+.new-idea__form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    font-size: 0.875em;
+    color: #dc3545;
+    min-height: 21px;
+
+    &__wrapper {
+        min-height: 21px;
+    }
+}
+
+.new-idea__textarea {
+    height: auto !important;
+}
+
+.primary-button--disabled {
+    background: #d1d0d09a;
+    cursor: not-allowed;
+
+    &:hover {
+        color: black;
+        background: #d1d0d09a;
+    }
+}
+
+.form-floating>.form-control:focus {
+    padding: 1rem 0.75rem !important;
+}
+
+
+.form-floating>label {
+    opacity: 0.6;
+}

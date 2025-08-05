@@ -25,13 +25,6 @@
                         <div class="grid__content-1">
                             <h3 class="personal__user__top__title">Контактная информация</h3>
                         </div>
-                        <div class="grid__content-1">
-                            <div class="personal__user__social__list">
-                                <a href="gazinskii.i.v@emk.ru"
-                                   target="_blank"><i
-                                       class="personal__user__social__item personal__user__social__skype"></i></a>
-                            </div>
-                        </div>
                     </div>
                     <div class="personal__user__property">
                         <div class="grid__content-1">

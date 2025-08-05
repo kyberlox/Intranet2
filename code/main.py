@@ -76,9 +76,9 @@ app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
 
 
-app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
+#app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
-templates = Jinja2Templates(directory="./front_jinja") 
+#templates = Jinja2Templates(directory="./front_jinja") 
 
 origins = [
     "http://localhost:8000",

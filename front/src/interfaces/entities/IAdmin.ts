@@ -6,3 +6,10 @@ export interface IAdminListItem {
     values?: string[];
     value?: string;
 }
+
+export interface IFileToUpload {
+    name: string;
+    size: number;
+    url: string;
+    file: File;
+}

@@ -7,7 +7,7 @@
         <div class="modal__wrapper modal__wrapper--zoom">
             <div class="modal__body modal__body--zoom">
                 <FullWidthSlider v-if="image"
-                                 :images="Array.isArray(image) ? image : [image]"
+                                 :images="image"
                                  :activeIndex="activeIndex"
                                  :type="'postInner'" />
                 <div v-if="video"
@@ -61,13 +61,21 @@
 </template>
 <script lang="ts">
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
-import { type PropType } from "vue";
+import { defineComponent, type PropType } from "vue";
 import FullWidthSlider from "@/components/tools/swiper/FullWidthSlider.vue";
-import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component'
-export default {
+import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component';
+
+interface ImageObject {
+    file_url: string;
+}
+
+type ImageItem = string | ImageObject;
+type ImageArray = ImageItem[];
+
+export default defineComponent({
     props: {
         image: {
-            type: [Array, String] as PropType<string[] | string>,
+            type: Array as PropType<ImageArray>,
         },
         video: {
             type: String,
@@ -96,5 +104,5 @@ export default {
             repairVideoUrl,
         };
     },
-};
+});
 </script>

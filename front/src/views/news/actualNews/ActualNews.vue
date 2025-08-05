@@ -3,8 +3,8 @@
     <div class="page__filter">
         <DateFilter :params="filterYears"
                     :buttonText="currentYear ?? 'Год'"
-                    @pickFilter="(year) => currentYear = year" />
-        <TagsFilter @pickTag="(tag) => currentTag = tag" />
+                    @pickFilter="(year: string) => currentYear = year" />
+        <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
     </div>
     <div class="row">
         <SampleGallery v-if="!emptyTag"
@@ -39,16 +39,16 @@ export default defineComponent({
         const viewsData = useViewsDataStore();
         const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData('actualNewsData') as INews[]);
         const visibleNews: Ref<INews[]> = ref(allNews.value);
-        const currentTag = ref('');
-        const currentYear = ref('');
-        const filterYears = ref([]);
-        const emptyTag = ref();
+        const currentTag: Ref<string> = ref('');
+        const currentYear: Ref<string> = ref('');
+        const filterYears: Ref<string[]> = ref([]);
+        const emptyTag: Ref<boolean> = ref(false);
 
         watch(([currentTag, currentYear]), () => {
             if (currentTag.value && currentYear.value || currentTag.value && !currentYear.value) {
                 const newData = ref();
                 Api.get(`article/get_articles_by_tag_id/${sectionTips['Актуальные новости']}/${currentTag.value}`)
-                    .then((data) => newData.value = data.filter((e) => {
+                    .then((data: INews[]) => newData.value = data.filter((e) => {
                         return e.date_creation?.includes(currentYear.value)
                     }))
                     .finally(() => {

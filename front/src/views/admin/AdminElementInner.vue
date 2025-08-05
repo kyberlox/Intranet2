@@ -45,9 +45,9 @@
         <div class="admin-element-inner__field"
              v-if="newElementFiles.images">
           <p class="admin-element-inner__field-title fs-l">Изображения </p>
-          <FileUploader @upload="(e) => handleUpload(e)"
+          <!-- <FileUploader @upload="(e) => handleUpload(e)"
                         :uploadType="'img'"
-                        :existFiles="newData.images" />
+                        :existFiles="newData.images" /> -->
         </div>
         <div class="admin-element-inner__field "
              v-if="newElementFiles.documentation">
@@ -58,8 +58,8 @@
         <div class="admin-element-inner__field "
              v-if="newElementFiles.videos_native">
           <p class="admin-element-inner__field-title fs-l">Видео </p>
-          <FileUploader :uploadType="'videoNative'"
-                        :existFiles="newData.videos_native" />
+          <!-- <FileUploader :uploadType="'videoNative'"
+                        :existFiles="newData.videos_native" /> -->
         </div>
       </div>
 
@@ -139,6 +139,7 @@ import { useToastCompose } from '@/utils/UseToastСompose';
 import { type IBXFileType } from "@/interfaces/IEntities";
 import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
+import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
 
 type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
@@ -251,7 +252,7 @@ export default defineComponent({
         })
     }
 
-    const handleUpload = (e) => {
+    const handleUpload = (e: IFileToUpload) => {
       const fileToUpload = e.file;
       const formData = new FormData();
       formData.append('files', fileToUpload)

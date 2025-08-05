@@ -25,7 +25,7 @@ export interface ISafetyTechnicsSlide {
         content_text?: string,
         images?: string[]
         preview_file_url?: string,
-
+        videos_native?: string[]
     },
     evacuationContent?: {
         images?: string[],

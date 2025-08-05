@@ -31,7 +31,7 @@ export default class Api {
         }
     }
 
-    static async post(url: string, data: IAuth | IPostIdea | IPostInner) {
+    static async post(url: string, data: IAuth | IPostIdea | IPostInner | FormData) {
         return (await api.post(url, data)).data;
     }
 

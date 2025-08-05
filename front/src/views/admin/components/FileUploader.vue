@@ -26,13 +26,13 @@
                     <video v-if="uploadType == 'videoNative'"
                            @click.stop.prevent=""
                            class="file-uploader__preview-video"
-                           :src="item"
+                           :src="item.file_url"
                            controls>
                         Ваш браузер не поддерживает видео.
                     </video>
                     <img v-if="uploadType == 'img'"
                          class="file-uploader__preview-img"
-                         :src="item" />
+                         :src="item.file_url" />
                     <div class="file-uploader__preview-doc"
                          v-if="uploadType == 'docs'">
                         <span v-if="item.original_name">{{ item.original_name }}</span>
@@ -67,14 +67,9 @@
 import { defineComponent, ref, type PropType, type Ref } from 'vue';
 import { allowedTypes } from '@/assets/static/uploadAllowedTypes';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
-import DocIcon from '@/assets/icons/posts/DocIcon.svg?component'
-
-interface IFileToUpload {
-    name: string;
-    size: number;
-    url: string;
-    file: File;
-}
+import DocIcon from '@/assets/icons/posts/DocIcon.svg?component';
+import type { IBXFileType } from '@/interfaces/IEntities';
+import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
 
 export default defineComponent({
     name: 'VideoUploader',
@@ -84,7 +79,7 @@ export default defineComponent({
             default: 'img'
         },
         existFiles: {
-            type: Array<string>
+            type: Array<IBXFileType>
         }
     },
     components: {

@@ -7,14 +7,14 @@
                           v-for="(image, index) in images"
                           :key="'postImg' + index">
                 <img class="full-width-slider__slide__img"
-                     :src="image"
+                     :src="getImageUrl(image)"
                      @click.stop="slideNext"
                      alt="слайд" />
             </swiper-slide>
         </swiper>
 
         <div class="full-width-slider__navigation-container"
-             v-if="images.length > 1"
+             v-if="Array.isArray(images) && images.length > 1"
              @click.stop="slideNext">
             <div class="full-width-slider__navigation">
                 <button class="full-width-slider__navigation__button full-width-slider__navigation__button--prev"
@@ -48,6 +48,13 @@ import "swiper/css/pagination";
 import SwiperArrowRight from "@/assets/icons/common/SwiperArrowRight.svg?component";
 import SwiperArrowLeft from "@/assets/icons/common/SwiperArrowLeft.svg?component";
 
+interface ImageObject {
+    file_url: string;
+}
+
+type ImageItem = string | ImageObject;
+type ImageArray = ImageItem[];
+
 export default defineComponent({
     components: {
         Swiper,
@@ -57,8 +64,7 @@ export default defineComponent({
     },
     props: {
         images: {
-            type: Array as PropType<string[]>,
-            required: true,
+            type: Array as PropType<ImageArray>,
         },
         activeIndex: {
             type: Number,
@@ -107,6 +113,13 @@ export default defineComponent({
             autoplay: false,
         };
 
+        const getImageUrl = (image: ImageItem): string => {
+            if (typeof image === 'object' && image && 'file_url' in image) {
+                return image.file_url;
+            }
+            return image as string;
+        };
+
         return {
             onSwiperInit,
             slideNext,
@@ -115,6 +128,7 @@ export default defineComponent({
             swiperInstance,
             isEnd,
             isBeginning,
+            getImageUrl
         };
     },
 });

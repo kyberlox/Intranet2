@@ -57,6 +57,14 @@ import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { useSwiperconf } from "@/utils/useSwiperConf";
 import { type IBXFileType } from "@/interfaces/IEntities";
 import SwiperButtons from "./SwiperButtons.vue";
+
+interface ImageObject {
+    file_url: string;
+}
+
+type ImageItem = string | ImageObject;
+type ImageArray = ImageItem[];
+
 export default defineComponent({
     name: 'SwiperBlank',
     components: {
@@ -67,7 +75,7 @@ export default defineComponent({
     },
     props: {
         images: {
-            type: Array as PropType<string[]>,
+            type: Array as PropType<ImageArray>,
             default: () => [],
         },
         videos: {

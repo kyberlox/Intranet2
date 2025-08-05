@@ -93,6 +93,10 @@ export interface IPostInner extends IBaseEntity {
         // Афиша 
         date_from?: string,
         date_to?: string,
+        tags: {
+            id: string,
+            tag_name: string,
+        }[]
     }
 }
 
@@ -131,7 +135,7 @@ export default defineComponent({
                     .then((res) => {
                         currentPost.value = res;
                         if (!currentPost.value) return;
-                        changeToPostStandart(currentPost as Ref<IPostInner>, res);
+                        changeToPostStandart(currentPost as Ref<IPostInner>);
                     })
         }, { immediate: true, deep: true })
 

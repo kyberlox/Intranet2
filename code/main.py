@@ -76,9 +76,9 @@ app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
 
 
-app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
+#app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
-templates = Jinja2Templates(directory="./front_jinja") 
+#templates = Jinja2Templates(directory="./front_jinja") 
 
 origins = [
     "http://localhost:8000",
@@ -120,11 +120,12 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
     open_links = [
         "/docs",
+        "/api/users_update",
         "/openapi.json",
         "/api/auth_router",
         "/total_update",
-        "/api/files",
-        "/api/compress_image/",
+        "/api/files/",
+        "/api/compress_image",
         "/api/user_files",
         "test", "get_file", "get_all_files",
         "/api/total_background_task_update",
@@ -225,6 +226,23 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 
 
+
+@app.get("/api/users_update/")
+def total_users_update():
+    time_start = time.time()
+    status = False
+
+    print("Обновление информации о пользователях")
+    if User().fetch_users_data()["status"]:
+        status += 1
+        print("Успешно!")
+    else:
+        print("Ошибка!")
+    
+    time_end = time.time()
+    total_time_sec = time_end - time_start
+
+    return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 @app.put("/api/total_update")
 def total_update():

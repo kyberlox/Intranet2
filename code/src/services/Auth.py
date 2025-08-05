@@ -153,7 +153,7 @@ class AuthService:
                     'employeeID': user_entry.employeeID.value if 'employeeID' in user_entry else None,
                     'employeeNumber': user_entry.employeeNumber.value if 'employeeNumber' in user_entry else None,
                 }
-                
+
             else:
                 return {"err" : "Пользователь не найден"}
 
@@ -170,7 +170,6 @@ class AuthService:
                 conn.unbind()
 
     #ЗАГЛУШКА
-    '''
     def check_ad_credentials(self, username, password):
 
         root_users = {
@@ -183,7 +182,6 @@ class AuthService:
             return {'GUID': root_users[username]}
         else:
             return {'GUID': None}
-    '''
 
 
     def get_user_data(self, user_uuid: str):

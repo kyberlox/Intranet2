@@ -185,11 +185,12 @@ class AuthService:
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID
         user_data_file = open("./src/base/test_AD_users.json", "r")
-        user_data = json.load(user_data_file)
+        user_json = json.load(user_data_file)
         user_data_file.close()
 
-        if username in user_data.keys():
-            return {"GUID" : user_data["GUID"]}
+        for user_data in user_json:
+            if username == user_data["login"]:
+                return {"GUID" : user_data["GUID"]}
     
 
     def get_user_data(self, user_uuid: str):

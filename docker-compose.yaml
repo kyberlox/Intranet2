@@ -14,7 +14,8 @@ services:
       - ./nginx/:/etc/nginx/conf.d/
     networks:
       - app-network
-
+  
+  postgresql:
     image: postgres:15-alpine
     container_name: postgresql
     environment:

@@ -60,6 +60,7 @@
                              class="order-2 order-lg-3 col-4 col-md-5 col-lg-2 mt-3 mb-4 mt-md-0 mb-md-0 d-flex align-items-center justify-content-end header__right-top">
 
                             <div class="header__user"
+                                 v-if="userFio && userAvatar"
                                  @click="visibleSidebar = true">
                                 <div class="header__points-balance__wrapper">
                                     <div class="header__points-balance"
@@ -72,7 +73,9 @@
                                          :src="userAvatar"
                                          alt="Ваша фотография" />
                                     <div class="header__user__block__title d-none d-lg-flex">
-                                        <span class="header__user__block__name">Газинский Игорь Владимирович</span>
+                                        <span class="header__user__block__name">
+                                            {{ userFio }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -106,6 +109,7 @@ export default defineComponent({
         SearchModal
     },
     setup() {
+        const userData = useUserData();
         const pageDataStore = usePageDataStore();
         const route = useRoute();
         const visibleSidebar = ref(false);
@@ -145,7 +149,8 @@ export default defineComponent({
             isMobileMenuOpen,
             handleDropdown,
             handleDropDownItemClick,
-            userAvatar: computed(() => useUserData().getPhoto),
+            userAvatar: computed(() => userData.getPhoto),
+            userFio: computed(() => userData.getFio),
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
             isMobileScreen: computed(() => ['sm', 'md'].includes(screenCheck(width))),
             toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,

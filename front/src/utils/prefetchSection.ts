@@ -6,6 +6,7 @@ import { useblogDataStore } from "@/stores/blogData";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useUserData } from "@/stores/userData";
 export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user') => {
+    if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
         case 'user':

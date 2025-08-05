@@ -40,6 +40,7 @@ export const useUserData = defineStore('userData', {
         getIsLogin: (state) => state.isLogin,
         getAuthKey: (state) => state.authKey,
         getUser: (state) => state.user,
-        getPhoto: (state) => state.user.photo_file_url
+        getPhoto: (state) => state.user.photo_file_url,
+        getFio: (state) => state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name
     }
 });

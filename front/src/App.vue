@@ -49,26 +49,30 @@ export default defineComponent({
     },
     setup() {
         const route = useRoute();
+        const userData = useUserData();
+        const isLogin = computed(() => userData.getIsLogin);
         // предзагрузка данных в стор
-        watch(route, () => {
-            const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
-            const blogsRoutes = ['blogs', 'blogOf', 'certainBlog'];
-            prefetchSection('user');
-            prefetchSection('calendar');
+        watch([route, isLogin], () => {
+            if (isLogin) {
+                const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
+                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog'];
+                prefetchSection('user');
+                prefetchSection('calendar');
 
-            if (blogsRoutes.includes(String(route.name))) {
-                prefetchSection('blogs')
-            } else if (factoryGuidRoutes.includes(String(route.name))) {
-                prefetchSection('factoryGuid')
+                if (blogsRoutes.includes(String(route.name))) {
+                    prefetchSection('blogs')
+                } else if (factoryGuidRoutes.includes(String(route.name))) {
+                    prefetchSection('factoryGuid')
+                }
             }
         }, { immediate: true, deep: true })
 
         onMounted(() => {
-            useUserData().initKeyFromStorage();
+            userData.initKeyFromStorage();
         })
 
         return {
-            isLogin: computed(() => useUserData().getIsLogin),
+            isLogin,
         }
     }
 })

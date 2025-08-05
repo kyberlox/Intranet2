@@ -27,10 +27,11 @@
     </div>
 </template>
 <script lang="ts">
+import router from '@/router';
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, ref } from 'vue';
-
+import { useRouter, useRoute } from 'vue-router';
 export default defineComponent({
     name: 'AuthPage',
     components: {},
@@ -38,9 +39,11 @@ export default defineComponent({
         const userName = ref('');
         const passWord = ref('');
         const error = ref();
+        const router = useRouter();
+        const route = useRoute();
 
-        const tryLogin = async () => {
-            await Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
+        const tryLogin = () => {
+            Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
                 .then((resp) => {
                     if (resp.session_id) {
                         localStorage.setItem('authKey', resp.session_id);

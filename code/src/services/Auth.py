@@ -178,9 +178,7 @@ class AuthService:
     def check_ad_credentials(self, username, password):
 
         root_users = {
-            os.getenv("user") : "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6",
-            os.getenv("user1") : "5bdbf37e-ad97-452a-ae80-cc666fa6f8e6",
-            os.getenv("user2") : "1e399032-9a09-49a9-9de3-c0e9aefe2570"
+            os.getenv("user") : "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"
         }
 
         if username in root_users.keys():

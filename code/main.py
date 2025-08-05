@@ -226,7 +226,8 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 
 
-@app.get("/api/users_update/)
+
+@app.get("/api/users_update/")
 def total_users_update():
     time_start = time.time()
     status = False
@@ -241,7 +242,7 @@ def total_users_update():
     time_end = time.time()
     total_time_sec = time_end - time_start
 
-    return {"status_code" : f"{status}", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
+    return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 @app.put("/api/total_update")
 def total_update():

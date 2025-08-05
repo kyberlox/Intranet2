@@ -72,10 +72,7 @@ services:
       - app-network
 
   fastapi:
-    build:
-      context: ./code
-      dockerfile: Dockerfile
-    image: app/fastapi
+    build: ./code
     container_name: fastapi
     volumes:
       - ./code:/data/app
@@ -90,9 +87,7 @@ services:
   
   frontend:
     container_name: vue
-    build:
-      context: ./front
-      dockerfile: Dockerfile
+    build: ./front
     #volumes:
       #- ./front/:/app/
     ports:

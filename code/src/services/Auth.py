@@ -153,6 +153,7 @@ class AuthService:
                     'employeeID': user_entry.employeeID.value if 'employeeID' in user_entry else None,
                     'employeeNumber': user_entry.employeeNumber.value if 'employeeNumber' in user_entry else None,
                 }
+                
             else:
                 return {"err" : "Пользователь не найден"}
 

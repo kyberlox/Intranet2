@@ -95,11 +95,12 @@ class AuthService:
             self.redis.save_session(session_id, session_data)
         else:
             session_id = ses_find[8:]
-
+        print(session_id, session_data)
         return {
             "session_id": session_id,
             "user": session_data
         }
+
     '''
     def check_ad_credentials(self, username: str, password: str) -> Optional[str]:
         """Проверка учетных данных в AD"""

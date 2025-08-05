@@ -71,25 +71,20 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
+        print(user_data)
         if not user_data:
             return None
         
-        print(user_data)
+        
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-
-            #ID="2375",
-            #email="",
-            #full_name="kyberlox",
-
             ID=user_data.get("ID", ""),
             email=user_data.get("email", ""),
             full_name=user_data.get("full_name", ""),
-
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 

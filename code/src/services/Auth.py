@@ -25,9 +25,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Загрузка переменных окружения
 load_dotenv()
 
-#данные для демки
-class TestUsersDemo:
-    def __init__(self, ID, GUID, email, full_name)
+
 
 class UserSession(BaseModel):
     user_uuid: str
@@ -185,7 +183,12 @@ class AuthService:
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID
-        pass
+        user_data_file = open("./src/base/test_AD_users.json", "r")
+        user_data = json.load(user_data_file)
+        user_data_file.close()
+
+        if username in user_data.keys():
+            return {"GUID" : user_data["GUID"]}
     
 
     def get_user_data(self, user_uuid: str):

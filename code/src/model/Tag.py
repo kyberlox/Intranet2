@@ -13,6 +13,9 @@ class Tag:
         return TagsModel(tag_name=self.tag_name).create_tag()
 
     def get_tag_by_id(self):
+        ############################################
+        # пусть возвращает True/False !!!!!!!!!!!!!#
+        ############################################
         return TagsModel(id=self.id).find_tag_by_id()
 
     def delete_tag(self):

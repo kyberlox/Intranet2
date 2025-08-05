@@ -196,7 +196,7 @@ class AuthService:
         for user_data in user_json:
             print(user_data)
             if username == user_data["login"]:
-                return user_data["GUID"]
+                return user_data
     
 
     def get_user_data(self, user_uuid: str):

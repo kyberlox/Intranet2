@@ -269,14 +269,6 @@ def total_update():
 
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
-
-
-#Заглушки фронта
-@app.get("/api/view/menu", tags=["Меню", "View"])
-def get_user(request: Request):
-    return templates.TemplateResponse(name="index.html", context={"request": request})
-
-
 # @app.get("/elastic_dump")
 # def elastic_dump():
 #     # res = UserSearchModel().dump()

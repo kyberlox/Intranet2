@@ -71,6 +71,8 @@ class AuthService:
         user_data = self.get_user_data(user_uuid)
         if not user_data:
             return None
+        
+        print(user_data)
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl

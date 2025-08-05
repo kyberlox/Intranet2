@@ -40,7 +40,7 @@ export default defineComponent({
         const error = ref();
 
         const tryLogin = async () => {
-            await Api.post('auth_router/auth', { login: "abobus", password: "1" })
+            await Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
                 .then((resp) => {
                     if (resp.session_id) {
                         localStorage.setItem('authKey', resp.session_id);

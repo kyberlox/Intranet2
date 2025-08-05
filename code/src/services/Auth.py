@@ -25,7 +25,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Загрузка переменных окружения
 load_dotenv()
 
-
+#данные для демки
+class TestUsersDemo:
+    def __init__(self, ID, GUID, email, full_name)
 
 class UserSession(BaseModel):
     user_uuid: str
@@ -67,9 +69,9 @@ class AuthService:
             return {"err" : "Auth error! Invalid login or password!"}
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        #user_data = self.get_user_data(user_uuid)
-        #if not user_data:
-            #return None
+        user_data = self.get_user_data(user_uuid)
+        if not user_data:
+            return None
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
@@ -182,11 +184,8 @@ class AuthService:
     '''
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
-
-        if username == "kyberlox":
-            return {'GUID': "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"}
-        else:
-            return {'GUID': None}
+        #хватаю из json пользователей по логину для демки и возваращаю GUID
+        pass
     
 
     def get_user_data(self, user_uuid: str):

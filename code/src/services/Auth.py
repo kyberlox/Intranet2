@@ -173,7 +173,7 @@ class AuthService:
         finally:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
-    '''
+    
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
 
@@ -187,7 +187,7 @@ class AuthService:
             return {'GUID': root_users[username]}
         else:
             return {'GUID': None}
-    '''
+    
 
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL

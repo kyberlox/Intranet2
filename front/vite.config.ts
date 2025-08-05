@@ -35,22 +35,8 @@ export default defineConfig({
     }
   },
 
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: false,
-    minify: 'terser',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['vue', 'vue-router'],
-        }
-      }
-    }
-  },
-
-  preview: {
+  server: {
+    host: "0.0.0.0",
     port: 5173,
-    host: true
-  }
+  },
 })

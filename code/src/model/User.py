@@ -79,6 +79,7 @@ class User:
 
     def user_inf_by_uuid(self):
         usr_inf = UserModel(self.uuid).find_by_uuid()
+        return usr_inf
 
 
 

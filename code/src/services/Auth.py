@@ -67,18 +67,24 @@ class AuthService:
             return {"err" : "Auth error! Invalid login or password!"}
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        #user_data = self.get_user_data(user_uuid)
-        #if not user_data:
-            #return None
+        user_data = self.get_user_data(user_uuid)
+        if not user_data:
+            return None
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-            #ID=user_data.get("ID", ""),
-            #email=user_data.get("email", ""),
-            #full_name=user_data.get("full_name", ""),
+
+            #ID="2375",
+            #email="",
+            #full_name="kyberlox",
+
+            ID=user_data.get("ID", ""),
+            email=user_data.get("email", ""),
+            full_name=user_data.get("full_name", ""),
+
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 
@@ -93,13 +99,13 @@ class AuthService:
             "session_id": session_id,
             "user": session_data
         }
-
+    '''
     def check_ad_credentials(self, username: str, password: str) -> Optional[str]:
         """Проверка учетных данных в AD"""
         try:
 
             #доступ админа
-            if username in os.getenv("user") and password = os.getenv("pswd"):
+            if username in os.getenv("user") and password == os.getenv("pswd"):
                 return {'GUID': "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"}
 
             server = Server(self.ldap_server, get_info=ALL)
@@ -176,18 +182,14 @@ class AuthService:
     '''
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
+        #хватаю из json пользователей по логину для демки и возваращаю GUID
+        user_data_file = open("./src/base/test_AD_users.json", "r")
+        user_data = json.load(user_data_file)
+        user_data_file.close()
 
-        root_users = {
-            os.getenv("user") : "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6",
-            os.getenv("user1") : "5bdbf37e-ad97-452a-ae80-cc666fa6f8e6",
-            os.getenv("user2") : "1e399032-9a09-49a9-9de3-c0e9aefe2570"
-        }
-
-        if username in root_users.keys():
-            return {'GUID': root_users[username]}
-        else:
-            return {'GUID': None}
-    '''
+        if username in user_data.keys():
+            return {"GUID" : user_data["GUID"]}
+    
 
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL

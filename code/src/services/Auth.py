@@ -129,8 +129,6 @@ class AuthService:
                 ]
             )
 
-
-
             if len(conn.entries) > 0:
                 user_entry = conn.entries[0]
 

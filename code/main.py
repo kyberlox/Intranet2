@@ -120,7 +120,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
     open_links = [
         "/docs",
-        "/api/users_update"
+        "/api/users_update",
         "/openapi.json",
         "/api/auth_router",
         "/total_update",

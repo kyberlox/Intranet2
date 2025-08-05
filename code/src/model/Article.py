@@ -420,7 +420,7 @@ class Article:
                 for value in data['PROPERTY_1116']:
                     existing_tag = Tag(id=int(value)).get_tag_by_id()
                     if existing_tag:
-                        tags.append(existing_tag.id)
+                        tags.append(int(value))
                 indirect_data['tags'] = tags
             
             indirect_data["author"] = author

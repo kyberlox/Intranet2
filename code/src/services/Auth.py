@@ -67,18 +67,18 @@ class AuthService:
             return {"err" : "Auth error! Invalid login or password!"}
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        user_data = self.get_user_data(user_uuid)
-        if not user_data:
-            return None
+        #user_data = self.get_user_data(user_uuid)
+        #if not user_data:
+            #return None
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-            ID=user_data.get("ID", ""),
-            email=user_data.get("email", ""),
-            full_name=user_data.get("full_name", ""),
+            #ID=user_data.get("ID", ""),
+            #email=user_data.get("email", ""),
+            #full_name=user_data.get("full_name", ""),
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 
@@ -97,6 +97,11 @@ class AuthService:
     def check_ad_credentials(self, username: str, password: str) -> Optional[str]:
         """Проверка учетных данных в AD"""
         try:
+
+            #доступ админа
+            if username in os.getenv("user") and password = os.getenv("pswd"):
+                return {'GUID': "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"}
+
             server = Server(self.ldap_server, get_info=ALL)
             conn = Connection(
                 server,
@@ -168,7 +173,7 @@ class AuthService:
         finally:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
-
+    '''
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
 
@@ -182,7 +187,7 @@ class AuthService:
             return {'GUID': root_users[username]}
         else:
             return {'GUID': None}
-
+    '''
 
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL

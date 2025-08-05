@@ -72,7 +72,7 @@ class AuthService:
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
         print(user_data)
-        if not user_data:
+        if user_data is None:
             return None
         
         

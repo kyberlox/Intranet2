@@ -54,7 +54,7 @@ load_dotenv()
 
 DOMAIN = os.getenv('DOMAIN')
 
-app = FastAPI() #timeout=60*5
+app = FastAPI(timeout=60*20)
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")

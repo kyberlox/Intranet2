@@ -76,12 +76,15 @@ class AuthService:
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-            #ID=user_data.get("ID", ""),
-            ID="2375",
-            #email=user_data.get("email", ""),
-            email="",
-            #full_name=user_data.get("full_name", ""),
-            full_name="Инкогнито Челик",
+
+            #ID="2375",
+            #email="",
+            #full_name="kyberlox",
+
+            ID=user_data.get("ID", ""),
+            email=user_data.get("email", ""),
+            full_name=user_data.get("full_name", ""),
+
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 

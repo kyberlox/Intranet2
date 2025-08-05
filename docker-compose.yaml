@@ -42,20 +42,20 @@ services:
     networks:
       - app-network
 
-  elasticsearch:
-    image: elasticsearch:8.17.9
-    container_name: "elastic"
-    ports:
-      - 9200:9200
-      - 9300:9300
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-    volumes:
-      - ./elasticsearch/data:/bitnami/elasticsearch/data
-      - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    networks:
-      - app-network
+  # elasticsearch:
+  #   image: elasticsearch:8.17.9
+  #   container_name: "elastic"
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #   volumes:
+  #     - ./elasticsearch/data:/bitnami/elasticsearch/data
+  #     - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  #   networks:
+  #     - app-network
 
   redis:
     image: redis:alpine

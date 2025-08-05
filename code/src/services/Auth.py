@@ -63,7 +63,8 @@ class AuthService:
             return {"err" : "Cannot connect to Redis"}
 
         # Проверяем учетные данные в AD
-        user_uuid = self.check_ad_credentials(username, password)['GUID']
+        user_uuid = self.check_ad_credentials(username, password)
+        user_uuid = user_uuid['GUID']
         print(user_uuid)
         if user_uuid is None:
             return {"err" : "Auth error! Invalid login or password!"}
@@ -195,7 +196,7 @@ class AuthService:
         for user_data in user_json:
             print(user_data)
             if username == user_data["login"]:
-                return {"GUID" : user_data["GUID"]}
+                return user_data["GUID"]
     
 
     def get_user_data(self, user_uuid: str):

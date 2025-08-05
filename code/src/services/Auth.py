@@ -93,7 +93,7 @@ class AuthService:
             "session_id": session_id,
             "user": session_data
         }
-
+    '''
     def check_ad_credentials(self, username: str, password: str) -> Optional[str]:
         """Проверка учетных данных в AD"""
         try:
@@ -173,16 +173,12 @@ class AuthService:
         finally:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
-    
+    '''
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
 
-        root_users = {
-            os.getenv("user") : "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"
-        }
-
         if username == "kyberlox":
-            return {'GUID': root_users[username]}
+            return {'GUID': "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"}
         else:
             return {'GUID': None}
     

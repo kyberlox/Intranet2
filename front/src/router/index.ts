@@ -273,7 +273,7 @@ const router = createRouter({
     {
       path: '/services/chatgpt',
       name: 'chatgpt',
-      component: () => import('@/views/services/chatGpt/ChatGpt.vue')
+      component: () => import('@/views/services/chatGpt/NeuroChat.vue')
     },
     {
       path: '/services/cert',

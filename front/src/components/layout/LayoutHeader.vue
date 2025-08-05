@@ -79,6 +79,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div @click="visibleSidebar = true"
+                                 v-else>
+                                ...
+                            </div>
                         </div>
                     </div>
                 </div>

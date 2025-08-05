@@ -39,7 +39,6 @@ export default defineComponent({
         HoverGallery
     },
     setup() {
-
         const storePlug = [
             {
                 id: 9,

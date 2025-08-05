@@ -124,7 +124,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/openapi.json",
         "/api/auth_router",
         "/total_update",
-        "/api/files",
+        "/api/files/",
         "/api/compress_image",
         "/api/user_files",
         "test", "get_file", "get_all_files",

@@ -192,6 +192,7 @@ class AuthService:
         user_data_file.close()
 
         for user_data in user_json:
+            print(user_data)
             if username == user_data["login"]:
                 return {"GUID" : user_data["GUID"]}
     

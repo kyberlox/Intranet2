@@ -1,12 +1,12 @@
 <template>
-    <div class="photoGallery"
+    <div class="contentGallery"
          v-if="slide">
         <div v-if=slide.images
              v-for="(image, index) in slide.images"
              :key="index"
-             class="photoGallery__img-wrapper">
+             class="contentGallery__img-wrapper">
             <div @click="callModal(slide.images, index)"
-                 class="photoGallery__card__img"
+                 class="contentGallery__card__img"
                  v-lazy-load="image.file_url"
                  alt="slide"></div>
         </div>
@@ -14,7 +14,7 @@
              v-for="video in slide.videos_embed">
             <iframe v-if="video && video.file_url"
                     width="100%"
-                    class="photoGallery__card__img"
+                    class="contentGallery__card__img"
                     height="500px"
                     :title="'Видеоконтент'"
                     :src="String(repairVideoUrl(video?.file_url))"
@@ -26,7 +26,7 @@
              v-for="video in slide.videos_native">
             <iframe v-if="video && video.file_url"
                     width="100%"
-                    class="photoGallery__card__img"
+                    class="contentGallery__card__img"
                     height="500px"
                     :title="'Видеоконтент'"
                     :src="String(repairVideoUrl(video?.file_url))"
@@ -42,17 +42,17 @@ import { defineComponent, type PropType, ref } from "vue";
 import type { IBXFileType } from "@/interfaces/IEntities";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 
-interface PhotoGallerySlide {
+interface ContentGallerySlide {
     images?: IBXFileType[],
     videos_native?: IBXFileType[],
     videos_embed?: IBXFileType[]
 }
 
 export default defineComponent({
-    name: 'PhotoGallery',
+    name: 'contentGallery',
     props: {
         slide: {
-            type: Object as PropType<PhotoGallerySlide>
+            type: Object as PropType<ContentGallerySlide>
         },
     },
     setup(props, { emit }) {
@@ -66,7 +66,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.photoGallery {
+.contentGallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 25px;

@@ -6,8 +6,7 @@
     <ComplexGallery class="mt10"
                     :page=page
                     :slides="visibleEvents"
-                    :routeTo="'corpLifeItem'"
-                    :onlyImg="true" />
+                    :routeTo="'corpLifeItem'" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';

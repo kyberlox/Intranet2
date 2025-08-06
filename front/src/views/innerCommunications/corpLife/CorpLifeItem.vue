@@ -19,7 +19,7 @@
 <script lang="ts">
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { defineComponent, type Ref, ref, onMounted } from "vue";
-import PhotoGallery from "@/components/tools/gallery/PhotoGallery.vue";
+import PhotoGallery from "@/components/tools/gallery/ContentGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { type IBXFileType } from "@/interfaces/IEntities";

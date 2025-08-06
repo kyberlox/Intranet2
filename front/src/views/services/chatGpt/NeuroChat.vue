@@ -104,10 +104,11 @@ export default defineComponent({
         const fileInputNode = ref<HTMLInputElement>();
         const fileInput = ref<File>();
 
-        const handleFileSelect = (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                fileToUploadName.value = file.name;
+        const handleFileSelect = (event: Event) => {
+            const target = event.target as HTMLInputElement;
+            const file = target.files;
+            if (file?.length) {
+                fileToUploadName.value = file[0].name;
             }
         }
         const triggerFileSelect = () => {

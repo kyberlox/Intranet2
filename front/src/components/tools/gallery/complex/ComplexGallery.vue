@@ -4,19 +4,9 @@
         <div v-for="(slide, index) in slides"
              class="flexGallery__wrapper"
              :key="index">
-            <ComplexGalleryCardBasic v-if="checkCardType(slide) == 'basic'"
-                                     :slide="slide"
+            <ComplexGalleryCardBasic :slide="slide"
                                      :modifiers="modifiers"
                                      :routeTo="routeTo" />
-
-            <ComplexGalleryCardOnlyImg v-else-if="checkCardType(slide) == 'onlyImg'"
-                                       :slide="slide"
-                                       @callModal="callModal" />
-
-            <ComplexGalleryCardVideo v-else-if="checkCardType(slide) == 'videoCard'"
-                                     :slide="slide"
-                                     :routeTo="routeTo"
-                                     @callModal="callModal" />
         </div>
         <ZoomModal :video="modalVideo"
                    :image="modalImg"
@@ -36,8 +26,6 @@ import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IFactoryDataTours, IFactoryDataReports, IBXFileType } from "@/interfaces/IEntities";
 import ComplexGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
-import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
-import ComplexGalleryCardVideo from "./ComplexGalleryCardVideo.vue";
 
 interface IComplexGallery {
     id: number,
@@ -58,7 +46,7 @@ export default defineComponent({
     name: 'ComplexGallery',
     props: {
         slides: {
-            type: Array as PropType<IComplexGallery | IBXFileType[]>,
+            type: Array<IComplexGallery>,
         },
         title: {
             type: String,
@@ -70,17 +58,11 @@ export default defineComponent({
         routeTo: {
             type: String,
         },
-        onlyImg: {
-            type: Boolean,
-            default: false
-        }
     },
     components: {
         ZoomModal,
         ComplexGallerySkeleton,
         ComplexGalleryCardBasic,
-        ComplexGalleryCardOnlyImg,
-        ComplexGalleryCardVideo
     },
     setup(props) {
         const modalVideo = ref();
@@ -104,32 +86,14 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        const checkCardType = (slide: IComplexGallery) => {
-
-            if (!slide.videoHref && !props.modifiers.includes('noRoute') &&
-                props.routeTo) {
-                // чек на отсутствие внутренных ссылок у репортажей и 3д туров
-                if (slide.section_id == 41 && (!slide?.indirect_data?.reports?.length && !slide?.indirect_data?.tours?.length)) return false;
-                return 'basic';
-            }
-            else if (slide?.indirect_data && ('videoHref' in slide.indirect_data && slide.indirect_data.videoHref) || slide.link) {
-                return 'videoCard'
-            }
-
-            else if (props.onlyImg || (props.modifiers.includes('noRoute') && slide.images)) {
-                return 'onlyImg'
-            }
-        }
-
         return {
             PlayVideo,
             modalImg,
             modalVideo,
-            callModal,
-            uniqueRoutesHandle,
             modalIsOpen,
             activeIndex,
-            checkCardType,
+            callModal,
+            uniqueRoutesHandle,
         }
     }
 })

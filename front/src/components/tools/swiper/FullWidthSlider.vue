@@ -114,7 +114,7 @@ export default defineComponent({
         };
 
         const getImageUrl = (image: ImageItem): string => {
-            if (typeof image === 'object' && image && 'file_url' in image) {
+            if (typeof image === 'object' && image && 'file_url' in image && typeof image.file_url == 'string') {
                 return image.file_url;
             }
             return image as string;

@@ -6,14 +6,21 @@
             <div class="neuroChat-content__wrapper">
                 <div class="neuroChat-content">
                     <div class="neuroChat__messages__wrapper"
-                         v-for="chat in messages"
-                         :key="chat.user">
-                        <div class="neuroChat__message neuroChat__message--user">
-                            {{ chat.user }}
+                         v-if="chatDataToSend.length"
+                         v-for="(chat, index) in chatDataToSend"
+                         :key="'chat' + index">
+                        <div v-if="chat.role == 'user'"
+                             class="neuroChat__message neuroChat__message--user">
+                            {{ chat.content }}
                         </div>
-                        <div class="neuroChat__message neuroChat__message--neuro">
-                            {{ chat.neuro }}
+                        <div v-if="chat.role == 'assistant'"
+                             class="neuroChat__message neuroChat__message--neuro">
+                            {{ chat.content }}
                         </div>
+                    </div>
+                    <div v-else
+                         class="neuroChat__message neuroChat__message--neuro">
+                        Привет! Чем могу помочь?
                     </div>
                 </div>
                 <div class="neuroChat__input-textarea__wrapper">
@@ -66,7 +73,8 @@ import Api from '@/utils/Api';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/utils/UseToastСompose';
-import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component'
+import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
+import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
 
 export default defineComponent({
     name: 'neuroChat',
@@ -79,16 +87,7 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const fileToUploadName = ref<string>()
-        const chatHistory = [
-            {
-                theme: 'Привет'
-            }
-        ]
-
-        const messages = [{
-            user: 'Привет',
-            neuro: 'Привет! Чем могу помочь?'
-        }]
+        const chatHistory = ref();
 
         const neuroModels = [{
             name: 'chatGpt',
@@ -103,6 +102,7 @@ export default defineComponent({
         const userInput = ref('');
         const fileInputNode = ref<HTMLInputElement>();
         const fileInput = ref<File>();
+        const chatDataToSend = ref<INeuroChat[]>([]);
 
         const handleFileSelect = (event: Event) => {
             const target = event.target as HTMLInputElement;
@@ -117,18 +117,15 @@ export default defineComponent({
 
         const sendMsg = async () => {
             isLoading.value = true;
-            const formData = new FormData;
-            formData.append('role-assistant', '');
-            formData.append('role-system', 'Определи из контекста, отвечай на русском');
-            formData.append('role-user', userInput.value);
-            if (fileInput.value) {
-                formData.append('file', fileInput.value);
+            if (!chatDataToSend.value.find((e) => e.role == 'system')) {
+                chatDataToSend.value.push({ 'role': 'system', content: 'Определи из контекста, отвечай на русском' });
             }
+            chatDataToSend.value.push({ 'role': 'user', content: userInput.value });
             userInput.value = '';
 
-            await Api.post('testgpt', formData)
+            await Api.postVendor('https://gpt.emk.ru/dialog', chatDataToSend.value)
                 .then((data) => {
-                    console.log(data);
+                    chatDataToSend.value = data
                 })
                 .catch((error) => {
                     handleApiError(error, toast)
@@ -140,12 +137,12 @@ export default defineComponent({
 
         return {
             chatHistory,
-            messages,
             neuroModels,
             isLoading,
             userInput,
             fileInputNode,
             fileToUploadName,
+            chatDataToSend,
             sendMsg,
             handleFileSelect,
             triggerFileSelect

@@ -23,13 +23,7 @@ import PhotoGallery from "@/components/tools/gallery/ContentGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { type IBXFileType } from "@/interfaces/IEntities";
-
-interface PhotoGallerySlide {
-    name: string,
-    images?: IBXFileType[],
-    videos_native?: IBXFileType[],
-    videos_embed?: IBXFileType[]
-}
+import { IContentGallerySlide } from "@/components/tools/gallery/ContentGallery.vue";
 
 export default defineComponent({
     components: {
@@ -44,7 +38,7 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const slide: Ref<PhotoGallerySlide | undefined> = ref();
+        const slide = ref<IContentGallerySlide>();
         const formattedSlides = ref({ images: [], id: '', videos_embed: [], videos_native: [] });
         const activeIndex = ref<number>();
         const modalIsOpen = ref<boolean>();
@@ -57,7 +51,6 @@ export default defineComponent({
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => {
-
                     slide.value = data;
                     formattedSlides.value.images = data.images;
                     formattedSlides.value.videos_embed = data.videos_embed;

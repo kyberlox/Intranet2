@@ -13,7 +13,8 @@
                 <button>Создать +</button>
             </div>
         </div>
-        <div class="neuroChat-sidebar__history__wrapper">
+        <div class="neuroChat-sidebar__history__wrapper"
+             v-if="chatHistory?.length">
             <div class="neuroChat-sidebar__history">
                 <div class="neuroChat-sidebar__history-title">История сообщений</div>
                 <div class="neuroChat-sidebar__history__item"

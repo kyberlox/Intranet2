@@ -42,7 +42,8 @@ import { defineComponent, type PropType, ref } from "vue";
 import type { IBXFileType } from "@/interfaces/IEntities";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 
-interface ContentGallerySlide {
+export interface IContentGallerySlide {
+    name: string
     images?: IBXFileType[],
     videos_native?: IBXFileType[],
     videos_embed?: IBXFileType[]
@@ -52,7 +53,7 @@ export default defineComponent({
     name: 'contentGallery',
     props: {
         slide: {
-            type: Object as PropType<ContentGallerySlide>
+            type: Object as PropType<IContentGallerySlide>
         },
     },
     setup(props, { emit }) {

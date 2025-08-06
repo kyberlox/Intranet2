@@ -56,6 +56,8 @@ class User(Base):
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
     uservisionsroot = relationship("UservisionsRoot", back_populates="user")
+    activeusers = relationship("ActiveUsers", back_populates="users")
+    activites = relationship("Activites", back_populates="users")
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -140,7 +142,7 @@ class UservisionsRoot(Base):
     __tablename__ = 'uservisionsroot'
     id = Column(Integer, primary_key=True)
     vision_id = Column(Integer, ForeignKey('fieldvision.id', ondelete="CASCADE"), nullable=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
 
     fieldvision = relationship("Fieldvision", back_populates="uservisionsroot")
     user = relationship("User", back_populates="uservisionsroot")
@@ -152,6 +154,31 @@ class Tags(Base):
     __tablename__ = 'tags'
     id = Column(Integer, primary_key=True)
     tag_name = Column(Text, nullable=True)
+
+class Activites(Base):
+    __tablename__ = "activites"
+  
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    coast = Column(Integer)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+
+    activeusers = relationship("ActiveUsers", back_populates="activites")
+    users = relationship("User", back_populates="activites")
+
+class ActiveUsers(Base):
+    __tablename__ = "activeusers"
+  
+    id = Column(Integer, primary_key=True, index=True)
+    user_id_from = Column(Integer, ForeignKey("users.id", , ondelete="CASCADE"), nullable=False)
+    user_id_to = Column(Integer, ForeignKey("users.id", , ondelete="CASCADE"), nullable=False)
+    description = Column(String)
+    valid = Column(Integer)
+    date_time = Column(DateTime)
+    activitesId = Column(Integer, ForeignKey("activites.id", , ondelete="CASCADE"), nullable=False)
+
+    activites = relationship("Activites", back_populates="activeusers")
+    users = relationship("User", back_populates="activeusers")
 
 metadata = MetaData()
 
@@ -1516,7 +1543,7 @@ class TagsModel:
         existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()
         if existing_tag:
             return existing_tag
-        return {"msg": "отсутствует такой тэг"}
+        return find_tag_by_id
 
     def remove_tag(self):
         existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()

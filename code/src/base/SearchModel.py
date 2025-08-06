@@ -19,8 +19,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-user = os.getenv('user')
 
+pswd = os.getenv('pswd')
 DOMAIN = os.getenv('DOMAIN')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])

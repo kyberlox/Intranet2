@@ -13,17 +13,33 @@ import json
 from typing import Optional
 
 from fastapi import APIRouter, Body
+from fastapi import HTTPException
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
+pswd = os.getenv('pswd')
 DOMAIN = os.getenv('DOMAIN')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
-elastic_client = Elasticsearch('http://elastic:9200')
+
+elastic_client = Elasticsearch(
+    hosts=[f"{DOMAIN[:-5]}:9200"],
+    basic_auth=('elastic', pswd),
+    verify_certs=False,
+    request_timeout=30,
+    retry_on_timeout=True,
+    max_retries=3
+)
+
+if elastic_client.ping():
+    print("✅ Успешное подключение!")
+else:
+    print("❌ Ошибка аутентификации!")
 
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)
@@ -34,8 +50,7 @@ class UserSearchModel:
         self.index = 'user'
 
     def create_index(self):
-        print("ZDES")
-        request_body = {
+        mapping = {
             "settings": {
                 "analysis": {
                     "analyzer": {
@@ -235,11 +250,21 @@ class UserSearchModel:
                 ]
             }
         }
-        print("NE ZDES")
-
-        responce = elastic_client.indices.create(index=self.index, body=request_body)
-        print("A TYT")
-        return responce
+        print("Я тут!")
+        index_name = self.index
+        try:
+            if elastic_client.indices.exists(index=index_name):
+                # Обновляем маппинг существующего индекса
+                elastic_client.indices.put_mapping(index=index_name, body=mapping["mappings"])
+                return {"status": "updated", "message": f"Mapping for {index_name} updated"}
+            else:
+                elastic_client.indices.create(index=index_name, body=mapping)
+                return {"status": "created", "message": f"Index {index_name} created"}
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Index operation failed: {str(e)}"
+            )
 
     def dump(self):
         try:
@@ -892,11 +917,9 @@ class StructureSearchModel:
                                                     dep_data_ES.append(data_action)
                                                     N_7_list = DepartmentModel().find_deps_by_father_id(N_6.id)
                                                     if N_7_list == []:
-                                                        print('мы закончили')
                                                         continue
                                                     else:
                                                         for N_7 in N_7_list:
-                                                            print('мы не закончили', N_7)
                                                             path_N_7_depart = str(N_7.id)
                                                             dep_data = {}
                                                             dep_data['id'] = N_7.id
@@ -1043,7 +1066,6 @@ class ArticleSearchModel:
         self.index = "articles"
 
     def create_index(self):
-        print("DO")
         request_body = {
             "settings": {
                 "analysis": {
@@ -1147,9 +1169,7 @@ class ArticleSearchModel:
                 }
             }
         }
-        print("POSLE")
         responce = elastic_client.indices.create(index=self.index, body=request_body)
-        print("HE DONDET")
         return responce
 
     def dump(self):

@@ -253,15 +253,18 @@ class UserSearchModel:
         print("Я тут!")
         index_name = self.index
         try:
-            if not elastic_client.indices.exists(index=index_name):
+            if elastic_client.indices.exists(index=index_name):
+                # Обновляем маппинг существующего индекса
+                elastic_client.indices.put_mapping(index=index_name, body=mapping["mappings"])
+                return {"status": "updated", "message": f"Mapping for {index_name} updated"}
+            else:
                 elastic_client.indices.create(index=index_name, body=mapping)
-                return {"message": f"Index '{index_name}' created successfully"}
-            return {"message": f"Index '{index_name}' already exists"}
+                return {"status": "created", "message": f"Index {index_name} created"}
         except Exception as e:
             raise HTTPException(
                 status_code=500,
-                detail=f"Failed to create index: {str(e)}"
-        )
+                detail=f"Index operation failed: {str(e)}"
+            )
 
     def dump(self):
         try:

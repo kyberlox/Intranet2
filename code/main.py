@@ -263,10 +263,10 @@ def total_users_update():
     time_start = time.time()
     status = False
 
-    print("Обновление информации о разделах сайта")
-    Section().load()
-    status += 1
-    print("Успешно!")
+    # print("Обновление информации о разделах сайта")
+    # Section().load()
+    # status += 1
+    # print("Успешно!")
 
     print("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:

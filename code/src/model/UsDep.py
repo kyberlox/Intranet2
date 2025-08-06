@@ -33,7 +33,8 @@ class UsDep:
 
         for usr in logg.progress(data, "Загрузка данных связей пользователей и подразделений "):
             if usr['ID'] is not None:
-                result[int(usr['ID'])] = usr['UF_DEPARTMENT']
+                result['id'] = int(usr['ID'])
+                result['depart'] = usr['UF_DEPARTMENT']
                 UserSQL.put_uf_depart(result)
         StructureSearchModel().dump()
         return {"status" : True}

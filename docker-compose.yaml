@@ -43,15 +43,17 @@ services:
       - app-network
 
   elasticsearch:
-    #image: elasticsearch:8.17.2
     image: elasticsearch:9.1.0
     container_name: "elastic"
     ports:
       - 9200:9200
-      - 9300:9300
+      #- 9300:9300
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=${pswd}
     volumes:
       - ./elasticsearch/data:/bitnami/elasticsearch/data
       - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml

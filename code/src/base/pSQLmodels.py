@@ -781,7 +781,8 @@ class UsDepModel():
             #преобразуем [11] в 11 или оставляем [11, 12]
             if len(us_dep_value) > 1:
                 pass
-            elif us_dep_value is not None: 
+            #elif us_dep_value is not None:
+            else:
                 us_dep_value = us_dep_value[0]
             
 

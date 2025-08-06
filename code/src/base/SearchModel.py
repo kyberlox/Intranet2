@@ -19,11 +19,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+pswd = os.getenv('pswd')
 DOMAIN = os.getenv('DOMAIN')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
-elastic_client = Elasticsearch('http://elastic:9200')
+elastic_client = Elasticsearch(hosts=['http://elastic:9200'], http_auth=('elastic', pswd), verify_certs=False)
+
+
 
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)
@@ -234,7 +237,6 @@ class UserSearchModel:
                 ]
             }
         }
-        
 
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
@@ -890,11 +892,9 @@ class StructureSearchModel:
                                                     dep_data_ES.append(data_action)
                                                     N_7_list = DepartmentModel().find_deps_by_father_id(N_6.id)
                                                     if N_7_list == []:
-                                                        print('мы закончили')
                                                         continue
                                                     else:
                                                         for N_7 in N_7_list:
-                                                            print('мы не закончили', N_7)
                                                             path_N_7_depart = str(N_7.id)
                                                             dep_data = {}
                                                             dep_data['id'] = N_7.id
@@ -1144,7 +1144,6 @@ class ArticleSearchModel:
                 }
             }
         }
-
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
 

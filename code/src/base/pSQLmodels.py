@@ -56,8 +56,6 @@ class User(Base):
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
     uservisionsroot = relationship("UservisionsRoot", back_populates="user")
-    activeusers = relationship("ActiveUsers", back_populates="users")
-    activites = relationship("Activites", back_populates="users")
 
     usdep = relationship("UsDep", back_populates="user")
 
@@ -162,30 +160,6 @@ class Tags(Base):
     id = Column(Integer, primary_key=True)
     tag_name = Column(Text, nullable=True)
 
-class Activites(Base):
-    __tablename__ = "activites"
-  
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    coast = Column(Integer)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-
-    activeusers = relationship("ActiveUsers", back_populates="activites")
-    users = relationship("User", back_populates="activites")
-
-class ActiveUsers(Base):
-    __tablename__ = "activeusers"
-  
-    id = Column(Integer, primary_key=True, index=True)
-    user_id_from = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    user_id_to = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    description = Column(String)
-    valid = Column(Integer)
-    date_time = Column(DateTime)
-    activitesId = Column(Integer, ForeignKey("activites.id", ondelete="CASCADE"), nullable=False)
-
-    activites = relationship("Activites", back_populates="activeusers")
-    users = relationship("User", back_populates="activeusers")
 
 metadata = MetaData()
 
@@ -783,217 +757,55 @@ class UsDepModel():
         self.dep_id = dep_id
         self.us_dep = UsDep
 
-        Base.metadata.create_all(bind=engine)
-        SessionLocal = sessionmaker(autoflush=True, bind=engine)
-        self.db = SessionLocal()
+        # Base.metadata.create_all(bind=engine)
+        # SessionLocal = sessionmaker(autoflush=True, bind=engine)
+        self.session = db
     
     def put_uf_depart(self, usr_dep):
-        """
-        Принимает данные с битрикса. Сравнивает юзеров с б24 и с таблицы users.
-        Сравнивает значения depart_id с таблицы users, departaments, с б24 и добавляет в таблицу usdep значения user_id и их departments если все проверки пройдены
-        """
-
-        # все пользователи из таблицы users
-        users = self.db.execute(select(User.id)).scalars().all() # возвращает все id в виде [1, 11, 61 ...]
-        
-        # все департаменты из таблицы users
-        departs_from_users_table = self.db.execute(select(User.indirect_data['uf_department'])).scalars().all() # возвращает в виде [[642], [642], [94], [94], [94], [483], [86]]
-        departs_from_users_table = [item[0] for item in departs_from_users_table] # сразу преобразовали в рабочий вид [642, 642, 94, 94, 94, 483, 86]
-        
-        # все департаменты из таблицы departments
-        departs = self.db.execute(select(Department.id)).scalars().all() # возвращает все id в виде [1, 11, 61 ...]
-
-        # все пользователи из таблицы usdep
-        users_from_usdep_table = self.db.execute(select(self.us_dep.user_id)).scalars().all()
-
-        # все департаменты из таблицы usdep
-        departs_from_usdep_table = self.db.execute(select(self.us_dep.dep_id)).scalars().all()
-        
-        # проверка на наличия пользователя в таблицах users и departments
-        for us_dep_key, us_dep_value in usr_dep.items():
-            #преобразуем [11] в 11 или оставляем [11, 12]
-            if len(us_dep_value) > 1:
-                pass
-            else: 
-                us_dep_value = us_dep_value[0]
-            
-
-            # если такого пользователя нет в таблице users - ошибка
-            if us_dep_key not in users:
-                #return {'err' : [{'Пользователя нет в таблице users' : us_dep_key}]}
-                continue
-            else:
-                # если есть такой пользователь в таблице users - проверяем есть ли он в таблице usdep
-                if us_dep_key not in users_from_usdep_table:
-                    # добавляем в таблицу usdep
-                    self.db.execute(insert(self.us_dep).values(user_id=us_dep_key))
-                    self.db.commit()
-                    
-                # если такой пользователь есть в таблице usdep, проверяем dep_id из Битрикса  в таблицах users, departs, us_deps
-                else:
-                    # проверяем есть ли департамент из таблицы users в таблице departs
-                    for dep_frm_usr in departs_from_users_table:
-                        if isinstance(dep_frm_usr, int):
-                            if dep_frm_usr not in departs:
-                                #print({'err' : [{'такого департамента из таблицы users нет в таблице departments' : dep_frm_usr}]}) 
-                                continue
-                            # если есть
-                            else:
-                                pass
-                            
-                        else:
-                            # если департамента из таблицы users в таблице departs нет
-                            
-                            for i in dep_frm_usr:
-                                if i not in departs:
-                                    return {'err' : [{f'такого департамента {i} из таблицы users нет в таблице departments' : us_dep_key}]}
-                                else:
-                                    pass
-                    
-                    # проверяем департамент в Б24 и в users. Если департаменты разные - ошибка.
-                    depart_from_user = self.db.execute(select(User.indirect_data['uf_department']).where(User.id == us_dep_key)).scalar()
-                    if isinstance(us_dep_value, int):
-                        if isinstance(depart_from_user, int):
-                            if us_dep_value != depart_from_user:
-                                return {'err' : [{f'Департамент в Б24 {us_dep_value} не равен департаменту в таблице users {depart_from_user}' : us_dep_key}]}
-                            else:
-                                pass # департаменты в б24 и в таблице юзерс равны по текущему индексу
-                        elif len(depart_from_user) > 1:
-                            return {'err' : [{f'Департаментов {us_dep_value} у пользователя в битриксе меньше чем в таблице users {us_dep_key}' : depart_from_user}]}
-                    elif len(us_dep_value) > 1:
-                        if isinstance(depart_from_user, int):
-                            return {'err' : [{f'Департаментов {us_dep_value} у пользователя в битриксе больше чем в таблице users {us_dep_key}' : depart_from_user}]}
-                        elif len(depart_from_user) > 1: # если значений департамента к одному пользоватлю несколько (таблица users)
-                            for i in us_dep_value:
-                                if i not in depart_from_user:
-                                    return {'err' : [{f'Такого значения департамента из битрикса нет у пользователя {us_dep_key}' : i}]}
-                                else:
-                                    pass # департаменты одинаковы у пользователя в таблице и в Б24
-
-                    
-                    # после всех проверок если пользователь в Б24 есть в таблице users и их департаменты равны, то проверяем есть ли департамент из б24 в usdep
-                    dep_from_usdep_table = self.db.execute(select(UsDep.dep_id).where(UsDep.user_id == us_dep_key)).scalars().all()
-                   
-                    # если значение dep_id по данному user_id отсутствует, то просто добавляем все проверенные значения из б24
-                    if dep_from_usdep_table[0] is None:
-                        # если из б24 только одно значение
-                        if isinstance(us_dep_value, int):
-                            self.db.execute(update(UsDep).values(dep_id=us_dep_value).where(UsDep.user_id == us_dep_key))
-                        # если из б24 значения в виде списка
-                        else:
-                            for i, k in enumerate(us_dep_value):
-                                # заменяем Null на значение
-                                if i == 0:
-                                    self.db.execute(update(UsDep).values(dep_id=k).where(UsDep.user_id == us_dep_key))
-                                # все остальные просто добавляем
-                                else:
-                                    tbl = UsDep(user_id=us_dep_key, dep_id=k)
-                                    self.db.add(tbl)
-                        
-                        self.db.commit()
-                    # для всех остальных значений, когда dep_from_usdep_table не None
-                    else:
-                        if len(dep_from_usdep_table) > 1:
-                            pass
-                        else:
-                            dep_from_usdep_table = dep_from_usdep_table[0]
-                    
-                        # проверка если из б24 по данному id только одно значение dep_id
-                        if isinstance(us_dep_value, int):
-                            # если в таблице usdep тоже только одно значение и если они не равны со значением из б24, то заменяем на значение из б24
-                            if isinstance(dep_from_usdep_table, int):
-                                if us_dep_value != dep_from_usdep_table:
-                                    self.db.execute(update(UsDep).values(dep_id=us_dep_value).where(UsDep.user_id == us_dep_key))
-                                    
-                                else:
-                                    pass
-                            # если в таблице usdep несколько значений dep_id, то оставляем только то что равно значению dep_id из б24, остальные удаляем
-                            elif len(dep_from_usdep_table) > 1:
-                                for i in dep_from_usdep_table:
-                                    if i != us_dep_value:
-                                        self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
-                                        dep_from_usdep_table.remove(i)
-                                    else:
-                                        pass
-                                # если список значений из таблицы usdep пустой, значит добавляем значение из б24
-                                if dep_from_usdep_table == []:
-                                    tbl = UsDep(user_id=us_dep_key, dep_id=us_dep_value)
-                                    self.db.add(tbl)
-                                    
-                                else:
-                                    pass
-                            self.db.commit()
-                        # если в б24 по данному user_id список значений
-                        elif len(us_dep_value) > 1:
-                            #сравниваем с единственным значением в таблице usdep
-                            if isinstance(dep_from_usdep_table, int):
-                                count = 0
-                                for i in us_dep_value:
-                                    if i == dep_from_usdep_table: 
-                                        count += 1                                   
-                                        pass
-                                    # если не равно, то добавляем
-                                    else:
-                                        tbl = UsDep(user_id=us_dep_key, dep_id=i)
-                                        self.db.add(tbl)
-                                        
-                                # если ни одно значение из б24 не сошлось со значением из таблицы, то удаляем его из таблицы
-                                if count == 0:
-                                    self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == dep_from_usdep_table))
-                                else:
-                                    pass
-                                self.db.commit()
-                            
-                            # если в таблице usdep содержится спиксок значений
-                            elif len(dep_from_usdep_table) > 1:
-                                for i in dep_from_usdep_table:
-                                    # если одного из значений из usdep нет в списке значений с б24, удаляем с таблицы
-                                    if i not in us_dep_value:
-                                        self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
-                                        self.db.commit()
-                                        dep_from_usdep_table.remove(i)
-                                    else:
-                                        # если есть, удаляем со списка значений б24, чтобы оставить тока исключительные
-                                        us_dep_value.remove(i)
-                                # если все значения из usdep есть в списке значений из б24, пропускаем итерацию
-                                if us_dep_value == []:
-                                    pass
-                                # если нет, то добавляем новые значения в таблицу usdep
-                                else:
-                                    if len(us_dep_value) > 1:
-                                        for i in us_dep_value:
-                                            tbl = UsDep(user_id=us_dep_key, dep_id=i)
-                                            self.db.add(tbl)
-                                    else:
-                                        tbl = UsDep(user_id=us_dep_key, dep_id=us_dep_value[0])
-                                        self.db.add(tbl)
-                                    self.db.commit()                         
-        
+        existing_user = UserModel(Id=usr_dep['id']).find_by_id()
+        if existing_user and existing_user['active'] is True:
+            for dep in usr_dep['depart']:
+                existing_depart = DepartmentModel(Id=int(dep)).find_dep_by_id()
+                #print(existing_user, existing_depart[0].__dict__)
+                #print(existing_depart[0].__dict__)
+                if existing_depart != []:
+                    self.user_id = usr_dep['id']
+                    self.dep_id = int(dep)
+                    existing_note = self.find_note()
+                    if not existing_note:
+                        new_usdep = UsDep(user_id=usr_dep['id'], dep_id=int(dep))
+                        self.session.add(new_usdep)
+                        self.session.commit()
+            self.session.close()
         return True
+
+    def find_note(self):
+        return self.session.query(UsDep).filter(UsDep.user_id == self.user_id, UsDep.dep_id == self.dep_id).first()
+        
 
     def find_dep_by_user_id(self):
         """
         Выдает данные по департаментам пользователя
         """
-        res = self.db.execute(select(self.us_dep).where(self.us_dep.user_id == self.id)).scalars().all()
+        res = self.session.execute(select(self.us_dep).where(self.us_dep.user_id == self.id)).scalars().all()
         print(res)
         if res != []:
             return [res]
         else:
-            return {'err' : "Invalid user id"}
+            return []
     
     def find_user_by_dep_id(self):
         """
         Выдает id пользователей по id департамента
         """
-        users = self.db.execute(select(self.us_dep).where(self.us_dep.dep_id == self.id)).scalars().all()
+        users = self.session.execute(select(self.us_dep).where(self.us_dep.dep_id == self.id)).scalars().all()
         if users != []:
             res = []
             for usr in users:
                 res.append(usr.user_id)
             return res
         else:
-            return {'err' : "Invalid user id"}
+            return []
 
 
 

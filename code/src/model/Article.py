@@ -1333,11 +1333,11 @@ class Article:
         
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
-            42 : ["68", "69"], #Официальные события ✔️
-            52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
+            # 42 : ["68", "69"], #Официальные события ✔️
+            # 52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
 
-        
+        '''
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -1404,8 +1404,8 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-
         '''
+
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()
@@ -1416,11 +1416,9 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
 
         
         #Корпоративная газета ✔️
-        '''
         data = [
             {
                 "ID" : "342022",
@@ -1458,7 +1456,6 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
 
         #Конкурсы ЭМК 7 секция
         '''
@@ -1474,7 +1471,6 @@ class Article:
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
         '''
-
 
         '''самобытные блоки'''
         # полная статика

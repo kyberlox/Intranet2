@@ -73,7 +73,8 @@ services:
       - xpack.security.enabled=false  # ОТКЛЮЧАЕМ БЕЗОПАСНОСТЬ
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     volumes:
-      - es_data:/usr/share/elasticsearch/data
+    - ./elasticsearch/data:/bitnami/elasticsearch/data    
+    - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
     networks:

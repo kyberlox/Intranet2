@@ -776,7 +776,6 @@ class UsDepModel():
         departs_from_usdep_table = self.db.execute(select(self.us_dep.dep_id)).scalars().all()
         
         # проверка на наличия пользователя в таблицах users и departments
-        print(usr_dep.items())
         for us_dep_key, us_dep_value in usr_dep.items():
             #преобразуем [11] в 11 или оставляем [11, 12]
             if type(us_dep_value) == type(list()) and us_dep_value != []:

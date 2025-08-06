@@ -5,8 +5,8 @@
                  v-if="user">
                 <div class="col-12 col-md-6">
                     <div class="personal__user__photo">
-                        <img v-if="user && user.indirect_data && user.indirect_data.personal_photo"
-                             :src="user.indirect_data.personal_photo"
+                        <img v-if="user && user.photo_file_url"
+                             :src="user.photo_file_url"
                              alt="Игорь"
                              @click="modalIsOpen = true" />
                         <img src="https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
@@ -24,13 +24,6 @@
                     <div class="personal__user__top">
                         <div class="grid__content-1">
                             <h3 class="personal__user__top__title">Контактная информация</h3>
-                        </div>
-                        <div class="grid__content-1">
-                            <div class="personal__user__social__list">
-                                <a href="gazinskii.i.v@emk.ru"
-                                   target="_blank"><i
-                                       class="personal__user__social__item personal__user__social__skype"></i></a>
-                            </div>
                         </div>
                     </div>
                     <div class="personal__user__property">
@@ -56,7 +49,8 @@
                                 <div class="personal__user__property__items__uf_usr_1705744824758"
                                      v-if="user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length">
                                     <h3>Отдел</h3>
-                                    <span v-for="item in user.indirect_data.uf_usr_1705744824758">
+                                    <span v-for="(item, index) in user.indirect_data.uf_usr_1705744824758"
+                                          :key="'dep' + index">
                                         {{ item }}
                                     </span>
                                 </div>
@@ -112,68 +106,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue';
+import { defineComponent, ref } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
-
-interface IUser {
-    "id": number,
-    "uuid": string,
-    "active": boolean,
-    "name": string,
-    "last_name": string,
-    "second_name": string,
-    "email": string,
-    "personal_mobile": string,
-    "uf_phone_inner": string,
-    "personal_city": string,
-    "personal_gender": string,
-    "personal_birthday": string,
-    "indirect_data": {
-        "id": number,
-        "title": string,
-        "work_www": string,
-        "work_zip": string,
-        "is_online": string,
-        "time_zone": string,
-        "user_type": string,
-        "work_city": string,
-        "last_login": string,
-        "work_notes": string,
-        "work_pager": string,
-        "work_phone": string,
-        "work_state": string,
-        "timestamp_x": {},
-        "work_street": string,
-        "personal_fax": string,
-        "personal_icq": string,
-        "work_company": string,
-        "work_country": string,
-        "work_mailbox": string,
-        "work_profile": string,
-        "date_register": string,
-        "uf_department": string[],
-        "work_position": string,
-        "personal_notes": string,
-        "personal_pager": string,
-        "personal_photo": string,
-        "work_department": string,
-        "personal_country": string,
-        "time_zone_offset": string,
-        "last_activity_date": {},
-        "uf_employment_date": string,
-        "personal_profession": string,
-        "uf_usr_1586854037086": string,
-        "uf_usr_1586861567149": string,
-        "uf_usr_1594879216192": string,
-        "uf_usr_1679387413613": string[],
-        "uf_usr_1696592324977": string[],
-        "uf_usr_1705744824758": string[],
-        "uf_usr_1707225966581": string[] | boolean,
-        "fio"?: string
-    }
-}
+import { type IUser } from '@/interfaces/IEntities';
 
 export default defineComponent({
     props: {
@@ -186,7 +123,6 @@ export default defineComponent({
     },
     setup(props) {
         const user = ref();
-        // const myId = computed(() => useUserData().getMyId)
         const modalIsOpen = ref(false);
         watch(props, (newVal) => {
             if (newVal) {

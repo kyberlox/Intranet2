@@ -36,7 +36,7 @@
     </div>
 </template>
 <script lang="ts">
-import { cources } from "@/assets/staticJsons/trainingCenterData";
+import { cources } from "@/assets/static/trainingCenterData";
 import { defineComponent } from "vue";
 export default defineComponent({
     setup() {

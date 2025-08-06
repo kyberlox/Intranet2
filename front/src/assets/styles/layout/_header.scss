@@ -1,3 +1,5 @@
+@use '@/assets/styles/mixins/_mixins.scss' as *;
+
 .header {
     background: linear-gradient(180deg, #ececec 38.13%, #fcfcfc 66.26%, #fbfbfb 76.34%, #e8e8e8 100%);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -5,27 +7,47 @@
 
     &__logo {
         width: 90px;
-        background: url('@/assets/imgs/emkLogo.webp') no-repeat;
-        background-position: 50% 50%;
+        height: 60px;
+        background: url('@/assets/imgs/emkLogo.webp') no-repeat center;
         background-size: contain;
         border-radius: 15px;
-        height: 60px;
         position: relative;
     }
 
     &__user {
-        &__block__title {
-            display: flex;
-            flex-direction: column;
-            margin: 0 0 0 8px;
-            position: relative;
-        }
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
 
-        &__block__img {
-            box-sizing: border-box;
-            border-radius: 16px;
-            width: 32px;
-            height: 32px;
+        &__block {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            &__title {
+                display: flex;
+                flex-direction: column;
+                margin: 0 0 0 8px;
+                position: relative;
+            }
+
+            &__img {
+                box-sizing: border-box;
+                border-radius: 16px;
+                width: 32px;
+                height: 32px;
+            }
+
+            &__name {
+                font-weight: bold;
+                font-size: 12px;
+                line-height: 16px;
+                color: #303030;
+            }
         }
 
         &__button {
@@ -39,86 +61,63 @@
             background: transparent;
             gap: 5px;
         }
+    }
 
-        &__block__name {
-            font-weight: bold;
-            font-size: 12px;
-            line-height: 16px;
-            color: #303030;
+    &__points-balance {
+        border: 1px solid var(--emk-brand-color);
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+            background: var(--emk-brand-color);
+            color: white;
         }
     }
 
-    &--dark-theme {
-        .navbar {
-            background-color: #313131 !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    &__right-top {
+        gap: 10px;
+    }
+}
+
+.navbar {
+    &-collapse {
+        height: 100%;
+    }
+
+    &-nav {
+        column-gap: 15px;
+        color: rgba(0, 0, 0, .55);
+        font-size: 0.9rem;
+        align-items: center;
+        height: 100%;
+
+        @include lg {
+            column-gap: 0px;
         }
 
-        .nav-link {
-            color: #FFFFFF;
+        &__search-icon {
+            width: 35px;
+            cursor: pointer;
+            transition: 0.2s all;
 
             &:hover {
                 color: var(--emk-brand-color);
             }
-
-            &--main-points {
-                color: rgba(255, 255, 255, 0.87);
-            }
         }
-
-        .dropdown-menu {
-            background: #252525;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            .dropdown__item {
-                color: #FFFFFF;
-
-                &:hover {
-                    background: #303030;
-                    color: var(--emk-brand-color);
-                }
-
-                &--active {
-                    background: #303030;
-                    color: var(--emk-brand-color);
-                }
-            }
-        }
-
-        .header__user {
-            &__block {
-                &__title {
-                    color: #FFFFFF;
-                }
-
-                &__name {
-                    color: rgba(255, 255, 255, 0.87);
-                }
-            }
-        }
-
-        .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #FFFFFF;
-        }
-
-        hr {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
     }
 }
 
-.nav-link--main-points::after {
-    color: var(--emk-brand-color);
-    vertical-align: 0.23em;
-    margin-left: 7px;
-}
-
-.navbar-nav {
-    column-gap: 15px;
-    color: rgba(0, 0, 0, .55);
-    font-size: 0.9rem;
+.nav-link {
+    &--main-points {
+        &::after {
+            color: var(--emk-brand-color);
+            vertical-align: 0.23em;
+            margin-left: 7px;
+        }
+    }
 }
 
 .dropdown {
@@ -128,6 +127,10 @@
         >.dropdown-menu {
             display: block;
         }
+    }
+
+    &--mobile {
+        width: 100%;
     }
 
     &__item {
@@ -154,8 +157,8 @@
             background-color: var(--emk-brand-color);
 
             &:hover {
-                background: #fff !important;
-
+                background: #fff;
+                color: var(--emk-brand-color);
             }
         }
     }

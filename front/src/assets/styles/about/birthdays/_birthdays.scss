@@ -2,6 +2,10 @@
 
 .birthday {
     &__page-content {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+
         @include sm {
             flex-direction: column;
         }
@@ -34,9 +38,7 @@
             }
         }
 
-        & li {
-            font-size: 12px;
-            line-height: 16px;
+        li {
             color: #666666;
             position: relative;
             padding-bottom: 1px;
@@ -64,7 +66,7 @@
                 }
             }
 
-            &:before {
+            &::before {
                 content: "";
                 width: 8px;
                 height: 8px;
@@ -77,7 +79,6 @@
     }
 
     &__workers-slider {
-        margin-bottom: 15px;
         width: min-content;
         flex-grow: 1;
 
@@ -86,24 +87,116 @@
         }
     }
 
-    &__static__greetings {
-        flex-grow: 1;
-        max-width: fit-content;
-        cursor: zoom-in;
-        margin: auto;
-
-        @include sm {
-            max-width: 100%;
-            width: 100%;
-        }
-
-        & img {
-            max-width: 341px;
+    &__static {
+        &__greetings {
+            flex-grow: 1;
+            max-width: fit-content;
+            cursor: zoom-in;
+            margin: auto;
+            text-align: right;
 
             @include sm {
                 max-width: 100%;
                 width: 100%;
             }
+
+            img {
+                max-width: 341px;
+
+                @include sm {
+                    max-width: 100%;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    &__page {
+        &__swiper {
+            width: 100%;
+            margin: 0;
+            height: 100% !important;
+
+            &__wrapper {
+                flex: 1;
+                max-width: calc(100% - 341px);
+                min-height: 100%;
+                position: relative;
+
+                @include sm {
+                    max-width: 100% !important;
+                }
+            }
+
+            &__slide {
+                height: 100%;
+                object-fit: contain;
+                background-size: cover;
+                background-position-x: center;
+                display: flex;
+
+                @include sm {
+                    min-height: 600px !important;
+                }
+
+                &__title {
+                    font-weight: bold;
+                }
+
+                &__subtitle {
+                    margin-top: 2px;
+                    color: #666;
+                }
+
+                &__info {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-end;
+                    font-size: 12px;
+                    padding: 6px;
+                    background: white;
+                    margin-top: auto;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    &__slide {
+        &__grid {
+            display: grid;
+            grid-template-rows: 1fr auto;
+            height: 100%;
+            min-height: 400px;
+            overflow: hidden;
+            transition: 0.2s all;
+            width: 100%;
+
+            &:hover {
+                .birthday__slide__image {
+                    transform: scale(1.02);
+                }
+            }
+        }
+
+        &__image {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 300px;
+            transition: 0.2s all;
+        }
+
+        &__info {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-size: 12px;
+            padding: 12px;
+            background: white;
+            min-height: 100px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
         }
     }
 
@@ -119,6 +212,23 @@
 
         @include sm {
             right: 46px;
+        }
+    }
+}
+
+.swiper-navigation__buttons-group {
+    &--birthday {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9;
+        width: 100%;
+        margin: auto;
+        padding: 0 10px;
+
+        @include sm {
+            display: flex !important;
         }
     }
 }

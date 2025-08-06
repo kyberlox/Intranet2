@@ -1,21 +1,24 @@
 <template>
     <div class="page__wrapper mt20">
-        <!-- <h2 class="page__title">{{ blogName }}</h2> -->
         <div class="row d-flex mt20 blog__articles-wrapper">
             <div class="avatar__wrapper col-sm-3">
                 <BlogAvatar :author="targetAuthor"
-                            :from="'blogsArticles'" />
+                            :from="'blogsArticles'"
+                            :needLink="true" />
             </div>
             <div class="blog-list__item-wrapper col-sm-9">
                 <div class="blog-list__item"
                      v-for="article in blogsArticles"
                      :key="'article' + article.id">
                     <div v-if="article.indirect_data">
-                        <RouterLink :to="{ name: 'CertainBlog', params: { id: article.id, authorId: targetAuthor?.authorId } }"
-                                    class="blog-list__item-title">{{ article.indirect_data.NAME }}</RouterLink>
+                        <RouterLink :to="{ name: 'certainBlog', params: { id: article.id, authorId: targetAuthor?.authorId } }"
+                                    class="blog-list__item-title">
+                            {{ article.name }}
+                        </RouterLink>
                         <div class="news-like news-like--blog">
-                            <span class="blog-date">{{ article.indirect_data.DATE_CREATE }}</span>
+                            <span class="blog-date">{{ article.date_creation?.replace('T', ' ') }} //</span>
                             <Reactions v-if="article.reactions"
+                                       :id="article.id"
                                        :reactions="article.reactions"
                                        :type="'blog'" />
                         </div>
@@ -31,8 +34,8 @@
 </template>
 
 <script lang="ts">
-import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
-import Reactions from "@/components/Reactions.vue";
+import BlogAvatar from "./components/BlogAvatar.vue";
+import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 
@@ -49,9 +52,9 @@ export default defineComponent({
         const targetBlog = ref();
         const blogData = useblogDataStore();
 
-        const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id))
+        const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id));
 
-        const blogsArticles = computed(() => blogData.getCurrentArticles(props.id));
+        const blogsArticles = computed(() => blogData.getCurrentArticles(Number(props.id)));
 
         return {
             blogsArticles,

@@ -1,5 +1,9 @@
 .conducted-training {
     &__list {
+        display: grid; // Use grid layout
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); // Responsive columns
+        gap: 20px;
+
         &__item {
 
             &:nth-child(2n) {
@@ -12,14 +16,24 @@
                 font-size: 14px;
                 line-height: 152.34%;
                 color: #666666;
+                max-width: fit-content;
+
+                &--content {
+                    flex-grow: 1;
+                    max-width: 500px;
+                }
             }
 
             &__top {
                 justify-content: flex-start;
-                align-items: center;
+                align-items: flex-start;
                 position: relative;
                 text-decoration: none;
                 gap: 5px;
+            }
+
+            &__download {
+                max-width: fit-content;
             }
 
             &__title {
@@ -40,14 +54,7 @@
                 }
             }
 
-            &:hover {
 
-                .conducted-training__list__item__title__one,
-                .conducted-training__list__item__date,
-                .conducted-training__list__item__author>span {
-                    color: var(--emk-brand-color) !important;
-                }
-            }
 
             &__review {
                 align-items: center;
@@ -78,6 +85,11 @@
             }
         }
 
+        &__items {
+            padding: 0 0 22px;
+            border-top: 2px solid #e1e1e1;
+        }
+
 
     }
 
@@ -93,6 +105,8 @@
             margin-left: 10px;
             justify-content: flex-end;
 
+
+
             & img {
                 width: 32px;
                 height: 32px;
@@ -103,7 +117,6 @@
                 width: 32px;
                 height: 32px;
                 background: #dbdbdb;
-                border-radius: 16px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -161,6 +174,7 @@
 
                     &__item__download {
                         margin-left: 5px;
+
                     }
                 }
 
@@ -177,38 +191,20 @@
     }
 }
 
-.trainings-table {
-    &__filter {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
+.conducted-training__list__item__title__undertitle-author {
+    color: gray;
+}
 
-        &__item {
-            font-style: normal;
-            font-weight: normal;
-            font-size: 14px;
-            line-height: 16px;
-            color: #5e5e5e;
-            text-decoration: none;
-            margin: 0.5rem;
-            cursor: pointer;
 
-            &--active {
-                color: #000;
-            }
-        }
 
-        &__wrap {
-            padding: 0 0 22px;
-            border-bottom: 2px solid #e1e1e1;
-        }
-
-        &__row {
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 16px;
-            color: #5e5e5e;
-            margin: 4px 0px;
-        }
+.conducted-training__list__item__download>a {
+    &:hover {
+        color: var(--emk-brand-color) !important;
     }
+}
+
+.trainings-table__navigation-header {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
 }

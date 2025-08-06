@@ -27,10 +27,9 @@
 </template>
 
 <script lang="ts">
-import SideBarNavigation from "@/components/about/companyHistory/SideBarNavigation.vue";
-import { defineAsyncComponent, ref, shallowRef, watch } from "vue";
+import SideBarNavigation from "./components/SideBarNavigation.vue";
+import { defineAsyncComponent, defineComponent, ref, shallowRef, watch } from "vue";
 import { useRouter } from "vue-router";
-import { defineComponent } from "vue";
 
 interface PagesRecord {
     [key: number]: unknown;
@@ -54,7 +53,7 @@ export default defineComponent({
         const pages = shallowRef<PagesRecord>({});
 
         for (let index = 0; index < 21; index++) {
-            pages.value[index] = defineAsyncComponent(() => import(`@/components/about/companyHistory/chapters/Chapter-${index}.vue`));
+            pages.value[index] = defineAsyncComponent(() => import(`./components/chapters/Chapter-${index}.vue`));
         }
 
         const navigate = (page: number) => {

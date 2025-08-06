@@ -8,11 +8,23 @@
 
 <script lang="ts">
 import { loadScript, unloadScript } from "vue-plugin-load-script";
-import { ref, onBeforeMount, onUnmounted } from 'vue';
+import { ref, onBeforeMount, onUnmounted, computed } from 'vue';
 import { defineComponent } from 'vue';
+import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
 
 export default defineComponent({
-    setup() {
+    props: {
+        id: {
+            type: String
+        },
+        factoryId: {
+            type: String
+        }
+    },
+    setup(props) {
+        const factoryGuid = useFactoryGuidDataStore();
+        const currentTour = computed(() => factoryGuid.getFactoryTour(Number(props.factoryId), String(props.id)))
+
         const folder = ref('');
         const swf = ref();
         const xml = ref();

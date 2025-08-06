@@ -15,6 +15,7 @@ from src.base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 from src.model.User import User
 
+import json
 
 
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизвция"])
@@ -62,13 +63,18 @@ class AuthService:
             return {"err" : "Cannot connect to Redis"}
 
         # Проверяем учетные данные в AD
-        user_uuid = self.check_ad_credentials(username, password)['GUID']
-        if not user_uuid:
+        user_uuid = self.check_ad_credentials(username, password)
+        user_uuid = user_uuid['GUID']
+        
+        if user_uuid is None:
             return {"err" : "Auth error! Invalid login or password!"}
+        
+        
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
-        if not user_data:
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
+        if user_data is None:
             return None
 
         session_id = str(uuid.uuid4())
@@ -94,9 +100,15 @@ class AuthService:
             "user": session_data
         }
 
+    '''
     def check_ad_credentials(self, username: str, password: str) -> Optional[str]:
         """Проверка учетных данных в AD"""
         try:
+
+            #доступ админа
+            if username in os.getenv("user") and password == os.getenv("pswd"):
+                return {'GUID': "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6"}
+
             server = Server(self.ldap_server, get_info=ALL)
             conn = Connection(
                 server,
@@ -129,8 +141,6 @@ class AuthService:
                 ]
             )
 
-
-
             if len(conn.entries) > 0:
                 user_entry = conn.entries[0]
 
@@ -155,6 +165,7 @@ class AuthService:
                     'employeeID': user_entry.employeeID.value if 'employeeID' in user_entry else None,
                     'employeeNumber': user_entry.employeeNumber.value if 'employeeNumber' in user_entry else None,
                 }
+
             else:
                 return {"err" : "Пользователь не найден"}
 
@@ -169,22 +180,19 @@ class AuthService:
         finally:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
-
+    '''
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
+        #хватаю из json пользователей по логину для демки и возваращаю GUID
+        user_data_file = open("./src/base/test_AD_users.json", "r")
+        user_json = json.load(user_data_file)
+        user_data_file.close()
 
-        root_users = {
-            os.getenv("user") : "c97f2043-7e8a-4b0f-9bf7-e6bfcf9fccb6",
-            os.getenv("user1") : "5bdbf37e-ad97-452a-ae80-cc666fa6f8e6",
-            os.getenv("user2") : "1e399032-9a09-49a9-9de3-c0e9aefe2570"
-        }
-
-        if username in root_users.keys():
-            return {'GUID': root_users[username]}
-        else:
-            return {'GUID': None}
-
-
+        for user_data in user_json:
+            print(user_data)
+            if username == user_data["login"]:
+                return user_data
+    
 
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL

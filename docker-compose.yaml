@@ -1,5 +1,19 @@
 services:
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    depends_on:
+      - fastapi
+      #- frontend
+    ports:
+      - "80:80"
+      #- "443:443"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+  
   postgres:
     image: postgres:15-alpine
     container_name: postgresql
@@ -29,7 +43,7 @@ services:
       - app-network
 
   elasticsearch:
-    image: elasticsearch:8.17.2
+    image: elasticsearch:8.17.9
     container_name: "elastic"
     ports:
       - 9200:9200
@@ -58,10 +72,7 @@ services:
       - app-network
 
   fastapi:
-    build:
-      context: ./code
-      dockerfile: Dockerfile
-    image: app/fastapi
+    build: ./code
     container_name: fastapi
     volumes:
       - ./code:/data/app
@@ -73,18 +84,14 @@ services:
       - postgres
     networks:
       - app-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    depends_on:
-      - fastapi
-      #- frontend
+  
+  frontend:
+    container_name: vue
+    build: ./front
+    #volumes:
+      #- ./front/:/app/
     ports:
-      - "80:80"
-      #- "443:443"
-    volumes:
-      - ./nginx/:/etc/nginx/conf.d/
+      - 5173:5173
     networks:
       - app-network
 

@@ -497,7 +497,6 @@ class UserModel():
 
     def find_by_uuid(self):
         user = self.db.query(self.user).filter(self.user.uuid == self.id).one()
-
         if user is not None:
             return {
                 "ID": user.id,

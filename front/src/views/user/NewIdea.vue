@@ -1,82 +1,170 @@
 <template>
     <div class="mt20">
         <h2 class="page__title">Обратная связь: Есть идея!</h2>
-        <p>Добро пожаловать на страницу обратной связи нашего внутрикорпоративного сайта
+        <div class="page__description"
+             v-html="greetings"></div>
+        <div class="col-sm-6">
+            <Form class="form-floating new-idea__form mb-3"
+                  ref="formRef"
+                  @submit="sendIdea">
+
+                <!-- Поле темы -->
+                <div class="invalid-feedback__wrapper">
+                    <ErrorMessage name="themeField"
+                                  class="invalid-feedback" />
+                </div>
+                <div class="form-floating">
+                    <Field class="form-control"
+                           name="themeField"
+                           :rules="isRequired"
+                           type="text"
+                           v-model="messageTheme"
+                           placeholder="Тема" />
+                    <label for="themeField">Тема</label>
+                </div>
+
+                <!-- Поле сообщения -->
+                <div class="invalid-feedback__wrapper">
+                    <ErrorMessage name="textField"
+                                  class="invalid-feedback" />
+                </div>
+                <div class="form-floating">
+                    <Field as="textarea"
+                           class="form-control new-idea__textarea"
+                           name="textField"
+                           :rules="isRequired"
+                           rows="8"
+                           placeholder="Добавьте сообщение"
+                           v-model="messageText" />
+                    <label for="textField">Сообщение</label>
+                </div>
+
+                <!-- Поле файла -->
+                <div class="">
+                    <label for="formFile"
+                           class="form-label">Добавить файл</label>
+                    <input class="form-control"
+                           name="attachments-files"
+                           ref="fileInput"
+                           type="file"
+                           @change="handleMessageFileLoad">
+                </div>
+
+                <!-- Кнопка отправки -->
+                <div class="mb-3">
+                    <button :class="{ 'primary-button--disabled': buttonsIsDisabled }"
+                            :disabled="buttonsIsDisabled"
+                            class="primary-button">
+                        Отправить
+                    </button>
+                </div>
+            </Form>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import Api from '@/utils/Api';
+import { ref, type Ref, defineComponent } from 'vue';
+import { useBase64 } from '@vueuse/core'
+import { shallowRef } from 'vue'
+import { type IPostIdea } from '@/interfaces/IPostFetch';
+import { Field, Form, ErrorMessage, type GenericObject } from 'vee-validate';
+
+export default defineComponent({
+    name: 'NewIdea',
+    components: {
+        Field,
+        Form,
+        ErrorMessage
+    },
+    emits: ['showToast'],
+    setup(props, { emit }) {
+        const messageText: Ref<string> = ref('');
+        const messageTheme: Ref<string> = ref('');
+        const messageFile = shallowRef<File>();
+        const messageFileName = ref("");
+        const fileInput = ref();
+        const formRef = ref();
+
+        const { base64: fileBase64 } = useBase64(messageFile);
+
+        const handleMessageFileLoad = (e: Event) => {
+            const target = e.target as HTMLInputElement;
+            if (target.files && target.files[0]) {
+                messageFileName.value = target.files[0].name;
+                messageFile.value = target.files[0];
+            }
+        };
+
+        const buttonsIsDisabled = ref(false);
+
+        const sendIdea = (values: GenericObject) => {
+            buttonsIsDisabled.value = true;
+
+            const formData: IPostIdea = {};
+            formData.NAME = values.themeField;
+            formData.DETAIL_TEXT = values.textField;
+            formData.CREATED_BY = '2366';
+            formData.base_name = messageFileName.value;
+
+            if (fileBase64.value) {
+                formData.base = fileBase64.value.split(',')[1];
+            }
+
+            Api.post('/idea/new/', formData)
+                .then((data) => {
+                    if (!data || Boolean(data.data) == false) {
+                        emit('showToast', 'error', 'Что-то пошло не так, попробуйте обновить страницу и повторить или сообщите в поддержку сайта (5182/5185)');
+                    }
+                    else {
+                        clearForm();
+                        emit('showToast', 'success', 'Идея успешно отправлена! Спасибо!');
+                    }
+                })
+                .catch((error) => {
+                    if (error.response?.status === 401) {
+                        emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
+                    }
+                    else
+                        emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+                })
+                .finally(() => buttonsIsDisabled.value = false)
+        };
+
+        const clearForm = () => {
+            if (formRef.value) {
+                formRef.value.resetForm();
+            }
+        };
+
+        const isRequired = (inputValue: unknown) => {
+            if (inputValue && String(inputValue).trim()) {
+                return true;
+            }
+            return 'Пропущены обязательные поля';
+        };
+
+        return {
+            messageText,
+            messageTheme,
+            fileBase64,
+            fileInput,
+            buttonsIsDisabled,
+            formRef,
+            handleMessageFileLoad,
+            sendIdea,
+            isRequired,
+            greetings: `<p>Добро пожаловать на страницу обратной связи нашего внутрикорпоративного сайта
             Интранет!</p>
         <p>Здесь вы можете поделиться своими идеями и предложениями по улучшению работы компании.</p>
         <p>Ваши идеи могут быть связаны с улучшением бизнес-процессов в компании, с производством, качеством, созданием
             новой техники, повышением квалификации, оптимизации работы в отдельном подразделении или
             внутрикорпоративными событиями.</p>
-        <p>Мы всегда открыты к новым идеям и готовы выслушать каждого сотрудника. Давайте работать вместе и делать нашу
-            компанию еще лучше!</p>
-        <form class="col-sm-6 needs-validation"
-              id="feedback-form">
-            <input type="hidden"
-                   name="section-id"
-                   value="319">
-            <div class="form-floating mb-3">
-                <input type="text"
-                       class="form-control"
-                       name="form-subject"
-                       id="form-subject">
-                <label for="form-subject">Тема</label>
-                <div class="invalid-feedback">
-                    Обязательно укажите тему сообщения
-                </div>
-            </div>
-            <div class="form-floating mb-3">
-                <textarea class="form-control"
-                          placeholder="Добавьте сообщение"
-                          name="form-message"
-                          id="form-message"
-                          style="height: 200px"></textarea>
-                <label for="form-message">Сообщение</label>
-                <div class="invalid-feedback">
-                    Это поле обязательно для заполнения
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="formFile"
-                       class="form-label">Добавить файл</label>
-                <input class="form-control"
-                       name="attachments-files"
-                       type="file"
-                       id="formFile">
-            </div>
-            <div class="mb-3">
-                <button type="submit"
-                        id="form-submit"
-                        class="btn btn-primary">
-                    <span class="spinner-border spinner-border-sm"
-                          style="display: none"
-                          role="status"
-                          aria-hidden="true"></span>
-                    Отправить
-                </button>
-            </div>
-        </form>
-
-        <div id="thanks"
-             class=""
-             style="display: none">
-            <p>Благодарим Вас за отправку формы обратной связи! Мы обязательно рассмотрим Ваше сообщение и постараемся
-                ответить на него как можно скорее. Если у Вас есть какие-либо дополнительные вопросы или пожелания, не
-                стесняйтесь обращаться к нам в любое время.</p>
-        </div>
-
-        <div id="error"
-             class=""
-             style="display: none">
-            <p>Ошибка! Что-то пошло не так. Сообщите о проблеме разработчику на Email: matrenin.d.e@emk.ru</p>
-        </div>
-
-    </div>
-</template>
-
-<style>
-.form-floating>.form-control:focus,
-.form-floating>.form-control:not(:placeholder-shown) {
-    padding-top: 1.625rem;
-    padding-bottom: .625rem;
-}
-</style>
+        <p>Мы всегда открыты к новым идеям и готовы выслушать каждого сотрудника.
+            Давайте работать вместе и делать нашу
+            компанию еще лучше!</p>`
+        }
+    }
+})
+</script>

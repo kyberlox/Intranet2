@@ -1,21 +1,23 @@
 import { defineStore } from "pinia";
-import type { IActualNews, IAfishaItem, ICareSlide, ICorpLife, ICorpEventsItem, IOurPeople, IVideoInterview, IVideoReports, ICorpNews, IOfficialEvents, IPartnerBonus } from "@/interfaces/IEntities";
+import type { INews, IAfishaItem, ICareSlide, IOurPeople, IVideoInterview, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
+import type { ICalendar } from "@/interfaces/entities/ICalendar";
 
 interface DataState {
     homeData: MainPageCards,
     ourPeopleData: IOurPeople[],
-    actualNewsData: IActualNews[],
-    corpEventsData: ICorpEventsItem[],
-    corpLifeData: ICorpLife[],
+    actualNewsData: INews[],
+    corpEventsData: INews[],
+    corpLifeData: IBaseEntity[],
     afishaData: IAfishaItem[],
     careData: ICareSlide[],
     videoInterviewsData: IVideoInterview[],
-    videoReportsData: IVideoReports[],
-    corpNewsData: ICorpNews[],
-    officialEventsData: IOfficialEvents[],
-    partnerBonusData: IPartnerBonus[],
-
+    videoReportsData: INews[],
+    corpNewsData: INews[],
+    officialEventsData: IBaseEntity[],
+    partnerBonusData: IBaseEntity[],
+    calendarData: ICalendar[],
+    factoryGuidData: IFactoryGuidSlides[],
     // yearResultsData: any[];
     // blogsData: any[];
     // gazettesData: any[],
@@ -27,19 +29,21 @@ export const useViewsDataStore = defineStore('viewsData', {
     state: (): DataState => ({
         homeData: [],
         ourPeopleData: [],
-        // yearResultsData: [],
-        // blogsData: [],
         videoInterviewsData: [],
         actualNewsData: [],
         corpNewsData: [],
         videoReportsData: [],
-        // gazettesData: any[],
         officialEventsData: [],
         corpEventsData: [],
         corpLifeData: [],
         afishaData: [],
         partnerBonusData: [],
         careData: [],
+        calendarData: [],
+        factoryGuidData: [],
+        // yearResultsData: [],
+        // blogsData: [],
+        // gazettesData: any[],
     }),
 
     actions: {

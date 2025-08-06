@@ -15,4 +15,22 @@ export const dateConvert = (dateString: string, convertType: 'toStringType' | 't
 
         return `${day}.${month}.${year}`;
     }
+    else return ''
+}
+
+export const getMonth = (date: string) => {
+    return date.split('.')[1];
+}
+
+export const formatDateNoTime = (date: string) => {
+    if (!date) return;
+    return date.length ? date.split(' ')[0] : date;
+}
+
+export const addZeroToMonth = (month: string) => {
+    return Number(month) < 9 ? `0${month}` : month
+}
+
+export const removeYear = (date: string) => {
+    return date.split('.')[0] + '.' + date.split('.')[1];
 }

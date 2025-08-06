@@ -4,7 +4,7 @@ const md = new MarkdownIt({
     html: true,
     linkify: true,
     typographer: true,
-    breaks: true
+    breaks: true,
 });
 
 export const parseMarkdown = (markdown: string): string => {

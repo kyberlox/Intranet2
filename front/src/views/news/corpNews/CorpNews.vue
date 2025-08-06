@@ -1,5 +1,5 @@
 <template>
-    <div class="page__title mt20">Новости организационного развития</div>
+    <h1 class="page__title mt20">Новости организационного развития</h1>
     <div class="row">
         <div class="news__list">
             <GridGallery :gallery="news"
@@ -9,11 +9,11 @@
     </div>
 </template>
 <script lang="ts">
-import GridGallery from "@/components/tools/gallery/GridGallery.vue";
+import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import { defineComponent, type Ref, onMounted, computed } from "vue";
-import type { IActualNews } from "@/interfaces/IEntities";
+import type { INews } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData"
 import { useLoadingStore } from "@/stores/loadingStore";
 export default defineComponent({
@@ -25,12 +25,12 @@ export default defineComponent({
     },
     setup() {
         const viewsData = useViewsDataStore();
-        const news: Ref<IActualNews[]> = computed(() => viewsData.getData('corpNewsData') as IActualNews[]);
+        const news: Ref<INews[]> = computed(() => viewsData.getData('corpNewsData') as INews[]);
 
         onMounted(() => {
             if (news.value.length) return;
             useLoadingStore().setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Новости орг развития']}`)
+            Api.get(`article/find_by/${sectionTips['НовостиОргРазвития']}`)
                 .then((res) => {
                     viewsData.setData(res, 'corpNewsData');
                 })

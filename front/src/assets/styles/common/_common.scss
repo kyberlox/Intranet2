@@ -7,6 +7,11 @@
 @forward './homeview';
 @forward './userPage';
 @forward './auth';
+@forward './breadcrumbs';
+@forward './loader';
+@forward './toast';
+@forward './vertical-card';
+@forward './tags';
 
 @forward './swipers/_swipers';
 @forward './modules/_modules';
@@ -29,7 +34,6 @@ a {
 }
 
 a:hover {
-    // color: var(--emk-brand-color);
     text-decoration: none;
 }
 
@@ -41,7 +45,6 @@ a:hover {
 .page__title {
     font-size: 1.5rem;
     font-weight: 300;
-    // margin-top: 10px;
     margin-bottom: 1rem;
 
     &__details {
@@ -57,8 +60,49 @@ a:hover {
     margin-top: 20px;
 }
 
+.mt10 {
+    margin-top: 10px;
+}
+
+.mr10 {
+    margin-right: 10px;
+}
+
+
+.red-text {
+    color: red;
+}
+
 
 input[type='checkbox'],
 label {
     cursor: pointer;
+}
+
+p {
+    margin-bottom: 5px;
+}
+
+.mt30 {
+    margin-top: 30px;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.fs-l {
+    font-size: large !important;
+}
+
+.fs-m {
+    font-size: medium !important;
+}
+
+.pos-rel {
+    position: relative;
+}
+
+.row-gap-50 {
+    row-gap: 50px;
 }

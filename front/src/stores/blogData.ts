@@ -18,8 +18,9 @@ export const useblogDataStore = defineStore('blogData', {
 
     getters: {
         getAllAuthors: (state) => state.allAuthors,
+        getAllBlogs: (state) => state.allBlogs,
         getCurrentAuthor: (state) => (x: string) => state.allAuthors.find(e => e.authorId == Number(x)),
-        getCurrentArticles: (state) => (x: string) => state.allBlogs.filter(e => e.indirect_data && (e.indirect_data['PROPERTY_451'] == x || e.indirect_data['PROPERTY_1022'] == x)),
+        getCurrentArticles: (state) => (x: number) => state.allBlogs.filter((e) => e.indirect_data && ((e.indirect_data.author_uuid == x) || e.indirect_data.company == x)),
         getBlogById: (state) => (x: string) => state.allBlogs.find(e => String(e.id) == x),
     }
 });

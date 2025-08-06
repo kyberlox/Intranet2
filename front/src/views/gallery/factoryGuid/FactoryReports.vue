@@ -1,20 +1,29 @@
 <template>
     <div class="factory-reports__page mt20">
         <div class="page__title">Репортаж </div>
-        <FlexGallery :slides="factoryReports" />
+        <ComplexGallery :slides="factoryReports" />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { factoryReports } from "@/assets/staticJsons/referencesAndExp";
+import { defineComponent, computed } from "vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
 
 export default defineComponent({
     components: {
-        FlexGallery,
+        ComplexGallery,
     },
-    setup() {
+    props: {
+        id: {
+            type: String,
+            required: true,
+        },
+    },
+    setup(props) {
+        const factoryGuidData = useFactoryGuidDataStore();
+        const factoryReports = computed(() => factoryGuidData.getFactoryReports(Number(props.id)));
+
         return {
             factoryReports
         };

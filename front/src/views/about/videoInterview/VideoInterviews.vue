@@ -1,23 +1,23 @@
 <template>
     <div class="page__wrapper mt20">
         <h1 class="page__title">Видеоинтервью</h1>
-        <GridGallery class="mt20"
-                     :gallery="interviews"
-                     :routeTo="'videoInterview'"
-                     :type="'video'" />
+        <SampleGallery class="mt20"
+                       :gallery="interviews"
+                       :routeTo="'videoInterview'"
+                       :type="'video'" />
     </div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, computed } from "vue";
-import GridGallery from "@/components/tools/gallery/GridGallery.vue";
+import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData"
 import { useLoadingStore } from "@/stores/loadingStore";
 import type { IVideoInterview } from "@/interfaces/IEntities";
 
 export default defineComponent({
-    components: { GridGallery },
+    components: { SampleGallery },
     setup() {
         const viewsData = useViewsDataStore();
         const interviews = computed((): IVideoInterview[] => viewsData.getData('videoInterviewsData') as IVideoInterview[]);

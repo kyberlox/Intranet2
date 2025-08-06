@@ -2,26 +2,47 @@
     <swiper v-bind="sliderConfig"
             @swiper="swiperOn">
 
+        <!-- для img -->
         <swiper-slide v-for="(image, index) in images"
+                      :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
                       :key="'postImg' + index">
-            <img :src="image"
+            <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : image"
+                 alt="изображение слайдера"
                  @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>
 
+        <!-- для встроенных video -->
+        <swiper-slide v-for="(video, index) in videosEmbed"
+                      :key="'postVideo' + index">
+            <iframe v-if="video && video.file_url"
+                    width="100%"
+                    height="500px"
+                    :title="'Видеоконтент'"
+                    :src="String(repairVideoUrl(video?.file_url))"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+        </swiper-slide>
+
+        <!-- для загруженных video -->
+        <swiper-slide v-for="(video, index) in videosNative"
+                      :key="'postVideo' + index">
+            <iframe width="100%"
+                    height="500px"
+                    :title="'Видеоконтент'"
+                    :src="String((video))"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
+        </swiper-slide>
+
     </swiper>
-    <div class="swiper-navigation__buttons-group">
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--prev"
-                :class="{ 'swiper-pagination__button--disabled': isBeginning }"
-                @click.stop="slidePrev">
-            <ArrowLeft />
-        </button>
-        <div class="swiper-navigation__buttons-group__pagination"></div>
-        <button class="swiper-navigation__buttons-group__button swiper-pagination__button--next"
-                :class="{ 'swiper-pagination__button--disabled': isEnd }"
-                @click.stop="slideNext">
-            <ArrowRight />
-        </button>
-    </div>
+    <SwiperButtons :isBeginning="isBeginning"
+                   :isEnd="isEnd"
+                   :buttonsPos="'bottom'"
+                   @slideNext="slideNext"
+                   @slidePrev="slidePrev" />
+
     <ZoomModal v-if="modalIsVisible"
                :image="images"
                :activeIndex="activeIndex"
@@ -30,28 +51,32 @@
 
 <script lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import ArrowLeft from "@/assets/icons/posts/SwiperNavArrowLeft.svg?component";
-import ArrowRight from "@/assets/icons/posts/SwiperNavArrowRight.svg?component";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
-import { defineComponent, type PropType, ref } from "vue";
+import { defineComponent, type PropType, ref, watch } from "vue";
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-
 import { useSwiperconf } from "@/utils/useSwiperConf";
+import { type IBXFileType } from "@/interfaces/IEntities";
+import SwiperButtons from "./SwiperButtons.vue";
+
+interface ImageObject {
+    file_url: string;
+}
+
+type ImageItem = string | ImageObject;
+type ImageArray = ImageItem[];
+
 export default defineComponent({
+    name: 'SwiperBlank',
     components: {
         Swiper,
         SwiperSlide,
-        ArrowLeft,
-        ArrowRight,
-        ZoomModal
+        ZoomModal,
+        SwiperButtons
     },
     props: {
         images: {
-            type: Array as PropType<string[]>,
-            required: true,
+            type: Array as PropType<ImageArray>,
+            default: () => [],
         },
         videos: {
             type: Array as PropType<string[]>,
@@ -61,18 +86,48 @@ export default defineComponent({
             type: String,
             default: "common",
         },
+        sectionId: {
+            type: Number,
+        },
+        activeIndexInModal: {
+            type: Number
+        },
+        videosNative: {
+            type: Array<string>
+        },
+        videosEmbed: {
+            type: Array<IBXFileType>
+        },
     },
     setup(props) {
         const modalIsVisible = ref(false);
-        const activeIndex = ref(0);
+        const activeIndex = ref();
+
+        watch((props), (newVal) => {
+            if (newVal.activeIndexInModal && newVal.activeIndexInModal !== null || newVal.activeIndexInModal == 0) {
+                activeIndex.value = newVal.activeIndexInModal;
+                modalIsVisible.value = true;
+            }
+        }, { deep: true, immediate: true })
+
+        const {
+            swiperOn,
+            slideNext,
+            slidePrev,
+            sliderConfig,
+            swiperInstance,
+            isEnd,
+            isBeginning
+        } = useSwiperconf(props.type);
+
         return {
-            swiperOn: useSwiperconf(props.type).swiperOn,
-            slideNext: useSwiperconf(props.type).slideNext,
-            slidePrev: useSwiperconf(props.type).slidePrev,
-            sliderConfig: useSwiperconf(props.type).sliderConfig,
-            swiperInstance: useSwiperconf(props.type).swiperInstance,
-            isEnd: useSwiperconf(props.type).isEnd,
-            isBeginning: useSwiperconf(props.type).isBeginning,
+            swiperOn,
+            slideNext,
+            slidePrev,
+            sliderConfig,
+            swiperInstance,
+            isEnd,
+            isBeginning,
             repairVideoUrl,
             modalIsVisible,
             activeIndex

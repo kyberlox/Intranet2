@@ -27,12 +27,6 @@
                 grid-column: 1 / -1;
             }
 
-            &--soloblock:hover {
-                .homeview__grid__card__image {
-                    transform: scale(1.03);
-                }
-            }
-
             &__info {
                 display: flex;
                 flex-direction: column;
@@ -53,15 +47,70 @@
                 background-repeat: no-repeat;
                 aspect-ratio: 16/9;
                 width: 100%;
+
+                &:hover {
+                    transform: scale(1.03);
+                }
+
+                &__swiper-slide {
+                    border: none !important;
+                    background: none !important;
+                }
+
+                &.lazy-loading {
+                    background-color: #f0f0f0;
+                    background-image: none !important;
+                    position: relative;
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg,
+                                transparent 0%,
+                                rgba(255, 255, 255, 0.4) 50%,
+                                transparent 100%);
+                        animation: shimmer 1.5s infinite;
+                    }
+                }
+
+                &.lazy-loaded {
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+
+                &.lazy-error {
+                    background-color: #ffebee;
+                    position: relative;
+
+                    &::after {
+                        content: '⚠️';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        font-size: 2rem;
+                        opacity: 0.5;
+                    }
+                }
             }
 
             &__bg-image {
                 width: 100%;
                 background-repeat: no-repeat;
                 background-size: cover;
+                background-position-y: center;
                 border-radius: 15px;
                 aspect-ratio: 16/9;
                 display: block;
+
+                &--plug {
+                    background-size: cover !important;
+                    background-repeat: no-repeat !important;
+                    border: 1px solid rgba(128, 128, 128, 0.333);
+                }
 
                 &--needpos {
                     background-position: center -77px;
@@ -74,6 +123,10 @@
 
             &__link {
                 cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                // justify-content: space-between;
+                height: 100%;
 
                 &:hover {
                     .homeview__grid__card__image {
@@ -94,18 +147,14 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
 
-                &--gallery {
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-
+                &--gallery,
                 &--video {
                     display: -webkit-box;
-                    -webkit-line-clamp: 2;
                     line-clamp: 2;
+                    -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+                    padding-bottom: 5px;
                 }
             }
 
@@ -123,7 +172,6 @@
                 line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                line-height: 1;
                 min-height: 2em;
                 color: var(--emk-brand-color);
                 font-weight: 600;
@@ -131,13 +179,17 @@
                 line-height: 24px;
                 text-wrap-mode: wrap;
                 padding-bottom: 5px;
+                transition: 0.2s;
+
+                &:hover {
+                    color: rgba(0, 0, 0, 0.55);
+                }
 
                 &--mixed {
                     display: -webkit-box;
                     line-clamp: 2;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
-                    line-height: 1;
                     min-height: 2em;
                     color: var(--emk-brand-color);
                     font-weight: 600;
@@ -158,7 +210,7 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                margin-top: 20px;
+                margin-top: auto;
 
                 &__more-button {
                     font-weight: 600;

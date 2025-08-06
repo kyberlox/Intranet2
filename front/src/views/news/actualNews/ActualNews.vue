@@ -1,36 +1,72 @@
 <template>
     <div class="page__title mt20">Актуальные новости</div>
-    <TagDateNavBar :years="extractYears(allNews)"
-                   @pickYear="(year) => visibleNews = showEventsByYear(allNews, year)" />
+    <div class="page__filter">
+        <DateFilter :params="filterYears"
+                    :buttonText="currentYear ?? 'Год'"
+                    @pickFilter="(year: string) => currentYear = year" />
+        <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
+    </div>
     <div class="row">
-        <GridGallery :gallery="visibleNews"
-                     :type="'postPreview'"
-                     :routeTo="'actualArticle'" />
+        <SampleGallery v-if="!emptyTag"
+                       :gallery="visibleNews"
+                       :type="'postPreview'"
+                       :routeTo="'actualArticle'"
+                       :modifiers="['noReactionUpdates']" />
+        <p class="mt20"
+           v-else>Нет новостей в этой категории</p>
     </div>
 </template>
 <script lang="ts">
-import { sectionTips } from '@/assets/staticJsons/sectionTips';
-import TagDateNavBar from '@/components/TagDateNavBar.vue';
-import GridGallery from "@/components/tools/gallery/GridGallery.vue";
+import { sectionTips } from '@/assets/static/sectionTips';
+import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef } from 'vue';
-import type { IActualNews } from '@/interfaces/IEntities';
+import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef, watch } from 'vue';
+import type { INews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from '@/stores/loadingStore';
-// import GridGallerySkeleton from '@/components/tools/gallery/GridGallerySkeleton.vue';
+import DateFilter from '@/components/tools/common/DateFilter.vue';
+import TagsFilter from '@/components/tools/common/TagsFilter.vue';
 
 export default defineComponent({
     components: {
-        TagDateNavBar,
-        GridGallery,
-        // GridGallerySkeleton
+        SampleGallery,
+        DateFilter,
+        TagsFilter
     },
     setup() {
         const viewsData = useViewsDataStore();
-        const allNews: ComputedRef<IActualNews[]> = computed(() => viewsData.getData('actualNewsData') as IActualNews[]);
-        const visibleNews: Ref<IActualNews[]> = ref(allNews.value);
+        const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData('actualNewsData') as INews[]);
+        const visibleNews: Ref<INews[]> = ref(allNews.value);
+        const currentTag: Ref<string> = ref('');
+        const currentYear: Ref<string> = ref('');
+        const filterYears: Ref<string[]> = ref([]);
+        const emptyTag: Ref<boolean> = ref(false);
+
+        watch(([currentTag, currentYear]), () => {
+            if (currentTag.value && currentYear.value || currentTag.value && !currentYear.value) {
+                const newData = ref();
+                Api.get(`article/get_articles_by_tag_id/${sectionTips['Актуальные новости']}/${currentTag.value}`)
+                    .then((data: INews[]) => newData.value = data.filter((e) => {
+                        return e.date_creation?.includes(currentYear.value)
+                    }))
+                    .finally(() => {
+                        if (!newData.value.length) return emptyTag.value = true;
+                        visibleNews.value = newData.value;
+                        filterYears.value = extractYears(visibleNews.value);
+                        emptyTag.value = false;
+                    })
+            }
+            else if ((!currentTag.value && currentYear.value) || (!currentTag.value && !currentYear.value)) {
+                filterYears.value = extractYears(visibleNews.value);
+                visibleNews.value = allNews.value.filter((e) => {
+                    return e.date_creation?.includes(currentYear.value)
+                })
+                return visibleNews.value.length ? emptyTag.value = false : emptyTag.value = true;
+            }
+        })
+
         onMounted(() => {
             if (allNews.value.length) return;
             useLoadingStore().setLoadingStatus(true);
@@ -40,14 +76,20 @@ export default defineComponent({
                     visibleNews.value = res;
                 })
                 .finally(() => {
+                    filterYears.value = extractYears(visibleNews.value);
                     useLoadingStore().setLoadingStatus(false);
                 })
         })
+
         return {
             allNews,
             visibleNews,
             extractYears,
-            showEventsByYear
+            showEventsByYear,
+            currentYear,
+            currentTag,
+            filterYears,
+            emptyTag
         };
     },
 });

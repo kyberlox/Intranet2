@@ -5,45 +5,75 @@
             <div class="col">
                 <RouterLink :to="{ name: 'newIdeaPage' }"
                             class="btn btn-primary"
-                            data-toggle="tooltip"
-                            data-placement="top"
                             title="Отправить новую идею!">Предложить идею</RouterLink>
             </div>
         </div>
         <div class="row mb-5">
-            <div>
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>№</th>
-                            <th>Дата</th>
-                            <th>Название</th>
-                            <th>Статус</th>
-                        </tr>
-                        <tr v-for="idea in ideas"
-                            :key="idea.id">
-                            <td>{{ idea.id }}</td>
-                            <td>{{ idea.date }}</td>
-                            <td>
-                                <RouterLink :to="idea.href">Конкурс</RouterLink>
-                            </td>
-                            <td>{{ idea.status }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="table"
+                   v-if="ideas">
+                <tbody>
+                    <tr>
+                        <th>№</th>
+                        <th>Дата</th>
+                        <th>Название</th>
+                        <th>Статус</th>
+                    </tr>
+                    <tr v-for="idea in ideas.sort((a, b) => Number(b.number) - Number(a.number))"
+                        :key="idea.id"
+                        class="table__idea"
+                        @click="callModal(idea)">
+                        <td>{{ idea.number }}</td>
+                        <td>{{ idea.date_create.split(' ')[0] }}</td>
+                        <td> {{ idea.name }} </td>
+                        <td>{{ idea.status }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+        <ZoomModal v-if="modalIsVisible"
+                   :currentUser="currentUser"
+                   :textContent="ideaInModal"
+                   :textOnly="true"
+                   @close="modalIsVisible = false" />
     </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ideas } from '@/assets/staticJsons/ideas';
+import { defineComponent, onMounted, ref, computed, type Ref } from 'vue';
+import Api from '@/utils/Api';
+import { sectionTips } from '@/assets/static/sectionTips';
+import { useUserData } from '@/stores/userData';
+import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
+import { type IIdeaData } from '@/interfaces/IEntities';
+
 export default defineComponent({
     name: 'MyIdeas',
+    components: {
+        ZoomModal
+    },
     setup() {
+        const currentUser = computed(() => useUserData().getUser)
 
+        const ideas: Ref<IIdeaData[]> = ref([]);
+        const ideaInModal = ref();
+        const modalIsVisible = ref(false);
+
+        const callModal = (idea: IIdeaData) => {
+            ideaInModal.value = idea;
+            modalIsVisible.value = true;
+        }
+
+        onMounted(() => {
+            Api.get(`article/find_by/${sectionTips['ЕстьИдея']}`)
+                .then((data) => {
+                    ideas.value = data;
+                })
+        })
         return {
-            ideas
+            ideas,
+            modalIsVisible,
+            ideaInModal,
+            callModal,
+            currentUser
         };
     },
 }); 

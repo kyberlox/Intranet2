@@ -3,7 +3,7 @@
                :interviewInner="interviewFromOurPeople" />
 </template>
 <script lang="ts">
-import Interview from "@/components/about/ourPeople/Interview.vue";
+import Interview from "./components/Interview.vue";
 import { defineComponent, onMounted, ref } from "vue";
 import Api from "@/utils/Api";
 

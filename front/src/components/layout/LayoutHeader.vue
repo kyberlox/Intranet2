@@ -7,11 +7,7 @@
                         <div class="col-4 col-md-5 d-lg-none d-flex align-items-center justify-content-sm-start">
                             <button class="navbar-toggler"
                                     type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#navbarScroll"
-                                    aria-controls="navbarScroll"
-                                    aria-expanded="false"
-                                    aria-label="Toggle navigation">
+                                    @click="toggleMobileMenu">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                         </div>
@@ -28,50 +24,64 @@
                         <div
                              class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
                             <div class="navbar-collapse collapse"
-                                 id="navbarScroll"
-                                 style="">
-                                <hr class="col-12 col-md-12 d-lg-none mt-4 mt-md-0" />
+                                 :class="{ 'show': isMobileMenuOpen && isMobileScreen }">
                                 <ul class="navbar-nav m-auto">
                                     <li class="nav-item dropdown"
-                                        :class="{ 'dropdown--opened': point.id == activeDrop }"
+                                        @mouseleave="handleDropdown('close', point.id)"
+                                        :class="[{ 'dropdown--opened': point.id == activeDrop || isMobileScreen },
+                                        { 'dropdown--mobile': isMobileScreen }]"
                                         v-for="point in mainMenuPoints"
                                         :key="'point' + point.id">
                                         <div class="nav-link nav-link--main-points dropdown-toggle"
                                              :to="{ name: point.href }"
-                                             @click="openDropdown(point.id)">
+                                             @mouseenter="handleDropdown('open', point.id)">
                                             {{ point.name }}
                                         </div>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu"
+                                            @mouseleave="handleDropdown('close', point.id)">
                                             <li v-for="subpoint in point.subPoints"
                                                 :key="'subpoint' + point.name + subpoint.id"
                                                 class="dropdown__item"
                                                 :class="{ 'dropdown__item--active': currentRoute == subpoint.href }"
-                                                @click="handleDropDownClick(subpoint)">
+                                                @click="handleDropDownItemClick(subpoint)">
                                                 {{ subpoint.name }}
                                             </li>
                                         </ul>
                                     </li>
-                                    <!-- <li onclick="$('#searchBar').slideToggle()" class="nav-item dropdown" id="searchCallButton">
-                                        <div class="nav-link dropdown" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="">
-                                            <i class="fa-solid fa-magnifying-glass" style="font-size: 20px; color: var(--emk-brand-color)"></i>
-                                        </div>
-                                    </li> -->
+                                    <SearchIcon class="navbar-nav__search-icon"
+                                                @click="visibleSearchModal = true" />
+                                    <SearchModal :visibleModal=visibleSearchModal
+                                                 @closeSearchModal="visibleSearchModal = false" />
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="order-2 order-lg-3 col-4 col-md-5 col-lg-2 mt-3 mb-4 mt-md-0 mb-md-0 d-flex align-items-center justify-content-end"
-                             @click="visibleSidebar = true">
+                        <div
+                             class="order-2 order-lg-3 col-4 col-md-5 col-lg-2 mt-3 mb-4 mt-md-0 mb-md-0 d-flex align-items-center justify-content-end header__right-top">
+
                             <div class="header__user"
-                                 title="Газинский Игорь Владимирович | ">
-                                <button class="header__user__button"
-                                        type="button">
-                                    <img class="header__user__block__img"
-                                         src="/src/assets/avatarGI.png" />
-                                    <div class="header__user__block__title d-none d-lg-flex">
-                                        <span class="header__user__block__name">Газинский Игорь Владимирович</span>
+                                 v-if="userFio && userAvatar"
+                                 @click="visibleSidebar = true">
+                                <div class="header__points-balance__wrapper">
+                                    <div class="header__points-balance"
+                                         title="Ваши баллы">
+                                        100
                                     </div>
-                                </button>
+                                </div>
+                                <div class="header__user__block">
+                                    <img class="header__user__block__img"
+                                         :src="userAvatar"
+                                         alt="Ваша фотография" />
+                                    <div class="header__user__block__title d-none d-lg-flex">
+                                        <span class="header__user__block__name">
+                                            {{ userFio }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div @click="visibleSidebar = true"
+                                 v-else>
+                                ...
                             </div>
                         </div>
                     </div>
@@ -85,20 +95,33 @@
 
 <script lang="ts">
 import { ref, computed, watch, defineComponent } from "vue";
-import { mainMenuPoints } from "@/assets/staticJsons/navLinks";
+import { mainMenuPoints } from "@/assets/static/navLinks";
 import type { ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
-import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
-import SidebarLk from "./SidebarLk.vue";
+import { useRoute, useRouter } from "vue-router";
+import SidebarLk from "./TopRightSidebar.vue";
+import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
+import SearchModal from "@/components/tools/modal/SearchModal/SearchModal.vue";
+import { useUserData } from "@/stores/userData";
+import { useWindowSize } from '@vueuse/core'
+import { screenCheck } from "@/utils/screenCheck";
+
 export default defineComponent({
     components: {
-        SidebarLk
+        SidebarLk,
+        SearchIcon,
+        SearchModal
     },
     setup() {
+        const userData = useUserData();
         const pageDataStore = usePageDataStore();
         const route = useRoute();
         const visibleSidebar = ref(false);
+        const isMobileMenuOpen = ref(false);
+        const visibleSearchModal = ref(false);
+        const router = useRouter();
+        const activeDrop = ref<null | number>(null);
+        const { width } = useWindowSize()
 
         watch(
             () => route.name,
@@ -110,17 +133,11 @@ export default defineComponent({
             }
         )
 
-        const router = useRouter();
-        const activeDrop = ref<null | number>(null);
-
-        const openDropdown = (id: number) => {
-            if (id == activeDrop.value) {
-                return (activeDrop.value = null);
-            }
-            activeDrop.value = id;
+        const handleDropdown = (type: 'open' | 'close', id: number) => {
+            return type == 'open' ? activeDrop.value = id : activeDrop.value = null
         };
 
-        const handleDropDownClick = (point: ISubPoint) => {
+        const handleDropDownItemClick = (point: ISubPoint) => {
             activeDrop.value = null;
 
             router.push({
@@ -129,12 +146,18 @@ export default defineComponent({
         };
 
         return {
-            handleDropDownClick,
             mainMenuPoints,
-            openDropdown,
             activeDrop,
+            visibleSidebar,
+            visibleSearchModal,
+            isMobileMenuOpen,
+            handleDropdown,
+            handleDropDownItemClick,
+            userAvatar: computed(() => userData.getPhoto),
+            userFio: computed(() => userData.getFio),
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
-            visibleSidebar
+            isMobileScreen: computed(() => ['sm', 'md'].includes(screenCheck(width))),
+            toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,
         };
     },
 });

@@ -1,34 +1,69 @@
 <template>
     <div class="experience__page mt20">
-        <div class="page__title">Референсы и опыт поставок </div>
-        <FlexGallery :page=page
-                     :slides="slides"
-                     :title="typeof title == 'string' ? title : ''"
-                     :modifiers="['noFullWidthImg']"
-                     :routeTo="'experienceType'" />
+        <div class="page__title">Референсы и опыт поставок</div>
+        <ComplexGallery :page="page"
+                        :slides="slides"
+                        :title="typeof title == 'string' ? title : ''"
+                        :modifiers="['noFullWidthImg']"
+                        :routeTo="'experienceType'" />
     </div>
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { useRoute } from "vue-router";
-import { defineComponent, ref } from "vue";
-import { expTypeSlides } from "@/assets/staticJsons/referencesAndExp";
+import { defineComponent, onMounted, ref, type Ref, watch } from "vue";
+import { useExperienceData } from "@/utils/useExperienceData";
+import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
+import { sectorLogoTips } from "../../../assets/static/factoryLogoTips";
+import type { IDocument } from "@/interfaces/IEntities";
+
 export default defineComponent({
     components: {
-        FlexGallery,
+        ComplexGallery,
     },
-
-    setup() {
+    props: {
+        factoryId: { type: String, required: true }
+    },
+    setup(props) {
         const route = useRoute();
-        const slides = expTypeSlides;
         const title = ref(route.params.title);
+        const slides: Ref<{ id: number, factoryId: number, sectorId: string, name: string, attach: IDocument[], preview_file_url: string }[]> = ref([]);
 
+        const { loadExperienceData } = useExperienceData();
+
+        const getLogo = (sectorId: keyof typeof sectorLogoTips) => {
+            return sectorLogoTips[sectorId];
+        }
+
+
+        const initializeData = () => {
+            const data = loadExperienceData();
+            watch(data, (newValue) => {
+                if (Object.keys(newValue).length && props.factoryId) {
+                    const currentContent = useReferencesAndExpDataStore().getCurrentFactory(props.factoryId);
+
+                    slides.value = currentContent.sectors.map((sector) => ({
+                        id: Number(props.factoryId),
+                        factoryId: Number(props.factoryId),
+                        sectorId: sector.sectorId,
+                        name: sector.sectorTitle,
+                        attach: sector.sectorDocs ?? [],
+                        preview_file_url: getLogo(sector.sectorId as keyof typeof sectorLogoTips)
+                    }));
+
+                }
+            }, { deep: true, immediate: true });
+        };
+
+        onMounted(() => {
+            initializeData();
+        });
 
         return {
             slides,
             page: "experienceTypes",
-            title
+            title,
         };
     },
 });

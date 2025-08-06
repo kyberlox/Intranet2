@@ -149,6 +149,7 @@
 .sidebar {
     position: sticky;
     top: 97px;
+    z-index: 0;
 
     &__burger {
         margin-bottom: 0;

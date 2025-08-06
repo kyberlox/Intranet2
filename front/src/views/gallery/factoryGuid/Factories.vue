@@ -1,24 +1,27 @@
 <template>
     <div class="experience__page mt20">
         <div class="page__title">Гид по предприятиям </div>
-        <FlexGallery :slides="slides"
-                     :modifiers="['noFullWidthImg', 'buttons']"
-                     :routeTo="'experienceTypes'" />
+        <ComplexGallery :slides="factoriesSlides"
+                        :modifiers="['noFullWidthImg', 'buttons']"
+                        :routeTo="'experienceTypes'" />
     </div>
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { defineComponent } from "vue";
-import { slides } from "@/assets/staticJsons/referencesAndExp";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { defineComponent, computed, type ComputedRef } from "vue";
+import type { IFactoryGuidSlides } from "@/interfaces/IEntities";
+import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
 
 export default defineComponent({
     components: {
-        FlexGallery,
+        ComplexGallery,
     },
     setup() {
+        const factoryGuidData = useFactoryGuidDataStore();
+        const factoriesSlides: ComputedRef<IFactoryGuidSlides[]> = computed(() => factoryGuidData.getAllFactories as IFactoryGuidSlides[]);
         return {
-            slides,
+            factoriesSlides,
         };
     },
 });

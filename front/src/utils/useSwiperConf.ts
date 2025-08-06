@@ -1,46 +1,109 @@
 import type { Swiper as SwiperType } from 'swiper';
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
-
-import { ref } from 'vue';
-
-let swiperInstance: SwiperType | null = null;
-
-const isBeginning = ref(true);
-const isEnd = ref(false);
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { nextTick, ref } from 'vue';
 
 export const useSwiperconf = (type: string, activeIndex?: number) => {
-    const swiperOn = (swiper: SwiperType) => {
-        swiperInstance = swiper;
-        isBeginning.value = swiperInstance.isBeginning;
-        isEnd.value = swiperInstance.isEnd;
+    const swiperInstance = ref<SwiperType | null>(null);
+    const isBeginning = ref(true);
+    const isEnd = ref(false);
 
-        swiperInstance.on("slideChange", () => {
-            if (swiperInstance) {
-                isBeginning.value = swiperInstance.isBeginning;
-                isEnd.value = swiperInstance.isEnd;
+    const swiperOn = (swiper: SwiperType) => {
+        swiperInstance.value = swiper;
+
+        nextTick(() => {
+            if (swiperInstance.value) {
+                isBeginning.value = swiperInstance.value.isBeginning;
+                isEnd.value = swiperInstance.value.isEnd;
             }
         });
+
+        swiper.on("update", () => {
+            if (swiperInstance.value) {
+                isBeginning.value = swiperInstance.value.isBeginning;
+                isEnd.value = swiperInstance.value.isEnd;
+            }
+        })
+
+        swiper.on("slideChange", () => {
+            if (swiperInstance.value) {
+                isBeginning.value = swiperInstance.value.isBeginning;
+                isEnd.value = swiperInstance.value.isEnd;
+            }
+        });
+
+        swiper.on("breakpoint", () => {
+            nextTick(() => {
+                if (swiperInstance.value) {
+                    isBeginning.value = swiperInstance.value.isBeginning;
+                    isEnd.value = swiperInstance.value.isEnd;
+                }
+            })
+        })
     };
 
     const slideNext = () => {
-        swiperInstance?.slideNext();
-        if (swiperInstance) {
-            isBeginning.value = swiperInstance.isBeginning;
-            isEnd.value = swiperInstance.isEnd;
-        }
+        swiperInstance.value?.slideNext();
+    };
 
-    };
     const slidePrev = () => {
-        if (swiperInstance) {
-            swiperInstance?.slidePrev();
-            isBeginning.value = swiperInstance.isBeginning;
-            isEnd.value = swiperInstance.isEnd;
-        }
+        swiperInstance.value?.slidePrev();
     };
+
+    const slidesPerViewDefine = (type: string) => {
+        switch (type) {
+            case 'fullWidth':
+                return 1;
+            case 'vertical':
+                return 3;
+            case 'newWorkers':
+                return 4;
+            default:
+                return "auto" as const;
+        }
+    }
+
+    const getBreakpoints = (type: string) => {
+        switch (type) {
+            case 'vertical':
+                return {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 8
+                    },
+                    480: {
+                        slidesPerView: 1,
+                        spaceBetween: 10
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 12,
+                    },
+                    1024: {
+                        slidesPerView: 2,
+                        spaceBetween: 16
+                    },
+                    1200: {
+                        slidesPerView: 2,
+                        spaceBetween: 12
+                    },
+                    1400: {
+                        slidesPerView: 2,
+                    },
+                    1920: {
+                        slidesPerView: 3
+                    }
+                }
+            default:
+                break;
+        }
+    }
 
     const sliderConfig = {
-        modules: type == 'vertical' ? [Navigation, Autoplay] : [Navigation, Autoplay, Pagination],
-        slidesPerView: type == 'fullWidth' ? 1 : "auto" as const,
+        modules: type == 'vertical' ? [Navigation, Pagination] : [Navigation, Autoplay, Pagination],
+        slidesPerView: slidesPerViewDefine(type),
         initialSlide: type == 'fullWidth' ? activeIndex : 0,
         spaceBetween: type == 'main' ? 2 : 12,
         autoplay:
@@ -48,16 +111,9 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                 ? {
                     delay: 3000,
                     disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
                 }
                 : false,
-        pagination: { el: ".swiper-navigation__buttons-group__pagination", clickable: true },
-        navigation: {
-            nextEl: type == 'fullWidth' ?
-                ".full-width-slider-pagination__button--next" : ".swiper-navigation__buttons-group__button--next",
-            prevEl: type == 'fullWidthSlider' ?
-                "full-width-slider-pagination__button--prev" : ".swiper-navigation__buttons-group__button--prev",
-        },
+        breakpoints: getBreakpoints(type)
     };
 
     return {
@@ -66,7 +122,7 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
         slidePrev,
         sliderConfig,
         swiperInstance,
-        isBeginning,
         isEnd,
-    }
-} 
+        isBeginning
+    };
+};

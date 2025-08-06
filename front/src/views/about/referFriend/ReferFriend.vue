@@ -15,7 +15,7 @@
                 class="job-list">
                 <li v-for="job in jobList"
                     :key="job.id">
-                    <a :href="getProperty(job, 'PROPERTY_5094')"
+                    <a :href="job?.indirect_data?.link"
                        target="_blank"
                        class="job-link">
                         {{ job.name }}
@@ -30,7 +30,7 @@
             </ul>
 
             <ul v-else>
-                <li v-for="i in 16"
+                <li v-for="i in 1"
                     :key="'jobSkelet' + i"
                     class="job-link job-link--nohover skeleton-job-link">
                 </li>
@@ -39,10 +39,9 @@
     </div>
 </template>
 <script lang="ts">
-import { sectionTips } from '@/assets/staticJsons/sectionTips';
+import { sectionTips } from '@/assets/static/sectionTips';
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, ref } from 'vue';
-import { getProperty } from '@/utils/getPropertyFirstPos';
 import { type IOpenVacancy } from '@/interfaces/IEntities';
 
 export default defineComponent({
@@ -62,7 +61,6 @@ export default defineComponent({
 
         return {
             jobList,
-            getProperty,
             noVac
         }
     }

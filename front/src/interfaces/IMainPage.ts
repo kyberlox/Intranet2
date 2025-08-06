@@ -1,17 +1,11 @@
-export interface Reaction {
-    views: number;
-    likes: {
-        count: number;
-        mine: boolean;
-    };
-}
+import type { IReaction } from "./IEntities";
 
 export interface ImageWithHref {
     id: number;
     image: string;
     title?: string;
     href?: string;
-    reactions?: Reaction;
+    reactions?: IReaction;
     blockTitle?: string;
 }
 
@@ -21,7 +15,7 @@ export interface BlockImage {
     description?: string;
     image: string;
     href?: string;
-    reactions?: Reaction;
+    reactions?: IReaction;
     blockTitle?: string;
 }
 
@@ -40,6 +34,7 @@ export interface FullRowBlock {
     title: string;
     href?: string;
     images: BlockImage[];
+    sectionId: string;
 }
 
 export interface MixedRowBlockContent {

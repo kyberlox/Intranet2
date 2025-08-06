@@ -11,35 +11,18 @@
                          :id="`memo__item${item.id}`">
                         <div class="row">
                             <div class="col-12 col-md-6 col-lg-6 col-xl-8">
-                                <div class="memo__item__main__img">
-                                    <img v-if="item && getProperty(item as IForNewWorker, 'PROPERTY_476').includes('http')"
-                                         class="news__detail__main__img"
-                                         src="/public/imgs/forNewWorker1.jpg"
-                                         alt="" />
-                                    <img v-else
-                                         class="news__detail__main__img"
-                                         src="https://placehold.co/360x206"
-                                         alt="" />
+                                <div class="memo__item__main__img__wrapper">
+                                    <div v-if="item.preview_file_url"
+                                         class="memo__item__main__img"
+                                         v-lazy-load="item.preview_file_url"
+                                         alt="изображение с памятки">
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 col-lg-6 col-xl-4">
                                 <div class="memo__item__content">
                                     <div class="news__detail__discr"
-                                         v-html="getProperty(item as IForNewWorker, 'PROPERTY_477').TEXT"></div>
-                                    <!-- <div v-if="item.pdf"
-                                         class="link__pdf">
-                                        <a :href="file.link"
-                                           v-for="(file, index) in item.pdf"
-                                           :key="index"
-                                           class="document-link">
-                                            <strong>
-                                                Cкачать
-                                                <br />
-                                                "{{ file.name }}"
-                                            </strong>
-                                            <DocIcon />
-                                        </a>
-                                    </div> -->
+                                         v-html="item.content_text"></div>
                                 </div>
                             </div>
                         </div>
@@ -65,26 +48,22 @@
 </template>
 
 <script lang="ts">
-import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
-import { getProperty } from "@/utils/getPropertyFirstPos";
 import { defineComponent, onMounted, ref } from "vue";
 import type { IForNewWorker } from '@/interfaces/IEntities'
 
 export default defineComponent({
     name: "ForNewWorker",
     components: {
-        DocIcon,
+        // DocIcon,
     },
     setup() {
         const pageContent = ref<IForNewWorker[]>();
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['Новому сотруднику']}`)
                 .then((res: IForNewWorker[]) => {
-                    pageContent.value = res.sort((a, b) => {
-                        return Number(getProperty(a as IForNewWorker, "PROPERTY_475")) - Number(getProperty(b, 'PROPERTY_475'))
-                    })
+                    pageContent.value = res;
                 })
         })
         const navigate = (id: number) => {
@@ -98,7 +77,6 @@ export default defineComponent({
         return {
             pageContent,
             navigate,
-            getProperty
         };
     },
 });

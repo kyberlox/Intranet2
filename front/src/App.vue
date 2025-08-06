@@ -1,14 +1,13 @@
 <template>
     <div v-if="isLogin">
         <LayoutHeader />
-        <ProgressBar v-if="isLoading"
-                     mode="indeterminate" />
         <main>
             <div class="container-fluid"
                  :class="{ 'container-fluid--nopadding': !isLogin }">
-                <div class="row flex-layout"
+                <div class="row main-layout"
                      :class="{ 'row--nomargin': !isLogin }">
                     <div class="main-content flex-grow">
+                        <Breadcrumbs />
                         <RouterView />
                     </div>
                     <div v-if="isLogin"
@@ -22,20 +21,22 @@
     <div v-else>
         <AuthPage />
     </div>
+    <Toast :position="'bottom-right'" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, ref, onMounted } from "vue";
+import { defineComponent, computed, watch, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
+
+import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
-import Sidebar from "./components/layout/Sidebar.vue";
+import Sidebar from "./components/layout/RightSidebar.vue";
+import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "./views/user/AuthPage.vue";
 
-import { useblogDataStore } from "./stores/blogData";
-import { getBlogAuthorsToStore } from "./utils/getBlogAuthorsToStore";
-import ProgressBar from 'primevue/progressbar';
-import { useLoadingStore } from '@/stores/loadingStore'
 import { useUserData } from "./stores/userData";
+import { prefetchSection } from "./utils/prefetchSection";
+
 export default defineComponent({
     name: "app-layout",
     components: {
@@ -43,27 +44,35 @@ export default defineComponent({
         Sidebar,
         RouterView,
         AuthPage,
-        ProgressBar
+        Breadcrumbs,
+        Toast,
     },
     setup() {
-        const blogData = useblogDataStore();
-        const blogAuthors = computed(() => blogData.getAllAuthors)
         const route = useRoute();
-        const allAuthors = ref([]);
-        // предзагрузка блогов в стор
-        watch(route, () => {
-            if (route.fullPath.includes('blog') && !blogAuthors.value.length) {
-                getBlogAuthorsToStore(allAuthors, blogData)
+        const userData = useUserData();
+        const isLogin = computed(() => userData.getIsLogin);
+        // предзагрузка данных в стор
+        watch([route, isLogin], () => {
+            if (isLogin) {
+                const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
+                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog'];
+                prefetchSection('user');
+                prefetchSection('calendar');
+
+                if (blogsRoutes.includes(String(route.name))) {
+                    prefetchSection('blogs')
+                } else if (factoryGuidRoutes.includes(String(route.name))) {
+                    prefetchSection('factoryGuid')
+                }
             }
         }, { immediate: true, deep: true })
 
         onMounted(() => {
-            useUserData().initKeyFromStorage();
+            userData.initKeyFromStorage();
         })
 
         return {
-            isLogin: computed(() => useUserData().getIsLogin),
-            isLoading: computed(() => useLoadingStore().getLoadingStatus)
+            isLogin,
         }
     }
 })
@@ -71,27 +80,4 @@ export default defineComponent({
 
 <style lang="scss">
 @use "./assets/styles/mixins/mixins.scss" as *;
-
-.flex-layout {
-    display: flex;
-    flex-wrap: nowrap;
-
-    .main-content {
-        flex: 1; // Занимает все доступное пространство
-        min-width: 0; // Позволяет контенту сжиматься
-    }
-
-    .main-sidebar {
-        flex: 0 0 auto; // Не растягивается и не сжимается, размер по контенту
-        width: auto;
-        min-width: fit-content;
-    }
-}
-
-// Адаптивность для мобильных устройств
-@media screen and (max-width: 991px) {
-    .flex-layout {
-        flex-direction: column;
-    }
-}
 </style>

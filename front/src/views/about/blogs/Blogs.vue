@@ -4,9 +4,9 @@
         <div class="mb-sm-5 blogs-section">
             <div class="blogs__list">
                 <div v-if="authors"
-                      class="blogs__items">
+                     class="blogs__items">
                     <BlogAvatar v-for="item in authors"
-                                :key="item.id"
+                                :key="item.authorId"
                                 :from="'blogs'"
                                 :author="item" />
                 </div>
@@ -15,7 +15,7 @@
                 <div v-if="factoryAuthors"
                      class="blogs__items">
                     <BlogAvatar v-for="item in factoryAuthors"
-                                :key="item.id"
+                                :key="item.authorId"
                                 :from="'blogs'"
                                 :author="item" />
                 </div>
@@ -24,7 +24,7 @@
     </div>
 </template>
 <script lang="ts">
-import BlogAvatar from "@/components/about/blogs/BlogAvatar.vue";
+import BlogAvatar from "./components/BlogAvatar.vue";
 import { defineComponent, ref, type Ref, computed, watch } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import type { IBlogAuthors } from "@/interfaces/IEntities";
@@ -42,7 +42,7 @@ export default defineComponent({
         watch(allAuthors, () => {
             if (!allAuthors.value.length) return
             allAuthors.value.map((e) => {
-                if (e.title == 'Новая техника ЗАО «САЗ»' || e.title == 'Новая техника ЗАО «НПО «Регулятор»') {
+                if (e.title == 'Новая техника АО «САЗ»' || e.title == 'Новая техника ЗАО «НПО «Регулятор»') {
                     factoryAuthors.value.push(e);
                 } else {
                     authors.value.push(e);

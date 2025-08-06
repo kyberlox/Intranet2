@@ -1,22 +1,22 @@
 <template>
     <div class="page__title mt20">Афиша</div>
-    <FlexGallery class="mt20"
-                 :page=page
-                 :slides="afisha"
-                 :routeTo="'eventAnnounce'" />
+    <ComplexGallery class="mt20"
+                    :page=page
+                    :slides="afisha"
+                    :routeTo="'eventAnnounce'" />
 </template>
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
 import type { IAfishaItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
-        FlexGallery
+        ComplexGallery
     },
     setup() {
         const afisha: ComputedRef<IAfishaItem[]> = computed(() => useViewsDataStore().getData('afishaData') as IAfishaItem[]);

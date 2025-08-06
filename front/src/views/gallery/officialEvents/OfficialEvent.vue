@@ -1,50 +1,46 @@
 <template>
     <div class="experience__page mt20">
         <div class="page__title">Официальные события</div>
-        <div class="page__title__details">{{ title }}</div>
-        <FlexGallery class="mt20"
-                     :page=page
-                     :modifiers="modifiers"
-                     :slides="formattedSlides" />
+        <div class="page__title__details"
+             v-if="title">{{ title }}</div>
+        <ComplexGallery v-if="formattedSlides"
+                        class="mt20"
+                        :page=page
+                        :modifiers="modifiers"
+                        :slides="formattedSlides" />
     </div>
 </template>
 
 <script lang="ts">
-import FlexGallery from "@/components/tools/gallery/FlexGallery.vue";
-import { officialEventSlide } from "@/assets/staticJsons/officialEventsSlides";
-import { defineComponent, computed } from "vue";
-
-export interface INewsSlide {
-    id: number;
-    name?: string;
-    title?: string;
-    href?: string;
-    hrefId?: string;
-    hrefTitle?: string;
-    videoHref?: string[];
-    img?: string | string[];
-    reportages?: boolean;
-    reportsHref?: string;
-    tours?: boolean;
-    toursHref?: string;
-}
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { defineComponent, type Ref, ref, onMounted } from "vue";
+import type { IBaseEntity } from "@/interfaces/IEntities";
+import Api from "@/utils/Api";
 
 export default defineComponent({
     components: {
-        FlexGallery,
+        ComplexGallery,
     },
-    setup() {
-        const slides = officialEventSlide
+    props: {
+        id: {
+            type: String,
+            required: true
+        }
+    },
+    setup(props) {
+        const slides: Ref<IBaseEntity | null> = ref(null);
+        const formattedSlides = ref();
 
-        const formattedSlides = computed(() => {
-            return slides.slides.map((imgUrl: string) => {
-                return {
-                    img: imgUrl
-                } as INewsSlide;
-            });
-        });
+        onMounted(() => {
+            Api.get(`article/find_by_ID/${props.id}`)
+                .then((data) => {
+                    formattedSlides.value.images = data.images;
+                    formattedSlides.value.id = data.id
+                })
+        })
+
         return {
-            title: slides.title,
+            title: slides.value?.name,
             formattedSlides,
             page: 'officialEvent',
             modifiers: ['noRoute']

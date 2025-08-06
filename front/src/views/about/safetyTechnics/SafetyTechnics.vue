@@ -3,31 +3,37 @@
     <div class="d-flex flex-column">
         <div class="section__image__list__section order-1 order-md-2">
             <div class="section__image__list__items row">
-                <SafetyTechnicsSlide v-for="slide in safetyTechnicsSlides"
-                                     :key="slide.id"
-                                     :slide="slide" />
-
+                <div class="safety__section safety__section__card-grid  col-xxl-9">
+                    <div v-for="(item, index) in safetyTechnics.content"
+                         :key="'safe' + index"
+                         class="safetyTechnics__card">
+                        <VerticalCard :card="item"
+                                      :page="'safetyTechnics'"
+                                      :modifiers="['needLogo']"
+                                      :routeTo="item.routeTo" />
+                    </div>
+                </div>
                 <div class="col-12 col-xl-12 col-xxl-3">
                     <div class="news__detail__discr safety__section__discr"
-                         v-html="sideInfoBlock"></div>
+                         v-html="safetyTechnics.sideInfo">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
-import SafetyTechnicsSlide from "@/components/about/safetyTechnics/SafetyTechnicsSlide.vue";
 import { defineComponent } from "vue";
-import { safetyTechnicsSlides, sideInfoBlock } from "@/assets/staticJsons/safetyTechnics";
+import { safetyTechnics } from "@/assets/static/safetyTechnics";
+import VerticalCard from "../../../components/tools/common/VerticalCard.vue";
+
 export default defineComponent({
     components: {
-        SafetyTechnicsSlide,
+        VerticalCard
     },
     setup() {
-
         return {
-            safetyTechnicsSlides,
-            sideInfoBlock,
+            safetyTechnics,
         };
     },
 });

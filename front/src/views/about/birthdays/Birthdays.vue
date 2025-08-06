@@ -7,26 +7,38 @@
                     :key="'picker' + nav.id"
                     class="birthday__chain-nav__item"
                     :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
-                    @click="pickDate(nav.value, true);">{{ nav.text }}</li>
+                    @click="pickDate(nav.value, true)">{{ nav.text }}</li>
             </ul>
         </div>
     </div>
     <div class="birthday__date-picker-wrapper mt20">
         <div class="col-12 col-md-2 mb-3">
-            <DatePicker @chosenDate="(date) => pickDate(date)"
+            <DatePicker @pickDate="(date) => pickDate(date)"
                         :calendarType="'dayAndMonth'"
                         :nullifyDateInput="nullifyDateInput" />
         </div>
     </div>
     <div class="birthday__workers-grid">
-        <div class="row birthday__page-content">
-            <div class="birthday__workers-slider">
-                <VerticalSlider :page="'birthdays'"
-                                :slides="slidesForBirthday" />
+        <div class="birthday__page-content">
+            <div class="birthday__page__swiper__wrapper"
+                 v-if="slidesForBirthday.length">
+                <swiper class="birthday__page__swiper"
+                        v-bind="sliderConfig"
+                        @swiper="swiperOn">
+                    <swiper-slide v-for="(slide, index) in slidesForBirthday"
+                                  :key="'vertSlide' + index">
+                        <VerticalSliderSlide :slide="slide" />
+                    </swiper-slide>
+                </swiper>
+                <SwiperButtons :isBeginning="isBeginning"
+                               :isEnd="isEnd"
+                               @slideNext="slideNext"
+                               @slidePrev="slidePrev" />
             </div>
             <div class="birthday__static__greetings">
-                <img @click="openModal(['https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488'])"
-                     src="https://portal.emk.ru/upload/disk/320/3205a776c4a005c8a856afc10f441488" />
+                <img @click="openModal(['/src/assets/imgs/plugs/birthdayPlug.jpg'])"
+                     src="/src/assets/imgs/plugs/birthdayPlug.jpg"
+                     alt="поздравление" />
             </div>
         </div>
     </div>
@@ -36,25 +48,45 @@
                    @close="hiddenModal = true; imageInModal = '';" />
     </Transition>
 </template>
+
 <script lang="ts">
-import { onMounted, ref, watch, nextTick } from "vue";
-import VerticalSlider from "@/components/tools/swiper/VerticalSlider.vue";
+import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
-// import { slidesForBirthday } from "@/assets/staticJsons/birthday";
-import { defineComponent } from "vue";
-import DatePicker from "@/components/DatePicker.vue";
+import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/staticJsons/sectionTips";
+import { sectionTips } from "@/assets/static/sectionTips";
+import { useSwiperconf } from "@/utils/useSwiperConf";
+
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/navigation";
+import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
+import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
+
+
 export default defineComponent({
     components: {
-        VerticalSlider,
-        ZoomModal,
         DatePicker,
+        Swiper,
+        SwiperSlide,
+        VerticalSliderSlide,
+        SwiperButtons,
+        ZoomModal
     },
     setup() {
+        const today = new Date();
+        const yesterday = new Date(today);
+        const tomorrow = new Date(today);
+
+        const formatDate = (date: Date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${day}.${month}`;
+        };
+
         const slidesForBirthday = ref([]);
-        const searchValue = ref();
+        const searchValue = ref(formatDate(today));
         const imageInModal = ref();
         const hiddenModal = ref(true);
 
@@ -63,11 +95,9 @@ export default defineComponent({
             hiddenModal.value = false;
         };
 
-        const pickDate = (target: string, needNulify: boolean = false) => {
-            searchValue.value = target;
+        const pickDate = (target: string | Date, needNulify: boolean = false) => {
+            searchValue.value = String(target).length > 5 ? formatDate(target as Date) : String(target);
             if (needNulify) {
-                console.log('d');
-
                 nullifyDateInput.value = true;
             }
             nextTick(() => {
@@ -75,19 +105,8 @@ export default defineComponent({
             });
         }
 
-        const today = new Date();
-
-        const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-
-        const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
-
-        const formatDate = (date: Date) => {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            return `${day}.${month}`;
-        };
 
         const fastDayNavigation = [
             {
@@ -107,7 +126,6 @@ export default defineComponent({
             },
         ];
 
-
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['ДниРождения']}`)
                 .then((data) => slidesForBirthday.value = data)
@@ -120,8 +138,9 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         const dateFromDatepicker = ref();
-
         const nullifyDateInput = ref(false);
+
+        const swiperConf = useSwiperconf('vertical');
 
         return {
             slidesForBirthday,
@@ -132,7 +151,14 @@ export default defineComponent({
             searchValue,
             pickDate,
             dateFromDatepicker,
-            nullifyDateInput
+            nullifyDateInput,
+            isEnd: swiperConf.isEnd,
+            swiperOn: swiperConf.swiperOn,
+            slideNext: swiperConf.slideNext,
+            slidePrev: swiperConf.slidePrev,
+            sliderConfig: swiperConf.sliderConfig,
+            swiperInstance: swiperConf.swiperInstance,
+            isBeginning: swiperConf.isBeginning,
         };
     },
 });

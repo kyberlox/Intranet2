@@ -1075,7 +1075,7 @@ class Article:
             175 : "60" # Учебный центр (Литература) ✔️
         }
         
-        '''
+        
         #проходимся по инфоблокам
         for i in logg.progress(sec_inf, f"Загрузка данных инфоблоков {sec_inf.values} "):
 
@@ -1094,7 +1094,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
-        '''
+        
 
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
@@ -1106,7 +1106,7 @@ class Article:
         }
 
         
-        
+        '''
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
         sec_inf_title = self.get_inf()
@@ -1280,7 +1280,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        
+        '''
 
         #несколько section_id - один IBLOCK_ID
         sec_inf = {

@@ -1337,7 +1337,7 @@ class Article:
             52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
 
-        
+        '''
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -1404,9 +1404,9 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        
-
         '''
+
+        
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()
@@ -1457,7 +1457,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
+        
         
         #Конкурсы ЭМК 7 секция
         '''

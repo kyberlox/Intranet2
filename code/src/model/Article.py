@@ -1288,7 +1288,7 @@ class Article:
             51 : "50"  #Корпоративные события ✔️
         }
 
-        
+        '''
         # пройти по инфоблоку
         self.section_id = "50"
         art_inf = self.get_inf()
@@ -1329,7 +1329,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        
+        '''
         
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
@@ -1337,7 +1337,7 @@ class Article:
             52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
 
-        '''
+        
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -1404,7 +1404,7 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        '''
+        
 
         '''
         # вакансии (приведи друга)

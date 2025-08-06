@@ -250,10 +250,7 @@ class UserSearchModel:
                 return {"message": f"Index '{index_name}' created successfully"}
             return {"message": f"Index '{index_name}' already exists"}
         except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to create index: {str(e)}"
-        )
+            raise {"err" : f"Failed to create index: {str(e)}"}
 
     def dump(self):
         try:

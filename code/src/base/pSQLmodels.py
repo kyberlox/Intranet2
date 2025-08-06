@@ -779,11 +779,17 @@ class UsDepModel():
         print(usr_dep.items())
         for us_dep_key, us_dep_value in usr_dep.items():
             #преобразуем [11] в 11 или оставляем [11, 12]
-            if len(us_dep_value) > 1:
-                pass
-            #elif us_dep_value is not None:
-            else:
+            if type(us_dep_value) == type(list()) and us_dep_value != []:
                 us_dep_value = us_dep_value[0]
+            elif type(us_dep_value) == type(str()):
+                us_dep_value = int(us_dep_value)
+            
+
+            # if len(us_dep_value) > 1:
+            #     pass
+            # #elif us_dep_value is not None:
+            # else:
+            #     us_dep_value = us_dep_value[0]
             
 
             # если такого пользователя нет в таблице users - ошибка

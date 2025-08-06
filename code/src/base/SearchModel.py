@@ -29,7 +29,7 @@ search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту
 
 elastic_client = Elasticsearch(
     hosts=[f"{DOMAIN[:-5]}:9200"],
-    basic_auth=('elastic', pswd),
+    #basic_auth=('elastic', pswd),
     verify_certs=False,
     request_timeout=30,
     retry_on_timeout=True,

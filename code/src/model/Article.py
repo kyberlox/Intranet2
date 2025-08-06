@@ -1458,6 +1458,7 @@ class Article:
                 pass
 
         #Конкурсы ЭМК 7 секция
+        '''
         self.section_id = "128"
         competitions_info = self.get_inf()
         if competitions_info != []:
@@ -1469,7 +1470,7 @@ class Article:
                     self.add(inf)
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
-
+        '''
 
         '''самобытные блоки'''
         # полная статика

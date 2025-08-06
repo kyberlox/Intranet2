@@ -28,8 +28,8 @@ search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту
 
 elastic_client = Elasticsearch(hosts=[f'{DOMAIN[:-5]}:9200'], basic_auth=('elastic', pswd), verify_certs=False)
 elastic_client1 = Elasticsearch(hosts=[f'{DOMAIN[:-5]}:9200'], http_auth=('elastic', pswd), verify_certs=False)
-elastic_client2 = Elasticsearch(hosts=['http://elasticsearch:9200'], basic_auth=('elastic', pswd), verify_certs=False)
-elastic_client3 = Elasticsearch(hosts=['http://elasticsearch:9200'], http_auth=('elastic', pswd), verify_certs=False)
+elastic_client2 = Elasticsearch(hosts=['http://elastic:9200'], basic_auth=('elastic', pswd), verify_certs=False)
+elastic_client3 = Elasticsearch(hosts=['http://elastic:9200'], http_auth=('elastic', pswd), verify_certs=False)
 
 if elastic_client.ping():
     print("✅ Успешное подключение!")

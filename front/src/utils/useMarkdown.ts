@@ -8,5 +8,5 @@ const md = new MarkdownIt({
 });
 
 export const parseMarkdown = (markdown: string): string => {
-    return md.render(markdown);
+    return md.render(markdown ?? '');
 };

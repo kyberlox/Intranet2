@@ -40,19 +40,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
 
             &__link {
                 font-size: 14px;
                 color: #303030;
-                height: 40px;
-                line-height: 40px;
-                display: inline-block;
-                padding: 0 34px;
+                display: flex;
+                align-items: center;
+                min-height: 40px;
+                padding: 5px 34px;
                 border: 1px solid #ef7f1b;
                 border-radius: 20px;
                 text-decoration: none;
                 font-weight: 600;
                 transition: 0.2s;
+                background: white;
+                margin: auto;
 
                 &:hover {
                     background: #ef7f1b;
@@ -91,6 +94,9 @@
 
             &__items {
                 max-width: 300px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
 
                 & h3 {
                     font-size: 12px;
@@ -103,7 +109,6 @@
                     font-size: 12px;
                     line-height: 16px;
                     color: #666666;
-                    margin: 0 0 20px;
                     display: inline-block;
                 }
             }

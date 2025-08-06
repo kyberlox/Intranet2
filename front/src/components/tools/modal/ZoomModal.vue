@@ -20,8 +20,9 @@
                     </iframe>
                 </div>
                 <div class="modal__text"
-                     v-if="textOnly && currentUser">
-                    <div class="modal__text__content">
+                     v-if="textOnly">
+                    <div v-if="currentUser"
+                         class="modal__text__content">
                         <div class="row mb-3">
                             <div class="col">
                                 <img :src="currentUser.photo_file_url"
@@ -54,6 +55,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="modal__text__content modal__text__content--points-modal"
+                         v-else-if="modalForUserPoints">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <PointsInfoTable />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -64,9 +73,10 @@ import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType } from "vue";
 import FullWidthSlider from "@/components/tools/swiper/FullWidthSlider.vue";
 import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component';
+import PointsInfoTable from "@/views/user/userPointsComponents/PointsInfoTable.vue";
 
 interface ImageObject {
-    file_url: string;
+    file_url?: string;
 }
 
 type ImageItem = string | ImageObject;
@@ -92,11 +102,15 @@ export default defineComponent({
         },
         currentUser: {
             type: Object
+        },
+        modalForUserPoints: {
+            type: Boolean
         }
     },
     components: {
         FullWidthSlider,
-        CloseIcon
+        CloseIcon,
+        PointsInfoTable
     },
     setup(props, { emit }) {
         return {

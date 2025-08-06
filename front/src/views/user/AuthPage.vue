@@ -32,6 +32,11 @@ import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { handleApiError } from '@/utils/ApiResponseCheck';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/utils/UseToastСompose';
+
+
 export default defineComponent({
     name: 'AuthPage',
     components: {},
@@ -41,22 +46,29 @@ export default defineComponent({
         const error = ref();
         const router = useRouter();
         const route = useRoute();
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
+
 
         const tryLogin = () => {
-            Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
-                .then((resp) => {
-                    if (resp.session_id) {
-                        localStorage.setItem('authKey', resp.session_id);
-                        useUserData().setAuthKey(resp.session_id);
-                        useUserData().setLogin(true);
-                    }
-                    else if (resp.warn) {
-                        if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {
-                            error.value = 'Ошибка авторизации. Проверьте логин и пароль'
+            if (userName.value && passWord.value)
+                Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
+                    .then((resp) => {
+                        if (resp.session_id) {
+                            localStorage.setItem('authKey', resp.session_id);
+                            useUserData().setAuthKey(resp.session_id);
+                            useUserData().setLogin(true);
                         }
-                        else error.value = 'Что-то пошло не так. Повторите попытку или сообщите в поддержку сайта (5182/5185)'
-                    }
-                })
+                        else if (resp.warn) {
+                            if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {
+                                error.value = 'Ошибка авторизации. Проверьте логин и пароль'
+                            }
+                            else error.value = 'Что-то пошло не так. Повторите попытку или сообщите в поддержку сайта (5182/5185)'
+                        }
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
         }
         return {
             tryLogin,

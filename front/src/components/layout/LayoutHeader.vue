@@ -64,7 +64,8 @@
                                  @click="visibleSidebar = true">
                                 <div class="header__points-balance__wrapper">
                                     <div class="header__points-balance"
-                                         title="Ваши баллы">
+                                         title="Ваши баллы"
+                                         @click.stop.prevent="pointsModalIsOpen = true">
                                         100
                                     </div>
                                 </div>
@@ -83,6 +84,10 @@
                                  v-else>
                                 ...
                             </div>
+                            <ZoomModal :modalForUserPoints="true"
+                                       :textOnly="true"
+                                       v-if="pointsModalIsOpen == true"
+                                       @close="pointsModalIsOpen = false" />
                         </div>
                     </div>
                 </div>
@@ -105,12 +110,16 @@ import SearchModal from "@/components/tools/modal/SearchModal/SearchModal.vue";
 import { useUserData } from "@/stores/userData";
 import { useWindowSize } from '@vueuse/core'
 import { screenCheck } from "@/utils/screenCheck";
+import PointsInfoTable from "@/views/user/userPointsComponents/PointsInfoTable.vue";
+import ZoomModal from "../tools/modal/ZoomModal.vue";
 
 export default defineComponent({
     components: {
         SidebarLk,
         SearchIcon,
-        SearchModal
+        SearchModal,
+        PointsInfoTable,
+        ZoomModal
     },
     setup() {
         const userData = useUserData();
@@ -121,7 +130,8 @@ export default defineComponent({
         const visibleSearchModal = ref(false);
         const router = useRouter();
         const activeDrop = ref<null | number>(null);
-        const { width } = useWindowSize()
+        const { width } = useWindowSize();
+        const pointsModalIsOpen = ref(false);
 
         watch(
             () => route.name,
@@ -151,6 +161,7 @@ export default defineComponent({
             visibleSidebar,
             visibleSearchModal,
             isMobileMenuOpen,
+            pointsModalIsOpen,
             handleDropdown,
             handleDropDownItemClick,
             userAvatar: computed(() => userData.getPhoto),

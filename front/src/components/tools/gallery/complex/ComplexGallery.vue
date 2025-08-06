@@ -31,9 +31,9 @@
 <script lang="ts">
 import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, type PropType } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import type { IFactoryDataTours, IFactoryDataReports } from "@/interfaces/IEntities";
+import type { IFactoryDataTours, IFactoryDataReports, IBXFileType } from "@/interfaces/IEntities";
 import ComplexGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
 import ComplexGalleryCardOnlyImg from "./ComplexGalleryCardOnlyImg.vue";
@@ -58,7 +58,7 @@ export default defineComponent({
     name: 'ComplexGallery',
     props: {
         slides: {
-            type: Array<IComplexGallery>,
+            type: Array as PropType<IComplexGallery | IBXFileType[]>,
         },
         title: {
             type: String,
@@ -116,7 +116,7 @@ export default defineComponent({
                 return 'videoCard'
             }
 
-            else if (props.modifiers.includes('noRoute') && slide.images) {
+            else if (props.onlyImg || (props.modifiers.includes('noRoute') && slide.images)) {
                 return 'onlyImg'
             }
         }

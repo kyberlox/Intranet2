@@ -1,6 +1,6 @@
 <template>
     <div class="experience__page mt20">
-        <div class="page__title">Официальные события</div>
+        <div class="page__title">Корпоративная жизнь</div>
         <div class="page__title__details"
              v-if="title">{{ title }}</div>
         <PhotoGallery v-if="formattedSlides"
@@ -19,13 +19,13 @@
 <script lang="ts">
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { defineComponent, type Ref, ref, onMounted } from "vue";
-import type { IBaseEntity } from "@/interfaces/IEntities";
 import PhotoGallery from "@/components/tools/gallery/PhotoGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { type IBXFileType } from "@/interfaces/IEntities";
 
 interface PhotoGallerySlide {
+    name: string,
     images?: IBXFileType[],
     videos_native?: IBXFileType[],
     videos_embed?: IBXFileType[]
@@ -57,7 +57,7 @@ export default defineComponent({
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => {
-                    console.log(formattedSlides);
+
                     slide.value = data;
                     formattedSlides.value.images = data.images;
                     formattedSlides.value.videos_embed = data.videos_embed;

@@ -16,10 +16,13 @@
                     <div class="personal__user__about">
                     </div>
                     <div class="personal__user__mess">
-                        <a href="https://portal.emk.ru/company/personal/user/2366/"
-                           class="personal__user__mess__link">Написать</a>
+                        <a :href='"https://portal.emk.ru/company/personal/user/" + user.id'
+                           class="personal__user__mess__link">Профиль в Bitrix24</a>
+                        <button v-if="user.id !== myId"
+                                class="personal__user__mess__link">Отправить баллы</button>
                     </div>
                 </div>
+
                 <div class="col-12 col-md-6">
                     <div class="personal__user__top">
                         <div class="grid__content-1">
@@ -69,7 +72,7 @@
                         <div class="grid__content-1">
                             <div class="personal__user__property__items">
                                 <div v-if="user.email"
-                                     class="personal__user__property__items">
+                                     class="personal__user__property__items__email">
                                     <h3>Контактный e-mail</h3>
                                     <span>{{ user.email }}</span>
                                 </div>
@@ -106,12 +109,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
 import { type IUser } from '@/interfaces/IEntities';
-
+import { useUserData } from '@/stores/userData';
 export default defineComponent({
     props: {
         id: {
@@ -119,9 +122,10 @@ export default defineComponent({
         },
     },
     components: {
-        ZoomModal
+        ZoomModal,
     },
     setup(props) {
+        const userData = useUserData();
         const user = ref();
         const modalIsOpen = ref(false);
         watch(props, (newVal) => {
@@ -129,7 +133,7 @@ export default defineComponent({
                 Api.get(`users/find_by/${newVal.id}`)
                     .then((res: IUser) => {
                         user.value = res;
-                        if (user.value.last_name && user.value.name && user.value.second_name) {
+                        if (user.value && user.value.last_name && user.value.name && user.value.second_name) {
                             user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
                         }
                     })
@@ -156,6 +160,7 @@ export default defineComponent({
             user,
             modalIsOpen,
             formatBirthday,
+            myId: computed(() => userData.getMyId)
         }
     }
 })

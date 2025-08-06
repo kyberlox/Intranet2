@@ -1,11 +1,8 @@
 <template>
-    <div v-for="(image, index) in slide.images"
-         :key="index"
-         class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
-        <img v-if="slide.images"
-             @click="callModal(slide.images, index)"
+    <div class="flexGallery__card__img-wrapper flexGallery__card__img-wrapper--official-event">
+        <img @click="callModal(slide.file_url, index)"
              class="flexGallery__card__img"
-             v-lazy-load="image"
+             v-lazy-load="slide.file_url"
              alt="slide" />
     </div>
 
@@ -13,9 +10,10 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
+import type { IBXFileType } from "@/interfaces/IEntities";
 
 interface IComplexGalleryCardOnlyImg {
-    images?: string[]
+    images?: string | IBXFileType
 }
 
 export default defineComponent({

@@ -49,7 +49,7 @@ import SwiperArrowRight from "@/assets/icons/common/SwiperArrowRight.svg?compone
 import SwiperArrowLeft from "@/assets/icons/common/SwiperArrowLeft.svg?component";
 
 interface ImageObject {
-    file_url: string;
+    file_url?: string;
 }
 
 type ImageItem = string | ImageObject;

@@ -22,8 +22,7 @@ import { defineComponent, type Ref, ref, onMounted } from "vue";
 import PhotoGallery from "@/components/tools/gallery/ContentGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
-import { type IBXFileType } from "@/interfaces/IEntities";
-import { IContentGallerySlide } from "@/components/tools/gallery/ContentGallery.vue";
+import type { IContentGallerySlide } from "@/components/tools/gallery/ContentGallery.vue";
 
 export default defineComponent({
     components: {

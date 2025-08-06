@@ -10,7 +10,7 @@
 
         width: 100%;
         display: flex;
-        max-width: 1200px;
+        // max-width: 1200px;
         margin: 0 auto;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         background-color: #FFFFFF;
@@ -310,7 +310,8 @@
     &__input-container {
         position: relative;
         display: flex;
-        align-items: flex-end;
+        flex-direction: column;
+        align-items: flex-start;
         gap: 10px;
 
         textarea {
@@ -347,9 +348,6 @@
     }
 
     &__send-button {
-        position: absolute;
-        right: 15px;
-        bottom: 15px;
         width: 40px;
         height: 40px;
         border: none;
@@ -403,4 +401,71 @@
             outline-offset: 2px;
         }
     }
+
+    &__add-file {
+        display: flex;
+
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background-color: var(--emk-brand-color);
+        color: #FFFFFF;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+}
+
+// 
+.neuroChat__file-upload {
+    position: relative;
+    display: inline-block;
+}
+
+.neuroChat__file-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.neuroChat__add-file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+        color: #6c757d;
+    }
+}
+
+.neuroChat__textarea__wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    gap: 5px;
 }

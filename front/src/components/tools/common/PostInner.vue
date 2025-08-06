@@ -131,12 +131,13 @@ export default defineComponent({
                 else currentPost.value = props.previewElement
             }
             else
-                Api.get(`article/find_by_ID/${props.id}`)
-                    .then((res) => {
-                        currentPost.value = res;
-                        if (!currentPost.value) return;
-                        changeToPostStandart(currentPost as Ref<IPostInner>);
-                    })
+                if (props.id && typeof props.id == 'string')
+                    Api.get(`article/find_by_ID/${props.id}`)
+                        .then((res) => {
+                            currentPost.value = res;
+                            if (!currentPost.value) return;
+                            changeToPostStandart(currentPost as Ref<IPostInner>);
+                        })
         }, { immediate: true, deep: true })
 
         const changeToPostStandart = (target: Ref<IPostInner>) => {

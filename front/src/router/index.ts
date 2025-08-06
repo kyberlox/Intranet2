@@ -403,13 +403,13 @@ const router = createRouter({
     {
       path: '/communications/corplife/',
       name: 'corpLife',
-      component: () => import('@/views/innerCommunications/CorpLife.vue')
+      component: () => import('@/views/innerCommunications/corpLife/CorpLife.vue')
     },
     {
       path: '/communications/corplife/:id',
       name: 'corpLifeItem',
-      component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь', type: 'onlyImg' }),
+      component: () => import('@/views/innerCommunications/corpLife/CorpLifeItem.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь' }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Корпоративная жизнь', route: 'corpLife' }]
       }

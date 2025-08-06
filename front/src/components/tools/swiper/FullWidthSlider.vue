@@ -49,7 +49,7 @@ import SwiperArrowRight from "@/assets/icons/common/SwiperArrowRight.svg?compone
 import SwiperArrowLeft from "@/assets/icons/common/SwiperArrowLeft.svg?component";
 
 interface ImageObject {
-    file_url: string;
+    file_url?: string;
 }
 
 type ImageItem = string | ImageObject;
@@ -114,7 +114,7 @@ export default defineComponent({
         };
 
         const getImageUrl = (image: ImageItem): string => {
-            if (typeof image === 'object' && image && 'file_url' in image) {
+            if (typeof image === 'object' && image && 'file_url' in image && typeof image.file_url == 'string') {
                 return image.file_url;
             }
             return image as string;

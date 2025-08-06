@@ -242,8 +242,9 @@ class UserSearchModel:
                 ]
             }
         }
-
+        print("Я тут!")
         responce = elastic_client.indices.create(index=self.index, body=request_body)
+        print("Потом тут!")
         return responce
 
     def dump(self):

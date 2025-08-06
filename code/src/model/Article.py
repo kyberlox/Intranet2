@@ -1094,7 +1094,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
-
+        
 
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
@@ -1106,7 +1106,7 @@ class Article:
         }
 
         
-        
+        '''
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
         sec_inf_title = self.get_inf()
@@ -1280,6 +1280,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
+        '''
 
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
@@ -1287,7 +1288,7 @@ class Article:
             51 : "50"  #Корпоративные события ✔️
         }
 
-        
+        '''
         # пройти по инфоблоку
         self.section_id = "50"
         art_inf = self.get_inf()
@@ -1328,7 +1329,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        
+        '''
         
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
@@ -1336,7 +1337,7 @@ class Article:
             52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
 
-        
+        '''
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -1455,6 +1456,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
+        '''
 
         #Конкурсы ЭМК 7 секция
         '''

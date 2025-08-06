@@ -59,6 +59,8 @@ class User(Base):
     activeusers = relationship("ActiveUsers", back_populates="users")
     activites = relationship("Activites", back_populates="users")
 
+    usdep = relationship("UsDep", back_populates="user")
+
 class Department(Base):
     __tablename__ = 'departments'
     id = Column(Integer, primary_key=True)
@@ -67,11 +69,16 @@ class Department(Base):
     user_head_id = Column(Integer, nullable=True)
     sort = Column(Integer, nullable=True)
 
+    usdep = relationship("UsDep", back_populates="depart")
+
 class UsDep(Base):
     __tablename__ = 'usdep'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=True)
-    dep_id = Column(Integer, nullable=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=False)
+    dep_id = Column(Integer, ForeignKey('departments.id', ondelete="CASCADE"), nullable=False)
+
+    user = relationship("User", back_populates="usdep")
+    depart = relationship("Department", back_populates="usdep")
 
 class Section(Base):
     __tablename__ = 'section'
@@ -170,12 +177,12 @@ class ActiveUsers(Base):
     __tablename__ = "activeusers"
   
     id = Column(Integer, primary_key=True, index=True)
-    user_id_from = Column(Integer, ForeignKey("users.id", , ondelete="CASCADE"), nullable=False)
-    user_id_to = Column(Integer, ForeignKey("users.id", , ondelete="CASCADE"), nullable=False)
+    user_id_from = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id_to = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     description = Column(String)
     valid = Column(Integer)
     date_time = Column(DateTime)
-    activitesId = Column(Integer, ForeignKey("activites.id", , ondelete="CASCADE"), nullable=False)
+    activitesId = Column(Integer, ForeignKey("activites.id", ondelete="CASCADE"), nullable=False)
 
     activites = relationship("Activites", back_populates="activeusers")
     users = relationship("User", back_populates="activeusers")

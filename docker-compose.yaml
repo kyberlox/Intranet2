@@ -43,7 +43,7 @@ services:
       - app-network
 
   elasticsearch:
-    image: elasticsearch:8.17.9
+    image: elasticsearch:9.1.0
     container_name: "elastic"
     ports:
       - 9200:9200

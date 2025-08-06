@@ -204,8 +204,10 @@ def elastic_search(keyword: str):
 @app.get("/api/full_elastic_dump")
 def elastic_dump():
     print("TYT")
-    UserSearchModel().dump()
-    print("TYT")
+    el = UserSearchModel()
+    print("TYTA")
+    el.dump()
+    print("TAM")
     StructureSearchModel().dump()
     ArticleSearchModel().dump()
     return {"status": True}

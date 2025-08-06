@@ -19,12 +19,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+user = os.getenv('user')
 pswd = os.getenv('pswd')
 DOMAIN = os.getenv('DOMAIN')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
-elastic_client = Elasticsearch(hosts=[f'{DOMAIN[:-5]}:9200'], http_auth=('elastic', pswd), verify_certs=False)
+#elastic_client = Elasticsearch(hosts=[f'{DOMAIN[:-5]}:9200'], http_auth=('elastic', pswd), verify_certs=False)
+elastic_client = Elasticsearch(hosts=[f'{DOMAIN[:-5]}:9200'], http_auth=(user, pswd), verify_certs=False)
 
 
 

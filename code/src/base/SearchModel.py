@@ -42,7 +42,7 @@ class UserSearchModel:
         self.index = 'user'
 
     def create_index(self):
-        request_body = {
+        mapping = {
             "settings": {
                 "analysis": {
                     "analyzer": {
@@ -243,10 +243,17 @@ class UserSearchModel:
             }
         }
         print("Я тут!")
-        responce = elastic_client.indices.create(index=self.index)
-        #responce = elastic_client.indices.create(index=self.index, body=request_body)
-        print("Потом тут!")
-        return responce
+        index_name = self.index
+        try:
+            if not elastic_client.indices.exists(index=index_name):
+                elastic_client.indices.create(index=index_name, body=mapping)
+                return {"message": f"Index '{index_name}' created successfully"}
+            return {"message": f"Index '{index_name}' already exists"}
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to create index: {str(e)}"
+        )
 
     def dump(self):
         try:

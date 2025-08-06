@@ -420,7 +420,7 @@ class Article:
                 for value in data['PROPERTY_1116']:
                     existing_tag = Tag(id=int(value)).get_tag_by_id()
                     if existing_tag:
-                        tags.append(existing_tag.id)
+                        tags.append(int(value))
                 indirect_data['tags'] = tags
             
             indirect_data["author"] = author
@@ -658,7 +658,7 @@ class Article:
                 for value in data['PROPERTY_1116']:
                     existing_tag = Tag(id=int(value)).get_tag_by_id()
                     if existing_tag:
-                        tags.append(existing_tag.id)
+                        tags.append(int(value))
                 indirect_data['tags'] = tags
 
         else:
@@ -1062,17 +1062,17 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            13 : "149", # Наши люди ✔️
-            14 : "123", # Доска почёта ☑️
-            16 : "122", # Видеоитервью ✔️
+            #13 : "149", # Наши люди ✔️
+            #14 : "123", # Доска почёта ☑️
+            #16 : "122", # Видеоитервью ✔️
             
-            32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
-            54 : "55", # Предложения партнеров ✔️
-            55 : "56", # Благотворительные проекты ✔️
+            #32 : "132", # Новости организационного развития ✔️
+            #53 : "62", # Афиша ✔️
+            #54 : "55", # Предложения партнеров ✔️
+            #55 : "56", # Благотворительные проекты ✔️
 
-            25 : "100", #Референсы и опыт поставок ✔️
-            175 : "60" # Учебный центр (Литература) ✔️
+            #25 : "100", #Референсы и опыт поставок ✔️
+            #175 : "60" # Учебный центр (Литература) ✔️
         }
         
 
@@ -1142,9 +1142,7 @@ class Article:
                 self.add(data)
             elif artDB.update(self.make_valid_article(data)):
                 pass
-        '''
         
-        '''
         #Блоги
         #пройти по инфоблоку заголовков
         self.section_id = "75"
@@ -1180,10 +1178,8 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
 
         #Памятка
-        '''
         # пройти по инфоблоку заголовков
         self.section_id = "82"
         sec_inf_title = self.get_inf()
@@ -1223,12 +1219,10 @@ class Article:
                         self.add(data)
                     elif artDB.update(self.make_valid_article(data)):
                         pass
-        '''
 
         
         
         #Гид по предприятиям
-        '''
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
@@ -1290,8 +1284,8 @@ class Article:
 
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
-            #31 : "50", #Актуальные новости ✔️
-            #51 : "50"  #Корпоративные события ✔️
+            # 31 : "50", #Актуальные новости ✔️
+            # 51 : "50"  #Корпоративные события ✔️
         }
 
         '''
@@ -1336,12 +1330,11 @@ class Article:
                     # сюда надо что-то дописать
                     pass
         '''
-   
         
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
-            #42 : ["68", "69"], #Официальные события ✔️
-            #52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
+            # 42 : ["68", "69"], #Официальные события ✔️
+            # 52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
 
         '''
@@ -1378,7 +1371,7 @@ class Article:
                     pass
         
 
-        
+
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1413,7 +1406,6 @@ class Article:
                     pass
         '''
 
-        '''
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()
@@ -1424,11 +1416,9 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
 
         
         #Корпоративная газета ✔️
-        '''
         data = [
             {
                 "ID" : "342022",
@@ -1466,7 +1456,6 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        '''
 
         #Конкурсы ЭМК 7 секция
         '''
@@ -1482,7 +1471,6 @@ class Article:
                 elif art_DB.update(self.make_valid_article(inf)):
                     pass
         '''
-
 
         '''самобытные блоки'''
         # полная статика

@@ -43,7 +43,8 @@ services:
       - app-network
 
   elasticsearch:
-    image: elasticsearch:8.17.2
+    #image: elasticsearch:8.17.2
+    image: elasticsearch:9.1.0
     container_name: "elastic"
     ports:
       - 9200:9200
@@ -72,10 +73,7 @@ services:
       - app-network
 
   fastapi:
-    build:
-      context: ./code
-      dockerfile: Dockerfile
-    image: app/fastapi
+    build: ./code
     container_name: fastapi
     volumes:
       - ./code:/data/app
@@ -90,9 +88,7 @@ services:
   
   frontend:
     container_name: vue
-    build:
-      context: ./front
-      dockerfile: Dockerfile
+    build: ./front
     #volumes:
       #- ./front/:/app/
     ports:

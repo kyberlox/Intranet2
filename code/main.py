@@ -127,7 +127,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/files/",
         "/api/compress_image",
         "/api/user_files",
-        "test", "get_file", "get_all_files",
+        "test", "dump", "get_file", "get_all_files",
         "/api/total_background_task_update",
     ]
     for open_link in open_links:
@@ -201,9 +201,13 @@ def test_file_get(file_id):
 def elastic_search(keyword: str): 
     return search_everywhere(key_word=keyword) 
 
-@app.put("/api/full_elastic_dump")
-def elastic_dump(): 
-    UserSearchModel().dump()
+@app.get("/api/full_elastic_dump")
+def elastic_dump():
+    print("TYT")
+    el = UserSearchModel()
+    print("TYTA")
+    el.dump()
+    print("TAM")
     StructureSearchModel().dump()
     ArticleSearchModel().dump()
     return {"status": True}
@@ -231,6 +235,12 @@ def total_background_task_update(background_tasks: BackgroundTasks):
 def total_users_update():
     time_start = time.time()
     status = False
+
+    print("Обновление информации о подразделениях")
+    if Department().fetch_departments_data()["status"]:
+        print("Успешно!")
+    else:
+        print("Ошибка!")
 
     print("Обновление информации о пользователях")
     if User().fetch_users_data()["status"]:

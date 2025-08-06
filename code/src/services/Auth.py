@@ -15,6 +15,7 @@ from src.base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 from src.model.User import User
 
+import json
 
 
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизвция"])
@@ -62,13 +63,18 @@ class AuthService:
             return {"err" : "Cannot connect to Redis"}
 
         # Проверяем учетные данные в AD
-        user_uuid = self.check_ad_credentials(username, password)['GUID']
-        if not user_uuid:
+        user_uuid = self.check_ad_credentials(username, password)
+        user_uuid = user_uuid['GUID']
+        
+        if user_uuid is None:
             return {"err" : "Auth error! Invalid login or password!"}
+        
+        
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
-        if not user_data:
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
+        if user_data is None:
             return None
 
         session_id = str(uuid.uuid4())
@@ -76,15 +82,9 @@ class AuthService:
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-
-            #ID="2375",
-            #email="",
-            #full_name="kyberlox",
-
             ID=user_data.get("ID", ""),
             email=user_data.get("email", ""),
             full_name=user_data.get("full_name", ""),
-
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
 
@@ -99,6 +99,7 @@ class AuthService:
             "session_id": session_id,
             "user": session_data
         }
+
     '''
     def check_ad_credentials(self, username: str, password: str) -> Optional[str]:
         """Проверка учетных данных в AD"""
@@ -184,11 +185,13 @@ class AuthService:
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID
         user_data_file = open("./src/base/test_AD_users.json", "r")
-        user_data = json.load(user_data_file)
+        user_json = json.load(user_data_file)
         user_data_file.close()
 
-        if username in user_data.keys():
-            return {"GUID" : user_data["GUID"]}
+        for user_data in user_json:
+            print(user_data)
+            if username == user_data["login"]:
+                return user_data
     
 
     def get_user_data(self, user_uuid: str):

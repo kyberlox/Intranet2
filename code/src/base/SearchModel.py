@@ -34,6 +34,7 @@ class UserSearchModel:
         self.index = 'user'
 
     def create_index(self):
+        print("ZDES")
         request_body = {
             "settings": {
                 "analysis": {
@@ -234,9 +235,10 @@ class UserSearchModel:
                 ]
             }
         }
-        
+        print("NE ZDES")
 
         responce = elastic_client.indices.create(index=self.index, body=request_body)
+        print("A TYT")
         return responce
 
     def dump(self):

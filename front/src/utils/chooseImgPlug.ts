@@ -1,13 +1,18 @@
+import winterPlug from "@/assets/imgs/plugs/winter.jpg";
+import autumnPlug from "@/assets/imgs/plugs/autumn.jpg";
+import summerPlug from "@/assets/imgs/plugs/summer.jpg";
+import springPlug from "@/assets/imgs/plugs/spring.jpg";
+
 export const chooseImgPlug = () => {
     const currentMonth = new Date().getMonth() + 1;
     if (currentMonth in [12, 1, 2]) {
-        return '@/assets/imgs/plugs/winter.jpg'
+        return winterPlug
     }
     else if (currentMonth in [3, 4, 5]) {
-        return '@/assets/imgs/plugs/autumn.jpg'
+        return autumnPlug
     }
     else if (currentMonth in [6, 7, 8]) {
-        return '@/assets/imgs/plugs/summer.jpg'
+        return summerPlug
     }
-    else return '@/assets/imgs/plugs/spring.jpg'
+    else return springPlug
 }

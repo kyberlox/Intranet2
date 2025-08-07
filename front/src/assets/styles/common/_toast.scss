@@ -2,6 +2,7 @@
 .p-toast {
     z-index: 9999;
     width: fit-content !important;
+    height: fit-content;
 }
 
 /* Общие стили для всех toast сообщений */
@@ -18,7 +19,6 @@
     position: relative;
 }
 
-/* Анимация появления */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
@@ -31,7 +31,6 @@
     }
 }
 
-/* Анимация исчезновения */
 .p-toast .p-toast-message.p-toast-message-leave {
     animation: slideOutRight 0.3s ease-in;
 }
@@ -48,7 +47,6 @@
     }
 }
 
-/* Контент сообщения */
 .p-toast .p-toast-message .p-toast-message-content {
     padding: 16px 20px;
     border: none;
@@ -240,16 +238,6 @@
     }
 }
 
-/* Темная тема */
-@media (prefers-color-scheme: dark) {
-    .p-toast .p-toast-message .p-toast-icon-close {
-        background: rgba(0, 0, 0, 0.2);
-    }
-
-    .p-toast .p-toast-message .p-toast-icon-close:hover {
-        background: rgba(0, 0, 0, 0.3);
-    }
-}
 
 /* Hover эффекты */
 .p-toast .p-toast-message:hover {

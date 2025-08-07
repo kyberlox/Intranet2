@@ -30,6 +30,9 @@
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/utils/UseToastСompose';
+import { handleApiError } from '@/utils/ApiResponseCheck';
 
 export default defineComponent({
     name: 'AuthPage',
@@ -38,6 +41,9 @@ export default defineComponent({
         const userName = ref('');
         const passWord = ref('');
         const error = ref();
+
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const tryLogin = async () => {
             await Api.post('auth_router/auth', { login: "abobus", password: "1" })
@@ -53,6 +59,9 @@ export default defineComponent({
                         }
                         else error.value = 'Что-то пошло не так. Повторите попытку или сообщите в поддержку сайта (5182/5185)'
                     }
+                })
+                .catch((error) => {
+                    handleApiError(error, toast)
                 })
         }
         return {

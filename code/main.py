@@ -52,7 +52,7 @@ import asyncio
 
 load_dotenv()
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 app = FastAPI(timeout=60*20)
 

@@ -22,7 +22,7 @@ load_dotenv()
 
 
 pswd = os.getenv('pswd')
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 

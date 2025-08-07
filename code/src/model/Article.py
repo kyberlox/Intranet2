@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 article_router = APIRouter(prefix="/article", tags=["Статьи"])
 

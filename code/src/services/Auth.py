@@ -205,9 +205,10 @@ class AuthService:
         user_data_file.close()
         
         for user_data in user_json:
-            print(username, user_data["login"])
             if username == user_data["login"]:
-
+                log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+                ret_str = "#"*len(log_str)
+                print(f"{ret_str}\n{log_str}\n{ret_str}")
                 return user_data
         
         return None

@@ -214,7 +214,7 @@ class AuthService:
         # Хватаем данные из pSQL
         return User(uuid = user_uuid).user_inf_by_uuid()
 
-    def validate_session(self, session_id: str) -> Optional[UserSession]:
+    def validate_session(self, session_id: str) -> dict :#Optional[UserSession]:
         """
         Проверка валидности сессии
 
@@ -240,7 +240,8 @@ class AuthService:
             # Обновляем TTL сессии (скользящее окно)
             self.redis.update_session_ttl(session_id, self.session_ttl)
 
-            return UserSession(**session_data)
+            #return UserSession(**session_data)
+            return session_data
 
         except (KeyError, ValueError) as e:
             logging.error(f"Invalid session data format: {e}")

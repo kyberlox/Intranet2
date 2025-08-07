@@ -88,8 +88,8 @@ class AuthService:
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-            user_ID=user_data.get("ID", ""),
             email=user_data.get("email", ""),
+            user_ID=user_data.get("ID", ""),
             full_name=user_data.get("full_name", ""),
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()

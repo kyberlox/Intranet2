@@ -32,7 +32,7 @@ class UserSession(BaseModel):
     user_uuid: str
     username: str
     email: str
-    user_ID: str
+    #user_ID: str
     full_name: str
     expires_at: str
 

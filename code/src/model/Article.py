@@ -114,6 +114,7 @@ class Article:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
         elif "PROPERTY_374" in data:
+            print(data["PROPERTY_374"])
             content = take_value(data["PROPERTY_374"])
         else:
             keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]

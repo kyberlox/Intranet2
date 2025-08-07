@@ -101,7 +101,7 @@ class AuthService:
             "expires_at" : dt.strftime('%Y-%m-%d %H:%M:%S')
         }
 
-        print(session_data)
+        #print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.find_session_id(user_uuid, username)

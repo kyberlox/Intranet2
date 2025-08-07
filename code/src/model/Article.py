@@ -113,6 +113,8 @@ class Article:
         elif "PROPERTY_365" in data:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
+        elif "PROPERTY_374" in data:
+            content = take_value(data["PROPERTY_374"])
         else:
             keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]
             content = None
@@ -1071,7 +1073,7 @@ class Article:
             # 54 : "55", # Предложения партнеров ✔️
             # 55 : "56", # Благотворительные проекты ✔️
 
-            # 25 : "100", #Референсы и опыт поставок ✔️
+            #25 : "100", #Референсы и опыт поставок ✔️
             # 175 : "60" # Учебный центр (Литература) ✔️
         }
         

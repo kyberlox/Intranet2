@@ -3,7 +3,7 @@
         <div class="page__title">Гид по предприятиям </div>
         <ComplexGallery :slides="factoriesSlides"
                         :modifiers="['noFullWidthImg', 'buttons']"
-                        :routeTo="'experienceTypes'" />
+                        :routeTo="'factoryReports'" />
     </div>
 </template>
 

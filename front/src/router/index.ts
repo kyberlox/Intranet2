@@ -409,7 +409,7 @@ const router = createRouter({
       path: '/communications/corplife/:id',
       name: 'corpLifeItem',
       component: () => import('@/views/innerCommunications/corpLife/CorpLifeItem.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь' }),
+      props: (route) => ({ id: route.params.id }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Корпоративная жизнь', route: 'corpLife' }]
       }

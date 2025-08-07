@@ -13,7 +13,7 @@
 
         <!-- для встроенных video -->
         <swiper-slide v-for="(video, index) in videosEmbed"
-                      :key="'postVideo' + index">
+                      :key="'postVideoEmbed' + index">
             <iframe v-if="video && video.file_url"
                     width="100%"
                     height="500px"
@@ -26,11 +26,12 @@
 
         <!-- для загруженных video -->
         <swiper-slide v-for="(video, index) in videosNative"
-                      :key="'postVideo' + index">
-            <iframe width="100%"
+                      :key="'postVideoNative' + index">
+            <iframe v-if="video && video.file_url"
+                    width="100%"
                     height="500px"
                     :title="'Видеоконтент'"
-                    :src="String((video))"
+                    :src="String((video.file_url))"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
             </iframe>

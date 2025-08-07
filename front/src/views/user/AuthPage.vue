@@ -31,11 +31,9 @@ import router from '@/router';
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
-
 
 export default defineComponent({
     name: 'AuthPage',
@@ -56,6 +54,7 @@ export default defineComponent({
                         if (resp.session_id) {
                             localStorage.setItem('authKey', resp.session_id);
                             useUserData().setAuthKey(resp.session_id);
+                            useUserData().setMyId(resp.ID)
                             useUserData().setLogin(true);
                         }
                         else if (resp.warn) {

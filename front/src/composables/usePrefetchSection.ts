@@ -32,7 +32,6 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 const currentYear = new Date().getFullYear();
                 Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
                     .then((data) => {
-                        console.log(data)
                         useViewsDataStore().setData(data.result, 'calendarData');
                     });
             }

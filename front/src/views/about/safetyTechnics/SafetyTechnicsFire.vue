@@ -9,7 +9,7 @@
                              :images="safetyTechnicsFireInner?.evacuationContent?.images" />
             </div>
             <div class="evacuation__floors-list">
-                <h4 @click="console.log(safetyTechnicsFireInner?.content)">План эвакуации по этажам</h4>
+                <h4>План эвакуации по этажам</h4>
                 <div class="evacuation__floor"
                      @click="activeIndexInModal = index"
                      v-for="(i, index) in [1, 3, 6, 7, 8, 9, 10, 11, 12]"

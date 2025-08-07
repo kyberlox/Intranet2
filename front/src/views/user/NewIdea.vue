@@ -3,7 +3,7 @@
         <h2 class="page__title">Обратная связь: Есть идея!</h2>
         <div class="page__description"
              v-html="greetings"></div>
-        <div class="col-sm-6">
+        <div class="col-sm-6 mt20">
             <Form class="form-floating new-idea__form mb-3"
                   ref="formRef"
                   @submit="sendIdea">
@@ -51,7 +51,7 @@
                 </div>
 
                 <!-- Кнопка отправки -->
-                <div class="mb-3">
+                <div class="mb-3 mt20">
                     <button :class="{ 'primary-button--disabled': buttonsIsDisabled }"
                             :disabled="buttonsIsDisabled"
                             class="primary-button">

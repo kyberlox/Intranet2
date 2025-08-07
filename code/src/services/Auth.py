@@ -34,7 +34,6 @@ class UserSession(BaseModel):
     email: str
     user_ID: str
     full_name: str
-    #roles: list[str]
     expires_at: str
 
 
@@ -89,10 +88,12 @@ class AuthService:
             user_uuid=user_uuid,
             username=username,
             email=user_data.get("email", ""),
-            user_ID=user_data.get("ID", ""),
+            #user_ID=user_data.get("ID", ""),
             full_name=user_data.get("full_name", ""),
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
         ).dict()
+
+        print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.find_session_id(user_uuid, username)

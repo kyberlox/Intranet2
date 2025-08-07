@@ -38,7 +38,7 @@ import "swiper/css/pagination";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent } from "vue";
 import { RouterLink } from "vue-router";
-import { useSwiperconf } from "@/utils/useSwiperConf";
+import { useSwiperconf } from "@/composables/useSwiperConf";
 import { chooseImgPlug } from "@/utils/chooseImgPlug";
 
 export default defineComponent({

@@ -35,7 +35,7 @@ import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "./views/user/AuthPage.vue";
 
 import { useUserData } from "./stores/userData";
-import { prefetchSection } from "./utils/prefetchSection";
+import { prefetchSection } from "./composables/usePrefetchSection";
 
 export default defineComponent({
     name: "app-layout",

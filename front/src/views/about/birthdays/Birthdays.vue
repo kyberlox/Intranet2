@@ -56,7 +56,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
-import { useSwiperconf } from "@/utils/useSwiperConf";
+import { useSwiperconf } from "@/composables/useSwiperConf";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";

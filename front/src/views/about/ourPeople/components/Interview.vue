@@ -25,7 +25,7 @@
 </template>
 <script lang="ts">
 import Reactions from "@/components/tools/common/Reactions.vue";
-import { parseMarkdown } from "@/utils/useMarkdown";
+import { parseMarkdown } from "@/utils/parseMarkdown";
 import { defineComponent } from "vue";
 export default defineComponent({
     components: {

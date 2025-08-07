@@ -83,7 +83,7 @@ import type { IBaseEntity } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import ComplexGallery from "../gallery/complex/ComplexGallery.vue";
 import Reactions from "./Reactions.vue";
-import { parseMarkdown } from "@/utils/useMarkdown";
+import { parseMarkdown } from "@/utils/parseMarkdown";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {

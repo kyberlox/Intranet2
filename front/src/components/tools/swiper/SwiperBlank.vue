@@ -54,7 +54,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType, ref, watch } from "vue";
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { useSwiperconf } from "@/utils/useSwiperConf";
+import { useSwiperconf } from "@/composables/useSwiperConf";
 import { type IBXFileType } from "@/interfaces/IEntities";
 import SwiperButtons from "./SwiperButtons.vue";
 

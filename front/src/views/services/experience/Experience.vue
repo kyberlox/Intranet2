@@ -11,7 +11,7 @@
 <script lang="ts">
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { defineComponent, onMounted, ref, type Ref, watch } from "vue";
-import { useExperienceData } from "@/utils/useExperienceData";
+import { useExperienceData } from "@/composables/useExperienceData";
 
 export default defineComponent({
     components: {

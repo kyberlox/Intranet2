@@ -114,7 +114,7 @@ import EditIcon from "@/assets/icons/admin/EditIcon.svg?component"
 import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component"
 
 import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/utils/UseToastСompose';
+import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiResponse } from '@/utils/ApiResponseCheck';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 

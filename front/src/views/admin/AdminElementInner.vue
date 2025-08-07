@@ -135,7 +135,7 @@ import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 import FileUploader from './components/FileUploader.vue';
 import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/utils/UseToastСompose';
+import { useToastCompose } from '@/composables/useToastСompose';
 import { type IBXFileType } from "@/interfaces/IEntities";
 import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
@@ -277,13 +277,13 @@ export default defineComponent({
       activeType,
       newElementSkeleton,
       buttonIsDisabled,
-      inputComponentChecker,
       newData,
       newElementFiles,
+      isMobileScreen,
+      inputComponentChecker,
       applyNewData,
       handleEmitValueChange,
       handleUpload,
-      isMobileScreen
     };
   }
 });

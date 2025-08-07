@@ -26,7 +26,7 @@
 import { sectionTips } from '@/assets/static/sectionTips';
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, ref } from 'vue';
-import { useSwiperconf } from '@/utils/useSwiperConf';
+import { useSwiperconf } from '@/composables/useSwiperConf';
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
 import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 import { Swiper, SwiperSlide } from "swiper/vue";

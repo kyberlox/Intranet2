@@ -34,7 +34,7 @@ import { defineComponent, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/utils/UseToastСompose';
+import { useToastCompose } from '@/composables/useToastСompose';
 
 
 export default defineComponent({
@@ -44,14 +44,13 @@ export default defineComponent({
         const userName = ref('');
         const passWord = ref('');
         const error = ref();
-        const router = useRouter();
-        const route = useRoute();
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
-
-
         const tryLogin = () => {
-            if (userName.value && passWord.value)
+            if (!userName.value || !passWord.value) {
+                return error.value = 'Проверьте логин и пароль'
+            }
+            else
                 Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
                     .then((resp) => {
                         if (resp.session_id) {

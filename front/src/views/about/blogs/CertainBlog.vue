@@ -31,7 +31,7 @@
 import BlogAvatar from "./components/BlogAvatar.vue";
 import { defineComponent, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
-import { parseMarkdown } from "@/utils/useMarkdown";
+import { parseMarkdown } from "@/utils/parseMarkdown";
 export default defineComponent({
 	components: { BlogAvatar },
 	props: {

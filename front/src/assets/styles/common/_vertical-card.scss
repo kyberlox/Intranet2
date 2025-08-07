@@ -94,6 +94,12 @@
         margin-top: auto;
         width: 100%;
         // background: #666;
+
+        &--care {
+            font-weight: 500;
+            background: #e7e7e796;
+            color: #000000;
+        }
     }
 
     &__link {

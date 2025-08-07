@@ -10,7 +10,7 @@
             <input ref="fileInput"
                    type="file"
                    class="file-uploader__input"
-                   @change="handleFileSelect"
+                   @change="useFile.handleFileSelect"
                    multiple />
 
             <div v-if="!uploadedFiles.length"
@@ -64,12 +64,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType, type Ref } from 'vue';
-import { allowedTypes } from '@/assets/static/uploadAllowedTypes';
+import { defineComponent, ref, type PropType } from 'vue';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
 import DocIcon from '@/assets/icons/posts/DocIcon.svg?component';
 import type { IBXFileType } from '@/interfaces/IEntities';
 import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
+import { useFileUtil } from '@/composables/useFile';
 
 export default defineComponent({
     name: 'VideoUploader',
@@ -94,50 +94,19 @@ export default defineComponent({
         const isUploading = ref(true);
         const uploadProgress = ref(0);
         const error = ref('');
-
-        const allowedType: Ref<string[]> = ref(allowedTypes[props.uploadType]);
-
-        const validateFile = (file: File): boolean => {
-            if (!allowedType.value.includes(file.type)) {
-                error.value = 'Неподдерживаемый формат файла';
-                return false;
-            }
-
-            error.value = '';
-            return true;
-        };
-
-        const processFiles = (files: FileList | File[]) => {
-            const fileArray = Array.from(files);
-
-            fileArray.forEach(file => {
-                if (validateFile(file)) {
-                    const videoFile: IFileToUpload = {
-                        name: file.name,
-                        size: file.size,
-                        url: URL.createObjectURL(file),
-                        file: file
-                    };
-
-                    uploadedFiles.value.push(videoFile);
-                    emit('upload', videoFile);
-                }
-            });
-        };
-
-        const handleFileSelect = (event: Event) => {
-            const target = event.target as HTMLInputElement;
-            if (target.files) {
-                processFiles(target.files);
-            }
-        };
-
+        const useFile = useFileUtil(props.uploadType);
         const handleDrop = (event: DragEvent) => {
             event.preventDefault();
             isDragOver.value = false;
 
             if (event.dataTransfer?.files) {
-                processFiles(event.dataTransfer.files);
+                const processResult = useFile.processFiles(event.dataTransfer.files);
+                if (typeof processResult == 'string') {
+                    error.value = processResult;
+                }
+                else
+                    uploadedFiles.value.push(processResult as IFileToUpload);
+                emit('upload', processResult);
             }
         };
 
@@ -168,7 +137,7 @@ export default defineComponent({
             isUploading,
             uploadProgress,
             error,
-            handleFileSelect,
+            useFile,
             handleDrop,
             handleDragOver,
             handleDragLeave,

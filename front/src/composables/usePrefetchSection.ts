@@ -1,7 +1,7 @@
-import Api from "./Api";
+import Api from "../utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
-import { getBlogAuthorsToStore } from "./getBlogAuthorsToStore";
+import { getBlogAuthorsToStore } from "./useBlogAuthors";
 import { useblogDataStore } from "@/stores/blogData";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useUserData } from "@/stores/userData";

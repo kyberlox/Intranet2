@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch, type Ref } from 'vue';
-import { useExperienceData } from "@/utils/useExperienceData";
+import { useExperienceData } from "@/composables/useExperienceData";
 import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
 import type { IDocument } from "@/interfaces/IEntities";
 

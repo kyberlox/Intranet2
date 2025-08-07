@@ -52,7 +52,7 @@ import asyncio
 
 load_dotenv()
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 app = FastAPI(timeout=60*20)
 
@@ -204,8 +204,8 @@ def elastic_search(keyword: str):
 @app.get("/api/full_elastic_dump")
 def elastic_dump():
     UserSearchModel().dump()
-    StructureSearchModel().dump()
-    ArticleSearchModel().dump()
+    #StructureSearchModel().dump()
+    #ArticleSearchModel().dump()
     return {"status": True}
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")
@@ -247,10 +247,39 @@ def total_users_update():
     else:
         print("Ошибка!")
     
+    print("Обновление информации о связи подразделений и пользователей")
+    if UsDep().get_usr_dep()["status"]:
+        print("Успешно!")
+    else:
+        print("Ошибка!")
+    
     time_end = time.time()
     total_time_sec = time_end - time_start
 
     return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
+
+@app.get("/api/art_update/")
+def total_users_update():
+    time_start = time.time()
+    status = False
+
+    # print("Обновление информации о разделах сайта")
+    # Section().load()
+    # status += 1
+    # print("Успешно!")
+
+    print("Обновление информации о статьях сайта")
+    if Article().uplod()["status"]:
+        status += 1
+        print("Успешно!")
+    else:
+        print("Ошибка!")
+    
+    time_end = time.time()
+    total_time_sec = time_end - time_start
+
+    return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
+
 
 @app.put("/api/total_update")
 def total_update():
@@ -303,4 +332,3 @@ def total_update():
 '''
 ! Особенные запросы
 '''
-

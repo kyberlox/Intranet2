@@ -8,7 +8,9 @@ services:
       #- frontend
     ports:
       - "80:80"
-      #- "443:443"
+      - "443:443"
+    environment:
+      - NGINX_HOST=${DOMAIN}
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
     networks:

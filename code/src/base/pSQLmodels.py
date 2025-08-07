@@ -21,7 +21,7 @@ from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 user = os.getenv('user')
 pswd = os.getenv('pswd')
@@ -1361,7 +1361,6 @@ class TagsModel:
         existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()
         if existing_tag:
             return existing_tag
-        return find_tag_by_id
 
     def remove_tag(self):
         existing_tag = self.session.query(Tags).filter(Tags.id == self.id).first()

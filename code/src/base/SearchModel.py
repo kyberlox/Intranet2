@@ -22,19 +22,22 @@ load_dotenv()
 
 
 pswd = os.getenv('pswd')
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
-
+'''
 elastic_client = Elasticsearch(
     hosts=[f"{DOMAIN[:-5]}:9200"],
-    basic_auth=('elastic', pswd),
+    #basic_auth=('elastic', pswd),
     verify_certs=False,
     request_timeout=30,
     retry_on_timeout=True,
     max_retries=3
 )
+'''
+
+elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
 
 if elastic_client.ping():
     print("✅ Успешное подключение!")

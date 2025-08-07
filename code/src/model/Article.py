@@ -1406,7 +1406,7 @@ class Article:
                     pass
         '''
 
-        
+        '''
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()
@@ -1417,7 +1417,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-
+        
         
         #Корпоративная газета ✔️
         data = [
@@ -1457,7 +1457,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        
+        ''''
         
         #Конкурсы ЭМК 7 секция
         '''

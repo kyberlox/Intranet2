@@ -64,10 +64,9 @@ class AuthService:
 
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)
-        user_uuid = user_uuid['GUID']
-        
-        
-        if user_uuid is None:
+        if "GUID" in user_uuid:
+            user_uuid = user_uuid['GUID']
+        else:
             return {"err" : "Auth error! Invalid login or password!"}
         
         
@@ -197,7 +196,7 @@ class AuthService:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
     '''
-    
+
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID

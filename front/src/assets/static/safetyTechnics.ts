@@ -1,4 +1,7 @@
 import type { ISafetyTechnicsSlide, ISafetyTechnicsVertSlide } from "@/interfaces/IEntities";
+import covid1Img from '@/assets/imgs/about/safetyTechnics/covid/COVID1.jpg';
+import covid2Img from '@/assets/imgs/about/safetyTechnics/covid/COVID2.jpg';
+import covid3Img from '@/assets/imgs/about/safetyTechnics/covid/COVID3.jpg';
 
 export const safetyTechnics: ISafetyTechnicsVertSlide = {
     content: [

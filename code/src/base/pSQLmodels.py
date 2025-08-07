@@ -393,7 +393,7 @@ class UserModel():
 
                 #вывод URL фотографии пользователя
                 url = photo_inf['URL']
-                result['photo_file_url'] = f"{HOST}{url}"
+                result['photo_file_url'] = f"{DOMAIN}{url}"
                 
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:

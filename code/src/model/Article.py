@@ -113,6 +113,10 @@ class Article:
         elif "PROPERTY_365" in data:
             content = list(data['PROPERTY_365'].values())[0]
             # data.pop('PROPERTY_365')
+        elif "PROPERTY_374" in data:
+            content = list(data['PROPERTY_374'].values())[0]["TEXT"]
+            content_type = list(data['PROPERTY_374'].values())[0]["TYPE"]
+
         else:
             keys = ["PROPERTY_1239", "PROPERTY_457", "PROPERTY_477", "PROPERTY_340", "PROPERTY_291", "PROPERTY_358", "PROPERTY_1034", "PROPERTY_348"]
             content = None
@@ -1062,20 +1066,20 @@ class Article:
 
         '''однозначно'''
         sec_inf = {
-            13 : "149", # Наши люди ✔️
-            14 : "123", # Доска почёта ☑️
-            16 : "122", # Видеоитервью ✔️
+            # 13 : "149", # Наши люди ✔️
+            # 14 : "123", # Доска почёта ☑️
+            # 16 : "122", # Видеоитервью ✔️
             
-            32 : "132", # Новости организационного развития ✔️
+            # 32 : "132", # Новости организационного развития ✔️
             53 : "62", # Афиша ✔️
-            54 : "55", # Предложения партнеров ✔️
-            55 : "56", # Благотворительные проекты ✔️
+            # 54 : "55", # Предложения партнеров ✔️
+            # 55 : "56", # Благотворительные проекты ✔️
 
-            25 : "100", #Референсы и опыт поставок ✔️
-            175 : "60" # Учебный центр (Литература) ✔️
+            #25 : "100", #Референсы и опыт поставок ✔️
+            # 175 : "60" # Учебный центр (Литература) ✔️
         }
         
-        '''
+        
         #проходимся по инфоблокам
         for i in logg.progress(sec_inf, f"Загрузка данных инфоблоков {sec_inf.values} "):
 
@@ -1094,7 +1098,7 @@ class Article:
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
-        '''
+        
 
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
@@ -1406,7 +1410,7 @@ class Article:
                     pass
         '''
 
-        
+        '''
         # вакансии (приведи друга)
         self.section_id = "67"
         art_inf = self.get_inf()
@@ -1417,9 +1421,10 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-
+        '''
         
         #Корпоративная газета ✔️
+        '''
         data = [
             {
                 "ID" : "342022",
@@ -1457,7 +1462,7 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        
+        '''
         
         #Конкурсы ЭМК 7 секция
         '''

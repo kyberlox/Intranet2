@@ -1417,9 +1417,10 @@ class Article:
                 self.add(art)
             elif artDB.update(self.make_valid_article(art)):
                 pass
-        
+        ''''
         
         #Корпоративная газета ✔️
+        ''''
         data = [
             {
                 "ID" : "342022",

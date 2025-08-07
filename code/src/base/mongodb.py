@@ -23,7 +23,7 @@ client.admin.command('ismaster')
 db = client["file_storage"]
 files_collection = db["files"]
 user_photo_collection = db["user_photo"]
-
+ai_dialogs_collection = db["ai_dialogs"]
 
 
 class FileModel:
@@ -61,6 +61,18 @@ class FileModel:
                 ("format", 1),
                 ("uuid", 1),
                 ("b24_url", 1)
+            ],
+            background=True
+        )
+        return {"status": True}
+    
+    def create_index_ai_dialogs(self):
+        ai_dialogs_collection.create_index(
+            [
+                ("id", 1),
+                ("name", 1),
+                ("user_uuid", 1),
+                ("messages", 1)
             ],
             background=True
         )

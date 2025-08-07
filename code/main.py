@@ -74,6 +74,8 @@ app.include_router(b24_router, prefix="/api")
 app.include_router(idea_router, prefix="/api")
 app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
+app.include_router(ai_router, prefix="/api")
+
 
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")

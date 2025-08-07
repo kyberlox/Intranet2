@@ -141,7 +141,7 @@ import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
 import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
 
-type AdminElementValue = string | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
+type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
 export default defineComponent({
   components: {
@@ -228,7 +228,7 @@ export default defineComponent({
           }
           if (data.files.videos_native.length) {
             newData.value.videos_native = [];
-            data.files.videos_native.map((e: IBXFileType) => { if (e.file_url) newData.value.videos_native?.push(e.file_url) })
+            data.files.videos_native.map((e: IBXFileType) => { if (e.file_url) newData.value.videos_native?.push(e) })
           }
           if (data.files.documentation.length) {
             newData.value.documentation = [];

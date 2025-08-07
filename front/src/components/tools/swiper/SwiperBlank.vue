@@ -94,7 +94,7 @@ export default defineComponent({
             type: Number
         },
         videosNative: {
-            type: Array<string>
+            type: Array<IBXFileType>
         },
         videosEmbed: {
             type: Array<IBXFileType>

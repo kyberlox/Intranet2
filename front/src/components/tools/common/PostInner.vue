@@ -6,7 +6,8 @@
                 <SwiperBlank :videosNative="currentPost?.videos_native"
                              :videosEmbed="currentPost?.videos_embed"
                              :images="currentPost?.images ? currentPost.images : undefined"
-                             :sectionId="currentPost?.section_id" />
+                             :sectionId="currentPost?.section_id"
+                             :type="'postInner'" />
             </div>
             <div class="col-12 col-lg-6">
                 <div class="news__detail__content">
@@ -22,7 +23,8 @@
                     </div>
                     <div class="news__detail">
                         <span v-if="currentPost.date_publiction"
-                              class="news__detail__date">{{ currentPost.date_publiction
+                              class="news__detail__date">{{
+                                currentPost.date_publiction.replace('T', ' ')
                             }}</span>
                         <div v-if="currentPost.reactions"
                              class="news__detail__like-wrapper">
@@ -67,9 +69,6 @@
                 </div>
             </div>
         </div>
-        <ComplexGallery v-else-if="type !== 'adminPreview'"
-                        :slides="[{ id: 1, images: currentPost?.images }]"
-                        :modifiers="['noRoute']" />
     </div>
 </template>
 
@@ -81,7 +80,6 @@ import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type Ref, ref, type PropType, watch } from "vue";
 import type { IBaseEntity } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
-import ComplexGallery from "../gallery/complex/ComplexGallery.vue";
 import Reactions from "./Reactions.vue";
 import { parseMarkdown } from "@/utils/parseMarkdown";
 
@@ -106,7 +104,6 @@ export default defineComponent({
         SwiperBlank,
         LikeIcon,
         DocIcon,
-        ComplexGallery,
         Reactions
     },
     props: {

@@ -197,6 +197,7 @@ class AuthService:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
     '''
+    
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID

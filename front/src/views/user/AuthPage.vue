@@ -7,12 +7,16 @@
                 <div class="portal__auth__form__input__block">
                     <input class="bx-auth-input form-control portal__auth__form__input"
                            placeholder="Логин"
+                           name="authLogin"
+                           type="text"
+                           autocomplete="on"
                            v-model="userName">
                 </div>
                 <div class="portal__auth__form__input__block">
                     <input class="bx-auth-input form-control portal__auth__form__input"
                            type="password"
-                           autocomplete="off"
+                           name="authPass"
+                           autocomplete="on"
                            placeholder="Пароль"
                            v-model="passWord">
                 </div>

@@ -28,13 +28,13 @@ load_dotenv()
 
 
 
-class UserSession(BaseModel):
-    user_uuid: str
-    username: str
-    email: str
-    #user_ID: str
-    full_name: str
-    expires_at: str
+# class UserSession(BaseModel):
+#     user_uuid: str
+#     username: str
+#     email: str
+#     #user_ID: str
+#     full_name: str
+#     expires_at: str
 
 
 
@@ -84,14 +84,23 @@ class AuthService:
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
-        session_data = UserSession(
-            user_uuid=user_uuid,
-            username=username,
-            email=user_data.get("email", ""),
-            #user_ID=user_data.get("ID", ""),
-            full_name=user_data.get("full_name", ""),
-            expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
-        ).dict()
+        # session_data = UserSession(
+        #     user_uuid=user_uuid,
+        #     username=username,
+        #     email=user_data.get("email", ""),
+        #     #user_ID=user_data.get("ID", ""),
+        #     full_name=user_data.get("full_name", ""),
+        #     expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
+        # ).dict()
+
+        session_data = {
+            "user_uuid" : user_uuid,
+            "username" : username,
+            "email" : user_data.get("email", ""),
+            "user_ID" : user_data.get("ID", ""),
+            "full_name" : user_data.get("full_name", ""),
+            "expires_at" : dt.strftime('%Y-%m-%d %H:%M:%S')
+        }
 
         print(session_data)
 

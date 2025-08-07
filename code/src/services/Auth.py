@@ -64,10 +64,9 @@ class AuthService:
 
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)
-        user_uuid = user_uuid['GUID']
-        
-        
-        if user_uuid is None:
+        if user_uuid is not None and "GUID" in user_uuid:
+            user_uuid = user_uuid['GUID']
+        else:
             return {"err" : "Auth error! Invalid login or password!"}
         
         
@@ -102,7 +101,7 @@ class AuthService:
             "expires_at" : dt.strftime('%Y-%m-%d %H:%M:%S')
         }
 
-        print(session_data)
+        #print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.find_session_id(user_uuid, username)
@@ -197,20 +196,21 @@ class AuthService:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
     '''
-    
+
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID
         user_data_file = open("./src/base/test_AD_users.json", "r")
         user_json = json.load(user_data_file)
         user_data_file.close()
-
+        
         for user_data in user_json:
-            print(user_data)
+            print(username, user_data["login"])
             if username == user_data["login"]:
+
                 return user_data
-            else:
-                return None
+        
+        return None
     
 
     def get_user_data(self, user_uuid: str):

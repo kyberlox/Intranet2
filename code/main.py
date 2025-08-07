@@ -203,7 +203,7 @@ def elastic_search(keyword: str):
 
 @app.get("/api/full_elastic_dump")
 def elastic_dump():
-    №UserSearchModel().dump()
+    #UserSearchModel().dump()
     StructureSearchModel().dump()
     ArticleSearchModel().dump()
     return {"status": True}

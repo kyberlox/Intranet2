@@ -34,6 +34,7 @@ import { defineComponent, ref } from 'vue';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
+import { prefetchSection } from '@/composables/usePrefetchSection';
 
 export default defineComponent({
     name: 'AuthPage',
@@ -54,8 +55,9 @@ export default defineComponent({
                         if (resp.session_id) {
                             localStorage.setItem('authKey', resp.session_id);
                             useUserData().setAuthKey(resp.session_id);
-                            useUserData().setMyId(resp.ID)
+                            useUserData().setMyId(resp.user.ID)
                             useUserData().setLogin(true);
+                            prefetchSection('user');
                         }
                         else if (resp.warn) {
                             if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {

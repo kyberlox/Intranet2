@@ -9,7 +9,7 @@
                     {{ card.header }}
                 </span>
                 <div class="vertical-card__image__list__item__logo">
-                    <img src="//imgs/emkLogo.webp"
+                    <img src="/src/assets/"
                          alt="ЭМК"
                          title="ЭМК" />
                 </div>

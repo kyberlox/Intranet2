@@ -64,7 +64,7 @@ class AuthService:
 
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)
-        if "GUID" in user_uuid:
+        if user_uuid is not None and "GUID" in user_uuid:
             user_uuid = user_uuid['GUID']
         else:
             return {"err" : "Auth error! Invalid login or password!"}

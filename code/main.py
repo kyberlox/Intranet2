@@ -203,9 +203,9 @@ def elastic_search(keyword: str):
 
 @app.get("/api/full_elastic_dump")
 def elastic_dump():
-    UserSearchModel().dump()
-    #StructureSearchModel().dump()
-    #ArticleSearchModel().dump()
+    №UserSearchModel().dump()
+    StructureSearchModel().dump()
+    ArticleSearchModel().dump()
     return {"status": True}
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")

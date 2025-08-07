@@ -203,9 +203,9 @@ class AuthService:
         user_data_file = open("./src/base/test_AD_users.json", "r")
         user_json = json.load(user_data_file)
         user_data_file.close()
-
+        
         for user_data in user_json:
-            print(user_data)
+            print(username, user_data["login"])
             if username == user_data["login"]:
                 return user_data
             else:

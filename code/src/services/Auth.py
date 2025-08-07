@@ -32,6 +32,7 @@ class UserSession(BaseModel):
     user_uuid: str
     username: str
     email: str
+    user_ID: str
     full_name: str
     #roles: list[str]
     expires_at: str
@@ -74,15 +75,18 @@ class AuthService:
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
-        if user_data is None:
-            return None
+        #if user_data is None:
+            #получаю ID по GUID или по почте
+            #плучаю данные по ID
+            #сохраняю в БД GUID
+
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
         session_data = UserSession(
             user_uuid=user_uuid,
             username=username,
-            ID=user_data.get("ID", ""),
+            user_ID=user_data.get("ID", ""),
             email=user_data.get("email", ""),
             full_name=user_data.get("full_name", ""),
             expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')

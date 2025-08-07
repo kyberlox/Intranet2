@@ -208,6 +208,8 @@ class AuthService:
             print(user_data)
             if username == user_data["login"]:
                 return user_data
+            else:
+                return None
     
 
     def get_user_data(self, user_uuid: str):

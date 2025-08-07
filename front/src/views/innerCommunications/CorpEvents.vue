@@ -1,18 +1,18 @@
 <template>
     <h1 class="page__title mt20">Корпоративные события</h1>
-    <TagDateNavBar v-if="allEvents"
-                   :years="extractYears(allEvents)"
-                   :modifiers="'noTag'"
-                   @pickYear="(year: string) => visibleEvents = showEventsByYear(allEvents, year)" />
-    <GridGallery v-if="visibleEvents"
-                 :gallery="visibleEvents"
-                 :routeTo="'corpEvent'" />
+    <DateFilter v-if="allEvents"
+                :buttonText="buttonText"
+                :params="extractYears(allEvents)"
+                @pickFilter="(year: string) => filterYear(year)" />
+    <SampleGallery v-if="visibleEvents"
+                   :gallery="visibleEvents"
+                   :routeTo="'corpEvent'" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, type ComputedRef } from "vue";
-import TagDateNavBar from "@/components/tools/common/DateFilter.vue";
-import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
+import { computed, defineComponent, onMounted, ref, type Ref, type ComputedRef, watch } from "vue";
+import DateFilter from "@/components/tools/common/DateFilter.vue";
+import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { extractYears } from "@/utils/extractYearsFromPosts";
@@ -22,7 +22,7 @@ import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from "@/stores/loadingStore";
 
 export default defineComponent({
-    components: { GridGallery, TagDateNavBar },
+    components: { SampleGallery, DateFilter },
     props: {
         pageTitle: String,
         id: Number,
@@ -30,6 +30,8 @@ export default defineComponent({
     setup() {
         const allEvents: ComputedRef<INews[]> = computed(() => useViewsDataStore().getData('corpEventsData') as INews[]);
         const visibleEvents = ref<INews[]>(allEvents.value);
+        const buttonText: Ref<string> = ref('Год публикации');
+
         onMounted(() => {
             if (allEvents.value.length) return;
             useLoadingStore().setLoadingStatus(true);
@@ -43,11 +45,24 @@ export default defineComponent({
                 })
         })
 
+        const filterYear = (year: string) => {
+            if (!year) {
+                visibleEvents.value = allEvents.value;
+                buttonText.value = 'Год публикации';
+            }
+            else {
+                buttonText.value = year;
+                visibleEvents.value = showEventsByYear(allEvents.value, year);
+            }
+        }
+
         return {
             visibleEvents,
-            extractYears,
             allEvents,
-            showEventsByYear
+            buttonText,
+            extractYears,
+            showEventsByYear,
+            filterYear
         };
     },
 });

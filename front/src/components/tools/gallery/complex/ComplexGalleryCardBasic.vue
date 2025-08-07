@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import { computed, defineComponent, type PropType } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IFactoryDataTours, IFactoryDataReports, IBaseEntity } from "@/interfaces/IEntities";
 
@@ -55,7 +55,7 @@ export default defineComponent({
             default: undefined
         },
     },
-    setup() {
+    setup(props) {
 
         const checkCardDate = (slide: IComplexGalleryCardBasic) => {
             if (!slide.indirect_data?.date_from) return;
@@ -66,8 +66,9 @@ export default defineComponent({
         }
 
         return {
+            imageUrl: computed(() => props.slide.preview_file_url ?? props.slide.photo_file_url),
             uniqueRoutesHandle,
-            checkCardDate
+            checkCardDate,
         }
     }
 })

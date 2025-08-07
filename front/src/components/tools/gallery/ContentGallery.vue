@@ -1,47 +1,37 @@
 <template>
-    <div v-if="slide">
-        <div v-if=slide.images
-             class=" contentGallery contentGallery__images__wrapper">
-            <div v-for="(image, index) in slide.images"
-                 :key="index"
-                 class="contentGallery__img-wrapper">
-                <div @click="callModal(slide.images, index)"
-                     class="contentGallery__card__img"
-                     v-lazy-load="image.file_url"
-                     alt="slide"></div>
-            </div>
+    <div class="contentGallery"
+         v-if="slide">
+        <div v-for="(image, index) in slide.images"
+             :key="index"
+             class="contentGallery__img-wrapper">
+            <div @click="callModal(slide.images, index)"
+                 class="contentGallery__card__img"
+                 v-lazy-load="image.file_url"
+                 alt="slide"></div>
         </div>
-
-        <div v-if="slide.videos_embed"
-             class="contentGallery contentGallery__images__wrapper">
-            <div v-for="(video, index) in slide.videos_embed"
-                 :key="'embed' + index">
-                <iframe v-if="video && video.file_url"
-                        width="100%"
-                        class="contentGallery__card__img"
-                        height="500px"
-                        :title="'Видеоконтент'"
-                        :src="String(repairVideoUrl(video?.file_url))"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                </iframe>
-            </div>
+        <div v-for="(video, index) in slide.videos_embed"
+             :key="'videEmbed' + index">
+            <iframe v-if="video && video.file_url"
+                    width="100%"
+                    class="contentGallery__card__img"
+                    height="500px"
+                    :title="'Видеоконтент'"
+                    :src="String(repairVideoUrl(video?.file_url))"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
         </div>
-
-        <div v-if="slide.videos_native"
-             class="contentGallery contentGallery__images__wrapper">
-            <div v-for="(video, index) in slide.videos_native"
-                 :key="'videoNative' + index">
-                <iframe v-if="video && video.file_url"
-                        width="100%"
-                        class="contentGallery__card__img"
-                        height="500px"
-                        :title="'Видеоконтент'"
-                        :src="String(repairVideoUrl(video?.file_url))"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                </iframe>
-            </div>
+        <div v-for="(video, index) in slide.videos_native"
+             :key="'videoNative' + index">
+            <iframe v-if="video && video.file_url"
+                    width="100%"
+                    class="contentGallery__card__img"
+                    height="500px"
+                    :title="'Видеоконтент'"
+                    :src="String(repairVideoUrl(video?.file_url))"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+            </iframe>
         </div>
     </div>
 </template>

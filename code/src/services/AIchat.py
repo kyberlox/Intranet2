@@ -10,7 +10,7 @@ import requests
 ai_router = APIRouter(prefix="/ai", tags=["AI"])
 
 class Dialog(BaseModel):
-    ID : srt
+    ID : str
     name: str
     user_uuid: str
     messages: list

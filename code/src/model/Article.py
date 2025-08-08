@@ -1071,12 +1071,13 @@ class Article:
             # 16 : "122", # Видеоитервью ✔️
             
             # 32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
+            # 53 : "62", # Афиша ✔️
             # 54 : "55", # Предложения партнеров ✔️
             # 55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
-            # 175 : "60" # Учебный центр (Литература) ✔️
+            # 175 : "60", # Учебный центр (Литература) ✔️
+            7 : "66", #Конкурсы (Главная)
         }
         
         
@@ -1098,7 +1099,6 @@ class Article:
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
-        
 
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
@@ -1465,19 +1465,18 @@ class Article:
         '''
         
         #Конкурсы ЭМК 7 секция
-        '''
-        self.section_id = "128"
-        competitions_info = self.get_inf()
-        if competitions_info != []:
-            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
-                #art_id = inf["ID"]
-                self.section_id = 7
-                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
-                if art_DB.need_add():
-                    self.add(inf)
-                elif art_DB.update(self.make_valid_article(inf)):
-                    pass
-        '''
+
+        # self.section_id = "128"
+        # competitions_info = self.get_inf()
+        # if competitions_info != []:
+        #     for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+        #         #art_id = inf["ID"]
+        #         self.section_id = 7
+        #         art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
+        #         if art_DB.need_add():
+        #             self.add(inf)
+        #         elif art_DB.update(self.make_valid_article(inf)):
+        #             pass
 
         '''самобытные блоки'''
         # полная статика

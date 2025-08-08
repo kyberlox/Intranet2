@@ -36,6 +36,8 @@ from src.services.FieldsVisions import Visions, fieldsvisions_router
 
 from src.model.Tag import Tag, tag_router
 
+from src.services.AIchat import ai_router
+
 from typing import Awaitable, Callable, Optional
 
 from PIL import Image

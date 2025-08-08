@@ -6,17 +6,22 @@
                               @typeChanged="(newType: IChatType) => chatType = newType" />
             <div class="neuroChat-content__wrapper">
                 <div class="neuroChat-content">
-                    <div class="neuroChat__messages__wrapper"
-                         v-if="chatDataToSend.length"
-                         v-for="(chat, index) in chatDataToSend"
-                         :key="'chat' + index">
-                        <div v-if="chat.role == 'user'"
-                             class="neuroChat__message neuroChat__message--user">
-                            {{ chat.content }}
-                        </div>
-                        <div v-if="chat.role == 'assistant'"
-                             class="neuroChat__message neuroChat__message--neuro">
-                            {{ chat.content }}
+                    <div v-if="chatDataToSend.length">
+                        <div class="neuroChat__messages__wrapper"
+                             v-for="(chat, index) in chatDataToSend"
+                             :key="'chat' + index">
+                            <div v-if="chat.role == 'user'"
+                                 class="neuroChat__message neuroChat__message--user">
+                                {{ chat.content }}
+                            </div>
+                            <div v-if="chat.role == 'assistant' && chatType == 'createImg' && chat.type == 'img'"
+                                 class="neuroChat__message neuroChat__message--neuro">
+                                <img :src="chat.content" />
+                            </div>
+                            <div v-if="chat.role == 'assistant'"
+                                 class="neuroChat__message neuroChat__message--neuro">
+                                {{ chat.content }}
+                            </div>
                         </div>
                     </div>
                     <div v-else
@@ -29,7 +34,8 @@
                         <label>Введите сообщение</label>
                         <div class="neuroChat__input-container">
                             <div class="neuroChat__textarea__wrapper">
-                                <textarea v-model="userInput"
+                                <textarea @keydown="handleKeyDown"
+                                          v-model="userInput"
                                           placeholder="Напишите ваше сообщение..."></textarea>
                                 <button @click="sendMsg"
                                         class="neuroChat__send-button pos-rel">
@@ -150,19 +156,22 @@ export default defineComponent({
                     .finally(() => {
                         isLoading.value = false;
                         userInput.value = '';
+
                     })
             }
             else if (chatType.value == 'createImg') {
-                await Api.postVendor(`https://gpt.emk.ru/generate-image?promt=${userInput.value}&size=${createImageChatData.value.size}&quality=standart&style=${createImageChatData.value.style}`, null)
+                chatDataToSend.value.length = 0;
+                await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
                     .then((data) => {
-                        chatDataToSend.value.length = 0;
                         chatDataToSend.value.push({
                             role: 'user',
-                            content: data.prompt
+                            content: userInput.value,
+
                         })
                         chatDataToSend.value.push({
                             role: 'assistant',
-                            content: data.image_url
+                            content: data.image_url,
+                            type: 'img'
                         })
                     })
                     .catch((error) => {
@@ -171,7 +180,19 @@ export default defineComponent({
                     .finally(() => {
                         isLoading.value = false;
                         userInput.value = '';
+
                     })
+            }
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+
+                if (userInput.value.trim() && !isLoading.value) {
+                    sendMsg();
+                    userInput.value = '';
+                }
             }
         }
 
@@ -186,7 +207,8 @@ export default defineComponent({
             chatType,
             sendMsg,
             handleFileSelect,
-            triggerFileSelect
+            triggerFileSelect,
+            handleKeyDown
         }
     }
 })

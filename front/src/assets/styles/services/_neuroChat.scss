@@ -224,6 +224,12 @@
         word-wrap: break-word;
         position: relative;
 
+        &--neuro {
+            &>img {
+                max-width: 100%;
+            }
+        }
+
         @include sm {
             max-width: 85%;
             padding: 12px 15px;

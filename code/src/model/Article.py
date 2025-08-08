@@ -1845,9 +1845,17 @@ class Article:
             images = []
             for art in articles_in_section:
                 if art["active"] is not False:
+                    self.id = art["id"]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+
                     art_img = {
-                        "id": art["id"],
-                        "image": art["preview_file_url"],
+                        "id": self.id,
+                        "image": preview_pict,
                         "href":  art["indirect_data"]["sectionHref"]
                     }
                     images.append(art_img)

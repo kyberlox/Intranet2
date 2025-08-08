@@ -2,6 +2,12 @@
 
 .neuroChat {
 
+    &__messages {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
     &-page {
         width: 100%;
         display: flex;
@@ -223,6 +229,18 @@
         line-height: 1.5;
         word-wrap: break-word;
         position: relative;
+
+        &--link {
+            &>a {
+                color: blue !important;
+                text-decoration: underline;
+                transition: 0.2s;
+
+                &:hover {
+                    color: var(--emk-brand-color) !important;
+                }
+            }
+        }
 
         &--neuro {
             &>img {

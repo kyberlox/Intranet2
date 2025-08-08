@@ -3,7 +3,7 @@
         <div class="neuroChat-page">
             <NeuroChatSidebar :chatHistory="chatHistory"
                               :neuroModels="neuroModels"
-                              @typeChanged="(newType: IChatType) => chatType = newType" />
+                              @typeChanged="handleChatTypeChange" />
             <div class="neuroChat-content__wrapper">
                 <div class="neuroChat-content">
                     <div v-if="chatDataToSend.length">
@@ -15,12 +15,18 @@
                                 {{ chat.content }}
                             </div>
                             <div v-if="chat.role == 'assistant' && chatType == 'createImg' && chat.type == 'img'"
-                                 class="neuroChat__message neuroChat__message--neuro">
-                                <img :src="chat.content" />
+                                 class="neuroChat__messages">
+                                <div class="neuroChat__message neuroChat__message--neuro">
+                                    <img :src="chat.content" />
+                                </div>
+                                <div class="neuroChat__message neuroChat__message--link neuroChat__message--neuro">
+                                    <a :href="chat.content"
+                                       target="_blank">Открыть в новом окне</a>
+                                </div>
                             </div>
-                            <div v-if="chat.role == 'assistant'"
-                                 class="neuroChat__message neuroChat__message--neuro">
-                                {{ chat.content }}
+                            <div v-else-if="chat.role == 'assistant'"
+                                 class="neuroChat__message neuroChat__message--neuro"
+                                 v-html="parseMarkdown(chat.content)">
                             </div>
                         </div>
                     </div>
@@ -81,6 +87,7 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
 import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
+import { parseMarkdown } from '@/utils/parseMarkdown';
 
 export type IChatType = "textChat" | "createImg";
 
@@ -161,13 +168,13 @@ export default defineComponent({
             }
             else if (chatType.value == 'createImg') {
                 chatDataToSend.value.length = 0;
+                chatDataToSend.value.push({
+                    role: 'user',
+                    content: userInput.value,
+
+                })
                 await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
                     .then((data) => {
-                        chatDataToSend.value.push({
-                            role: 'user',
-                            content: userInput.value,
-
-                        })
                         chatDataToSend.value.push({
                             role: 'assistant',
                             content: data.image_url,
@@ -196,6 +203,11 @@ export default defineComponent({
             }
         }
 
+        const handleChatTypeChange = (type: IChatType) => {
+            chatDataToSend.value.length = 0;
+            chatType.value = type;
+        }
+
         return {
             chatHistory,
             neuroModels,
@@ -205,6 +217,8 @@ export default defineComponent({
             fileToUploadName,
             chatDataToSend,
             chatType,
+            handleChatTypeChange,
+            parseMarkdown,
             sendMsg,
             handleFileSelect,
             triggerFileSelect,

@@ -1839,7 +1839,8 @@ class Article:
             return idea_block
         
         #конкурсы
-        elif section_id == 7:
+        elif section_id == 7:\
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             images = []
             for art in articles_in_section:

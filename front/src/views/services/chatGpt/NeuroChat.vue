@@ -32,7 +32,7 @@
                     </div>
                     <div v-else
                          class="neuroChat__message neuroChat__message--neuro">
-                        Привет! Чем могу помочь?
+                        {{ firstMessage }}
                     </div>
                 </div>
                 <div class="neuroChat__input-textarea__wrapper">
@@ -104,6 +104,7 @@ export default defineComponent({
         const fileToUploadName = ref<string>()
         const chatHistory = ref();
         const createImageChatData = ref();
+        const firstMessage = ref();
 
         const neuroModels: { name: string, type: IChatType }[] = [{
             name: 'Чат',
@@ -206,6 +207,7 @@ export default defineComponent({
         const handleChatTypeChange = (type: IChatType) => {
             chatDataToSend.value.length = 0;
             chatType.value = type;
+            firstMessage.value = type == 'createImg' ? 'Привет! Опиши изображение, которое хочешь получить' : 'Привет! Чем могу помочь?'
         }
 
         return {
@@ -217,6 +219,7 @@ export default defineComponent({
             fileToUploadName,
             chatDataToSend,
             chatType,
+            firstMessage,
             handleChatTypeChange,
             parseMarkdown,
             sendMsg,

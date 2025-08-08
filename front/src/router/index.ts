@@ -420,6 +420,11 @@ const router = createRouter({
       component: () => import('@/views/innerCommunications/EventAnnounces.vue')
     },
     {
+      path: '/communications/contest/',
+      name: 'contest',
+      component: () => import('@/views/innerCommunications/EventAnnounces.vue')
+    },
+    {
       path: '/communications/announces/:id',
       name: 'eventAnnounce',
       component: () => import('@/views/PostPreview.vue'),

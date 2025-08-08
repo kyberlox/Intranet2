@@ -230,48 +230,50 @@ class Article:
 
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
-            nomination = None
-            age_group = None
+            print(data)
 
-            if 'PROPERTY_1071' in data:
-                if int(data['PROPERTY_1071'][0]) == 664:
-                    nomination = 'Дети от 5 до 7 лет'
-                elif int(data['PROPERTY_1071'][0]) == 1775:
-                    nomination = 'Дети от 8 до 11 лет'
-                elif int(data['PROPERTY_1071'][0]) == 1776:
-                    nomination = 'Дети от 12 до 16 лет'
+            # nomination = None
+            # age_group = None
+
+            # if 'PROPERTY_1071' in data:
+            #     if int(data['PROPERTY_1071'][0]) == 664:
+            #         nomination = 'Дети от 5 до 7 лет'
+            #     elif int(data['PROPERTY_1071'][0]) == 1775:
+            #         nomination = 'Дети от 8 до 11 лет'
+            #     elif int(data['PROPERTY_1071'][0]) == 1776:
+            #         nomination = 'Дети от 12 до 16 лет'
         
 
 
-            if 'PROPERTY_1072' in data:
-                if int(data['PROPERTY_1072'][0]) == 671:
-                    age_group = 'Дети от 5 до 7 лет'
-                elif int(data['PROPERTY_1072'][0]) == 672:
-                    age_group = 'Дети от 8 до 11 лет'
-                elif int(data['PROPERTY_1072'][0]) == 673:
-                    age_group = 'Дети от 12 до 16 лет'
+            # if 'PROPERTY_1072' in data:
+            #     if int(data['PROPERTY_1072'][0]) == 671:
+            #         age_group = 'Дети от 5 до 7 лет'
+            #     elif int(data['PROPERTY_1072'][0]) == 672:
+            #         age_group = 'Дети от 8 до 11 лет'
+            #     elif int(data['PROPERTY_1072'][0]) == 673:
+            #         age_group = 'Дети от 12 до 16 лет'
 
             
 
-            indirect_data = json.dumps({
-                "created_by" : data['CREATED_BY'],
-                "author" : str(data['PROPERTY_1070'][0]),
-                "nomination" : nomination,
-                "age_group" : age_group,
-                "representative_id" : int(data['PROPERTY_1074'][0]),
-                "representative_text" : str(data['PROPERTY_1075'][0])
-            })
-            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
+            # indirect_data = json.dumps({
+            #     "created_by" : data['CREATED_BY'],
+            #     "author" : str(data['PROPERTY_1070'][0]),
+            #     "nomination" : nomination,
+            #     "age_group" : age_group,
+            #     "representative_id" : int(data['PROPERTY_1074'][0]),
+            #     "representative_text" : str(data['PROPERTY_1075'][0])
+            # })
+            # '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
 
-            indirect_data = json.dumps({
-                "created_by" : data['CREATED_BY'],
-                "author" : str(data['PROPERTY_1070'][0]),
-                "nomination" : nomination,
-                "age_group" : age_group,
-                "representative_id" : int(data['PROPERTY_1074'][0]),
-                "representative_text" : str(data['PROPERTY_1075'][0]),
-                "likes_from_b24": data['PROPERTY_1073']
-            })
+            # indirect_data = json.dumps({
+            #     "created_by" : data['CREATED_BY'],
+            #     "author" : str(data['PROPERTY_1070'][0]),
+            #     "nomination" : nomination,
+            #     "age_group" : age_group,
+            #     "representative_id" : int(data['PROPERTY_1074'][0]),
+            #     "representative_text" : str(data['PROPERTY_1075'][0]),
+            #     "likes_from_b24": data['PROPERTY_1073']
+            # })
 
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:

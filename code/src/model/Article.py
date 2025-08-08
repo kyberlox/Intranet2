@@ -1849,12 +1849,15 @@ class Article:
                         "image": art["preview_file_url"],
                         "href":  art["indirect_data"]["sectionHref"]
                     }
-            {
+                    images.append(art_img)
+            second_page = {
                 "id": 7,
                 "type": "singleBlock",
                 "title": "Конкурсы ЭМК",
                 "images": images
             }
+
+            return second_page
 
 
         # Открытые вакансии

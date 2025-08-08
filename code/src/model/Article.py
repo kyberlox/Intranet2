@@ -1577,13 +1577,13 @@ class Article:
                 art['reactions'] = has_user_liked
 
         #обработаем конкурсы эмк где есть лайки, но нет просмотров
-        elif art['section_id'] == 7:
-            # вызов количества лайков
-            del art['indirect_data']['likes_from_b24']
-            user_id = self.get_user_by_session_id(session_id=session_id)
-            if user_id is not None:
-                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                art['reactions'] = has_user_liked
+        # elif art['section_id'] == 7:
+        #     # вызов количества лайков
+        #     del art['indirect_data']['likes_from_b24']
+        #     user_id = self.get_user_by_session_id(session_id=session_id)
+        #     if user_id is not None:
+        #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+        #         art['reactions'] = has_user_liked
         
         return art
 
@@ -1726,13 +1726,13 @@ class Article:
                             res['reactions'] = has_user_liked
 
                     #обработаем конкурсы эмк где есть лайки, но нет просмотров
-                    elif res['section_id'] == 7:
-                        del res['indirect_data']['likes_from_b24']
-                        # вызов количества лайков
-                        user_id = self.get_user_by_session_id(session_id=session_id)
-                        if user_id is not None:
-                            has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                            res['reactions'] = has_user_liked
+                    # elif res['section_id'] == 7:
+                    #     del res['indirect_data']['likes_from_b24']
+                    #     # вызов количества лайков
+                    #     user_id = self.get_user_by_session_id(session_id=session_id)
+                    #     if user_id is not None:
+                    #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                    #         res['reactions'] = has_user_liked
 
 
                     active_articles.append(res)
@@ -1837,21 +1837,40 @@ class Article:
                 'href': 'ideasPage'
             }# словарь-заглушка для будущей секции "Предложить идею"
             return idea_block
+        
+        #конкурсы
+        elif section_id == 7:
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            images = []
+            for art in articles_in_section:
+                if art["active"] is not False:
+                    art_img = {
+                        "id": art["ID"],
+                        "image": фото,
+                        "href":  #"sectionHref"
+                    }
+            {
+                "id": 7,
+                "type": "singleBlock",
+                "title": "Конкурсы ЭМК",
+                "images": images
+            }
+
 
         # Открытые вакансии
-        elif section_id == 111:
-            emk_competition = {
-                'id': section_id,
-                'type': 'singleBlock',
-                'title': 'Конкурсы ЭМК',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                    "href": "vacancies"
-                }],
-                '// href': '/'
-            } # словарь-заглушка для будущей секции "Конкурсы ЭМК"
-            return emk_competition
+        # elif section_id == 111:
+        #     emk_competition = {
+        #         'id': section_id,
+        #         'type': 'singleBlock',
+        #         'title': 'Конкурсы ЭМК',
+        #         'images': [{
+        #             "id": 1,
+        #             "image": None,
+        #             "href": "vacancies"
+        #         }],
+        #         '// href': '/'
+        #     } # словарь-заглушка для будущей секции "Конкурсы ЭМК"
+        #     return emk_competition
 
         # Актуальные новости
         elif section_id == 31:
@@ -2167,22 +2186,22 @@ class Article:
                             pass
 
                     ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
-            elif inf['section_id'] == 7:
-                if isinstance(inf['indirect_data'], str):
-                    inf['indirect_data'] = json.loads(inf['indirect_data'])
+            # elif inf['section_id'] == 7:
+            #     if isinstance(inf['indirect_data'], str):
+            #         inf['indirect_data'] = json.loads(inf['indirect_data'])
 
-                if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
-                    for user_id in inf['indirect_data']['likes_from_b24']:
-                        user_exist = User(int(user_id)).search_by_id()
-                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-                            continue
-                        else:
-                            has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
-                            if has_usr_liked['likes']['likedByMe']:
-                                continue
-                            else:
-                                LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
-                            # прописать удаление из indirect_data лайков
+            #     if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
+            #         for user_id in inf['indirect_data']['likes_from_b24']:
+            #             user_exist = User(int(user_id)).search_by_id()
+            #             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+            #                 continue
+            #             else:
+            #                 has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
+            #                 if has_usr_liked['likes']['likedByMe']:
+            #                     continue
+            #                 else:
+            #                     LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
+            #                 # прописать удаление из indirect_data лайков
                         
 
         return {"status": True}

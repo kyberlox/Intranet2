@@ -231,6 +231,12 @@ class Article:
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
             print(data)
+            property_dict = {
+                "CREATED_BY" : "author",
+                "PROPERTY_391" : "sectionHref"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
 
             # nomination = None
             # age_group = None
@@ -749,6 +755,9 @@ class Article:
             "PROPERTY_478",
             "PROPERTY_491",
             "PROPERTY_366",
+
+            #превьюшка конкурсов
+            "PROPERTY_389",
         ]
 
         preview_file = [
@@ -764,6 +773,7 @@ class Article:
             "PREVIEW_PICTURE",
             "B24_PREVIEW_FILES",
             "PROPERTY_356",
+            "PROPERTY_389",
         ]
 
         link_prop = [

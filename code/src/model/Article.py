@@ -1900,9 +1900,7 @@ class Article:
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if values["active"] is False:
-                        pass
-                else:
+                if values["active"] is not False:
                     if "PROPERTY_1025" not in values["indirect_data"] or values["indirect_data"]["PROPERTY_1025"] is None:
                         pass
                     else:

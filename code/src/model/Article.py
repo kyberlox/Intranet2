@@ -1636,7 +1636,7 @@ class Article:
 
     def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 9, 53, 51] #7
             page_view = []
 
             user_id = self.get_user_by_session_id(session_id=session_id)

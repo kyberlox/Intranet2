@@ -1897,24 +1897,21 @@ class Article:
 
         # Видеоитервью
         elif section_id == 16:
-            date_list = [] # список для сортировки по дате
+            data_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is not False:
-                    if "PROPERTY_1025" not in values["indirect_data"] or values["indirect_data"]["PROPERTY_1025"] is None:
-                        pass
-                    else:
-                        date_value = [] # список для хранения необходимых данных
-                        date_value.append(values["id"])
-                        date_value.append(values["name"])
-                        date_value.append(values["preview_text"])
-                        date_value.append(values["date_creation"])
+                    data_value = [] # список для хранения необходимых данных
+                    data_value.append(values["id"])
+                    data_value.append(values["name"])
+                    data_value.append(values["preview_text"])
+                    data_value.append(values["date_creation"])
 
-                        self.id = values["id"]
+                    self.id = values["id"]
 
-                        date_list.append(date_value) # получили список с необходимыми данными
+                    data_list.append(data_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(data_list, key=lambda x: x[0], reverse=True)
 
             second_page = {
                 'id': section_id,

@@ -1845,9 +1845,9 @@ class Article:
             for art in articles_in_section:
                 if art["active"] is not False:
                     art_img = {
-                        "id": art["ID"],
-                        "image": "фото",
-                        "href":  ""#"sectionHref"
+                        "id": art["id"],
+                        "image": art["preview_file_url"],
+                        "href":  art["indirect_data"]["sectionHref"]
                     }
             {
                 "id": 7,

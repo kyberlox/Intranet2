@@ -1866,7 +1866,7 @@ class Article:
                 "images": images
             }
 
-            print(second_page)
+            #print(second_page)
 
             return second_page
 

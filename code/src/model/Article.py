@@ -230,48 +230,56 @@ class Article:
 
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
-            nomination = None
-            age_group = None
+            print(data)
+            property_dict = {
+                "CREATED_BY" : "author",
+                "PROPERTY_391" : "sectionHref"
+            }
+            
+            indirect_data = dict_to_indirect_data(data, property_dict)
 
-            if 'PROPERTY_1071' in data:
-                if int(data['PROPERTY_1071'][0]) == 664:
-                    nomination = 'Дети от 5 до 7 лет'
-                elif int(data['PROPERTY_1071'][0]) == 1775:
-                    nomination = 'Дети от 8 до 11 лет'
-                elif int(data['PROPERTY_1071'][0]) == 1776:
-                    nomination = 'Дети от 12 до 16 лет'
+            # nomination = None
+            # age_group = None
+
+            # if 'PROPERTY_1071' in data:
+            #     if int(data['PROPERTY_1071'][0]) == 664:
+            #         nomination = 'Дети от 5 до 7 лет'
+            #     elif int(data['PROPERTY_1071'][0]) == 1775:
+            #         nomination = 'Дети от 8 до 11 лет'
+            #     elif int(data['PROPERTY_1071'][0]) == 1776:
+            #         nomination = 'Дети от 12 до 16 лет'
         
 
 
-            if 'PROPERTY_1072' in data:
-                if int(data['PROPERTY_1072'][0]) == 671:
-                    age_group = 'Дети от 5 до 7 лет'
-                elif int(data['PROPERTY_1072'][0]) == 672:
-                    age_group = 'Дети от 8 до 11 лет'
-                elif int(data['PROPERTY_1072'][0]) == 673:
-                    age_group = 'Дети от 12 до 16 лет'
+            # if 'PROPERTY_1072' in data:
+            #     if int(data['PROPERTY_1072'][0]) == 671:
+            #         age_group = 'Дети от 5 до 7 лет'
+            #     elif int(data['PROPERTY_1072'][0]) == 672:
+            #         age_group = 'Дети от 8 до 11 лет'
+            #     elif int(data['PROPERTY_1072'][0]) == 673:
+            #         age_group = 'Дети от 12 до 16 лет'
 
             
 
-            indirect_data = json.dumps({
-                "created_by" : data['CREATED_BY'],
-                "author" : str(data['PROPERTY_1070'][0]),
-                "nomination" : nomination,
-                "age_group" : age_group,
-                "representative_id" : int(data['PROPERTY_1074'][0]),
-                "representative_text" : str(data['PROPERTY_1075'][0])
-            })
-            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
+            # indirect_data = json.dumps({
+            #     "created_by" : data['CREATED_BY'],
+            #     "author" : str(data['PROPERTY_1070'][0]),
+            #     "nomination" : nomination,
+            #     "age_group" : age_group,
+            #     "representative_id" : int(data['PROPERTY_1074'][0]),
+            #     "representative_text" : str(data['PROPERTY_1075'][0])
+            # })
+            # '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
 
-            indirect_data = json.dumps({
-                "created_by" : data['CREATED_BY'],
-                "author" : str(data['PROPERTY_1070'][0]),
-                "nomination" : nomination,
-                "age_group" : age_group,
-                "representative_id" : int(data['PROPERTY_1074'][0]),
-                "representative_text" : str(data['PROPERTY_1075'][0]),
-                "likes_from_b24": data['PROPERTY_1073']
-            })
+            # indirect_data = json.dumps({
+            #     "created_by" : data['CREATED_BY'],
+            #     "author" : str(data['PROPERTY_1070'][0]),
+            #     "nomination" : nomination,
+            #     "age_group" : age_group,
+            #     "representative_id" : int(data['PROPERTY_1074'][0]),
+            #     "representative_text" : str(data['PROPERTY_1075'][0]),
+            #     "likes_from_b24": data['PROPERTY_1073']
+            # })
 
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
@@ -747,6 +755,9 @@ class Article:
             "PROPERTY_478",
             "PROPERTY_491",
             "PROPERTY_366",
+
+            #превьюшка конкурсов
+            "PROPERTY_389",
         ]
 
         preview_file = [
@@ -762,6 +773,7 @@ class Article:
             "PREVIEW_PICTURE",
             "B24_PREVIEW_FILES",
             "PROPERTY_356",
+            "PROPERTY_389",
         ]
 
         link_prop = [
@@ -1071,12 +1083,13 @@ class Article:
             # 16 : "122", # Видеоитервью ✔️
             
             # 32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
+            # 53 : "62", # Афиша ✔️
             # 54 : "55", # Предложения партнеров ✔️
             # 55 : "56", # Благотворительные проекты ✔️
 
             #25 : "100", #Референсы и опыт поставок ✔️
-            # 175 : "60" # Учебный центр (Литература) ✔️
+            # 175 : "60", # Учебный центр (Литература) ✔️
+            7 : "66", #Конкурсы (Главная)
         }
         
         
@@ -1098,7 +1111,6 @@ class Article:
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
-        
 
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
@@ -1465,19 +1477,18 @@ class Article:
         '''
         
         #Конкурсы ЭМК 7 секция
-        '''
-        self.section_id = "128"
-        competitions_info = self.get_inf()
-        if competitions_info != []:
-            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
-                #art_id = inf["ID"]
-                self.section_id = 7
-                art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
-                if art_DB.need_add():
-                    self.add(inf)
-                elif art_DB.update(self.make_valid_article(inf)):
-                    pass
-        '''
+
+        # self.section_id = "128"
+        # competitions_info = self.get_inf()
+        # if competitions_info != []:
+        #     for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+        #         #art_id = inf["ID"]
+        #         self.section_id = 7
+        #         art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
+        #         if art_DB.need_add():
+        #             self.add(inf)
+        #         elif art_DB.update(self.make_valid_article(inf)):
+        #             pass
 
         '''самобытные блоки'''
         # полная статика
@@ -1566,13 +1577,13 @@ class Article:
                 art['reactions'] = has_user_liked
 
         #обработаем конкурсы эмк где есть лайки, но нет просмотров
-        elif art['section_id'] == 7:
-            # вызов количества лайков
-            del art['indirect_data']['likes_from_b24']
-            user_id = self.get_user_by_session_id(session_id=session_id)
-            if user_id is not None:
-                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                art['reactions'] = has_user_liked
+        # elif art['section_id'] == 7:
+        #     # вызов количества лайков
+        #     del art['indirect_data']['likes_from_b24']
+        #     user_id = self.get_user_by_session_id(session_id=session_id)
+        #     if user_id is not None:
+        #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+        #         art['reactions'] = has_user_liked
         
         return art
 
@@ -1625,7 +1636,7 @@ class Article:
 
     def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 111, 31, 16, 33, 9, 53, 51] #section id
+            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 9, 53, 51] #7
             page_view = []
 
             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -1715,13 +1726,13 @@ class Article:
                             res['reactions'] = has_user_liked
 
                     #обработаем конкурсы эмк где есть лайки, но нет просмотров
-                    elif res['section_id'] == 7:
-                        del res['indirect_data']['likes_from_b24']
-                        # вызов количества лайков
-                        user_id = self.get_user_by_session_id(session_id=session_id)
-                        if user_id is not None:
-                            has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                            res['reactions'] = has_user_liked
+                    # elif res['section_id'] == 7:
+                    #     del res['indirect_data']['likes_from_b24']
+                    #     # вызов количества лайков
+                    #     user_id = self.get_user_by_session_id(session_id=session_id)
+                    #     if user_id is not None:
+                    #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                    #         res['reactions'] = has_user_liked
 
 
                     active_articles.append(res)
@@ -1826,21 +1837,54 @@ class Article:
                 'href': 'ideasPage'
             }# словарь-заглушка для будущей секции "Предложить идею"
             return idea_block
+        
+        #конкурсы
+        elif section_id == 7:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            images = []
+            for art in articles_in_section:
+                if art["active"] is not False:
+                    self.id = art["id"]
+                    preview_pict = self.get_preview()
+
+                    if preview_pict is None:
+                        image_url = None
+                    else:
+                        image_url = preview_pict
+
+                    art_img = {
+                        "id": self.id,
+                        "image": preview_pict,
+                        "href":  art["indirect_data"]["sectionHref"]
+                    }
+                    images.append(art_img)
+            second_page = {
+                "id": 7,
+                "type": "singleBlock",
+                "title": "Конкурсы ЭМК",
+                "images": images
+            }
+
+            #print(second_page)
+
+            return second_page
+
 
         # Открытые вакансии
-        elif section_id == 111:
-            emk_competition = {
-                'id': section_id,
-                'type': 'singleBlock',
-                'title': 'Конкурсы ЭМК',
-                'images': [{
-                    "id": 1,
-                    "image": None,
-                    "href": "vacancies"
-                }],
-                '// href': '/'
-            } # словарь-заглушка для будущей секции "Конкурсы ЭМК"
-            return emk_competition
+        # elif section_id == 111:
+        #     emk_competition = {
+        #         'id': section_id,
+        #         'type': 'singleBlock',
+        #         'title': 'Конкурсы ЭМК',
+        #         'images': [{
+        #             "id": 1,
+        #             "image": None,
+        #             "href": "vacancies"
+        #         }],
+        #         '// href': '/'
+        #     } # словарь-заглушка для будущей секции "Конкурсы ЭМК"
+        #     return emk_competition
 
         # Актуальные новости
         elif section_id == 31:
@@ -1897,26 +1941,21 @@ class Article:
 
         # Видеоитервью
         elif section_id == 16:
-            date_list = [] # список для сортировки по дате
+            data_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if values["active"] is False:
-                        pass
-                else:
-                    if "PROPERTY_1025" not in values["indirect_data"] or values["indirect_data"]["PROPERTY_1025"] is None:
-                        pass
-                    else:
-                        date_value = [] # список для хранения необходимых данных
-                        date_value.append(values["id"])
-                        date_value.append(values["name"])
-                        date_value.append(values["preview_text"])
-                        date_value.append(values["date_creation"])
+                if values["active"] is not False:
+                    data_value = [] # список для хранения необходимых данных
+                    data_value.append(values["id"])
+                    data_value.append(values["name"])
+                    data_value.append(values["preview_text"])
+                    data_value.append(values["date_creation"])
 
-                        self.id = values["id"]
+                    self.id = values["id"]
 
-                        date_list.append(date_value) # получили список с необходимыми данными
+                    data_list.append(data_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(data_list, key=lambda x: x[0], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -2161,22 +2200,22 @@ class Article:
                             pass
 
                     ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
-            elif inf['section_id'] == 7:
-                if isinstance(inf['indirect_data'], str):
-                    inf['indirect_data'] = json.loads(inf['indirect_data'])
+            # elif inf['section_id'] == 7:
+            #     if isinstance(inf['indirect_data'], str):
+            #         inf['indirect_data'] = json.loads(inf['indirect_data'])
 
-                if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
-                    for user_id in inf['indirect_data']['likes_from_b24']:
-                        user_exist = User(int(user_id)).search_by_id()
-                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-                            continue
-                        else:
-                            has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
-                            if has_usr_liked['likes']['likedByMe']:
-                                continue
-                            else:
-                                LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
-                            # прописать удаление из indirect_data лайков
+            #     if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
+            #         for user_id in inf['indirect_data']['likes_from_b24']:
+            #             user_exist = User(int(user_id)).search_by_id()
+            #             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+            #                 continue
+            #             else:
+            #                 has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
+            #                 if has_usr_liked['likes']['likedByMe']:
+            #                     continue
+            #                 else:
+            #                     LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
+            #                 # прописать удаление из indirect_data лайков
                         
 
         return {"status": True}

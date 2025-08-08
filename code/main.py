@@ -36,6 +36,8 @@ from src.services.FieldsVisions import Visions, fieldsvisions_router
 
 from src.model.Tag import Tag, tag_router
 
+from src.services.AIchat import ai_router
+
 from typing import Awaitable, Callable, Optional
 
 from PIL import Image
@@ -74,6 +76,8 @@ app.include_router(b24_router, prefix="/api")
 app.include_router(idea_router, prefix="/api")
 app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
+app.include_router(ai_router, prefix="/api")
+
 
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")

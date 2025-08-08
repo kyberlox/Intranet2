@@ -23,7 +23,7 @@ export interface SingleBlock {
     id: number;
     type: 'singleBlock';
     title: string;
-    images: (string | ImageWithHref)[];
+    images: (ImageWithHref)[];
     href?: string;
     modifiers?: string[];
 }

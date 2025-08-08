@@ -4,7 +4,8 @@
         <div v-for="(image, index) in slide.images"
              :key="index"
              class="contentGallery__img-wrapper">
-            <div @click="callModal(slide.images, index)"
+            <div v-if="slide.images"
+                 @click="callModal(slide.images, index)"
                  class="contentGallery__card__img"
                  v-lazy-load="image.file_url"
                  alt="slide"></div>

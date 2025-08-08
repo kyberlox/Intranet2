@@ -9,7 +9,6 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
     const swiperInstance = ref<SwiperType | null>(null);
     const isBeginning = ref(true);
     const isEnd = ref(false);
-    console.log(type);
 
     const swiperOn = (swiper: SwiperType) => {
         swiperInstance.value = swiper;

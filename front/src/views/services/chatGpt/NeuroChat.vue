@@ -2,7 +2,8 @@
     <div class="neuroChat-page__wrapper">
         <div class="neuroChat-page">
             <NeuroChatSidebar :chatHistory="chatHistory"
-                              :neuroModels="neuroModels" />
+                              :neuroModels="neuroModels"
+                              @typeChanged="(newType: IChatType) => chatType = newType" />
             <div class="neuroChat-content__wrapper">
                 <div class="neuroChat-content">
                     <div class="neuroChat__messages__wrapper"
@@ -49,12 +50,11 @@
                                        ref="fileInputNode"
                                        @change="handleFileSelect"
                                        class="neuroChat__file-input"
-                                       accept=".pdf,.doc,.docx,.txt,.jpg,.png">
+                                       accept=".pdf,.doc,.docx,.txt,.jpg,.png" />
                                 <div class="neuroChat__add-file"
                                      @click="triggerFileSelect">
                                     <AddFileIcon />
                                 </div>
-                                </input>
                                 <p class="fs-s">{{ fileToUploadName }}</p>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type Ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import NeuroChatSidebar from './components/NeuroChatSidebar.vue';
 import Api from '@/utils/Api';
@@ -75,6 +75,8 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
 import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
+
+export type IChatType = "textChat" | "createImg";
 
 export default defineComponent({
     name: 'neuroChat',
@@ -88,21 +90,23 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
         const fileToUploadName = ref<string>()
         const chatHistory = ref();
+        const createImageChatData = ref();
 
-        const neuroModels = [{
-            name: 'chatGpt',
-            route: 'chatGpt'
+        const neuroModels: { name: string, type: IChatType }[] = [{
+            name: 'Чат',
+            type: 'textChat'
         },
         {
-            name: 'Deepseek',
-            route: 'deepseek'
-        }]
+            name: 'Генерация изображений',
+            type: 'createImg'
+        },]
 
         const isLoading = ref(false);
         const userInput = ref('');
         const fileInputNode = ref<HTMLInputElement>();
         const fileInput = ref<File>();
         const chatDataToSend = ref<INeuroChat[]>([]);
+        const chatType = ref<IChatType>();
 
         const handleFileSelect = (event: Event) => {
             const target = event.target as HTMLInputElement;
@@ -115,24 +119,60 @@ export default defineComponent({
             fileInputNode.value?.click();
         }
 
-        const sendMsg = async () => {
+        const chatWindowUpdate = () => {
             isLoading.value = true;
-            if (!chatDataToSend.value.find((e) => e.role == 'system')) {
-                chatDataToSend.value.push({ 'role': 'system', content: 'Определи из контекста, отвечай на русском' });
+            if (chatType.value == 'textChat') {
+                if (!chatDataToSend.value.find((e) => e.role == 'system')) {
+                    chatDataToSend.value.push({ 'role': 'system', content: 'Определи из контекста, отвечай на русском' });
+                }
+                chatDataToSend.value.push({ 'role': 'user', content: userInput.value });
             }
-            chatDataToSend.value.push({ 'role': 'user', content: userInput.value });
-            userInput.value = '';
+            else if (chatType.value == 'createImg') {
+                createImageChatData.value = {
+                    prompt: userInput.value,
+                    size: '1024x1024',
+                    quality: 'standard',
+                    style: 'vivid'
+                }
+            }
+        }
 
-            await Api.postVendor('https://gpt.emk.ru/dialog', chatDataToSend.value)
-                .then((data) => {
-                    chatDataToSend.value = data
-                })
-                .catch((error) => {
-                    handleApiError(error, toast)
-                })
-                .finally(() => {
-                    isLoading.value = false;
-                })
+        const sendMsg = async () => {
+            chatWindowUpdate();
+            if (chatType.value == 'textChat') {
+                await Api.postVendor('https://gpt.emk.ru/dialog', chatDataToSend.value)
+                    .then((data) => {
+                        chatDataToSend.value = data
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => {
+                        isLoading.value = false;
+                        userInput.value = '';
+                    })
+            }
+            else if (chatType.value == 'createImg') {
+                await Api.postVendor(`https://gpt.emk.ru/generate-image?promt=${userInput.value}&size=${createImageChatData.value.size}&quality=standart&style=${createImageChatData.value.style}`, null)
+                    .then((data) => {
+                        chatDataToSend.value.length = 0;
+                        chatDataToSend.value.push({
+                            role: 'user',
+                            content: data.prompt
+                        })
+                        chatDataToSend.value.push({
+                            role: 'assistant',
+                            content: data.image_url
+                        })
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => {
+                        isLoading.value = false;
+                        userInput.value = '';
+                    })
+            }
         }
 
         return {
@@ -143,6 +183,7 @@ export default defineComponent({
             fileInputNode,
             fileToUploadName,
             chatDataToSend,
+            chatType,
             sendMsg,
             handleFileSelect,
             triggerFileSelect

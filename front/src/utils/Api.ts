@@ -36,7 +36,7 @@ export default class Api {
         }
     }
 
-    static async postVendor(url: string, data: INeuroChat[]) {
+    static async postVendor(url: string, data: INeuroChat[] | null) {
         return (await vendorApi.post(url, data)).data;
     }
     static async post(url: string, data: IAuth | IPostIdea | IPostInner | FormData) {

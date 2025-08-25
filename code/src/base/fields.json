@@ -3,6 +3,7 @@
     "section_id" : "ID раздела",
     "name" : "Название статьи",
     "active" : "Активна",
+    "theme" : "Тема",
     "date_publiction" : "Дата публикации",
     "date_creation" : "Дата создания",
     "preview_text" : "Аннотация",
@@ -20,4 +21,5 @@
     "phone_number" : "Номер телефона",
     "date_from" : "Дата начала",
     "date_to" : "Дата окончания"
+    
 }

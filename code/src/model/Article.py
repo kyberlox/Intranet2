@@ -2310,7 +2310,7 @@ def get_article(ID : int, request: Request):
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
-def get_articles(section_id : int, request: Request):
+def get_articles(section_id, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -2320,7 +2320,10 @@ def get_articles(section_id : int, request: Request):
     else:
         session_id = token
     
-    return Article(section_id = section_id).search_by_section_id(session_id=session_id)
+    if section_id == "undefind":
+        return {"err" : "Undefined section_id!"}
+    else:
+        return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
 @article_router.put("/add_or_remove_like/{article_id}")
 def add_or_remove_like(article_id, request: Request):

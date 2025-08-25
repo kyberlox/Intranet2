@@ -2320,7 +2320,10 @@ def get_articles(section_id, request: Request):
     else:
         session_id = token
     
-    return Article(section_id = section_id).search_by_section_id(session_id=session_id)
+    if section_id == "undefind":
+        return {"err" : "Undefined section_id!"}
+    else:
+        return Article(section_id = section_id).search_by_section_id(session_id=session_id)
 
 @article_router.put("/add_or_remove_like/{article_id}")
 def add_or_remove_like(article_id, request: Request):

@@ -131,8 +131,9 @@ class Editor:
         
         # вывести
         return {"fields" : field, "files" : files}
-    
-    
+
+
+
     def get_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()

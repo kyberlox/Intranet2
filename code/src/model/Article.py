@@ -230,16 +230,28 @@ class Article:
 
         # отдельно обработаем случай конкурсов ЭМК
         elif self.section_id == 7:
-            print(data)
             property_dict = {
                 "CREATED_BY" : "author",
                 "PROPERTY_391" : "sectionHref"
             }
-            
+        
             indirect_data = dict_to_indirect_data(data, property_dict)
+        
+        elif self.section_id == 71:
+            nomination = None
+            age_group = None
 
-            # nomination = None
-            # age_group = None
+            property_dict = {
+                "PROPERTY_1071" : "nomination",
+                "PROPERTY_1072" : "age_group",
+                "PROPERTY_1070" : "author",
+                "created_by" : "CREATED_BY",
+                "PROPERTY_1074" : "representative_id",
+                "representative_text" : "PROPERTY_1075"
+
+            }
+        
+            indirect_data = dict_to_indirect_data(data, property_dict)
 
             # if 'PROPERTY_1071' in data:
             #     if int(data['PROPERTY_1071'][0]) == 664:
@@ -269,6 +281,7 @@ class Article:
             #     "representative_id" : int(data['PROPERTY_1074'][0]),
             #     "representative_text" : str(data['PROPERTY_1075'][0])
             # })
+
             # '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
 
             # indirect_data = json.dumps({
@@ -1089,7 +1102,8 @@ class Article:
 
             #25 : "100", #Референсы и опыт поставок ✔️
             # 175 : "60", # Учебный центр (Литература) ✔️
-            7 : "66", #Конкурсы (Главная)
+            7 : "66", #Конкурсы (Главная) ✔️
+            71 : "128", #Конкурсы (Непосредственно)
         }
         
         
@@ -1483,7 +1497,7 @@ class Article:
         # if competitions_info != []:
         #     for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
         #         #art_id = inf["ID"]
-        #         self.section_id = 7
+        #         self.section_id = 71
         #         art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
         #         if art_DB.need_add():
         #             self.add(inf)
@@ -1567,7 +1581,7 @@ class Article:
                 art['indirect_data']['tags'] = tags
 
 
-        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34, 175] # список секций где нет лайков
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 71, 34, 175] # список секций где нет лайков
 
         if art['section_id'] not in null_list:
             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -1577,13 +1591,13 @@ class Article:
                 art['reactions'] = has_user_liked
 
         #обработаем конкурсы эмк где есть лайки, но нет просмотров
-        # elif art['section_id'] == 7:
-        #     # вызов количества лайков
-        #     del art['indirect_data']['likes_from_b24']
-        #     user_id = self.get_user_by_session_id(session_id=session_id)
-        #     if user_id is not None:
-        #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-        #         art['reactions'] = has_user_liked
+        elif art['section_id'] == 71:
+            # вызов количества лайков
+            del art['indirect_data']['likes_from_b24']
+            user_id = self.get_user_by_session_id(session_id=session_id)
+            if user_id is not None:
+                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                art['reactions'] = has_user_liked
         
         return art
 
@@ -1636,7 +1650,7 @@ class Article:
 
     def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 9, 53, 51] #7
+            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 9, 53, 51] #111
             page_view = []
 
             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -2283,7 +2297,7 @@ def upload_articles():
 
 #найти статью по id
 @article_router.get("/find_by_ID/{ID}")
-def get_article(ID, request: Request):
+def get_article(ID : int, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -2296,7 +2310,7 @@ def get_article(ID, request: Request):
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
-def get_articles(section_id, request: Request):
+def get_articles(section_id : int, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:

@@ -1,41 +1,45 @@
-import { watch, type Ref, ref } from "vue";
+import { type Ref, ref } from "vue";
 import Api from "@/utils/Api";
 import type { INews } from "@/interfaces/IEntities";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { extractYears } from "@/utils/extractYearsFromPosts";
 
-export const useNewsFilterWatch = (currentTag: Ref<string>, currentYear: Ref<string>, allNews: Ref<INews[]>) => {
+export const useNewsFilterWatch = async (currentTag: Ref<string>, currentYear: Ref<string>, allNews: Ref<INews[]>, visibleNews: Ref<INews[]>) => {
 
-    const visibleNews = ref();
-    const filterYears = ref();
-    const emptyTag = ref();
+    const newVisibleNews: Ref<INews[]> = ref([]);
+    const newFilterYears: Ref<string[]> = ref([]);
+    const newEmptyTag: Ref<boolean> = ref(false);
 
-    watch(([currentTag, currentYear]), () => {
-        if (currentTag.value && currentYear.value || currentTag.value && !currentYear.value) {
-            const newData = ref();
-            Api.get(`article/get_articles_by_tag_id/${sectionTips['АктуальныеНовости']}/${currentTag.value}`)
-                .then((data: INews[]) => newData.value = data.filter((e) => {
+    if ((currentTag.value && currentYear.value) || (currentTag.value && !currentYear.value)) {
+        const newData: Ref<INews[]> = ref([]);
+        await Api.get(`article/get_articles_by_tag_id/${sectionTips['АктуальныеНовости']}/${currentTag.value}`)
+            .then((data: INews[]) => {
+                newData.value = data.filter((e) => {
                     return e.date_creation?.includes(currentYear.value)
-                }))
-                .finally(() => {
-                    if (!newData.value.length) return emptyTag.value = true;
-                    visibleNews.value = newData.value;
-                    filterYears.value = extractYears(visibleNews.value);
-                    emptyTag.value = false;
                 })
-        }
-        else if ((!currentTag.value && currentYear.value) || (!currentTag.value && !currentYear.value)) {
-            filterYears.value = extractYears(visibleNews.value);
-            visibleNews.value = allNews.value.filter((e) => {
-                return e.date_creation?.includes(currentYear.value)
             })
-            return visibleNews.value.length ? emptyTag.value = false : emptyTag.value = true;
-        }
-    })
+            .finally(() => {
+                if (!newData.value.length) {
+                    newEmptyTag.value = true;
+                } else {
+                    newVisibleNews.value = newData.value;
+                    newFilterYears.value = extractYears(newData.value);
+                    newEmptyTag.value = false;
+                }
+            })
+    }
+    else if ((!currentTag.value && currentYear.value) || (!currentTag.value && !currentYear.value)) {
+        newVisibleNews.value = allNews.value.filter((e) => {
+            return e.date_creation?.includes(currentYear.value)
+        });
+        newFilterYears.value = extractYears(allNews.value);
+        newEmptyTag.value = newVisibleNews.value.length === 0;
+    }
+
 
     return {
-        visibleNews,
-        filterYears,
-        emptyTag
+        newVisibleNews,
+        newFilterYears,
+        newEmptyTag
     }
 }

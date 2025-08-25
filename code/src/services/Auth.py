@@ -54,7 +54,7 @@ class AuthService:
         self.ldap_server = os.getenv("LDAP_SERVER")
         self.ldap_domain = os.getenv("LDAP_DOMAIN")
 
-        self.session_ttl = timedelta(minutes=90)
+        self.session_ttl = timedelta(minutes=240)
 
     async def authenticate(self, username: str, password: str) -> Optional[Dict[str, Any]]:
         """Аутентификация пользователя"""

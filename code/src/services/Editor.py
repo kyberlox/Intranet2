@@ -199,6 +199,7 @@ class Editor:
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
                 if f_key not in files_keys.keys() and files[f_key] != []:
                     files_keys[f_key] = []
+
             
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",

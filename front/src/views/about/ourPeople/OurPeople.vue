@@ -26,7 +26,7 @@ export default defineComponent({
         onMounted(() => {
             if (ourPeople.value.length) return;
             loadingStore.setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Наши люди']}`)
+            Api.get(`article/find_by/${sectionTips['НашиЛюди']}`)
                 .then((data) => {
                     ViewsDataStore.setData(data, 'ourPeopleData');
                 });

@@ -422,7 +422,7 @@ const router = createRouter({
     {
       path: '/communications/contest/',
       name: 'contest',
-      component: () => import('@/views/innerCommunications/EventAnnounces.vue')
+      component: () => import('@/views/innerCommunications/ContestEmk.vue')
     },
     {
       path: '/communications/announces/:id',

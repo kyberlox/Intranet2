@@ -47,7 +47,7 @@ export default defineComponent({
         watch(([currentTag, currentYear]), () => {
             if (currentTag.value && currentYear.value || currentTag.value && !currentYear.value) {
                 const newData = ref();
-                Api.get(`article/get_articles_by_tag_id/${sectionTips['Актуальные новости']}/${currentTag.value}`)
+                Api.get(`article/get_articles_by_tag_id/${sectionTips['АктуальныеНовости']}/${currentTag.value}`)
                     .then((data: INews[]) => newData.value = data.filter((e) => {
                         return e.date_creation?.includes(currentYear.value)
                     }))
@@ -70,7 +70,7 @@ export default defineComponent({
         onMounted(() => {
             if (allNews.value.length) return;
             useLoadingStore().setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Актуальные новости']}`)
+            Api.get(`article/find_by/${sectionTips['АктуальныеНовости']}`)
                 .then((res) => {
                     viewsData.setData(res, 'actualNewsData');
                     visibleNews.value = res;

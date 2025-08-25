@@ -23,7 +23,7 @@ export default defineComponent({
         onMounted(() => {
             if (bonusesSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Бонусы партнеров']}`)
+            Api.get(`article/find_by/${sectionTips['БонусыПартнеров']}`)
                 .then((res) => useViewsDataStore().setData(res, "partnerBonusData"))
                 .finally(() => {
                     useLoadingStore().setLoadingStatus(false);

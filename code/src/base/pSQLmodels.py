@@ -160,6 +160,29 @@ class Tags(Base):
     id = Column(Integer, primary_key=True)
     tag_name = Column(Text, nullable=True)
 
+class Activities(Base):
+    __tablename__ = "activites"
+  
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    coast = Column(Integer)
+    user_uuid = Column(String)
+
+    activeusers = relationship("ActiveUsers", back_populates="activites")
+    
+
+class ActiveUsers(Base):
+    __tablename__ = "activeusers"
+  
+    id = Column(Integer, primary_key=True, index=True)
+    uuid_from = Column(String)
+    uuid_to = Column(String)
+    description = Column(String)
+    valid = Column(Integer)
+    date_time = Column(DateTime)
+    activitesId = Column(Integer, ForeignKey(Integer, back_populates="activites.id"))
+
+    activites = relationship("Activites", back_populates="activeusers")
 
 metadata = MetaData()
 

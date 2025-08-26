@@ -102,9 +102,8 @@ class FileModel:
                 print("File not found.")
             
             #удалить запись
-            filter = {"_id": self.id}
-            result = collection.delete_one(filter)  
-            print("111")
+            result = collection.delete_one({"_id": self.id})  
+            print(result.deleted_count)
             return result.deleted_count
         else:
             return "File not found."

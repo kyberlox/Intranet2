@@ -18,12 +18,11 @@
         </div>
 
         <div class="admin-element-inner__field">
-          <AdminComponentInput v-if="newElementFiles.videos_embed"
-                               :item="{ name: 'Видео с источников', field: 'videos_embed', value: newElementFiles?.videos_embed[0]?.original_name ?? undefined }"
+          <AdminComponentInput v-if="newFileData.videos_embed"
+                               :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
                                @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
         </div>
         <AdminUploadingSection :newFileData="newFileData"
-                               :newElementFiles="newElementFiles"
                                :newData="newData"
                                @reloadData="reloadElementData(true)"
                                @handleUpload="handleUpload" />
@@ -39,7 +38,9 @@
                         :newFileData="newFileData"
                         :newData="newData"
                         :activeType="activeType"
+                        :sectionId="id"
                         :currentItem="currentItem"
+                        @noPreview="previewFullWidth = true"
                         @changePreviewWidth="previewFullWidth = !previewFullWidth" />
 
     </div>
@@ -69,7 +70,7 @@ import AdminComponentDatePicker from './components/AdminComponentDatePicker.vue'
 import AdminComponentInput from './components/AdminComponentInput.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
-import type { IAdminListItem, newFileData } from '@/interfaces/entities/IAdmin';
+import type { IAdminListItem, INewFileData } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
@@ -118,7 +119,7 @@ export default defineComponent({
     const isCreateNew = ref(true);
     const { width } = useWindowSize()
 
-    const newElementFiles = ref();
+    // const newElementFiles = ref();
 
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
@@ -126,7 +127,7 @@ export default defineComponent({
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
 
     const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()] });
-    const newFileData = ref<newFileData>({});
+    const newFileData = ref<INewFileData>({});
     const isMobileScreen = computed(() => ['sm'].includes(screenCheck(width)));
 
     const inputComponentChecker = (item: IAdminListItem) => {
@@ -149,7 +150,11 @@ export default defineComponent({
           .then((data) => {
             isCreateNew.value = true;
             newElementSkeleton.value = data.fields;
-            newElementFiles.value = data.files;
+            newFileData.value = data.files;
+
+            newData.value.images = data.files.images;
+            newData.value.videos_native = data.files.videos_native;
+            newData.value.documentation = data.files.documentation;
           })
       }
       else reloadElementData(false);
@@ -161,22 +166,12 @@ export default defineComponent({
           if (!onlyFiles) {
             isCreateNew.value = false;
             newElementSkeleton.value = data.fields;
-            newElementFiles.value = data.files;
           }
-          newElementFiles.value = data.files;
+          newFileData.value = data.files;
 
-          if (data.files.images) {
-            newFileData.value.images = data.files.images;
-            newData.value.images = data.files.images;
-          }
-          if (data.files.videos_native) {
-            newFileData.value.videos_native = data.files.videos_native;
-            newData.value.images = data.files.videos_native;
-          }
-          if (data.files.documentation) {
-            newFileData.value.documentation = data.files.documentation;
-            newData.value.documentation = data.files.documentation;
-          }
+          newData.value.images = data.files.images;
+          newData.value.videos_native = data.files.videos_native;
+          newData.value.documentation = data.files.documentation;
         })
     }
 
@@ -225,7 +220,6 @@ export default defineComponent({
       buttonIsDisabled,
       newData,
       newFileData,
-      newElementFiles,
       isMobileScreen,
       inputComponentChecker,
       applyNewData,
@@ -287,6 +281,10 @@ export default defineComponent({
       border-top: 1px solid gainsboro;
       padding-top: 40px;
       transform: translateY(0);
+
+      &>.admin-element-inner__field {
+        max-width: 70% !important;
+      }
     }
 
     &--no-preview {

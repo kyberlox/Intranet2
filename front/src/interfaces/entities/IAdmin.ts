@@ -16,9 +16,9 @@ export interface IFileToUpload {
     file: File;
 }
 
-export interface newFileData {
+export interface INewFileData {
     documentation?: IBXFileType[],
-    images?: IBXFileType[] | string[],
-    videos_embed?: string[],
-    videos_native?: string[]
+    images?: IBXFileType[],
+    videos_embed?: IBXFileType[],
+    videos_native?: IBXFileType[]
 }

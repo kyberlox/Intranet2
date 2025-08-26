@@ -1,10 +1,11 @@
 <template>
-    <div v-if="newElementFiles">
+    <div class="admin-element-inner__field"
+         v-if="newFileData">
         <div class="admin-element-inner__fields"
-             v-for="itemKey in Object.keys(newElementFiles)"
+             v-for="itemKey in Object.keys(newFileData)"
              :key="'key' + itemKey">
             <div v-if="newFileData && itemKey !== 'videos_embed'"
-                 class="admin-element-inner__field">
+                 class="">
                 <p class="admin-element-inner__field-title fs-l">{{ blockTitle(itemKey) }} </p>
                 <FileUploader @upload="(e) => $emit('handleUpload', e)"
                               @reloadData="$emit('reloadData')"

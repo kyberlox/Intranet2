@@ -90,6 +90,7 @@ class FileModel:
 
     def remove(self):
         #удалить сам файл
+        print("я тут")
         file_data = files_collection.find_one({"_id": self.id})
         if file_data is not None:
             unique_name = file_data['stored_name']

@@ -100,11 +100,11 @@ class FileModel:
                 os.remove(file_path)
             else:  
                 print("File not found.")
-            print("я тут")
+            
             #удалить запись
             # filter = {"_id": self.id}
             # result = collection.delete_one(filter)  
-            return result.deleted_count
+            # return result.deleted_count
         else:
             return "File not found."
 

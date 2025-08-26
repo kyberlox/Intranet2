@@ -480,9 +480,7 @@ class File:
         #     inserted_id_str = str(inserted_id)
         # else:
         #     inserted_id_str = str(inserted_id)  # На крайний случай
-
-        file_info["id"] = inserted_id
-        print("я тут")
+        file_info['id'] = file_info.pop("_id")
         return file_info
 
         # return {

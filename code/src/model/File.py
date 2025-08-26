@@ -452,7 +452,7 @@ class File:
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
-        print("я тут")
+        
 
         # Если нужно сохранить файл на диск
         with file.file:
@@ -473,18 +473,20 @@ class File:
 
         inserted_id = FileModel().add(file_info)
 
+        print("я тут")
+
         # Проверяем, что inserted_id можно преобразовать в строку
-        if hasattr(inserted_id, "__str__"):
-            inserted_id_str = str(inserted_id)
-        else:
-            inserted_id_str = str(inserted_id)  # На крайний случай
+        # if hasattr(inserted_id, "__str__"):
+        #     inserted_id_str = str(inserted_id)
+        # else:
+        #     inserted_id_str = str(inserted_id)  # На крайний случай
 
         #file_info["id"] = str(inserted_id)
         #return file_info
 
         return {
             **file_info,
-            "id": str(inserted_id)
+            "id": inserted_id
         }
     
     def editor_chenge_file(self, file : webFile):

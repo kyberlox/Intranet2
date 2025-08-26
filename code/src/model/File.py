@@ -444,13 +444,15 @@ class File:
 
     def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
-        print("я тут")
+        
         # Генерируем уникальное имя файла
         filename = file.filename
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
+
+        print("я тут")
 
         # Если нужно сохранить файл на диск
         with file.file:

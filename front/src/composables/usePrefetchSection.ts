@@ -13,6 +13,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             Api.get(`users/find_by/${useUserData().getMyId}`)
                 .then((res) => {
                     useUserData().setUserInfo(res);
+                    localStorage.setItem('user', res)
                 })
             break;
         case 'factoryGuid':

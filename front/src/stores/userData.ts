@@ -12,17 +12,21 @@ export const useUserData = defineStore('userData', {
     actions: {
         setMyId(id: number) {
             this.myId = id;
+            localStorage.setItem('id', String(id));
         },
         setLogin(login: boolean) {
             this.isLogin = login;
         },
         setAuthKey(key: string) {
             this.authKey = key;
+            localStorage.setItem('key', key);
         },
         initKeyFromStorage() {
             const storedAuthKey = localStorage.getItem('authKey');
+            const storedId = localStorage.getItem('id');
             if (!storedAuthKey) return
             this.authKey = String(storedAuthKey);
+            this.myId = Number(storedId);
             this.isLogin = true;
         },
         setUserInfo(userData: IUser) {
@@ -34,6 +38,7 @@ export const useUserData = defineStore('userData', {
             this.user = {} as IUser;
             this.myId = 0;
             localStorage.removeItem('authKey');
+            localStorage.removeItem('id');
         }
     },
 

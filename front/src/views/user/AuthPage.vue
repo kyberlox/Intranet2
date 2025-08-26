@@ -31,7 +31,6 @@
     </div>
 </template>
 <script lang="ts">
-import router from '@/router';
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, ref } from 'vue';
@@ -60,8 +59,10 @@ export default defineComponent({
                             localStorage.setItem('authKey', resp.session_id);
                             useUserData().setAuthKey(resp.session_id);
                             useUserData().setMyId(resp.user.ID)
-                            useUserData().setLogin(true);
-                            prefetchSection('user');
+                            if (useUserData().getMyId !== 0) {
+                                useUserData().setLogin(true);
+                                prefetchSection('user');
+                            }
                         }
                         else if (resp.warn) {
                             if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {

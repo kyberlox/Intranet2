@@ -442,9 +442,9 @@ class File:
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
 
-    def editor_add_file(self, file : webFile()):
+    def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
-        
+        print("я тут")
         # Генерируем уникальное имя файла
         filename = file.filename
         filename_parts = filename.split('.')

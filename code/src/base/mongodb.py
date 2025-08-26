@@ -91,7 +91,6 @@ class FileModel:
     def remove(self):
         #удалить сам файл
         file_data = files_collection.find_one({"_id": self.id})
-        print(file_data)
         if file_data is not None:
             
             unique_name = file_data['stored_name']
@@ -102,7 +101,7 @@ class FileModel:
                 print("File not found.")
             
             #удалить запись
-            result = collection.delete_one({"_id": self.id})  
+            result = collection.delete_one({"_id": file_data['_id']})  
             print(result.deleted_count)
             return result.deleted_count
         else:

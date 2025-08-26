@@ -1,6 +1,6 @@
 <template>
     <div class="admin-element-inner__field-content">
-        <p class="admin-element-inner__field-title">{{ item?.name }}</p>
+        <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
         <select class="admin-element-inner__select"
                 @change="handleValuePick"
                 v-model="value">

@@ -10,7 +10,7 @@
             <input ref="fileInput"
                    type="file"
                    class="file-uploader__input"
-                   @change="useFile.handleFileSelect"
+                   @change="(e) => $emit('upload', (useFile.handleFileSelect(e)))"
                    multiple />
 
             <div v-if="!uploadedFiles.length"
@@ -19,28 +19,30 @@
             </div>
 
             <div class="file-uploader__preview-list"
-                 :class="{ 'file-uploader__preview-list--video': uploadType == 'videoNative' }">
+                 :class="{ 'file-uploader__preview-list--video': uploadType == 'videos_native' }">
                 <div v-for="(item, index) in existFiles"
                      :key="index"
                      class="file-uploader__preview-item">
-                    <video v-if="uploadType == 'videoNative'"
-                           @click.stop.prevent=""
+                    <video v-if="uploadType == 'videos_native' && item.file_url"
                            class="file-uploader__preview-video"
                            :src="item.file_url"
+                           @click.stop.prevent="openFile(item.file_url)"
                            controls>
                         Ваш браузер не поддерживает видео.
                     </video>
-                    <img v-if="uploadType == 'img'"
+                    <img v-if="uploadType == 'images' && item.file_url"
                          class="file-uploader__preview-img"
-                         :src="item.file_url" />
-                    <div class="file-uploader__preview-doc"
-                         v-if="uploadType == 'docs'">
-                        <span v-if="item.original_name">{{ item.original_name }}</span>
+                         :src="item.file_url"
+                         @click.stop.prevent="openFile(item.file_url)" />
+                    <div v-if="uploadType == 'documentation' && item.file_url"
+                         class="file-uploader__preview-doc">
+                        <span @click.stop.prevent="openFile(item.file_url)"
+                              v-if="item.original_name">{{ item.original_name }}</span>
                         <DocIcon />
                     </div>
 
                     <button class="file-uploader__remove-btn"
-                            @click.stop="removeVideo(index)">
+                            @click.stop="removeItem(String(item.id))">
                         <RemoveIcon />
                     </button>
                 </div>
@@ -70,13 +72,14 @@ import DocIcon from '@/assets/icons/posts/DocIcon.svg?component';
 import type { IBXFileType } from '@/interfaces/IEntities';
 import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
 import { useFileUtil } from '@/composables/useFile';
+import Api from '@/utils/Api';
 
 export default defineComponent({
-    name: 'VideoUploader',
+    name: 'FileUploader',
     props: {
         uploadType: {
-            type: String as PropType<'img' | 'docs' | 'videoNative'>,
-            default: 'img'
+            type: String as PropType<'images' | 'documentation' | 'videos_native'>,
+            default: 'images'
         },
         existFiles: {
             type: Array<IBXFileType>
@@ -86,21 +89,23 @@ export default defineComponent({
         RemoveIcon,
         DocIcon
     },
-    emits: ['upload', 'remove'],
+    emits: ['upload', 'remove', 'reloadData'],
     setup(props, { emit }) {
         const fileInput = ref<HTMLInputElement>();
         const uploadedFiles = ref<IFileToUpload[]>([]);
         const isDragOver = ref(false);
-        const isUploading = ref(true);
+        const isUploading = ref(false);
         const uploadProgress = ref(0);
         const error = ref('');
         const useFile = useFileUtil(props.uploadType);
+
         const handleDrop = (event: DragEvent) => {
             event.preventDefault();
             isDragOver.value = false;
 
             if (event.dataTransfer?.files) {
                 const processResult = useFile.processFiles(event.dataTransfer.files);
+
                 if (typeof processResult == 'string') {
                     error.value = processResult;
                 }
@@ -123,11 +128,9 @@ export default defineComponent({
             fileInput.value?.click();
         };
 
-        const removeVideo = (index: number) => {
-            const file = uploadedFiles.value[index];
-            URL.revokeObjectURL(file.url);
-            uploadedFiles.value.splice(index, 1);
-            emit('remove', file);
+        const removeItem = (id: string) => {
+            Api.delete(`editor/delete_file/${id}`)
+                .then(() => emit('reloadData'))
         };
 
         return {
@@ -142,7 +145,8 @@ export default defineComponent({
             handleDragOver,
             handleDragLeave,
             triggerFileInput,
-            removeVideo,
+            removeItem,
+            openFile: (url: string) => window.open(url, '_blank')
         };
     }
 });

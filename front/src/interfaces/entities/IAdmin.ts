@@ -1,3 +1,5 @@
+import type { IBXFileType } from "./IBase";
+
 export interface IAdminListItem {
     name?: string;
     disabled?: string;
@@ -12,4 +14,11 @@ export interface IFileToUpload {
     size: number;
     url: string;
     file: File;
+}
+
+export interface newFileData {
+    documentation?: IBXFileType[],
+    images?: IBXFileType[] | string[],
+    videos_embed?: string[],
+    videos_native?: string[]
 }

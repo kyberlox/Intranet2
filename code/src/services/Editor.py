@@ -10,6 +10,8 @@ from src.model.Article import Article
 from src.model.Section import Section
 from src.model.File import File as storeFile
 
+from bson.objectid import ObjectId
+
 import json
 import datetime
 

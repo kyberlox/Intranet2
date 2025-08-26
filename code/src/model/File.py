@@ -7,7 +7,6 @@ from fastapi import File as webFile
 
 from bson.objectid import ObjectId
 import requests
-import os
 
 from fastapi import APIRouter, Body, UploadFile, HTTPException
 
@@ -435,12 +434,16 @@ class File:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
     
+
+
     # Блок создания индексов
     def index_files(self):
         return FileModel().create_index_files()
 
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
+
+
 
     def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
@@ -473,21 +476,22 @@ class File:
 
         inserted_id = FileModel().add(file_info)
 
-        
-
-        # Проверяем, что inserted_id можно преобразовать в строку
-        # if hasattr(inserted_id, "__str__"):
-        #     inserted_id_str = str(inserted_id)
-        # else:
-        #     inserted_id_str = str(inserted_id)  # На крайний случай
         file_info.pop("_id")
         return file_info
-
-        # return {
-        #     **file_info,
-        #     "id": inserted_id
-        # }
     
+    def editor_del_file(self ):
+        file_data = FileModel(id = self.id).find_by_id()
+        if not file_data:
+            raise HTTPException(404, detail="File not found")
+        
+        try:
+            FileModel(id = self.id).remove()
+            return {"status": "to_archive"}
+        except Exception as e:
+            # raise HTTPException(500, detail=str(e))
+            return LogsMaker().error_message(e)
+
+
     def editor_chenge_file(self, file : webFile):
         #найти файл
         #заменить id и отправить предыдущую версию в архив

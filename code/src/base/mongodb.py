@@ -9,6 +9,8 @@ load_dotenv()
 user = os.getenv('user')
 pswd = os.getenv('pswd')
 
+STORAGE_PATH = "./files_db"
+
 # MongoDB connection
 client = MongoClient(
     host="mongodb",
@@ -88,7 +90,23 @@ class FileModel:
 
     def remove(self):
         #удалить сам файл
-        return files_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
+        file_data = files_collection.find_one({"_id": self.id})
+        if file_data is not None:
+            unique_name = file_data['stored_name']
+            file_path = os.path.join(STORAGE_PATH, unique_name)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            else:  
+                print("File not found.")
+
+            #удалить запись
+            # filter = {"_id": self.id}
+            # result = collection.delete_one(filter)  
+            return result.deleted_count
+        else:
+            return "File not found."
+
+        #return files_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
 
     def find_by_id(self):
         return files_collection.find_one({"_id": self.id})

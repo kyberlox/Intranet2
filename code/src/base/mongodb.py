@@ -105,6 +105,7 @@ class FileModel:
             # filter = {"_id": self.id}
             # result = collection.delete_one(filter)  
             # return result.deleted_count
+            return True
         else:
             return "File not found."
 

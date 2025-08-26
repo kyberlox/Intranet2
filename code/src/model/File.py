@@ -481,13 +481,13 @@ class File:
         # else:
         #     inserted_id_str = str(inserted_id)  # На крайний случай
 
-        #file_info["id"] = str(inserted_id)
-        #return file_info
+        file_info["id"] = inserted_id)
+        return file_info
 
-        return {
-            **file_info,
-            "id": inserted_id
-        }
+        # return {
+        #     **file_info,
+        #     "id": inserted_id
+        # }
     
     def editor_chenge_file(self, file : webFile):
         #найти файл

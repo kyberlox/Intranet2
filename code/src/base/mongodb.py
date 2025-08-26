@@ -93,14 +93,14 @@ class FileModel:
         
         file_data = files_collection.find_one({"_id": self.id})
         if file_data is not None:
-            print("я тут")
+            
             unique_name = file_data['stored_name']
             file_path = os.path.join(STORAGE_PATH, unique_name)
             if os.path.exists(file_path):
                 os.remove(file_path)
             else:  
                 print("File not found.")
-
+            print("я тут")
             #удалить запись
             # filter = {"_id": self.id}
             # result = collection.delete_one(filter)  

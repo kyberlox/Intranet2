@@ -481,7 +481,7 @@ class File:
         # else:
         #     inserted_id_str = str(inserted_id)  # На крайний случай
 
-        file_info["id"] = inserted_id)
+        file_info["id"] = inserted_id
         return file_info
 
         # return {

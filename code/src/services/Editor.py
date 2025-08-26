@@ -396,7 +396,7 @@ async def create_file(file: UploadFile, art_id : int):
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')
-async def del_file(file_id: str):
+def del_file(file_id: str):
     return storeFile(id = file_id).editor_del_file()
 
 

@@ -90,9 +90,10 @@ class FileModel:
 
     def remove(self):
         #удалить сам файл
-        print("я тут")
+        
         file_data = files_collection.find_one({"_id": self.id})
         if file_data is not None:
+            print("я тут")
             unique_name = file_data['stored_name']
             file_path = os.path.join(STORAGE_PATH, unique_name)
             if os.path.exists(file_path):

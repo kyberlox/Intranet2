@@ -206,6 +206,27 @@ class Editor:
 
         #пост обработка
         for field in fields:
+
+            #если это ID статьи
+            if field["field"] == "id":
+                #отдельно засылаю будущий уже инкрементированнный ID статьи
+                self.art_id = ArticleModel().get_current_id()
+                field["value"] = self.art_id
+
+                #создать пустую неактивную статью с этим ID
+                art = dict()
+
+                #вписываю значения нередактируемых параметров сам:
+                art["section_id"] = self.section_id
+                art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+                if "content_type" in data:
+                    art["content_type"] = data["content_type"]
+                else:
+                    art["content_type"] = None
+
+                #добавить статью
+                Article().set_new(art)
+
             # если значения варьируются
             if field["field"] in self.variable.keys():
                 field["values"] = self.variable[field["field"]]
@@ -214,25 +235,18 @@ class Editor:
             if field["field"] in self.notEditble:
                     field["disabled"] = True
         
-        #отдельно засылаю будущий уже инкрементированнный ID статьи
-        current_id = ArticleModel().get_current_id()
-        field_ID = {
-            "name" : "ID",
-            "value" : current_id,
-            "field" : "ID",
-            "data_type" : "int",
-            "disabled" : True
-        }
-        fields.insert(0, field_ID)
+        
 
         return {"fields" : fields, "files" : files_keys}
 
+
+
     def add(self, data : dict):
-        self.section_id = int(data["section_id"])
-        if self.section_id is None:
+        self.art_id = int(data["art_id"])
+        if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art = dict()
+        
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
@@ -253,24 +267,13 @@ class Editor:
         if "date_publiction" in art and art["date_publiction"] is not None:
             art["date_publiction"] = make_date_valid(art["date_publiction"])
 
-        #отдельно перевожу стоку в билевое значение для active
+        #отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):
             art["active"] = True if (art["active"] == 'true' or art["active"] == 'True') else False
 
-            
-
-        #вписываю значения нередактируемы параметров сам:
-        art["section_id"] = self.section_id
-        art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
-        if "content_type" in data:
-            art["content_type"] = data["content_type"]
-        else:
-            art["content_type"] = None
-
-        #добавить файлы к статье
-
-        #добавить статью
-        return Article().set_new(art)
+        #вставить данные в статью
+        return ArticleModel(id = self.art_id).update(art)
+    
 
     def delete_art(self ):
         return Article(id = self.art_id).delete()
@@ -383,9 +386,13 @@ async def updt(art_id : int, data = Body()):
 async def get_form(section_id : int):
     return Editor(section_id=section_id).get_format()
 
+
+
 @editor_router.post("/add")
 async def set_new(data = Body()):
     return Editor().add(data)
+
+
 
 @editor_router.delete("/del/{art_id}")
 async def del_art(art_id : int):

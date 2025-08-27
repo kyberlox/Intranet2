@@ -242,7 +242,7 @@ class Editor:
 
 
     def add(self, data : dict):
-        self.art_id = int(data["art_id"])
+        self.art_id = int(data["id"])
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 

@@ -243,7 +243,7 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        
+        art=dict()
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():

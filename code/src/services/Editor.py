@@ -219,10 +219,6 @@ class Editor:
                 #вписываю значения нередактируемых параметров сам:
                 art["section_id"] = self.section_id
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
-                if "content_type" in data:
-                    art["content_type"] = data["content_type"]
-                else:
-                    art["content_type"] = None
 
                 #добавить статью
                 Article().set_new(art)
@@ -270,6 +266,11 @@ class Editor:
         #отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):
             art["active"] = True if (art["active"] == 'true' or art["active"] == 'True') else False
+        
+        if "content_type" in data:
+            art["content_type"] = data["content_type"]
+        else:
+            art["content_type"] = None
 
         #вставить данные в статью
         return ArticleModel(id = self.art_id).update(art)

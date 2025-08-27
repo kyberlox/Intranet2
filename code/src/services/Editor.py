@@ -187,9 +187,7 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-
-                
-
+            
                     
 
             #теперь проверим какие файлы бывают у статей раздела

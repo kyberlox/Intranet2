@@ -156,6 +156,8 @@ class Editor:
                         "field" : k, #хватай поле
                         "data_type" : get_type(art[k]) #хватай тип данных
                     }
+                    if field["name"] == "active":
+                        field["value"] = False
                     fields.append(field)
                 #если есть
                 else:

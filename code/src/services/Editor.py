@@ -214,6 +214,7 @@ class Editor:
             if field["field"] in self.notEditble:
                     field["disabled"] = True
         
+        #отдельно засылаю будущий уже инкрементированнный ID статьи
         current_id = ArticleModel().get_current_id()
         field_ID = {
             "name" : "ID",

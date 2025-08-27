@@ -213,6 +213,14 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
+        
+        current_id = ArticleModel().get_current_id()
+        field.insert({
+            "name" : "ID",
+            "value" : current_id,
+            "field" : "ID",
+            "data_type" : "int"
+        }, 0)
 
         return {"fields" : fields, "files" : files_keys}
 

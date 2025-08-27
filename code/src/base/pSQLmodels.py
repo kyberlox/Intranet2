@@ -856,8 +856,6 @@ class ArticleModel():
     
     def get_current_id(self ):
         current_id = self.db.query(func.max(Article.id)).scalar()
-
-        print(current_id)
         current_id = int(current_id) + 1
         self.id = current_id
         return current_id

@@ -64,10 +64,10 @@ import { defineComponent, onMounted, ref, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 
-import AdminComponentSelect from './components/adminInputComponents/AdminComponentSelect.vue';
-import AdminComponentTextarea from './components/adminInputComponents/AdminComponentTextarea.vue';
-import AdminComponentDatePicker from './components/adminInputComponents/AdminComponentDatePicker.vue';
-import AdminComponentInput from './components/adminInputComponents/AdminComponentInput.vue';
+import AdminComponentSelect from '@/views/admin/components/inputFields/AdminComponentSelect.vue';
+import AdminComponentTextarea from '@/views/admin/components/inputFields/AdminComponentTextarea.vue';
+import AdminComponentDatePicker from '@/views/admin/components/inputFields/AdminComponentDatePicker.vue';
+import AdminComponentInput from '@/views/admin/components/inputFields/AdminComponentInput.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData } from '@/interfaces/entities/IAdmin';
@@ -191,8 +191,6 @@ export default defineComponent({
     }
 
     const handleUpload = (e: IFileToUpload) => {
-      console.log(e);
-
       if (!e || !e.file) return
       const fileToUpload = e.file;
       const formData = new FormData();

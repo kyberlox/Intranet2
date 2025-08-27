@@ -12,19 +12,19 @@
                         @click="$emit('changePreviewWidth')" />
         </Transition>
 
-        <section>
+        <section class="admin-element-inner__preview-section">
             <PostInner v-if="identifyPreviewType['news'].includes(sectionId)"
                        class="admin-element-inner__preview-content mt30"
                        :previewElement="newData"
                        :type="'adminPreview'" />
             <Interview v-else-if="identifyPreviewType['interview'].includes(sectionId)"
                        class="admin-element-inner__preview-content"
-                       :interviewInner="currentItem" />
+                       :interviewInner="(newData as Record<string, any>)" />
             <CertainBlog v-else-if="identifyPreviewType['blogs'].includes(sectionId)"
                          class="admin-element-inner__preview-content"
-                         :interviewInner="currentItem"
-                         :id="String(15238)"
-                         :authorId="String(157)" />
+                         :interviewInner="newData"
+                         :id="String(elementId)"
+                         :authorId="String(blogStore.getAuthorByBlogId(String(elementId)))" />
         </section>
     </div>
 </template>
@@ -38,6 +38,7 @@ import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { INewFileData } from '@/interfaces/entities/IAdmin';
 import LayoutLeft from "@/assets/icons/admin/LayoutLeft.svg?component";
 import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
+import { useblogDataStore } from '@/stores/blogData';
 
 export default defineComponent({
     name: 'adminPostPreview',
@@ -62,6 +63,9 @@ export default defineComponent({
         },
         sectionId: {
             type: String
+        },
+        elementId: {
+            type: String
         }
     },
     components: {
@@ -72,6 +76,7 @@ export default defineComponent({
         LayoutTop
     },
     setup(props, { emit }) {
+        const blogStore = useblogDataStore();
         const identifyPreviewType = {
             'news': ['31', '53', '51', '32', '54'],
             'blogs': ['15'],
@@ -79,13 +84,17 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            if (Object.values(identifyPreviewType).map((e) => !e.includes(String(props.sectionId)))) {
-                emit('noPreview')
+            const hasPreview = Object.values(identifyPreviewType)
+                .some(array => array.includes(String(props.sectionId)));
+
+            if (!hasPreview) {
+                emit('noPreview');
             }
         })
 
         return {
-            identifyPreviewType
+            identifyPreviewType,
+            blogStore
         }
     }
 })

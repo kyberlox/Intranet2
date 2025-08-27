@@ -39,6 +39,7 @@
                         :newData="newData"
                         :activeType="activeType"
                         :sectionId="id"
+                        :elementId="elementId"
                         :currentItem="currentItem"
                         @noPreview="previewFullWidth = true"
                         @changePreviewWidth="previewFullWidth = !previewFullWidth" />
@@ -168,7 +169,7 @@ export default defineComponent({
             newElementSkeleton.value = data.fields;
           }
           newFileData.value = data.files;
-
+          newData.value.preview_file_url = data.files.images[0].file_url
           newData.value.images = data.files.images;
           newData.value.videos_native = data.files.videos_native;
           newData.value.documentation = data.files.documentation;
@@ -439,7 +440,8 @@ export default defineComponent({
   }
 
   &__preview {
-    overflow: hidden;
+    overflow-x: auto;
+    max-width: 100%;
     flex-grow: 1;
     height: fit-content;
     position: sticky;
@@ -453,6 +455,12 @@ export default defineComponent({
       // transform: translateY(0);
     }
   }
+
+  // .blog__articles-wrapper {
+  //   &>.avatar__wrapper {
+  //     min-width: max-content;
+  //   }
+  // }
 
   &__layout-toggle {
     position: absolute;

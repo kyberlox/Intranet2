@@ -1,19 +1,24 @@
 <template>
     <div class="factory-reports__page mt20">
         <div class="page__title">Репортаж </div>
-        <ComplexGallery :slides="factoryReports" />
+        <div class="factory-reports">
+            <div v-for="item in factoryReports"
+                 :key="'report' + item.id"
+                 class="factory-reports__report">
+                <iframe v-if="item.link"
+                        :src="String(repairVideoUrl(item.link))"
+                        allowfullscreen></iframe>
+                <p>{{ item.name }}</p>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
-
+import { repairVideoUrl } from "@/utils/embedVideoUtil";
 export default defineComponent({
-    components: {
-        ComplexGallery,
-    },
     props: {
         id: {
             type: String,
@@ -25,7 +30,8 @@ export default defineComponent({
         const factoryReports = computed(() => factoryGuidData.getFactoryReports(Number(props.id)));
 
         return {
-            factoryReports
+            factoryReports,
+            repairVideoUrl
         };
     },
 });

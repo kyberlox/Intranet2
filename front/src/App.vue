@@ -56,7 +56,7 @@ export default defineComponent({
         watch([route, isLogin], () => {
             if (isLogin.value) {
                 const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
-                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog'];
+                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
                 prefetchSection('calendar');
 
                 if (blogsRoutes.includes(String(route.name))) {

@@ -1,13 +1,13 @@
 <template>
 	<div class="page__wrapper mt20">
 		<div class="row d-flex mt20 blog__articles-wrapper">
-			<div class="avatar__wrapper col-sm-3">
+			<div class="avatar__wrapper col-sm-4">
 				<BlogAvatar :author="targetAuthor"
 							:from="'blogsArticles'"
 							:need-link="true" />
 			</div>
 			<div v-if="currentArticle && 'name' in currentArticle"
-				 class="col-sm-9">
+				 class="col-sm-8">
 				<h2>{{ currentArticle.name }}</h2>
 				<div v-if="currentArticle.content_text"
 					 class="mt20"

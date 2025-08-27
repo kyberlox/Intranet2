@@ -37,6 +37,7 @@
                           class="admin-block-inner__card__wrapper">
                 <div v-if="item.preview_file_url"
                      class="admin-block-inner__card__side-img"
+                     :class="{ 'bg-contain': sectionId == '41' }"
                      v-lazy-load="item.preview_file_url"></div>
                 <div class="flex-grow">
                   <div class="admin-block-inner__card-header">

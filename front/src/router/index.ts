@@ -487,12 +487,12 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/admin/AdminSidebar.vue')
+      component: () => import('@/views/admin/components/elementsListLayout/AdminSidebar.vue')
     },
     {
       path: '/admin/:id',
       name: 'adminBlockInner',
-      component: () => import('@/views/admin/AdminContent.vue'),
+      component: () => import('@/views/admin/AdminElements.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {

@@ -21,7 +21,7 @@ import { defineComponent, type PropType, computed } from 'vue';
 import type { newFileData } from '@/interfaces/entities/IAdmin';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import { type IBXFileType } from '@/interfaces/IEntities';
-import FileUploader from './FileUploader.vue';
+import FileUploader from '@/components/tools/common/FileUploader.vue';
 
 interface IKeyToWord {
     images: string,

@@ -64,25 +64,25 @@ import { defineComponent, onMounted, ref, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 
-import AdminComponentSelect from './components/AdminComponentSelect.vue';
-import AdminComponentTextarea from './components/AdminComponentTextarea.vue';
-import AdminComponentDatePicker from './components/AdminComponentDatePicker.vue';
-import AdminComponentInput from './components/AdminComponentInput.vue';
+import AdminComponentSelect from './components/adminInputComponents/AdminComponentSelect.vue';
+import AdminComponentTextarea from './components/adminInputComponents/AdminComponentTextarea.vue';
+import AdminComponentDatePicker from './components/adminInputComponents/AdminComponentDatePicker.vue';
+import AdminComponentInput from './components/adminInputComponents/AdminComponentInput.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
-import FileUploader from './components/FileUploader.vue';
+import FileUploader from '../../components/tools/common/FileUploader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { type IBXFileType } from "@/interfaces/IEntities";
 import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
 import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
-import AdminPostPreview from './components/AdminPostPreview.vue';
-import AdminUploadingSection from './components/AdminUploadingSection.vue';
+import AdminPostPreview from './components/elementInnerLayout/AdminPostPreview.vue';
+import AdminUploadingSection from './components/elementInnerLayout/AdminUploadingSection.vue';
 
 type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 

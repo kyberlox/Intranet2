@@ -219,7 +219,8 @@ class Editor:
             "name" : "ID",
             "value" : current_id,
             "field" : "ID",
-            "data_type" : "int"
+            "data_type" : "int",
+            "disabled" : True
         }
         fields.insert(0, field_ID)
 

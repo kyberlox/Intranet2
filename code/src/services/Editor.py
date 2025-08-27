@@ -215,7 +215,7 @@ class Editor:
                     field["disabled"] = True
         
         current_id = ArticleModel().get_current_id()
-        field.insert({
+        fields.insert({
             "name" : "ID",
             "value" : current_id,
             "field" : "ID",

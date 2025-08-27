@@ -4,8 +4,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import exists, select
+from sqlalchemy.sql.expression import func
 from sqlalchemy import inspect, text
 from sqlalchemy import update, insert, delete
+
 
 from typing import List, Optional, Dict, Tuple
 
@@ -190,6 +192,8 @@ class UserModel():
         Base.metadata.create_all(bind=engine)
         SessionLocal = sessionmaker(autoflush=True, bind=engine)
         self.db = SessionLocal()
+    
+    
 
     def upsert_user(self, user_data):
         """
@@ -849,6 +853,12 @@ class ArticleModel():
         self.article = Article
 
         self.db = SessionLocal()
+    
+    def get_current_id(self ):
+        current_id = self.db.query(func.max(Article.id)).scalar()
+        current_id = int(current_id) + 1
+        self.id = current_id
+        return current_id
 
     def add_article(self, article_data):
         article = Article(**article_data)

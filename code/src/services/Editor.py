@@ -187,9 +187,7 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-
-                
-
+            
                     
 
             #теперь проверим какие файлы бывают у статей раздела
@@ -215,6 +213,17 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
+        
+        #отдельно засылаю будущий уже инкрементированнный ID статьи
+        current_id = ArticleModel().get_current_id()
+        field_ID = {
+            "name" : "ID",
+            "value" : current_id,
+            "field" : "ID",
+            "data_type" : "int",
+            "disabled" : True
+        }
+        fields.insert(0, field_ID)
 
         return {"fields" : fields, "files" : files_keys}
 

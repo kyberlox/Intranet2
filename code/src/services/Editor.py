@@ -306,7 +306,7 @@ class Editor:
                 #если это часть indirect_data
                 else:
                     if "indirect_data" in art and art["indirect_data"] is not None: 
-                    art["indirect_data"][key] = data[key]
+                        art["indirect_data"][key] = data[key]
         
         print(art)
 

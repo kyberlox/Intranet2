@@ -221,7 +221,7 @@ class Editor:
             "field" : "ID",
             "data_type" : "int"
         }
-        fields.insert(field_ID, 0)
+        fields.insert(0, field_ID)
 
         return {"fields" : fields, "files" : files_keys}
 

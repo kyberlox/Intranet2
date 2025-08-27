@@ -242,7 +242,7 @@ class Editor:
 
 
     def add(self, data : dict):
-        self.art_id = int(data["id"])
+        #self.art_id = int(data["id"])
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
@@ -393,9 +393,9 @@ async def get_form(section_id : int):
 
 
 
-@editor_router.post("/add")
-async def set_new(data = Body()):
-    return Editor().add(data)
+@editor_router.post("/add/{art_id}")
+async def set_new(art_id : int, data = Body()):
+    return Editor(art_id=art_id).add(data)
 
 
 

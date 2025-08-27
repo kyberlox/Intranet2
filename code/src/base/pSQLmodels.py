@@ -855,7 +855,7 @@ class ArticleModel():
         self.db = SessionLocal()
     
     def get_current_id(self ):
-        current_id = db.query(func.max(Article.id))
+        current_id = db.query(func.max(Article.id)).scalar()
         print(current_id)
         current_id = int(current_id) + 1
         self.id = current_id

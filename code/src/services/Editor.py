@@ -168,7 +168,7 @@ class Editor:
                                 field["data_type"] = "str"
 
                 # вытащить поля из psql -> indirect_data
-                if "indirect_data" in art:
+                if "indirect_data" in art and art["indirect_data"] is not None:
                     for k in art["indirect_data"].keys():
                         fields_names = [f["field"] for f in fields]
                         if k not in fields_names and k != "indirect_data" and k in self.fields.keys():

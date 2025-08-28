@@ -10,6 +10,8 @@ from src.model.Article import Article
 from src.model.Section import Section
 from src.model.File import File as storeFile
 
+from bson.objectid import ObjectId
+
 import json
 import datetime
 
@@ -18,7 +20,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
@@ -87,7 +89,7 @@ class Editor:
                 art_keys.append(k)
 
         # вытащить поля из psql -> indirect_data
-        if "indirect_data" in art:
+        if "indirect_data" in art and art["indirect_data"] is not None:
             for k in art["indirect_data"].keys():
                 if k not in art_keys:
                     art_keys.append(k)
@@ -131,8 +133,9 @@ class Editor:
         
         # вывести
         return {"fields" : field, "files" : files}
-    
-    
+
+
+
     def get_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
@@ -165,7 +168,7 @@ class Editor:
                                 field["data_type"] = "str"
 
                 # вытащить поля из psql -> indirect_data
-                if "indirect_data" in art:
+                if "indirect_data" in art and art["indirect_data"] is not None:
                     for k in art["indirect_data"].keys():
                         fields_names = [f["field"] for f in fields]
                         if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
@@ -184,9 +187,7 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-
-                
-
+            
                     
 
             #теперь проверим какие файлы бывают у статей раздела
@@ -198,12 +199,34 @@ class Editor:
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
                 if f_key not in files_keys.keys() and files[f_key] != []:
                     files_keys[f_key] = []
+
             
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
 
         #пост обработка
         for field in fields:
+
+            #если это ID статьи
+            if field["field"] == "id":
+                #отдельно засылаю будущий уже инкрементированнный ID статьи
+                self.art_id = ArticleModel().get_current_id()
+                field["value"] = self.art_id
+
+                #создать пустую неактивную статью с этим ID
+                art = dict()
+
+                #вписываю значения нередактируемых параметров сам:
+                art["active"] = False
+                art["section_id"] = self.section_id
+                art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+
+                #добавить статью
+                Article().set_new(art)
+
+            elif field["field"] == "active":
+                field["value"] = False
+
             # если значения варьируются
             if field["field"] in self.variable.keys():
                 field["values"] = self.variable[field["field"]]
@@ -211,15 +234,19 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
+        
+        
 
         return {"fields" : fields, "files" : files_keys}
 
+
+
     def add(self, data : dict):
-        self.section_id = int(data["section_id"])
-        if self.section_id is None:
+        #self.art_id = int(data["id"])
+        if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art = dict()
+        art=dict()
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
@@ -240,24 +267,18 @@ class Editor:
         if "date_publiction" in art and art["date_publiction"] is not None:
             art["date_publiction"] = make_date_valid(art["date_publiction"])
 
-        #отдельно перевожу стоку в билевое значение для active
+        #отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):
             art["active"] = True if (art["active"] == 'true' or art["active"] == 'True') else False
-
-            
-
-        #вписываю значения нередактируемы параметров сам:
-        art["section_id"] = self.section_id
-        art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+        
         if "content_type" in data:
             art["content_type"] = data["content_type"]
         else:
             art["content_type"] = None
 
-        #добавить файлы к статье
-
-        #добавить статью
-        return Article().set_new(art)
+        #вставить данные в статью
+        return ArticleModel(id = self.art_id).update(art)
+    
 
     def delete_art(self ):
         return Article(id = self.art_id).delete()
@@ -284,7 +305,8 @@ class Editor:
 
                 #если это часть indirect_data
                 else:
-                    art["indirect_data"][key] = data[key]
+                    if "indirect_data" in art and art["indirect_data"] is not None: 
+                        art["indirect_data"][key] = data[key]
         
         print(art)
 
@@ -370,9 +392,13 @@ async def updt(art_id : int, data = Body()):
 async def get_form(section_id : int):
     return Editor(section_id=section_id).get_format()
 
-@editor_router.post("/add")
-async def set_new(data = Body()):
-    return Editor().add(data)
+
+
+@editor_router.post("/add/{art_id}")
+async def set_new(art_id : int, data = Body()):
+    return Editor(art_id=art_id).add(data)
+
+
 
 @editor_router.delete("/del/{art_id}")
 async def del_art(art_id : int):
@@ -387,14 +413,14 @@ async def render(art_id : int):
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
 async def create_file(file: UploadFile, art_id : int):
-    #data = json.loads(jsn)
-    #if "art_id" in data:
-    #art_id = int(data["art_id"])
-    print(art_id)
-    # Здесь можно сохранить файл или обработать его содержимое
-    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
-            
+    # Здесь нужно сохранить файл или обработать его содержимое
+    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)    
     return f_inf
+
+@editor_router.delete('/delete_file/{file_id}')
+def del_file(file_id: str):
+    return storeFile(id = file_id).editor_del_file()
+
 
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):

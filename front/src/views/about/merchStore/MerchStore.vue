@@ -19,7 +19,6 @@
                         <span class=""> {{ item.price }} </span> эмк-коинов
                     </div>
                 </RouterLink>
-
             </div>
         </div>
     </div>

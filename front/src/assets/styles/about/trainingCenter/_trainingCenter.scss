@@ -1,7 +1,7 @@
 @forward './ecources';
 @forward './trainings';
 @forward './trainingsIcons';
-@use '/src/assets/styles/mixins/mixins' as *;
+@use '@/assets/styles/mixins/_mixins.scss' as *;
 
 .training {
     &__center {

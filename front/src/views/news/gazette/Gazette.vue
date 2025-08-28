@@ -55,7 +55,6 @@ export default defineComponent({
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['газетта']}`)
                 .then((data) => {
-                    console.log(data);
                     gazettes.value = data;
                 })
         })

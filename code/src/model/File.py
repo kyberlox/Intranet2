@@ -7,7 +7,6 @@ from fastapi import File as webFile
 
 from bson.objectid import ObjectId
 import requests
-import os
 
 from fastapi import APIRouter, Body, UploadFile, HTTPException
 
@@ -16,7 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
@@ -435,6 +434,8 @@ class File:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
     
+
+
     # Блок создания индексов
     def index_files(self):
         return FileModel().create_index_files()
@@ -442,9 +443,10 @@ class File:
     def index_user_photo(self):
         return FileModel().create_index_user_photo()
 
+
+
     def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
-        
         
         # Генерируем уникальное имя файла
         filename = file.filename
@@ -453,11 +455,13 @@ class File:
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
+        
+
         # Если нужно сохранить файл на диск
-        #with file.file:
-            #contents = file.file.read()
-            #with open(file_path, "wb") as f:
-                #f.write(contents)
+        with file.file:
+            contents = file.file.read()
+            with open(file_path, "wb") as f:
+                f.write(contents)
 
         file_info = {
             "original_name": filename,
@@ -472,20 +476,22 @@ class File:
 
         inserted_id = FileModel().add(file_info)
 
-        # Проверяем, что inserted_id можно преобразовать в строку
-        if hasattr(inserted_id, "__str__"):
-            inserted_id_str = str(inserted_id)
-        else:
-            inserted_id_str = str(inserted_id)  # На крайний случай
-
-        #file_info["id"] = str(inserted_id)
-        #return file_info
-
-        return {
-            **file_info,
-            "id": str(inserted_id)
-        }
+        file_info.pop("_id")
+        return file_info
     
+    def editor_del_file(self ):
+        file_data = FileModel(id = self.id).find_by_id()
+        if not file_data:
+            raise HTTPException(404, detail="File not found")
+        
+        try:
+            FileModel(id = self.id).remove()
+            return {"status": "to_archive"}
+        except Exception as e:
+            # raise HTTPException(500, detail=str(e))
+            return LogsMaker().error_message(e)
+
+
     def editor_chenge_file(self, file : webFile):
         #найти файл
         #заменить id и отправить предыдущую версию в архив

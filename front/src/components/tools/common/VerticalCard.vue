@@ -9,12 +9,18 @@
                     {{ card.header }}
                 </span>
                 <div class="vertical-card__image__list__item__logo">
-                    <img src="/src/assets/imgs/emkLogo.webp"
+                    <img src="@/assets/imgs/emkLogo.webp"
                          alt="ЭМК"
                          title="ЭМК" />
                 </div>
-                <h3 class="vertical-card__image__list__item__title">{{ page == 'safetyTechnics' ? card.name :
-                    card.indirect_data?.theme }}</h3>
+                <h3 class="vertical-card__image__list__item__title"
+                    :class="{ 'vertical-card__image__list__item__title--care': page == 'care' }">
+                    {{
+                        page == 'safetyTechnics' ?
+                            card.name :
+                            card.indirect_data?.theme
+                    }}
+                </h3>
                 <RouterLink v-if="page == 'safetyTechnics' || page == 'care'"
                             :to="{ name: card.routeTo ?? routeTo, params: { id: card.id } }"
                             class="vertical-card__image__list__item__link">

@@ -1,6 +1,6 @@
 import { sectionTips } from "@/assets/static/sectionTips";
 import { type Ref, ref } from "vue";
-import Api from "./Api";
+import Api from "../utils/Api";
 import type { IExperience, IFormattedData } from "@/interfaces/IEntities";
 import { useReferencesAndExpDataStore } from "@/stores/referencesAndExpData";
 import { factoryLogoTips } from "@/assets/static/factoryLogoTips";

@@ -1,17 +1,17 @@
 <template>
     <div class="contentGallery"
          v-if="slide">
-        <div v-if=slide.images
-             v-for="(image, index) in slide.images"
+        <div v-for="(image, index) in slide.images"
              :key="index"
              class="contentGallery__img-wrapper">
-            <div @click="callModal(slide.images, index)"
+            <div v-if="slide.images"
+                 @click="callModal(slide.images, index)"
                  class="contentGallery__card__img"
                  v-lazy-load="image.file_url"
                  alt="slide"></div>
         </div>
-        <div v-if="slide.videos_embed"
-             v-for="video in slide.videos_embed">
+        <div v-for="(video, index) in slide.videos_embed"
+             :key="'videEmbed' + index">
             <iframe v-if="video && video.file_url"
                     width="100%"
                     class="contentGallery__card__img"
@@ -22,8 +22,8 @@
                     allowfullscreen>
             </iframe>
         </div>
-        <div v-if="slide.videos_native"
-             v-for="video in slide.videos_native">
+        <div v-for="(video, index) in slide.videos_native"
+             :key="'videoNative' + index">
             <iframe v-if="video && video.file_url"
                     width="100%"
                     class="contentGallery__card__img"
@@ -38,11 +38,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, ref } from "vue";
+import { defineComponent, type PropType } from "vue";
 import type { IBXFileType } from "@/interfaces/IEntities";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 
-interface ContentGallerySlide {
+export interface IContentGallerySlide {
+    name: string
     images?: IBXFileType[],
     videos_native?: IBXFileType[],
     videos_embed?: IBXFileType[]
@@ -52,11 +53,10 @@ export default defineComponent({
     name: 'contentGallery',
     props: {
         slide: {
-            type: Object as PropType<ContentGallerySlide>
+            type: Object as PropType<IContentGallerySlide>
         },
     },
     setup(props, { emit }) {
-        console.log(props.slide);
 
         return {
             callModal: (slides: IBXFileType[], index: number) => emit('callModal', slides, 'img', index),
@@ -110,6 +110,26 @@ export default defineComponent({
         cursor: pointer;
 
         background-size: contain;
+
+        &.lazy-loading {
+            background-color: #f0f0f0;
+            background-image: none !important;
+            position: relative;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg,
+                        transparent 0%,
+                        rgba(255, 255, 255, 0.4) 50%,
+                        transparent 100%);
+                animation: shimmer 1.5s infinite;
+            }
+        }
     }
 }
 </style>

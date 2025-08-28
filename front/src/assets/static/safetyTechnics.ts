@@ -5,7 +5,7 @@ export const safetyTechnics: ISafetyTechnicsVertSlide = {
         {
             id: 1,
             name: "COVID-19",
-            preview_file_url: "https://portal.emk.ru/local/templates/intranet/img/safety/safety-1.jpg",
+            preview_file_url: "/imgs/about/safetyTechnics/safety-1.jpg",
             header: "Берегите себя и своих близких",
             subtitle: "COVID-19 — острая респираторная инфекция, вызываемая коронавирусом SARS-CoV-2 (2019-nCoV)",
             description: "Как защитить своё здоровье от потенциальной угрозы",
@@ -55,17 +55,17 @@ export const safetyTechnicsCovidInner: ISafetyTechnicsVertSlide =
         {
             id: 1,
             subtitle: 'Соблюдайте социальную дистанцию',
-            preview_file_url: '/src/assets/imgs/about/safetyTechnics/covid/COVID1.jpg',
+            preview_file_url: '/imgs/about/safetyTechnics/covid/COVID1.jpg',
         },
         {
             id: 2,
             subtitle: 'Ходите в масках и используйте антисептики',
-            preview_file_url: '/src/assets/imgs/about/safetyTechnics/covid/COVID2.jpg',
+            preview_file_url: '/imgs/about/safetyTechnics/covid/COVID2.jpg',
         },
         {
             id: 3,
             subtitle: 'Старайтесь не приглашать лишних людей в офис',
-            preview_file_url: '/src/assets/imgs/about/safetyTechnics/covid/COVID3.jpg',
+            preview_file_url: '/imgs/about/safetyTechnics/covid/COVID3.jpg',
         }
     ],
     sideInfo: `<div class="news__detail__discr safety__section__discr">
@@ -94,7 +94,7 @@ export const safetyTechnicsFireInner: ISafetyTechnicsSlide =
 {
     content: {
         id: 1,
-        videos_native: ['@/assets/videos/fire.mp4'],
+        videos_native: [{ file_url: '@/assets/videos/fire.mp4' }],
         content_text: `<div class="news__detail__discr safety__detail__discr">
                     <h2 class="news__detail__title mb-2">Техника безопасности</h2>
                     <strong>При возникновении локального возгорания</strong>
@@ -132,15 +132,15 @@ export const safetyTechnicsFireInner: ISafetyTechnicsSlide =
     },
     evacuationContent: {
         images: [
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor1.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor3.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor6.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor7.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor8.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor9.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor10.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor11.jpg',
-            '/src/assets/imgs/about/safetyTechnics/evacuation/floor12.jpg'
+            '/imgs/about/safetyTechnics/evacuation/floor1.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor3.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor6.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor7.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor8.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor9.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor10.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor11.jpg',
+            '/imgs/about/safetyTechnics/evacuation/floor12.jpg'
         ],
     }
 }
@@ -149,7 +149,7 @@ export const safetyTechnicsFactoryInner: ISafetyTechnicsSlide =
 {
     content: {
         id: 1,
-        images: ['/src/assets/imgs/about/safetyTechnics/factory/factory1.jpg'],
+        images: ['/imgs/about/safetyTechnics/factory/factory1.jpg'],
         content_text: `<div class="news__detail__discr safety__section__discr">
             <p><strong>Пребывая на производственном объекте,</strong> обращайте внимание на предупредительные
                 плакаты и придерживайтесь установленных правил.</p>

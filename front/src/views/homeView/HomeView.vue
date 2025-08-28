@@ -31,8 +31,8 @@
                     <div v-for="(block, index) in item.content"
                          :key="index"
                          :class="{ 'grid-span-4': block.type == 'fullRowBlock' }">
-                        <MainPageSoloBlock v-if="block.type == 'singleBlock'"
-                                           :card="block" />
+                        <MainPageSoloBlock v-if="(block.type == 'singleBlock' && typeof block.images !== 'string')"
+                                           :card="(block as IHomeViewSoloBlock)" />
                         <div class="homeview__grid homeview__grid--mixed"
                              v-else-if="block.type == 'fullRowBlock'">
                             <MainPageRowBlocks v-for="(blockSlides, index) in block.images"
@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, onMounted, type ComputedRef } from "vue";
-import MainPageSoloBlock from "./components/MainPageSoloBlock.vue";
+import { computed, defineComponent, onBeforeMount, type ComputedRef } from "vue";
+import MainPageSoloBlock, { type IHomeViewSoloBlock } from "./components/MainPageSoloBlock.vue";
 import MainPageRowBlocks from "./components/MainPageRowBlocks.vue";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";

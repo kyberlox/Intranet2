@@ -7,12 +7,16 @@
                 <div class="portal__auth__form__input__block">
                     <input class="bx-auth-input form-control portal__auth__form__input"
                            placeholder="Логин"
+                           name="authLogin"
+                           type="text"
+                           autocomplete="on"
                            v-model="userName">
                 </div>
                 <div class="portal__auth__form__input__block">
                     <input class="bx-auth-input form-control portal__auth__form__input"
                            type="password"
-                           autocomplete="off"
+                           name="authPass"
+                           autocomplete="on"
                            placeholder="Пароль"
                            v-model="passWord">
                 </div>
@@ -27,15 +31,13 @@
     </div>
 </template>
 <script lang="ts">
-import router from '@/router';
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/utils/UseToastСompose';
-
+import { useToastCompose } from '@/composables/useToastСompose';
+import { prefetchSection } from '@/composables/usePrefetchSection';
 
 export default defineComponent({
     name: 'AuthPage',
@@ -44,20 +46,23 @@ export default defineComponent({
         const userName = ref('');
         const passWord = ref('');
         const error = ref();
-        const router = useRouter();
-        const route = useRoute();
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
-
-
         const tryLogin = () => {
-            if (userName.value && passWord.value)
+            if (!userName.value || !passWord.value) {
+                return error.value = 'Проверьте логин и пароль'
+            }
+            else
                 Api.post('auth_router/auth', { login: userName.value, password: passWord.value })
                     .then((resp) => {
                         if (resp.session_id) {
                             localStorage.setItem('authKey', resp.session_id);
                             useUserData().setAuthKey(resp.session_id);
-                            useUserData().setLogin(true);
+                            useUserData().setMyId(resp.user.ID)
+                            if (useUserData().getMyId !== 0) {
+                                useUserData().setLogin(true);
+                                prefetchSection('user');
+                            }
                         }
                         else if (resp.warn) {
                             if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {

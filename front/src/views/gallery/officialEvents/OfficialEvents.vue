@@ -1,16 +1,18 @@
 <template>
     <div class="page__title mt20">Официальные события</div>
-    <TagDateNavBar :years="extractYears(allSlides)"
-                   :modifiers="'noTag'"
-                   @pickYear="(year: string) => visibleEvents = showEventsByYear(allSlides, year)" />
+    <DateFilter v-if="allSlides"
+                :buttonText="buttonText"
+                :params="extractYears(allSlides)"
+                @pickFilter="(year: string) => filterYear(year)" />
     <ComplexGallery v-if="visibleEvents"
+                    :key="offEventKey"
                     class="mt20"
                     :page=page
                     :slides="visibleEvents"
                     :routeTo="'officialEvent'" />
 </template>
 <script lang="ts">
-import TagDateNavBar from '@/components/tools/common/DateFilter.vue';
+import DateFilter from '@/components/tools/common/DateFilter.vue';
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { computed, defineComponent, onMounted, ref, type Ref } from 'vue';
 import Api from '@/utils/Api';
@@ -23,12 +25,15 @@ import type { IBaseEntity } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
-        TagDateNavBar,
+        DateFilter,
         ComplexGallery
     },
     setup() {
+        const offEventKey = ref(0);
         const allSlides = computed((): IBaseEntity[] => useViewsDataStore().getData('officialEventsData') as IBaseEntity[]);
         const visibleEvents: Ref<IBaseEntity[]> = ref(allSlides.value);
+        const buttonText: Ref<string> = ref('Год публикации');
+
         onMounted(() => {
             if (allSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);
@@ -41,11 +46,26 @@ export default defineComponent({
                     useLoadingStore().setLoadingStatus(false);
                 })
         })
+
+        const filterYear = (year: string) => {
+            if (!year) {
+                visibleEvents.value = allSlides.value;
+                buttonText.value = 'Год публикации';
+            }
+            else {
+                buttonText.value = year;
+                visibleEvents.value = showEventsByYear(allSlides.value, year);
+            }
+            offEventKey.value++;
+        }
         return {
             allSlides,
             page: 'officialEvents',
+            filterYear,
             extractYears,
             visibleEvents,
+            buttonText,
+            offEventKey,
             showEventsByYear
         };
     },

@@ -195,6 +195,11 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: "Открытые вакансии",
                 href: "vacancies",
             },
+            {
+                id: 5.7,
+                name: "Конкурс",
+                href: "contest",
+            },
         ],
     },
 ];

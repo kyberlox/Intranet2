@@ -61,7 +61,7 @@ export default defineComponent({
     setup() {
         const pageContent = ref<IForNewWorker[]>();
         onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['Новому сотруднику']}`)
+            Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`)
                 .then((res: IForNewWorker[]) => {
                     pageContent.value = res;
                 })

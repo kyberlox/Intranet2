@@ -13,25 +13,26 @@
 
         <!-- для встроенных video -->
         <swiper-slide v-for="(video, index) in videosEmbed"
-                      :key="'postVideo' + index">
+                      :key="'postVideoEmbed' + index">
             <iframe v-if="video && video.file_url"
                     width="100%"
                     height="500px"
                     :title="'Видеоконтент'"
                     :src="String(repairVideoUrl(video?.file_url))"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
             </iframe>
         </swiper-slide>
 
         <!-- для загруженных video -->
         <swiper-slide v-for="(video, index) in videosNative"
-                      :key="'postVideo' + index">
-            <iframe width="100%"
+                      :key="'postVideoNative' + index">
+            <iframe v-if="video && video.file_url"
+                    width="100%"
                     height="500px"
                     :title="'Видеоконтент'"
-                    :src="String((video))"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    :src="String((video.file_url))"
+                    allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
             </iframe>
         </swiper-slide>
@@ -54,7 +55,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType, ref, watch } from "vue";
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { useSwiperconf } from "@/utils/useSwiperConf";
+import { useSwiperconf } from "@/composables/useSwiperConf";
 import { type IBXFileType } from "@/interfaces/IEntities";
 import SwiperButtons from "./SwiperButtons.vue";
 
@@ -93,7 +94,7 @@ export default defineComponent({
             type: Number
         },
         videosNative: {
-            type: Array<string>
+            type: Array<IBXFileType>
         },
         videosEmbed: {
             type: Array<IBXFileType>

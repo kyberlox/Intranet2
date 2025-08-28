@@ -1,5 +1,5 @@
 export const allowedTypes = {
-    img: [
+    images: [
         'image/jpeg',
         'image/jpg',
         'image/png',
@@ -7,7 +7,7 @@ export const allowedTypes = {
         'image/gif',
         'image/svg+xml'
     ],
-    videoNative: [
+    videos_native: [
         'video/mp4',
         'video/avi',
         'video/quicktime',
@@ -15,7 +15,7 @@ export const allowedTypes = {
         'video/x-flv',
         'video/webm'
     ],
-    docs: [
+    documentation: [
         'application/pdf',
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

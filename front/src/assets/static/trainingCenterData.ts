@@ -84,7 +84,7 @@ export const allCources: IAllCources[] = [
     {
         id: 1,
         name: "Запорная и обратная арматура",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource1.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource1.jpg",
         structure: ["Задвижки", "Клапаны запорные", "Электромагнитные запорные клапаны", "Отсечные клапаны", "Отключающие клапаны", "Обратные клапаны и затворы", "Предохранительные клапаны", "Тест для самопроверки"],
         additionalInfo: [
             { title: "Площадка прохождения курса", text: "LMS iSpring" },
@@ -96,7 +96,7 @@ export const allCources: IAllCources[] = [
     {
         id: 2,
         name: "ЗАПОРНАЯ И РАСПРЕДЕЛИТЕЛЬНАЯ АРМАТУРА",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource2.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource2.jpg",
         structure: ["Краны шаровые и конусные", "Дисковые затворы, эксцентриситет", "Гермоклапаны", "Тест для самопроверки"],
         additionalInfo: [
             { title: "Площадка прохождения курса", text: "LMS iSpring" },
@@ -108,7 +108,7 @@ export const allCources: IAllCources[] = [
     {
         id: 3,
         name: "РЕГУЛИРУЮЩИЕ КЛАПАНЫ",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource3.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource3.jpg",
         structure: [
             "Особенности конструкции",
             "Расходные характеристики",
@@ -129,7 +129,7 @@ export const allCources: IAllCources[] = [
     {
         id: 4,
         name: "КОНСТРУКЦИОННЫЕ МАТЕРИАЛЫ ТПА",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource4.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource4.jpg",
         structure: [
             "Назначение и применение конструкционных материалов",
             "Факторы воздействия среды на конструкционный материал",
@@ -148,7 +148,7 @@ export const allCources: IAllCources[] = [
     {
         id: 5,
         name: "ПРИВОДЫ ДЛЯ ТПА",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource5.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource5.jpg",
         structure: [
             "Силовые характеристики управления арматурой",
             "Назначение и классификация приводных устройств",
@@ -169,7 +169,7 @@ export const allCources: IAllCources[] = [
     {
         id: 6,
         name: "ОБЩИЕ ХАРАКТЕРИСТИКИ АРМАТУРЫ",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource6.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource6.jpg",
         structure: [
             "Основные термины и определения",
             "Перечень основных типов и видов арматуры",
@@ -192,7 +192,7 @@ export const allCources: IAllCources[] = [
     {
         id: 7,
         name: "РЕГУЛИРУЮЩИЕ КЛАПАНЫ. Лучшие решения",
-        img: "/src/assets/imgs/about/trainingCenter/ecources/ecource7.jpg",
+        img: "/imgs/about/trainingCenter/ecources/ecource7.jpg",
         structure: ["Решения по выбору регулирующих клапанов:", "Заявка от заказчика", "Проточная часть", "Приводная часть", "Дополнительные требования", "Заключение"],
         additionalInfo: [
             { title: "Площадка прохождения курса", text: "LMS iSpring" },
@@ -257,8 +257,8 @@ export const excursions = {
     <br>
      Также компания в рамках программы адаптации организует регулярные ознакомительные экскурсии на Саратовский арматурный завод и базу УПТК-1.&nbsp;<br>
      Если Вы желаете посетить экскурсию на САЗ и базу УПТК-1, необходимо обратиться в Отдел найма и адаптации персонала <b>(вн. тел. 1455)</b>.<br></div>`,
-    images: ['/src/assets/imgs/about/trainingCenter/excursions/excursion1.jpg',
-        '/src/assets/imgs/about/trainingCenter/excursions/excursion2.jpg',
-        '/src/assets/imgs/about/trainingCenter/excursions/excursion3.jpg'],
+    images: ['/imgs/about/trainingCenter/excursions/excursion1.jpg',
+        '/imgs/about/trainingCenter/excursions/excursion2.jpg',
+        '/imgs/about/trainingCenter/excursions/excursion3.jpg'],
 
 }

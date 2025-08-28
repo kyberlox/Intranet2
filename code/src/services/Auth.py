@@ -28,13 +28,13 @@ load_dotenv()
 
 
 
-class UserSession(BaseModel):
-    user_uuid: str
-    username: str
-    email: str
-    full_name: str
-    #roles: list[str]
-    expires_at: str
+# class UserSession(BaseModel):
+#     ID : srt
+#     user_uuid: str
+#     username: str
+#     email: str
+#     full_name: str
+#     expires_at: str
 
 
 
@@ -54,7 +54,7 @@ class AuthService:
         self.ldap_server = os.getenv("LDAP_SERVER")
         self.ldap_domain = os.getenv("LDAP_DOMAIN")
 
-        self.session_ttl = timedelta(minutes=90)
+        self.session_ttl = timedelta(minutes=240)
 
     async def authenticate(self, username: str, password: str) -> Optional[Dict[str, Any]]:
         """Аутентификация пользователя"""
@@ -64,29 +64,44 @@ class AuthService:
 
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)
-        user_uuid = user_uuid['GUID']
-        
-        if user_uuid is None:
+        if user_uuid is not None and "GUID" in user_uuid:
+            user_uuid = user_uuid['GUID']
+        else:
             return {"err" : "Auth error! Invalid login or password!"}
         
         
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
+        print(user_data)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
-        if user_data is None:
-            return None
+        #if user_data is None:
+            #получаю ID по GUID или по почте
+            #плучаю данные по ID
+            #сохраняю в БД GUID
+
 
         session_id = str(uuid.uuid4())
         dt = datetime.now() + self.session_ttl
-        session_data = UserSession(
-            user_uuid=user_uuid,
-            username=username,
-            ID=user_data.get("ID", ""),
-            email=user_data.get("email", ""),
-            full_name=user_data.get("full_name", ""),
-            expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
-        ).dict()
+        # session_data = UserSession(
+        #     #ID=user_data.get("ID", ""),
+        #     user_uuid=user_uuid,
+        #     username=username,
+        #     email=user_data.get("email", ""),
+        #     full_name=user_data.get("full_name", ""),
+        #     expires_at=dt.strftime('%Y-%m-%d %H:%M:%S')
+        # ).dict()
+
+        session_data = {
+            "ID" : user_data.get("ID", ""),
+            "user_uuid" : user_uuid,
+            "username" : username,
+            "email" : user_data.get("email", ""),
+            "full_name" : user_data.get("full_name", ""),
+            "expires_at" : dt.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        #print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.find_session_id(user_uuid, username)
@@ -181,24 +196,29 @@ class AuthService:
             if 'conn' in locals() and conn.bound:
                 conn.unbind()
     '''
+
     #ЗАГЛУШКА
     def check_ad_credentials(self, username, password):
         #хватаю из json пользователей по логину для демки и возваращаю GUID
         user_data_file = open("./src/base/test_AD_users.json", "r")
         user_json = json.load(user_data_file)
         user_data_file.close()
-
+        
         for user_data in user_json:
-            print(user_data)
             if username == user_data["login"]:
+                log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+                ret_str = "#"*len(log_str)
+                print(f"{ret_str}\n{log_str}\n{ret_str}")
                 return user_data
+        
+        return None
     
 
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL
         return User(uuid = user_uuid).user_inf_by_uuid()
 
-    def validate_session(self, session_id: str) -> Optional[UserSession]:
+    def validate_session(self, session_id: str) -> dict :#Optional[UserSession]:
         """
         Проверка валидности сессии
 
@@ -224,7 +244,8 @@ class AuthService:
             # Обновляем TTL сессии (скользящее окно)
             self.redis.update_session_ttl(session_id, self.session_ttl)
 
-            return UserSession(**session_data)
+            #return UserSession(**session_data)
+            return session_data
 
         except (KeyError, ValueError) as e:
             logging.error(f"Invalid session data format: {e}")

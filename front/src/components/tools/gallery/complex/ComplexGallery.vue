@@ -3,7 +3,8 @@
          v-if="slides?.length">
         <div v-for="(slide, index) in slides"
              class="flexGallery__wrapper"
-             :key="index">
+             :class="{ 'hidden': routeTo == 'factoryReports' && !slide.indirect_data?.reports?.length && !slide.indirect_data?.tours?.length }"
+             :key="'complGal' + index">
             <ComplexGalleryCardBasic :slide="slide"
                                      :modifiers="modifiers"
                                      :routeTo="routeTo" />
@@ -21,9 +22,9 @@
 <script lang="ts">
 import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
-import { defineComponent, ref, type PropType } from "vue";
+import { defineComponent, ref } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import type { IFactoryDataTours, IFactoryDataReports, IBXFileType } from "@/interfaces/IEntities";
+import type { IFactoryDataTours, IFactoryDataReports } from "@/interfaces/IEntities";
 import ComplexGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
 
@@ -72,17 +73,13 @@ export default defineComponent({
 
         const callModal = (src: string[] | string, type: 'video' | 'img', imgIndex?: number) => {
             if (!src) return;
-            if (type == 'video') {
-                modalImg.value = '';
-                modalVideo.value = src;
-            }
-            else if (type == 'img') {
-                if (typeof imgIndex !== 'number' && !imgIndex) return;
-                activeIndex.value = imgIndex;
-                modalVideo.value = '';
-                modalImg.value = src;
-                activeIndex.value = imgIndex;
-            }
+
+            if (typeof imgIndex !== 'number' && !imgIndex) return;
+            activeIndex.value = imgIndex;
+            modalVideo.value = '';
+            modalImg.value = src;
+            activeIndex.value = imgIndex;
+
             modalIsOpen.value = true;
         }
 

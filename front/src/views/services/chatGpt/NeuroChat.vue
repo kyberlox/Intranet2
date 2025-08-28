@@ -2,18 +2,37 @@
     <div class="neuroChat-page__wrapper">
         <div class="neuroChat-page">
             <NeuroChatSidebar :chatHistory="chatHistory"
-                              :neuroModels="neuroModels" />
+                              :neuroModels="neuroModels"
+                              @typeChanged="handleChatTypeChange" />
             <div class="neuroChat-content__wrapper">
                 <div class="neuroChat-content">
-                    <div class="neuroChat__messages__wrapper"
-                         v-for="chat in messages"
-                         :key="chat.user">
-                        <div class="neuroChat__message neuroChat__message--user">
-                            {{ chat.user }}
+                    <div v-if="chatDataToSend.length">
+                        <div class="neuroChat__messages__wrapper"
+                             v-for="(chat, index) in chatDataToSend"
+                             :key="'chat' + index">
+                            <div v-if="chat.role == 'user'"
+                                 class="neuroChat__message neuroChat__message--user">
+                                {{ chat.content }}
+                            </div>
+                            <div v-if="chat.role == 'assistant' && chatType == 'createImg' && chat.type == 'img'"
+                                 class="neuroChat__messages">
+                                <div class="neuroChat__message neuroChat__message--neuro">
+                                    <img :src="chat.content" />
+                                </div>
+                                <div class="neuroChat__message neuroChat__message--link neuroChat__message--neuro">
+                                    <a :href="chat.content"
+                                       target="_blank">Открыть в новом окне</a>
+                                </div>
+                            </div>
+                            <div v-else-if="chat.role == 'assistant'"
+                                 class="neuroChat__message neuroChat__message--neuro"
+                                 v-html="parseMarkdown(chat.content)">
+                            </div>
                         </div>
-                        <div class="neuroChat__message neuroChat__message--neuro">
-                            {{ chat.neuro }}
-                        </div>
+                    </div>
+                    <div v-else
+                         class="neuroChat__message neuroChat__message--neuro">
+                        {{ firstMessage }}
                     </div>
                 </div>
                 <div class="neuroChat__input-textarea__wrapper">
@@ -21,7 +40,8 @@
                         <label>Введите сообщение</label>
                         <div class="neuroChat__input-container">
                             <div class="neuroChat__textarea__wrapper">
-                                <textarea v-model="userInput"
+                                <textarea @keydown="handleKeyDown"
+                                          v-model="userInput"
                                           placeholder="Напишите ваше сообщение..."></textarea>
                                 <button @click="sendMsg"
                                         class="neuroChat__send-button pos-rel">
@@ -42,12 +62,11 @@
                                        ref="fileInputNode"
                                        @change="handleFileSelect"
                                        class="neuroChat__file-input"
-                                       accept=".pdf,.doc,.docx,.txt,.jpg,.png">
+                                       accept=".pdf,.doc,.docx,.txt,.jpg,.png" />
                                 <div class="neuroChat__add-file"
                                      @click="triggerFileSelect">
                                     <AddFileIcon />
                                 </div>
-                                </input>
                                 <p class="fs-s">{{ fileToUploadName }}</p>
                             </div>
                         </div>
@@ -59,14 +78,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type Ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import NeuroChatSidebar from './components/NeuroChatSidebar.vue';
 import Api from '@/utils/Api';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/utils/UseToastСompose';
-import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component'
+import { useToastCompose } from '@/composables/useToastСompose';
+import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
+import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
+import { parseMarkdown } from '@/utils/parseMarkdown';
+
+export type IChatType = "textChat" | "createImg";
 
 export default defineComponent({
     name: 'neuroChat',
@@ -79,30 +102,25 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const fileToUploadName = ref<string>()
-        const chatHistory = [
-            {
-                theme: 'Привет'
-            }
-        ]
+        const chatHistory = ref();
+        const createImageChatData = ref();
+        const firstMessage = ref();
 
-        const messages = [{
-            user: 'Привет',
-            neuro: 'Привет! Чем могу помочь?'
-        }]
-
-        const neuroModels = [{
-            name: 'chatGpt',
-            route: 'chatGpt'
+        const neuroModels: { name: string, type: IChatType }[] = [{
+            name: 'Чат',
+            type: 'textChat'
         },
         {
-            name: 'Deepseek',
-            route: 'deepseek'
-        }]
+            name: 'Генерация изображений',
+            type: 'createImg'
+        },]
 
         const isLoading = ref(false);
         const userInput = ref('');
         const fileInputNode = ref<HTMLInputElement>();
         const fileInput = ref<File>();
+        const chatDataToSend = ref<INeuroChat[]>([]);
+        const chatType = ref<IChatType>();
 
         const handleFileSelect = (event: Event) => {
             const target = event.target as HTMLInputElement;
@@ -115,40 +133,99 @@ export default defineComponent({
             fileInputNode.value?.click();
         }
 
-        const sendMsg = async () => {
+        const chatWindowUpdate = () => {
             isLoading.value = true;
-            const formData = new FormData;
-            formData.append('role-assistant', '');
-            formData.append('role-system', 'Определи из контекста, отвечай на русском');
-            formData.append('role-user', userInput.value);
-            if (fileInput.value) {
-                formData.append('file', fileInput.value);
+            if (chatType.value == 'textChat') {
+                if (!chatDataToSend.value.find((e) => e.role == 'system')) {
+                    chatDataToSend.value.push({ 'role': 'system', content: 'Определи из контекста, отвечай на русском' });
+                }
+                chatDataToSend.value.push({ 'role': 'user', content: userInput.value });
             }
-            userInput.value = '';
+            else if (chatType.value == 'createImg') {
+                createImageChatData.value = {
+                    prompt: userInput.value,
+                    size: '1024x1024',
+                    quality: 'standard',
+                    style: 'vivid'
+                }
+            }
+        }
 
-            await Api.post('testgpt', formData)
-                .then((data) => {
-                    console.log(data);
+        const sendMsg = async () => {
+            chatWindowUpdate();
+            if (chatType.value == 'textChat') {
+                await Api.postVendor('https://gpt.emk.ru/dialog', chatDataToSend.value)
+                    .then((data) => {
+                        chatDataToSend.value = data
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => {
+                        isLoading.value = false;
+                        userInput.value = '';
+
+                    })
+            }
+            else if (chatType.value == 'createImg') {
+                chatDataToSend.value.length = 0;
+                chatDataToSend.value.push({
+                    role: 'user',
+                    content: userInput.value,
+
                 })
-                .catch((error) => {
-                    handleApiError(error, toast)
-                })
-                .finally(() => {
-                    isLoading.value = false;
-                })
+                await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
+                    .then((data) => {
+                        chatDataToSend.value.push({
+                            role: 'assistant',
+                            content: data.image_url,
+                            type: 'img'
+                        })
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => {
+                        isLoading.value = false;
+                        userInput.value = '';
+
+                    })
+            }
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+
+                if (userInput.value.trim() && !isLoading.value) {
+                    sendMsg();
+                    userInput.value = '';
+                }
+            }
+        }
+
+        const handleChatTypeChange = (type: IChatType) => {
+            chatDataToSend.value.length = 0;
+            chatType.value = type;
+            firstMessage.value = type == 'createImg' ? 'Привет! Опиши изображение, которое хочешь получить' : 'Привет! Чем могу помочь?'
         }
 
         return {
             chatHistory,
-            messages,
             neuroModels,
             isLoading,
             userInput,
             fileInputNode,
             fileToUploadName,
+            chatDataToSend,
+            chatType,
+            firstMessage,
+            handleChatTypeChange,
+            parseMarkdown,
             sendMsg,
             handleFileSelect,
-            triggerFileSelect
+            triggerFileSelect,
+            handleKeyDown
         }
     }
 })

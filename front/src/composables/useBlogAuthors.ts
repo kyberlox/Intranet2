@@ -1,4 +1,4 @@
-import Api from "./Api"
+import Api from "../utils/Api"
 import { sectionTips } from "@/assets/static/sectionTips"
 import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
 import { useblogDataStore } from "@/stores/blogData"

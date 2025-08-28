@@ -1,3 +1,5 @@
+import type { IBXFileType } from "./IBase"
+
 export interface ISafetyTechnicsVertSlide {
     content?: {
         id: number,
@@ -25,7 +27,7 @@ export interface ISafetyTechnicsSlide {
         content_text?: string,
         images?: string[]
         preview_file_url?: string,
-        videos_native?: string[]
+        videos_native?: IBXFileType[]
     },
     evacuationContent?: {
         images?: string[],

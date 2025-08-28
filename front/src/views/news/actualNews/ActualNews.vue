@@ -28,6 +28,7 @@ import { useViewsDataStore } from "@/stores/viewsData";
 import { useLoadingStore } from '@/stores/loadingStore';
 import DateFilter from '@/components/tools/common/DateFilter.vue';
 import TagsFilter from '@/components/tools/common/TagsFilter.vue';
+import { useNewsFilterWatch } from '@/composables/useNewsFilterWatch';
 
 export default defineComponent({
     components: {
@@ -44,33 +45,19 @@ export default defineComponent({
         const filterYears: Ref<string[]> = ref([]);
         const emptyTag: Ref<boolean> = ref(false);
 
-        watch(([currentTag, currentYear]), () => {
-            if (currentTag.value && currentYear.value || currentTag.value && !currentYear.value) {
-                const newData = ref();
-                Api.get(`article/get_articles_by_tag_id/${sectionTips['Актуальные новости']}/${currentTag.value}`)
-                    .then((data: INews[]) => newData.value = data.filter((e) => {
-                        return e.date_creation?.includes(currentYear.value)
-                    }))
-                    .finally(() => {
-                        if (!newData.value.length) return emptyTag.value = true;
-                        visibleNews.value = newData.value;
-                        filterYears.value = extractYears(visibleNews.value);
-                        emptyTag.value = false;
-                    })
-            }
-            else if ((!currentTag.value && currentYear.value) || (!currentTag.value && !currentYear.value)) {
-                filterYears.value = extractYears(visibleNews.value);
-                visibleNews.value = allNews.value.filter((e) => {
-                    return e.date_creation?.includes(currentYear.value)
-                })
-                return visibleNews.value.length ? emptyTag.value = false : emptyTag.value = true;
-            }
+        watch(([currentTag, currentYear]), async () => {
+            const { newVisibleNews, newEmptyTag, newFilterYears } =
+                await useNewsFilterWatch(currentTag, currentYear, allNews, visibleNews);
+
+            visibleNews.value = newVisibleNews.value;
+            emptyTag.value = newEmptyTag.value;
+            filterYears.value = newFilterYears.value;
         })
 
-        onMounted(() => {
+        onMounted(async () => {
             if (allNews.value.length) return;
             useLoadingStore().setLoadingStatus(true);
-            Api.get(`article/find_by/${sectionTips['Актуальные новости']}`)
+            await Api.get(`article/find_by/${sectionTips['АктуальныеНовости']}`)
                 .then((res) => {
                     viewsData.setData(res, 'actualNewsData');
                     visibleNews.value = res;

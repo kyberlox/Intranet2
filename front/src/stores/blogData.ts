@@ -22,5 +22,6 @@ export const useblogDataStore = defineStore('blogData', {
         getCurrentAuthor: (state) => (x: string) => state.allAuthors.find(e => e.authorId == Number(x)),
         getCurrentArticles: (state) => (x: number) => state.allBlogs.filter((e) => e.indirect_data && ((e.indirect_data.author_uuid == x) || e.indirect_data.company == x)),
         getBlogById: (state) => (x: string) => state.allBlogs.find(e => String(e.id) == x),
+        getAuthorByBlogId: (state) => (x: string) => state.allBlogs.find(e => String(e.id) == x)?.indirect_data?.author_uuid
     }
 });

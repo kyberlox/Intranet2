@@ -13,7 +13,9 @@
                     <div class="homeview__grid__card__info">
                         <div v-if="card.name"
                              class="homeview__grid__card__title homeview__grid__card__title--gallery"
-                             :class="{ 'homeview__grid__card__title--video': type == 'video' }">{{ card.name }}</div>
+                             :class="{ 'homeview__grid__card__title--video': type == 'video' }">
+                            {{ card.name }}
+                        </div>
                     </div>
                     <Reactions v-if="card.reactions && card.id"
                                :reactions="card.reactions"

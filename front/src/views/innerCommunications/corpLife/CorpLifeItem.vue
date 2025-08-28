@@ -3,12 +3,12 @@
         <div class="page__title">Корпоративная жизнь</div>
         <div class="page__title__details"
              v-if="title">{{ title }}</div>
-        <PhotoGallery v-if="formattedSlides"
-                      class="mt20"
-                      :page=page
-                      :modifiers="modifiers"
-                      :slide="slide"
-                      @callModal="callModal" />
+        <ContentGallery v-if="formattedSlides"
+                        class="mt20"
+                        :page=page
+                        :modifiers="modifiers"
+                        :slide="slide"
+                        @callModal="callModal" />
     </div>
     <ZoomModal v-if="slide && slide.images?.length && modalIsOpen == true"
                :activeIndex="activeIndex"
@@ -17,24 +17,15 @@
 </template>
 
 <script lang="ts">
-import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { defineComponent, type Ref, ref, onMounted } from "vue";
-import PhotoGallery from "@/components/tools/gallery/ContentGallery.vue";
+import { defineComponent, ref, onMounted } from "vue";
+import ContentGallery from "@/components/tools/gallery/ContentGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
-import { type IBXFileType } from "@/interfaces/IEntities";
-
-interface PhotoGallerySlide {
-    name: string,
-    images?: IBXFileType[],
-    videos_native?: IBXFileType[],
-    videos_embed?: IBXFileType[]
-}
+import type { IContentGallerySlide } from "@/components/tools/gallery/ContentGallery.vue";
 
 export default defineComponent({
     components: {
-        ComplexGallery,
-        PhotoGallery,
+        ContentGallery,
         ZoomModal
     },
     props: {
@@ -44,7 +35,7 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const slide: Ref<PhotoGallerySlide | undefined> = ref();
+        const slide = ref<IContentGallerySlide>();
         const formattedSlides = ref({ images: [], id: '', videos_embed: [], videos_native: [] });
         const activeIndex = ref<number>();
         const modalIsOpen = ref<boolean>();
@@ -57,7 +48,6 @@ export default defineComponent({
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => {
-
                     slide.value = data;
                     formattedSlides.value.images = data.images;
                     formattedSlides.value.videos_embed = data.videos_embed;

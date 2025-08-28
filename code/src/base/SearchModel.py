@@ -13,20 +13,36 @@ import json
 from typing import Optional
 
 from fastapi import APIRouter, Body
+from fastapi import HTTPException
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 pswd = os.getenv('pswd')
-DOMAIN = os.getenv('DOMAIN')
+DOMAIN = os.getenv('HOST')
 
 search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту"])
 
-elastic_client = Elasticsearch(hosts=['http://elastic:9200'], http_auth=('elastic', pswd), verify_certs=False)
+'''
+elastic_client = Elasticsearch(
+    hosts=[f"{DOMAIN[:-5]}:9200"],
+    #basic_auth=('elastic', pswd),
+    verify_certs=False,
+    request_timeout=30,
+    retry_on_timeout=True,
+    max_retries=3
+)
+'''
 
+elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
 
+if elastic_client.ping():
+    print("✅ Успешное подключение!")
+else:
+    print("❌ Ошибка аутентификации!")
 
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)
@@ -37,7 +53,7 @@ class UserSearchModel:
         self.index = 'user'
 
     def create_index(self):
-        request_body = {
+        mapping = {
             "settings": {
                 "analysis": {
                     "analyzer": {
@@ -237,9 +253,21 @@ class UserSearchModel:
                 ]
             }
         }
-
-        responce = elastic_client.indices.create(index=self.index, body=request_body)
-        return responce
+        print("Я тут!")
+        index_name = self.index
+        try:
+            if elastic_client.indices.exists(index=index_name):
+                # Обновляем маппинг существующего индекса
+                elastic_client.indices.put_mapping(index=index_name, body=mapping["mappings"])
+                return {"status": "updated", "message": f"Mapping for {index_name} updated"}
+            else:
+                elastic_client.indices.create(index=index_name, body=mapping)
+                return {"status": "created", "message": f"Index {index_name} created"}
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Index operation failed: {str(e)}"
+            )
 
     def dump(self):
         try:

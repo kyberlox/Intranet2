@@ -1,7 +1,7 @@
-import Api from "./Api";
+import Api from "../utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
-import { getBlogAuthorsToStore } from "./getBlogAuthorsToStore";
+import { getBlogAuthorsToStore } from "./useBlogAuthors";
 import { useblogDataStore } from "@/stores/blogData";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useUserData } from "@/stores/userData";
@@ -10,10 +10,10 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
         case 'user':
-            if (Object.keys(useUserData().getUser).length) return
             Api.get(`users/find_by/${useUserData().getMyId}`)
                 .then((res) => {
                     useUserData().setUserInfo(res);
+                    localStorage.setItem('user', res)
                 })
             break;
         case 'factoryGuid':
@@ -32,7 +32,6 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 const currentYear = new Date().getFullYear();
                 Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
                     .then((data) => {
-                        console.log(data)
                         useViewsDataStore().setData(data.result, 'calendarData');
                     });
             }

@@ -1,13 +1,14 @@
 @use '@/assets/styles/mixins/_mixins.scss' as *;
 
 .neuroChat {
-    &-page {
-        &__wrapper {
-            width: 100%;
-            height: calc(100vh - 140px);
-            display: flex;
-        }
 
+    &__messages {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    &-page {
         width: 100%;
         display: flex;
         // max-width: 1200px;
@@ -23,6 +24,13 @@
             height: 100vh;
             max-height: 100%;
         }
+
+        &__wrapper {
+            width: 100%;
+            height: calc(100vh - 140px);
+            display: flex;
+        }
+
     }
 
     &-sidebar {
@@ -40,6 +48,10 @@
         }
 
         &__model-select {
+            @include sm {
+                flex: 1;
+            }
+
             &__wrapper {
                 padding: 20px;
                 display: flex;
@@ -51,10 +63,6 @@
                     align-items: center;
                     gap: 10px;
                 }
-            }
-
-            @include sm {
-                flex: 1;
             }
 
             select {
@@ -105,6 +113,10 @@
         }
 
         &__history {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
             &__wrapper {
                 flex: 1;
                 overflow-y: auto;
@@ -128,10 +140,6 @@
                     border-radius: 3px;
                 }
             }
-
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
 
             &-title {
                 font-size: 16px;
@@ -165,13 +173,6 @@
     }
 
     &-content {
-        &__wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #FFFFFF;
-        }
-
         flex: 1;
         padding: 30px;
         padding-bottom: 0;
@@ -184,6 +185,13 @@
         @include sm {
             padding: 20px;
             padding-bottom: 0;
+        }
+
+        &__wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #FFFFFF;
         }
 
         &::-webkit-scrollbar {
@@ -221,6 +229,24 @@
         line-height: 1.5;
         word-wrap: break-word;
         position: relative;
+
+        &--link {
+            &>a {
+                color: blue !important;
+                text-decoration: underline;
+                transition: 0.2s;
+
+                &:hover {
+                    color: var(--emk-brand-color) !important;
+                }
+            }
+        }
+
+        &--neuro {
+            &>img {
+                max-width: 100%;
+            }
+        }
 
         @include sm {
             max-width: 85%;
@@ -285,6 +311,10 @@
     }
 
     &__input-textarea {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
         &__wrapper {
             padding: 20px 30px;
             background-color: #FFFFFF;
@@ -296,9 +326,6 @@
             }
         }
 
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
 
         label {
             font-size: 14px;

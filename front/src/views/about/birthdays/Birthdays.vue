@@ -13,7 +13,7 @@
     </div>
     <div class="birthday__date-picker-wrapper mt20">
         <div class="col-12 col-md-2 mb-3">
-            <DatePicker @pickDate="(date) => pickDate(date)"
+            <DatePicker @pickDate="(date: string) => pickDate(date)"
                         :calendarType="'dayAndMonth'"
                         :nullifyDateInput="nullifyDateInput" />
         </div>
@@ -36,8 +36,8 @@
                                @slidePrev="slidePrev" />
             </div>
             <div class="birthday__static__greetings">
-                <img @click="openModal(['/src/assets/imgs/plugs/birthdayPlug.jpg'])"
-                     src="/src/assets/imgs/plugs/birthdayPlug.jpg"
+                <img @click="openModal([birthdayPageImg])"
+                     :src=birthdayPageImg
                      alt="поздравление" />
             </div>
         </div>
@@ -56,14 +56,14 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
-import { useSwiperconf } from "@/utils/useSwiperConf";
+import { useSwiperconf } from "@/composables/useSwiperConf";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
 import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
-
+import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.jpg";
 
 export default defineComponent({
     components: {
@@ -159,6 +159,7 @@ export default defineComponent({
             sliderConfig: swiperConf.sliderConfig,
             swiperInstance: swiperConf.swiperInstance,
             isBeginning: swiperConf.isBeginning,
+            birthdayPageImg
         };
     },
 });

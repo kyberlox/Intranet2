@@ -17,6 +17,7 @@
                     </div>
                     <div class="personal__user__mess">
                         <a :href='"https://portal.emk.ru/company/personal/user/" + user.id'
+                           target="_blank"
                            class="personal__user__mess__link">Профиль в Bitrix24</a>
                         <button v-if="user.id !== myId"
                                 class="personal__user__mess__link">Отправить баллы</button>
@@ -45,7 +46,8 @@
                                 <div v-if="user.indirect_data && user.indirect_data.uf_usr_1696592324977 && user.indirect_data.uf_usr_1696592324977.length"
                                      class="personal__user__property__items__uf_usr_1696592324977">
                                     <h3>Дирекция</h3>
-                                    <span v-for="item in user.indirect_data.uf_usr_1696592324977">
+                                    <span v-for="item in user.indirect_data.uf_usr_1696592324977"
+                                          :key="'dir' + item">
                                         {{ item }}
                                     </span>
                                 </div>

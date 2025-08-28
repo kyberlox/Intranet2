@@ -55,10 +55,17 @@
     &__custom-marker {
         position: absolute;
         top: 0;
-        right: 0;
+        right: 50%;
         height: 8px;
         width: 8px;
         border-radius: 100%;
+        transform: translateX(50%);
+
+        &--line {
+            height: 2px;
+            width: 100%;
+            border-radius: 0;
+        }
 
         &__wrapper {
             position: absolute;

@@ -3,12 +3,18 @@
     "section_id" : "ID раздела",
     "name" : "Название статьи",
     "active" : "Активна",
+    "theme" : "Тема",
     "date_publiction" : "Дата публикации",
     "date_creation" : "Дата создания",
     "preview_text" : "Аннотация",
     "content_type" : "Тип форматирования",
     "content_text" : "Содержимое",
-
+    
+    "link" : "Ссылка",
+    "TITLE" : "заголовок",
+    "company" : "Предприятие",
+    "author_uuid" : "ID автора",
+    "youtube_link" : "ссылка на YouTube",
     "year" : "год",
     "uuid" : "ID пользователя",
     "photo_file_url" : "Фотография (URL)",
@@ -19,5 +25,8 @@
     "organizer" : "Организатор",
     "phone_number" : "Номер телефона",
     "date_from" : "Дата начала",
-    "date_to" : "Дата окончания"
+    "date_to" : "Дата окончания",
+    "reports" : "Репортажи",
+    "subsection" : "Подраздел"
+    
 }

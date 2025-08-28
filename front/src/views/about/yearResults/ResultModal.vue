@@ -31,7 +31,7 @@
     </Transition>
 </template>
 <script lang="ts">
-import { parseMarkdown } from "@/utils/useMarkdown";
+import { parseMarkdown } from "@/utils/parseMarkdown";
 import { defineComponent } from "vue";
 export default defineComponent({
     props: {

@@ -2,9 +2,10 @@
     <div class="neuroChat-sidebar">
         <div class="neuroChat-sidebar__model-select__wrapper">
             <div class="neuroChat-sidebar__model-select">
-                <select>
+                <select v-model="chatType">
                     <option v-for="model in neuroModels"
-                            :key="model.route">
+                            :key="model.type"
+                            :value="model.type">
                         {{ model.name }}
                     </option>
                 </select>
@@ -13,7 +14,8 @@
                 <button>Создать +</button>
             </div>
         </div>
-        <div class="neuroChat-sidebar__history__wrapper">
+        <div class="neuroChat-sidebar__history__wrapper"
+             v-if="chatHistory?.length">
             <div class="neuroChat-sidebar__history">
                 <div class="neuroChat-sidebar__history-title">История сообщений</div>
                 <div class="neuroChat-sidebar__history__item"
@@ -27,10 +29,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 
 interface INeuroModels {
-    route: string,
+    type: 'textChat' | 'createImg',
     name: string
 }
 
@@ -44,9 +46,15 @@ export default defineComponent({
         neuroModels: Array<INeuroModels>,
         chatHistory: Array<IChatHistory>
     },
-    setup() {
-        return {
+    setup(props, { emit }) {
+        const chatType = ref<'textChat' | 'createImg'>('textChat');
 
+        watch((chatType), () => {
+            emit('typeChanged', chatType.value)
+        }, { immediate: true })
+
+        return {
+            chatType,
         }
     }
 })

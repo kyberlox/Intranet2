@@ -409,7 +409,7 @@ const router = createRouter({
       path: '/communications/corplife/:id',
       name: 'corpLifeItem',
       component: () => import('@/views/innerCommunications/corpLife/CorpLifeItem.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Корпоративная жизнь' }),
+      props: (route) => ({ id: route.params.id }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Корпоративная жизнь', route: 'corpLife' }]
       }
@@ -418,6 +418,11 @@ const router = createRouter({
       path: '/communications/announces/',
       name: 'eventAnnounces',
       component: () => import('@/views/innerCommunications/EventAnnounces.vue')
+    },
+    {
+      path: '/communications/contest/',
+      name: 'contest',
+      component: () => import('@/views/innerCommunications/ContestEmk.vue')
     },
     {
       path: '/communications/announces/:id',
@@ -482,12 +487,12 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/admin/AdminSidebar.vue')
+      component: () => import('@/views/admin/components/elementsListLayout/AdminSidebar.vue')
     },
     {
       path: '/admin/:id',
       name: 'adminBlockInner',
-      component: () => import('@/views/admin/AdminContent.vue'),
+      component: () => import('@/views/admin/AdminElements.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {

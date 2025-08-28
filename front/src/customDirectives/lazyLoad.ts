@@ -18,7 +18,6 @@ export const vLazyLoad: Directive = {
                         const imageUrl = binding.value
 
                         if (imageUrl) {
-
                             if (isBackgroundImage) {
                                 // Для фоновых изображений
                                 const img = new Image()

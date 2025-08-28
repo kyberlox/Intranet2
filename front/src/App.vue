@@ -35,7 +35,7 @@ import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "./views/user/AuthPage.vue";
 
 import { useUserData } from "./stores/userData";
-import { prefetchSection } from "./utils/prefetchSection";
+import { prefetchSection } from "./composables/usePrefetchSection";
 
 export default defineComponent({
     name: "app-layout",
@@ -51,12 +51,12 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
+
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            if (isLogin) {
+            if (isLogin.value) {
                 const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
-                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog'];
-                prefetchSection('user');
+                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
                 prefetchSection('calendar');
 
                 if (blogsRoutes.includes(String(route.name))) {
@@ -69,6 +69,7 @@ export default defineComponent({
 
         onMounted(() => {
             userData.initKeyFromStorage();
+            prefetchSection('user');
         })
 
         return {

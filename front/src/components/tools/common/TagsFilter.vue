@@ -9,10 +9,16 @@
                  class=" tags">
                 <div v-for="tag in tags"
                      :key="tag.id"
-                     class="tag__wrapper ">
+                     class="tag__wrapper">
                     <div class="tag section__item__link btn-air"
                          @click="setActiveTag(tag)">
                         #{{ tag.tag_name }}
+                    </div>
+                </div>
+                <div class="tag__wrapper">
+                    <div class="tag section__item__link btn-air"
+                         @click="setActiveTag({ id: '' })">
+                        Очистить
                     </div>
                 </div>
             </div>
@@ -26,8 +32,8 @@ import Api from '@/utils/Api';
 import { defineComponent, ref, onMounted, type Ref } from 'vue';
 
 interface ITag {
-    id: number,
-    tag_name: string
+    id: number | '',
+    tag_name?: string
 }
 
 export default defineComponent({
@@ -36,7 +42,6 @@ export default defineComponent({
         const tagsVisible = ref(false);
         const activeTag: Ref<ITag | undefined> = ref();
 
-
         onMounted(() => {
             Api.get('/tags/get_tags')
                 .then((data) => tags.value = data)
@@ -44,7 +49,8 @@ export default defineComponent({
 
         const setActiveTag = (tag: ITag) => {
             activeTag.value = tag;
-            emit('pickTag', tag.id)
+            emit('pickTag', tag.id);
+            tagsVisible.value = false;
         }
 
         return {

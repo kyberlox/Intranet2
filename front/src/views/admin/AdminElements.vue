@@ -37,6 +37,7 @@
                           class="admin-block-inner__card__wrapper">
                 <div v-if="item.preview_file_url"
                      class="admin-block-inner__card__side-img"
+                     :class="{ 'bg-contain': sectionId == '41' }"
                      v-lazy-load="item.preview_file_url"></div>
                 <div class="flex-grow">
                   <div class="admin-block-inner__card-header">
@@ -106,7 +107,7 @@
 import { computed, defineComponent, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Api from '@/utils/Api';
-import AdminSidebar from './AdminSidebar.vue';
+import AdminSidebar from './components/elementsListLayout/AdminSidebar.vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useDateFormat } from '@vueuse/core';
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
@@ -114,7 +115,7 @@ import EditIcon from "@/assets/icons/admin/EditIcon.svg?component"
 import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component"
 
 import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/utils/UseToastСompose';
+import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiResponse } from '@/utils/ApiResponseCheck';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 

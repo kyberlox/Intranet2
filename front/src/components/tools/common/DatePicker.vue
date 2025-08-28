@@ -16,6 +16,7 @@
             <div class="calendar__custom-marker__wrapper"
                  @click="$emit('markerClick', marker)">
                 <span class="calendar__custom-marker"
+                      :class="{ 'calendar__custom-marker--line': marker.type == 'line' }"
                       :style="{ backgroundColor: marker.color }">
                     <span>{{ marker.tooltip.name }}</span>
                 </span>

@@ -123,6 +123,7 @@ class Editor:
                     fl["values"] = self.variable[k]
 
                 # проверяю редактируемость
+                print(self.notEditble)
                 if k in self.notEditble:
                     fl["disabled"] = True
 

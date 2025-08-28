@@ -108,8 +108,6 @@ class Editor:
                 
                 data_type = get_type(val)
 
-                if k == "photo_file_url" and val != None: #photo_file_url нужен только там, где он есть
-
                     # экземпляр поля
                     fl = {
                         "name" : self.fields[k],
@@ -128,6 +126,12 @@ class Editor:
 
                     #загрузил
                     field.append(fl)
+        
+        #photo_file_url нужен только там, где он есть
+        for f, i in enumerate(field):
+            if field["field"] == "photo_file_url" and field["value"] is None:
+                field.pop(i)
+
 
         # вытащить файлы
         self.art_id = int(self.art_id)

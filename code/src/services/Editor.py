@@ -49,6 +49,8 @@ class Editor:
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
 
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        if self.section_id in [18, 52, 54, 172] :
+                self.notEditble.append("preview_text")
 
         self.variable = {
             "active" : [True, False],
@@ -86,7 +88,8 @@ class Editor:
         art_keys = []
         for k in art.keys():
             if k not in art_keys and k != "indirect_data":
-                art_keys.append(k)
+                if 
+                    art_keys.append(k)
 
         # вытащить поля из psql -> indirect_data
         if "indirect_data" in art and art["indirect_data"] is not None:
@@ -133,18 +136,17 @@ class Editor:
         #         field.pop(i)
 
 
+
         # вытащить файлы
         self.art_id = int(self.art_id)
         files=self.get_files()
 
-        need_del = []
-        for f in files.keys():
-            if files[f] == []:
-                need_del.append(f)
-        for f in need_del:
-            files.pop(f)
-
-
+        # need_del = []
+        # for f in files.keys():
+        #     if files[f] == []:
+        #         need_del.append(f)
+        # for f in need_del:
+        #     files.pop(f)
         
         # вывести
         return {"fields" : field, "files" : files}
@@ -166,6 +168,7 @@ class Editor:
                 #если такого поля ещё нет
                 fields_names = [f["field"] for f in fields]
                 if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                        
                     field = {
                         "name" : self.fields[k], #хватай имя
                         "field" : k, #хватай поле
@@ -249,8 +252,6 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
-        
-        
 
         return {"fields" : fields, "files" : files_keys}
 

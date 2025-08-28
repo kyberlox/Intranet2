@@ -108,28 +108,32 @@ class Editor:
                 
                 data_type = get_type(val)
 
-                # экземпляр поля
-                fl = {
-                    "name" : self.fields[k],
-                    "value" : val,
-                    "field" : k,
-                    "data_type" : data_type
-                }
+                if k == "photo_file_url" and val != None: #photo_file_url нужен только там, где он есть
 
-                # если значения варьируются
-                if k in self.variable.keys():
-                    fl["values"] = self.variable[k]
+                    # экземпляр поля
+                    fl = {
+                        "name" : self.fields[k],
+                        "value" : val,
+                        "field" : k,
+                        "data_type" : data_type
+                    }
 
-                # проверяю редактируемость
-                if k in self.notEditble:
-                    fl["disabled"] = True
+                    # если значения варьируются
+                    if k in self.variable.keys():
+                        fl["values"] = self.variable[k]
 
-                #загрузил
-                field.append(fl)
+                    # проверяю редактируемость
+                    if k in self.notEditble:
+                        fl["disabled"] = True
+
+                    #загрузил
+                    field.append(fl)
 
         # вытащить файлы
         self.art_id = int(self.art_id)
         files=self.get_files()
+
+
         
         # вывести
         return {"fields" : field, "files" : files}
@@ -246,7 +250,7 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art=dict()
+        art=ArticleModel(id=self.art_id).find_by_id()
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():

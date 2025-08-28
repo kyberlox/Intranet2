@@ -205,7 +205,7 @@ class Editor:
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys.keys() and files[f_key] != [] files[f_key] is not None:
+                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
                     files_keys[f_key] = []
 
             

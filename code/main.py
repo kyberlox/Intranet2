@@ -34,6 +34,8 @@ from src.services.Editor import Editor, editor_router
 
 from src.services.FieldsVisions import Visions, fieldsvisions_router
 
+from src.services.Peer import Peer, peer_router
+
 from src.model.Tag import Tag, tag_router
 
 from src.services.AIchat import ai_router
@@ -78,6 +80,7 @@ app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
 
+app.include_router(peer_router, prefix="/api")
 
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")

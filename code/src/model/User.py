@@ -51,11 +51,11 @@ class User:
             #if usr_data['ID'] in cool_users:
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             UserSQL.upsert_user(usr_data)
-        status = self.set_users_photo()
+        #status = self.set_users_photo()
         #дампим данные в эластик
         self.dump_users_data_es()
         
-        return {"status" : status}
+        return {"status" : True}
 
     def search_by_id(self):
         return UserModel(self.id).find_by_id()

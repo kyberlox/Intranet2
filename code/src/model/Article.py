@@ -153,7 +153,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        self.search_files(data["IBLOCK_ID"], self.id, data)
+        #self.search_files(data["IBLOCK_ID"], self.id, data)
         # article_data["indirect_data"]["files"]
 
         # определяем превью
@@ -1399,9 +1399,9 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        
+        '''
 
-
+        '''
         # Видеогалерея
         self.section_id = "69"
         art_inf = self.get_inf()
@@ -1435,7 +1435,6 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     pass
         '''
-
         '''
         # вакансии (приведи друга)
         self.section_id = "67"
@@ -1489,6 +1488,8 @@ class Article:
             elif artDB.update(self.make_valid_article(art)):
                 pass
         '''
+
+        
         
         #Конкурсы ЭМК 7 секция
 
@@ -1503,6 +1504,7 @@ class Article:
         #             self.add(inf)
         #         elif art_DB.update(self.make_valid_article(inf)):
         #             pass
+        
 
         '''самобытные блоки'''
         # полная статика

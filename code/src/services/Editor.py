@@ -126,10 +126,20 @@ class Editor:
 
                 #загрузил
                 field.append(fl)
+        
+        #photo_file_url нужен только там, где он есть
+        # for f, i in enumerate(field):
+        #     if field["field"] == "photo_file_url" and field["value"] is None:
+        #         field.pop(i)
+
 
         # вытащить файлы
         self.art_id = int(self.art_id)
         files=self.get_files()
+
+        # for f in files.keys():
+        #     if files[f] == []:
+        #         files.pop(f)
         
         # вывести
         return {"fields" : field, "files" : files}
@@ -197,7 +207,7 @@ class Editor:
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys.keys() and files[f_key] != []:
+                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
                     files_keys[f_key] = []
 
             
@@ -246,7 +256,11 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art=dict()
+        art=ArticleModel(id=self.art_id).find_by_id()
+        if '_sa_instance_state' in art:
+            art.pop('_sa_instance_state')
+        print(art)
+        print(data)
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
@@ -412,15 +426,14 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-async def create_file(file: UploadFile, art_id : int):
+def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)    
+    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')
 def del_file(file_id: str):
     return storeFile(id = file_id).editor_del_file()
-
 
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):

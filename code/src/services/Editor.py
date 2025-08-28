@@ -128,9 +128,9 @@ class Editor:
                 field.append(fl)
         
         #photo_file_url нужен только там, где он есть
-        for f, i in enumerate(field):
-            if field["field"] == "photo_file_url" and field["value"] is None:
-                field.pop(i)
+        # for f, i in enumerate(field):
+        #     if field["field"] == "photo_file_url" and field["value"] is None:
+        #         field.pop(i)
 
 
         # вытащить файлы

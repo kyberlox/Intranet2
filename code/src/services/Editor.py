@@ -43,12 +43,20 @@ class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
-        self.art_id = art_id
         self.section_id = section_id
+        self.art_id = art_id
+        if self.art_id is not None:
+            art = ArticleModel(id = self.art_id).find_by_id()
+            self.section_id = art["section_id"]
+        
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
 
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        if self.section_id in [18, 52, 54, 172] :
+                self.notEditble.append("preview_text")
+        if self.section_id in [42, 52] :
+                self.notEditble.append("content_text")
 
         self.variable = {
             "active" : [True, False],
@@ -82,6 +90,7 @@ class Editor:
         
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
+        self.section_id = art["section_id"]
 
         art_keys = []
         for k in art.keys():
@@ -121,6 +130,8 @@ class Editor:
                     fl["values"] = self.variable[k]
 
                 # проверяю редактируемость
+                print(self.section_id)
+                print(self.notEditble)
                 if k in self.notEditble:
                     fl["disabled"] = True
 
@@ -133,18 +144,17 @@ class Editor:
         #         field.pop(i)
 
 
+
         # вытащить файлы
         self.art_id = int(self.art_id)
         files=self.get_files()
 
-        need_del = []
-        for f in files.keys():
-            if files[f] == []:
-                need_del.append(f)
-        for f in need_del:
-            files.pop(f)
-
-
+        # need_del = []
+        # for f in files.keys():
+        #     if files[f] == []:
+        #         need_del.append(f)
+        # for f in need_del:
+        #     files.pop(f)
         
         # вывести
         return {"fields" : field, "files" : files}
@@ -166,6 +176,7 @@ class Editor:
                 #если такого поля ещё нет
                 fields_names = [f["field"] for f in fields]
                 if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                        
                     field = {
                         "name" : self.fields[k], #хватай имя
                         "field" : k, #хватай поле
@@ -249,8 +260,6 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
-        
-        
 
         return {"fields" : fields, "files" : files_keys}
 

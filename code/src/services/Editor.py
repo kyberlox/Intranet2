@@ -251,6 +251,7 @@ class Editor:
             return LogsMaker.warning_message("Укажите id раздела")
 
         art=ArticleModel(id=self.art_id).find_by_id()
+        art.pop('_sa_instance_state')
         print(art)
         indirect_data = dict()
         #валидировать данные data

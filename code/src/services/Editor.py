@@ -137,7 +137,7 @@ class Editor:
         self.art_id = int(self.art_id)
         files=self.get_files()
 
-        for f in files:
+        for f in files.keys():
             if files[f] == []:
                 files.pop(f)
         

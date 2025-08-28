@@ -84,6 +84,7 @@ class Editor:
         
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
+        self.section_id = art["section_id"]
 
         art_keys = []
         for k in art.keys():

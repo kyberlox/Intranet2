@@ -162,6 +162,40 @@ class Tags(Base):
     id = Column(Integer, primary_key=True)
     tag_name = Column(Text, nullable=True)
 
+class Activities(Base):
+    __tablename__ = "activities"
+  
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, nullable=True)
+    coast = Column(Integer, nullable=True)
+    need_valid = Column(Boolean, nullable=True)
+
+    activeusers = relationship("ActiveUsers", back_populates="activities")
+    moders = relationship("Moders", back_populates="activities")
+    
+
+class ActiveUsers(Base):
+    __tablename__ = "activeusers"
+  
+    id = Column(Integer, primary_key=True)
+    uuid_from = Column(Integer, nullable=True)
+    uuid_to = Column(Integer, nullable=True)
+    description = Column(Text, nullable=True)
+    valid = Column(Integer, nullable=True)
+    date_time = Column(DateTime, nullable=True)
+    activities_id = Column(Integer, ForeignKey("activities.id", ondelete="CASCADE"), nullable=False)
+
+    activities = relationship("Activities", back_populates="activeusers")
+
+class Moders(Base):
+    __tablename__ = "moders"
+
+    id = Column(Integer, primary_key=True)
+    user_uuid = Column(Text, nullable=True)
+    activities_id = Column(Integer, ForeignKey("activities.id", ondelete="CASCADE"), nullable=False)
+
+    activities = relationship("Activities", back_populates="moders")
+
 
 metadata = MetaData()
 
@@ -812,7 +846,6 @@ class UsDepModel():
             return []
 
 
-
 class SectionModel():
 
     def __init__(self, id=0, name="", parent_id=0):
@@ -1407,3 +1440,168 @@ class TagsModel:
             return tags
         return []
     
+class ActivitiesModel:
+    def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False):
+        self.session = db
+        self.id = id
+        self.name = name
+        self.coast = coast
+        self.need_valid = need_valid
+
+    def upload_base_activities(self):
+        with open('./src/base/base_activities.json', mode='r', encoding='UTF-8') as f:
+            cur_activities = json.load(f)
+        for activity in cur_activities:
+            existing_activity = self.session.query(Activities).filter(Activities.id == activity['id']).first()
+            if existing_activity:
+                continue
+            else:
+                new_activity = Activities(id=activity['id'], name=activity['name'], coast=activity['coast'], need_valid=activity['need_valid'])
+                self.session.add(new_activity)
+                self.session.commit()
+        self.session.close()
+        return {"status": True}
+    
+    def find_all_activities(self):
+        return self.session.query(Activities).all()
+
+    def update_activity(self):
+        activity = self.session.query(Activities).get(self.id)
+        if activity:
+            activity.name = self.name
+            activity.coast = self.coast
+            activity.user_uuid = self.user_uuid
+            self.session.commit()
+            self.session.close()
+            return {"status": True}
+        else:
+            return {"msg": "нет такого id"}
+
+    def delete_activity(self):
+        existing_activity = self.session.query(Activities).get(self.id)
+        if existing_activity:
+            self.session.delete(existing_activity)
+            self.session.commit()
+            self.session.close()
+            return {"status": True}
+        else:
+            return {"msg": "нет такой активности"}
+
+class ActiveUsersModel:
+
+    def __init__(self, id: int = 0, description: str = '', valid: int = 0, uuid_from: int = 0, uuid_to: int = 0, activities_id: int = 0):
+        self.session = db
+        self.id = id
+        self.description = description
+        self.valid = valid
+        self.uuid_from = uuid_from
+        self.uuid_to = uuid_to
+        self.activities_id = activities_id
+
+    def upload_past_table_ActiveUsers(self):
+        with open('./src/base/active_users.json', mode='r', encoding='UTF-8') as f:
+            cur_activities = json.load(f)
+        for activity in cur_activities:
+            existing_activity = self.session.query(ActiveUsers).filter(ActiveUsers.id == activity['id']).first()
+            if existing_activity:
+                continue
+            else:
+                new_activity = ActiveUsers(id=activity['id'], uuid_from=activity['uuid_from'], uuid_to=activity['uuid_to'], description=activity['description'], valid=activity['valid'], date_time=activity['date_time'], activities_id=activity['activities_id'])
+                self.session.add(new_activity)
+                self.session.commit()
+        self.session.close()
+        return {"status": True}
+
+    def actions(self):
+        """выводит список доступных пользователю активностей"""
+        month_ago = datetime.now() - timedelta(days=30)
+        likes_count = self.session.query(ActiveUsers).filter(ActiveUsers.uuid_from == self.uuid_from, ActiveUsers.activities_id == 0, ActiveUsers.date_time >= month_ago).count()
+
+        #проверить остаток доступных лайков
+        likes_left = 10 - likes_count
+        if likes_count > 10:
+            likes_left = 0
+        
+        uuid_for_filter = str(self.uuid_from)
+
+        result = self.session.query(Activities.id, Activities.name).join(
+                Moders,
+                Moders.activities_id == Activities.id
+            ).filter(
+                or_(
+                    Moders.user_uuid == uuid_for_filter,
+                    Moders.user_uuid == '*'
+                )
+            ).all()
+
+        activities_list = [
+            {"id": activity.id, "name": activity.name}
+            for activity in result
+        ]
+
+        return {
+            "likes_left": likes_left,
+            "activities": activities_list
+        }
+
+
+class ModersModel:
+    def __init__(self, activities_id: int = 0, uuid: int = 0):
+        self.session = db
+        self.activities_id = activities_id
+        self.uuid = uuid
+
+    def upload_past_moders(self):
+        with open('./src/base/activities_moders.json', mode='r', encoding='UTF-8') as f:
+            cur_moders = json.load(f)
+        for moder in cur_moders:
+            existing_moder = self.session.query(Moders).filter(Moders.id == moder['id']).first()
+            if existing_moder:
+                continue
+            else:
+                new_moder = Moders(id=moder['id'], user_uuid=moder['user_uuid'], activities_id=moder['active_id'])
+                self.session.add(new_moder)
+                self.session.commit()
+        self.session.close()
+        return {"status": True}
+    
+    def confirmation(self):
+        res = self.session.query(ActiveUsers, Activities).join(Activities, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.activities_id == Activities.id, ActiveUsers.valid == 0, Activities.id == self.activities_id).all()
+        if res:
+            result = []
+            for activities in res:
+                data = {
+                    "id": activities[0].id,
+                    "name": activities[1].name,
+                    "uuid_from": activities[0].uuid_from,
+                    "uuid_to": activities[0].uuid_to,
+                    "description": activities[0].description,
+                    "date_time": activities[0].date_time,
+                    "coast": activities[1].coast,
+                    "need_valid": activities[1].need_valid
+                }
+                result.append(data)
+            return result
+        return res
+        
+    def do_valid(self, action_id):
+        res = False
+        user_uuid = self.session.query(Moders.user_uuid).join(ActiveUsers, ActiveUsers.activities_id == Moders.activities_id).filter(ActiveUsers.id == action_id).first()
+        if str(self.uuid) == user_uuid or str(self.uuid) == '1414':
+            stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=1)
+            self.session.execute(stmt)
+            self.session.commit()
+            res = True
+        self.session.close()
+        return res
+
+    def do_not_valid(self, action_id):
+        res = False
+        user_uuid = self.session.query(Moders.user_uuid).join(ActiveUsers, ActiveUsers.activities_id == Moders.activities_id).filter(ActiveUsers.id == action_id).first()
+        if str(self.uuid) == user_uuid or str(self.uuid) == '1414':
+            stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
+            self.session.execute(stmt)
+            self.session.commit()
+            res = True
+        self.session.close()
+        return res

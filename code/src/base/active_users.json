@@ -1,0 +1,857 @@
+[
+  {
+    "id": 0,
+    "uuid_from": "1414",
+    "uuid_to": "2375",
+    "description": "2023 год",
+    "valid": 2,
+    "date_time": "2024-04-12 06:30:32.729064",
+    "activities_id": 8
+  },
+  {
+    "id": 1,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Все мы — единая команда",
+    "valid": 1,
+    "date_time": "2023-03-01 00:00:00",
+    "activities_id": 10
+  },
+  {
+    "id": 2,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Экспертное мнение о рынке трубопроводной арматуры",
+    "valid": 1,
+    "date_time": "2023-04-10 00:00:00",
+    "activities_id": 10
+  },
+  {
+    "id": 3,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Цифровизация за дверью?",
+    "valid": 1,
+    "date_time": "2024-01-16 00:00:00",
+    "activities_id": 10
+  },
+  {
+    "id": 4,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Цифровизация в маркетинге",
+    "valid": 1,
+    "date_time": "2024-03-14 00:00:00",
+    "activities_id": 10
+  },
+  {
+    "id": 5,
+    "uuid_from": "166",
+    "uuid_to": "157",
+    "description": "Семинар-тренинг \"Эффективная работа в команде\"",
+    "valid": 1,
+    "date_time": "2022-06-10 00:00:00",
+    "activities_id": 4
+  },
+  {
+    "id": 6,
+    "uuid_from": "166",
+    "uuid_to": "157",
+    "description": "Тренинг «Эффективная работа в команде»",
+    "valid": 1,
+    "date_time": "2022-05-27 00:00:00",
+    "activities_id": 4
+  },
+  {
+    "id": 7,
+    "uuid_from": "166",
+    "uuid_to": "157",
+    "description": "Семинар-тренинг \"Системное мышление\"",
+    "valid": 1,
+    "date_time": "2022-04-07 00:00:00",
+    "activities_id": 4
+  },
+  {
+    "id": 8,
+    "uuid_from": "166",
+    "uuid_to": "157",
+    "description": "Тренинг \"Системное мышление\"",
+    "valid": 1,
+    "date_time": "2022-03-24 00:00:00",
+    "activities_id": 4
+  },
+  {
+    "id": 9,
+    "uuid_from": "166",
+    "uuid_to": "157",
+    "description": "Тренинг \"Лидерство\"",
+    "valid": 1,
+    "date_time": "2022-01-21 00:00:00",
+    "activities_id": 4
+  },
+  {
+    "id": 10,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Выездные семинары в Беларуси",
+    "valid": 1,
+    "date_time": "2023-11-29 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 11,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Конференция СИБУРИНТЕХа",
+    "valid": 1,
+    "date_time": "2023-11-15 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 12,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "ПМГФ-2023",
+    "valid": 1,
+    "date_time": "2023-10-21 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 13,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "V Всероссийская конференция специалистов по проектированию",
+    "valid": 1,
+    "date_time": "2023-08-16 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 14,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Семинар в Нижнем Новгороде",
+    "valid": 1,
+    "date_time": "2023-07-26 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 15,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Семинар в Волгограде",
+    "valid": 1,
+    "date_time": "2023-07-07 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 16,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "НЕФТЕГАЗ-2023",
+    "valid": 1,
+    "date_time": "2023-04-20 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 17,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Семинар в Казани",
+    "valid": 1,
+    "date_time": "2022-11-01 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 18,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "ПМГФ-2022",
+    "valid": 1,
+    "date_time": "2022-10-10 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 19,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Выставка \"Курганспецфорум\"",
+    "valid": 1,
+    "date_time": "2022-09-09 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 20,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Умный город",
+    "valid": 1,
+    "date_time": "2022-09-05 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 21,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Семинар в Челябинске",
+    "valid": 1,
+    "date_time": "2022-08-29 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 22,
+    "uuid_from": "1414",
+    "uuid_to": "157",
+    "description": "Семинар в Самаре",
+    "valid": 1,
+    "date_time": "2022-08-08 00:00:00",
+    "activities_id": 1
+  },
+  {
+    "id": 28,
+    "uuid_from": "372",
+    "uuid_to": "390",
+    "description": "Идея №1. информация по меню столовой",
+    "valid": 1,
+    "date_time": "2023-05-11 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 29,
+    "uuid_from": "372",
+    "uuid_to": "533",
+    "description": "Идея №2. комплектация крепежом приводов и арматуры",
+    "valid": 1,
+    "date_time": "2023-05-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 30,
+    "uuid_from": "372",
+    "uuid_to": "1552",
+    "description": "Идея №3. Видеоинтервью",
+    "valid": 1,
+    "date_time": "2023-05-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 31,
+    "uuid_from": "372",
+    "uuid_to": "1414",
+    "description": "Идея №4. Для сотрудников ЭМК",
+    "valid": 1,
+    "date_time": "2023-05-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 32,
+    "uuid_from": "372",
+    "uuid_to": "533",
+    "description": "Идея №5. подбор крепежа",
+    "valid": 1,
+    "date_time": "2023-05-19 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 33,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №6. соц сети",
+    "valid": 1,
+    "date_time": "2023-05-22 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 34,
+    "uuid_from": "372",
+    "uuid_to": "367",
+    "description": "Идея №7. база персоналий",
+    "valid": 1,
+    "date_time": "2023-05-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 35,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №8. Аудита техно-сферы для Роснефти. ",
+    "valid": 1,
+    "date_time": "2023-06-02 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 36,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №9. Модернизация процесса закупки ТМЦ по заказам клиентов. ",
+    "valid": 1,
+    "date_time": "2023-06-02 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 37,
+    "uuid_from": "372",
+    "uuid_to": "157",
+    "description": "Идея №10. Прошу организовать синертим \"отсутствует путь клиента ТЭП\" ",
+    "valid": 1,
+    "date_time": "2023-06-02 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 38,
+    "uuid_from": "372",
+    "uuid_to": "554",
+    "description": "Идея №11. Устаревшие регламенты и инструкции ЭМК, размещенные в Мотиве",
+    "valid": 1,
+    "date_time": "2023-06-07 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 39,
+    "uuid_from": "372",
+    "uuid_to": "2120",
+    "description": "Идея №12. Функция сохранения информация перед выходом в Мотиве.",
+    "valid": 1,
+    "date_time": "2023-06-08 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 40,
+    "uuid_from": "372",
+    "uuid_to": "527",
+    "description": "Идея №13. Подпись",
+    "valid": 1,
+    "date_time": "2023-06-14 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 41,
+    "uuid_from": "372",
+    "uuid_to": "390",
+    "description": "Идея №14. Новое на корпоративный портал",
+    "valid": 1,
+    "date_time": "2023-06-27 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 42,
+    "uuid_from": "372",
+    "uuid_to": "367",
+    "description": "Идея №15. САЗ. Предложение КО Иванов",
+    "valid": 1,
+    "date_time": "2023-07-13 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 43,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №16. Позиционирование позиционеров НПО Регулятор. ",
+    "valid": 1,
+    "date_time": "2023-07-17 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 44,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №17. Оптимизация запусков пр-ва задач на НПО Регулятор",
+    "valid": 1,
+    "date_time": "2023-07-17 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 45,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №18. Тайный покупатель",
+    "valid": 1,
+    "date_time": "2023-07-19 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 46,
+    "uuid_from": "372",
+    "uuid_to": "790",
+    "description": "Идея №19. Расценка ССД",
+    "valid": 1,
+    "date_time": "2023-07-31 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 47,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №20. Установка логотипа",
+    "valid": 1,
+    "date_time": "2023-08-04 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 48,
+    "uuid_from": "372",
+    "uuid_to": "757",
+    "description": "Идея №21. Процессы, автоматизированные в КО Арма",
+    "valid": 1,
+    "date_time": "2023-08-22 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 49,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №22. Оптимизация работы КО с отделом ВЭД",
+    "valid": 1,
+    "date_time": "2023-08-28 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 50,
+    "uuid_from": "372",
+    "uuid_to": "1129",
+    "description": "Идея №23. Работники склада",
+    "valid": 1,
+    "date_time": "2023-08-31 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 51,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №24. Оптимизация раздела \"Есть идея!\"",
+    "valid": 1,
+    "date_time": "2023-09-04 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 52,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №25. Сервисный центр ЭМК. Возвраты брака, рекламации, плановый сервис, ремонты и т.п. мероприятия. ",
+    "valid": 1,
+    "date_time": "2023-09-05 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 53,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №26. Оптимизация раздела \"Есть идея!\"",
+    "valid": 1,
+    "date_time": "2023-09-05 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 54,
+    "uuid_from": "372",
+    "uuid_to": "485",
+    "description": "Идея №27. КСА, оптимизация пр-ва",
+    "valid": 1,
+    "date_time": "2023-09-05 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 55,
+    "uuid_from": "372",
+    "uuid_to": "157",
+    "description": "Идея №28. улучшение корпоративного сознания",
+    "valid": 1,
+    "date_time": "2023-09-08 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 56,
+    "uuid_from": "372",
+    "uuid_to": "724",
+    "description": "Идея №29. Комплектовочная ведомость для склада",
+    "valid": 1,
+    "date_time": "2023-09-08 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 57,
+    "uuid_from": "372",
+    "uuid_to": "724",
+    "description": "Идея №30. Предоставление сертификатов",
+    "valid": 1,
+    "date_time": "2023-09-13 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 58,
+    "uuid_from": "372",
+    "uuid_to": "440",
+    "description": "Идея №31. Заказ продукции",
+    "valid": 1,
+    "date_time": "2023-09-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 59,
+    "uuid_from": "372",
+    "uuid_to": "372",
+    "description": "Идея №32. Разработка собственной ЭЦП в Б24.",
+    "valid": 1,
+    "date_time": "2023-09-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 60,
+    "uuid_from": "372",
+    "uuid_to": "828",
+    "description": "Идея №33. Рациональное использование деловых отходов в производстве",
+    "valid": 1,
+    "date_time": "2023-09-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 61,
+    "uuid_from": "372",
+    "uuid_to": "724",
+    "description": "Идея №34. Прайс на продукцию ВФ",
+    "valid": 1,
+    "date_time": "2023-09-26 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 62,
+    "uuid_from": "372",
+    "uuid_to": "1251",
+    "description": "Идея №35. Желаемое дополнение вкладки \"Гид по предприятиям\"",
+    "valid": 1,
+    "date_time": "2023-09-27 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 63,
+    "uuid_from": "372",
+    "uuid_to": "1005",
+    "description": "Идея №36. Создание каталога в электронном виде паспортов и сертификатов",
+    "valid": 1,
+    "date_time": "2023-09-28 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 64,
+    "uuid_from": "372",
+    "uuid_to": "367",
+    "description": "Идея №37. открытка компании к профильному празднику",
+    "valid": 1,
+    "date_time": "2023-09-28 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 65,
+    "uuid_from": "372",
+    "uuid_to": "1865",
+    "description": "Идея №38. Мотив",
+    "valid": 1,
+    "date_time": "2023-09-29 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 66,
+    "uuid_from": "372",
+    "uuid_to": "570",
+    "description": "Идея №39. Оповещения",
+    "valid": 1,
+    "date_time": "2023-10-02 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 67,
+    "uuid_from": "372",
+    "uuid_to": "552",
+    "description": "Идея №40. Изменение системы оформления отгрузочных документов",
+    "valid": 1,
+    "date_time": "2023-10-03 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 68,
+    "uuid_from": "372",
+    "uuid_to": "478",
+    "description": "Идея №41. Курс обучения работе в 1с",
+    "valid": 1,
+    "date_time": "2023-10-06 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 69,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №42. Создания папки для фотографий с УПТК-1",
+    "valid": 1,
+    "date_time": "2023-10-09 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 70,
+    "uuid_from": "372",
+    "uuid_to": "372",
+    "description": "Идея №43. Актуализация раздела \"Разрешительная документация и сертификаты\" в Интранете.",
+    "valid": 1,
+    "date_time": "2023-10-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 71,
+    "uuid_from": "372",
+    "uuid_to": "477",
+    "description": "Идея №44. Отчеты о сделках",
+    "valid": 1,
+    "date_time": "2023-10-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 72,
+    "uuid_from": "372",
+    "uuid_to": "157",
+    "description": "Идея №45. Дополнительный канал подачи идей ",
+    "valid": 1,
+    "date_time": "2023-10-17 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 73,
+    "uuid_from": "372",
+    "uuid_to": "490",
+    "description": "Идея №46. Упаковка негабаритной продукции пр-ва ЗАО \"САЗ\" ",
+    "valid": 1,
+    "date_time": "2023-10-18 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 74,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №47. Доработка листа согласования закупки ",
+    "valid": 1,
+    "date_time": "2023-10-20 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 75,
+    "uuid_from": "372",
+    "uuid_to": "786",
+    "description": "Идея №48. Идея с QR кодом в паспортах",
+    "valid": 1,
+    "date_time": "2023-10-23 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 76,
+    "uuid_from": "372",
+    "uuid_to": "786",
+    "description": "Идея №49. Систематизация графы \"Примечание\" при формировании складских накладных.",
+    "valid": 1,
+    "date_time": "2023-10-23 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 77,
+    "uuid_from": "372",
+    "uuid_to": "786",
+    "description": "Идея №50. Идея  обучения специалистов по целевому направлению",
+    "valid": 1,
+    "date_time": "2023-10-23 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 78,
+    "uuid_from": "372",
+    "uuid_to": "1297",
+    "description": "Идея №53. Разминка",
+    "valid": 1,
+    "date_time": "2023-10-24 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 79,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №54. Буклет НПО \"ЭМК\". Отраслевые презентационные материалы. ",
+    "valid": 1,
+    "date_time": "2023-10-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 80,
+    "uuid_from": "372",
+    "uuid_to": "490",
+    "description": "Идея №55. Контрольные точки для рекламационных задач",
+    "valid": 1,
+    "date_time": "2023-10-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 81,
+    "uuid_from": "372",
+    "uuid_to": "724",
+    "description": "Идея №56. Взаимодействие с КСА",
+    "valid": 1,
+    "date_time": "2023-10-31 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 82,
+    "uuid_from": "372",
+    "uuid_to": "491",
+    "description": "Идея №58. Деловая переписка, оформление писем ",
+    "valid": 1,
+    "date_time": "2023-11-02 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 83,
+    "uuid_from": "372",
+    "uuid_to": "372",
+    "description": "Идея №59. Создание \"черных\" и \"белых списков\" поставщиков.",
+    "valid": 1,
+    "date_time": "2023-11-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 84,
+    "uuid_from": "372",
+    "uuid_to": "2416",
+    "description": "Идея №60. Паспорта на фланцы/крепеж/прокладки",
+    "valid": 1,
+    "date_time": "2023-11-17 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 85,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №61. Добавление продукции и услуг Техно-сферы и ВАЗа в программу поиска закупок",
+    "valid": 1,
+    "date_time": "2023-11-17 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 86,
+    "uuid_from": "372",
+    "uuid_to": "1251",
+    "description": "Идея №62. Первые предложения по развитию/улучшению от основных рабочих",
+    "valid": 1,
+    "date_time": "2023-11-20 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 87,
+    "uuid_from": "372",
+    "uuid_to": "618",
+    "description": "Идея №63. информирование о расширении технологических возможностей (приобретение оборудование, освоениеТП)",
+    "valid": 1,
+    "date_time": "2023-11-21 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 88,
+    "uuid_from": "372",
+    "uuid_to": "1323",
+    "description": "Идея №64. Корпоративный календарь",
+    "valid": 1,
+    "date_time": "2023-11-25 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 89,
+    "uuid_from": "372",
+    "uuid_to": "790",
+    "description": "Идея №65. Новый материал для уплотнений",
+    "valid": 1,
+    "date_time": "2023-11-30 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 90,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №66. Создание должности \"продакт-менеджер по пневматическому навесному оборудованию\"",
+    "valid": 1,
+    "date_time": "2023-11-30 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 91,
+    "uuid_from": "372",
+    "uuid_to": "292",
+    "description": "Идея №极7. Страхование склада обособленного подразделения",
+    "valid": 1,
+    "date_time": "2023-12-01 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 92,
+    "uuid_from": "372",
+    "uuid_to": "490",
+    "description": "Идея №68. Оформление расценки и заказа на производство продукции Техно-сферы",
+    "valid": 1,
+    "date_time": "2023-12-12 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 93,
+    "uuid_from": "372",
+    "uuid_to": "440",
+    "description": "Идея №69. Оповещение в 1С об упакованной продукции",
+    "valid": 1,
+    "date_time": "2023-12-15 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 94,
+    "uuid_from": "372",
+    "uuid_to": "161",
+    "description": "Идея №70. Изменения регламента работы службы поддержки",
+    "valid": 1,
+    "date_time": "2023-12-21 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 95,
+    "uuid_from": "72",
+    "uuid_to": "1087",
+    "description": "Идея №71. Реферальная программа",
+    "valid": 1,
+    "date_time": "2023-12-29 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 96,
+    "uuid_from": "372",
+    "uuid_to": "514",
+    "description": "Идея №72. Доработка раздела \"Есть идея\".",
+    "valid": 1,
+    "date_time": "2024-01-04 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 97,
+    "uuid_from": "372",
+    "uuid_to": "2160",
+    "description": "дея №73. Актуальная информация в Битрикс24",
+    "valid": 1,
+    "date_time": "2024-01-16 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 98,
+    "uuid_from": "372",
+    "uuid_to": "1087",
+    "description": "Идея №74. ЭМК в Медиапространстве",
+    "valid": 1,
+    "date_time": "2024-01-19 00:00:00",
+    "activities_id": 5
+  },
+  {
+    "id": 99,
+    "uuid_from": "372",
+    "uuid_to": "1087",
+    "description": "Идея №75. Развитие офиса",
+    "valid": 1,
+    "date_time": "2024-01-19 00:00:00",
+    "activities_id": 5
+  }
+]

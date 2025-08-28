@@ -108,24 +108,24 @@ class Editor:
                 
                 data_type = get_type(val)
 
-                    # экземпляр поля
-                    fl = {
-                        "name" : self.fields[k],
-                        "value" : val,
-                        "field" : k,
-                        "data_type" : data_type
-                    }
+                # экземпляр поля
+                fl = {
+                    "name" : self.fields[k],
+                    "value" : val,
+                    "field" : k,
+                    "data_type" : data_type
+                }
 
-                    # если значения варьируются
-                    if k in self.variable.keys():
-                        fl["values"] = self.variable[k]
+                # если значения варьируются
+                if k in self.variable.keys():
+                    fl["values"] = self.variable[k]
 
-                    # проверяю редактируемость
-                    if k in self.notEditble:
-                        fl["disabled"] = True
+                # проверяю редактируемость
+                if k in self.notEditble:
+                    fl["disabled"] = True
 
-                    #загрузил
-                    field.append(fl)
+                #загрузил
+                field.append(fl)
         
         #photo_file_url нужен только там, где он есть
         for f, i in enumerate(field):

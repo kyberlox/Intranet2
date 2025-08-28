@@ -88,7 +88,7 @@ class Editor:
         art_keys = []
         for k in art.keys():
             if k not in art_keys and k != "indirect_data":
-                    art_keys.append(k)
+                art_keys.append(k)
 
         # вытащить поля из psql -> indirect_data
         if "indirect_data" in art and art["indirect_data"] is not None:

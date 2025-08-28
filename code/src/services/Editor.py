@@ -49,7 +49,7 @@ class Editor:
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
 
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
-        if self.section_id in [18, 52, 54, 172] :
+        if self.section_id in ["18", 52, 54, 172] :
                 self.notEditble.append("preview_text")
 
         self.variable = {

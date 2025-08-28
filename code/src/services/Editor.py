@@ -137,9 +137,9 @@ class Editor:
         self.art_id = int(self.art_id)
         files=self.get_files()
 
-        for f in files.keys():
-            if files[f] == []:
-                files.pop(f)
+        # for f in files.keys():
+        #     if files[f] == []:
+        #         files.pop(f)
         
         # вывести
         return {"fields" : field, "files" : files}

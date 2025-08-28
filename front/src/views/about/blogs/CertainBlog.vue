@@ -4,7 +4,7 @@
 			<div class="avatar__wrapper col-sm-4">
 				<BlogAvatar :author="targetAuthor"
 							:from="'blogsArticles'"
-							:need-link="true" />
+							:needLink="true" />
 			</div>
 			<div v-if="currentArticle && 'name' in currentArticle"
 				 class="col-sm-8">
@@ -37,16 +37,19 @@ export default defineComponent({
 	props: {
 		id: {
 			type: String,
-			required: true
 		},
 		authorId: {
 			type: String,
 			required: true,
 		},
+		previewPost: {
+			type: Object,
+		}
 	},
 	setup(props) {
 		const blogData = useblogDataStore();
-		const currentArticle = computed(() => blogData.getBlogById(props.id));
+
+		const currentArticle = computed(() => props.id ? blogData.getBlogById(props.id) : props.previewPost);
 		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId));
 
 		return {

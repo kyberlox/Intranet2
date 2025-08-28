@@ -160,6 +160,12 @@
     overflow-x: auto;
 }
 
+.admin-element-inner__preview {
+    &--overflow {
+        overflow-x: auto;
+    }
+}
+
 .admin-block-inner__cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, 1fr);

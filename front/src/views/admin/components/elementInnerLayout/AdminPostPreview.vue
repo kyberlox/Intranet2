@@ -1,7 +1,8 @@
 <template>
     <div v-if="newFileData && sectionId"
          class="admin-element-inner__preview"
-         :class="{ 'admin-element-inner__preview--full-width': previewFullWidth || isMobileScreen }">
+         :class="[{ 'admin-element-inner__preview--full-width': previewFullWidth || isMobileScreen },
+        { 'admin-element-inner__preview--overflow': sectionId == '15' }]">
         <Transition name="layout-change"
                     mode="out-in">
             <LayoutTop v-if="previewFullWidth && !isMobileScreen"
@@ -22,9 +23,8 @@
                        :interviewInner="(newData as Record<string, any>)" />
             <CertainBlog v-else-if="identifyPreviewType['blogs'].includes(sectionId)"
                          class="admin-element-inner__preview-content"
-                         :interviewInner="newData"
-                         :id="String(elementId)"
-                         :authorId="String(blogStore.getAuthorByBlogId(String(elementId)))" />
+                         :previewPost="newData"
+                         :authorId="String(blogStore.getAuthorByBlogId(String(newId)))" />
         </section>
     </div>
 </template>
@@ -41,7 +41,7 @@ import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
 import { useblogDataStore } from '@/stores/blogData';
 
 export default defineComponent({
-    name: 'adminPostPreview',
+    name: 'AdminPostPreview',
     props: {
         previewFullWidth: {
             type: Boolean
@@ -64,7 +64,7 @@ export default defineComponent({
         sectionId: {
             type: String
         },
-        elementId: {
+        newId: {
             type: String
         }
     },

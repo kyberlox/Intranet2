@@ -43,8 +43,12 @@ class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
-        self.art_id = art_id
         self.section_id = section_id
+        self.art_id = art_id
+        if self.art_id is not None:
+            art = ArticleModel(id = self.art_id).find_by_id()
+            self.section_id = art["section_id"]
+        
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
 

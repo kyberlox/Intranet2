@@ -253,6 +253,7 @@ class Editor:
         art=ArticleModel(id=self.art_id).find_by_id()
         art.pop('_sa_instance_state')
         print(art)
+        print(data)
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():

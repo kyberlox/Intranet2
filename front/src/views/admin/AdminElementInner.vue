@@ -15,14 +15,20 @@
           <Component :is="inputComponentChecker(item)"
                      :item="item"
                      @pick="(value: string) => handleEmitValueChange(item, value)" />
+
+          <AdminEditReportage v-if="item.field == 'reports'"
+                              :item="item.value"
+                              @pick="handleReportChange" />
+
         </div>
 
-        <div class="admin-element-inner__field">
+        <div class="admin-element-inner__field mt10">
           <AdminEditInput v-if="newFileData.videos_embed"
                           :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
                           @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
         </div>
-        <AdminUploadingSection :newFileData="newFileData"
+        <AdminUploadingSection class="mt10"
+                               :newFileData="newFileData"
                                :newData="newData"
                                @reloadData="reloadElementData(true)"
                                @handleUpload="handleUpload" />
@@ -136,8 +142,6 @@ export default defineComponent({
     const inputComponentChecker = (item: IAdminListItem) => {
       if (item.disabled) return;
       switch (true) {
-        case (item.field == 'report'):
-          return AdminEditReportage
         case (item.data_type == 'str' || item.data_type == 'datetime.datetime') && String(item.field)?.includes('date'):
           return AdminEditDatePicker
         case (item.data_type == 'str' || item.data_type == 'bool') && 'values' in item:
@@ -164,7 +168,7 @@ export default defineComponent({
             }
 
             newData.value.section_id = Number(props.id);
-            newData.value.images = data.files.images;
+            // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;
             newData.value.documentation = data.files.documentation;
           })
@@ -181,7 +185,7 @@ export default defineComponent({
           }
           newFileData.value = data.files;
           newData.value.preview_file_url = data.files?.images[0]?.file_url
-          newData.value.images = data.files.images;
+          // newData.value.images = data.files.images;
           newData.value.videos_native = data.files.videos_native;
           newData.value.documentation = data.files.documentation;
         })
@@ -221,6 +225,10 @@ export default defineComponent({
       }
     };
 
+    const handleReportChange = (item) => {
+      newData.value.reports = item
+    }
+
     return {
       events,
       router,
@@ -237,7 +245,8 @@ export default defineComponent({
       applyNewData,
       handleEmitValueChange,
       handleUpload,
-      reloadElementData
+      reloadElementData,
+      handleReportChange
     };
   }
 });
@@ -578,5 +587,51 @@ export default defineComponent({
   &:not(:first-child) {
     margin-top: 15px;
   }
+}
+
+.admin-element__reportage-group__add-button__wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-element__reportage-group__add-button {
+  margin: 5px;
+  display: flex !important;
+  max-width: fit-content;
+  align-items: center;
+  justify-content: center;
+
+  &>svg {
+    width: 20px;
+    height: 20px;
+    // margin: auto;
+    color: #666;
+  }
+
+  &:hover {
+    &>svg {
+      color: black;
+    }
+  }
+}
+
+.admin-element__reportage-group__wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+
+}
+
+.reportage-list>div>p {
+  font-size: 15px !important;
+}
+
+.reportage-list {
+  display: contents;
 }
 </style>

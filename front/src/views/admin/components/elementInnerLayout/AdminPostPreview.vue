@@ -3,25 +3,27 @@
          class="admin-element-inner__preview"
          :class="[{ 'admin-element-inner__preview--full-width': previewFullWidth || isMobileScreen },
         { 'admin-element-inner__preview--overflow': sectionId == '15' }]">
-        <Transition name="layout-change"
-                    mode="out-in">
-            <LayoutTop v-if="previewFullWidth && !isMobileScreen"
-                       class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
-                       @click="$emit('changePreviewWidth')" />
-            <LayoutLeft v-else-if="!isMobileScreen"
-                        class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
-                        @click="$emit('changePreviewWidth')" />
-        </Transition>
+        <div v-if="!noPreview">
+            <Transition name="layout-change"
+                        mode="out-in">
+                <LayoutTop v-if="previewFullWidth && !isMobileScreen"
+                           class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
+                           @click="$emit('changePreviewWidth')" />
+                <LayoutLeft v-else-if="!isMobileScreen"
+                            class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
+                            @click="$emit('changePreviewWidth')" />
+            </Transition>
+        </div>
 
         <section class="admin-element-inner__preview-section">
-            <PostInner v-if="identifyPreviewType['news'].includes(sectionId)"
+            <PostInner v-if="PreviewTypes['news'].includes(sectionId)"
                        class="admin-element-inner__preview-content mt30"
                        :previewElement="newData"
                        :type="'adminPreview'" />
-            <Interview v-else-if="identifyPreviewType['interview'].includes(sectionId)"
+            <Interview v-else-if="PreviewTypes['interview'].includes(sectionId)"
                        class="admin-element-inner__preview-content"
                        :interviewInner="(newData as Record<string, any>)" />
-            <CertainBlog v-else-if="identifyPreviewType['blogs'].includes(sectionId)"
+            <CertainBlog v-else-if="PreviewTypes['blogs'].includes(sectionId)"
                          class="admin-element-inner__preview-content"
                          :previewPost="newData"
                          :authorId="String(blogStore.getAuthorByBlogId(String(newId)))" />
@@ -30,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, type PropType } from 'vue';
+import { defineComponent, onMounted, ref, type PropType } from 'vue';
 import PostInner from '@/components/tools/common/PostInner.vue';
 import Interview from '@/views/about/ourPeople/components/Interview.vue';
 import CertainBlog from '@/views/about/blogs/CertainBlog.vue';
@@ -77,24 +79,27 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const blogStore = useblogDataStore();
-        const identifyPreviewType = {
+        const noPreview = ref(false);
+        const PreviewTypes = {
             'news': ['31', '53', '51', '32', '54'],
             'blogs': ['15'],
             'interview': ['13']
         }
 
         onMounted(() => {
-            const hasPreview = Object.values(identifyPreviewType)
+            const hasPreview = Object.values(PreviewTypes)
                 .some(array => array.includes(String(props.sectionId)));
 
             if (!hasPreview) {
+                noPreview.value = true;
                 emit('noPreview');
             }
         })
 
         return {
-            identifyPreviewType,
-            blogStore
+            PreviewTypes,
+            blogStore,
+            noPreview
         }
     }
 })

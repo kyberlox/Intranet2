@@ -149,7 +149,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        self.search_files(data["IBLOCK_ID"], self.id, data)
+        #self.search_files(data["IBLOCK_ID"], self.id, data)
         # article_data["indirect_data"]["files"]
 
         # определяем превью
@@ -1066,7 +1066,7 @@ class Article:
             #14 : "123", # Доска почёта ☑️
             #16 : "122", # Видеоитервью ✔️
             
-            #32 : "132", # Новости организационного развития ✔️
+            32 : "132", # Новости организационного развития ✔️
             #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ✔️
@@ -1288,7 +1288,7 @@ class Article:
             # 51 : "50"  #Корпоративные события ✔️
         }
 
-        '''
+        
         # пройти по инфоблоку
         self.section_id = "50"
         art_inf = self.get_inf()
@@ -1329,7 +1329,7 @@ class Article:
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
-        '''
+        
         
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
@@ -1337,7 +1337,7 @@ class Article:
             # 52 : ["68", "69"]  #Корпоративная жизнь в фото ✔️
         }
 
-        '''
+        
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
@@ -1404,7 +1404,7 @@ class Article:
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     pass
-        '''
+        
 
         # вакансии (приведи друга)
         self.section_id = "67"

@@ -19,6 +19,7 @@
             <PostInner v-if="PreviewTypes['news'].includes(sectionId)"
                        class="admin-element-inner__preview-content mt30"
                        :previewElement="newData"
+                       :previewImages="previewImages"
                        :type="'adminPreview'" />
             <Interview v-else-if="PreviewTypes['interview'].includes(sectionId)"
                        class="admin-element-inner__preview-content"
@@ -32,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type PropType } from 'vue';
+import { defineComponent, onMounted, ref, watch, type PropType } from 'vue';
 import PostInner from '@/components/tools/common/PostInner.vue';
 import Interview from '@/views/about/ourPeople/components/Interview.vue';
 import CertainBlog from '@/views/about/blogs/CertainBlog.vue';
@@ -80,6 +81,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const blogStore = useblogDataStore();
         const noPreview = ref(false);
+        const previewImages = ref<string[]>([]);
         const PreviewTypes = {
             'news': ['31', '53', '51', '32', '54'],
             'blogs': ['15'],
@@ -96,10 +98,20 @@ export default defineComponent({
             }
         })
 
+        watch((props), () => {
+            if (props.newFileData?.images?.length) {
+                props.newFileData?.images?.map((e) => {
+                    if (!e.file_url) return
+                    previewImages.value.push(e.file_url)
+                })
+            }
+        }, { once: true })
+
         return {
             PreviewTypes,
             blogStore,
-            noPreview
+            noPreview,
+            previewImages
         }
     }
 })

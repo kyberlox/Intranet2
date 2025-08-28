@@ -13,11 +13,11 @@
 					 class="mt20"
 					 v-html="parseMarkdown(currentArticle.content_text)">
 				</div>
-				<div v-if="(currentArticle.indirect_data?.youtube_link)"
+				<div v-if="(currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed)"
 					 class="blog-list__video__wrapper">
 					<iframe style="width: 100%; min-height: 480px;"
 							id="you-player"
-							:src="currentArticle.indirect_data?.youtube_link"
+							:src="currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed"
 							title="YouTube video player"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 							allowfullscreen></iframe>

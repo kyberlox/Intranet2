@@ -17,7 +17,7 @@
                      @pick="(value: string) => handleEmitValueChange(item, value)" />
 
           <AdminEditReportage v-if="item.field == 'reports'"
-                              :item="item.value"
+                              :item="(item.value as IReportage[])"
                               @pick="handleReportChange" />
 
         </div>
@@ -78,7 +78,7 @@ import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.
 import AdminEditReportage from '@/views/admin/components/inputFields/AdminEditReportage.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
-import type { IAdminListItem, INewFileData } from '@/interfaces/entities/IAdmin';
+import type { IAdminListItem, INewFileData, IReportage } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
@@ -183,8 +183,11 @@ export default defineComponent({
             isCreateNew.value = false;
             newElementSkeleton.value = data.fields;
           }
+          newId.value = data.fields.find((e: IAdminListItem) => e.field == 'id').value;
           newFileData.value = data.files;
-          newData.value.preview_file_url = data.files?.images[0]?.file_url
+          if (data.files?.images && data.files?.images[0]?.file_url) {
+            newData.value.preview_file_url = data.files?.images[0]?.file_url
+          }
           // newData.value.images = data.files.images;
           newData.value.videos_native = data.files.videos_native;
           newData.value.documentation = data.files.documentation;
@@ -225,7 +228,7 @@ export default defineComponent({
       }
     };
 
-    const handleReportChange = (item) => {
+    const handleReportChange = (item: IReportage[]) => {
       newData.value.reports = item
     }
 

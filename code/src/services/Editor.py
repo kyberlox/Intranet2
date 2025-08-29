@@ -149,12 +149,12 @@ class Editor:
         self.art_id = int(self.art_id)
         files=self.get_files()
 
-        # need_del = []
-        # for f in files.keys():
-        #     if files[f] == []:
-        #         need_del.append(f)
-        # for f in need_del:
-        #     files.pop(f)
+        need_del = []
+        for f in files.keys():
+            if files[f] == []:
+                need_del.append(f)
+        for f in need_del:
+            files.pop(f)
         
         # вывести
         return {"fields" : field, "files" : files}
@@ -260,6 +260,8 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
+        
+
 
         return {"fields" : fields, "files" : files_keys}
 

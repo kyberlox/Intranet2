@@ -5,7 +5,7 @@ from src.services.LogsMaker import LogsMaker
 
 #from fastapi import APIRouter
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Body
 # from fastapi.responses import HTMLResponse
 # from jinja2 import Environment, FileSystemLoader
 # import json
@@ -18,8 +18,8 @@ class Visions:
         self.vision_id = vision_id
         self.user_id = user_id
 
-    def get_all_directors(self):
-        return StructureSearchModel().get_directors()
+    def get_full_structure(self):
+        return StructureSearchModel().get_full_structure()
 
     def get_dep_structure(self, parent_id):
         return StructureSearchModel().get_structure_by_parent_id(parent_id)
@@ -42,14 +42,16 @@ class Visions:
     def add_user_to_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).upload_user_to_vision()
 
-    def add_users_list_to_vision(self, dep_id):
-        all_dep_users = []
-        dep = self.get_dep_structure(dep_id)
-        for de in dep:
-            for user in de['users']:
-                all_dep_users.append(user['user_id'])
-        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
-    
+    # def add_users_list_to_vision(self, dep_id):
+    #     all_dep_users = []
+    #     dep = self.get_dep_structure(dep_id)
+    #     for de in dep:
+    #         for user in de['users']:
+    #             all_dep_users.append(user['user_id'])
+    #     return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
+    def add_users_list_to_vision(self, users):
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(users)
+
     def delete_user_from_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).remove_user_from_vision()
 
@@ -57,17 +59,17 @@ class Visions:
         return UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision()
 
 
-@fieldsvisions_router.get("/get_all_directors")
-def get_all_directors():
-    return Visions().get_all_directors()
+@fieldsvisions_router.get("/get_full_structure")
+def get_full_structure():
+    return Visions().get_full_structure()
 
-@fieldsvisions_router.get("/get_dep_structure/{parent_id}")
-def get_dep_structure(parent_id: int):
-    return Visions().get_dep_structure(parent_id)
+# @fieldsvisions_router.get("/get_dep_structure/{parent_id}")
+# def get_dep_structure(parent_id: int):
+#     return Visions().get_dep_structure(parent_id)
 
-@fieldsvisions_router.get("/get_dep_structure_by_name/{word}")
-def get_dep_structure_by_name(word: str):
-    return Visions().get_dep_structure_by_name(word)
+# @fieldsvisions_router.get("/get_dep_structure_by_name/{word}")
+# def get_dep_structure_by_name(word: str):
+#     return Visions().get_dep_structure_by_name(word)
 
 @fieldsvisions_router.get("/get_all_visions")
 def get_all_visions():
@@ -79,15 +81,18 @@ def create_new_vision(vision_name: str):
 
 @fieldsvisions_router.delete("/delete_vision/{vision_id}")
 def delete_vision(vision_id: int):
-    return Visions(vision_id).delete_vision()
+    return Visions(vision_id=vision_id).delete_vision()
 
 @fieldsvisions_router.put("/add_user_to_vision/{vision_id}/{user_id}")
 def add_user_to_vision(vision_id: int, user_id: int):
     return Visions(vision_id=vision_id, user_id=user_id).add_user_to_vision()
 
-@fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}/{dep_id}")
-def add_users_list_to_vision(vision_id: int, dep_id: int):
-    return Visions(vision_id=vision_id).add_users_list_to_vision(dep_id)
+# @fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}/{dep_id}")
+# def add_users_list_to_vision(vision_id: int, dep_id: int):
+#     return Visions(vision_id=vision_id).add_users_list_to_vision(dep_id)
+@fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}")
+def add_users_list_to_vision(vision_id: int, users = Body()):
+    return Visions(vision_id=vision_id).add_users_list_to_vision(users)
 
 @fieldsvisions_router.delete("/delete_user_from_vision/{vision_id}/{user_id}")
 def delete_user_from_vision(vision_id: int, user_id: int):

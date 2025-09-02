@@ -16,12 +16,14 @@ server_mail_login = os.getenv('mail_login')
 server_mail_pswd = os.getenv('mail_password')
 
 class SendEmail:
-    def __init__(self, sender: str = '', reciever: str = '', title_msg: str = '', file_url: str = '', html_content=''):
-        self.sender = sender
-        self.reciever = reciever
+    def __init__(self, data):
+        self.sender = data['sender']
+        self.reciever = data['reciever']
+        self.title = data['title']
         self.title_msg = title_msg
-        self.file_url = file_url
-        self.html_content = html_content
+        self.file_url = data['file_url']
+        self.html_content = data['text']
+        self.data = data
 
     def send_sucsesfell(self):
         msg = MIMEMultipart()

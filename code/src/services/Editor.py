@@ -9,6 +9,7 @@ from src.base.mongodb import FileModel
 from src.model.Article import Article
 from src.model.Section import Section
 from src.model.File import File as storeFile
+from src.model.User import User
 
 from bson.objectid import ObjectId
 
@@ -70,7 +71,7 @@ class Editor:
     
     def get_sections(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 172, 175, 18, 110, 111, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55]
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
@@ -197,6 +198,7 @@ class Editor:
                 if "indirect_data" in art and art["indirect_data"] is not None:
                     for k in art["indirect_data"].keys():
                         fields_names = [f["field"] for f in fields]
+
                         if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
                             field = {
                                 "name" : self.fields[k], #хватай имя
@@ -213,6 +215,7 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
+
             
                     
 
@@ -260,8 +263,25 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
+            
+        need_del = False 
+        indx = None
+        del_key = ["photo_file_url", ""]
+        del_val = []
+        for i, field in enumerate(fields):
+            #если есть uuid
+            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
+                field["data_type"] = "search_by_uuid"
+                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
+                need_del = True
+            if field["field"] in del_key:
+                del_val.append(i)
         
-
+        if need_del:
+            for i in del_val:
+                fields.pop(i)
+                
+            
 
         return {"fields" : fields, "files" : files_keys}
 
@@ -280,6 +300,7 @@ class Editor:
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
+            
             #если это редактируемый параметр
             if key not in self.notEditble:
                 #если это один из основных параметров
@@ -289,7 +310,15 @@ class Editor:
 
                 #если это часть indirect_data
                 else:
-                    indirect_data[key] = data[key]  
+                    indirect_data[key] = data[key]
+
+            #найти человека по uuid
+            if key == "uuid" or key == "author_uuid":
+                uuid = int(data[key])
+                #поиск по uuid
+                usr_dt = User(uuid).search_by_id()
+                photo = usr_dt["personal_photo"]
+                indirect_data["photo_file_url"] = photo
 
         art["indirect_data"] = indirect_data
 
@@ -309,6 +338,7 @@ class Editor:
         #вставить данные в статью
         return ArticleModel(id = self.art_id).update(art)
     
+
 
     def delete_art(self ):
         return Article(id = self.art_id).delete()

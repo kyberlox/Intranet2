@@ -9,6 +9,7 @@ from src.base.mongodb import FileModel
 from src.model.Article import Article
 from src.model.Section import Section
 from src.model.File import File as storeFile
+from src.model.User import User
 
 from bson.objectid import ObjectId
 
@@ -313,8 +314,9 @@ class Editor:
 
             #найти человека по uuid
             if key == "uuid" or key == "author_uuid":
-                uuid = data[key]
+                uuid = int(data[key])
                 #поиск по uuid
+                usr_dt = User(uuid).search_by_id()
                 indirect_data["photo_file_url"] #= 
 
         art["indirect_data"] = indirect_data

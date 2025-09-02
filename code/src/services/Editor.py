@@ -70,7 +70,7 @@ class Editor:
     
     def get_sections(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 172, 175, 18, 110, 111, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55]
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
@@ -309,6 +309,7 @@ class Editor:
         #вставить данные в статью
         return ArticleModel(id = self.art_id).update(art)
     
+
 
     def delete_art(self ):
         return Article(id = self.art_id).delete()

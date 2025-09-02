@@ -197,6 +197,7 @@ class Editor:
                 if "indirect_data" in art and art["indirect_data"] is not None:
                     for k in art["indirect_data"].keys():
                         fields_names = [f["field"] for f in fields]
+
                         if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
                             field = {
                                 "name" : self.fields[k], #хватай имя
@@ -213,6 +214,7 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
+
             
                     
 
@@ -260,11 +262,13 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
-        
+            
             #если есть uuid
             if field["field"] == "uuid" or field['field'] == "author_uuid":
                 #стереть возможность грузить photo_file_url и заполнить заранее по uuid
                 pass
+        
+            
 
         return {"fields" : fields, "files" : files_keys}
 

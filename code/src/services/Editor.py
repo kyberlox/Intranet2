@@ -315,7 +315,7 @@ class Editor:
             if key == "uuid" or key == "author_uuid":
                 uuid = data[key]
                 #поиск по uuid
-                indirect_data["photo_file_url"] = 
+                indirect_data["photo_file_url"] #= 
 
         art["indirect_data"] = indirect_data
 

@@ -263,11 +263,22 @@ class Editor:
             if field["field"] in self.notEditble:
                     field["disabled"] = True
             
+        need_del = False 
+        indx = None
+        del_key = []
+        del_val = []
+        for i, field in enumerate(fields):
             #если есть uuid
             if field["field"] == "uuid" or field['field'] == "author_uuid":
                 #стереть возможность грузить photo_file_url и заполнить заранее по uuid
-                pass
+                need_del = True
+            if field["field"] in del_key:
+                del_val.append(i)
         
+        if need_del:
+            for i in del_val:
+                fields.pop()
+                
             
 
         return {"fields" : fields, "files" : files_keys}

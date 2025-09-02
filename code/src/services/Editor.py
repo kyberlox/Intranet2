@@ -277,7 +277,7 @@ class Editor:
         
         if need_del:
             for i in del_val:
-                fields.pop()
+                fields.pop(i)
                 
             
 

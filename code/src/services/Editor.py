@@ -317,7 +317,8 @@ class Editor:
                 uuid = int(data[key])
                 #поиск по uuid
                 usr_dt = User(uuid).search_by_id()
-                indirect_data["photo_file_url"] #= 
+                photo = usr_dt["personal_photo"]
+                indirect_data["photo_file_url"] = photo
 
         art["indirect_data"] = indirect_data
 

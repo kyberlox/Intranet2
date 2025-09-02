@@ -8,6 +8,7 @@ from email.mime.image import MIMEImage
 from email.mime.text import MIMEText 
 
 from src.services.LogsMaker import LogsMaker
+from src.model.File import File
 
 load_dotenv()
 
@@ -20,7 +21,6 @@ class SendEmail:
         self.sender = data['sender']
         self.reciever = data['reciever']
         self.title = data['title']
-        self.title_msg = title_msg
         self.file_url = data['file_url']
         self.html_content = data['text']
         self.data = data
@@ -63,7 +63,7 @@ class SendEmail:
             msg = MIMEMultipart()
             msg["From"] = self.sender
             msg["To"] = self.reciever
-            msg['Subject'] = self.title_msg
+            msg['Subject'] = self.title
 
             content = self.html_content['html_content']
             
@@ -87,8 +87,9 @@ class SendEmail:
             """
             
             msg.attach(MIMEText(content, "html"))
-
-            with open(f'.{self.file_url}', "rb") as img_file: 
+            # file_id = self.file_url.split('.') /intranet/Intranet2/code/files_db
+            # image = file_id[0]
+            with open(f'./code/files_db/{self.file_url}', "rb") as img_file: 
                 logo = MIMEImage(img_file.read())
                 logo.add_header("Content-ID", "<file_logo>")  
                 logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")

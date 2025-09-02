@@ -269,7 +269,8 @@ class Editor:
         del_val = []
         for i, field in enumerate(fields):
             #если есть uuid
-            if field["field"] == "uuid" or field['field'] == "author_uuid":
+            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
+                field["data_type"] = "search_by_uuid"
                 #стереть возможность грузить photo_file_url и заполнить заранее по uuid
                 need_del = True
             if field["field"] in del_key:
@@ -298,6 +299,7 @@ class Editor:
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
+            
             #если это редактируемый параметр
             if key not in self.notEditble:
                 #если это один из основных параметров
@@ -307,7 +309,13 @@ class Editor:
 
                 #если это часть indirect_data
                 else:
-                    indirect_data[key] = data[key]  
+                    indirect_data[key] = data[key]
+
+            #найти человека по uuid
+            if key == "uuid" or key == "author_uuid":
+                uuid = data[key]
+                #поиск по uuid
+                indirect_data["photo_file_url"] = 
 
         art["indirect_data"] = indirect_data
 

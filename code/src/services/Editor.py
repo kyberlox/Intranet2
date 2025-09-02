@@ -265,7 +265,7 @@ class Editor:
             
         need_del = False 
         indx = None
-        del_key = []
+        del_key = ["photo_file_url", ""]
         del_val = []
         for i, field in enumerate(fields):
             #если есть uuid

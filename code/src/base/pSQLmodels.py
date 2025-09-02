@@ -1532,7 +1532,7 @@ class ActiveUsersModel:
             likes_left = 0
         
         uuid_for_filter = str(self.uuid_from)
-
+        
         result = self.session.query(Activities.id, Activities.name).join(
                 Moders,
                 Moders.activities_id == Activities.id

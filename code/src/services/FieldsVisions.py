@@ -58,18 +58,30 @@ class Visions:
     def get_users_in_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision()
 
+    def get_wonderful_structure(self):
+        #сначала получаем список всей верхушки
+        structure = self.get_dep_structure(53)
+        head = structure[0]
+        n_1 = []
+        for depart in structure:
+            if depart['id'] == 53:
+                continue
+            else:
+                n_1.append(depart)
+        pass
+
 
 @fieldsvisions_router.get("/get_full_structure")
 def get_full_structure():
     return Visions().get_full_structure()
 
-# @fieldsvisions_router.get("/get_dep_structure/{parent_id}")
-# def get_dep_structure(parent_id: int):
-#     return Visions().get_dep_structure(parent_id)
+@fieldsvisions_router.get("/get_dep_structure/{parent_id}")
+def get_dep_structure(parent_id: int):
+    return Visions().get_dep_structure(parent_id)
 
-# @fieldsvisions_router.get("/get_dep_structure_by_name/{word}")
-# def get_dep_structure_by_name(word: str):
-#     return Visions().get_dep_structure_by_name(word)
+@fieldsvisions_router.get("/get_dep_structure_by_name/{word}")
+def get_dep_structure_by_name(word: str):
+    return Visions().get_dep_structure_by_name(word)
 
 @fieldsvisions_router.get("/get_all_visions")
 def get_all_visions():

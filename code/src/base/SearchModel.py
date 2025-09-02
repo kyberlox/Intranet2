@@ -1062,7 +1062,7 @@ class StructureSearchModel:
     def get_structure_by_parent_id(self, parent_id=None): 
         result = []
         query = {"match": {"path_depart": parent_id}}
-        res = elastic_client.search(index=self.index, query=query)
+        res = elastic_client.search(index=self.index, query=query, size=1000)
         for re in res['hits']['hits']:
             depart = {}
             users_id = []

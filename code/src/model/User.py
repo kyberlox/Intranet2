@@ -81,9 +81,6 @@ class User:
         usr_inf = UserModel(self.uuid).find_by_uuid()
         return usr_inf
 
-
-
-
     def set_users_photo(self):
         b24 = B24()
         data = b24.getUsers()
@@ -210,11 +207,6 @@ def update_user():
     usr = User()
     return usr.fetch_users_data()
 
-# фронт
-@users_router.get("/view")
-def view_user(request: Request):
-    return templates.TemplateResponse(name="user.html", context={"request": request})
-
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")
 def find_by_user(id):
@@ -239,8 +231,9 @@ def birthday_celebrants(day_month: str):
     return User().get_birthday_celebrants(day_month)
 
 @users_router.post("/test_send_mail")
-def send_test_mail(sender: str, reciever: str, title_msg: str, file_url: str, html_content=Body(...)):
-    return SendEmail(sender=sender, reciever=reciever, title_msg=title_msg, file_url=file_url, html_content=html_content).send_congratulations()
+def send_test_mail(data=Body(...)):
+    # {"reciever" : str, "title": str, "text": str, "file_url": str}
+    return SendEmail(data=data).send_congratulations()
 
 # лайки и просмотры для статистики
 @users_router.get("/get_user_likes")

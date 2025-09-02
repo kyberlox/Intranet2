@@ -1,5 +1,8 @@
 from src.base.pSQLmodels import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Request
+
+from src.model.User import User
+from src.services.Auth import AuthService
 
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
@@ -11,6 +14,19 @@ class Peer:
         self.user_uuid = user_uuid
         self.need_valid = need_valid
         self.activities_id = activities_id
+    
+    """Ручки которые доступны любому пользователю"""
+    def sum(self, session_id): 
+        user = self.get_user_by_session_id(session_id)
+        return ActiveUsersModel(uuid_to=user).sum()
+    
+    def statistics(self, session_id):
+        user = self.get_user_by_session_id(session_id) 
+        return ActiveUsersModel(uuid_to=user).statistics()
+    
+    def actions(self, session_id):
+        user = self.get_user_by_session_id(session_id)  
+        return ActiveUsersModel(uuid_from=user).actions()
     """"""
     def get_all_activities(self):
         return ActivitiesModel().find_all_activities()
@@ -50,15 +66,9 @@ class Peer:
     """"""
     def upload_past_activeusers(self): 
         return ActiveUsersModel().upload_past_table_ActiveUsers()
-
-    def actions(self): 
-        return ActiveUsersModel(uuid_from=self.user_uuid).actions()
         
     def history_mdr(self, activity_name): 
         return ActiveUsersModel().history_mdr(activity_name)
-
-    def sum(self): 
-        return ActiveUsersModel(uuid_to=self.user_uuid).sum()
 
     def top(self): 
         return ActiveUsersModel().top()
@@ -66,10 +76,9 @@ class Peer:
     def my_place(self): 
         return ActiveUsersModel(uuid_to=self.user_uuid).my_place()
 
-    def statistics(self): 
-        return ActiveUsersModel(uuid_to=self.user_uuid).statistics()
-
-    def statistics_history(self): 
+    
+    
+    def statistics_history(self):
         return ActiveUsersModel(uuid_to=self.user_uuid, activities_id=self.activities_id).statistics_history()
 
     def new_a_week(self): 
@@ -89,9 +98,21 @@ class Peer:
 
     def delete_admin(self):
         return AdminModel(uuid=self.user_uuid).delete_admin()
+    
+    def get_user_by_session_id(self, session_id):
+        user = dict(AuthService().get_user_by_seesion_id(session_id))
+
+        if user is not None:
+            user_uuid = user["user_uuid"]
+            username = user["username"]
+
+            #получить и вывести его id
+            user_inf = User(uuid = user_uuid).user_inf_by_uuid()
+            return user_inf["ID"]
+        return None
 
 
-
+# дампит старые данные
 @peer_router.put("/put_tables")
 def load_activities():
     Peer().upload_base_activities()
@@ -99,6 +120,45 @@ def load_activities():
     Peer().upload_past_activeusers()
     return {"status": True} 
 
+"""Ручки которые доступны любому пользователю"""
+@peer_router.get("/sum")
+def sum(request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+
+    return Peer().sum(session_id=session_id)
+
+
+@peer_router.get("/statistics")
+def statistics(request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    return Peer().statistics(session_id=session_id)
+
+@peer_router.get("/actions")
+def actions(request: Request):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    return Peer().actions(session_id=session_id)
+""""""
 @peer_router.get("/get_all_activities")
 def get_activities():
     return Peer().get_all_activities()
@@ -135,17 +195,13 @@ def add_moder(activities_id: int, uuid: int):
 def is_moder(uuid: int):
     return Peer(user_uuid=uuid).is_moder()
 """"""
-@peer_router.get("/actions/{uuid}")
-def actions(uuid: int):
-    return Peer(user_uuid=uuid).actions()
-
 @peer_router.get("/history_mdr/{activity_name}")
 def history_mdr(activity_name: str):
     return Peer().history_mdr(activity_name)
 
-@peer_router.get("/sum/{uuid}")
-def sum(uuid: int):
-    return Peer(user_uuid=uuid).sum()
+@peer_router.get("/statistics_history/{activities_id}/{uuid}")
+def statistics_history(activities_id: int, uuid: int):
+    return Peer(activities_id=activities_id, user_uuid=uuid).statistics_history()
 
 @peer_router.get("/top")
 def top():
@@ -155,9 +211,6 @@ def top():
 def my_place(uuid: int):
     return Peer(user_uuid=uuid).my_place()
 
-@peer_router.get("/statistics/{uuid}")
-def statistics(uuid: int):
-    return Peer(user_uuid=uuid).statistics()
 
 @peer_router.get("/statistics_history/{activities_id}/{uuid}")
 def statistics_history(activities_id: int, uuid: int):

@@ -639,6 +639,15 @@ class StructureSearchModel:
                         else:
                             pass
 
+                        if user['photo_file_id']:
+                            photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                            url = photo_inf['URL']
+                            user_data['photo'] = f"{DOMAIN}{url}"
+                            print(DOMAIN)
+                            print(pswd)
+                        else:
+                            user_data['photo'] = None
+
                         users_list.append(user_data)
         """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
         dep_data['users'] = users_list
@@ -684,6 +693,12 @@ class StructureSearchModel:
                                 user_data['user_position'] = user['indirect_data']['work_position']
                             else:
                                 pass
+                            if user['photo_file_id']:
+                                photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                url = photo_inf['URL']
+                                user_data['photo'] = f"{DOMAIN}{url}"
+                            else:
+                                user_data['photo'] = None
 
                             users_list.append(user_data)
             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -729,6 +744,13 @@ class StructureSearchModel:
                                         user_data['user_position'] = user['indirect_data']['work_position']
                                     else:
                                         pass
+                                    
+                                    if user['photo_file_id']:
+                                        photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                        url = photo_inf['URL']
+                                        user_data['photo'] = f"{DOMAIN}{url}"
+                                    else:
+                                        user_data['photo'] = None
 
                                     users_list.append(user_data)
                     """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -775,6 +797,13 @@ class StructureSearchModel:
                                                 user_data['user_position'] = user['indirect_data']['work_position']
                                             else:
                                                 pass
+                                            
+                                            if user['photo_file_id']:
+                                                photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                                url = photo_inf['URL']
+                                                user_data['photo'] = f"{DOMAIN}{url}"
+                                            else:
+                                                user_data['photo'] = None
 
                                             users_list.append(user_data)
                             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -820,6 +849,13 @@ class StructureSearchModel:
                                                     else:
                                                         pass
 
+                                                    if user['photo_file_id']:
+                                                        photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                                        url = photo_inf['URL']
+                                                        user_data['photo'] = f"{DOMAIN}{url}"
+                                                    else:
+                                                        user_data['photo'] = None
+
                                                     users_list.append(user_data)
                                     """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
                                     dep_data['users'] = users_list
@@ -863,6 +899,13 @@ class StructureSearchModel:
                                                                 user_data['user_position'] = user['indirect_data']['work_position']
                                                             else:
                                                                 pass
+                                                                
+                                                            if user['photo_file_id']:
+                                                                photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                                                url = photo_inf['URL']
+                                                                user_data['photo'] = f"{DOMAIN}{url}"
+                                                            else:
+                                                                user_data['photo'] = None
 
                                                             users_list.append(user_data)
                                             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -907,6 +950,13 @@ class StructureSearchModel:
                                                                         user_data['user_position'] = user['indirect_data']['work_position']
                                                                     else:
                                                                         pass
+                                                                    
+                                                                    if user['photo_file_id']:
+                                                                        photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                                                        url = photo_inf['URL']
+                                                                        user_data['photo'] = f"{DOMAIN}{url}"
+                                                                    else:
+                                                                        user_data['photo'] = None
 
                                                                     users_list.append(user_data)
                                                     """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -951,6 +1001,13 @@ class StructureSearchModel:
                                                                                 user_data['user_position'] = user['indirect_data']['work_position']
                                                                             else:
                                                                                 pass
+                                                                            
+                                                                            if user['photo_file_id']:
+                                                                                photo_inf = File(id=user['photo_file_id']).get_users_photo()
+                                                                                url = photo_inf['URL']
+                                                                                user_data['photo'] = f"{DOMAIN}{url}"
+                                                                            else:
+                                                                                user_data['photo'] = None
 
                                                                             users_list.append(user_data)
                                                             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -981,35 +1038,25 @@ class StructureSearchModel:
 
         # helpers.bulk(elastic_client, article_data_ES)
 
-
-    # def get_structure_by_id(self, parent_id=None): # для html страницы
-    #     query = {"match": {"path_depart": parent_id}}
-    #     res = elastic_client.search(index=self.index, query=query, size=1000)
-    #     return res['hits']['hits']
-    def get_directors(self):
-        all_directors = []
+    def get_full_structure(self):
+        result = []
         res = elastic_client.search(
             index=self.index,
             query={
                 "match_all": {}
             },
-            sort=[
-                {
-                    "id": {
-                        "order": "asc"  # "desc" использовать если хотим по убыванию
-                    }
-                }
-            ],
+            # sort=[
+            #     {
+            #         "id": {
+            #             "order": "asc"  # "desc" использовать если хотим по убыванию
+            #         }
+            #     }
+            # ],
             size=1000
         )
         for re in res['hits']['hits']:
-            for user in re['_source']['users']:
-                if user['user_id'] == re['_source']['user_head_id']:
-                    user['department_id'] = re['_source']['id']
-                    user['department'] = re['_source']['name']
-                    all_directors.append(user)
-                    break
-        return all_directors
+            result.append(re['_source'])
+        return result
 
 
     def get_structure_by_parent_id(self, parent_id=None): 

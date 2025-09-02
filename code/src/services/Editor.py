@@ -43,12 +43,20 @@ class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
-        self.art_id = art_id
         self.section_id = section_id
+        self.art_id = art_id
+        if self.art_id is not None:
+            art = ArticleModel(id = self.art_id).find_by_id()
+            self.section_id = art["section_id"]
+        
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
 
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172] :
+                self.notEditble.append("preview_text")
+        if self.section_id in [41, 42, 111, 52] :
+                self.notEditble.append("content_text")
 
         self.variable = {
             "active" : [True, False],
@@ -82,6 +90,7 @@ class Editor:
         
         # вытащить основные поля из psql
         art = ArticleModel(id = self.art_id).find_by_id()
+        self.section_id = art["section_id"]
 
         art_keys = []
         for k in art.keys():
@@ -121,15 +130,31 @@ class Editor:
                     fl["values"] = self.variable[k]
 
                 # проверяю редактируемость
+                print(self.section_id)
+                print(self.notEditble)
                 if k in self.notEditble:
                     fl["disabled"] = True
 
                 #загрузил
                 field.append(fl)
+        
+        #photo_file_url нужен только там, где он есть
+        # for f, i in enumerate(field):
+        #     if field["field"] == "photo_file_url" and field["value"] is None:
+        #         field.pop(i)
+
+
 
         # вытащить файлы
         self.art_id = int(self.art_id)
         files=self.get_files()
+
+        need_del = []
+        for f in files.keys():
+            if files[f] == []:
+                need_del.append(f)
+        for f in need_del:
+            files.pop(f)
         
         # вывести
         return {"fields" : field, "files" : files}
@@ -151,6 +176,7 @@ class Editor:
                 #если такого поля ещё нет
                 fields_names = [f["field"] for f in fields]
                 if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                        
                     field = {
                         "name" : self.fields[k], #хватай имя
                         "field" : k, #хватай поле
@@ -197,7 +223,7 @@ class Editor:
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys.keys() and files[f_key] != []:
+                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
                     files_keys[f_key] = []
 
             
@@ -235,7 +261,7 @@ class Editor:
             if field["field"] in self.notEditble:
                     field["disabled"] = True
         
-        
+
 
         return {"fields" : fields, "files" : files_keys}
 
@@ -246,7 +272,11 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art=dict()
+        art=ArticleModel(id=self.art_id).find_by_id()
+        if '_sa_instance_state' in art:
+            art.pop('_sa_instance_state')
+        print(art)
+        print(data)
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
@@ -412,15 +442,14 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-async def create_file(file: UploadFile, art_id : int):
+def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)    
+    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')
 def del_file(file_id: str):
     return storeFile(id = file_id).editor_del_file()
-
 
 @editor_router.post("/upload_files")
 async def create_upload_files(files: List[UploadFile] ):

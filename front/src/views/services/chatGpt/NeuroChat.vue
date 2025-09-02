@@ -57,7 +57,8 @@
                                             class="neuroChat__send-button__loader" />
                                 </button>
                             </div>
-                            <div class="neuroChat__file-upload">
+                            <div class="neuroChat__file-upload"
+                                 v-if="chatType == 'textChat'">
                                 <input type="file"
                                        ref="fileInputNode"
                                        @change="handleFileSelect"
@@ -78,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import NeuroChatSidebar from './components/NeuroChatSidebar.vue';
 import Api from '@/utils/Api';
@@ -103,8 +104,8 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
         const fileToUploadName = ref<string>()
         const chatHistory = ref();
-        const createImageChatData = ref();
         const firstMessage = ref();
+        const analyzeMessage = ref(false);
 
         const neuroModels: { name: string, type: IChatType }[] = [{
             name: 'Чат',
@@ -120,6 +121,9 @@ export default defineComponent({
         const fileInputNode = ref<HTMLInputElement>();
         const fileInput = ref<File>();
         const chatDataToSend = ref<INeuroChat[]>([]);
+
+        const createImageChatData = ref();
+        const analyzeImageChatData = ref();
         const chatType = ref<IChatType>();
 
         const handleFileSelect = (event: Event) => {
@@ -133,13 +137,23 @@ export default defineComponent({
             fileInputNode.value?.click();
         }
 
+        watch((fileInput), () => {
+            if (fileInput.value) {
+                analyzeMessage.value = true;
+            }
+            else analyzeMessage.value = false;
+        })
+
         const chatWindowUpdate = () => {
             isLoading.value = true;
             if (chatType.value == 'textChat') {
                 if (!chatDataToSend.value.find((e) => e.role == 'system')) {
                     chatDataToSend.value.push({ 'role': 'system', content: 'Определи из контекста, отвечай на русском' });
                 }
-                chatDataToSend.value.push({ 'role': 'user', content: userInput.value });
+                if (analyzeMessage.value) {
+                    analyzeImageChatData.value.push({ 'role': 'user', content: userInput.value })
+                } else
+                    chatDataToSend.value.push({ 'role': 'user', content: userInput.value });
             }
             else if (chatType.value == 'createImg') {
                 createImageChatData.value = {
@@ -154,25 +168,43 @@ export default defineComponent({
         const sendMsg = async () => {
             chatWindowUpdate();
             if (chatType.value == 'textChat') {
-                await Api.postVendor('https://gpt.emk.ru/dialog', chatDataToSend.value)
-                    .then((data) => {
-                        chatDataToSend.value = data
-                    })
-                    .catch((error) => {
-                        handleApiError(error, toast)
-                    })
-                    .finally(() => {
-                        isLoading.value = false;
-                        userInput.value = '';
+                if (analyzeMessage.value) {
+                    await Api.postVendor('https://gpt.emk.ru/analyze-image', analyzeImageChatData.value)
+                        .then((data) => {
+                            chatDataToSend.value.push({
+                                role: 'assistant',
+                                content: data.image_url,
+                                type: 'img'
+                            })
+                        })
+                        .catch((error) => {
+                            handleApiError(error, toast)
+                        })
+                        .finally(() => {
+                            isLoading.value = false;
+                            userInput.value = '';
 
-                    })
+                        })
+                }
+                else
+                    await Api.postVendor('https://gpt.emk.ru/dialog', chatDataToSend.value)
+                        .then((data) => {
+                            chatDataToSend.value = data
+                        })
+                        .catch((error) => {
+                            handleApiError(error, toast)
+                        })
+                        .finally(() => {
+                            isLoading.value = false;
+                            userInput.value = '';
+
+                        })
             }
             else if (chatType.value == 'createImg') {
                 chatDataToSend.value.length = 0;
                 chatDataToSend.value.push({
                     role: 'user',
                     content: userInput.value,
-
                 })
                 await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
                     .then((data) => {
@@ -196,7 +228,6 @@ export default defineComponent({
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-
                 if (userInput.value.trim() && !isLoading.value) {
                     sendMsg();
                     userInput.value = '';
@@ -205,6 +236,8 @@ export default defineComponent({
         }
 
         const handleChatTypeChange = (type: IChatType) => {
+            fileInput.value = undefined;
+            fileToUploadName.value = '';
             chatDataToSend.value.length = 0;
             chatType.value = type;
             firstMessage.value = type == 'createImg' ? 'Привет! Опиши изображение, которое хочешь получить' : 'Привет! Чем могу помочь?'

@@ -15,14 +15,20 @@
           <Component :is="inputComponentChecker(item)"
                      :item="item"
                      @pick="(value: string) => handleEmitValueChange(item, value)" />
+
+          <AdminEditReportage v-if="item.field == 'reports'"
+                              :item="(item.value as IReportage[])"
+                              @pick="handleReportChange" />
+
         </div>
 
-        <div class="admin-element-inner__field">
-          <AdminComponentInput v-if="newFileData.videos_embed"
-                               :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
-                               @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
+        <div class="admin-element-inner__field mt10">
+          <AdminEditInput v-if="newFileData.videos_embed"
+                          :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
+                          @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
         </div>
-        <AdminUploadingSection :newFileData="newFileData"
+        <AdminUploadingSection class="mt10"
+                               :newFileData="newFileData"
                                :newData="newData"
                                @reloadData="reloadElementData(true)"
                                @handleUpload="handleUpload" />
@@ -39,7 +45,7 @@
                         :newData="newData"
                         :activeType="activeType"
                         :sectionId="id"
-                        :elementId="elementId"
+                        :newId="String(newId)"
                         :currentItem="currentItem"
                         @noPreview="previewFullWidth = true"
                         @changePreviewWidth="previewFullWidth = !previewFullWidth" />
@@ -65,13 +71,14 @@ import { defineComponent, onMounted, ref, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 
-import AdminComponentSelect from '@/views/admin/components/inputFields/AdminComponentSelect.vue';
-import AdminComponentTextarea from '@/views/admin/components/inputFields/AdminComponentTextarea.vue';
-import AdminComponentDatePicker from '@/views/admin/components/inputFields/AdminComponentDatePicker.vue';
-import AdminComponentInput from '@/views/admin/components/inputFields/AdminComponentInput.vue';
+import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
+import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';
+import AdminEditDatePicker from '@/views/admin/components/inputFields/AdminEditDatePicker.vue';
+import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.vue';
+import AdminEditReportage from '@/views/admin/components/inputFields/AdminEditReportage.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
-import type { IAdminListItem, INewFileData } from '@/interfaces/entities/IAdmin';
+import type { IAdminListItem, INewFileData, IReportage } from '@/interfaces/entities/IAdmin';
 import { chooseImgPlug } from '@/utils/chooseImgPlug';
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
@@ -91,10 +98,11 @@ export default defineComponent({
   components: {
     AdminPostPreview,
     Loader,
-    AdminComponentTextarea,
-    AdminComponentSelect,
-    AdminComponentDatePicker,
-    AdminComponentInput,
+    AdminEditTextarea,
+    AdminEditSelect,
+    AdminEditDatePicker,
+    AdminEditReportage,
+    AdminEditInput,
     FileUploader,
     AdminUploadingSection
   },
@@ -118,16 +126,16 @@ export default defineComponent({
     const activeType: Ref<"noPreview" | "news" | "interview" | "blogs"> = ref('news');
     const buttonIsDisabled = ref(false);
     const isCreateNew = ref(true);
-    const { width } = useWindowSize()
+    const { width } = useWindowSize();
 
-    // const newElementFiles = ref();
+    const newId = ref(props.elementId ?? null);
 
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
 
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
 
-    const newData: Ref<IPostInner> = ref({ id: 0, images: [chooseImgPlug()] });
+    const newData: Ref<IPostInner> = ref({ id: Number(newId.value) });
     const newFileData = ref<INewFileData>({});
     const isMobileScreen = computed(() => ['sm'].includes(screenCheck(width)));
 
@@ -135,25 +143,32 @@ export default defineComponent({
       if (item.disabled) return;
       switch (true) {
         case (item.data_type == 'str' || item.data_type == 'datetime.datetime') && String(item.field)?.includes('date'):
-          return AdminComponentDatePicker
+          return AdminEditDatePicker
         case (item.data_type == 'str' || item.data_type == 'bool') && 'values' in item:
-          return AdminComponentSelect
+          return AdminEditSelect
         case item.data_type == 'str' && item.field?.includes('text'):
-          return AdminComponentTextarea
+          return AdminEditTextarea
         case item.data_type == 'str':
-          return AdminComponentInput
+          return AdminEditInput
       }
     }
-
     onMounted(() => {
       if (props.type == 'new') {
         Api.get(`/editor/add/${props.id}`)
           .then((data) => {
             isCreateNew.value = true;
             newElementSkeleton.value = data.fields;
+            newElementSkeleton.value.map((e) => {
+              handleEmitValueChange(e, e.value)
+            })
+            newId.value = data.fields.find((e: IAdminListItem) => e.field == 'id').value;
             newFileData.value = data.files;
+            if (!('section_id' in newData.value)) {
+              newData.value.section_id = data.fields.find((e: IAdminListItem) => e.field == 'section_id').value;
+            }
 
-            newData.value.images = data.files.images;
+            newData.value.section_id = Number(props.id);
+            // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;
             newData.value.documentation = data.files.documentation;
           })
@@ -162,23 +177,27 @@ export default defineComponent({
     })
 
     const reloadElementData = (onlyFiles: boolean = false) => {
-      Api.get(`/editor/rendering/${props.elementId}`)
+      Api.get(`/editor/rendering/${newId.value}`)
         .then((data) => {
           if (!onlyFiles) {
             isCreateNew.value = false;
             newElementSkeleton.value = data.fields;
           }
+          newId.value = data.fields.find((e: IAdminListItem) => e.field == 'id').value;
           newFileData.value = data.files;
-          newData.value.preview_file_url = data.files.images[0].file_url
-          newData.value.images = data.files.images;
+          if (data.files?.images && data.files?.images[0]?.file_url) {
+            newData.value.preview_file_url = data.files?.images[0]?.file_url
+          }
+          // newData.value.images = data.files.images;
           newData.value.videos_native = data.files.videos_native;
           newData.value.documentation = data.files.documentation;
         })
     }
 
     const applyNewData = async () => {
+      const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
-      await Api.post(isCreateNew.value ? '/editor/add' : `editor/update/${props.elementId}`, newData.value)
+      await Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
         .then((data) => {
           handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminApdateElementSuccess')
           router.push({ name: 'adminBlockInner', params: { id: props.id } })
@@ -196,7 +215,7 @@ export default defineComponent({
       const fileToUpload = e.file;
       const formData = new FormData();
       formData.append('file', fileToUpload)
-      Api.post(`/editor/upload_file/${props.elementId}`, formData)
+      Api.post(`/editor/upload_file/${isCreateNew.value ? newId.value : props.elementId}`, formData)
         .then(() => reloadElementData(true))
     }
 
@@ -209,6 +228,10 @@ export default defineComponent({
       }
     };
 
+    const handleReportChange = (item: IReportage[]) => {
+      newData.value.reports = item
+    }
+
     return {
       events,
       router,
@@ -220,11 +243,13 @@ export default defineComponent({
       newData,
       newFileData,
       isMobileScreen,
+      newId,
       inputComponentChecker,
       applyNewData,
       handleEmitValueChange,
       handleUpload,
-      reloadElementData
+      reloadElementData,
+      handleReportChange
     };
   }
 });
@@ -440,7 +465,7 @@ export default defineComponent({
   }
 
   &__preview {
-    overflow-x: auto;
+    // overflow-x: auto;
     max-width: 100%;
     flex-grow: 1;
     height: fit-content;
@@ -565,5 +590,51 @@ export default defineComponent({
   &:not(:first-child) {
     margin-top: 15px;
   }
+}
+
+.admin-element__reportage-group__add-button__wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-element__reportage-group__add-button {
+  margin: 5px;
+  display: flex !important;
+  max-width: fit-content;
+  align-items: center;
+  justify-content: center;
+
+  &>svg {
+    width: 20px;
+    height: 20px;
+    // margin: auto;
+    color: #666;
+  }
+
+  &:hover {
+    &>svg {
+      color: black;
+    }
+  }
+}
+
+.admin-element__reportage-group__wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+
+}
+
+.reportage-list>div>p {
+  font-size: 15px !important;
+}
+
+.reportage-list {
+  display: contents;
 }
 </style>

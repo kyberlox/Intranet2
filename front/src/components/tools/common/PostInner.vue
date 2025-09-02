@@ -5,7 +5,7 @@
             <div class="col-12 col-lg-6 mb-2 pos-rel">
                 <SwiperBlank :videosNative="currentPost?.videos_native"
                              :videosEmbed="currentPost?.videos_embed"
-                             :images="currentPost?.images ? currentPost.images : undefined"
+                             :images="currentPost?.images ? currentPost.images : previewImages"
                              :sectionId="currentPost?.section_id"
                              :type="'postInner'" />
             </div>
@@ -77,11 +77,12 @@
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { defineComponent, type Ref, ref, type PropType, watch } from "vue";
-import type { IBaseEntity } from "@/interfaces/IEntities";
+import { defineComponent, type Ref, ref, type PropType, watch, type Prop } from "vue";
+import type { IBaseEntity, IBXFileType } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import Reactions from "./Reactions.vue";
 import { parseMarkdown } from "@/utils/parseMarkdown";
+import type { IReportage } from "@/interfaces/entities/IAdmin";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {
@@ -95,7 +96,8 @@ export interface IPostInner extends IBaseEntity {
             id: string,
             tag_name: string,
         }[]
-    }
+    },
+    reports?: IReportage[]
 }
 
 export default defineComponent({
@@ -116,6 +118,9 @@ export default defineComponent({
         },
         previewElement: {
             type: (Object as PropType<IPostInner>) || null
+        },
+        previewImages: {
+            type: Array<string>
         }
     },
     setup(props) {

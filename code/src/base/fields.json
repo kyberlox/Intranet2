@@ -11,10 +11,10 @@
     "content_text" : "Содержимое",
     
     "link" : "Ссылка",
-    "TITLE" : "заголовок",
+    "TITLE" : "Заголовок",
     "company" : "Предприятие",
     "author_uuid" : "ID автора",
-    "youtube_link" : "ссылка на YouTube",
+    "youtube_link" : "Ссылка на YouTube",
     "year" : "год",
     "uuid" : "ID пользователя",
     "photo_file_url" : "Фотография (URL)",

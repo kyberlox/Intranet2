@@ -10,6 +10,8 @@
                            name="authLogin"
                            type="text"
                            autocomplete="on"
+                           @keydown="handleKeyDown"
+                           ref="loginInput"
                            v-model="userName">
                 </div>
                 <div class="portal__auth__form__input__block">
@@ -18,6 +20,7 @@
                            name="authPass"
                            autocomplete="on"
                            placeholder="Пароль"
+                           @keydown="handleKeyDown"
                            v-model="passWord">
                 </div>
                 <button class="btn btn-primary portal__auth__form__auth__submit"
@@ -33,7 +36,7 @@
 <script lang="ts">
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref, nextTick } from 'vue';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
@@ -48,6 +51,7 @@ export default defineComponent({
         const error = ref();
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
+        const loginInput = ref();
         const tryLogin = () => {
             if (!userName.value || !passWord.value) {
                 return error.value = 'Проверьте логин и пароль'
@@ -75,11 +79,25 @@ export default defineComponent({
                         handleApiError(error, toast)
                     })
         }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                tryLogin();
+            }
+        }
+
+        onMounted(() => {
+            loginInput.value.focus();
+        })
+
         return {
-            tryLogin,
             userName,
             passWord,
-            error
+            error,
+            loginInput,
+            tryLogin,
+            handleKeyDown
         };
     },
 })

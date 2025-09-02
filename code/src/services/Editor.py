@@ -261,7 +261,10 @@ class Editor:
             if field["field"] in self.notEditble:
                     field["disabled"] = True
         
-
+            #если есть uuid
+            if field["field"] == "uuid" or field['field'] == "author_uuid":
+                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
+                pass
 
         return {"fields" : fields, "files" : files_keys}
 

@@ -448,7 +448,7 @@ class File:
 
 
 
-    async def editor_add_file(self, file : webFile):
+    def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
         
         # Генерируем уникальное имя файла

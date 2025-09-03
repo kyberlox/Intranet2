@@ -16,7 +16,7 @@ from bson.objectid import ObjectId
 import json
 import datetime
 
-import asyncio
+#import asyncio
 
 import os
 from dotenv import load_dotenv

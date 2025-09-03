@@ -14,7 +14,7 @@ import os
 from dotenv import load_dotenv
 
 import asyncio
-import aiofiles
+#import aiofiles
 
 load_dotenv()
 

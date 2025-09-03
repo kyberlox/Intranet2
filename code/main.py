@@ -208,7 +208,7 @@ def test_file_get(file_id):
 def elastic_search(keyword: str): 
     return search_everywhere(key_word=keyword) 
 
-@app.get("/api/full_elastic_dump")
+@app.put("/api/full_elastic_dump")
 def elastic_dump():
     UserSearchModel().dump()
     StructureSearchModel().dump()

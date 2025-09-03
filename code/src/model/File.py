@@ -544,6 +544,7 @@ async def upload_file(file: UploadFile):
             "file_url": file_data["file_url"],
             "original_name": file.filename
         }
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

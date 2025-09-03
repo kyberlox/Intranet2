@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, ForeignKey, desc, func, Date, or_
+from sqlalchemy import create_engine, Column, Integer, Text, Boolean, String, DateTime, JSON, MetaData, Table, ForeignKey, desc, func, Date, or_, and_, over
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
@@ -22,6 +22,8 @@ from src.model.File import File
 from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
+
+ADMINS_PEER = []
 
 DOMAIN = os.getenv('HOST')
 
@@ -1308,13 +1310,16 @@ class FieldvisionModel:
         new_vision = Fieldvision(vision_name=self.vision_name)
         self.session.add(new_vision)
         self.session.commit()
+        self.session.close()
         return self.session.query(Fieldvision).filter(Fieldvision.vision_name == self.vision_name).first()
 
     def remove_field_vision(self):
         existing_vision = self.session.query(Fieldvision).filter(Fieldvision.id == self.id).first()
+        
         if existing_vision:
             self.session.query(Fieldvision).filter(Fieldvision.id == self.id).delete()
             self.session.commit()
+            self.session.close()
             return {"msg": "Удалено"}
         return {"msg": "Такой области не существует"}
     
@@ -1342,6 +1347,7 @@ class UservisionsRootModel:
         new_user = UservisionsRoot(vision_id=self.vision_id, user_id=self.user_id)
         self.session.add(new_user)
         self.session.commit()
+        self.session.close()
         return {"msg": "Добавлен"}
     
     def upload_users_to_vision(self, user_data):
@@ -1357,6 +1363,7 @@ class UservisionsRootModel:
                     new_user = UservisionsRoot(vision_id=self.vision_id, user_id=user)
                     self.session.add(new_user)
                     self.session.commit()
+                    self.session.close()
         return {"status": True}
     
     def remove_user_from_vision(self):
@@ -1364,12 +1371,13 @@ class UservisionsRootModel:
         if existing_user:
             self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == self.user_id).delete()
             self.session.commit()
+            self.session.close()
             return {"msg": f"пользователь {self.user_id} удален из области видимости"}
         return {"msg": f"пользователя {self.user_id} не существует в данной области видимости"}
     
     def find_users_in_vision(self):
         result = []
-        existing_vision = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).first()
+        existing_vision = self.session.query(Fieldvision).filter(Fieldvision.id == self.vision_id).first()
         if existing_vision:
             users_in_vis = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
             for user in users_in_vis:
@@ -1379,6 +1387,7 @@ class UservisionsRootModel:
                 general_info['name'] = user_info['name']
                 general_info['last_name'] = user_info['last_name']
                 general_info['second_name'] = user_info['second_name']
+                general_info['depart'] = user_info['indirect_data']['uf_department']
                 general_info['post'] = user_info['indirect_data']['work_position']
                 general_info['photo'] = user_info['photo_file_url']
                 result.append(general_info)
@@ -1523,7 +1532,7 @@ class ActiveUsersModel:
             likes_left = 0
         
         uuid_for_filter = str(self.uuid_from)
-
+        
         result = self.session.query(Activities.id, Activities.name).join(
                 Moders,
                 Moders.activities_id == Activities.id
@@ -1544,12 +1553,197 @@ class ActiveUsersModel:
             "activities": activities_list
         }
 
+    def history_mdr(self, activity_name):
+        result = []
+        res = self.session.scalars(self.session.query(ActiveUsers).join(Activities, and_(ActiveUsers.activities_id == Activities.id, Activities.name == activity_name))).all()
+        stat = {0 : "Не подтверждено", 1 : "Подтверждено", 2 : "Отказано"}
+        if res:
+            for re in res:
+                info = re.__dict__
+                stat['valid'] = info['valid']
+                info['stat'] = stat
+                info.pop('valid')
+                result.append(info)
+            return result
+        return res
+
+    def sum(self):
+        res = self.session.query(
+            func.sum(Activities.coast)
+        ).join(
+            ActiveUsers,
+            ActiveUsers.activities_id == Activities.id
+        ).filter(
+            ActiveUsers.uuid_to == str(self.uuid_to),
+            ActiveUsers.valid == 1
+        ).scalar()
+        if res:
+            return res
+        else:
+            return 0
+    
+    def top(self):
+        stmt = self.session.query(
+            ActiveUsers.uuid_to,
+            func.sum(Activities.coast)
+        ).join(
+            Activities,
+            Activities.id == ActiveUsers.activities_id
+        ).filter(ActiveUsers.valid == 1).group_by(
+            ActiveUsers.uuid_to
+        ).order_by(
+            func.sum(Activities.coast).desc()
+        ).limit(10)
+        res = self.session.scalars(stmt).all()
+        return res
+
+    def my_place(self):
+        results = self.session.query(
+            ActiveUsers.uuid_to,
+            func.sum(Activities.coast).label('total_coast')
+        ).join(
+            Activities,
+            Activities.id == ActiveUsers.activities_id
+        ).filter(
+            ActiveUsers.valid == 1
+        ).group_by(
+            ActiveUsers.uuid_to
+        ).order_by(
+            func.coalesce(func.sum(Activities.coast), 0).desc()
+        ).all()
+
+        for rank, (uuid, coast) in enumerate(results, 1):
+            if uuid == self.uuid_to:
+                return rank
+
+        return "Либо Вы вне всяких оценок, либо ВЫ ЕЩЁ СПИТЕ!"
+
+    def statistics(self):
+        results = self.session.query(
+            Activities.id,
+            Activities.name,
+            func.coalesce(func.sum(Activities.coast), 0)
+        ).join(
+            ActiveUsers,
+            ActiveUsers.activities_id == Activities.id
+        ).filter(
+            ActiveUsers.uuid_to == self.uuid_to,
+            ActiveUsers.valid == 1
+        ).group_by(
+            Activities.name,
+            Activities.id
+        ).order_by(
+            func.sum(Activities.coast).desc()
+        ).all()
+        
+        return [
+            {
+                'activity_id': activity_id,
+                'activity_name': activity_name,
+                'total_coast': total_coast
+            }
+            for activity_id, activity_name, total_coast in results
+        ]   
+
+    def statistics_history(self):
+        results = self.session.query(
+            ActiveUsers.id,
+            ActiveUsers.uuid_from,
+            ActiveUsers.description,
+            ActiveUsers.date_time,
+            Activities.name,
+            Activities.coast,
+            Activities.id
+        ).join(Activities).filter(
+            ActiveUsers.uuid_to == self.uuid_to,
+            ActiveUsers.valid == 1,
+            Activities.id == self.activities_id
+        ).all()
+
+        processed_results = []
+        for result in results:
+            adjusted_time = result.date_time + timedelta(hours=4) if result.date_time else None
+            processed_results.append({
+                'id': result.id,
+                'uuid_from': result.uuid_from,
+                'description': result.description,
+                'adjusted_time': adjusted_time,
+                'activity_name': result.name,
+                'coast': result.coast,
+                'activity_id': result.id
+            })
+        
+        return processed_results
+
+    def new_a_week(self):
+        week_start = func.date_trunc('week', func.now())
+        results = self.session.query(
+            ActiveUsers.id,
+            ActiveUsers.uuid_from,
+            ActiveUsers.description,
+            ActiveUsers.date_time,
+            Activities.name,
+            Activities.coast,
+            Activities.id,
+            func.sum(Activities.coast).over().label('total_sum')
+        ).join(Activities).filter(
+            ActiveUsers.uuid_to == self.uuid_to,
+            func.date_trunc('week', ActiveUsers.date_time) == week_start,
+            ActiveUsers.valid == 1
+        ).all()
+
+        activities = []
+        for result in results:
+            activities.append({
+                "id_activeusers": result.id,
+                "uuid": result.uuid_from,
+                "description": result.description,
+                "date_time": result.date_time,
+                "activity_name": result.name,
+                "cost": result.coast,
+                "id_activites": result.id
+            })
+        total_sum = results[0].total_sum if results else 0
+        
+        return {"sum": total_sum, "activities": activities}
+
+    def user_history(self):
+        results = self.session.query(
+            ActiveUsers.id,
+            ActiveUsers.uuid_from,
+            ActiveUsers.description,
+            ActiveUsers.date_time,
+            Activities.name,
+            Activities.coast,
+            Activities.id,
+            func.sum(Activities.coast).over().label('total_sum')
+        ).join(Activities).filter(
+            ActiveUsers.uuid_to == self.uuid_to,
+            ActiveUsers.valid == 1
+        ).all()
+
+        activities = []
+        for result in results:
+            activities.append({
+                "id_activeusers": result.id,
+                "uuid": result.uuid_from,
+                "description": result.description,
+                "date_time": result.date_time,
+                "activity_name": result.name,
+                "cost": result.coast,
+                "id_activites": result.id
+            })
+        total_sum = results[0].total_sum if results else 0
+        
+        return {"sum": total_sum, "activities": activities}
+
 
 class ModersModel:
-    def __init__(self, activities_id: int = 0, uuid: int = 0):
+    def __init__(self, activities_id: int = 0, uuid: int = 0, id: int = 0):
         self.session = db
         self.activities_id = activities_id
         self.uuid = uuid
+        self.id = id
 
     def upload_past_moders(self):
         with open('./src/base/activities_moders.json', mode='r', encoding='UTF-8') as f:
@@ -1587,7 +1781,7 @@ class ModersModel:
     def do_valid(self, action_id):
         res = False
         user_uuid = self.session.query(Moders.user_uuid).join(ActiveUsers, ActiveUsers.activities_id == Moders.activities_id).filter(ActiveUsers.id == action_id).first()
-        if str(self.uuid) == user_uuid or str(self.uuid) == '1414':
+        if str(self.uuid) == user_uuid or int(self.uuid) in ADMINS_PEER:
             stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=1)
             self.session.execute(stmt)
             self.session.commit()
@@ -1598,10 +1792,119 @@ class ModersModel:
     def do_not_valid(self, action_id):
         res = False
         user_uuid = self.session.query(Moders.user_uuid).join(ActiveUsers, ActiveUsers.activities_id == Moders.activities_id).filter(ActiveUsers.id == action_id).first()
-        if str(self.uuid) == user_uuid or str(self.uuid) == '1414':
+        if str(self.uuid) == user_uuid or int(self.uuid) in ADMINS_PEER:
             stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
             self.session.execute(stmt)
             self.session.commit()
             res = True
         self.session.close()
         return res
+
+    def get_moders(self):
+        result = self.session.query(Moders.user_uuid, Activities.id, Activities.name).join(Activities, Activities.id == Moders.activities_id).all()
+        moders = []
+        for re in result:
+            moder = {}
+            moder['moder_id'] = re[0]
+            moder['activity_id'] = re[1]
+            moder['activity_name'] = re[2]
+            moders.append(moder)
+        return moders
+
+    def add_moder(self):
+        existing_activity = self.session.query(Activities).filter(Activities.id == self.activities_id).first()
+        if existing_activity:
+            existing_moder = self.session.query(Moders).filter(Moders.user_uuid == str(self.uuid), Moders.activities_id == self.activities_id).first()
+            if existing_moder:
+                return {"msg": f"У {self.uuid} уже существует активность {self.activities_id}"}
+            else:
+                max_id = self.session.query(func.max(Moders.id)).scalar() or 0
+                new_id = max_id + 1
+                new_moder = Moders(id=new_id, user_uuid=self.uuid, activities_id=self.activities_id)
+                self.session.add(new_moder)
+                self.session.commit()
+                self.session.close()
+                return {"msg": "Создано"}
+        else:
+            return {"msg": "Не существует такой активности"}
+
+    def is_moder(self):
+        existing_moder = self.session.query(Moders).filter(Moders.user_uuid == str(self.uuid)).first()
+        if existing_moder:
+            return True
+        else:
+            return False
+
+class AdminModel:
+    def __init__(self, uuid: int = 0):
+        self.session = db
+        self.uuid = uuid
+
+    def new_active(self, data):
+        res = False
+        uuid_from = data["uuid_from"]
+        uuid_to =  data["uuid_to"]
+        activities_id = data["activities_id"]
+        description = data["description"]
+
+        month_ago = datetime.now() - timedelta(days=30)
+        likes_count = self.session.query(ActiveUsers).filter(ActiveUsers.uuid_from == uuid_from, ActiveUsers.activities_id == 0, ActiveUsers.date_time >= month_ago).count()
+        likes_left = 10 - likes_count
+        needs = self.session.scalars(self.session.query(Activities.id).where(Activities.need_valid == True)).all()
+        
+        if activities_id in needs:
+            if likes_left < 0:
+                return {"result" : False}
+            else:
+                max_id = self.session.query(func.max(ActiveUsers.id)).scalar() or 0
+                new_id = max_id + 1
+                new_action = ActiveUsers(
+                    id=new_id,
+                    uuid_from=uuid_from,
+                    uuid_to=uuid_to,
+                    description=description,
+                    activities_id=activities_id,
+                    valid=0,
+                    date_time=datetime.now()
+                )
+        else:
+            max_id = self.session.query(func.max(ActiveUsers.id)).scalar() or 0
+            new_id = max_id + 1
+            new_action = ActiveUsers(
+                id=new_id,
+                uuid_from=uuid_from,
+                uuid_to=uuid_to,
+                description=description,
+                activities_id=activities_id,
+                valid=1,
+                date_time=datetime.now()
+            )
+        
+        activity_moder = self.session.query(Moders.user_uuid).where(Moders.activities_id == activities_id).scalar()
+        
+        if activity_moder:
+            if uuid_from == activity_moder or activity_moder == '*':
+                
+                self.session.add(new_action)
+                self.session.commit()
+                self.session.close()
+                return {"result" : True}
+        else:
+            return {"result" : False}
+
+    def get_admins_list(self):
+        return ADMINS_PEER
+    
+    def add_peer_admin(self):
+        if int(self.uuid) in ADMINS_PEER:
+            return {"msg": "уже существует"}
+        else:
+            ADMINS_PEER.append(int(self.uuid))
+            return {"msg": "добавлен"}
+    
+    def delete_admin(self):
+        if int(self.uuid) in ADMINS_PEER:
+            ADMINS_PEER.remove(int(self.uuid))
+            return {"msg": "удален"}
+        else:
+            return {"msg": "отсутствует такой админ"}

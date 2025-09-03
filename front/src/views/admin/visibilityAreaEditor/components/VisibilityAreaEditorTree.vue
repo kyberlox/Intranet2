@@ -1,12 +1,15 @@
 <template>
     <ul class="visibility-editor__area-departments">
         <li class="visibility-editor__area-department"
+            @click="changeVisibility(dep.id)"
             v-for="dep in departments"
             :key="dep.id">
-            <PlusIcon />
+            <PlusIcon v-if="!showingDeps.includes(dep.id)" />
+            <MinusIcon v-else />
             <div class="visibility-editor__area-department__info">
                 <span>{{ dep.name }}</span>
-                <ul class="visibility-editor__area-department__info__users ">
+                <ul class="visibility-editor__area-department__info__users"
+                    :class="{ 'hidden': !showingDeps.includes(dep.id) }">
                     <li class="visibility-editor__area-user visibility-editor__area-user--inDep"
                         v-for="user in dep.users"
                         :key="user.user_id">
@@ -18,7 +21,6 @@
         </li>
     </ul>
 </template>
-
 
 <script lang="ts">
 import { defineComponent, type PropType, ref } from 'vue';
@@ -38,12 +40,19 @@ export default defineComponent({
         MinusIcon
     },
     setup() {
-        const showThisDeps = ref<number[]>([])
-        const changeVisibility = (id: number) => {
-            showThisDeps.value.find((e) => e == id)
-        }
-        return {
+        const showingDeps = ref<number[]>([]);
 
+        const changeVisibility = (id: number) => {
+            const target = showingDeps.value.findIndex((e) => e == id);
+            if (target == -1) {
+                showingDeps.value.push(id)
+            }
+            else showingDeps.value.splice(target, 1)
+        }
+
+        return {
+            showingDeps,
+            changeVisibility
         }
     }
 })

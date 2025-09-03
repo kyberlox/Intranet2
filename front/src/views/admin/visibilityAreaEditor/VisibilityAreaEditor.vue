@@ -71,6 +71,7 @@ export interface IUserSearch {
 }
 
 export default defineComponent({
+    name: 'VisibilityAreaEditor',
     components: {
         AdminSidebar,
         AdminEditInput,
@@ -148,29 +149,49 @@ export default defineComponent({
             Api.delete(`fields_visions/delete_vision/${visionId}/${userId}`)
         }
 
-        const createDepartmentTree = (depStructure) => {
-            const departmentMap = new Map();
-            if (!depStructure.length) return
-            depStructure.value.forEach(dept => {
-                departmentMap.set(dept.id, { ...dept, departments: [] });
-            });
+        const createDepartmentTree = (depStructure: IDepartment[]) => {
+            // console.log('Input depStructure:', depStructure);
 
-            const rootDepartments = [];
-            depStructure.forEach(dept => {
-                const currentDept = departmentMap.get(dept.id)!;
+            // if (!depStructure?.length) {
+            //     allDepStructure.value = [];
+            //     return [];
+            // }
 
-                if (dept.father_id === null) {
-                    // Это корневой департамент
-                    rootDepartments.push(currentDept);
-                } else {
-                    // Это дочерний департамент, добавляем его к родителю
-                    const parentDept = departmentMap.get(dept.father_id);
-                    if (parentDept) {
-                        parentDept.departments!.push(currentDept);
-                    }
-                }
-            });
-            allDepStructure.value = depStructure;
+            // const departmentMap = new Map();
+
+            // // Создаем карту всех департаментов
+            // depStructure.forEach(dept => {
+            //     departmentMap.set(dept.id, { ...dept, departments: [] });
+            // });
+
+            const rootDepartments: string[] = [];
+
+            // // Строим дерево
+            // depStructure.forEach(dept => {
+            //     const currentDept = departmentMap.get(dept.id);
+
+            //     if (!currentDept) return; // Защита от undefined
+
+            //     if (dept.father_id === null || dept.father_id === undefined) {
+            //         // Это корневой департамент
+            //         rootDepartments.push(currentDept);
+            //     } else {
+            //         // Это дочерний департамент, добавляем его к родителю
+            //         const parentDept = departmentMap.get(dept.father_id);
+            //         if (parentDept) {
+            //             parentDept.departments.push(currentDept);
+            //         } else {
+            //             // Если родитель не найден, считаем департамент корневым
+            //             console.warn(`Parent department with id ${dept.father_id} not found for department ${dept.id}`);
+            //             rootDepartments.push(currentDept);
+            //         }
+            //     }
+            // });
+
+            // console.log('Built tree:', rootDepartments);
+
+            // Сохраняем построенное дерево, а не исходные данные
+            allDepStructure.value = rootDepartments;
 
         }
 
@@ -338,10 +359,15 @@ export default defineComponent({
     }
 }
 
+.visibility-editor__area-department__info {
+    user-select: none;
+}
+
 .visibility-editor__area-department__info__users {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 5px;
+    user-select: none;
 }
 </style>

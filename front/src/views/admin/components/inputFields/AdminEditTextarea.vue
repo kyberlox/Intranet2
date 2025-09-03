@@ -30,7 +30,7 @@ export default defineComponent({
         const value = ref(props.item?.value);
         return {
             value,
-            handleValuePick: () => emit('pick', value.value?.replaceAll('&nbsp;', ' ')),
+            handleValuePick: () => emit('pick', (value.value as string)?.replaceAll('&nbsp;', ' ')),
             parseMarkdown
         }
     }

@@ -7,7 +7,7 @@
         <swiper-slide v-for="(image, index) in images"
                       :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
                       :key="'postImg' + index">
-            <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : image"
+            <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : (image as string)"
                  alt="изображение слайдера"
                  @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
         </swiper-slide>
@@ -78,7 +78,7 @@ export default defineComponent({
     emits: ['indexChanged'],
     props: {
         images: {
-            type: Array as PropType<ImageArray>,
+            type: Array as PropType<IBXFileType[] | string[]>,
             default: () => [],
         },
         videos: {

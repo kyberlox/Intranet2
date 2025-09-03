@@ -14,7 +14,7 @@ import os
 from dotenv import load_dotenv
 
 import asyncio
-import aiofiles
+#import aiofiles
 
 load_dotenv()
 
@@ -461,15 +461,15 @@ class File:
         
 
         # Если нужно сохранить файл на диск
-        # with file.file:
-        #     contents = file.file.read()
-        #     with open(file_path, "wb") as f:
-        #         f.write(contents)
-        
         with file.file:
             contents = file.file.read()
-            async with aiofiles.open(file_path, "wb") as f:
-                await f.write(contents)
+            with open(file_path, "wb") as f:
+                f.write(contents)
+        
+        # with file.file:
+        #     contents = file.file.read()
+        #     async with aiofiles.open(file_path, "wb") as f:
+        #         await f.write(contents)
 
         file_info = {
             "original_name": filename,

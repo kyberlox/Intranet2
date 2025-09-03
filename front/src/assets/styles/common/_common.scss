@@ -115,3 +115,7 @@ p {
 .bg-contain {
     background-size: contain !important;
 }
+
+.disabled {
+    pointer-events: none;
+}

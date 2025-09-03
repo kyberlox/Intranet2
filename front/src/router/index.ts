@@ -496,6 +496,12 @@ const router = createRouter({
       props: (route) => ({ id: route.params.id })
     },
     {
+      path: '/admin/:id/new',
+      name: 'adminElementInnerAdd',
+      component: () => import('@/views/admin/AdminElementInner.vue'),
+      props: (route) => ({ id: route.params.id, type: 'new' }),
+    },
+    {
       path: '/admin/:id/:elementId',
       name: 'adminElementInnerEdit',
       component: () => import('@/views/admin/AdminElementInner.vue'),
@@ -505,12 +511,19 @@ const router = createRouter({
       }
     },
     {
-      path: '/admin/:id/new',
-      name: 'adminElementInnerAdd',
-      component: () => import('@/views/admin/AdminElementInner.vue'),
-      props: (route) => ({ id: route.params.id, type: 'new' }),
+      path: '/admin/visibility',
+      name: 'visibilityArea',
+      component: () => import('@/views/admin/visibilityAreaEditor/VisibilityAreaEditor.vue'),
       meta: {
-        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
+    {
+      path: '/admin/files',
+      name: 'fileManager',
+      component: () => import('@/views/admin/visibilityAreaEditor/VisibilityAreaEditor.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
   ],

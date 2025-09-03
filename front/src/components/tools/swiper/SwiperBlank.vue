@@ -1,5 +1,6 @@
 <template>
     <swiper v-bind="sliderConfig"
+            @slideChange="needEmitIndex ? $emit('indexChanged', swiperInstance?.activeIndex) : ''"
             @swiper="swiperOn">
 
         <!-- для img -->
@@ -74,6 +75,7 @@ export default defineComponent({
         ZoomModal,
         SwiperButtons
     },
+    emits: ['indexChanged'],
     props: {
         images: {
             type: Array as PropType<ImageArray>,
@@ -99,6 +101,9 @@ export default defineComponent({
         videosEmbed: {
             type: Array<IBXFileType>
         },
+        needEmitIndex: {
+            type: Boolean
+        }
     },
     setup(props) {
         const modalIsVisible = ref(false);

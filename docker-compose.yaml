@@ -67,20 +67,42 @@ services:
   #   networks:
   #     - app-network
 
+  # elasticsearch:
+  #   image: elasticsearch:9.1.0
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false  # ОТКЛЮЧАЕМ БЕЗОПАСНОСТЬ
+  #     - ES_JAVA_OPTS=-Xms1g -Xmx1g
+  #   volumes:
+  #   - ./elasticsearch/data:/bitnami/elasticsearch/data    
+  #   - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - app-network
+
   elasticsearch:
     image: elasticsearch:9.1.0
-    container_name: elasticsearch
+    volumes:
+    - ./elasticsearch/data:/usr/share/elasticsearch/data
+    # - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "127.0.0.1:9200:9200"
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false  # ОТКЛЮЧАЕМ БЕЗОПАСНОСТЬ
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
-    volumes:
-    - ./elasticsearch/data:/bitnami/elasticsearch/data    
-    - ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    ports:
-      - "9200:9200"
+      - ELASTIC_PASSWORD=${pswd}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - network.host=0.0.0.0
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
       - app-network
+
   
 
 

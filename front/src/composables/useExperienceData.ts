@@ -33,7 +33,7 @@ export const useExperienceData = () => {
                 sectorTitle: industryTitle,
                 sectorId: String(industryId),
                 sectorDocs: docs,
-                sectorImgs: (images as string[])
+                sectorImgs: images
             });
         } else if (existingSector.sectorDocs && docs) {
             if (Array.isArray(docs) && Array.isArray(existingSector.sectorDocs)) {

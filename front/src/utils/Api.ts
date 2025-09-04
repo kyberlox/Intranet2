@@ -4,7 +4,6 @@ import { computed } from "vue";
 import type { IPostIdea, IAuth } from '@/interfaces/IPostFetch';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
-import type { IPostCardMsg } from '@/interfaces/entities/IPostCardMsg';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 const authKey = computed(() => useUserData().getAuthKey);
@@ -40,7 +39,7 @@ export default class Api {
     static async postVendor(url: string, data: INeuroChat[] | null) {
         return (await vendorApi.post(url, data)).data;
     }
-    static async post(url: string, data: IAuth | IPostIdea | IPostInner | FormData | IPostCardMsg) {
+    static async post(url: string, data: IAuth | IPostIdea | IPostInner | FormData) {
         return (await api.post(url, data)).data;
     }
 

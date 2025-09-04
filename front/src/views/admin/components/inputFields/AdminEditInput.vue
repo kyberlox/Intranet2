@@ -5,8 +5,7 @@
                v-model="value"
                @input="handleValuePick"
                :type="'text'"
-               :disabled="Boolean(item?.disabled)"
-               :placeholder="placeholder" />
+               :disabled="Boolean(item?.disabled)" />
     </div>
 </template>
 
@@ -20,9 +19,6 @@ export default defineComponent({
         item: {
             type: Object as PropType<IAdminListItem>
         },
-        placeholder: {
-            type: String
-        }
     },
     setup(props, { emit }) {
         const value = ref(props.item?.value);

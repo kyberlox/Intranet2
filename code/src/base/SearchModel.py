@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 pswd = os.getenv('pswd')
 DOMAIN = os.getenv('HOST')
 
@@ -37,7 +38,9 @@ elastic_client = Elasticsearch(
 )
 '''
 
-elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
+#elastic_client http_auth=('elastic', pswd),  = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)http_auth=('elastic', pswd)
+# elastic_client = Elasticsearch(hosts=["http://host.docker.internal:9200"], http_auth=('elastic', pswd), verify_certs=False)
+elastic_client = Elasticsearch(hosts=["http://127.0.0.1:9200"], http_auth=('elastic', pswd), verify_certs=False)
 
 if elastic_client.ping():
     print("✅ Успешное подключение!")
@@ -643,8 +646,6 @@ class StructureSearchModel:
                             photo_inf = File(id=user['photo_file_id']).get_users_photo()
                             url = photo_inf['URL']
                             user_data['photo'] = f"{DOMAIN}{url}"
-                            print(DOMAIN)
-                            print(pswd)
                         else:
                             user_data['photo'] = None
 

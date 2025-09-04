@@ -4,7 +4,7 @@
         <DatePicker class="admin-element-inner__date-picker"
                     :disable-year-select="false"
                     :calendarType="'full'"
-                    :defaultData="(item?.value as string)"
+                    :defaultData="item?.value"
                     @pickDate="(date: string) => { handleValuePick(useDateFormat(date, 'DD.MM.YYYY HH:mm:ss')) }"
                     @clearValue="() => value = ''" />
     </div>

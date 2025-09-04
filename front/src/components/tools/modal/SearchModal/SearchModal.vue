@@ -105,7 +105,7 @@ export default defineComponent({
             Api.get(`/${selectedSearchType.value}/${searchTargetText.value}`)
                 .then((data) => {
                     searchResult.value = data
-                }) 
+                })
         }
 
         const searchTypes = [

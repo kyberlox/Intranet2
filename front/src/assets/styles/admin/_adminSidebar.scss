@@ -13,7 +13,6 @@
         position: fixed;
         height: 82vh;
         overflow-y: auto;
-        z-index: 9;
 
         @include lg {
             width: 100%;
@@ -45,6 +44,7 @@
         padding: 20px 0;
 
         &-title {
+            margin: 0 0 15px 0;
             padding: 0 20px;
             font-size: 14px;
             font-weight: 600;
@@ -71,7 +71,6 @@
             text-decoration: none;
             transition: all 0.2s ease;
             border-left: 3px solid transparent;
-            cursor: pointer;
 
             &:hover {
                 background-color: #e9ecef;
@@ -79,14 +78,10 @@
             }
 
             &--active {
-                background-color: #ffdec787;
-                // color: var(--emk-brand-color);
+                background-color: #e3f2fd;
+                color: var(--emk-brand-color);
                 border-left-color: var(--emk-brand-color);
                 font-weight: 500;
-
-                &>.admin-panel__nav-icon>svg {
-                    color: var(--emk-brand-color-dark);
-                }
             }
         }
 

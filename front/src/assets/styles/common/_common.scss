@@ -39,7 +39,7 @@ a:hover {
 
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 .page__title {
@@ -114,8 +114,4 @@ p {
 
 .bg-contain {
     background-size: contain !important;
-}
-
-.disabled {
-    pointer-events: none;
 }

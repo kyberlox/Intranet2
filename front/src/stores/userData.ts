@@ -48,13 +48,6 @@ export const useUserData = defineStore('userData', {
         getAuthKey: (state) => state.authKey,
         getUser: (state) => state.user,
         getPhoto: (state) => state.user.photo_file_url,
-        getFio: (state) => state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name,
-        getSignature: (state) => (`С уважением,
-${state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name}
---
-АО «НПО «ЭМК»
-Тел.: ${state.user.uf_phone_inner}
-Моб.: ${state.user.personal_mobile}
-Эл. почта: ${state.user.email} `)
+        getFio: (state) => state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name
     }
 });

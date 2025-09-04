@@ -37,8 +37,15 @@ elastic_client = Elasticsearch(
 )
 '''
 
-#elastic_client = Elasticsearch(hosts=["http://127.0.0.1:9200"], http_auth=('elastic', pswd), verify_certs=False)
-elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
+#elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
+elastic_client = Elasticsearch(
+    hosts=["http://host.docker.internal:9200"],
+    http_auth=('elastic', 'MyPw123'),
+    verify_certs=False,  
+    request_timeout=30
+)
+
+
 
 if elastic_client.ping():
     print("✅ Успешное подключение!")

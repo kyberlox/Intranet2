@@ -5,7 +5,7 @@
              v-if="title">
             {{ title }}
         </div>
-        <ContentGallery v-if="slides.length"
+        <ContentGallery v-if="slides && slides.length"
                         class="mt20"
                         :slide="slides"
                         @callModal="callModal" />

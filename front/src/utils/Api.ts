@@ -44,8 +44,8 @@ export default class Api {
         return (await api.post(url, data)).data;
     }
 
-    static async put(url: string) {
-        return (await api.put(url))
+    static async put(url: string, data?: number[]) {
+        return (await api.put(url, data || ''))
     }
 
     static async delete(url: string) {

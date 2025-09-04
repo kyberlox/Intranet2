@@ -134,6 +134,10 @@ export default defineComponent({
                 .then((data) => { createDepartmentTree(data); })
         }
 
+        const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
+            const body = [4133, 2375, 2366];
+            Api.put((`fields_visions/add_users_list_to_vision/${visionId}`), body);
+        }
         // const getDepStructureById = (depId: number) => {
         //     Api.get(`fields_visions/get_dep_structure/${depId}`)
         // }
@@ -149,11 +153,6 @@ export default defineComponent({
         // const addUserToArea = (visionId: number, userId: number) => {
         //     Api.put(`fields_visions/add_user_to_vision/${visionId}/${userId}`)
         // }
-
-        // const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
-        //     Api.put(`fields_visions/add_users_list_to_vision/${visionId}/${departmentId}`)
-        // }
-
 
         // const removeUserFromArea = (visionId: number, userId: number) => {
         //     Api.delete(`fields_visions/delete_vision/${visionId}/${userId}`)
@@ -223,6 +222,7 @@ export default defineComponent({
         onMounted(() => {
             getAllVisions();
             getDepStructureAll();
+            addFullDepartmentToArea(2, 142);
         })
 
         return {
@@ -334,7 +334,6 @@ p .visibility-editor__areas {
     display: flex;
     align-items: center;
 }
-
 
 .visibility-editor__user-photo {
     width: 100%;
@@ -448,5 +447,9 @@ p .visibility-editor__areas {
     display: flex;
     flex-direction: column;
     gap: 5px;
+}
+
+.visibility-editor__area-users__department-title {
+    font-size: 18px;
 }
 </style>

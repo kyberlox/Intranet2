@@ -6,6 +6,7 @@
                       :activeId="activeArea"
                       @addNewArea="console.log('addNewArea')"
                       @areaClicked="(i) => changeActiveArea(i)" />
+
         <div class="visibility-editor__area-users__wrapper">
             <div v-if="activeArea"
                  class="visibility-editor__area-users__edit-methods">
@@ -49,8 +50,10 @@
                 </tbody>
             </table>
             <div class="visibility-editor__button-group">
-                <button @click="saveChoices">Сохранить</button>
-                <button @click="clearChoices">Сбросить</button>
+                <button class='primary-button'
+                        @click="saveChoices">Сохранить</button>
+                <button class='primary-button'
+                        @click="clearChoices">Сбросить</button>
             </div>
         </div>
     </div>

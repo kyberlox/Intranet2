@@ -1,4 +1,4 @@
-FROM node:24-alpine3.21 AS build-stage
+FROM node:20.17-alpine AS build-stage
 # Установить рабочий каталог в контейнере
 WORKDIR /app
 

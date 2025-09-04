@@ -9,11 +9,13 @@
         <div class="visibility-editor__area-users__wrapper">
             <div v-if="activeArea"
                  class="visibility-editor__area-users__edit-methods">
-                <button @click="changeEditMode(true)"
-                        class="visibility-editor__area-users__edit-methods__add">Добавить</button>
-                <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
+                <button @click="changeEditMode(!editGroupMode)"
+                        class="visibility-editor__area-users__edit-methods__add">
+                    {{ editGroupMode ? 'Вернуться' : 'Добавить' }}
+                </button>
+                <!-- <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
                                 :item="{ name: '', value: '' }"
-                                :placeholder="'Фильтр по фио'" />
+                                :placeholder="'Фильтр по фио'" /> -->
             </div>
             <ul v-if="!editGroupMode"
                 class="visibility-editor__area-users">
@@ -32,14 +34,31 @@
                 </li>
             </ul>
             <VisibilityAreaEditorTree v-else
+                                      @fixUserChoice="fixUserChoice"
+                                      :choices="choices"
                                       :departments="allDepStructure" />
+        </div>
+
+        <div class="visibility-editor__right-sidebar">
+            <table>
+                <tbody>
+                    <tr v-for="choice in choices"
+                        :key="choice.type + choice.id">
+                        <td>{{ choice.name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="visibility-editor__button-group">
+                <button @click="saveChoices">Сохранить</button>
+                <button @click="clearChoices">Сбросить</button>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, watchEffect } from 'vue';
 import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
 import AdminEditInput from '../components/inputFields/AdminEditInput.vue';
 import VisibilityAreaEditorTree from './components/VisibilityAreaEditorTree.vue';
@@ -63,11 +82,12 @@ export interface IDepartment {
 }
 
 export interface IUserSearch {
-    department: string
-    department_id: number
-    user_fio: string
-    user_id: number
-    user_position: string
+    department: string;
+    department_id: number;
+    user_fio: string;
+    user_id: number;
+    user_position: string;
+    photo: null | string;
 }
 
 export default defineComponent({
@@ -84,6 +104,8 @@ export default defineComponent({
         const activeAreaUsers = ref<IVisionUser[]>();
         const editGroupMode = ref<boolean>(false);
         const allDepStructure = ref();
+        const departmentMap = new Map();
+
 
         const changeEditMode = (val: boolean) => {
             editGroupMode.value = val;
@@ -150,55 +172,75 @@ export default defineComponent({
         }
 
         const createDepartmentTree = (depStructure: IDepartment[]) => {
-            // console.log('Input depStructure:', depStructure);
+            if (!depStructure?.length) {
+                allDepStructure.value = [];
+                return [];
+            }
 
-            // if (!depStructure?.length) {
-            //     allDepStructure.value = [];
-            //     return [];
-            // }
-
-            // const departmentMap = new Map();
-
-            // // Создаем карту всех департаментов
-            // depStructure.forEach(dept => {
-            //     departmentMap.set(dept.id, { ...dept, departments: [] });
-            // });
+            // Создаем карту всех департаментов
+            depStructure.forEach(dept => {
+                departmentMap.set(dept.id, { ...dept, departments: [] });
+            });
 
             const rootDepartments: string[] = [];
 
-            // // Строим дерево
-            // depStructure.forEach(dept => {
-            //     const currentDept = departmentMap.get(dept.id);
+            // Строим дерево
+            depStructure.forEach(dept => {
+                const currentDept = departmentMap.get(dept.id);
 
-            //     if (!currentDept) return; // Защита от undefined
+                if (!currentDept) return; // Защита от undefined
 
-            //     if (dept.father_id === null || dept.father_id === undefined) {
-            //         // Это корневой департамент
-            //         rootDepartments.push(currentDept);
-            //     } else {
-            //         // Это дочерний департамент, добавляем его к родителю
-            //         const parentDept = departmentMap.get(dept.father_id);
-            //         if (parentDept) {
-            //             parentDept.departments.push(currentDept);
-            //         } else {
-            //             // Если родитель не найден, считаем департамент корневым
-            //             console.warn(`Parent department with id ${dept.father_id} not found for department ${dept.id}`);
-            //             rootDepartments.push(currentDept);
-            //         }
-            //     }
-            // });
-
-            // console.log('Built tree:', rootDepartments);
-
+                if (dept.father_id === null || dept.father_id === undefined) {
+                    // Это корневой департамент
+                    rootDepartments.push(currentDept);
+                } else {
+                    // Это дочерний департамент, добавляем его к родителю
+                    const parentDept = departmentMap.get(dept.father_id);
+                    if (parentDept) {
+                        parentDept.departments.push(currentDept);
+                    } else {
+                        // Если родитель не найден, считаем департамент корневым
+                        console.warn(`Parent department with id ${dept.father_id} not found for department ${dept.id}`);
+                        rootDepartments.push(currentDept);
+                    }
+                }
+            });
             // Сохраняем построенное дерево, а не исходные данные
             allDepStructure.value = rootDepartments;
+        }
+        const choices = ref<{ id: number; name: string; type: 'allDep' | 'onlyDep' | 'user' }[]>([]);
 
+        const fixUserChoice = (type: 'allDep' | 'onlyDep' | 'user', id: number, userId: number | null = null) => {
+            const targetIndex = choices.value.findIndex((e) => e.id == (type == 'user' ? userId : id));
+
+            if (targetIndex !== -1) {
+                choices.value.splice(targetIndex, 1);
+            }
+            else
+                if (type == 'user') {
+                    const target = departmentMap.get(id).users.find((e: IUserSearch) => e.user_id == userId);
+
+                    choices.value.push({ id: target.user_id, name: target.user_fio, type: 'user' })
+                }
+                else {
+                    const target = departmentMap.get(id);
+                    choices.value.push({ id: target.id, name: target.name + (type == "allDep" ? ' с подотделами' : ' без подотделов'), type: type })
+                    console.log(choices.value);
+
+                }
+        }
+
+        const saveChoices = () => {
+            console.log(choices.value);
+        }
+
+        const clearChoices = () => {
+            choices.value.length = 0;
         }
 
         onMounted(() => {
             getAllVisions();
             getDepStructureAll();
-            // getDepStructureById(53);
         })
 
         return {
@@ -207,17 +249,21 @@ export default defineComponent({
             activeAreaUsers,
             editGroupMode,
             allDepStructure,
+            choices,
+            fixUserChoice,
             getVisionUser,
             createNewArea,
             changeActiveArea,
-            changeEditMode
+            changeEditMode,
+            saveChoices,
+            clearChoices
         }
     }
 })
 </script>
 
 <style lang="scss">
-.visibility-editor__areas {
+p .visibility-editor__areas {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -245,7 +291,7 @@ export default defineComponent({
 
 .visibility-editor__area-users__wrapper {
     flex: 1;
-    padding: 0 24px;
+    padding-right: 10px;
     margin-left: 0;
 }
 
@@ -271,7 +317,7 @@ export default defineComponent({
     border: 1px solid #e9ecef;
     color: black;
     border-radius: 12px;
-    padding: 16px;
+    padding: 8px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -281,8 +327,9 @@ export default defineComponent({
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     overflow: hidden;
 
-    &--inDep {
+    &--inDep:last-child {
         padding: 8px;
+        margin-bottom: 15px;
     }
 }
 
@@ -338,6 +385,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 0;
 }
 
 .visibility-editor__area-department {
@@ -348,14 +396,37 @@ export default defineComponent({
     justify-content: flex-start;
     cursor: pointer;
     transition: all 0.2s;
+    border-left: 1px solid #6666666a;
+    padding-left: 5px;
+
 
     &:hover:not(.visibility-editor__area-user) {
-        color: var(--emk-brand-color);
+        // color: var(--emk-brand-color);
+    }
+
+    &:hover {
+        &>svg {
+            color: var(--emk-brand-color);
+
+            &+.visibility-editor__area-department__info>span {
+                color: var(--emk-brand-color);
+            }
+        }
     }
 
     &>svg {
+        min-width: 20px;
         width: 20px;
         height: 20px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: var(--emk-brand-color);
+
+            &+.visibility-editor__area-department__info>span {
+                color: var(--emk-brand-color);
+            }
+        }
     }
 }
 
@@ -369,5 +440,31 @@ export default defineComponent({
     flex-direction: column;
     gap: 5px;
     user-select: none;
+}
+
+.visibility-editor__area-user-avatar {
+    max-width: 20px;
+    border-radius: 10px;
+}
+
+.visibility-editor__area-department--active {
+    color: var(--emk-brand-color);
+}
+
+.visibility-editor__right-sidebar {
+    border-left: 1px solid #e9ecef;
+    border-top: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    max-width: 160px;
+    min-width: 160px;
+    padding: 10px;
+    // position: fixed;
+}
+
+.visibility-editor__button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 </style>

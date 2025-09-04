@@ -1394,10 +1394,6 @@ class UservisionsRootModel:
             return result
         return {"msg": "такого vision_id не существует"}
 
-    def find_vision_by_user_id(self):
-        result = self.session.scalars(self.session.query(UservisionsRoot.vision_id).filter(UservisionsRoot.user_id == self.user_id)).all()
-        return result     
-
 class TagsModel:
     def __init__(self, id: int = 0, tag_name: str = ''):
         self.session = db

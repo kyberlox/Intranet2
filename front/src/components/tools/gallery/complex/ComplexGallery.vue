@@ -24,7 +24,7 @@ import PlayVideo from "@/assets/icons/common/PlayVideo.svg?component";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { defineComponent, ref } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
-import type { IFactoryDataTours, IFactoryDataReports } from "@/interfaces/IEntities";
+import type { IFactoryDataTours, IFactoryDataReports, IBXFileType } from "@/interfaces/IEntities";
 import ComplexGallerySkeleton from "./ComplexGallerySkeleton.vue";
 import ComplexGalleryCardBasic from "./ComplexGalleryCardBasic.vue";
 
@@ -40,7 +40,7 @@ interface IComplexGallery {
     },
     videoHref?: string,
     link?: string,
-    images?: string[],
+    images?: string[] | IBXFileType[],
 }
 
 export default defineComponent({

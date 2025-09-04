@@ -83,5 +83,13 @@
 
     &__swiper-wrapper {
         position: relative;
+        min-height: 367px;
+        background: rgba(177, 177, 177, 0.2156862745);
+        border-radius: 4px;
+        border: 1px solid rgba(128, 128, 128, 0.333);
+
+        &+.postcard__form-group {
+            margin-top: 65px;
+        }
     }
 }

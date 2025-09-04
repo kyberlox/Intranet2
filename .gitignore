@@ -1,7 +1,8 @@
 /pSQL/data
 /mongodb/data
-/code/files_db
+/elasticsearch/data
 /redis_data
+/code/files_db
 
 **/__pycache__/
 .env

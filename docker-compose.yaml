@@ -89,7 +89,7 @@ services:
     depends_on:
       - elasticsearch
     volumes:
-      - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
+      - ./elasticsearch/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
     networks:
       - elk
     ports:

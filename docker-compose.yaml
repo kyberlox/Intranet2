@@ -69,18 +69,31 @@ services:
 
   elasticsearch:
     image: elasticsearch:9.1.0
-    container_name: elasticsearch
+    container_name: "elasticsearch"
     environment:
+      - ELASTIC_USERNAME="elastic"
+      - ELASTIC_PASSWORD="MyPw123"
       - discovery.type=single-node
-      - xpack.security.enabled=false  # ОТКЛЮЧАЕМ БЕЗОПАСНОСТЬ
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     volumes:
     - ./elasticsearch/data:/usr/share/elasticsearch/data
-    #- ./elasticsearch/data/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    - ./elasticsearch/config/config.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
+      - "9300:9300"
     networks:
       - app-network
+
+  kibana:
+    image: kibana:7.16.1
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
+    networks:
+      - elk
+    ports:
+      - "5601:5601"
 
   # elasticsearch:
   #   image: elasticsearch:9.1.0

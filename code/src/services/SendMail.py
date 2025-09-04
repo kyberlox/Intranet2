@@ -65,7 +65,7 @@ class SendEmail:
             msg["To"] = self.reciever
             msg['Subject'] = self.title
 
-            content = self.html_content['html_content']
+            content = self.html_content
             
             
             """

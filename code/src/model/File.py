@@ -13,6 +13,9 @@ from fastapi import APIRouter, Body, UploadFile, HTTPException
 import os
 from dotenv import load_dotenv
 
+import asyncio
+import aiofiles
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')
@@ -445,7 +448,7 @@ class File:
 
 
 
-    def editor_add_file(self, file : webFile):
+    async def editor_add_file(self, file : webFile):
         #!!!!!!!внедрить проверки
         
         # Генерируем уникальное имя файла
@@ -458,10 +461,15 @@ class File:
         
 
         # Если нужно сохранить файл на диск
+        # with file.file:
+        #     contents = file.file.read()
+        #     with open(file_path, "wb") as f:
+        #         f.write(contents)
+        
         with file.file:
             contents = file.file.read()
-            with open(file_path, "wb") as f:
-                f.write(contents)
+            async with aiofiles.open(file_path, "wb") as f:
+                await f.write(contents)
 
         file_info = {
             "original_name": filename,
@@ -544,6 +552,7 @@ async def upload_file(file: UploadFile):
             "file_url": file_data["file_url"],
             "original_name": file.filename
         }
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

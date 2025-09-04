@@ -23,18 +23,18 @@ class LogsMaker:
 
         return tqdm(this_list, bar_format=bar_format, **kwargs)
 
-    async def error_message(self, error: Exception) -> None:
+    def error_message(self, error: Exception) -> None:
         """Выводит сообщение об ошибке красным цветом в консоль"""
         error_msg = str(error)
         print(f"\033[91m[ERROR] {error_msg}\033[0m")  # 91 - красный цвет
         return {"err" : error_msg}
 
-    async def warning_message(self, message: str) -> None:
+    def warning_message(self, message: str) -> None:
         """Выводит предупреждение/ошибку желтым цветом в консоль"""
         print(f"\033[93m[WARNING] {message}\033[0m")  # 93 - желтый цвет
         return {"warn" : message}
 
-    async def auth_error_template(
+    def auth_error_template(
         self, 
         request: Request, 
         error_message: str = "Ошибка авторизации",

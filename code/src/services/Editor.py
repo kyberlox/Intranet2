@@ -16,6 +16,8 @@ from bson.objectid import ObjectId
 import json
 import datetime
 
+import asyncio
+
 import os
 from dotenv import load_dotenv
 
@@ -472,9 +474,9 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
+async def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
+    f_inf = await storeFile(art_id = int(art_id)).editor_add_file(file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')

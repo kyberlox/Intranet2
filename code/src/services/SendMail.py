@@ -16,6 +16,8 @@ server_mail_host = os.getenv('mail_server')
 server_mail_login = os.getenv('mail_login')
 server_mail_pswd = os.getenv('mail_password')
 
+STORAGE_PATH = "./files_db"
+
 class SendEmail:
     def __init__(self, data):
         self.sender = data['sender']
@@ -89,7 +91,8 @@ class SendEmail:
             msg.attach(MIMEText(content, "html"))
             # file_id = self.file_url.split('.') /intranet/Intranet2/code/files_db
             # image = file_id[0]
-            with open(f'./code/files_db/{self.file_url}', "rb") as img_file: 
+            file_path = os.path.join(STORAGE_PATH, self.file_url)
+            with open(file_path, "rb") as img_file: 
                 logo = MIMEImage(img_file.read())
                 logo.add_header("Content-ID", "<file_logo>")  
                 logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")

@@ -91,7 +91,7 @@ services:
     volumes:
       - ./elasticsearch/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
     networks:
-      - elk
+      - app-network
     ports:
       - "5601:5601"
 

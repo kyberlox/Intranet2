@@ -36,7 +36,7 @@ export interface IBaseEntity {
     tours?: boolean,
     videoHref?: string,
 
-    images?: string[],
+    images?: string[] | IBXFileType[],
     documentation?: IBXFileType[],
     videos_native?: IBXFileType[],
     videos_embed?: IBXFileType[],

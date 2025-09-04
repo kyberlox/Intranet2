@@ -10,7 +10,7 @@
                 <FileUploader @upload="(e) => $emit('handleUpload', e)"
                               @reloadData="$emit('reloadData')"
                               :uploadType="(itemKey as keyof IKeyToWord)"
-                              :existFiles="(newFileData[itemKey as keyof newFileData] as IBXFileType[])" />
+                              :existFiles="(newFileData[itemKey as keyof IKeyToWord] as IBXFileType[])" />
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType, computed } from 'vue';
-import type { newFileData } from '@/interfaces/entities/IAdmin';
+import type { INewFileData } from '@/interfaces/entities/IAdmin';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import { type IBXFileType } from '@/interfaces/IEntities';
 import FileUploader from '@/components/tools/common/FileUploader.vue';
@@ -32,10 +32,10 @@ interface IKeyToWord {
 export default defineComponent({
     props: {
         newFileData: {
-            type: Object as PropType<newFileData>,
+            type: Object as PropType<INewFileData>,
         },
         newElementFiles: {
-            type: Object as PropType<newFileData>,
+            type: Object as PropType<INewFileData>,
         },
         newData: {
             type: Object as PropType<IPostInner>

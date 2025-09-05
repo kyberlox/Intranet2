@@ -170,6 +170,8 @@ class Editor:
             need_add_fields.append(need_add_field['field'])
         
         #сравнить
+        print(cus_fields)
+        print(need_add_field)
         for need_add_field in need_add_fields:
             if need_add_field not in cus_fields:
                 print(need_add_field)

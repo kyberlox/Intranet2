@@ -42,13 +42,27 @@ class Visions:
     def add_user_to_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).upload_user_to_vision()
 
-    # def add_users_list_to_vision(self, dep_id):
-    #     all_dep_users = []
-    #     dep = self.get_dep_structure(dep_id)
-    #     for de in dep:
-    #         for user in de['users']:
-    #             all_dep_users.append(user['user_id'])
-    #     return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
+    def add_full_usdep_list_to_vision(self, dep_id):
+        all_dep_users = []
+        dep = self.get_dep_structure(dep_id)
+        for de in dep:
+            for user in de['users']:
+                all_dep_users.append(user['user_id'])
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
+    
+    def add_dep_users_only(self, dep_id):
+        all_dep_users = []
+        dep = self.get_dep_structure(dep_id)
+        for de in dep:
+            if de['id'] == dep_id:
+                for user in de['users']:
+                    all_dep_users.append(user['user_id'])
+                break
+            else:
+                pass
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
+        
+
     def add_users_list_to_vision(self, users):
         return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(users)
 
@@ -58,17 +72,7 @@ class Visions:
     def get_users_in_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision()
 
-    def get_wonderful_structure(self):
-        #сначала получаем список всей верхушки
-        structure = self.get_dep_structure(53)
-        head = structure[0]
-        n_1 = []
-        for depart in structure:
-            if depart['id'] == 53:
-                continue
-            else:
-                n_1.append(depart)
-        pass
+
 
 
 @fieldsvisions_router.get("/get_full_structure")
@@ -99,9 +103,14 @@ def delete_vision(vision_id: int):
 def add_user_to_vision(vision_id: int, user_id: int):
     return Visions(vision_id=vision_id, user_id=user_id).add_user_to_vision()
 
-# @fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}/{dep_id}")
-# def add_users_list_to_vision(vision_id: int, dep_id: int):
-#     return Visions(vision_id=vision_id).add_users_list_to_vision(dep_id)
+@fieldsvisions_router.put("/add_dep_users_only/{vision_id}/{dep_id}")
+def add_dep_users_only(vision_id: int, dep_id: int):
+    return Visions(vision_id=vision_id).add_dep_users_only(dep_id)
+
+@fieldsvisions_router.put("/add_full_usdep_list_to_vision/{vision_id}/{dep_id}")
+def add_full_usdep_list_to_vision(vision_id: int, dep_id: int):
+    return Visions(vision_id=vision_id).add_full_usdep_list_to_vision(dep_id)
+
 @fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}")
 def add_users_list_to_vision(vision_id: int, users = Body()):
     return Visions(vision_id=vision_id).add_users_list_to_vision(users)

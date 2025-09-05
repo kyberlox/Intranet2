@@ -1458,7 +1458,7 @@ class ActivitiesModel:
         self.need_valid = need_valid
 
     def upload_base_activities(self):
-        with open('./src/base/base_activities.json', mode='r', encoding='UTF-8') as f:
+        with open('./src/base/peer-data/base_activities.json', mode='r', encoding='UTF-8') as f:
             cur_activities = json.load(f)
         for activity in cur_activities:
             existing_activity = self.session.query(Activities).filter(Activities.id == activity['id']).first()
@@ -1508,7 +1508,7 @@ class ActiveUsersModel:
         self.activities_id = activities_id
 
     def upload_past_table_ActiveUsers(self):
-        with open('./src/base/active_users.json', mode='r', encoding='UTF-8') as f:
+        with open('./src/base/peer-data/active_users.json', mode='r', encoding='UTF-8') as f:
             cur_activities = json.load(f)
         for activity in cur_activities:
             existing_activity = self.session.query(ActiveUsers).filter(ActiveUsers.id == activity['id']).first()
@@ -1746,7 +1746,7 @@ class ModersModel:
         self.id = id
 
     def upload_past_moders(self):
-        with open('./src/base/activities_moders.json', mode='r', encoding='UTF-8') as f:
+        with open('./src/base/peer-data/activities_moders.json', mode='r', encoding='UTF-8') as f:
             cur_moders = json.load(f)
         for moder in cur_moders:
             existing_moder = self.session.query(Moders).filter(Moders.id == moder['id']).first()

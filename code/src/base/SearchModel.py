@@ -53,7 +53,7 @@ elastic_client = Elasticsearch(
 #     verify_certs=False,  
 #     request_timeout=30
 # )
-elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', 'MyPw123'), verify_certs=False, request_timeout=30)
+elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=30)
 
 
 

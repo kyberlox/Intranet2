@@ -1374,7 +1374,19 @@ class UservisionsRootModel:
             self.session.close()
             return {"msg": f"пользователь {self.user_id} удален из области видимости"}
         return {"msg": f"пользователя {self.user_id} не существует в данной области видимости"}
-    
+
+    def remove_users_from_vision(self, user_data):
+        for user in user_data:
+            stmt = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == user)
+            existing_user = stmt.first()
+            if existing_user:
+                stmt.delete()
+                self.session.commit()
+            else:
+                pass
+        self.session.close()
+        return True
+
     def find_users_in_vision(self):
         result = []
         existing_vision = self.session.query(Fieldvision).filter(Fieldvision.id == self.vision_id).first()

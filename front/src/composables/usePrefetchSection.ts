@@ -5,7 +5,9 @@ import { getBlogAuthorsToStore } from "./useBlogAuthors";
 import { useblogDataStore } from "@/stores/blogData";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useUserData } from "@/stores/userData";
-export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user') => {
+import { useUserScore } from "@/stores/userScoreData";
+
+export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {
     if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
@@ -13,7 +15,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             Api.get(`users/find_by/${useUserData().getMyId}`)
                 .then((res) => {
                     useUserData().setUserInfo(res);
-                    localStorage.setItem('user', res)
+                    localStorage.setItem('user', res);
                 })
             break;
         case 'factoryGuid':
@@ -35,7 +37,26 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                         useViewsDataStore().setData(data.result, 'calendarData');
                     });
             }
-        default:
+            break;
+        case 'score':
+            const scoreRoutes = [{
+                route: '/peer/sum',
+                functionName: useUserScore().setCurrentScore
+            },
+            {
+                route: '/peer/actions',
+                functionName: useUserScore().setCurrentScore
+            },
+            {
+                route: '/peer/statistics',
+                functionName: useUserScore().setCurrentScore
+            }]
+            scoreRoutes.map((e) => {
+                Api.get(e.route)
+                    .then((data) => {
+                        e.functionName(data);
+                    });
+            })
             break;
     }
 }

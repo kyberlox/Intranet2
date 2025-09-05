@@ -1,22 +1,40 @@
 <template>
     <ul class="visibility-editor__area-departments">
         <li class="visibility-editor__area-department"
-            @click="changeVisibility(dep.id)"
             v-for="dep in departments"
             :key="dep.id">
-            <PlusIcon v-if="!showingDeps.includes(dep.id)" />
-            <MinusIcon v-else />
+            <PlusIcon @click.stop.prevent="changeVisibility(dep.id)"
+                      v-if="!showingDeps.includes(dep.id)" />
+            <MinusIcon @click.stop.prevent="changeVisibility(dep.id)"
+                       v-else />
             <div class="visibility-editor__area-department__info">
-                <span>{{ dep.name }}</span>
-                <ul class="visibility-editor__area-department__info__users"
-                    :class="{ 'hidden': !showingDeps.includes(dep.id) }">
-                    <li class="visibility-editor__area-user visibility-editor__area-user--inDep"
+                <span @click.stop.prevent="changeVisibility(dep.id)">{{ dep.name }}</span>
+                <ul class="visibility-editor__area-department__info__users">
+                    <li v-show="showingDeps.includes(dep.id)"
+                        class="visibility-editor__area-user italic"
+                        @click="$emit('fixUserChoice', 'onlyDep', dep.id)">
+                        Добавить весь отдел
+                    </li>
+                    <li v-show="showingDeps.includes(dep.id)"
+                        class="visibility-editor__area-user italic"
+                        @click="$emit('fixUserChoice', 'allDep', dep.id)">
+                        Добавить весь отдел с подотделами
+                    </li>
+                    <li v-show="showingDeps.includes(dep.id)"
+                        class="visibility-editor__area-user visibility-editor__area-user--inDep"
                         v-for="user in dep.users"
-                        :key="user.user_id">
+                        :key="user.user_id"
+                        @click="$emit('fixUserChoice', 'user', dep.id, user.user_id)">
+                        <img v-if="user.photo"
+                             class="visibility-editor__area-user-avatar"
+                             :src="user.photo" />
                         {{ user.user_fio }}
                     </li>
                 </ul>
-                <VisibilityAreaEditorTree :departments="dep.departments" />
+                <VisibilityAreaEditorTree v-if="showingDeps.includes(dep.id)"
+                                          @fixUserChoice="(type, depId, userId) =>
+                                            $emit('fixUserChoice', type, depId, userId)"
+                                          :departments="dep.departments" />
             </div>
         </li>
     </ul>
@@ -33,22 +51,27 @@ export default defineComponent({
     props: {
         departments: {
             type: Array as PropType<IDepartment[]>
+        },
+        choices: {
+
         }
     },
+    emits: ['fixUserChoice'],
     components: {
         PlusIcon,
         MinusIcon
     },
-    setup() {
+    setup(props, { emit }) {
         const showingDeps = ref<number[]>([]);
 
         const changeVisibility = (id: number) => {
             const target = showingDeps.value.findIndex((e) => e == id);
             if (target == -1) {
-                showingDeps.value.push(id)
+                showingDeps.value.push(id);
             }
-            else showingDeps.value.splice(target, 1)
+            else showingDeps.value.splice(target, 1);
         }
+
 
         return {
             showingDeps,

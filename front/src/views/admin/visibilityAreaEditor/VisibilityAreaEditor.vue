@@ -6,51 +6,45 @@
                       :activeId="activeArea"
                       @addNewArea="console.log('addNewArea')"
                       @areaClicked="(i) => changeActiveArea(i)" />
+
         <div class="visibility-editor__area-users__wrapper">
-            <div v-if="activeArea"
-                 class="visibility-editor__area-users__edit-methods">
-                <button @click="changeEditMode(true)"
-                        class="visibility-editor__area-users__edit-methods__add">Добавить</button>
-                <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
-                                :item="{ name: '', value: '' }"
-                                :placeholder="'Фильтр по фио'" />
-            </div>
-            <ul v-if="!editGroupMode"
-                class="visibility-editor__area-users">
-                <li v-for="user in activeAreaUsers"
-                    :key="user.id"
-                    class="visibility-editor__area-user">
-                    <div class="visibility-editor__user-avatar">
-                        <img v-if="user.photo"
-                             :src="user.photo"
-                             :alt="`${user.name} ${user.last_name}`"
-                             class="visibility-editor__user-photo">
-                    </div>
-                    <div class="visibility-editor__user-fio">
-                        {{ user.name + ' ' + user.last_name + ' ' + user.second_name }}
-                    </div>
-                </li>
-            </ul>
+            <VisibilityAreaControls v-if="activeArea"
+                                    class="visibility-editor__area-users__edit-methods"
+                                    @changeEditMode="(value) => changeEditMode(value)" />
+
+            <VisibilityAreaUsersList v-if="!editGroupMode"
+                                     :editGroupMode="editGroupMode"
+                                     :formattedUsers="formattedUsers" />
+
             <VisibilityAreaEditorTree v-else
+                                      @fixUserChoice="fixUserChoice"
+                                      :choices="choices"
                                       :departments="allDepStructure" />
         </div>
+
+        <VisibilityRightSidebar :choices="choices"
+                                @saveChoices="saveChoices"
+                                @clearChoices="clearChoices" />
     </div>
 </template>
 
 <script lang="ts">
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
-import AdminEditInput from '../components/inputFields/AdminEditInput.vue';
 import VisibilityAreaEditorTree from './components/VisibilityAreaEditorTree.vue';
+import VisibilityRightSidebar from './components/VisibilityRightSidebar.vue';
+import VisibilityAreaControls from './components/VisibilityAreaControls.vue';
+import VisibilityAreaUsersList from './components/VisibilityAreaUsersList.vue';
 
-interface IVisionUser {
+export interface IVisionUser {
     id: number;
     name: string;
     last_name: string;
     second_name: string;
     post: string;
     photo: null | string;
+    depart: string;
 }
 
 export interface IDepartment {
@@ -63,27 +57,54 @@ export interface IDepartment {
 }
 
 export interface IUserSearch {
-    department: string
-    department_id: number
-    user_fio: string
-    user_id: number
-    user_position: string
+    department: string;
+    department_id: number;
+    user_fio: string;
+    user_id: number;
+    user_position: string;
+    photo: null | string;
+}
+
+export interface IChoice {
+    id: number;
+    name: string;
+    type: 'allDep' | 'onlyDep' | 'user'
+}
+
+export interface IFormattedUserGroup {
+    depart: string;
+    users: IVisionUser[];
 }
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
     components: {
         AdminSidebar,
-        AdminEditInput,
-        VisibilityAreaEditorTree
+        VisibilityAreaEditorTree,
+        VisibilityRightSidebar,
+        VisibilityAreaControls,
+        VisibilityAreaUsersList
     },
     setup() {
-        const allChiefs = ref<IUserSearch[]>([]);
         const allAreas = ref<{ id: number, vision_name: string }[]>([]);
         const activeArea = ref<number>();
-        const activeAreaUsers = ref<IVisionUser[]>();
+        const activeAreaUsers = ref<IVisionUser[]>([]);
         const editGroupMode = ref<boolean>(false);
         const allDepStructure = ref();
+        const choices = ref<IChoice[]>([]);
+
+        const departmentMap = new Map();
+        const formattedUsers = computed(() => {
+            const formattedGroup: IFormattedUserGroup[] = [];
+            activeAreaUsers.value.forEach((user) => {
+                const target = formattedGroup.find((formatItem) => formatItem.depart == user.depart);
+                if (!target) {
+                    formattedGroup.push({ depart: user.depart, users: [user] })
+                }
+                else target.users.push(user);
+            })
+            return formattedGroup
+        });
 
         const changeEditMode = (val: boolean) => {
             editGroupMode.value = val;
@@ -99,13 +120,7 @@ export default defineComponent({
                 .then((data) => { allAreas.value = data })
         }
 
-        const getAllDirectors = () => {
-            Api.get(`fields_visions/get_all_directors`)
-                .then((data) => { allChiefs.value = data })
-        }
-
         const getVisionUser = (visionId: number) => {
-            activeAreaUsers.value = [];
             Api.get(`fields_visions/get_users_in_vision/${visionId}`)
                 .then((data) => {
                     if ('msg' in data) return;
@@ -117,107 +132,120 @@ export default defineComponent({
         const getDepStructureAll = () => {
             Api.get(`fields_visions/get_full_structure`)
                 .then((data) => { createDepartmentTree(data); })
-
         }
 
-        const getDepStructureById = (depId: number) => {
-            Api.get(`fields_visions/get_dep_structure/${depId}`)
+        const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
+            const body = [4133, 2375, 2366];
+            Api.put((`fields_visions/add_users_list_to_vision/${visionId}`), body);
         }
+        // const getDepStructureById = (depId: number) => {
+        //     Api.get(`fields_visions/get_dep_structure/${depId}`)
+        // }
 
-        const getDepStructureByName = (word: string) => {
-            Api.get(`fields_visions/get_dep_structure/${word}`)
-        }
+        // const getDepStructureByName = (word: string) => {
+        //     Api.get(`fields_visions/get_dep_structure/${word}`)
+        // }
 
+        // const deleteArea = (id: number) => {
+        //     Api.delete(`fields_visions/delete_vision/${id}`)
+        // }
+
+        // const addUserToArea = (visionId: number, userId: number) => {
+        //     Api.put(`fields_visions/add_user_to_vision/${visionId}/${userId}`)
+        // }
+
+        // const removeUserFromArea = (visionId: number, userId: number) => {
+        //     Api.delete(`fields_visions/delete_vision/${visionId}/${userId}`)
+        // }
         const createNewArea = () => {
             Api.put('fields_visions/create_new_vision/abub')
         }
 
-        const deleteArea = (id: number) => {
-            Api.delete(`fields_visions/delete_vision/${id}`)
-        }
+        const createDepartmentTree = (depStructure: IDepartment[]): void => {
+            if (!depStructure?.length) {
+                allDepStructure.value = [];
+                return;
+            }
 
-        const addUserToArea = (visionId: number, userId: number) => {
-            Api.put(`fields_visions/add_user_to_vision/${visionId}/${userId}`)
-        }
+            departmentMap.clear();
+            depStructure.forEach(dept => {
+                departmentMap.set(dept.id, { ...dept, departments: [] });
+            });
 
-        const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
-            Api.put(`fields_visions/add_users_list_to_vision/${visionId}/${departmentId}`)
-        }
+            const rootDepartments: IDepartment[] = [];
 
+            depStructure.forEach(dept => {
+                const currentDept = departmentMap.get(dept.id);
+                if (!currentDept) return;
 
-        const removeUserFromArea = (visionId: number, userId: number) => {
-            Api.delete(`fields_visions/delete_vision/${visionId}/${userId}`)
-        }
+                if (dept.father_id === null || dept.father_id === undefined) {
+                    rootDepartments.push(currentDept);
+                } else {
+                    const parentDept = departmentMap.get(dept.father_id);
+                    if (parentDept) {
+                        parentDept.departments.push(currentDept);
+                    } else {
+                        rootDepartments.push(currentDept);
+                    }
+                }
+            });
 
-        const createDepartmentTree = (depStructure: IDepartment[]) => {
-            // console.log('Input depStructure:', depStructure);
-
-            // if (!depStructure?.length) {
-            //     allDepStructure.value = [];
-            //     return [];
-            // }
-
-            // const departmentMap = new Map();
-
-            // // Создаем карту всех департаментов
-            // depStructure.forEach(dept => {
-            //     departmentMap.set(dept.id, { ...dept, departments: [] });
-            // });
-
-            const rootDepartments: string[] = [];
-
-            // // Строим дерево
-            // depStructure.forEach(dept => {
-            //     const currentDept = departmentMap.get(dept.id);
-
-            //     if (!currentDept) return; // Защита от undefined
-
-            //     if (dept.father_id === null || dept.father_id === undefined) {
-            //         // Это корневой департамент
-            //         rootDepartments.push(currentDept);
-            //     } else {
-            //         // Это дочерний департамент, добавляем его к родителю
-            //         const parentDept = departmentMap.get(dept.father_id);
-            //         if (parentDept) {
-            //             parentDept.departments.push(currentDept);
-            //         } else {
-            //             // Если родитель не найден, считаем департамент корневым
-            //             console.warn(`Parent department with id ${dept.father_id} not found for department ${dept.id}`);
-            //             rootDepartments.push(currentDept);
-            //         }
-            //     }
-            // });
-
-            // console.log('Built tree:', rootDepartments);
-
-            // Сохраняем построенное дерево, а не исходные данные
             allDepStructure.value = rootDepartments;
+        };
 
+        const fixUserChoice = (type: 'allDep' | 'onlyDep' | 'user', id: number, userId: number | null = null) => {
+            const targetIndex = choices.value.findIndex((e) => e.id == (type == 'user' ? userId : id));
+
+            if (targetIndex !== -1) {
+                choices.value.splice(targetIndex, 1);
+            }
+            else
+                if (type == 'user') {
+                    const target = departmentMap.get(id).users.find((e: IUserSearch) => e.user_id == userId);
+                    choices.value.push({ id: target.user_id, name: target.user_fio, type: 'user' })
+                }
+                else {
+                    const target = departmentMap.get(id);
+                    const typeText = type == "allDep" ? ' с подотделами' : ' без подотделов';
+                    choices.value.push({ id: target.id, name: target.name + typeText, type: type })
+                }
+        }
+
+        const saveChoices = () => {
+            console.log(choices.value);
+        }
+
+        const clearChoices = () => {
+            choices.value.length = 0;
         }
 
         onMounted(() => {
             getAllVisions();
             getDepStructureAll();
-            // getDepStructureById(53);
+            addFullDepartmentToArea(2, 142);
         })
 
         return {
             allAreas,
             activeArea,
-            activeAreaUsers,
+            formattedUsers,
             editGroupMode,
             allDepStructure,
+            choices,
+            fixUserChoice,
             getVisionUser,
             createNewArea,
             changeActiveArea,
-            changeEditMode
+            changeEditMode,
+            saveChoices,
+            clearChoices
         }
     }
 })
 </script>
 
 <style lang="scss">
-.visibility-editor__areas {
+p .visibility-editor__areas {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -245,7 +273,7 @@ export default defineComponent({
 
 .visibility-editor__area-users__wrapper {
     flex: 1;
-    padding: 0 24px;
+    padding-right: 10px;
     margin-left: 0;
 }
 
@@ -271,7 +299,7 @@ export default defineComponent({
     border: 1px solid #e9ecef;
     color: black;
     border-radius: 12px;
-    padding: 16px;
+    padding: 8px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -281,8 +309,9 @@ export default defineComponent({
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     overflow: hidden;
 
-    &--inDep {
+    &--inDep:last-child {
         padding: 8px;
+        margin-bottom: 15px;
     }
 }
 
@@ -305,7 +334,6 @@ export default defineComponent({
     display: flex;
     align-items: center;
 }
-
 
 .visibility-editor__user-photo {
     width: 100%;
@@ -338,6 +366,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 0;
 }
 
 .visibility-editor__area-department {
@@ -348,14 +377,37 @@ export default defineComponent({
     justify-content: flex-start;
     cursor: pointer;
     transition: all 0.2s;
+    border-left: 1px solid #6666666a;
+    padding-left: 5px;
+
 
     &:hover:not(.visibility-editor__area-user) {
-        color: var(--emk-brand-color);
+        // color: var(--emk-brand-color);
+    }
+
+    &:hover {
+        &>svg {
+            color: var(--emk-brand-color);
+
+            &+.visibility-editor__area-department__info>span {
+                color: var(--emk-brand-color);
+            }
+        }
     }
 
     &>svg {
+        min-width: 20px;
         width: 20px;
         height: 20px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: var(--emk-brand-color);
+
+            &+.visibility-editor__area-department__info>span {
+                color: var(--emk-brand-color);
+            }
+        }
     }
 }
 
@@ -369,5 +421,35 @@ export default defineComponent({
     flex-direction: column;
     gap: 5px;
     user-select: none;
+}
+
+.visibility-editor__area-user-avatar {
+    max-width: 20px;
+    border-radius: 10px;
+}
+
+.visibility-editor__area-department--active {
+    color: var(--emk-brand-color);
+}
+
+.visibility-editor__right-sidebar {
+    border-left: 1px solid #e9ecef;
+    border-top: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    max-width: 160px;
+    min-width: 160px;
+    padding: 10px;
+    // position: fixed;
+}
+
+.visibility-editor__button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.visibility-editor__area-users__department-title {
+    font-size: 18px;
 }
 </style>

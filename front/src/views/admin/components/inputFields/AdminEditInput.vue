@@ -14,7 +14,6 @@
 import { defineComponent, onMounted, type PropType, ref } from 'vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
 
-
 export default defineComponent({
     props: {
         item: {

@@ -38,7 +38,8 @@
                     </li>
                 </ul>
             </nav>
-            <nav v-else>
+            <nav class="admin-panel__nav"
+                 v-else>
                 <h6 class="admin-panel__nav-title mt20">Области</h6>
                 <ul class="admin-panel__nav-list">
                     <li v-for="(area, index) in visibilityAreas"
@@ -54,8 +55,8 @@
                         </div>
                     </li>
                 </ul>
-                <div class="mt20"
-                     @click="$emit('addNewArea')">Добавить</div>
+                <button class="admin-panel__nav__button primary-button"
+                        @click="$emit('addNewArea')">Добавить</button>
             </nav>
         </div>
         <div class="admin-panel__content ">

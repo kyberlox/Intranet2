@@ -116,10 +116,12 @@ export default defineComponent({
         }
 
         const scrollToNode = async (target: string, nodes: Ref<HTMLElement[]>, attrTitle: string) => {
-            visibleMonthes.value = monthesInit;
-            if (!target || !nodes.value?.length || !attrTitle) return;
+            console.log(target, nodes.value?.length, !attrTitle);
 
-            await nextTick();
+            await nextTick()
+
+            if (!target || !nodes.value?.length || !attrTitle) return;
+            visibleMonthes.value = monthesInit;
 
             nodes.value.map((e: HTMLElement) => {
                 if (e.getAttribute(attrTitle) == target) {
@@ -129,22 +131,25 @@ export default defineComponent({
             })
         }
 
-        onMounted(() => {
-            if (!props.monthId) return;
-            scrollToNode(props.monthId, monthNodes, 'data-month-num')
-            if (!props.preDate) return;
-            scrollToNode(props.preDate, eventNodes, 'data-date-target')
+        watch(([eventNodes, monthNodes, props]), () => {
+            console.log('s');
 
-        })
-
-        watch((props), (newVal) => {
-            if (newVal.monthId && monthNodes.value?.length) {
-                scrollToNode(newVal.monthId, monthNodes, 'data-month-num')
+            if (props.monthId) {
+                scrollToNode(props.monthId, monthNodes, 'data-month-num')
             }
-            else if (newVal.preDate && eventNodes.value?.length) {
-                scrollToNode(newVal.preDate, eventNodes, 'data-event-id')
+            else if (props.preDate) {
+                scrollToNode(props.preDate, eventNodes, 'data-date-target')
             }
         }, { immediate: true, deep: true })
+
+        // watch((props), (newVal) => {
+        //     if (newVal.monthId && monthNodes.value?.length) {
+        //         scrollToNode(newVal.monthId, monthNodes, 'data-month-num')
+        //     }
+        //     else if (newVal.preDate && eventNodes.value?.length) {
+        //         scrollToNode(newVal.preDate, eventNodes, 'data-event-id')
+        //     }
+        // }, { immediate: true, deep: true })
 
         const getEventFromMonth = (monthNum: string) => {
             const monthEvents = currentEvents.value.filter((e) => {

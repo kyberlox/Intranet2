@@ -42,6 +42,10 @@ a:hover {
     display: none !important;
 }
 
+.italic {
+    font-style: italic;
+}
+
 .page__title {
     font-size: 1.5rem;
     font-weight: 300;
@@ -64,15 +68,17 @@ a:hover {
     margin-top: 10px;
 }
 
+.mauto {
+    margin: auto;
+}
+
 .mr10 {
     margin-right: 10px;
 }
 
-
 .red-text {
     color: red;
 }
-
 
 input[type='checkbox'],
 label {

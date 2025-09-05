@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent, ref, type Ref, computed, type ComputedRef, watch } from 'vue';
 import DatePicker from '../tools/common/DatePicker.vue';
-import { dateConvert, formatDateNoTime, addZeroToMonth } from '@/utils/dateConvert';
+import { dateConvert, formatDateNoTime } from '@/utils/dateConvert';
 import { useRoute, useRouter } from 'vue-router';
 import type { ICalendar } from '@/interfaces/entities/ICalendar';
 import { useViewsDataStore } from '@/stores/viewsData';
@@ -113,25 +113,23 @@ export default defineComponent({
 
         const dateClicked = (marker: ICalendarMarker) => {
             const target = marker.ID;
-            if (!target || route.params.eventId == target) return;
+            if (!target || route.params.targetId == target) return;
             router.push({
                 name: 'calendarMonth',
-                params: { eventId: target }
+                params: { targetId: target }
             });
         };
 
         const handleRouteToCurrentMonth = () => {
-            const currentMonth = addZeroToMonth(String(new Date().getMonth()));
             router.push({ name: 'calendar' });
             setTimeout(() =>
-                router.push({ name: 'calendarMonth', params: { monthId: currentMonth } }), 30)
+                router.push({ name: 'calendarMonth' }), 30)
         }
 
         return {
             date,
             markers,
             dateClicked,
-            addZeroToMonth,
             handleRouteToCurrentMonth,
         }
     },

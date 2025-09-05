@@ -29,16 +29,18 @@
                  :key="'month' + month.value">
                 <div class="calendarYear__item">
                     <div class="calendarYear__title "
-                         :class="{ 'calendarYear__title--target': String(monthId) == month.value }"
+                         :class="{ 'calendarYear__title--target': String(targetId) == month.value }"
                          :data-month-num="month.value"
-                         ref=monthNodes>{{ month.name }}</div>
+                         ref=monthNodes>
+                        {{ month.name }}
+                    </div>
                     <div class="calendarYear__content">
                         <div class="calendarYear__event__wrapper"
                              v-for="(event, index) in getEventFromMonth(month.value)"
                              :key="'event' + index">
                             <div class="calendarYear__event"
                                  ref=eventNodes
-                                 :class="{ 'calendarYear__event--chosen': isCalendarEvent(event) && event.DATE_FROM && preDate == event.ID }"
+                                 :class="{ 'calendarYear__event--chosen': isCalendarEvent(event) && event.DATE_FROM && targetId == event.ID }"
                                  :style="{ '--event-color': isCalendarEvent(event) && event.COLOR || '#f36509' }"
                                  :data-event-id="'ID' in event ? event.ID : ''"
                                  :data-date-target="'DATE_TO' in event ? event.DATE_TO : ''">
@@ -89,12 +91,9 @@ export default defineComponent({
         DatePicker
     },
     props: {
-        monthId: {
+        targetId: {
             type: String
         },
-        preDate: {
-            type: String
-        }
     },
     setup(props) {
         const visibleMonthes = ref(monthesInit);
@@ -131,25 +130,12 @@ export default defineComponent({
             })
         }
 
-        watch(([eventNodes, monthNodes, props]), () => {
-            console.log('s');
-
-            if (props.monthId) {
-                scrollToNode(props.monthId, monthNodes, 'data-month-num')
-            }
-            else if (props.preDate) {
-                scrollToNode(props.preDate, eventNodes, 'data-date-target')
+        watch((props), () => {
+            visibleMonthes.value = monthesInit;
+            if (props.targetId) {
+                scrollToNode(props.targetId, eventNodes, 'data-event-id')
             }
         }, { immediate: true, deep: true })
-
-        // watch((props), (newVal) => {
-        //     if (newVal.monthId && monthNodes.value?.length) {
-        //         scrollToNode(newVal.monthId, monthNodes, 'data-month-num')
-        //     }
-        //     else if (newVal.preDate && eventNodes.value?.length) {
-        //         scrollToNode(newVal.preDate, eventNodes, 'data-event-id')
-        //     }
-        // }, { immediate: true, deep: true })
 
         const getEventFromMonth = (monthNum: string) => {
             const monthEvents = currentEvents.value.filter((e) => {
@@ -171,11 +157,11 @@ export default defineComponent({
             visibleMonthes,
             monthesInit,
             currentEvents,
-            checkButtonStatus,
             date,
-            getMonth,
             monthNodes,
             eventNodes,
+            checkButtonStatus,
+            getMonth,
             formatDateNoTime,
             getEventFromMonth,
             handleMonthChange,

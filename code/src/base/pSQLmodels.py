@@ -1388,7 +1388,8 @@ class UservisionsRootModel:
                 general_info['last_name'] = user_info['last_name']
                 general_info['second_name'] = user_info['second_name']
                 general_info['depart'] = user_info['indirect_data']['uf_department'][0]
-                general_info['post'] = user_info['indirect_data']['work_position']
+                if 'work_position' in user_info['indirect_data'].keys():
+                    general_info['post'] = user_info['indirect_data']['work_position']
                 general_info['photo'] = user_info['photo_file_url']
                 result.append(general_info)
             return result

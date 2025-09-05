@@ -1389,6 +1389,7 @@ class UservisionsRootModel:
                 general_info['second_name'] = user_info['second_name']
                 general_info['depart'] = user_info['indirect_data']['uf_department'][0]
                 print('xnjn', general_info['depart'])
+                
                 general_info['question'] = 'почему?????????????'
                 general_info['post'] = user_info['indirect_data']['work_position']
                 general_info['photo'] = user_info['photo_file_url']

@@ -406,23 +406,27 @@ class UserModel():
 
             indirect_data = user.indirect_data
             list_departs = []
+            list_departs_id = []
             if len(indirect_data['uf_department']) != 0:
                 for dep in indirect_data['uf_department']:
                     dedep = DepartmentModel(dep).find_dep_by_id()
                     if type(dedep) == type(dict()):
                         if 'name' in dedep:
                             list_departs.append(dedep['name'])
+                            list_departs_id.append(dedep['id'])
                         else:
                             print(dedep)
                     else: #если объект
                         for dp in dedep:
                             list_departs.append(dp.__dict__['name'])
+                            list_departs_id.append(dp.__dict__['id'])
 
             if "uf_usr_department_main" in indirect_data:
                 dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
             indirect_data['uf_department'] = list_departs
+            indirect_data['uf_department_id'] = list_departs_id
             result['indirect_data'] = indirect_data
             
             #информация о фото
@@ -1374,7 +1378,19 @@ class UservisionsRootModel:
             self.session.close()
             return {"msg": f"пользователь {self.user_id} удален из области видимости"}
         return {"msg": f"пользователя {self.user_id} не существует в данной области видимости"}
-    
+
+    def remove_users_from_vision(self, user_data):
+        for user in user_data:
+            stmt = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id, UservisionsRoot.user_id == user)
+            existing_user = stmt.first()
+            if existing_user:
+                stmt.delete()
+                self.session.commit()
+            else:
+                pass
+        self.session.close()
+        return True
+
     def find_users_in_vision(self):
         result = []
         existing_vision = self.session.query(Fieldvision).filter(Fieldvision.id == self.vision_id).first()
@@ -1383,17 +1399,17 @@ class UservisionsRootModel:
             for user in users_in_vis:
                 general_info = {}
                 user_info = UserModel(Id=user.user_id).find_by_id()
-                general_info['id'] = user_info['id']
-                general_info['name'] = user_info['name']
-                general_info['last_name'] = user_info['last_name']
-                general_info['second_name'] = user_info['second_name']
-                general_info['depart'] = user_info['indirect_data']['uf_department'][0]
-                print('xnjn', general_info['depart'])
-                
-                general_info['question'] = 'почему?????????????'
-                general_info['post'] = user_info['indirect_data']['work_position']
-                general_info['photo'] = user_info['photo_file_url']
-                result.append(general_info)
+                if user_info['active']:
+                    general_info['id'] = user_info['id']
+                    general_info['name'] = user_info['name']
+                    general_info['last_name'] = user_info['last_name']
+                    general_info['second_name'] = user_info['second_name']
+                    general_info['depart'] = user_info['indirect_data']['uf_department'][0]
+                    general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0]
+                    if 'work_position' in user_info['indirect_data'].keys():
+                        general_info['post'] = user_info['indirect_data']['work_position']
+                    general_info['photo'] = user_info['photo_file_url']
+                    result.append(general_info)
             return result
         return {"msg": "такого vision_id не существует"}
 
@@ -1461,7 +1477,7 @@ class ActivitiesModel:
         self.need_valid = need_valid
 
     def upload_base_activities(self):
-        with open('./src/base/base_activities.json', mode='r', encoding='UTF-8') as f:
+        with open('./src/base/peer-data/base_activities.json', mode='r', encoding='UTF-8') as f:
             cur_activities = json.load(f)
         for activity in cur_activities:
             existing_activity = self.session.query(Activities).filter(Activities.id == activity['id']).first()
@@ -1511,7 +1527,7 @@ class ActiveUsersModel:
         self.activities_id = activities_id
 
     def upload_past_table_ActiveUsers(self):
-        with open('./src/base/active_users.json', mode='r', encoding='UTF-8') as f:
+        with open('./src/base/peer-data/active_users.json', mode='r', encoding='UTF-8') as f:
             cur_activities = json.load(f)
         for activity in cur_activities:
             existing_activity = self.session.query(ActiveUsers).filter(ActiveUsers.id == activity['id']).first()
@@ -1749,7 +1765,7 @@ class ModersModel:
         self.id = id
 
     def upload_past_moders(self):
-        with open('./src/base/activities_moders.json', mode='r', encoding='UTF-8') as f:
+        with open('./src/base/peer-data/activities_moders.json', mode='r', encoding='UTF-8') as f:
             cur_moders = json.load(f)
         for moder in cur_moders:
             existing_moder = self.session.query(Moders).filter(Moders.id == moder['id']).first()
@@ -1911,3 +1927,8 @@ class AdminModel:
             return {"msg": "удален"}
         else:
             return {"msg": "отсутствует такой админ"}
+
+class MerchStoreModel:
+
+    def __init(self):
+        pass

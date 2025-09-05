@@ -51,7 +51,7 @@ services:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=MyPw123
+      - ELASTIC_PASSWORD=${pswd}
       - network.host=0.0.0.0
       - http.host=0.0.0.0
       - transport.host=0.0.0.0

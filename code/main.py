@@ -137,9 +137,20 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "test", "dump", "get_file", "get_all_files",
         "/api/total_background_task_update",
     ]
+
     for open_link in open_links:
         if open_link in request.url.path:
-            return await call_next(request)
+            try:
+                return await call_next(request)
+            except TypeError:
+                return call_next(request)
+            else:
+                return JSONResponse(
+                    status_code = status.HTTP_401_UNAUTHORIZED,
+                    content = await log.warning_message(message="Error when trying to follow the link without authorization")
+                )
+
+
 
     # Проверяем авторизацию для всех остальных /api эндпоинтов
     if request.url.path.startswith("/api"):

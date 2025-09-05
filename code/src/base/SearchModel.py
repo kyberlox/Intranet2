@@ -661,8 +661,6 @@ class StructureSearchModel:
                             photo_inf = File(id=user['photo_file_id']).get_users_photo()
                             url = photo_inf['URL']
                             user_data['photo'] = f"{DOMAIN}{url}"
-                            print(DOMAIN)
-                            print(pswd)
                         else:
                             user_data['photo'] = None
 

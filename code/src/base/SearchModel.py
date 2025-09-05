@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 pswd = os.getenv('pswd')
 DOMAIN = os.getenv('HOST')
 
@@ -37,7 +38,22 @@ elastic_client = Elasticsearch(
 )
 '''
 
-elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
+# elastic_client = Elasticsearch(hosts="http://elastic:MyPw123@localhost:9200")#,  verify_certs=False)
+# elastic_client = Elasticsearch(
+#     hosts=["http://localhost:9200"],
+#     http_auth=('elastic', 'MyPw123'),
+#     verify_certs=False,  
+#     request_timeout=30
+# )
+# Отключаем проверку сертификатов для разработки
+
+# elastic_client = Elasticsearch(
+#     hosts=["http://host.docker.internal:9200"],
+#     http_auth=('elastic', 'MyPw123'),
+#     verify_certs=False,  
+#     request_timeout=30
+# )
+elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', 'MyPw123'), verify_certs=False, request_timeout=30)
 
 if elastic_client.ping():
     print("✅ Успешное подключение!")

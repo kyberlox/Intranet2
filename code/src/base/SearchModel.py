@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 pswd = os.getenv('pswd')
 DOMAIN = os.getenv('HOST')
 
@@ -37,7 +38,21 @@ elastic_client = Elasticsearch(
 )
 '''
 
-#elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], verify_certs=False)
+# #elastic_client = Elasticsearch(hosts="http://elastic:MyPw123@localhost:9200")#,  verify_certs=False)
+# elastic_client = Elasticsearch(
+#     hosts=["http://localhost:9200"],
+#     http_auth=('elastic', 'MyPw123'),
+#     verify_certs=False,  
+#     request_timeout=30
+# )
+# Отключаем проверку сертификатов для разработки
+
+# elastic_client = Elasticsearch(
+#     hosts=["http://host.docker.internal:9200"],
+#     http_auth=('elastic', 'MyPw123'),
+#     verify_certs=False,  
+#     request_timeout=30
+# )
 elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', 'MyPw123'), verify_certs=False, request_timeout=30)
 
 
@@ -646,8 +661,6 @@ class StructureSearchModel:
                             photo_inf = File(id=user['photo_file_id']).get_users_photo()
                             url = photo_inf['URL']
                             user_data['photo'] = f"{DOMAIN}{url}"
-                            print(DOMAIN)
-                            print(pswd)
                         else:
                             user_data['photo'] = None
 

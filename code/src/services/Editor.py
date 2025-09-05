@@ -131,8 +131,6 @@ class Editor:
                     fl["values"] = self.variable[k]
 
                 # проверяю редактируемость
-                print(self.section_id)
-                print(self.notEditble)
                 if k in self.notEditble:
                     fl["disabled"] = True
 
@@ -280,6 +278,8 @@ class Editor:
         
         return {"fields" : fields, "files" : files_keys}
 
+
+
     def get_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
@@ -413,8 +413,6 @@ class Editor:
         art=ArticleModel(id=self.art_id).find_by_id()
         if '_sa_instance_state' in art:
             art.pop('_sa_instance_state')
-        print(art)
-        print(data)
         indirect_data = dict()
         #валидировать данные data
         for key in data.keys():
@@ -485,8 +483,6 @@ class Editor:
                 else:
                     if "indirect_data" in art and art["indirect_data"] is not None: 
                         art["indirect_data"][key] = data[key]
-        
-        print(art)
 
         # перезаписать файлы 
         # сохранить

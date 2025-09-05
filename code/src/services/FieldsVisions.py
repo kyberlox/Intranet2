@@ -49,6 +49,19 @@ class Visions:
             for user in de['users']:
                 all_dep_users.append(user['user_id'])
         return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
+    
+    def add_dep_users_only(self, dep_id):
+        all_dep_users = []
+        dep = self.get_dep_structure(dep_id)
+        for de in dep:
+            if de['id'] == dep_id:
+                for user in de['users']:
+                    all_dep_users.append(user['user_id'])
+                break
+            else:
+                pass
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
+        
 
     def add_users_list_to_vision(self, users):
         return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(users)
@@ -89,6 +102,10 @@ def delete_vision(vision_id: int):
 @fieldsvisions_router.put("/add_user_to_vision/{vision_id}/{user_id}")
 def add_user_to_vision(vision_id: int, user_id: int):
     return Visions(vision_id=vision_id, user_id=user_id).add_user_to_vision()
+
+@fieldsvisions_router.put("/add_dep_users_only/{vision_id}/{dep_id}")
+def add_dep_users_only(vision_id: int, dep_id: int):
+    return Visions(vision_id=vision_id).add_dep_users_only(dep_id)
 
 @fieldsvisions_router.put("/add_full_usdep_list_to_vision/{vision_id}/{dep_id}")
 def add_full_usdep_list_to_vision(vision_id: int, dep_id: int):

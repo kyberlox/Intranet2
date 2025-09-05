@@ -406,23 +406,27 @@ class UserModel():
 
             indirect_data = user.indirect_data
             list_departs = []
+            list_departs_id = []
             if len(indirect_data['uf_department']) != 0:
                 for dep in indirect_data['uf_department']:
                     dedep = DepartmentModel(dep).find_dep_by_id()
                     if type(dedep) == type(dict()):
                         if 'name' in dedep:
                             list_departs.append(dedep['name'])
+                            list_departs_id.append(dedep['id'])
                         else:
                             print(dedep)
                     else: #если объект
                         for dp in dedep:
                             list_departs.append(dp.__dict__['name'])
+                            list_departs_id.append(dp.__dict__['id'])
 
             if "uf_usr_department_main" in indirect_data:
                 dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
             indirect_data['uf_department'] = list_departs
+            indirect_data['uf_department_id'] = list_departs_id
             result['indirect_data'] = indirect_data
             
             #информация о фото
@@ -1401,6 +1405,7 @@ class UservisionsRootModel:
                     general_info['last_name'] = user_info['last_name']
                     general_info['second_name'] = user_info['second_name']
                     general_info['depart'] = user_info['indirect_data']['uf_department'][0]
+                    general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0]
                     if 'work_position' in user_info['indirect_data'].keys():
                         general_info['post'] = user_info['indirect_data']['work_position']
                     general_info['photo'] = user_info['photo_file_url']
@@ -1922,3 +1927,8 @@ class AdminModel:
             return {"msg": "удален"}
         else:
             return {"msg": "отсутствует такой админ"}
+
+class MerchStoreModel:
+
+    def __init(self):
+        pass

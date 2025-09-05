@@ -44,10 +44,23 @@ class Visions:
 
     def add_full_usdep_list_to_vision(self, dep_id):
         all_dep_users = []
-        dep = self.get_dep_structure(dep_id)
-        for de in dep:
-            for user in de['users']:
-                all_dep_users.append(user['user_id'])
+        if dep_id == 53:
+            dep = self.get_dep_structure(dep_id)
+            for de in dep:
+                if de['id'] == 53:
+                    for user in de['users']:
+                        all_dep_users.append(user['user_id'])
+                else:
+                    dep_n_1 = self.get_dep_structure(de['id'])
+                    for dep_users in dep_n_1:
+                        for user in dep_users['users']:
+                            all_dep_users.append(user['user_id'])
+
+        else:
+            dep = self.get_dep_structure(dep_id)
+            for de in dep:
+                for user in de['users']:
+                    all_dep_users.append(user['user_id'])
         return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(all_dep_users)
     
     def add_dep_users_only(self, dep_id):

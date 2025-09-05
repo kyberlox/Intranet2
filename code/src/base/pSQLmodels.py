@@ -1383,15 +1383,16 @@ class UservisionsRootModel:
             for user in users_in_vis:
                 general_info = {}
                 user_info = UserModel(Id=user.user_id).find_by_id()
-                general_info['id'] = user_info['id']
-                general_info['name'] = user_info['name']
-                general_info['last_name'] = user_info['last_name']
-                general_info['second_name'] = user_info['second_name']
-                general_info['depart'] = user_info['indirect_data']['uf_department'][0]
-                if 'work_position' in user_info['indirect_data'].keys():
-                    general_info['post'] = user_info['indirect_data']['work_position']
-                general_info['photo'] = user_info['photo_file_url']
-                result.append(general_info)
+                if user_info['active']:
+                    general_info['id'] = user_info['id']
+                    general_info['name'] = user_info['name']
+                    general_info['last_name'] = user_info['last_name']
+                    general_info['second_name'] = user_info['second_name']
+                    general_info['depart'] = user_info['indirect_data']['uf_department'][0]
+                    if 'work_position' in user_info['indirect_data'].keys():
+                        general_info['post'] = user_info['indirect_data']['work_position']
+                    general_info['photo'] = user_info['photo_file_url']
+                    result.append(general_info)
             return result
         return {"msg": "такого vision_id не существует"}
 

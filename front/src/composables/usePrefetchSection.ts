@@ -45,11 +45,11 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             },
             {
                 route: '/peer/actions',
-                functionName: useUserScore().setCurrentScore
+                functionName: useUserScore().setActions
             },
             {
                 route: '/peer/statistics',
-                functionName: useUserScore().setCurrentScore
+                functionName: useUserScore().setStatistics
             }]
             scoreRoutes.map((e) => {
                 Api.get(e.route)

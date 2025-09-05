@@ -55,8 +55,13 @@
                         </div>
                     </li>
                 </ul>
-                <button class="admin-panel__nav__button primary-button"
-                        @click="$emit('addNewArea')">Добавить</button>
+                <div class="admin-panel__nav__button-group">
+                    <button class="admin-panel__nav__button primary-button"
+                            @click="$emit('addNewArea')">Добавить</button>
+                    <button v-if="activeId"
+                            class="admin-panel__nav__button primary-button"
+                            @click="$emit('deleteArea', activeId)">Удалить</button>
+                </div>
             </nav>
         </div>
         <div class="admin-panel__content ">
@@ -86,7 +91,7 @@ export default defineComponent({
             type: Number
         }
     },
-    emits: ['areaClicked', 'addNewArea'],
+    emits: ['areaClicked', 'addNewArea', 'deleteArea'],
     components: {
         NavArrow
     },

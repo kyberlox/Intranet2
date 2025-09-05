@@ -45,10 +45,10 @@ export default class Api {
     }
 
     static async put(url: string, data?: number[]) {
-        return (await api.put(url, data || ''))
+        return (await api.put(url, data))
     }
 
-    static async delete(url: string) {
-        return (await api.delete(url))
+    static async delete(url: string, data?: number[]) {
+        return (await api.delete(url, { data }))
     }
 }

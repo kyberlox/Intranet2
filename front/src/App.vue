@@ -70,6 +70,7 @@ export default defineComponent({
         onMounted(() => {
             userData.initKeyFromStorage();
             prefetchSection('user');
+            prefetchSection('score');
         })
 
         return {

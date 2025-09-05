@@ -22,6 +22,7 @@
                     </li>
                     <li v-show="showingDeps.includes(dep.id)"
                         class="visibility-editor__area-user visibility-editor__area-user--inDep"
+                        :class="{ 'visibility-editor__area-user--chosen': choices?.find((e) => e.id == user.user_id) }"
                         v-for="user in dep.users"
                         :key="user.user_id"
                         @click="$emit('fixUserChoice', 'user', dep.id, user.user_id)">
@@ -44,7 +45,7 @@
 import { defineComponent, type PropType, ref } from 'vue';
 import PlusIcon from '@/assets/icons/admin/PlusIcon.svg?component'
 import MinusIcon from '@/assets/icons/admin/MinusIcon.svg?component'
-import type { IDepartment, IUserSearch } from '../VisibilityAreaEditor.vue';
+import type { IDepartment, IUserSearch, IChoice } from '../VisibilityAreaEditor.vue';
 
 export default defineComponent({
     name: 'VisibilityAreaEditorTree',
@@ -53,7 +54,7 @@ export default defineComponent({
             type: Array as PropType<IDepartment[]>
         },
         choices: {
-
+            type: Array<IChoice>
         }
     },
     emits: ['fixUserChoice'],

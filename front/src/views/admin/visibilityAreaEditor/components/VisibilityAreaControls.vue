@@ -1,10 +1,11 @@
 <template>
     <div class="visibility-editor__area-users__edit-methods">
-        <button @click="() => changeEditMode"
+        <button @click="changeEditMode"
                 class="visibility-editor__area-users__edit-methods__add primary-button">
             {{ buttonText }}
         </button>
-        <div class="visibility-editor__area-users__edit-methods__input-wrapper">
+        <div class="visibility-editor__area-users__edit-methods__input-wrapper"
+             v-if="editGroupMode">
             <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
                             :item="{ name: '', value: '' }"
                             @pick="(abob: string) => console.log(abob)"
@@ -34,8 +35,8 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         return {
-            buttonText: computed(() => props.editGroupMode ? 'Вернуться' : 'Изменить'),
-            changeEditMode: (value: boolean) => emit('changeEditMode', value),
+            buttonText: computed(() => props.editGroupMode ? 'Вернуться' : 'Добавить'),
+            changeEditMode: () => emit('changeEditMode', !props.editGroupMode),
         }
     }
 })

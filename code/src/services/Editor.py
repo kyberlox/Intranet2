@@ -155,6 +155,8 @@ class Editor:
         for f in need_del:
             files.pop(f)
         
+
+
         may_be_added = []
         #получить формат данных
         fast_format = self.get_fast_format()
@@ -172,11 +174,21 @@ class Editor:
         #сравнить
         print(cus_fields)
         print(need_add_fields)
+        need_add = []
         for need_add_field in need_add_fields:
             if need_add_field not in cus_fields:
-                print(need_add_field)
-                #добавить нехватающие
+                #определить нехватающие
+                need_add.append(need_add_field)
         
+        #добавить нехватающие
+        #беру список полей раздела
+        need_add_fields = []
+        for need_add_field in fast_format["fields"]:
+            if need_add_field['field'] in need_add:
+                may_be_added.append(need_add_field)
+
+        
+
         # вывести
         return {"fields" : field, "files" : files, "may_be_added" : may_be_added}
 

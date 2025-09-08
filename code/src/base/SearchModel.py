@@ -644,12 +644,12 @@ class StructureSearchModel:
                 if user['id'] in users:
                     user_data = {}
                     if user['active'] is True:
-                        user_data['user_id'] = user['id']
+                        user_data['id'] = user['id']
 
                         if user['second_name'] is not None or user['second_name'] != '':
-                            user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                            user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                         else:
-                            user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                            user_data['name'] = f'{user['last_name']} {user['name']}'
 
                         if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                             'work_position'] != '':
@@ -660,9 +660,9 @@ class StructureSearchModel:
                         if user['photo_file_id']:
                             photo_inf = File(id=user['photo_file_id']).get_users_photo()
                             url = photo_inf['URL']
-                            user_data['photo'] = f"{DOMAIN}{url}"
+                            user_data['image'] = f"{DOMAIN}{url}"
                         else:
-                            user_data['photo'] = None
+                            user_data['image'] = None
 
                         users_list.append(user_data)
         """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -697,12 +697,12 @@ class StructureSearchModel:
                     if user['id'] in users:
                         user_data = {}
                         if user['active'] is True:
-                            user_data['user_id'] = user['id']
+                            user_data['id'] = user['id']
 
                             if user['second_name'] is not None or user['second_name'] != '':
-                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                             else:
-                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                user_data['name'] = f'{user['last_name']} {user['name']}'
 
                             if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                 'work_position'] != '':
@@ -712,9 +712,9 @@ class StructureSearchModel:
                             if user['photo_file_id']:
                                 photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                 url = photo_inf['URL']
-                                user_data['photo'] = f"{DOMAIN}{url}"
+                                user_data['image'] = f"{DOMAIN}{url}"
                             else:
-                                user_data['photo'] = None
+                                user_data['image'] = None
 
                             users_list.append(user_data)
             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -748,12 +748,12 @@ class StructureSearchModel:
                             if user['id'] in users:
                                 user_data = {}
                                 if user['active'] is True:
-                                    user_data['user_id'] = user['id']
+                                    user_data['id'] = user['id']
 
                                     if user['second_name'] is not None or user['second_name'] != '':
-                                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                        user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                                     else:
-                                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                        user_data['name'] = f'{user['last_name']} {user['name']}'
 
                                     if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                         'work_position'] != '':
@@ -764,9 +764,9 @@ class StructureSearchModel:
                                     if user['photo_file_id']:
                                         photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                         url = photo_inf['URL']
-                                        user_data['photo'] = f"{DOMAIN}{url}"
+                                        user_data['image'] = f"{DOMAIN}{url}"
                                     else:
-                                        user_data['photo'] = None
+                                        user_data['image'] = None
 
                                     users_list.append(user_data)
                     """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -801,12 +801,12 @@ class StructureSearchModel:
                                     if user['id'] in users:
                                         user_data = {}
                                         if user['active'] is True:
-                                            user_data['user_id'] = user['id']
+                                            user_data['id'] = user['id']
 
                                             if user['second_name'] is not None or user['second_name'] != '':
-                                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                                             else:
-                                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                                user_data['name'] = f'{user['last_name']} {user['name']}'
 
                                             if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                                 'work_position'] != '':
@@ -817,9 +817,9 @@ class StructureSearchModel:
                                             if user['photo_file_id']:
                                                 photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                                 url = photo_inf['URL']
-                                                user_data['photo'] = f"{DOMAIN}{url}"
+                                                user_data['image'] = f"{DOMAIN}{url}"
                                             else:
-                                                user_data['photo'] = None
+                                                user_data['image'] = None
 
                                             users_list.append(user_data)
                             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -852,12 +852,12 @@ class StructureSearchModel:
                                             if user['id'] in users:
                                                 user_data = {}
                                                 if user['active'] is True:
-                                                    user_data['user_id'] = user['id']
+                                                    user_data['id'] = user['id']
 
                                                     if user['second_name'] is not None or user['second_name'] != '':
-                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                        user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                                                     else:
-                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                                        user_data['name'] = f'{user['last_name']} {user['name']}'
 
                                                     if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                                         'work_position'] != '':
@@ -868,9 +868,9 @@ class StructureSearchModel:
                                                     if user['photo_file_id']:
                                                         photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                                         url = photo_inf['URL']
-                                                        user_data['photo'] = f"{DOMAIN}{url}"
+                                                        user_data['image'] = f"{DOMAIN}{url}"
                                                     else:
-                                                        user_data['photo'] = None
+                                                        user_data['image'] = None
 
                                                     users_list.append(user_data)
                                     """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -903,12 +903,12 @@ class StructureSearchModel:
                                                     if user['id'] in users:
                                                         user_data = {}
                                                         if user['active'] is True:
-                                                            user_data['user_id'] = user['id']
+                                                            user_data['id'] = user['id']
 
                                                             if user['second_name'] is not None or user['second_name'] != '':
-                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                                user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                                                             else:
-                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                                                user_data['name'] = f'{user['last_name']} {user['name']}'
 
                                                             if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                                                 'work_position'] != '':
@@ -919,9 +919,9 @@ class StructureSearchModel:
                                                             if user['photo_file_id']:
                                                                 photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                                                 url = photo_inf['URL']
-                                                                user_data['photo'] = f"{DOMAIN}{url}"
+                                                                user_data['image'] = f"{DOMAIN}{url}"
                                                             else:
-                                                                user_data['photo'] = None
+                                                                user_data['image'] = None
 
                                                             users_list.append(user_data)
                                             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -954,12 +954,12 @@ class StructureSearchModel:
                                                             if user['id'] in users:
                                                                 user_data = {}
                                                                 if user['active'] is True:
-                                                                    user_data['user_id'] = user['id']
+                                                                    user_data['id'] = user['id']
 
                                                                     if user['second_name'] is not None or user['second_name'] != '':
-                                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                                        user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                                                                     else:
-                                                                        user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                                                        user_data['name'] = f'{user['last_name']} {user['name']}'
 
                                                                     if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                                                         'work_position'] != '':
@@ -970,9 +970,9 @@ class StructureSearchModel:
                                                                     if user['photo_file_id']:
                                                                         photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                                                         url = photo_inf['URL']
-                                                                        user_data['photo'] = f"{DOMAIN}{url}"
+                                                                        user_data['image'] = f"{DOMAIN}{url}"
                                                                     else:
-                                                                        user_data['photo'] = None
+                                                                        user_data['image'] = None
 
                                                                     users_list.append(user_data)
                                                     """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
@@ -1005,12 +1005,12 @@ class StructureSearchModel:
                                                                     if user['id'] in users:
                                                                         user_data = {}
                                                                         if user['active'] is True:
-                                                                            user_data['user_id'] = user['id']
+                                                                            user_data['id'] = user['id']
 
                                                                             if user['second_name'] is not None or user['second_name'] != '':
-                                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']} {user['second_name']}'
+                                                                                user_data['name'] = f'{user['last_name']} {user['name']} {user['second_name']}'
                                                                             else:
-                                                                                user_data['user_fio'] = f'{user['last_name']} {user['name']}'
+                                                                                user_data['name'] = f'{user['last_name']} {user['name']}'
 
                                                                             if 'work_position' in user['indirect_data'].keys() and user['indirect_data'][
                                                                                 'work_position'] != '':
@@ -1021,9 +1021,9 @@ class StructureSearchModel:
                                                                             if user['photo_file_id']:
                                                                                 photo_inf = File(id=user['photo_file_id']).get_users_photo()
                                                                                 url = photo_inf['URL']
-                                                                                user_data['photo'] = f"{DOMAIN}{url}"
+                                                                                user_data['image'] = f"{DOMAIN}{url}"
                                                                             else:
-                                                                                user_data['photo'] = None
+                                                                                user_data['image'] = None
 
                                                                             users_list.append(user_data)
                                                             """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""

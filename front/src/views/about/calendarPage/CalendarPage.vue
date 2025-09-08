@@ -115,8 +115,6 @@ export default defineComponent({
         }
 
         const scrollToNode = async (target: string, nodes: Ref<HTMLElement[]>, attrTitle: string) => {
-            console.log(target, nodes.value?.length, !attrTitle);
-
             await nextTick()
 
             if (!target || !nodes.value?.length || !attrTitle) return;

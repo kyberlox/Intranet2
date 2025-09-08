@@ -66,7 +66,7 @@
                                     <div class="header__points-balance"
                                          title="Ваши баллы"
                                          @click.stop.prevent="pointsModalIsOpen = true">
-                                        100
+                                        {{ userScore }}
                                     </div>
                                 </div>
                                 <div class="header__user__block">
@@ -112,6 +112,7 @@ import { useWindowSize } from '@vueuse/core'
 import { screenCheck } from "@/utils/screenCheck";
 import PointsInfoTable from "@/views/user/userPointsComponents/PointsInfoTable.vue";
 import ZoomModal from "../tools/modal/ZoomModal.vue";
+import { useUserScore } from "@/stores/userScoreData";
 
 export default defineComponent({
     components: {
@@ -162,12 +163,13 @@ export default defineComponent({
             visibleSearchModal,
             isMobileMenuOpen,
             pointsModalIsOpen,
-            handleDropdown,
-            handleDropDownItemClick,
+            userScore: computed(() => useUserScore().getCurrentScore),
             userAvatar: computed(() => userData.getPhoto),
             userFio: computed(() => userData.getFio),
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
             isMobileScreen: computed(() => ['sm', 'md'].includes(screenCheck(width))),
+            handleDropdown,
+            handleDropDownItemClick,
             toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,
         };
     },

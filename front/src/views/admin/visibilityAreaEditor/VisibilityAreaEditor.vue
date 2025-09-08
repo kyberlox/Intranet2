@@ -4,25 +4,38 @@
         <AdminSidebar :isVisibilityArea="true"
                       :visibilityAreas="allAreas"
                       :activeId="activeArea"
-                      @addNewArea="console.log('addNewArea')"
+                      @addNewArea="modalIsOpen = true"
+                      @deleteDep="deleteDepFromVision"
                       @areaClicked="(i) => changeActiveArea(i)" />
+
+        <SlotModal v-if="modalIsOpen"
+                   @close="modalIsOpen = false">
+            <VisibilityAreaSlotModal @cancelArea="modalIsOpen = false"
+                                     @acceptArea="createNewArea" />
+        </SlotModal>
 
         <div class="visibility-editor__area-users__wrapper">
             <VisibilityAreaControls v-if="activeArea"
+                                    :editGroupMode="editGroupMode"
                                     class="visibility-editor__area-users__edit-methods"
                                     @changeEditMode="(value) => changeEditMode(value)" />
 
             <VisibilityAreaUsersList v-if="!editGroupMode"
                                      :editGroupMode="editGroupMode"
-                                     :formattedUsers="formattedUsers" />
+                                     :userChoices="choices"
+                                     :formattedUsers="formattedUsers"
+                                     @pickUser="fixUserChoice"
+                                     @deleteArea="deleteArea" />
 
             <VisibilityAreaEditorTree v-else
-                                      @fixUserChoice="fixUserChoice"
+                                      @fixUserChoice="fixUserChoiceFromDepTree"
                                       :choices="choices"
                                       :departments="allDepStructure" />
         </div>
 
         <VisibilityRightSidebar :choices="choices"
+                                :editMode="editGroupMode"
+                                @deleteMultipleUsers="deleteMultipleUsers"
                                 @saveChoices="saveChoices"
                                 @clearChoices="clearChoices" />
     </div>
@@ -36,45 +49,9 @@ import VisibilityAreaEditorTree from './components/VisibilityAreaEditorTree.vue'
 import VisibilityRightSidebar from './components/VisibilityRightSidebar.vue';
 import VisibilityAreaControls from './components/VisibilityAreaControls.vue';
 import VisibilityAreaUsersList from './components/VisibilityAreaUsersList.vue';
-
-export interface IVisionUser {
-    id: number;
-    name: string;
-    last_name: string;
-    second_name: string;
-    post: string;
-    photo: null | string;
-    depart: string;
-}
-
-export interface IDepartment {
-    id: number;
-    name: string;
-    user_head_id: number;
-    father_id: null;
-    users: IUserSearch[];
-    departments: IDepartment[];
-}
-
-export interface IUserSearch {
-    department: string;
-    department_id: number;
-    user_fio: string;
-    user_id: number;
-    user_position: string;
-    photo: null | string;
-}
-
-export interface IChoice {
-    id: number;
-    name: string;
-    type: 'allDep' | 'onlyDep' | 'user'
-}
-
-export interface IFormattedUserGroup {
-    depart: string;
-    users: IVisionUser[];
-}
+import SlotModal from '@/components/tools/modal/SlotModal.vue';
+import VisibilityAreaSlotModal from './components/VisibilityAreaSlotModal.vue';
+import type { IVisionUser, IChoice, IFormattedUserGroup, IDepartment, IUserSearch, IUser } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -83,7 +60,9 @@ export default defineComponent({
         VisibilityAreaEditorTree,
         VisibilityRightSidebar,
         VisibilityAreaControls,
-        VisibilityAreaUsersList
+        VisibilityAreaUsersList,
+        SlotModal,
+        VisibilityAreaSlotModal
     },
     setup() {
         const allAreas = ref<{ id: number, vision_name: string }[]>([]);
@@ -91,6 +70,7 @@ export default defineComponent({
         const activeAreaUsers = ref<IVisionUser[]>([]);
         const editGroupMode = ref<boolean>(false);
         const allDepStructure = ref();
+        const modalIsOpen = ref(false);
         const choices = ref<IChoice[]>([]);
 
         const departmentMap = new Map();
@@ -99,7 +79,7 @@ export default defineComponent({
             activeAreaUsers.value.forEach((user) => {
                 const target = formattedGroup.find((formatItem) => formatItem.depart == user.depart);
                 if (!target) {
-                    formattedGroup.push({ depart: user.depart, users: [user] })
+                    formattedGroup.push({ depart: user.depart, users: [user], depart_id: user.depart_id })
                 }
                 else target.users.push(user);
             })
@@ -108,6 +88,7 @@ export default defineComponent({
 
         const changeEditMode = (val: boolean) => {
             editGroupMode.value = val;
+            clearChoices();
         }
 
         const changeActiveArea = (id: number) => {
@@ -125,18 +106,44 @@ export default defineComponent({
                 .then((data) => {
                     if ('msg' in data) return;
                     activeAreaUsers.value = data;
-                    changeEditMode(false)
+                    changeEditMode(false);
                 })
         }
 
         const getDepStructureAll = () => {
             Api.get(`fields_visions/get_full_structure`)
-                .then((data) => { createDepartmentTree(data); })
+                .then((data) => {
+                    createDepartmentTree(data);
+                })
+        }
+
+        const addOneDepartmentToArea = (visionId: number, departmentId: number) => {
+            Api.put((`fields_visions/add_dep_users_only/${visionId}/${departmentId}`))
+                .finally(() => {
+                    getVisionUser(visionId)
+                })
         }
 
         const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
-            const body = [4133, 2375, 2366];
-            Api.put((`fields_visions/add_users_list_to_vision/${visionId}`), body);
+            Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
+                .finally(() => {
+                    getVisionUser(visionId)
+                })
+        }
+
+        // const addManyUsersToArea = (visionId: number) => {
+        //     const body = [4133, 2375, 2366];
+        //     Api.put((`fields_visions/add_users_list_to_vision/${visionId}`), body)
+        //         .finally(() => {
+        //             getVisionUser(visionId)
+        //         })
+        // }
+
+        const addUserToArea = (visionId: number, userId: number) => {
+            Api.put(`fields_visions/add_user_to_vision/${visionId}/${userId}`)
+                .finally(() => {
+                    getVisionUser(visionId)
+                })
         }
         // const getDepStructureById = (depId: number) => {
         //     Api.get(`fields_visions/get_dep_structure/${depId}`)
@@ -146,19 +153,22 @@ export default defineComponent({
         //     Api.get(`fields_visions/get_dep_structure/${word}`)
         // }
 
-        // const deleteArea = (id: number) => {
-        //     Api.delete(`fields_visions/delete_vision/${id}`)
-        // }
+        const createNewArea = (newAreaName: string) => {
+            Api.put(`fields_visions/create_new_vision/${newAreaName}`)
+                .then(() => {
+                    modalIsOpen.value = false;
+                    getAllVisions();
+                    changeEditMode(false);
+                })
+        }
 
-        // const addUserToArea = (visionId: number, userId: number) => {
-        //     Api.put(`fields_visions/add_user_to_vision/${visionId}/${userId}`)
-        // }
-
-        // const removeUserFromArea = (visionId: number, userId: number) => {
-        //     Api.delete(`fields_visions/delete_vision/${visionId}/${userId}`)
-        // }
-        const createNewArea = () => {
-            Api.put('fields_visions/create_new_vision/abub')
+        const deleteArea = (id: number) => {
+            Api.delete(`fields_visions/delete_vision/${id}`)
+                .then(() => {
+                    getAllVisions();
+                    changeEditMode(false);
+                    activeArea.value = Number('');
+                })
         }
 
         const createDepartmentTree = (depStructure: IDepartment[]): void => {
@@ -193,11 +203,17 @@ export default defineComponent({
             allDepStructure.value = rootDepartments;
         };
 
-        const fixUserChoice = (type: 'allDep' | 'onlyDep' | 'user', id: number, userId: number | null = null) => {
+        const fixUserChoiceFromDepTree = (type: 'allDep' | 'onlyDep' | 'user', id: number, userId: number | null = null) => {
             const targetIndex = choices.value.findIndex((e) => e.id == (type == 'user' ? userId : id));
 
             if (targetIndex !== -1) {
-                choices.value.splice(targetIndex, 1);
+                if (choices.value[targetIndex].type == type) {
+                    choices.value.splice(targetIndex, 1);
+                }
+                else {
+                    choices.value.splice(targetIndex, 1);
+                    fixUserChoiceFromDepTree(type, id, userId);
+                }
             }
             else
                 if (type == 'user') {
@@ -211,18 +227,66 @@ export default defineComponent({
                 }
         }
 
-        const saveChoices = () => {
-            console.log(choices.value);
+        const fixUserChoice = (user: IUser) => {
+            const targetIndex = choices.value.findIndex((e) => e.id == user.id)
+            if (targetIndex !== -1) {
+                choices.value.splice(targetIndex, 1);
+            }
+            else {
+                choices.value.push({
+                    id: user.id,
+                    name: user.last_name + ' ' + user.name + ' ' + user.second_name,
+                    type: 'user'
+                })
+            }
+        }
+
+        const saveChoices = async () => {
+            choices.value.map((e) => {
+                switch (e.type) {
+                    case 'allDep':
+                        addFullDepartmentToArea(Number(activeArea.value), e.id);
+                        break;
+                    case 'onlyDep':
+                        addOneDepartmentToArea(Number(activeArea.value), e.id);
+                        break;
+                    case 'user':
+                        addUserToArea(Number(activeArea.value), e.id);
+                        break;
+                    default:
+                        break;
+                }
+            })
+            clearChoices();
         }
 
         const clearChoices = () => {
             choices.value.length = 0;
         }
 
+        const pickUser = (user: IChoice) => {
+            choices.value.push(user)
+        }
+
+        const deleteMultipleUsers = () => {
+            const userIds: number[] = [];
+            choices.value.map((e) => {
+                userIds.push(e.id)
+            })
+
+            Api.delete(`fields_visions/delete_users_from_vision/${activeArea.value}`, userIds)
+                .finally(() => {
+                    getVisionUser(activeArea.value!);
+                })
+        }
+
+        const deleteDepFromVision = () => {
+            
+        }
+
         onMounted(() => {
             getAllVisions();
             getDepStructureAll();
-            addFullDepartmentToArea(2, 142);
         })
 
         return {
@@ -232,7 +296,13 @@ export default defineComponent({
             editGroupMode,
             allDepStructure,
             choices,
+            modalIsOpen,
+            deleteDepFromVision,
+            deleteMultipleUsers,
+            pickUser,
+            deleteArea,
             fixUserChoice,
+            fixUserChoiceFromDepTree,
             getVisionUser,
             createNewArea,
             changeActiveArea,
@@ -354,6 +424,16 @@ p .visibility-editor__areas {
     // margin-top: 16px;
 }
 
+.user-choices-table__row {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.325);
+    margin-top: 5px;
+    padding: 5px;
+
+    &>td {
+        padding: 5px 0;
+    }
+}
+
 .visibility-editor__area-users__edit-methods {
     display: flex;
     flex-direction: row;
@@ -449,7 +529,101 @@ p .visibility-editor__areas {
     gap: 5px;
 }
 
+.visibility-editor__area-users__department-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    &>svg {
+        cursor: pointer;
+        color: red;
+        width: 30px;
+
+        &:hover {
+            color: rgba(255, 0, 0, 0.497);
+        }
+    }
+}
+
 .visibility-editor__area-users__department-title {
     font-size: 18px;
+    transition: 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--emk-brand-color)
+    }
+}
+
+.admin-panel__nav__button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 15px;
+
+    &>button {
+        margin-top: 0;
+        min-width: 139px;
+    }
+}
+
+.visibility-editor__add-new-area__slot {
+    padding: 15px 20px 0 15px !important;
+}
+
+.visibility-editor__add-new-area__slot__buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.visibility-editor__add-new-area__slot__button--accept {
+    &:hover {
+        background: green;
+    }
+}
+
+.visibility-editor__add-new-area__slot__button--cancel {
+    &:hover {
+        background: red;
+    }
+}
+
+.visibility-editor__add-new-area__slot__button {
+    &>svg {
+        width: 30px;
+
+        &:hover {
+            color: white;
+        }
+    }
+}
+
+.visibility-editor__add-new-area__slot__button--disabled {
+    background: rgba(128, 128, 128, 0.41);
+
+    &:hover {
+        background: rgba(128, 128, 128, 0.41) !important;
+
+        color: black !important;
+
+        &>svg {
+            color: black !important;
+        }
+    }
+}
+
+.visibility-editor__area-user--chosen {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: var(--emk-brand-color);
+    background: #fafbfc;
+}
+
+.visibility-editor__area-users__department-header {
+    display: flex;
+    flex-direction: row;
 }
 </style>

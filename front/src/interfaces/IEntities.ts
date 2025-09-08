@@ -18,3 +18,4 @@ export * from './entities/IVideoInterview';
 export * from './entities/IWorkerOfTheYear';
 export * from './entities/ICalendar';
 export * from './entities/IBirthday';
+export * from './entities/IAdminVisibilityArea';

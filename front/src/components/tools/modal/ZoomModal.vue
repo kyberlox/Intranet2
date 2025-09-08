@@ -55,8 +55,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal__text__content modal__text__content--points-modal"
-                         v-else-if="modalForUserPoints">
+                    <div v-else-if="modalForUserPoints"
+                         class="modal__text__content modal__text__content--points-modal">
                         <div class="row mb-3">
                             <div class="col">
                                 <PointsInfoTable />

@@ -2381,7 +2381,7 @@ def has_user_liked(article_id, request: Request):
     return Article(id=article_id).has_user_liked(session_id=session_id)
 
 # поиск по статьям еластик
-@article_router.get("/search/full_search_art/{keyword}")
+@article_router.get("/search/full_search_art/{keyword}/{size_res}")
 def elastic_search(keyword: str, size_res: int = 20):
     return ArticleSearchModel().elasticsearch_article(key_word=keyword, size_res=size_res)
 

@@ -1401,17 +1401,28 @@ class UservisionsRootModel:
                 user_info = UserModel(Id=user.user_id).find_by_id()
                 if user_info['active']:
                     general_info['id'] = user_info['id']
-                    general_info['name'] = user_info['name']
-                    general_info['last_name'] = user_info['last_name']
-                    general_info['second_name'] = user_info['second_name']
-                    general_info['depart'] = user_info['indirect_data']['uf_department'][0]
-                    general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0]
+                    general_info['name'] = user_info['name'] if 'name' in user_info.keys() else None
+                    general_info['last_name'] = user_info['last_name'] if 'last_name' in user_info.keys() else None
+                    general_info['second_name'] = user_info['second_name'] if 'second_name' in user_info.keys() else None
+                    general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
+                    general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
                     if 'work_position' in user_info['indirect_data'].keys():
                         general_info['post'] = user_info['indirect_data']['work_position']
-                    general_info['photo'] = user_info['photo_file_url']
+                    general_info['photo'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
                     result.append(general_info)
             return result
-        return {"msg": "такого vision_id не существует"}
+        return False
+
+    def remove_depart_in_vision(self, dep_id):
+        users = self.find_users_in_vision()
+        if users:
+            for user in users:
+                if user['depart_id'] == dep_id:
+                    self.session.query(UservisionsRoot).filter(UservisionsRoot.user_id == user['id']).delete()
+                    self.session.commit()
+            return True
+        return False
+
 
 class TagsModel:
     def __init__(self, id: int = 0, tag_name: str = ''):
@@ -1932,3 +1943,4 @@ class MerchStoreModel:
 
     def __init(self):
         pass
+

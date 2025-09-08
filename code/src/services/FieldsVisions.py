@@ -86,6 +86,9 @@ class Visions:
 
     def get_users_in_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision()
+    
+    def remove_depart_in_vision(self, dep_id):
+        return UservisionsRootModel(vision_id=self.vision_id).remove_depart_in_vision(dep_id)
 
 
 
@@ -141,3 +144,7 @@ def delete_users_from_vision(vision_id: int, users = Body()):
 @fieldsvisions_router.get("/get_users_in_vision/{vision_id}")
 def get_users_in_vision(vision_id: int):
     return Visions(vision_id=vision_id).get_users_in_vision()
+
+@fieldsvisions_router.delete("/remove_depart_in_vision/{vision_id}/{dep_id}")
+def remove_depart_in_vision(vision_id: int, dep_id: int):
+    return Visions(vision_id=vision_id).remove_depart_in_vision(dep_id)

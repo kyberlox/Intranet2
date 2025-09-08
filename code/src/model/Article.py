@@ -1599,6 +1599,21 @@ class Article:
                 has_user_liked = User(id=user_id).has_liked(art_id=self.id)
                 art['reactions'] = has_user_liked
         
+        # магазин мерча
+        if art['section_id'] == 56:
+            result = {}
+            result['id'] = art['id']
+            result['active'] = art['active']
+            result['name'] = art['name']
+            result['section_id'] = art['section_id']
+            result['price'] = str(art['indirect_data']['price']) + ' ' + art['indirect_data']['money']
+            art['indirect_data'].pop('price')
+            art['indirect_data'].pop('money')
+            result['current_sizes'] = [art['indirect_data']]
+            result['photo'] = [None]
+            return result
+        
+        
         return art
 
     def delete(self):
@@ -1723,6 +1738,20 @@ class Article:
             else:
                 return {"err" : "Auth Err"}
         
+        # магазин мерча
+        elif self.section_id == "56":
+            result = []
+            res = ArticleModel(section_id = self.section_id).find_by_section_id()
+            for re in res:
+                # отсюда достать все файлы
+                art_info = {}
+                art_info['id'] = re['id']
+                art_info['section_id'] = re['section_id']
+                art_info['name'] = re['name']
+                art_info['price'] = str(re['indirect_data']['price']) + ' ' + re['indirect_data']['money']
+                art_info['photo'] = [None]
+                result.append(art_info)
+            return result
         else:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []

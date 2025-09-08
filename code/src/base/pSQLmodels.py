@@ -1411,7 +1411,18 @@ class UservisionsRootModel:
                     general_info['photo'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
                     result.append(general_info)
             return result
-        return {"msg": "такого vision_id не существует"}
+        return False
+
+    def remove_depart_in_vision(self, dep_id):
+        users = self.find_users_in_vision()
+        if users:
+            for user in users:
+                if user['depart_id'] == dep_id:
+                    self.session.query(UservisionsRoot).filter(UservisionsRoot.user_id == user['id']).delete()
+                    self.session.commit()
+            return True
+        return False
+
 
 class TagsModel:
     def __init__(self, id: int = 0, tag_name: str = ''):
@@ -1932,3 +1943,4 @@ class MerchStoreModel:
 
     def __init(self):
         pass
+

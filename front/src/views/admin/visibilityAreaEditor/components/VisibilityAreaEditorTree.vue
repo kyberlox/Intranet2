@@ -35,6 +35,7 @@
                 <VisibilityAreaEditorTree v-if="showingDeps.includes(dep.id)"
                                           @fixUserChoice="(type, depId, userId) =>
                                             $emit('fixUserChoice', type, depId, userId)"
+                                          :choices="choices"
                                           :departments="dep.departments" />
             </div>
         </li>
@@ -64,6 +65,7 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const showingDeps = ref<number[]>([]);
+        console.log(props.choices);
 
         const changeVisibility = (id: number) => {
             const target = showingDeps.value.findIndex((e) => e == id);

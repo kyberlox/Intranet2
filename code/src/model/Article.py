@@ -1762,8 +1762,11 @@ class Article:
                 if res['active']:
                     self.id = res["id"]
                     files = File(art_id = int(self.id)).get_files_by_art_id()
-                    url = files[0]["file_url"]
-                    res['preview_file_url'] = f"{DOMAIN}{url}"
+                    if files:
+                        url = files[0]["file_url"]
+                        res['preview_file_url'] = f"{DOMAIN}{url}"
+                    else:
+                        res['preview_file_url'] = None
                     user_id = self.get_user_by_session_id(session_id=session_id)
                     if user_id is not None:
                         has_user_liked = User(id=user_id).has_liked(art_id=self.id)

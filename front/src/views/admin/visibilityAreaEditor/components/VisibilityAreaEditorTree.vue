@@ -1,7 +1,8 @@
 <template>
-    <ul class="visibility-editor__area-departments">
+    <ul class="visibility-editor__area-departments"
+        v-if="!userDisplayMode">
         <li class="visibility-editor__area-department"
-            v-for="dep in departments"
+            v-for="dep in departmentsToShow"
             :key="dep.id">
             <PlusIcon @click.stop.prevent="changeVisibility(dep.id)"
                       v-if="!showingDeps.includes(dep.id)" />
@@ -22,14 +23,14 @@
                     </li>
                     <li v-show="showingDeps.includes(dep.id)"
                         class="visibility-editor__area-user visibility-editor__area-user--inDep"
-                        :class="{ 'visibility-editor__area-user--chosen': choices?.find((e) => e.id == user.user_id) }"
+                        :class="{ 'visibility-editor__area-user--chosen': choices?.find((e) => e.id == user.id) }"
                         v-for="user in dep.users"
-                        :key="user.user_id"
-                        @click="$emit('fixUserChoice', 'user', dep.id, user.user_id)">
-                        <img v-if="user.photo"
+                        :key="user.id"
+                        @click="$emit('fixUserChoice', 'user', dep.id, user.id)">
+                        <img v-if="user.image"
                              class="visibility-editor__area-user-avatar"
-                             :src="user.photo" />
-                        {{ user.user_fio }}
+                             :src="user.image" />
+                        {{ user.name }}
                     </li>
                 </ul>
                 <VisibilityAreaEditorTree v-if="showingDeps.includes(dep.id)"
@@ -40,19 +41,38 @@
             </div>
         </li>
     </ul>
+    <ul class="visibility-editor__area-users--userMode"
+        v-else>
+        <li class="visibility-editor__area-user visibility-editor__area-user--inDep visibility-editor__area-user--userMode"
+            :class="{ 'visibility-editor__area-user--chosen': choices?.find((e) => e.id == user.id) }"
+            v-for="user in filteredUsers"
+            :key="user.id"
+            @click="$emit('fixUserChoice', 'user', dep.id, user.id)">
+            <img v-if="user.image"
+                 class="visibility-editor__area-user-avatar"
+                 :src="user.image" />
+            {{ user.name }}
+        </li>
+    </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, ref } from 'vue';
+import { defineComponent, type PropType, ref, watch } from 'vue';
 import PlusIcon from '@/assets/icons/admin/PlusIcon.svg?component'
 import MinusIcon from '@/assets/icons/admin/MinusIcon.svg?component'
-import type { IDepartment, IUserSearch, IChoice } from '../VisibilityAreaEditor.vue';
+import type { IDepartment, IChoice, IUserSearch } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'VisibilityAreaEditorTree',
     props: {
         departments: {
             type: Array as PropType<IDepartment[]>
+        },
+        filteredDepartments: {
+            type: Array as PropType<IDepartment[]>
+        },
+        filteredUsers: {
+            type: Array as PropType<IUserSearch[]>
         },
         choices: {
             type: Array<IChoice>
@@ -65,7 +85,19 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const showingDeps = ref<number[]>([]);
-        console.log(props.choices);
+        const userDisplayMode = ref(false);
+        const departmentsToShow = ref();
+
+        watch((props), () => {
+            if (props.filteredUsers?.length) {
+                userDisplayMode.value = true
+            } else userDisplayMode.value = false;
+
+            if (props.filteredDepartments?.length) {
+                departmentsToShow.value = props.filteredDepartments;
+            }
+            else departmentsToShow.value = props.departments;
+        }, { immediate: true, deep: true })
 
         const changeVisibility = (id: number) => {
             const target = showingDeps.value.findIndex((e) => e == id);
@@ -77,6 +109,8 @@ export default defineComponent({
 
 
         return {
+            userDisplayMode,
+            departmentsToShow,
             showingDeps,
             changeVisibility
         }

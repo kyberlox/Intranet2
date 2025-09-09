@@ -5,7 +5,7 @@
                       :visibilityAreas="allAreas"
                       :activeId="activeArea"
                       @addNewArea="modalIsOpen = true"
-                      @deleteDep="deleteDepFromVision"
+                      @deleteArea="deleteArea"
                       @areaClicked="(i) => changeActiveArea(i)" />
 
         <SlotModal v-if="modalIsOpen"
@@ -18,17 +18,24 @@
             <VisibilityAreaControls v-if="activeArea"
                                     :editGroupMode="editGroupMode"
                                     class="visibility-editor__area-users__edit-methods"
-                                    @changeEditMode="(value) => changeEditMode(value)" />
+                                    @changeEditMode="(value) => changeEditMode(value)"
+                                    @depFilterChanged="(depValue) => handleFilterChanged(depValue, 'dep')"
+                                    @fioFilterChanged="(fioValue) => handleFilterChanged(fioValue, 'fio')" />
 
             <VisibilityAreaUsersList v-if="!editGroupMode"
                                      :editGroupMode="editGroupMode"
                                      :userChoices="choices"
                                      :formattedUsers="formattedUsers"
-                                     @pickUser="fixUserChoice"
-                                     @deleteArea="deleteArea" />
+                                     :filteredUsers="filteredUsers"
+                                     :fioFilter="fioFilterValue"
+                                     :depFilter="depFilterValue"
+                                     @deleteDep="deleteDepFromVision"
+                                     @pickUser="fixUserChoice" />
 
             <VisibilityAreaEditorTree v-else
                                       @fixUserChoice="fixUserChoiceFromDepTree"
+                                      :filteredDepartments="filteredDepartments"
+                                      :filteredUsers="filteredUsers"
                                       :choices="choices"
                                       :departments="allDepStructure" />
         </div>
@@ -37,7 +44,8 @@
                                 :editMode="editGroupMode"
                                 @deleteMultipleUsers="deleteMultipleUsers"
                                 @saveChoices="saveChoices"
-                                @clearChoices="clearChoices" />
+                                @clearChoices="clearChoices"
+                                @deleteFromChoice="deleteFromChoice" />
     </div>
 </template>
 
@@ -72,6 +80,10 @@ export default defineComponent({
         const allDepStructure = ref();
         const modalIsOpen = ref(false);
         const choices = ref<IChoice[]>([]);
+        const fioFilterValue = ref<string>();
+        const depFilterValue = ref<string>();
+        const filteredUsers = ref<IFormattedUserGroup[]>([]);
+        const filteredDepartments = ref<IUserSearch[]>([]);
 
         const departmentMap = new Map();
         const formattedUsers = computed(() => {
@@ -131,27 +143,12 @@ export default defineComponent({
                 })
         }
 
-        // const addManyUsersToArea = (visionId: number) => {
-        //     const body = [4133, 2375, 2366];
-        //     Api.put((`fields_visions/add_users_list_to_vision/${visionId}`), body)
-        //         .finally(() => {
-        //             getVisionUser(visionId)
-        //         })
-        // }
-
-        const addUserToArea = (visionId: number, userId: number) => {
-            Api.put(`fields_visions/add_user_to_vision/${visionId}/${userId}`)
+        const addUsersToArea = (visionId: number, userIds: number[]) => {
+            Api.put(`fields_visions/add_users_list_to_vision/${visionId}`, userIds)
                 .finally(() => {
                     getVisionUser(visionId)
                 })
         }
-        // const getDepStructureById = (depId: number) => {
-        //     Api.get(`fields_visions/get_dep_structure/${depId}`)
-        // }
-
-        // const getDepStructureByName = (word: string) => {
-        //     Api.get(`fields_visions/get_dep_structure/${word}`)
-        // }
 
         const createNewArea = (newAreaName: string) => {
             Api.put(`fields_visions/create_new_vision/${newAreaName}`)
@@ -217,8 +214,8 @@ export default defineComponent({
             }
             else
                 if (type == 'user') {
-                    const target = departmentMap.get(id).users.find((e: IUserSearch) => e.user_id == userId);
-                    choices.value.push({ id: target.user_id, name: target.user_fio, type: 'user' })
+                    const target = departmentMap.get(id).users.find((e: IUserSearch) => e.id == userId);
+                    choices.value.push({ id: target.id, name: target.name, type: 'user' })
                 }
                 else {
                     const target = departmentMap.get(id);
@@ -235,13 +232,14 @@ export default defineComponent({
             else {
                 choices.value.push({
                     id: user.id,
-                    name: user.last_name + ' ' + user.name + ' ' + user.second_name,
+                    name: user.name,
                     type: 'user'
                 })
             }
         }
 
         const saveChoices = async () => {
+            const newAreaUsers: number[] = []
             choices.value.map((e) => {
                 switch (e.type) {
                     case 'allDep':
@@ -251,17 +249,26 @@ export default defineComponent({
                         addOneDepartmentToArea(Number(activeArea.value), e.id);
                         break;
                     case 'user':
-                        addUserToArea(Number(activeArea.value), e.id);
+                        newAreaUsers.push(e.id)
                         break;
                     default:
                         break;
                 }
             })
+            if (newAreaUsers.length) {
+                addUsersToArea(Number(activeArea.value), newAreaUsers);
+            }
             clearChoices();
         }
 
+
         const clearChoices = () => {
             choices.value.length = 0;
+        }
+
+        const deleteFromChoice = (id: number) => {
+            const targetId = choices.value.findIndex(e => e.id == id);
+            choices.value.splice(targetId, 1);
         }
 
         const pickUser = (user: IChoice) => {
@@ -280,14 +287,53 @@ export default defineComponent({
                 })
         }
 
-        const deleteDepFromVision = () => {
-            
+        const deleteDepFromVision = (id: number) => {
+            Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}`)
+                .then(() => {
+                    getVisionUser(activeArea.value!);
+                })
+        }
+
+        const handleFilterChanged = (value: string, type: 'dep' | 'fio') => {
+            switch (type) {
+                case 'dep':
+                    filteredUsers.value.length = 0;
+                    depFilterValue.value = value;
+                    if (!value) return filteredDepartments.value.length = 0;
+                    getDepStructureByName(depFilterValue.value);
+                    break;
+                case 'fio':
+                    filteredDepartments.value.length = 0;
+                    fioFilterValue.value = value;
+                    if (!value) return filteredUsers.value.length = 0;
+                    getUserByName(fioFilterValue.value);
+                    break;
+                default:
+                    break;
+            }
         }
 
         onMounted(() => {
             getAllVisions();
             getDepStructureAll();
         })
+
+        const getDepStructureByName = (word: string) => {
+            Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                .then((data) => {
+                    filteredUsers.value = [];
+                    filteredDepartments.value = data;
+                })
+        }
+
+        const getUserByName = (word: string) => {
+            Api.get(`users/search/full_search_users/${word}/100`)
+                .then((data) => {
+                    filteredDepartments.value.length = 0;
+                    filteredUsers.value = data[0].content;
+                });
+        }
+
 
         return {
             allAreas,
@@ -297,10 +343,16 @@ export default defineComponent({
             allDepStructure,
             choices,
             modalIsOpen,
+            fioFilterValue,
+            depFilterValue,
+            filteredUsers,
+            filteredDepartments,
             deleteDepFromVision,
             deleteMultipleUsers,
+            handleFilterChanged,
             pickUser,
             deleteArea,
+            deleteFromChoice,
             fixUserChoice,
             fixUserChoiceFromDepTree,
             getVisionUser,
@@ -549,6 +601,8 @@ p .visibility-editor__areas {
     font-size: 18px;
     transition: 0.2s;
     cursor: pointer;
+    flex-grow: 1;
+    user-select: none;
 
     &:hover {
         color: var(--emk-brand-color)
@@ -625,5 +679,49 @@ p .visibility-editor__areas {
 .visibility-editor__area-users__department-header {
     display: flex;
     flex-direction: row;
+}
+
+.user-choices-table__row {
+    cursor: pointer;
+
+    &:hover {
+        opacity: 0.7;
+
+        &>svg {
+            &:hover {
+                color: rgba(255, 0, 0, 0.497);
+            }
+        }
+    }
+
+    &>svg {
+        width: 20px;
+        color: red;
+        cursor: pointer;
+    }
+}
+
+.visibility-editor__area-users__edit-methods {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.visibility-editor__area-users__edit-methods__input-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.visibility-editor__area-users__edit-methods__search--disabled {
+    &>input {
+        background: #6666662d;
+    }
+}
+
+.visibility-editor__area-users--userMode {
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
 }
 </style>

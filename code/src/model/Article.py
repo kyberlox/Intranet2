@@ -2466,3 +2466,4 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
 # @article_router.get("/get_viewers/{ID}")
 # def get_viewers(ID: int):
 #     return Article(id = ID).get_art_views()
+

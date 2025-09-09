@@ -236,6 +236,12 @@
     "sectionHref": "carePost"
   },
   {
+    "id" : 56,
+    "name" : "Магазин Мерча",
+    "parent_id" : 5,
+    "sectionHref": "carePost"
+  },
+  {
     "id" : 6,
     "name" : "Уже НЕ актуальные новости",
     "parent_id" : 0

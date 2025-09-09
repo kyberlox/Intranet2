@@ -240,36 +240,36 @@ class Article:
         elif self.section_id == 71:
             nomination = None
             age_group = None
+            # property_dict = {
+            #     "PROPERTY_1071" : "nomination",
+            #     "PROPERTY_1072" : "age_group",
+            #     "PROPERTY_1070" : "author",
+            #     "created_by" : "CREATED_BY",
+            #     "PROPERTY_1074" : "representative_id",
+            #     "representative_text" : "PROPERTY_1075",
+            #     "PROPERTY_1073" : "likes_from_b24"
 
-            property_dict = {
-                "PROPERTY_1071" : "nomination",
-                "PROPERTY_1072" : "age_group",
-                "PROPERTY_1070" : "author",
-                "created_by" : "CREATED_BY",
-                "PROPERTY_1074" : "representative_id",
-                "representative_text" : "PROPERTY_1075"
-
-            }
+            # }
         
-            indirect_data = dict_to_indirect_data(data, property_dict)
-
-            # if 'PROPERTY_1071' in data:
-            #     if int(data['PROPERTY_1071'][0]) == 664:
-            #         nomination = 'Дети от 5 до 7 лет'
-            #     elif int(data['PROPERTY_1071'][0]) == 1775:
-            #         nomination = 'Дети от 8 до 11 лет'
-            #     elif int(data['PROPERTY_1071'][0]) == 1776:
-            #         nomination = 'Дети от 12 до 16 лет'
+            # indirect_data = dict_to_indirect_data(data, property_dict)
+            # print(data)
+            if 'PROPERTY_1071' in data:
+                if int(data['PROPERTY_1071'][0]) == 664:
+                    nomination = 'Дети от 5 до 7 лет'
+                elif int(data['PROPERTY_1071'][0]) == 1775:
+                    nomination = 'Дети от 8 до 11 лет'
+                elif int(data['PROPERTY_1071'][0]) == 1776:
+                    nomination = 'Дети от 12 до 16 лет'
         
 
 
-            # if 'PROPERTY_1072' in data:
-            #     if int(data['PROPERTY_1072'][0]) == 671:
-            #         age_group = 'Дети от 5 до 7 лет'
-            #     elif int(data['PROPERTY_1072'][0]) == 672:
-            #         age_group = 'Дети от 8 до 11 лет'
-            #     elif int(data['PROPERTY_1072'][0]) == 673:
-            #         age_group = 'Дети от 12 до 16 лет'
+            if 'PROPERTY_1072' in data:
+                if int(data['PROPERTY_1072'][0]) == 671:
+                    age_group = 'Дети от 5 до 7 лет'
+                elif int(data['PROPERTY_1072'][0]) == 672:
+                    age_group = 'Дети от 8 до 11 лет'
+                elif int(data['PROPERTY_1072'][0]) == 673:
+                    age_group = 'Дети от 12 до 16 лет'
 
             
 
@@ -282,17 +282,17 @@ class Article:
             #     "representative_text" : str(data['PROPERTY_1075'][0])
             # })
 
-            # '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
+            '''!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'''
 
-            # indirect_data = json.dumps({
-            #     "created_by" : data['CREATED_BY'],
-            #     "author" : str(data['PROPERTY_1070'][0]),
-            #     "nomination" : nomination,
-            #     "age_group" : age_group,
-            #     "representative_id" : int(data['PROPERTY_1074'][0]),
-            #     "representative_text" : str(data['PROPERTY_1075'][0]),
-            #     "likes_from_b24": data['PROPERTY_1073']
-            # })
+            indirect_data = {
+                "created_by" : data['CREATED_BY'],
+                "author" : str(data['PROPERTY_1070'][0]),
+                "nomination" : nomination,
+                "age_group" : age_group,
+                "representative_id" : int(data['PROPERTY_1074'][0]),
+                "representative_text" : str(data['PROPERTY_1075'][0]) if 'PROPERTY_1075' in data.keys() else None,
+                "likes_from_b24": data['PROPERTY_1073']
+            }
 
         #отдельно обарботаем случай Блогов
         elif self.section_id == 15:
@@ -1101,7 +1101,7 @@ class Article:
             # 25 : "100", #Референсы и опыт поставок ✔️
             # 175 : "60", # Учебный центр (Литература) ✔️
             # 7 : "66", #Конкурсы (Главная) ✔️
-            # 71 : "128", #Конкурсы (Непосредственно)
+            71 : "128", #Конкурсы (Непосредственно)
         }
         
         
@@ -1599,6 +1599,22 @@ class Article:
                 has_user_liked = User(id=user_id).has_liked(art_id=self.id)
                 art['reactions'] = has_user_liked
         
+        # магазин мерча
+        if art['section_id'] == 56:
+            result = {}
+            result['id'] = art['id']
+            result['active'] = art['active']
+            result['name'] = art['name']
+            result['content_text'] = art['content_text']
+            result['section_id'] = art['section_id']
+            result['price'] = str(art['indirect_data']['price']) + ' ' + art['indirect_data']['money']
+            art['indirect_data'].pop('price')
+            art['indirect_data'].pop('money')
+            result['current_sizes'] = [art['indirect_data']]
+            result['photo'] = [None]
+            return result
+        
+        
         return art
 
     def delete(self):
@@ -1723,6 +1739,20 @@ class Article:
             else:
                 return {"err" : "Auth Err"}
         
+        # магазин мерча
+        elif self.section_id == "56":
+            result = []
+            res = ArticleModel(section_id = self.section_id).find_by_section_id()
+            for re in res:
+                # отсюда достать все файлы
+                art_info = {}
+                art_info['id'] = re['id']
+                art_info['section_id'] = re['section_id']
+                art_info['name'] = re['name']
+                art_info['price'] = str(re['indirect_data']['price']) + ' ' + re['indirect_data']['money']
+                art_info['photo'] = [None]
+                result.append(art_info)
+            return result
         else:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
@@ -2193,43 +2223,44 @@ class Article:
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
         for inf in articles_info:
             if inf['section_id'] not in null_list:
-                likes_info = B24().get_likes_views(inf['id'])
-                
-                if likes_info != "Not found" and 'VOTES' in likes_info.keys():
-                    for vote in likes_info['VOTES']:
-                        # проверяем есть ли такие юзеры в бд
-                        user_exist = User(vote['USER_ID']).search_by_id()
-                        if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-                            continue
-                        else:
-                            LikesModel(user_id=vote['USER_ID'], art_id=inf['id']).add_like_from_b24(vote['CREATED_'])
+                # конкурсы ЭМК
+                if inf['section_id'] == 71:
+                    if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
+                        for user_id in inf['indirect_data']['likes_from_b24']:
+                            user_exist = User(int(user_id)).search_by_id()
+                            if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                                continue
+                            else:
+                                has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
+                                if has_usr_liked['likes']['likedByMe']:
+                                    continue
+                                else:
+                                    LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
+                                    
+                                # прописать удаление из indirect_data лайков
+                # все остальное
+                else:
+                    likes_info = B24().get_likes_views(inf['id'])
+                    
+                    if likes_info != "Not found" and 'VOTES' in likes_info.keys():
+                        for vote in likes_info['VOTES']:
+                            # проверяем есть ли такие юзеры в бд
+                            user_exist = User(vote['USER_ID']).search_by_id()
+                            if isinstance(user_exist, types.CoroutineType) or user_exist is None:
+                                continue
+                            else:
+                                LikesModel(user_id=vote['USER_ID'], art_id=inf['id']).add_like_from_b24(vote['CREATED_'])
 
-                    #удаляем тех, кто убрал лайк
-                    b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
-                    article_likers = LikesModel(art_id=inf['id']).get_article_likers()
-                    for usr in article_likers:
-                        if usr not in b24_likers:
-                            LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
-                        else:
-                            pass
+                        #удаляем тех, кто убрал лайк
+                        b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
+                        article_likers = LikesModel(art_id=inf['id']).get_article_likers()
+                        for usr in article_likers:
+                            if usr not in b24_likers:
+                                LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
+                            else:
+                                pass
 
-                    ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
-            # elif inf['section_id'] == 7:
-            #     if isinstance(inf['indirect_data'], str):
-            #         inf['indirect_data'] = json.loads(inf['indirect_data'])
-
-            #     if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
-            #         for user_id in inf['indirect_data']['likes_from_b24']:
-            #             user_exist = User(int(user_id)).search_by_id()
-            #             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
-            #                 continue
-            #             else:
-            #                 has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
-            #                 if has_usr_liked['likes']['likedByMe']:
-            #                     continue
-            #                 else:
-            #                     LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
-            #                 # прописать удаление из indirect_data лайков
+                        ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
                         
 
         return {"status": True}
@@ -2352,7 +2383,7 @@ def has_user_liked(article_id, request: Request):
     return Article(id=article_id).has_user_liked(session_id=session_id)
 
 # поиск по статьям еластик
-@article_router.get("/search/full_search_art/{keyword}")
+@article_router.get("/search/full_search_art/{keyword}/{size_res}")
 def elastic_search(keyword: str, size_res: int = 20):
     return ArticleSearchModel().elasticsearch_article(key_word=keyword, size_res=size_res)
 

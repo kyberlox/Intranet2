@@ -5,8 +5,9 @@ export interface IVisionUser {
     last_name: string;
     second_name: string;
     post: string;
-    photo: null | string;
+    image?: string;
     depart: string;
+    depart_id: number;
 }
 
 export interface IDepartment {
@@ -20,11 +21,12 @@ export interface IDepartment {
 
 export interface IUserSearch {
     department: string;
-    department_id: number;
-    user_fio: string;
-    user_id: number;
+    depart: number;
+    depart_id: number;
+    name: string;
+    id: number;
     user_position: string;
-    photo: null | string;
+    image?: string;
 }
 
 export interface IChoice {

@@ -5,8 +5,10 @@
                 <tbody>
                     <tr class="user-choices-table__row"
                         v-for="choice in choices"
-                        :key="choice.type + choice.id">
+                        :key="choice.type + choice.id"
+                        @click="$emit('deleteFromChoice', choice.id)">
                         <td>{{ choice.name }}</td>
+                        <CloseIcon />
                     </tr>
                 </tbody>
             </table>
@@ -28,6 +30,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { type IChoice } from '@/interfaces/IEntities';
+import CloseIcon from '@/assets/icons/common/Cancel.svg?component';
+
 export default defineComponent({
     props: {
         choices: {
@@ -37,8 +41,12 @@ export default defineComponent({
             type: Boolean
         }
     },
-    emits: ['saveChoices', 'clearChoices', 'deleteMultipleUsers'],
+    components: {
+        CloseIcon
+    },
+    emits: ['saveChoices', 'clearChoices', 'deleteMultipleUsers', 'deleteFromChoice'],
     setup(props, { emit }) {
+
         return {
 
         }

@@ -964,6 +964,7 @@ class ArticleModel():
         art.indirect_data.pop("likes_from_b24")
         flag_modified(art, 'indirect_data')
         self.db.commit()
+        self.db.close()
         return True
 
     def find_by_id(self):

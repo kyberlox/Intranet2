@@ -217,9 +217,9 @@ def test_update_photo():
     return User().set_users_photo()
 
 # поиск по статьям еластик
-@users_router.get("/search/full_search_users/{keyword}/{size_res}")
-def elastic_search(keyword: str, size_res: int = 20):
-    return UserSearchModel().elasticsearch_users(key_word=keyword, size_res=size_res)
+@users_router.get("/search/full_search_users/{keyword}")
+def elastic_search(keyword: str):
+    return UserSearchModel().elasticsearch_users(key_word=keyword)
 
 @users_router.get("/test_update_photo")
 def test_update_photo():

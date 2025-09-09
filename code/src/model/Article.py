@@ -2256,7 +2256,7 @@ class Article:
                                     LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
                         ArticleModel(id=int(inf['id'])).remove_b24_likes()
                                 
-                все остальное
+                # все остальное
                 else:
                     likes_info = B24().get_likes_views(inf['id'])
                     

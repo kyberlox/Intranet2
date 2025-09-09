@@ -385,7 +385,7 @@ class UserSearchModel:
     #     )
     #     return res['hits']['hits']
 
-    def elasticsearch_users(self, key_word, size_res):
+    def elasticsearch_users(self, key_word):
         result = []
         res = elastic_client.search(
             index=self.index,
@@ -453,7 +453,7 @@ class UserSearchModel:
                         ]
                     }
                 },
-                "size": size_res
+                "size": 1000
             }
         )
         users = []
@@ -462,12 +462,12 @@ class UserSearchModel:
         for res_info in res['hits']['hits']:
             if "matched_queries" in res_info.keys():
                 true_search_flag = True
-            #print(res_info)
             user_info = {}
             user_info['name'] = res_info["_source"]["user_fio"]
             user_info['sectionHref'] = "userPage"
             user_info['id'] = int(res_info["_id"])
             user_info['image'] = res_info["_source"]["photo_file_id"]
+            user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
             users.append(user_info)
         
         sec_user = {}

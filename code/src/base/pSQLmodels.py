@@ -657,7 +657,6 @@ class UserModel():
         return all_users """
 
 
-
 class DepartmentModel():
     def __init__(self, Id=None): #убрать None в будущем
         self.id = Id
@@ -791,7 +790,6 @@ class DepartmentModel():
 
     def all(self):
         return self.db.query(self.department).all()
-
 
 
 class UsDepModel():
@@ -960,7 +958,9 @@ class ArticleModel():
         else:
             return False
 
-        
+    def remove_b24_likes(self):
+        art = self.db.query(self.article).filter(self.article.id == self.id).first()
+        pass
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)
@@ -1946,3 +1946,4 @@ class MerchStoreModel:
     def __init(self):
         pass
 
+    # def put_user_sum

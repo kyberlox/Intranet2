@@ -1753,6 +1753,24 @@ class Article:
                 art_info['photo'] = [None]
                 result.append(art_info)
             return result
+        
+        # конкурсы ЭМК без компрессии
+        elif self.section_id == "71":
+            active_articles = []
+            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            for res in result:
+                if res['active']:
+                    self.id = res["id"]
+                    files = File(art_id = int(self.id)).get_files_by_art_id()
+                    res['preview_file_url'] = files[0] if files else None
+                    user_id = self.get_user_by_session_id(session_id=session_id)
+                    if user_id is not None:
+                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        res['reactions'] = has_user_liked
+                    active_articles.append(res)
+            sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+            return sorted_active_articles
+
         else:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
@@ -2236,8 +2254,8 @@ class Article:
                                     continue
                                 else:
                                     LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
-                                    
-                                # прописать удаление из indirect_data лайков
+                        ArticleModel(id=int(inf['id'])).remove_b24_likes()
+                                
                 # все остальное
                 else:
                     likes_info = B24().get_likes_views(inf['id'])

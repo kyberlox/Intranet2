@@ -7,6 +7,7 @@ from sqlalchemy.sql.expression import exists, select
 from sqlalchemy.sql.expression import func
 from sqlalchemy import inspect, text
 from sqlalchemy import update, insert, delete
+from sqlalchemy.orm.attributes import flag_modified
 
 
 from typing import List, Optional, Dict, Tuple
@@ -960,7 +961,10 @@ class ArticleModel():
 
     def remove_b24_likes(self):
         art = self.db.query(self.article).filter(self.article.id == self.id).first()
-        pass
+        art.indirect_data.pop("likes_from_b24")
+        flag_modified(art, 'indirect_data')
+        self.db.commit()
+        return True
 
     def find_by_id(self):
         art = db.query(Article).get(self.id)

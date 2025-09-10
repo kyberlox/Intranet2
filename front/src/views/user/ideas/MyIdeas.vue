@@ -30,11 +30,12 @@
                 </tbody>
             </table>
         </div>
-        <ZoomModal v-if="modalIsVisible"
-                   :currentUser="currentUser"
-                   :textContent="ideaInModal"
-                   :textOnly="true"
-                   @close="modalIsVisible = false" />
+        <SlotModal>
+            <MyIdeaModalInner v-if="modalIsVisible"
+                              :currentUser="currentUser"
+                              :textContent="ideaInModal"
+                              @close="modalIsVisible = false" />
+        </SlotModal>
     </div>
 </template>
 <script lang="ts">
@@ -42,13 +43,15 @@ import { defineComponent, onMounted, ref, computed, type Ref } from 'vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
 import { useUserData } from '@/stores/userData';
-import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { type IIdeaData } from '@/interfaces/IEntities';
+import SlotModal from '@/components/tools/modal/SlotModal.vue';
+import MyIdeaModalInner from './MyIdeaModalInner.vue';
+import type { IIdeaData } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'MyIdeas',
     components: {
-        ZoomModal
+        SlotModal,
+        MyIdeaModalInner
     },
     setup() {
         const currentUser = computed(() => useUserData().getUser)
@@ -68,6 +71,7 @@ export default defineComponent({
                     ideas.value = data;
                 })
         })
+
         return {
             ideas,
             modalIsVisible,

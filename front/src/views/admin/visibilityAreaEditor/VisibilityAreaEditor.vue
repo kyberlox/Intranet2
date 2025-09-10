@@ -22,7 +22,7 @@
                                     @depFilterChanged="(depValue) => handleFilterChanged(depValue, 'dep')"
                                     @fioFilterChanged="(fioValue) => handleFilterChanged(fioValue, 'fio')" />
 
-            <VisibilityAreaUsersList v-if="!editGroupMode"
+            <VisibilityAreaUsersList v-if="!editGroupMode && !isLoading"
                                      :editGroupMode="editGroupMode"
                                      :userChoices="choices"
                                      :formattedUsers="formattedUsers"
@@ -32,12 +32,16 @@
                                      @deleteDep="deleteDepFromVision"
                                      @pickUser="fixUserChoice" />
 
-            <VisibilityAreaEditorTree v-else
+            <VisibilityAreaEditorTree v-else-if="editGroupMode && !isLoading"
                                       @fixUserChoice="fixUserChoiceFromDepTree"
                                       :filteredDepartments="filteredDepartments"
                                       :filteredUsers="filteredUsers"
                                       :choices="choices"
                                       :departments="allDepStructure" />
+            <div v-else
+                 class="visibility-editor__area__loader__wrapper">
+                <Loader />
+            </div>
         </div>
 
         <VisibilityRightSidebar :choices="choices"
@@ -60,6 +64,10 @@ import VisibilityAreaUsersList from './components/VisibilityAreaUsersList.vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import VisibilityAreaSlotModal from './components/VisibilityAreaSlotModal.vue';
 import type { IVisionUser, IChoice, IFormattedUserGroup, IDepartment, IUserSearch, IUser } from '@/interfaces/IEntities';
+import Loader from '@/components/layout/Loader.vue';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
+import { handleApiError } from '@/utils/ApiResponseCheck';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -70,7 +78,8 @@ export default defineComponent({
         VisibilityAreaControls,
         VisibilityAreaUsersList,
         SlotModal,
-        VisibilityAreaSlotModal
+        VisibilityAreaSlotModal,
+        Loader
     },
     setup() {
         const allAreas = ref<{ id: number, vision_name: string }[]>([]);
@@ -82,8 +91,11 @@ export default defineComponent({
         const choices = ref<IChoice[]>([]);
         const fioFilterValue = ref<string>();
         const depFilterValue = ref<string>();
-        const filteredUsers = ref<IFormattedUserGroup[]>([]);
-        const filteredDepartments = ref<IUserSearch[]>([]);
+        const filteredUsers = ref<IUserSearch[]>([]);
+        const filteredDepartments = ref<IDepartment[]>([]);
+        const isLoading = ref(false);
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const departmentMap = new Map();
         const formattedUsers = computed(() => {
@@ -110,20 +122,39 @@ export default defineComponent({
 
         const getAllVisions = () => {
             Api.get(`fields_visions/get_all_visions`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => { allAreas.value = data })
         }
 
         const getVisionUser = (visionId: number) => {
+            isLoading.value = true
             Api.get(`fields_visions/get_users_in_vision/${visionId}`)
                 .then((data) => {
                     if ('msg' in data) return;
                     activeAreaUsers.value = data;
                     changeEditMode(false);
                 })
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
+                    isLoading.value = false;
+                })
         }
 
         const getDepStructureAll = () => {
             Api.get(`fields_visions/get_full_structure`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => {
                     createDepartmentTree(data);
                 })
@@ -131,20 +162,36 @@ export default defineComponent({
 
         const addOneDepartmentToArea = (visionId: number, departmentId: number) => {
             Api.put((`fields_visions/add_dep_users_only/${visionId}/${departmentId}`))
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     getVisionUser(visionId)
                 })
         }
 
         const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
+            isLoading.value = true;
             Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
-                    getVisionUser(visionId)
+                    getVisionUser(visionId);
                 })
         }
 
         const addUsersToArea = (visionId: number, userIds: number[]) => {
             Api.put(`fields_visions/add_users_list_to_vision/${visionId}`, userIds)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     getVisionUser(visionId)
                 })
@@ -152,7 +199,12 @@ export default defineComponent({
 
         const createNewArea = (newAreaName: string) => {
             Api.put(`fields_visions/create_new_vision/${newAreaName}`)
-                .then(() => {
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
                     modalIsOpen.value = false;
                     getAllVisions();
                     changeEditMode(false);
@@ -160,10 +212,15 @@ export default defineComponent({
         }
 
         const deleteArea = (id: number) => {
+            changeEditMode(false);
             Api.delete(`fields_visions/delete_vision/${id}`)
-                .then(() => {
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
                     getAllVisions();
-                    changeEditMode(false);
                     activeArea.value = Number('');
                 })
         }
@@ -261,7 +318,6 @@ export default defineComponent({
             clearChoices();
         }
 
-
         const clearChoices = () => {
             choices.value.length = 0;
         }
@@ -282,14 +338,25 @@ export default defineComponent({
             })
 
             Api.delete(`fields_visions/delete_users_from_vision/${activeArea.value}`, userIds)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     getVisionUser(activeArea.value!);
                 })
         }
 
         const deleteDepFromVision = (id: number) => {
+            isLoading.value = true;
             Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}`)
-                .then(() => {
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
                     getVisionUser(activeArea.value!);
                 })
         }
@@ -320,6 +387,11 @@ export default defineComponent({
 
         const getDepStructureByName = (word: string) => {
             Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => {
                     filteredUsers.value = [];
                     filteredDepartments.value = data;
@@ -327,13 +399,17 @@ export default defineComponent({
         }
 
         const getUserByName = (word: string) => {
-            Api.get(`users/search/full_search_users/${word}/100`)
+            Api.get(`users/search/full_search_users/${word}`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => {
                     filteredDepartments.value.length = 0;
                     filteredUsers.value = data[0].content;
                 });
         }
-
 
         return {
             allAreas,
@@ -347,6 +423,7 @@ export default defineComponent({
             depFilterValue,
             filteredUsers,
             filteredDepartments,
+            isLoading,
             deleteDepFromVision,
             deleteMultipleUsers,
             handleFilterChanged,
@@ -395,7 +472,7 @@ p .visibility-editor__areas {
 
 .visibility-editor__area-users__wrapper {
     flex: 1;
-    padding-right: 10px;
+    padding: 0 10px;
     margin-left: 0;
 }
 
@@ -723,5 +800,22 @@ p .visibility-editor__areas {
     gap: 5px;
     display: flex;
     flex-direction: column;
+}
+
+.visibility-editor__add-new-area__slot__button>svg {
+    display: flex;
+    height: 100%;
+}
+
+.visibility-editor__area__loader__wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &>.loader {
+        width: 120px;
+        height: 120px;
+    }
 }
 </style>

@@ -23,7 +23,6 @@
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType } from "vue";
 import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component';
-import PointsInfoTable from "@/views/user/userPointsComponents/PointsInfoTable.vue";
 
 interface ImageObject {
     file_url?: string;
@@ -59,7 +58,6 @@ export default defineComponent({
     },
     components: {
         CloseIcon,
-        PointsInfoTable
     },
     setup(props, { emit }) {
         return {

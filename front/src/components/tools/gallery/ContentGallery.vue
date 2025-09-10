@@ -8,7 +8,14 @@
                  @click="callModal(slide.images, index)"
                  class="contentGallery__card__img"
                  v-lazy-load="image.file_url"
-                 alt="slide"></div>
+                 alt="slide">
+            </div>
+            <Reactions v-if="modifiers?.includes('likes')"
+                       :reactions="(image?.reactions as IReaction)"
+                       :id="Number(image.id)"
+                       :type="'postPreview'"
+                       :modifiers="modifiers" />
+
         </div>
         <div v-for="(video, index) in slide.videos_embed"
              :key="'videEmbed' + index">
@@ -39,14 +46,22 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { IBXFileType } from "@/interfaces/IEntities";
+import type { IBXFileType, IReaction } from "@/interfaces/IEntities";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
+import Reactions from "../common/Reactions.vue";
+
+interface IImageItem extends IBXFileType {
+    id: string;
+    file_url: string;
+    preview_file_url?: string;
+    reactions?: IReaction;
+}
 
 export interface IContentGallerySlide {
-    name: string
-    images?: IBXFileType[],
-    videos_native?: IBXFileType[],
-    videos_embed?: IBXFileType[]
+    name: string;
+    images?: IImageItem[];
+    videos_native?: IBXFileType[];
+    videos_embed?: IBXFileType[];
 }
 
 export default defineComponent({
@@ -55,6 +70,12 @@ export default defineComponent({
         slide: {
             type: Object as PropType<IContentGallerySlide>
         },
+        modifiers: {
+            type: Array<string>
+        }
+    },
+    components: {
+        Reactions
     },
     setup(props, { emit }) {
 
@@ -108,8 +129,16 @@ export default defineComponent({
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         cursor: pointer;
-
         background-size: contain;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        &>.homeview__grid__card__group-buttons {
+            padding: 8px;
+        }
+
 
         &.lazy-loading {
             background-color: #f0f0f0;

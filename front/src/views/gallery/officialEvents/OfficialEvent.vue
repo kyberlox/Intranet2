@@ -3,12 +3,12 @@
         <div class="page__title">Официальные события</div>
         <div class="page__title__details"
              v-if="title">{{ title }}</div>
-        <PhotoGallery v-if="formattedSlides"
-                      class="mt20"
-                      :page=page
-                      :modifiers="modifiers"
-                      :slide="slide"
-                      @callModal="callModal" />
+        <ContentGallery v-if="formattedSlides"
+                        class="mt20"
+                        :page=page
+                        :modifiers="modifiers"
+                        :slide="slide"
+                        @callModal="callModal" />
     </div>
     <ZoomModal v-if="slide && slide.images?.length && modalIsOpen == true"
                :activeIndex="activeIndex"
@@ -17,17 +17,15 @@
 </template>
 
 <script lang="ts">
-import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { defineComponent, type Ref, ref, onMounted } from "vue";
-import PhotoGallery from "@/components/tools/gallery/ContentGallery.vue";
+import { defineComponent, ref, onMounted } from "vue";
+import ContentGallery from "@/components/tools/gallery/ContentGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import type { IContentGallerySlide } from "@/components/tools/gallery/ContentGallery.vue";
 
 export default defineComponent({
     components: {
-        ComplexGallery,
-        PhotoGallery,
+        ContentGallery,
         ZoomModal
     },
     props: {

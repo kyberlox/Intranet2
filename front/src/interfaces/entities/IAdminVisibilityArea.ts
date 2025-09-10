@@ -26,6 +26,7 @@ export interface IUserSearch {
     name: string;
     id: number;
     user_position: string;
+    dep_id: number;
     image?: string;
 }
 

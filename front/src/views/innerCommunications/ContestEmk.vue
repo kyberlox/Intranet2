@@ -5,9 +5,10 @@
              v-if="title">
             {{ title }}
         </div>
-        <ContentGallery v-if="slides && slides.length"
+        <ContentGallery v-if="slides && slides.images?.length"
                         class="mt20"
                         :slide="slides"
+                        :modifiers="['likes']"
                         @callModal="callModal" />
         <div v-else>
             <h5>Сейчас нет актуальных конкурсов</h5>
@@ -25,6 +26,7 @@ import Api from '@/utils/Api';
 import { onMounted, defineComponent, ref } from 'vue';
 import ContentGallery from '@/components/tools/gallery/ContentGallery.vue';
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
+import { type IContentGallerySlide } from '@/components/tools/gallery/ContentGallery.vue';
 
 export default defineComponent({
     components: {
@@ -32,18 +34,21 @@ export default defineComponent({
         ZoomModal
     },
     setup() {
-        const slides = ref();
+        const slides = ref<IContentGallerySlide>();
         const title = ref();
         const modalIsOpen = ref(false);
         const activeIndex = ref();
 
-        const callModal = () => {
-            modalIsOpen.value = true
+        const callModal = (param1: undefined, param2: undefined, id: number) => {
+            activeIndex.value = id;
+            modalIsOpen.value = true;
         }
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['Конкурсы']}`)
-                .then((data) => slides.value = data)
+                .then((data) => {
+                    slides.value!.images = data;
+                })
         })
 
         return {

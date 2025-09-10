@@ -13,13 +13,13 @@
                 <ul class="visibility-editor__area-department__info__users">
                     <li v-show="showingDeps.includes(dep.id)"
                         class="visibility-editor__area-user italic"
-                        @click="$emit('fixUserChoice', 'onlyDep', dep.id)">
-                        Добавить весь отдел
+                        @click="$emit('fixUserChoice', 'allDep', dep.id)">
+                        Добавить весь отдел с подотделами
                     </li>
                     <li v-show="showingDeps.includes(dep.id)"
                         class="visibility-editor__area-user italic"
-                        @click="$emit('fixUserChoice', 'allDep', dep.id)">
-                        Добавить весь отдел с подотделами
+                        @click="$emit('fixUserChoice', 'onlyDep', dep.id)">
+                        Добавить отдел без подотделов
                     </li>
                     <li v-show="showingDeps.includes(dep.id)"
                         class="visibility-editor__area-user visibility-editor__area-user--inDep"
@@ -47,7 +47,7 @@
             :class="{ 'visibility-editor__area-user--chosen': choices?.find((e) => e.id == user.id) }"
             v-for="user in filteredUsers"
             :key="user.id"
-            @click="$emit('fixUserChoice', 'user', dep.id, user.id)">
+            @click="$emit('fixUserChoice', 'user', user.dep_id, user.id)">
             <img v-if="user.image"
                  class="visibility-editor__area-user-avatar"
                  :src="user.image" />
@@ -106,7 +106,6 @@ export default defineComponent({
             }
             else showingDeps.value.splice(target, 1);
         }
-
 
         return {
             userDisplayMode,

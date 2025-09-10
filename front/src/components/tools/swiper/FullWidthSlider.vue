@@ -50,6 +50,7 @@ import SwiperArrowLeft from "@/assets/icons/common/SwiperArrowLeft.svg?component
 
 interface ImageObject {
     file_url?: string;
+    preview_file_url?: string;
 }
 
 type ImageItem = string | ImageObject;
@@ -114,8 +115,11 @@ export default defineComponent({
         };
 
         const getImageUrl = (image: ImageItem): string => {
-            if (typeof image === 'object' && image && 'file_url' in image && typeof image.file_url == 'string') {
+            if (image && typeof image === 'object' && 'file_url' in image && typeof image.file_url == 'string') {
                 return image.file_url;
+            }
+            else if (typeof image === 'object' && 'preview_file_url' in image && image.preview_file_url) {
+                return image.preview_file_url;
             }
             return image as string;
         };

@@ -22,7 +22,7 @@
                                     @depFilterChanged="(depValue) => handleFilterChanged(depValue, 'dep')"
                                     @fioFilterChanged="(fioValue) => handleFilterChanged(fioValue, 'fio')" />
 
-            <VisibilityAreaUsersList v-if="!editGroupMode"
+            <VisibilityAreaUsersList v-if="!editGroupMode && !isLoading"
                                      :editGroupMode="editGroupMode"
                                      :userChoices="choices"
                                      :formattedUsers="formattedUsers"
@@ -32,12 +32,16 @@
                                      @deleteDep="deleteDepFromVision"
                                      @pickUser="fixUserChoice" />
 
-            <VisibilityAreaEditorTree v-else
+            <VisibilityAreaEditorTree v-else-if="editGroupMode && !isLoading"
                                       @fixUserChoice="fixUserChoiceFromDepTree"
                                       :filteredDepartments="filteredDepartments"
                                       :filteredUsers="filteredUsers"
                                       :choices="choices"
                                       :departments="allDepStructure" />
+            <div v-else
+                 class="visibility-editor__area__loader__wrapper">
+                <Loader />
+            </div>
         </div>
 
         <VisibilityRightSidebar :choices="choices"
@@ -60,6 +64,10 @@ import VisibilityAreaUsersList from './components/VisibilityAreaUsersList.vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import VisibilityAreaSlotModal from './components/VisibilityAreaSlotModal.vue';
 import type { IVisionUser, IChoice, IFormattedUserGroup, IDepartment, IUserSearch, IUser } from '@/interfaces/IEntities';
+import Loader from '@/components/layout/Loader.vue';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
+import { handleApiError } from '@/utils/ApiResponseCheck';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -70,7 +78,8 @@ export default defineComponent({
         VisibilityAreaControls,
         VisibilityAreaUsersList,
         SlotModal,
-        VisibilityAreaSlotModal
+        VisibilityAreaSlotModal,
+        Loader
     },
     setup() {
         const allAreas = ref<{ id: number, vision_name: string }[]>([]);
@@ -82,8 +91,11 @@ export default defineComponent({
         const choices = ref<IChoice[]>([]);
         const fioFilterValue = ref<string>();
         const depFilterValue = ref<string>();
-        const filteredUsers = ref<IFormattedUserGroup[]>([]);
-        const filteredDepartments = ref<IUserSearch[]>([]);
+        const filteredUsers = ref<IUserSearch[]>([]);
+        const filteredDepartments = ref<IDepartment[]>([]);
+        const isLoading = ref(false);
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const departmentMap = new Map();
         const formattedUsers = computed(() => {
@@ -114,11 +126,15 @@ export default defineComponent({
         }
 
         const getVisionUser = (visionId: number) => {
+            isLoading.value = true
             Api.get(`fields_visions/get_users_in_vision/${visionId}`)
                 .then((data) => {
                     if ('msg' in data) return;
                     activeAreaUsers.value = data;
                     changeEditMode(false);
+                })
+                .finally(() => {
+                    isLoading.value = false;
                 })
         }
 
@@ -138,6 +154,11 @@ export default defineComponent({
 
         const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
             Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     getVisionUser(visionId)
                 })
@@ -327,13 +348,12 @@ export default defineComponent({
         }
 
         const getUserByName = (word: string) => {
-            Api.get(`users/search/full_search_users/${word}/100`)
+            Api.get(`users/search/full_search_users/${word}`)
                 .then((data) => {
                     filteredDepartments.value.length = 0;
                     filteredUsers.value = data[0].content;
                 });
         }
-
 
         return {
             allAreas,
@@ -347,6 +367,7 @@ export default defineComponent({
             depFilterValue,
             filteredUsers,
             filteredDepartments,
+            isLoading,
             deleteDepFromVision,
             deleteMultipleUsers,
             handleFilterChanged,
@@ -723,5 +744,22 @@ p .visibility-editor__areas {
     gap: 5px;
     display: flex;
     flex-direction: column;
+}
+
+.visibility-editor__add-new-area__slot__button>svg {
+    display: flex;
+    height: 100%;
+}
+
+.visibility-editor__area__loader__wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &>.loader {
+        width: 120px;
+        height: 120px;
+    }
 }
 </style>

@@ -57,7 +57,7 @@
                 </ul>
                 <div class="admin-panel__nav__button-group">
                     <button class="admin-panel__nav__button primary-button"
-                            @click="$emit('addNewArea')">Добавить</button>
+                            @click="$emit('addNewArea')">Создать</button>
                     <button v-if="activeId"
                             class="admin-panel__nav__button primary-button"
                             @click="$emit('deleteArea', activeId)">Удалить</button>

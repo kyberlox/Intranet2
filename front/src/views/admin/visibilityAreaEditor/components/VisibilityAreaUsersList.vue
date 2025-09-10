@@ -90,7 +90,6 @@ export default defineComponent({
                 return true;
         }
 
-
         return {
             showAllDepsUsers,
             showingDeps,

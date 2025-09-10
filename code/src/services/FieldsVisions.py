@@ -49,12 +49,13 @@ class Visions:
             for de in dep:
                 if de['id'] == 53:
                     for user in de['users']:
-                        all_dep_users.append(user['user_id'])
+                        print(user)
+                        all_dep_users.append(user['id'])
                 else:
                     dep_n_1 = self.get_dep_structure(de['id'])
                     for dep_users in dep_n_1:
                         for user in dep_users['users']:
-                            all_dep_users.append(user['user_id'])
+                            all_dep_users.append(user['id'])
 
         else:
             dep = self.get_dep_structure(dep_id)

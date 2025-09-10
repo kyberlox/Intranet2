@@ -1412,7 +1412,6 @@ class UservisionsRootModel:
                     name = user_info['name'] if user_info['name'] else ''
                     last_name = user_info['last_name'] if user_info['last_name'] else ''
                     second_name = user_info['second_name'] if user_info['second_name'] else ''
-                    print(type(name), type(last_name), type(second_name))
                     general_info['name'] = last_name + ' ' + name + ' ' + second_name
                     general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
                     general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None

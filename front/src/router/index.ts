@@ -133,7 +133,7 @@ const router = createRouter({
     {
       path: '/about/trainingcenter/trainings/:id',
       name: 'conductedTraining',
-      component: () => import('@/views/about/trainingCenter/conductedTrainings/FeedBackModal.vue'),
+      component: () => import('@/views/about/trainingCenter/conductedTrainings/FeedBackModalInner.vue'),
       props: (route) => ({ id: route.params.id }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }, { title: 'Тренинги', route: 'conductedTrainings' }]
@@ -476,13 +476,13 @@ const router = createRouter({
     {
       path: '/user/ideas/',
       name: 'ideasPage',
-      component: () => import('@/views/user/MyIdeas.vue'),
+      component: () => import('@/views/user/ideas/MyIdeas.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {
       path: '/user/ideas/new',
       name: 'newIdeaPage',
-      component: () => import('@/views/user/NewIdea.vue')
+      component: () => import('@/views/user/ideas/NewIdea.vue')
     },
     {
       path: '/admin',

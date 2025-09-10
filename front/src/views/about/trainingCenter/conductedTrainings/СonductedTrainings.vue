@@ -3,10 +3,12 @@
         <div class="page__title">Проведённые тренинги</div>
         <TrainingTable :tableElements="trainings"
                        :page="'conductedTrainings'"
-                       @openModal="handleModal" />
-        <FeedBackModal v-if="modalIsVisible == true"
-                       @closeModal="handleModal('close', null)"
-                       :trainingInModal="trainingInModal" />
+                       @openModal="(item: IConductedTrainings) => handleModal('open', item)" />
+
+        <SlotModal v-if="modalIsVisible == true"
+                   @closeModal="handleModal('close', null)">
+            <FeedBackModalInner :trainingInModal="trainingInModal" />
+        </SlotModal>
     </div>
 </template>
 
@@ -14,14 +16,16 @@
 import TrainingTable from "../components/TrainingTable.vue";
 import { defineComponent, onMounted, ref, type Ref } from "vue";
 import Api from "@/utils/Api";
-import FeedBackModal from "@/views/about/trainingCenter/conductedTrainings/FeedBackModal.vue"
+import FeedBackModalInner from "@/views/about/trainingCenter/conductedTrainings/FeedBackModalInner.vue";
 import { sectionTips } from "@/assets/static/sectionTips";
 import type { IConductedTrainings } from "@/interfaces/IEntities";
+import SlotModal from "@/components/tools/modal/SlotModal.vue";
 
 export default defineComponent({
     components: {
         TrainingTable,
-        FeedBackModal
+        SlotModal,
+        FeedBackModalInner
     },
     setup() {
         const trainings: Ref<IConductedTrainings[]> = ref([]);
@@ -36,6 +40,9 @@ export default defineComponent({
         })
 
         const handleModal = (type: string, item: IConductedTrainings | null) => {
+            console.log(type);
+            console.log(item);
+
             if (type == 'open' && item) {
                 trainingInModal.value = item;
                 modalIsVisible.value = true;

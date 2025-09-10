@@ -122,6 +122,11 @@ export default defineComponent({
 
         const getAllVisions = () => {
             Api.get(`fields_visions/get_all_visions`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => { allAreas.value = data })
         }
 
@@ -133,6 +138,11 @@ export default defineComponent({
                     activeAreaUsers.value = data;
                     changeEditMode(false);
                 })
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     isLoading.value = false;
                 })
@@ -140,6 +150,11 @@ export default defineComponent({
 
         const getDepStructureAll = () => {
             Api.get(`fields_visions/get_full_structure`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => {
                     createDepartmentTree(data);
                 })
@@ -147,13 +162,6 @@ export default defineComponent({
 
         const addOneDepartmentToArea = (visionId: number, departmentId: number) => {
             Api.put((`fields_visions/add_dep_users_only/${visionId}/${departmentId}`))
-                .finally(() => {
-                    getVisionUser(visionId)
-                })
-        }
-
-        const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
-            Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)
@@ -164,8 +172,26 @@ export default defineComponent({
                 })
         }
 
+        const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
+            isLoading.value = true;
+            Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
+                    getVisionUser(visionId);
+                })
+        }
+
         const addUsersToArea = (visionId: number, userIds: number[]) => {
             Api.put(`fields_visions/add_users_list_to_vision/${visionId}`, userIds)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     getVisionUser(visionId)
                 })
@@ -173,7 +199,12 @@ export default defineComponent({
 
         const createNewArea = (newAreaName: string) => {
             Api.put(`fields_visions/create_new_vision/${newAreaName}`)
-                .then(() => {
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
                     modalIsOpen.value = false;
                     getAllVisions();
                     changeEditMode(false);
@@ -181,10 +212,15 @@ export default defineComponent({
         }
 
         const deleteArea = (id: number) => {
+            changeEditMode(false);
             Api.delete(`fields_visions/delete_vision/${id}`)
-                .then(() => {
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
                     getAllVisions();
-                    changeEditMode(false);
                     activeArea.value = Number('');
                 })
         }
@@ -282,7 +318,6 @@ export default defineComponent({
             clearChoices();
         }
 
-
         const clearChoices = () => {
             choices.value.length = 0;
         }
@@ -303,14 +338,25 @@ export default defineComponent({
             })
 
             Api.delete(`fields_visions/delete_users_from_vision/${activeArea.value}`, userIds)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .finally(() => {
                     getVisionUser(activeArea.value!);
                 })
         }
 
         const deleteDepFromVision = (id: number) => {
+            isLoading.value = true;
             Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}`)
-                .then(() => {
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
+                .finally(() => {
                     getVisionUser(activeArea.value!);
                 })
         }
@@ -341,6 +387,11 @@ export default defineComponent({
 
         const getDepStructureByName = (word: string) => {
             Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => {
                     filteredUsers.value = [];
                     filteredDepartments.value = data;
@@ -349,6 +400,11 @@ export default defineComponent({
 
         const getUserByName = (word: string) => {
             Api.get(`users/search/full_search_users/${word}`)
+                .catch(error => {
+                    if (error.response?.status == 500) {
+                        handleApiError(error, toast)
+                    }
+                })
                 .then((data) => {
                     filteredDepartments.value.length = 0;
                     filteredUsers.value = data[0].content;
@@ -416,7 +472,7 @@ p .visibility-editor__areas {
 
 .visibility-editor__area-users__wrapper {
     flex: 1;
-    padding-right: 10px;
+    padding: 0 10px;
     margin-left: 0;
 }
 

@@ -84,10 +84,10 @@
                                  v-else>
                                 ...
                             </div>
-                            <ZoomModal :modalForUserPoints="true"
-                                       :textOnly="true"
-                                       v-if="pointsModalIsOpen == true"
-                                       @close="pointsModalIsOpen = false" />
+                            <SlotModal v-if="pointsModalIsOpen == true"
+                                       @close="pointsModalIsOpen = false">
+                                <LayoutHeaderPointsModal />
+                            </SlotModal>
                         </div>
                     </div>
                 </div>
@@ -110,17 +110,17 @@ import SearchModal from "@/components/tools/modal/SearchModal/SearchModal.vue";
 import { useUserData } from "@/stores/userData";
 import { useWindowSize } from '@vueuse/core'
 import { screenCheck } from "@/utils/screenCheck";
-import PointsInfoTable from "@/views/user/userPointsComponents/PointsInfoTable.vue";
-import ZoomModal from "../tools/modal/ZoomModal.vue";
 import { useUserScore } from "@/stores/userScoreData";
+import SlotModal from "../tools/modal/SlotModal.vue";
+import LayoutHeaderPointsModal from "./LayoutHeaderPointsModal.vue";
 
 export default defineComponent({
     components: {
         SidebarLk,
         SearchIcon,
         SearchModal,
-        PointsInfoTable,
-        ZoomModal
+        SlotModal,
+        LayoutHeaderPointsModal
     },
     setup() {
         const userData = useUserData();

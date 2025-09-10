@@ -10,7 +10,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in pointTablePlug">
+                <tr v-for="item in pointTablePlug"
+                    :key="item.id">
                     <td>{{ item.date }}</td>
                     <td>{{ item.who }}</td>
                     <td>{{ item.comment }}</td>

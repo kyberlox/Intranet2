@@ -1323,7 +1323,7 @@ class ArticleSearchModel:
         return {"status": True}
 
        
-    def elasticsearch_article(self, key_word, size_res: Optional[int] = 20):
+    def elasticsearch_article(self, key_word):
         result = []
         res = elastic_client.search(
             index=self.index,
@@ -1392,7 +1392,7 @@ class ArticleSearchModel:
                         }
                     }
                 },
-                "size": size_res
+                "size": 200
             }
         )
         articles = []

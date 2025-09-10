@@ -1535,6 +1535,10 @@ class ActivitiesModel:
         else:
             return {"msg": "нет такой активности"}
 
+    def new_activity(self, user_id):
+        max_id = self.session.query(func.max(Activities.id)).scalar() or 0
+        pass
+
 class ActiveUsersModel:
 
     def __init__(self, id: int = 0, description: str = '', valid: int = 0, uuid_from: int = 0, uuid_to: int = 0, activities_id: int = 0):
@@ -1962,4 +1966,5 @@ class MerchStoreModel:
             self.session.commit()
         self.session.close()
         return True
+
 

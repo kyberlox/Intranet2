@@ -224,8 +224,8 @@ def new_a_week(uuid: int):
 def user_history(uuid: int):
     return Peer(user_uuid=uuid).user_history()
 """"""
-@peer_router.put("/new_active")
-def new_active(data = Body()):
+@peer_router.put("/send_points")
+def send_points(data = Body()):
     return Peer().new_active(data) # {"uuid_from": "4133", "uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 
 @peer_router.get("/get_admins_list")

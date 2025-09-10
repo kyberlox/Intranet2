@@ -52,7 +52,7 @@ class Peer:
     def do_not_valid(self, action_id): 
         return ModersModel(uuid=self.user_uuid).do_not_valid(action_id)
 
-    def confirmation(self): 
+    def points_to_confirm(self): 
         return ModersModel(activities_id=self.activities_id).confirmation()
     
     def get_moders(self): 
@@ -87,8 +87,8 @@ class Peer:
     def user_history(self): 
         return ActiveUsersModel(uuid_to=self.user_uuid).user_history()
     """"""
-    def new_active(self, data):
-        return AdminModel().new_active(data)
+    def send_points(self, data):
+        return AdminModel().send_points(data)
 
     def get_admins_list(self):
         return AdminModel().get_admins_list()
@@ -170,6 +170,9 @@ def edit_activity(data = Body()):
 @peer_router.delete("/remove_activity")
 def remove_activity(id: str):
     return Peer(id=id).remove_activity()
+
+# @peer_router.put("create_activity")
+# def create_activity
 """"""
 @peer_router.post("/do_valid/{action_id}/{uuid}")
 def do_valid(action_id: int, uuid: int):
@@ -179,9 +182,9 @@ def do_valid(action_id: int, uuid: int):
 def do_not_valid(action_id: int, uuid: int):
     return Peer(user_uuid=uuid).do_not_valid(action_id) 
 
-@peer_router.get("/confirmation/{activities_id}")
-def confirmation(activities_id: int):
-    return Peer(activities_id=activities_id).confirmation()
+@peer_router.get("/points_to_confirm/{activities_id}")
+def points_to_confirm(activities_id: int):
+    return Peer(activities_id=activities_id).points_to_confirm()
 
 @peer_router.get("/get_moders")
 def get_moders():
@@ -226,7 +229,7 @@ def user_history(uuid: int):
 """"""
 @peer_router.put("/send_points")
 def send_points(data = Body()):
-    return Peer().new_active(data) # {"uuid_from": "4133", "uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
+    return Peer().send_points(data) # {"uuid_from": "4133", "uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 
 @peer_router.get("/get_admins_list")
 def get_admins_list():

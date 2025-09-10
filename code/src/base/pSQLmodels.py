@@ -24,7 +24,7 @@ from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 
-ADMINS_PEER = []
+ADMINS_PEER = [2366]
 
 DOMAIN = os.getenv('HOST')
 
@@ -1535,9 +1535,17 @@ class ActivitiesModel:
         else:
             return {"msg": "нет такой активности"}
 
-    def new_activity(self, user_id):
+    def new_activity(self):
         max_id = self.session.query(func.max(Activities.id)).scalar() or 0
-        pass
+        new_active = Activities(
+            id=max_id + 1,
+            name=self.name,
+            coast=self.coast,
+            need_valid=self.need_valid
+        )
+        self.session.add(new_active)
+        self.session.commit()
+        return max_id + 1
 
 class ActiveUsersModel:
 
@@ -1587,7 +1595,7 @@ class ActiveUsersModel:
             ).all()
 
         activities_list = [
-            {"id": activity.id, "name": activity.name}
+            {"value": activity.id, "name": activity.name}
             for activity in result
         ]
 
@@ -1802,7 +1810,7 @@ class ModersModel:
         self.session.close()
         return {"status": True}
     
-    def confirmation(self):
+    def points_to_confirm(self):
         res = self.session.query(ActiveUsers, Activities).join(Activities, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.activities_id == Activities.id, ActiveUsers.valid == 0, Activities.id == self.activities_id).all()
         if res:
             result = []
@@ -1883,7 +1891,7 @@ class AdminModel:
         self.session = db
         self.uuid = uuid
 
-    def new_active(self, data):
+    def send_points(self, data):
         res = False
         uuid_from = data["uuid_from"]
         uuid_to =  data["uuid_to"]

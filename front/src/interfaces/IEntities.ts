@@ -19,3 +19,4 @@ export * from './entities/IWorkerOfTheYear';
 export * from './entities/ICalendar';
 export * from './entities/IBirthday';
 export * from './entities/IAdminVisibilityArea';
+export * from './entities/IAdminPoints';

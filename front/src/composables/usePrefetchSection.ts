@@ -6,6 +6,7 @@ import { useblogDataStore } from "@/stores/blogData";
 import { useViewsDataStore } from "@/stores/viewsData";
 import { useUserData } from "@/stores/userData";
 import { useUserScore } from "@/stores/userScoreData";
+import { usePointsData } from "@/stores/PointsData";
 
 export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {
     if (!useUserData().isLogin) return;
@@ -50,7 +51,12 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             {
                 route: '/peer/statistics',
                 functionName: useUserScore().setStatistics
-            }]
+            },
+            {
+                route: '/peer/get_all_activities',
+                functionName: usePointsData().setAllActivities
+            }
+            ]
             scoreRoutes.map((e) => {
                 Api.get(e.route)
                     .then((data) => {

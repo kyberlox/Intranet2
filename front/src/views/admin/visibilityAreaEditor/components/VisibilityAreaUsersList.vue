@@ -33,7 +33,7 @@
     </div>
     <div class="mt20"
          v-else>
-        Добавьте пользователей в текущую облась видимости
+        {{ activeArea ? 'Добавьте пользователей в облась видимости' : 'Создайте и выберите область видимости' }}
     </div>
 </template>
 
@@ -58,6 +58,9 @@ export default defineComponent({
         },
         depFilter: {
             type: String
+        },
+        activeArea: {
+            type: Number
         }
     },
     components: {

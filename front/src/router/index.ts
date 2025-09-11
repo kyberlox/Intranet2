@@ -526,6 +526,22 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
+    {
+      path: '/admin/scoreAdmin',
+      name: 'pointsAdministrator',
+      component: () => import('@/views/admin/pointsSystem/superAdminPanel/SuperAdminPanel.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
+    {
+      path: '/admin/pointsmoderation',
+      name: 'pointsModeration',
+      component: () => import('@/views/admin/pointsSystem/ModeratorValidationPanel.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

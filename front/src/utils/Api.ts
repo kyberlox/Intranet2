@@ -5,7 +5,7 @@ import type { IPostIdea, IAuth } from '@/interfaces/IPostFetch';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
 import type { IPostCardMsg } from '@/interfaces/entities/IPostCardMsg';
-
+import type { IPointsForm } from '@/interfaces/IPutFetchData';
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 const authKey = computed(() => useUserData().getAuthKey);
 
@@ -44,8 +44,8 @@ export default class Api {
         return (await api.post(url, data)).data;
     }
 
-    static async put(url: string, data?: number[]) {
-        return (await api.put(url, data))
+    static async put(url: string, data?: number[] | IPointsForm) {
+        return (await api.put(url, data)).data
     }
 
     static async delete(url: string, data?: number[]) {

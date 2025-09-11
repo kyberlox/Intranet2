@@ -8,7 +8,7 @@
                     v-for="(option, index) in item?.values"
                     :value="option"
                     :key=index>
-                {{ renderOptionText(option) }}
+                {{ typeof option === 'string' ? (yesOrNoFormat ? renderOptionText(option) : option) : option.name }}
             </option>
         </select>
     </div>
@@ -19,7 +19,12 @@ import { defineComponent, type PropType, ref } from 'vue';
 import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
 
 export default defineComponent({
+    name: 'SelectComponent',
     props: {
+        yesOrNoFormat: {
+            type: Boolean,
+            default: true
+        },
         item: {
             type: Object as PropType<IAdminListItem>
         },

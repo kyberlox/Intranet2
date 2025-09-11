@@ -79,7 +79,7 @@ import AdminEditReportage from '@/views/admin/components/inputFields/AdminEditRe
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage } from '@/interfaces/entities/IAdmin';
-import { chooseImgPlug } from '@/utils/chooseImgPlug';
+
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 import FileUploader from '../../components/tools/common/FileUploader.vue';
@@ -199,7 +199,7 @@ export default defineComponent({
       buttonIsDisabled.value = true;
       await Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
         .then((data) => {
-          handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminApdateElementSuccess')
+          handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
           router.push({ name: 'adminBlockInner', params: { id: props.id } })
         })
         .catch((error) => {

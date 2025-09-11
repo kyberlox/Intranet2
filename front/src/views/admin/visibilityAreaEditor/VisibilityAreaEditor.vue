@@ -29,6 +29,7 @@
                                      :filteredUsers="filteredUsers"
                                      :fioFilter="fioFilterValue"
                                      :depFilter="depFilterValue"
+                                     :activeArea="activeArea"
                                      @deleteDep="deleteDepFromVision"
                                      @pickUser="fixUserChoice" />
 
@@ -68,6 +69,7 @@ import Loader from '@/components/layout/Loader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiError } from '@/utils/ApiResponseCheck';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -100,7 +102,7 @@ export default defineComponent({
         const departmentMap = new Map();
         const formattedUsers = computed(() => {
             const formattedGroup: IFormattedUserGroup[] = [];
-            activeAreaUsers.value.forEach((user) => {
+            activeAreaUsers.value?.forEach((user) => {
                 const target = formattedGroup.find((formatItem) => formatItem.depart == user.depart);
                 if (!target) {
                     formattedGroup.push({ depart: user.depart, users: [user], depart_id: user.depart_id })
@@ -220,8 +222,9 @@ export default defineComponent({
                     }
                 })
                 .finally(() => {
-                    getAllVisions();
                     activeArea.value = Number('');
+                    activeAreaUsers.value.length = 0;
+                    getAllVisions();
                 })
         }
 
@@ -666,7 +669,8 @@ p .visibility-editor__areas {
     &>svg {
         cursor: pointer;
         color: red;
-        width: 30px;
+        min-width: 30px;
+        max-width: 30px;
 
         &:hover {
             color: rgba(255, 0, 0, 0.497);
@@ -712,7 +716,7 @@ p .visibility-editor__areas {
 
 .visibility-editor__add-new-area__slot__button--accept {
     &:hover {
-        background: green;
+        background: #4bad66;
     }
 }
 

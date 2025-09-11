@@ -1,10 +1,7 @@
-from src.base.pSQLmodels import DepartmentModel
-from src.base.SearchModel import StructureSearchModel
-from src.base.B24 import B24
-from src.services.LogsMaker import LogsMaker
-
-import requests
-import json
+from pSQL import DepartmentModel
+from base import StructureSearchModel
+from base import B24
+from services import LogsMaker
 
 from fastapi import APIRouter, Body, Request
 from fastapi.templating import Jinja2Templates

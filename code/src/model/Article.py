@@ -1,16 +1,14 @@
-from src.base.B24 import B24
-from src.base.pSQLmodels import ArticleModel
-from src.base.SearchModel import ArticleSearchModel
-from src.base.mongodb import FileModel
-from src.model.File import File
-from src.model.User import User
-from src.model.Section import Section
-from src.model.Tag import Tag
-from src.services.LogsMaker import LogsMaker
-from src.base.pSQLmodels import LikesModel
-from src.base.pSQLmodels import ViewsModel
-from src.services.Idea import Idea
-from src.services.Auth import AuthService
+from base import B24
+from base import ArticleSearchModel
+from model import File
+from model import User
+from model import Tag
+from pSQL import ArticleModel
+from pSQL import LikesModel
+from pSQL import ViewsModel
+from services import Idea
+from services import AuthService
+from services import LogsMaker
 
 import re
 import json

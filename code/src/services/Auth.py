@@ -11,9 +11,9 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
-from src.base.RedisStorage import RedisStorage
-from src.services.LogsMaker import LogsMaker
-from src.model.User import User
+from base import RedisStorage
+from services import LogsMaker
+from model import User
 
 import json
 

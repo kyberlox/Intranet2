@@ -1,4 +1,4 @@
-from src.base.pSQLmodels import TagsModel
+from pSQL import TagsModel
 
 from fastapi import APIRouter
 

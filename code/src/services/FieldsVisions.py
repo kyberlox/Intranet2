@@ -1,7 +1,6 @@
-from src.base.pSQLmodels import FieldvisionModel, UservisionsRootModel
-from src.base.SearchModel import StructureSearchModel, UserSearchModel
-from src.base.B24 import B24
-from src.services.LogsMaker import LogsMaker
+from pSQL import FieldvisionModel, UservisionsRootModel
+from base import StructureSearchModel
+from services import LogsMaker
 
 #from fastapi import APIRouter
 

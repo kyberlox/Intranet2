@@ -2,14 +2,13 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from typing import Annotated, List
 
-from src.services.LogsMaker import LogsMaker
-from src.base.pSQLmodels import ArticleModel
-from src.base.SearchModel import ArticleSearchModel
-from src.base.mongodb import FileModel
-from src.model.Article import Article
-from src.model.Section import Section
-from src.model.File import File as storeFile
-from src.model.User import User
+from services import LogsMaker
+from pSQL import ArticleModel
+from base import FileModel
+from model import Article
+from model import Section
+from model import File as storeFile
+from model import User
 
 from bson.objectid import ObjectId
 
@@ -609,8 +608,8 @@ def create_file(file: UploadFile, art_id : int): #нельзя асинхрон�
 def del_file(file_id: str):
     return storeFile(id = file_id).editor_del_file()
 
-@editor_router.post("/upload_files")
-async def create_upload_files(files: List[UploadFile] ):
+@editor_router.post("/upload_files/{art_id}")
+async def create_upload_files(art_id, files: List[UploadFile] ):
     try:
         # Обработка каждого файла
         file_infos = []

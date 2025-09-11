@@ -11,35 +11,38 @@ from fastapi import Request, HTTPException, status
 
 # from bson import Binary
 
-from src.model.User import User, users_router
-from src.model.Department import Department, depart_router
-from src.model.UsDep import UsDep, usdep_router
+from model import User, users_router
+from model import Department, depart_router
+from model import UsDep, usdep_router
 
-from src.model.Section import Section, section_router
-from src.model.Article import Article, article_router
+from model import Section, section_router
+from model import Article, article_router
 
-from src.model.File import File, file_router
-from src.services.VCard import vcard_app
-from src.services.LogsMaker import LogsMaker
+from model import Tag, tag_router
 
-from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere, ArticleSearchModel
+from model import File, file_router
 
-from src.base.B24 import B24, b24_router
+from base import UserSearchModel, StructureSearchModel, search_router, search_everywhere, ArticleSearchModel
 
-from src.services.Auth import AuthService, auth_router
-from src.services.Comporession import compress_router
-from src.services.Idea import idea_router
+from base import B24, b24_router
 
-from src.services.Editor import Editor, editor_router
+from services import vcard_app
+from services import LogsMaker
 
-from src.services.FieldsVisions import Visions, fieldsvisions_router
 
-from src.services.Peer import Peer, peer_router
-from src.services.MerchStore import MerchStore, store_router
 
-from src.model.Tag import Tag, tag_router
+from services import AuthService, auth_router
+from services import compress_router
+from services import idea_router
 
-from src.services.AIchat import ai_router
+from services import editor_router
+
+from services import fieldsvisions_router
+
+from services import peer_router
+from services import store_router
+
+from services import ai_router
 
 from typing import Awaitable, Callable, Optional
 

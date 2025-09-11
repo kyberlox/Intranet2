@@ -1,12 +1,12 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 
-from src.base.B24 import B24
-from src.services.Auth import AuthService
-from src.model.User import User
+from base import B24
+from services import AuthService
+from model import User
 
-from src.services.LogsMaker import LogsMaker
+from services import LogsMaker
 
-import json
+
 
 idea_router = APIRouter(prefix="/idea", tags=["Битрикс24"])
 

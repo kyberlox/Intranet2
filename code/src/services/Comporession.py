@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import Response
 from PIL import Image, ImageFilter
 from io import BytesIO
 import os

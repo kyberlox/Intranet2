@@ -1,4 +1,4 @@
-from src.base.pSQLmodels import MerchStoreModel
+from pSQL import MerchStoreModel
 from fastapi import APIRouter, Body, Request
 
 store_router = APIRouter(prefix="/store", tags=["Магазин мерча"])

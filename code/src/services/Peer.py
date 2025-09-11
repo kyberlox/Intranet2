@@ -1,8 +1,8 @@
-from src.base.pSQLmodels import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
+from pSQL import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
 from fastapi import APIRouter, Body, Request
 
-from src.model.User import User
-from src.services.Auth import AuthService
+from model import User
+from services import AuthService
 
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
@@ -110,6 +110,7 @@ class Peer:
             user_inf = User(uuid = user_uuid).user_inf_by_uuid()
             return user_inf["ID"]
         return None
+
 
 
 # дампит старые данные

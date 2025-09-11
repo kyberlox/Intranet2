@@ -1,9 +1,9 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from pydantic import BaseModel
 
-from src.model.User import User
+from ..model import User
 
 import requests
 

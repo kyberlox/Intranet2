@@ -1,7 +1,5 @@
-from src.base.B24 import B24
-from src.base.pSQLmodels import SectionModel
-from src.base.mongodb import FileModel
-from src.services.LogsMaker import LogsMaker
+from pSQL import SectionModel
+from services import LogsMaker
 
 from datetime import datetime
 

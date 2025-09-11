@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-import os
 
-from src.base.B24 import B24
+from base import B24
+
 from transliterate import translit
 import qrcode
 import vobject
 import base64
 import requests
+import os
 
 
 vcard_app = APIRouter(prefix="/vcard", tags=["VCard"])

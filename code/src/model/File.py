@@ -1,6 +1,6 @@
-from src.base.mongodb import FileModel
-from src.base.B24 import B24
-from src.services.LogsMaker import LogsMaker
+from base import FileModel
+from base import B24
+from services import LogsMaker
 
 from fastapi import FastAPI, UploadFile
 from fastapi import File as webFile
@@ -14,7 +14,7 @@ import os
 from dotenv import load_dotenv
 
 import asyncio
-#import aiofiles
+import aiofiles
 
 load_dotenv()
 

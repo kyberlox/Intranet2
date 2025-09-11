@@ -2,11 +2,11 @@ from elasticsearch import Elasticsearch
 from elasticsearch import AsyncElasticsearch
 from elasticsearch import helpers
 
-from src.base.pSQLmodels import UserModel
-from src.base.pSQLmodels import DepartmentModel
-from src.base.pSQLmodels import UsDepModel
-from src.base.pSQLmodels import ArticleModel
-from src.model.File import File
+from pSQL import UserModel
+from pSQL import DepartmentModel
+from pSQL import UsDepModel
+from pSQL import ArticleModel
+from pSQL import File
 
 import json
 

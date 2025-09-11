@@ -1323,7 +1323,7 @@ class ArticleSearchModel:
         return {"status": True}
 
        
-    def elasticsearch_article(self, key_word, size_res: Optional[int] = 20):
+    def elasticsearch_article(self, key_word):
         result = []
         res = elastic_client.search(
             index=self.index,
@@ -1392,7 +1392,7 @@ class ArticleSearchModel:
                         }
                     }
                 },
-                "size": size_res
+                "size": 200
             }
         )
         articles = []
@@ -1406,7 +1406,7 @@ class ArticleSearchModel:
             section_href = next((s.get('sectionHref') for s in sections if s['id'] == res_info["_source"]["section_id"]), res_info["_source"]["section_id"])
             art_info['sectionHref'] = section_href
             art_info['id'] = int(res_info["_id"])
-            if "authorId" in res_info["_source"].keys():
+            if "authorId" in res_info["_source"].keys() and res_info["_source"]["authorId"] is not None:
                 art_info['authorId'] = res_info["_source"]["authorId"]
             art_info['image'] = res_info["_source"]["preview_photo"]
             art_info['coincident'] = res_info['highlight']

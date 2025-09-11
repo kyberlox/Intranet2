@@ -1,9 +1,9 @@
-from .models import Fieldvision
+from ..models import Fieldvision
 from .App import db
 
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class FieldvisionModel:

@@ -1,6 +1,6 @@
-from base import FileModel
-from base import B24
-from services import LogsMaker
+from ..base.mongodb import FileModel
+from ..base.B24 import B24
+from ..services.LogsMaker import LogsMaker
 
 from fastapi import FastAPI, UploadFile
 from fastapi import File as webFile

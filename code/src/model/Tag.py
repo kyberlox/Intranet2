@@ -1,4 +1,4 @@
-from pSQL import TagsModel
+from ..base.pSQL.objects import TagsModel
 
 from fastapi import APIRouter
 

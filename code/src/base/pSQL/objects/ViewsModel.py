@@ -1,7 +1,9 @@
 from typing import Optional
 
-from models import Views
-from objects import db
+from ..models.Views import Views
+from .App import db
+
+from ....services.LogsMaker import LogsMaker
 
 class ViewsModel:
     def __init__(self, views_count: Optional[int] = None, art_id: Optional[int] = None):

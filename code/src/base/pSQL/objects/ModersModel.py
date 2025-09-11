@@ -3,7 +3,7 @@ from sqlalchemy.sql.expression import func
 
 import json
 
-from .models import ActiveUsers, Activities, Moders
+from ..models import ActiveUsers, Activities, Moders
 from .App import db
 
 
@@ -13,7 +13,7 @@ ADMINS_PEER = []
 
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class ModersModel:

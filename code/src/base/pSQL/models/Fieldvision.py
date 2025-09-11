@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, Text
 from sqlalchemy.orm import  relationship
 
-from models import Base
-from models import UservisionsRoot
+from .App import Base
+from .UservisionsRoot import UservisionsRoot
 
 class Fieldvision(Base):
     """

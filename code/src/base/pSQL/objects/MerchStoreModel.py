@@ -1,7 +1,10 @@
 from sqlalchemy.orm.attributes import flag_modified
 
-from .models import User
-from .App import db, ActiveUsersModel
+from ..models import User
+from .App import db
+from .ActiveUsersModel import ActiveUsersModel
+
+from ....services.LogsMaker import LogsMaker
 
 class MerchStoreModel:
 

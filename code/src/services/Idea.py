@@ -1,10 +1,10 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 
-from base import B24
-from services import AuthService
-from model import User
+from ..base.B24 import B24
+from .Auth import AuthService
+from ..model.User import User
 
-from services import LogsMaker
+from .LogsMaker import LogsMaker
 
 
 

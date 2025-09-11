@@ -1,52 +1,61 @@
-from .src.base.pSQL.models.User import User
-from .src.base.pSQL.models.Department import Department
-from .UsDep import UsDep
+from .src.base.pSQL.objects import UserModel
+from .src.base.pSQL.objects import DepartmentModel
+from .src.base.pSQL.objects import UsDepModel
 
-from .src.base.pSQL.models.Article import Article
-from .src.base.pSQL.models.Likes import Likes
-from .src.base.pSQL.models.Views import Views
+#from .pSQL.objects import SectionModel
 
-from .src.base.pSQL.models.Tags import Tags
+from .src.base.pSQL.objects import ArticleModel
+from .src.base.pSQL.objects import LikesModel
+from .src.base.pSQL.objects import ViewsModel
 
-from .src.base.pSQL.models.Activities import Activities
-from .src.base.pSQL.models.ActiveUsers import ActiveUsers
-from .src.base.pSQL.models.Moders import Moders
+from .src.base.pSQL.objects import FieldvisionModel
+from .src.base.pSQL.objects import UservisionsRootModel
 
-from .src.base.pSQL.models.UservisionsRoot import UservisionsRoot
+from .src.base.pSQL.objects import TagsModel
 
-from .src.base.pSQL.objects import *
+from .src.base.pSQL.objects import ActivitiesModel
+from .src.base.pSQL.objects import ActiveUsersModel
+from .src.base.pSQL.objects import ModersModel
+from .src.base.pSQL.objects import AdminModel
+
+from .src.base.pSQL.objects import MerchStoreModel
 
 from .src.base.RedisStorage import RedisStorage
-from .B24 import B24, b24_router
-from .mongodb import FileModel
-from .SearchModel import UserSearchModel, StructureSearchModel, ArticleSearchModel, search_everywhere, search_router
+from .src.base.B24 import B24, b24_router
+from .src.base.mongodb import FileModel
+from .src.base.SearchModel import UserSearchModel, StructureSearchModel, ArticleSearchModel, search_everywhere, search_router
 
 
-from .User import User, users_router
-from .Department import Department, depart_router
-from .UsDep import UsDep, usdep_router
 
-from .Article import Article, article_router
-from .Tag import Tag, tag_router
+from .src.model.User import User, users_router
+from .src.model.Department import Department, depart_router
+from .src.model.UsDep import UsDep, usdep_router
 
-
-from .Section import Section, section_router
+from .src.model.Article import Article, article_router
+from .src.model.Tag import Tag, tag_router
 
 
-from .File import File, file_router
+from .src.model.Section import Section, section_router
 
-from .AIchat import Dialog, History, GPT
-from .Auth import AuthService, auth_router
-from .Comporession import compress_router
-from .Editor import Editor, editor_router
-from .FieldsVisions import Visions, fieldsvisions_router
-from .Idea import Idea, idea_router
-from .LogsMaker import LogsMaker
-from .MerchStore import MerchStore, store_router
-from .Peer import Peer, peer_router
-from .SendMail import SendEmail
-from .Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
-from .VCard import User_Vcard, vcard_app
+
+from .src.model.File import File, file_router
+
+
+
+from .src.services.AIchat import Dialog, History, GPT
+from .src.services.Auth import AuthService, auth_router
+from .src.services.Comporession import compress_router
+from .src.services.Editor import Editor, editor_router
+from .src.services.FieldsVisions import Visions, fieldsvisions_router
+from .src.services.Idea import Idea, idea_router
+from .src.services.LogsMaker import LogsMaker
+from .src.services.MerchStore import MerchStore, store_router
+from .src.services.Peer import Peer, peer_router
+from .src.services.SendMail import SendEmail
+from .src.services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
+from .src.services.VCard import User_Vcard, vcard_app
+
+
 
 __all__ = [
     'UserModel',

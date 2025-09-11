@@ -1,10 +1,11 @@
-from ..base.pSQL import UserModel
-from ..base.pSQL import LikesModel
-from base import UserSearchModel
-from base import B24
-from model import File
-from services import LogsMaker
-from services import SendEmail
+from ..base.pSQL.objects import UserModel
+from ..base.pSQL.objects import UserModel
+from ..base.pSQL.objects import LikesModel
+from ..base.SearchModel import UserSearchModel
+from ..base.B24 import B24
+from ..model.File import File
+from ..services.LogsMaker import LogsMaker
+from ..services.SendMail import SendEmail
 
 from fastapi import APIRouter, Body
 from fastapi.templating import Jinja2Templates

@@ -5,14 +5,14 @@ from typing import List, Optional, Dict
 
 from datetime import datetime, timedelta
 
-from .models import Likes
-from .App import db, ViewsModel
-
+from ..models import Likes
+from .App import db
+from .ViewsModel import ViewsModel
 
 
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class LikesModel:

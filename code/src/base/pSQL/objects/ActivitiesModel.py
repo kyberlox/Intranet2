@@ -1,13 +1,12 @@
 import json
 
-from .models import Activities
+from ..models import Activities
 from .App import db
 
 
 
-
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class ActivitiesModel:

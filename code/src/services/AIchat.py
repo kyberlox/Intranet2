@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 from pydantic import BaseModel
 
-from ..model import User
+from ..model.User import User
 
 import requests
 

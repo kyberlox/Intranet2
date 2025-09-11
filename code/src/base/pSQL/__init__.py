@@ -1,39 +1,41 @@
-from .models.User import User
-from .models.Department import Department
-from .models.UsDep import UsDep
+from .models import User
+from .models import User
+from .models import Department
+from .models import UsDep
 
-from .models.Article import Article
-from .models.Likes import Likes
-from .models.Views import Views
+from .models import Article
+from .models import Likes
+from .models import Views
 
-from .models.Tags import Tags
+from .models import Tags
 
-from .models.Activities import Activities
-from .models.ActiveUsers import ActiveUsers
-from .models.Moders import Moders
+from .models import Activities
+from .models import ActiveUsers
+from .models import Moders
 
-from .models.UservisionsRoot import UservisionsRoot
+from .models import UservisionsRoot
 
-from .objects.UserModel import UserModel
-from .objects.DepartmentModel import DepartmentModel
-from .objects.UsDepModel import UsDepModel
+from .objects import UserModel
+from .objects import DepartmentModel
+from .objects import UsDepModel
 
-from .objects.SectionModel import SectionModel
+#from .objects import SectionModel
 
-from .objects.ArticleModel import ArticleModel
-from .objects.LikesModel import LikesModel
-from .objects.ViewsModel import ViewsModel
+from .objects import ArticleModel
+from .objects import LikesModel
+from .objects import ViewsModel
 
-from .objects.FieldvisionModel import FieldvisionModel
-from .objects.UservisionsRootModel import UservisionsRootModel
+from .objects import FieldvisionModel
+from .objects import UservisionsRootModel
 
-from .objects.TagsModel import TagsModel
+from .objects import TagsModel
 
-from .objects.ActivitiesModel import ActivitiesModel
-from .objects.ActiveUsersModel import ActiveUsersModel
-from .objects.ModersModel import ModersModel
+from .objects import ActivitiesModel
+from .objects import ActiveUsersModel
+from .objects import ModersModel
+from .objects import AdminModel
 
-from .objects.MerchStoreModel import MerchStoreModel
+from .objects import MerchStoreModel
 
 ## Control imports
 __all__ = [

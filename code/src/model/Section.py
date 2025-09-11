@@ -1,5 +1,5 @@
-from pSQL import SectionModel
-from services import LogsMaker
+from ..base.pSQL.objects.SectionModel import SectionModel
+from ..services.LogsMaker import LogsMaker
 
 from datetime import datetime
 

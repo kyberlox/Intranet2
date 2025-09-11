@@ -1,13 +1,13 @@
 import json
 
-from .models import Tags, Article
+from ..models import Tags, Article
 from .App import db
 
 
 
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class TagsModel:

@@ -16,6 +16,7 @@ from .TagsModel import TagsModel
 from .ActivitiesModel import ActivitiesModel
 from .ActiveUsersModel import ActiveUsersModel
 from .ModersModel import ModersModel
+from .AdminModel import AdminModel
 
 from .MerchStoreModel import MerchStoreModel
 

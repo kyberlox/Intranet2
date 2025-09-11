@@ -15,13 +15,13 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 #!!!!!!!!!!!!!!!
-from model import File
-from services import LogsMaker
+from code.src.model.File import File
+from code.src.services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 
 
-class UserModel():
+class UserModel:
     def __init__(self, Id=None, uuid=None):
         self.id = Id
         self.uuid = uuid

@@ -1,14 +1,14 @@
-from base import B24
-from base import ArticleSearchModel
-from model import File
-from model import User
-from model import Tag
-from pSQL import ArticleModel
-from pSQL import LikesModel
-from pSQL import ViewsModel
-from services import Idea
-from services import AuthService
-from services import LogsMaker
+from ..base.B24 import B24
+from ..base.SearchModel import ArticleSearchModel
+from .File import File
+from .User import User
+from .Tag import Tag
+from ..base.pSQL.objects import ArticleModel
+from ..base.pSQL.objects import LikesModel
+from ..base.pSQL.objects import ViewsModel
+from ..services.Idea import Idea
+from ..services.Auth import AuthService
+from ..services.LogsMaker import LogsMaker
 
 import re
 import json

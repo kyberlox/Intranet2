@@ -5,13 +5,13 @@ from typing import List, Optional, Dict
 
 from datetime import datetime, timedelta
 
-from .models import ActiveUsers, Moders
+from ..models import ActiveUsers, Moders
 from .App import db
 
 ADMINS_PEER = [] #!!!!!!!!!!!!!!!!!!ТЫ ЧЕ, ХРАНИШЬ СПИСОК АДМИНОВ В ПАМЯТИ ПРОГРАММЫ?!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class AdminModel:

@@ -1,9 +1,10 @@
-from models import UservisionsRoot, User, Fieldvision
-from objects import db, UserModel
+from ..models import UservisionsRoot, User, Fieldvision
+from .App import db
+
 
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class UservisionsRootModel:
@@ -65,6 +66,7 @@ class UservisionsRootModel:
         return True
 
     def find_users_in_vision(self):
+        from .UserModel import UserModel
         result = []
         existing_vision = self.session.query(self.Fieldvision).filter(self.Fieldvision.id == self.vision_id).first()
         if existing_vision:

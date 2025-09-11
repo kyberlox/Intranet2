@@ -1,7 +1,7 @@
-from pSQL import UsDepModel
-from base import StructureSearchModel
-from base import B24
-from services import LogsMaker
+from ..base.pSQL.objects import UsDepModel
+from ..base.SearchModel import StructureSearchModel
+from ..base.B24 import B24
+from ..services.LogsMaker import LogsMaker
 
 from fastapi import APIRouter
 

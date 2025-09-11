@@ -1,7 +1,7 @@
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm.attributes import flag_modified
 
-from .models import Article
+from ..models import Article
 from .App import db
 
 import json
@@ -10,10 +10,10 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
-class ArticleModel():
+class ArticleModel:
 
     def __init__(self, id=0, section_id=0):
         self.id = id

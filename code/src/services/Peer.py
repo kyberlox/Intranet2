@@ -1,8 +1,8 @@
-from pSQL import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
+from ..base.pSQL.objects import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
 from fastapi import APIRouter, Body, Request
 
-from model import User
-from services import AuthService
+from ..model import User
+from .Auth import AuthService
 
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 

@@ -2,13 +2,13 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from typing import Annotated, List
 
-from services import LogsMaker
-from pSQL import ArticleModel
-from base import FileModel
-from model import Article
-from model import Section
-from model import File as storeFile
-from model import User
+from .LogsMaker import LogsMaker
+from ..base.pSQL.objects import ArticleModel
+from ..base.mongodb import FileModel
+from ..model import Article
+from ..model import Section
+from ..model.File import File as storeFile
+from ..model import User
 
 from bson.objectid import ObjectId
 

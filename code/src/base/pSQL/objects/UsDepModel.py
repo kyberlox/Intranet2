@@ -1,14 +1,12 @@
 from sqlalchemy.sql.expression import select
 
-from .models import UsDep
+from ..models import UsDep
 from .App import db
-from UserModel import UserModel
-from.DepartmentModel import DepartmentModel
 
-from sqlalchemy.exc import SQLAlchemyError
+
 
 #!!!!!!!!!!!!!!!
-from services import LogsMaker
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 class UsDepModel():
@@ -23,6 +21,9 @@ class UsDepModel():
         self.session = db
     
     def put_uf_depart(self, usr_dep):
+        from .UserModel import UserModel
+        from .DepartmentModel import DepartmentModel
+
         existing_user = UserModel(Id=usr_dep['id']).find_by_id()
         if existing_user and existing_user['active'] is True:
             for dep in usr_dep['depart']:

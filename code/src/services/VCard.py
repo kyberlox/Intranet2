@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from base import B24
+from ..base.B24 import B24
 
 from transliterate import translit
 import qrcode

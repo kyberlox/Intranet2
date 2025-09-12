@@ -1,9 +1,9 @@
 <template>
     <div class="moderator-panel__wrapper">
-        <AdminSidebar :isModeratorArea="true"
-                      :activeId="activeId"
-                      @areaClicked="changeActive"
-                      :moderatorsActivities="activitiesToConfirm" />
+        <AdminSidebar :needDefaultNav="false">
+            <ModeratorSidebarSlot @areaClicked="changeActive"
+                                  :moderatorsActivities="activitiesToConfirm" />
+        </AdminSidebar>
         <div v-if="activitiesInTable?.length"
              class="bottomTablePadding">
             <div class="forModeratorsTable">
@@ -51,8 +51,9 @@ import CheckIcon from '@/assets/icons/common/Check.svg?component';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
 import Api from '@/utils/Api';
 import { usePointsData } from '@/stores/PointsData';
-import AdminSidebar from '../components/elementsListLayout/AdminSidebar.vue';
+import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
 import { dateConvert } from '@/utils/dateConvert';
+import ModeratorSidebarSlot from './ModeratorSidebarSlot.vue';
 
 interface IActivityToConfirm {
     coast: number
@@ -69,7 +70,8 @@ export default defineComponent({
     components: {
         CheckIcon,
         CancelIcon,
-        AdminSidebar
+        AdminSidebar,
+        ModeratorSidebarSlot
     },
     setup(props) {
         const activeId = ref<number>();

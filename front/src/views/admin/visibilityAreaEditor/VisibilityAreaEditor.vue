@@ -1,12 +1,13 @@
 <template>
     <div class="visibility-editor__title page__title mt20">Редактор областей видимости</div>
     <div class="visibility-editor__wrapper">
-        <AdminSidebar :isVisibilityArea="true"
-                      :visibilityAreas="allAreas"
-                      :activeId="activeArea"
-                      @addNewArea="modalIsOpen = true"
-                      @deleteArea="deleteArea"
-                      @areaClicked="(i) => changeActiveArea(i)" />
+        <AdminSidebar :needDefaultNav="false">
+            <VisibilityAreaSlotLeftSidebar :visibilityAreas="allAreas"
+                                           :activeId="activeArea"
+                                           @addNewArea="modalIsOpen = true"
+                                           @deleteArea="deleteArea"
+                                           @areaClicked="(i: number) => changeActiveArea(i)" />
+        </AdminSidebar>
 
         <SlotModal v-if="modalIsOpen"
                    @close="modalIsOpen = false">
@@ -69,7 +70,7 @@ import Loader from '@/components/layout/Loader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiError } from '@/utils/ApiResponseCheck';
-import { useRouter } from 'vue-router';
+import VisibilityAreaSlotLeftSidebar from './components/VisibilityAreaSlotLeftSidebar.vue';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -81,6 +82,7 @@ export default defineComponent({
         VisibilityAreaUsersList,
         SlotModal,
         VisibilityAreaSlotModal,
+        VisibilityAreaSlotLeftSidebar,
         Loader
     },
     setup() {

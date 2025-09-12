@@ -537,7 +537,7 @@ const router = createRouter({
     {
       path: '/admin/pointsmoderation',
       name: 'pointsModeration',
-      component: () => import('@/views/admin/pointsSystem/ModeratorValidationPanel.vue'),
+      component: () => import('@/views/admin/pointsSystem/moderatorPanel/ModeratorValidationPanel.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }

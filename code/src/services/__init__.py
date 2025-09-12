@@ -8,7 +8,7 @@ from .LogsMaker import LogsMaker
 from .MerchStore import MerchStore, store_router
 from .Peer import Peer, peer_router
 from .SendMail import SendEmail
-from .Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
+#from .Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
 from .VCard import User_Vcard, vcard_app
 
 __all__ = [
@@ -30,7 +30,7 @@ __all__ = [
     'Peer',
     'peer_router',
     'SendEmail',
-    'FastAPIUser',
+    #'FastAPIUser',
     'User_Vcard',
     'vcard_app'
     ]

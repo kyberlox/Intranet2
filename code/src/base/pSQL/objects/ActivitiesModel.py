@@ -45,7 +45,6 @@ class ActivitiesModel:
             activity.user_uuid = self.user_uuid
             self.session.commit()
             self.session.close()
-            self.session.close()
             return {"status": True}
         else:
             return {"msg": "нет такого id"}

@@ -1,5 +1,5 @@
 from ..base.pSQL.objects import DepartmentModel
-from ..base.SearchModel import StructureSearchModel
+from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
 from ..base.B24 import B24
 from ..services.LogsMaker import LogsMaker
 

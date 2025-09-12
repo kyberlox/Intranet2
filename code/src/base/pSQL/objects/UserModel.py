@@ -15,8 +15,8 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 #!!!!!!!!!!!!!!!
-from code.src.model.File import File
-from code.src.services.LogsMaker import LogsMaker
+from ....model.File import File
+from ....services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
 

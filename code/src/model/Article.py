@@ -1,5 +1,5 @@
 from ..base.B24 import B24
-from ..base.SearchModel import ArticleSearchModel
+from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
 from .File import File
 from .User import User
 from .Tag import Tag

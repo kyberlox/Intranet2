@@ -1,5 +1,5 @@
 from ..base.pSQL.objects import FieldvisionModel, UservisionsRootModel
-from ..base.SearchModel import StructureSearchModel
+from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
 from .LogsMaker import LogsMaker
 
 #from fastapi import APIRouter

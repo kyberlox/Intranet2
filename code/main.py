@@ -18,19 +18,19 @@ from src.model.Article import Article, article_router
 from src.model.Tag import Tag, tag_router
 from src.model.File import File, file_router
 
-from .src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere, ArticleSearchModel
-from .src.base.B24 import B24, b24_router
+from src.base.Elastic.App import search_router
+from src.base.B24 import B24, b24_router
 
-from .src.services.VCard import vcard_app
-from .src.services.LogsMaker import LogsMaker
-from .src.services.Auth import AuthService, auth_router
-from .src.services.Comporession import compress_router
-from .src.services.Idea import idea_router
-from .src.services.Editor import editor_router
-from .src.services.FieldsVisions import fieldsvisions_router
-from .src.services.Peer import peer_router
-from .src.services.MerchStore import store_router
-from .src.services.AIchat import ai_router
+from src.services.VCard import vcard_app
+from src.services.LogsMaker import LogsMaker
+from src.services.Auth import AuthService, auth_router
+from src.services.Comporession import compress_router
+from src.services.Idea import idea_router
+from src.services.Editor import editor_router
+from src.services.FieldsVisions import fieldsvisions_router
+from src.services.Peer import peer_router
+from src.services.MerchStore import store_router
+from src.services.AIchat import ai_router
 
 from typing import Awaitable, Callable, Optional
 
@@ -209,11 +209,15 @@ def test_file_get(file_id):
     return file_data
 
 @app.get("/api/full_search/{keyword}")
-def elastic_search(keyword: str): 
+def elastic_search(keyword: str):
+    from .src.base.Elastic.App import search_everywhere
     return search_everywhere(key_word=keyword) 
 
 @app.put("/api/full_elastic_dump")
 def elastic_dump():
+    from .src.base.Elastic.UserSearchModel import UserSearchModel
+    from .src.base.Elastic.StuctureSearchmodel import StructureSearchModel
+    from .src.base.Elastic.ArticleSearchModel import ArticleSearchModel
     UserSearchModel().dump()
     StructureSearchModel().dump()
     ArticleSearchModel().dump()

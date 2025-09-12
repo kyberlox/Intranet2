@@ -25,7 +25,11 @@ from .pSQL import *
 from .RedisStorage import RedisStorage
 from .B24 import B24, b24_router
 from .mongodb import FileModel
-from .SearchModel import UserSearchModel, StructureSearchModel, ArticleSearchModel, search_everywhere, search_router
+
+from .Elastic.App import search_router, search_everywhere
+from .Elastic.UserSearchModel import UserSearchModel
+from .Elastic.StuctureSearchmodel import StructureSearchModel
+from .Elastic.ArticleSearchModel import ArticleSearchModel
 
 
 

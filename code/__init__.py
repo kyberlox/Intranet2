@@ -23,7 +23,11 @@ from .src.base.pSQL.objects import MerchStoreModel
 from .src.base.RedisStorage import RedisStorage
 from .src.base.B24 import B24, b24_router
 from .src.base.mongodb import FileModel
-from .src.base.SearchModel import UserSearchModel, StructureSearchModel, ArticleSearchModel, search_everywhere, search_router
+
+from .src.base.Elastic.App import search_router, search_everywhere
+from .src.base.Elastic.UserSearchModel import UserSearchModel
+from .src.base.Elastic.StuctureSearchmodel import StructureSearchModel
+from .src.base.Elastic.ArticleSearchModel import ArticleSearchModel
 
 
 
@@ -52,7 +56,7 @@ from .src.services.LogsMaker import LogsMaker
 from .src.services.MerchStore import MerchStore, store_router
 from .src.services.Peer import Peer, peer_router
 from .src.services.SendMail import SendEmail
-from .src.services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
+#from .src.services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
 from .src.services.VCard import User_Vcard, vcard_app
 
 
@@ -113,7 +117,6 @@ __all__ = [
     'Peer',
     'peer_router',
     'SendEmail',
-    'FastAPIUser',
     'User_Vcard',
     'vcard_app'
     ]

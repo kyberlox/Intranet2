@@ -16,6 +16,10 @@
                              :class="{ 'homeview__grid__card__title--video': type == 'video' }">
                             {{ card.name }}
                         </div>
+                        <div class="homeview__grid__card__date"
+                             v-if="needDate && card.date_creation">
+                            {{ card.date_creation.split('T')[0] }}
+                        </div>
                     </div>
                     <Reactions v-if="card.reactions && card.id"
                                :reactions="card.reactions"
@@ -52,6 +56,10 @@ export default defineComponent({
         },
         modifiers: {
             type: Array<string>
+        },
+        needDate: {
+            type: Boolean,
+            default: () => false
         }
     },
     components: {

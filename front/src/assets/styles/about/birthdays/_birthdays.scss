@@ -185,6 +185,17 @@
             background-repeat: no-repeat;
             min-height: 300px;
             transition: 0.2s all;
+            position: relative;
+
+            &__icon {
+                position: absolute;
+                bottom: 15px;
+                right: 15px;
+
+                &>svg {
+                    width: 40px;
+                }
+            }
         }
 
         &__info {

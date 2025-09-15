@@ -38,6 +38,12 @@
                 margin-top: 20px;
             }
 
+            &__date {
+                text-align: right;
+                font-size: small;
+                color: #61606097;
+            }
+
             &__image {
                 margin-top: 10px;
                 transition: var(--default-transition);

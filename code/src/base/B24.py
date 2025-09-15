@@ -15,11 +15,10 @@ class B24:
 
 
     def getUsers(self):
-        result = self.bx24.callMethod('user.get')
-        return result
+        res = self.bx24.callMethod('user.get')
+        return res
 
     def getDeps(self):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
         result = self.bx24.callMethod('department.get')
         return result
 
@@ -139,7 +138,7 @@ class B24:
         
         ID = response.json()['result']
             
-        bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
+        bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\\Lists\\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
         
         bis_response = requests.get(bis_url)
 

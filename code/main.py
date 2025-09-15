@@ -7,8 +7,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, HTTPException, status
 
-
-
+from src.services.VCard import dowload_file
 # from bson import Binary
 from src.model.User import User, users_router
 from src.model.Department import Department, depart_router
@@ -18,7 +17,9 @@ from src.model.Article import Article, article_router
 from src.model.Tag import Tag, tag_router
 from src.model.File import File, file_router
 
+
 from src.base.Elastic.App import search_router
+from src.base.Elastic import StructureSearchModel, ArticleSearchModel, UserSearchModel
 from src.base.B24 import B24, b24_router
 
 from src.services.VCard import vcard_app
@@ -123,7 +124,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/users_update",
         "/openapi.json",
         "/api/auth_router",
-        "/total_update",
+        "/api/total_update",
         "/api/files/",
         "/api/compress_image",
         "/api/user_files",
@@ -133,15 +134,17 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     for open_link in open_links:
         if open_link in request.url.path:
-            try:
-                return await call_next(request)
-            except TypeError:
-                return call_next(request)
-            else:
-                return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Error when trying to follow the link without authorization")
-                )
+            return await call_next(request)
+
+            # try:
+            #     #return call_next(request)
+            #     print('тут')
+            #     return await call_next(request)
+            # except:
+            #     return JSONResponse(
+            #         status_code = status.HTTP_401_UNAUTHORIZED,
+            #         content = log.warning_message(message="Error when trying to follow the link without authorization")
+            #     )
 
 
 
@@ -153,7 +156,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             if token is None:
                 return JSONResponse(
                     status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Authorization cookies or headers missing")
+                    content = log.warning_message(message="Authorization cookies or headers missing")
                 )
                 # raise HTTPException(
                 #     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -165,7 +168,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             if not session:
                 return JSONResponse(
                     status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Invalid token")
+                    content = log.warning_message(message="Invalid token")
                 )
                 # raise HTTPException(
                 #     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -175,7 +178,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         except IndexError:
             return JSONResponse(
                     status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Invalid authorization cookies or headers format")
+                    content = log.warning_message(message="Invalid authorization cookies or headers format")
                 )
             # raise HTTPException(
             #     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -215,9 +218,9 @@ def elastic_search(keyword: str):
 
 @app.put("/api/full_elastic_dump")
 def elastic_dump():
-    from .src.base.Elastic.UserSearchModel import UserSearchModel
-    from .src.base.Elastic.StuctureSearchmodel import StructureSearchModel
-    from .src.base.Elastic.ArticleSearchModel import ArticleSearchModel
+    from src.base.Elastic.UserSearchModel import UserSearchModel
+    from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
+    from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
     UserSearchModel().dump()
     StructureSearchModel().dump()
     ArticleSearchModel().dump()
@@ -309,7 +312,9 @@ def total_update():
         print("Ошибка!")
 
     print("Обновление информации о пользователях")
-    if User().fetch_users_data()["status"]:
+    from src.model.User import User
+    dowload_status = User().fetch_users_data()["status"]
+    if dowload_status:
         status += 1
         print("Успешно!")
     else:

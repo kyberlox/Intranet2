@@ -10,10 +10,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from ....services import LogsMaker
 #!!!!!!!!!!!!!!!
 
-class DepartmentModel():
+class DepartmentModel:
+
     def __init__(self, Id=None): #убрать None в будущем
         self.id = Id
-        self.department = Department
+        self.department = Department()
         self.db = db
 
     def upsert_dep(self, dep_data):

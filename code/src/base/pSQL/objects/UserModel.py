@@ -31,7 +31,7 @@ class UserModel:
     
     
 
-    def upsert_user(self, user_data):
+    def upsert_user(self, user_data : dict):
         """
         Добавляет или обновляет запись в таблице.
         user_data: словарь с данными пользователя

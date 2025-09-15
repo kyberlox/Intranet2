@@ -1,6 +1,5 @@
-from ..base.pSQL.objects import UserModel
-from ..base.pSQL.objects import UserModel
 from ..base.pSQL.objects import LikesModel
+
 from ..base.Elastic.UserSearchModel import UserSearchModel
 from ..base.B24 import B24
 from ..model.File import File
@@ -21,12 +20,11 @@ class User:
     def __init__(self, id=0, uuid=""):
         self.id = id
         self.uuid = uuid
-        #self.UserSQL = UserSQL()
+        from ..base.pSQL.objects.UserModel import UserModel
+        self.UserModel = UserModel()
 
     def fetch_users_data(self):
-        b24 = B24()
-        data = b24.getUsers()
-        UserSQL = UserModel()
+        data = B24().getUsers()
         # кастомный прогрессбар
         logg = LogsMaker()
 
@@ -34,6 +32,7 @@ class User:
 
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
+            '''
             #!!!!!!!!!!!!!!!!!!!!!!убрать по окончанию тестового периода!!!!!!!!!!!!!
             # cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515', '682', '660', '806', '466', '763', '376', '373', '2349', '911', '552', '796', '367', '690', '618', '659', '579', '828', '4399', '4393', '4411', '292', '3218', '2081', '489', '533', '2745']
             
@@ -46,7 +45,8 @@ class User:
             #cool_users += pochet
             #if usr_data['ID'] in cool_users:
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            UserSQL.upsert_user(usr_data)
+            '''
+            self.UserModel.upsert_user(usr_data)
         #status = self.set_users_photo()
         #дампим данные в эластик
         self.dump_users_data_es()
@@ -54,11 +54,10 @@ class User:
         return {"status" : True}
 
     def search_by_id(self):
-        return UserModel(self.id).find_by_id()
+        return self.UserModel(Id = self.id).find_by_id()
 
     def get_dep_usrs(self):
-        b24 = B24()
-        users_data = sorted(b24.getUsers(), key=lambda d: int(d['ID']))
+        users_data = sorted(B24().getUsers(), key=lambda d: int(d['ID']))
         #dep_data = b24.getDeps()
         result = [["id", "ФИО", "Должность", "Подразделение (по иерархии)"]]
         for usr in users_data:
@@ -71,15 +70,14 @@ class User:
         return result
 
     def get_uf_depart(self):
-        return UserModel().find_uf_depart()
+        return self.UserModel.find_uf_depart()
 
     def user_inf_by_uuid(self):
-        usr_inf = UserModel(self.uuid).find_by_uuid()
+        usr_inf = self.UserModel(uuid=self.uuid).find_by_uuid()
         return usr_inf
 
     def set_users_photo(self):
-        b24 = B24()
-        data = b24.getUsers()
+        data = B24().getUsers()
         # кастомный прогрессбар
         logg = LogsMaker()
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
@@ -101,7 +99,7 @@ class User:
                 #if usr_data['ID'] in cool_users:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
-                psql_user = UserModel(uuid).find_by_id()
+                psql_user = self.UserModel(uuid=uuid).find_by_id()
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #проверим url первоисточника текущей аватарки
@@ -114,7 +112,7 @@ class User:
                         #если есть несоответствие - скачать новую
                         file_data = File().add_user_img(b24_url, uuid)
                         #обновить данные в pSQL
-                        UserModel(uuid).set_user_photo(file_data['id'])
+                        self.UserModel(uuid).set_user_photo(file_data['id'])
                     else:
                         continue
                         
@@ -126,8 +124,7 @@ class User:
         return B24().variant_key_user(key)
 
     def get_dep_usrs(self):
-        b24 = B24()
-        users_data = b24.getUsers()
+        users_data = B24().getUsers()
         dep_data = sorted(b24.getDeps(), key=lambda d: int(d['ID']))
 
         result = [["ID", "Название подраздедения", "ФИО руководителя", "ФИО сотрудника"]]
@@ -151,15 +148,17 @@ class User:
 
     # день рождения
     def get_birthday_celebrants(self, date):
+        from ..base.pSQL.objects import UserModel
         return UserModel().find_all_celebrants(date)
     
     # новые сотрудники
     def get_new_workers(self):
+        from ..base.pSQL.objects import UserModel
         return UserModel().new_workers()
 
     # дамп данных в эластик
     def dump_users_data_es(self):
-        return UserSearchModel().dump()
+        return UserSearchModel.dump()
 
     # для статистики
     def get_user_likes(self):
@@ -208,9 +207,9 @@ def update_user():
 def find_by_user(id):
     return User(id).search_by_id()
 
-@users_router.get("/test_update_photo")
-def test_update_photo():
-    return User().set_users_photo()
+# @users_router.get("/test_update_photo")
+# def test_update_photo():
+#     return User().set_users_photo()
 
 # поиск по статьям еластик
 @users_router.get("/search/full_search_users/{keyword}")

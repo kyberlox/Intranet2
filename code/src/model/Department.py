@@ -1,4 +1,3 @@
-from ..base.pSQL.objects import DepartmentModel
 from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
 from ..base.B24 import B24
 from ..services.LogsMaker import LogsMaker
@@ -18,22 +17,23 @@ class Department:
         self.father_id = father_id
         self.data = data
 
+        from ..base.pSQL.objects.DepartmentModel import DepartmentModel
+        self.department = DepartmentModel()
+
     def fetch_departments_data(self):
-        b24 = B24()
-        data = b24.getDeps()
-        DepSQL = DepartmentModel()
+        data = B24().getDeps()
         logg = LogsMaker()
 
         #отправить записи
         for dep in logg.progress(data, "Загрузка данных подразделений "):
             #if dep['ID'] == '420':
-            DepSQL.upsert_dep(dep)
+            self.department.upsert_dep(dep)
             
         StructureSearchModel().create_index()
         return {"status" : True}
     
     def search_dep_by_id(self):
-        return DepartmentModel(self.id).find_dep_by_id()
+        return self.department(Id=self.id).find_dep_by_id()
 
 
 # Департаменты можно обновить

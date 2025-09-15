@@ -233,7 +233,7 @@ class UserSearchModel:
             pass
         self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
 
-        users_data = self.UserModel().all()
+        users_data = self.UserModel.all()
         users_data_ES = []
         for user in users_data:
 

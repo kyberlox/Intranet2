@@ -20,6 +20,7 @@ class UsDep:
         self.ID = ID
         self.usr_id = usr_id
         self.dep_id = dep_id
+        self.UserSQL = UsDepModel
     
     def get_usr_dep(self):
         b24 = B24()
@@ -35,12 +36,12 @@ class UsDep:
             if usr['ID'] is not None:
                 result['id'] = int(usr['ID'])
                 result['depart'] = usr['UF_DEPARTMENT']
-                UserSQL.put_uf_depart(result)
+                self.UserSQL.put_uf_depart(result)
         StructureSearchModel().dump()
         return {"status" : True}
         
     def search_usdep_by_id(self):
-        return UsDepModel(self.ID).find_dep_by_user_id()
+        return self.UserSQL(id = self.ID).find_dep_by_user_id()
 
 
 #Таблицу пользователей и департаментов можно обновить
@@ -51,7 +52,7 @@ def get_user():
 #Пользователя и его департамент можно выгрузить
 @usdep_router.get("/find_by/{id}")
 def get_usdepart(id):
-    return UsDep(id).search_usdep_by_id()
+    return UsDep(id = id).search_usdep_by_id()
 
 #поиск по id подразделения
 @usdep_router.get("/get_structure_by_dep_id/{parent_id}")

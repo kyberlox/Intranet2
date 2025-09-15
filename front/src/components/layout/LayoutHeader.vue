@@ -12,13 +12,13 @@
                             </button>
                         </div>
                         <div class="col-4 col-md-2 col-lg-2 d-flex align-items-center justify-content-center logo">
-                            <router-link to="/"
-                                         class="navbar-brand d-block mt-1 mb-1">
+                            <RouterLink to="/"
+                                        class="navbar-brand d-block mt-1 mb-1">
                                 <div class="d-inline-block header__logo align-top"
                                      alt="ЭМК"
                                      loading="ЭМК"
                                      title="Энергомашкомплект"></div>
-                            </router-link>
+                            </RouterLink>
                         </div>
 
                         <div

@@ -1,10 +1,11 @@
 import { type Ref, ref } from "vue";
 import Api from "@/utils/Api";
-import type { INews } from "@/interfaces/IEntities";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { extractYears } from "@/utils/extractYearsFromPosts";
 
-export const useNewsFilterWatch = async (currentTag: Ref<string>, currentYear: Ref<string>, allNews: Ref<INews[]>, visibleNews: Ref<INews[]>) => {
+import type { INews } from "@/interfaces/IEntities";
+
+export const useNewsFilterWatch = async (currentTag: Ref<string>, currentYear: Ref<string>, allNews: Ref<INews[]>) => {
 
     const newVisibleNews: Ref<INews[]> = ref([]);
     const newFilterYears: Ref<string[]> = ref([]);

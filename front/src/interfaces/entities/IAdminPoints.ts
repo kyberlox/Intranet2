@@ -6,7 +6,6 @@ export interface IActivitiesList {
 }
 
 export interface IActivityToSend {
-    activities: { value: number, name: string }[],
+    activities: { value?: number, name: string, id: number }[],
     likes_left: number
-
 }

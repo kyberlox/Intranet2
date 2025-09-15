@@ -85,10 +85,10 @@ import { ref, defineComponent, onMounted, watch, computed } from "vue";
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
-import { type IPostCard } from "@/interfaces/entities/IPostCard";
+import { type IPostCard } from "@/interfaces/IEntities";
 import { useUserData } from "@/stores/userData";
 import { createMail } from "@/utils/createMail";
-import { Field, Form, ErrorMessage, type GenericObject } from 'vee-validate';
+import { Field, Form, ErrorMessage } from 'vee-validate';
 
 export default defineComponent({
     name: "PostCard",

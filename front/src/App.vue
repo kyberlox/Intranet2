@@ -79,7 +79,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style lang="scss">
-@use "./assets/styles/mixins/mixins.scss" as *;
-</style>

@@ -3,8 +3,7 @@
         <div class="merchStoreItem mt20">
             <div class="merchStoreItem__images__wrapper">
                 <div class="merchStoreItem__images__flex-gallery">
-                    <div v-if="merchItemPlug.images"
-                         v-for="(card, index) in merchItemPlug.images"
+                    <div v-for="(card, index) in merchItemPlug.images"
                          :key="index"
                          class="merchStoreItem__images__flex-gallery__card__wrapper">
                         <div class="merchStoreItem__images__flex-gallery__card">
@@ -12,14 +11,6 @@
                                  :src="card"
                                  @click="setZoomImg(card)" />
                             <ZoomInIcon class="merchStoreItem__images__flex-gallery__card__zoom-icon" />
-                        </div>
-                    </div>
-                    <div v-else
-                         v-for="n in 4"
-                         :key="`skeleton-${n}`"
-                         class="merchStoreItem__images__flex-gallery__card__wrapper">
-                        <div class="merchStoreItem__images__flex-gallery__card skeleton">
-                            <div class="skeleton-image"></div>
                         </div>
                     </div>
                 </div>
@@ -118,32 +109,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style>
-.skeleton {
-    background-color: #f0f0f0;
-    position: relative;
-    overflow: hidden;
-}
-
-.skeleton::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.6),
-            transparent);
-    animation: skeleton-loading 1.5s infinite;
-}
-
-.skeleton-image {
-    width: 100%;
-    height: 100%;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-}
-</style>

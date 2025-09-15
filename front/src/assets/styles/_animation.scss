@@ -70,3 +70,47 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+// Модалка для поиска в шапке
+.modal-content-enter-active,
+.modal-content-leave-active {
+    transition: all 0.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modal-content-enter-from,
+.modal-content-leave-to {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+}
+
+.result-item-enter-active,
+.result-item-leave-active {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.result-item-enter-from {
+    opacity: 0;
+    transform: translateY(20px) translateX(-15px);
+}
+
+.result-item-leave-to {
+    opacity: 0;
+    transform: translateY(-20px) translateX(15px);
+}
+
+.result-item-move {
+    transition: transform 0.3s ease;
+}
+
+// 
+// Для смены layout в админке
+.layout-change-enter-active,
+.layout-change-leave-active {
+    transition: all 0.2s ease;
+}
+
+.layout-change-enter-from,
+.layout-change-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}

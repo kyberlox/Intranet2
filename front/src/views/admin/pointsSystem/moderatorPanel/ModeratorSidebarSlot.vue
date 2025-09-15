@@ -23,6 +23,7 @@ import { defineComponent, type PropType } from 'vue';
 import type { IActivitiesList } from '@/interfaces/IEntities';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 export default defineComponent({
+    name: 'ModeratorSidebarSlot',
     props: {
         moderatorsActivities: {
             type: Array as PropType<IActivitiesList[]>

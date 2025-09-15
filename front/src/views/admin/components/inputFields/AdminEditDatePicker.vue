@@ -15,7 +15,7 @@ import { defineComponent, type PropType, ref } from 'vue';
 import { useDateFormat } from '@vueuse/core';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
 import { type UseDateFormatReturn } from '@vueuse/core';
-import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
+import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {

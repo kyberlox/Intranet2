@@ -90,7 +90,7 @@ export const useSwiperconf = (type: string, activeIndex?: number) => {
                         spaceBetween: 12
                     },
                     1400: {
-                        slidesPerView: 2,
+                        slidesPerView: 3,
                     },
                     1920: {
                         slidesPerView: 3

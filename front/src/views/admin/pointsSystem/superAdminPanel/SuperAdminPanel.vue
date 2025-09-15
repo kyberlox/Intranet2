@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 
-import EditTable from './components/EditTable.vue';
+import EditTable from './components/PointsEditTable.vue';
 export default defineComponent({
     components: {
         EditTable
@@ -47,56 +47,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style>
-.points-admin-panel__navigation__wrapper {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    padding: 12px;
-    border-bottom: 1px solid #eef2f6;
-    background: #fafbfd;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.points-admin-panel__navigation {
-    padding: 8px 14px;
-    border-radius: 10px;
-    color: #5a6b82;
-    background: transparent;
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: 0.2px;
-    cursor: pointer;
-    user-select: none;
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.02s ease;
-    border: 1px solid transparent;
-
-    &--active {
-        transform: translateY(0.5px);
-    }
-}
-
-.points-admin-panel__navigation:hover {
-    background: #f1f5f9;
-    color: var(--emk-brand-color);
-}
-
-.points-admin-panel__navigation:active {
-    transform: translateY(0.5px);
-}
-
-.points-admin-panel__navigation--active {
-    border: 1px solid var(--emk-brand-color);
-}
-
-.points-admin-panel {
-    display: flex;
-    flex-direction: column;
-}
-</style>

@@ -65,7 +65,7 @@ export default defineComponent({
         ComplexGallerySkeleton,
         ComplexGalleryCardBasic,
     },
-    setup(props) {
+    setup() {
         const modalVideo = ref();
         const modalImg = ref();
         const modalIsOpen = ref(false);

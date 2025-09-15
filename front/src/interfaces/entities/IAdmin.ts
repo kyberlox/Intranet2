@@ -14,7 +14,7 @@ export interface IAdminListItem {
     disabled?: string;
     data_type?: string;
     field?: string;
-    values?: string[] | { name: string, value: string | number }[];
+    values?: string[] | { name: string, id: string | number }[];
     value?: number | string | IReportage[];
 }
 

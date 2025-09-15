@@ -77,12 +77,11 @@
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { defineComponent, type Ref, ref, type PropType, watch, type Prop } from "vue";
-import type { IBaseEntity, IBXFileType } from "@/interfaces/IEntities";
+import { defineComponent, type Ref, ref, type PropType, watch } from "vue";
+import type { IBaseEntity, IReportage } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import Reactions from "./Reactions.vue";
 import { parseMarkdown } from "@/utils/parseMarkdown";
-import type { IReportage } from "@/interfaces/entities/IAdmin";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {

@@ -43,7 +43,7 @@ export default defineComponent({
     },
     setup() {
         const newWorkers = ref([]);
-        const swiperConf = useSwiperconf('newWorkers');
+        const swiperConf = useSwiperconf('vertical');
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
@@ -64,8 +64,3 @@ export default defineComponent({
     }
 })
 </script>
-<style>
-.vertical-swiper__wrapper {
-    max-width: 100%;
-}
-</style>

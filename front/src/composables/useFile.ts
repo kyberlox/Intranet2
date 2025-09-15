@@ -1,6 +1,6 @@
 import { type Ref, ref } from "vue";
 import { allowedTypes } from '@/assets/static/uploadAllowedTypes';
-import { type IFileToUpload } from "@/interfaces/entities/IAdmin";
+import { type IFileToUpload } from "@/interfaces/IEntities";
 
 export const useFileUtil = (uploadType: 'images' | 'documentation' | 'videos_native') => {
     const allowedType: Ref<string[]> = ref(allowedTypes[uploadType]);

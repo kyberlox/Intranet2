@@ -27,14 +27,11 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `
-        @use "@/assets/styles/mixins/_mixins.scss" as *;
-        @use "@/assets/styles/main.scss";`,
+        additionalData: `@use "@/assets/styles/mixins/_mixins.scss" as *;`,
         api: 'modern-compiler',
       }
     }
   },
-
   server: {
     host: "0.0.0.0",
     port: 5173,

@@ -542,6 +542,14 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
+    {
+      path: '/admin/curatorhistory',
+      name: 'curatorHistory',
+      component: () => import('@/views/admin/pointsSystem/curatorHistory/CuratorHistory.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

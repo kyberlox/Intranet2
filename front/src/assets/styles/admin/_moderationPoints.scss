@@ -3,6 +3,7 @@
     flex-direction: row;
 
     &__content {
+        overflow-x: auto;
         flex-grow: 1;
     }
 
@@ -23,7 +24,9 @@
     &__table-item {
         display: flex;
         align-items: flex-end;
-        justify-content: center;
+        // justify-content: center;
+        overflow-x: auto;
+        min-height: fit-content;
     }
 
     &__table {

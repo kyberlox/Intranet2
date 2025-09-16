@@ -1,82 +1,82 @@
 <template>
-    <div class="postcard">
-        <h1 class="page__title">Сервис отправки поздравительных открыток</h1>
-        <div class="postcard__container">
-            <div class="postcard__form-wrapper">
-                <select class="postcard__select"
-                        v-model="activeHoliday">
-                    <option value=""
-                            disabled
-                            selected>Выберите праздник</option>
-                    <option v-for="holiday in postCards"
-                            :key="holiday.id"
-                            :value="holiday.id">
-                        {{ holiday.name }}
-                    </option>
-                </select>
+<div class="postcard">
+    <h1 class="page__title">Сервис отправки поздравительных открыток</h1>
+    <div class="postcard__container">
+        <div class="postcard__form-wrapper">
+            <select class="postcard__select"
+                    v-model="activeHoliday">
+                <option value=""
+                        disabled
+                        selected>Выберите праздник</option>
+                <option v-for="holiday in postCards"
+                        :key="holiday.id"
+                        :value="holiday.id">
+                    {{ holiday.name }}
+                </option>
+            </select>
 
-                <Form @submit="sendMsg"
-                      class="postcard__form">
-                    <div class="postcard__form-group">
-                        <label>От</label>
-                        <input type="email"
-                               class="disabled"
-                               disabled
-                               :placeholder="msgSender" />
-                    </div>
+            <VForm @submit="sendMsg"
+                   class="postcard__form">
+                <div class="postcard__form-group">
+                    <label>От</label>
+                    <input type="email"
+                           class="disabled"
+                           disabled
+                           :placeholder="msgSender" />
+                </div>
 
-                    <div class="postcard__form-group">
-                        <label for="msgRecieverTextField">Кому</label>
-                        <ErrorMessage name="msgRecieverTextField"
-                                      class="invalid-feedback" />
-                        <Field as="input"
-                               type="email"
-                               name="msgRecieverTextField"
-                               :rules="validateEmail"
-                               rows="1"
-                               placeholder="recipient@email.com"
-                               v-model="msgReciever" />
-                    </div>
+                <div class="postcard__form-group">
+                    <label for="msgRecieverTextField">Кому</label>
+                    <ErrorMessage name="msgRecieverTextField"
+                                  class="invalid-feedback" />
+                    <Field as="input"
+                           type="email"
+                           name="msgRecieverTextField"
+                           :rules="validateEmail"
+                           rows="1"
+                           placeholder="recipient@email.com"
+                           v-model="msgReciever" />
+                </div>
 
-                    <div class="postcard__form-group">
-                        <label for="textField">Тема</label>
-                        <Field as="textarea"
-                               name="msgThemeTextField"
-                               rows="1"
-                               placeholder="Поздравление"
-                               v-model="msgTheme" />
-                    </div>
+                <div class="postcard__form-group">
+                    <label for="textField">Тема</label>
+                    <Field as="textarea"
+                           name="msgThemeTextField"
+                           rows="1"
+                           placeholder="Поздравление"
+                           v-model="msgTheme" />
+                </div>
 
-                    <div class="postcard__form-group postcard__swiper-wrapper">
-                        <SwiperBlank :type="'postInner'"
-                                     @indexChanged="changeMsgCardIndex"
-                                     :needEmitIndex="true"
-                                     :images="currentSlides" />
-                    </div>
+                <div class="postcard__form-group postcard__swiper-wrapper">
+                    <SwiperBlank :type="'postInner'"
+                                 @indexChanged="changeMsgCardIndex"
+                                 :needEmitIndex="true"
+                                 :images="currentSlides" />
+                </div>
 
-                    <div class="postcard__form-group">
-                        <label for="textField">Текст письма</label>
-                        <Field as="textarea"
-                               name="msgTextField"
-                               rows="8"
-                               placeholder="Введите текст поздравления..."
-                               v-model="msgText" />
-                    </div>
+                <div class="postcard__form-group">
+                    <label for="textField">Текст письма</label>
+                    <Field as="textarea"
+                           name="msgTextField"
+                           rows="8"
+                           placeholder="Введите текст поздравления..."
+                           v-model="msgText" />
+                </div>
 
-                    <div class="postcard__form-group">
-                        <label>Подпись</label>
-                        <textarea v-model="signature"
-                                  :rows="textAreaRowsToContent(signature)"
-                                  class="postcard__signature"></textarea>
-                    </div>
+                <div class="postcard__form-group">
+                    <label>Подпись</label>
+                    <textarea v-model="signature"
+                              :rows="textAreaRowsToContent(signature)"
+                              class="postcard__signature"></textarea>
+                </div>
 
-                    <div class="postcard__form-group">
-                        <button class="submit-button">Отправить</button>
-                    </div>
-                </Form>
-            </div>
+                <div class="postcard__form-group">
+                    <button class="submit-button">Отправить</button>
+                </div>
+            </VForm>
         </div>
     </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -88,14 +88,14 @@ import { sectionTips } from "@/assets/static/sectionTips";
 import { type IPostCard } from "@/interfaces/IEntities";
 import { useUserData } from "@/stores/userData";
 import { createMail } from "@/utils/createMail";
-import { Field, Form, ErrorMessage } from 'vee-validate';
+import { Field, Form as VForm, ErrorMessage } from 'vee-validate';
 
 export default defineComponent({
     name: "PostCard",
     components: {
         SwiperBlank,
         Field,
-        Form,
+        VForm,
         ErrorMessage
     },
     setup() {

@@ -1,54 +1,54 @@
 <template>
-    <swiper v-bind="sliderConfig"
-            @slideChange="needEmitIndex ? $emit('indexChanged', swiperInstance?.activeIndex) : ''"
-            @swiper="swiperOn">
+<swiper v-bind="sliderConfig"
+        @slideChange="needEmitIndex ? $emit('indexChanged', swiperInstance?.activeIndex) : ''"
+        @swiper="swiperOn">
 
-        <!-- для img -->
-        <swiper-slide v-for="(image, index) in images"
-                      :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
-                      :key="'postImg' + index">
-            <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : (image as string)"
-                 alt="изображение слайдера"
-                 @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
-        </swiper-slide>
+    <!-- для img -->
+    <swiper-slide v-for="(image, index) in images"
+                  :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
+                  :key="'postImg' + index">
+        <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : (image as string)"
+             alt="изображение слайдера"
+             @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
+    </swiper-slide>
 
-        <!-- для встроенных video -->
-        <swiper-slide v-for="(video, index) in videosEmbed"
-                      :key="'postVideoEmbed' + index">
-            <iframe v-if="video && video.file_url"
-                    width="100%"
-                    height="500px"
-                    :title="'Видеоконтент'"
-                    :src="String(repairVideoUrl(video?.file_url))"
-                    allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-            </iframe>
-        </swiper-slide>
+    <!-- для встроенных video -->
+    <swiper-slide v-for="(video, index) in videosEmbed"
+                  :key="'postVideoEmbed' + index">
+        <iframe v-if="video && video.file_url"
+                width="100%"
+                height="500px"
+                :title="'Видеоконтент'"
+                :src="String(repairVideoUrl(video?.file_url))"
+                allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+        </iframe>
+    </swiper-slide>
 
-        <!-- для загруженных video -->
-        <swiper-slide v-for="(video, index) in videosNative"
-                      :key="'postVideoNative' + index">
-            <iframe v-if="video && video.file_url"
-                    width="100%"
-                    height="500px"
-                    :title="'Видеоконтент'"
-                    :src="String((video.file_url))"
-                    allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-            </iframe>
-        </swiper-slide>
+    <!-- для загруженных video -->
+    <swiper-slide v-for="(video, index) in videosNative"
+                  :key="'postVideoNative' + index">
+        <iframe v-if="video && video.file_url"
+                width="100%"
+                height="500px"
+                :title="'Видеоконтент'"
+                :src="String((video.file_url))"
+                allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+        </iframe>
+    </swiper-slide>
 
-    </swiper>
-    <SwiperButtons :isBeginning="isBeginning"
-                   :isEnd="isEnd"
-                   :buttonsPos="'bottom'"
-                   @slideNext="slideNext"
-                   @slidePrev="slidePrev" />
+</swiper>
+<SwiperButtons :isBeginning="isBeginning"
+               :isEnd="isEnd"
+               :buttonsPos="'bottom'"
+               @slideNext="slideNext"
+               @slidePrev="slidePrev" />
 
-    <ZoomModal v-if="modalIsVisible"
-               :image="images"
-               :activeIndex="activeIndex"
-               @close="modalIsVisible = false" />
+<ZoomModal v-if="modalIsVisible"
+           :image="images"
+           :activeIndex="activeIndex"
+           @close="modalIsVisible = false" />
 </template>
 
 <script lang="ts">
@@ -59,13 +59,6 @@ import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { useSwiperconf } from "@/composables/useSwiperConf";
 import { type IBXFileType } from "@/interfaces/IEntities";
 import SwiperButtons from "./SwiperButtons.vue";
-
-interface ImageObject {
-    file_url: string;
-}
-
-type ImageItem = string | ImageObject;
-type ImageArray = ImageItem[];
 
 export default defineComponent({
     name: 'SwiperBlank',

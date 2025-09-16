@@ -1,81 +1,79 @@
 <template>
-    <div class="post-inner__page__wrapper mt20">
-        <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
-             class="row row-gap-50">
-            <div class="col-12 col-lg-6 mb-2 pos-rel">
-                <SwiperBlank :videosNative="currentPost?.videos_native"
-                             :videosEmbed="currentPost?.videos_embed"
-                             :images="currentPost?.images ? currentPost.images : previewImages"
-                             :sectionId="currentPost?.section_id"
-                             :type="'postInner'" />
-            </div>
-            <div class="col-12 col-lg-6">
-                <div class="news__detail__content">
-                    <div v-if="currentPost.name"
-                         class="news__detail__top">
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <h2 class="news__detail__title">
-                                    {{ currentPost.name }}
-                                </h2>
-                            </div>
+<div class="post-inner__page__wrapper mt20">
+    <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
+         class="row row-gap-50">
+        <div class="col-12 col-lg-6 mb-2 pos-rel">
+            <SwiperBlank :videosNative="currentPost?.videos_native"
+                         :videosEmbed="currentPost?.videos_embed"
+                         :images="currentPost?.images ? currentPost.images : previewImages"
+                         :sectionId="currentPost?.section_id"
+                         :type="'postInner'" />
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="news__detail__content">
+                <div v-if="currentPost.name"
+                     class="news__detail__top">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <h2 class="news__detail__title">
+                                {{ currentPost.name }}
+                            </h2>
                         </div>
                     </div>
-                    <div class="news__detail">
-                        <span v-if="currentPost.date_publiction"
-                              class="news__detail__date">{{
-                                currentPost.date_publiction.replace('T', ' ')
-                            }}</span>
-                        <div v-if="currentPost.reactions"
-                             class="news__detail__like-wrapper">
-                            <Reactions :id="Number(currentPost.id)"
-                                       :reactions="currentPost.reactions"
-                                       :type="'postPreview'" />
-                        </div>
+                </div>
+                <div class="news__detail">
+                    <span v-if="currentPost.date_publiction"
+                          class="news__detail__date">
+                        {{ currentPost.date_publiction.replace('T', ' ') }}
+                    </span>
+                    <div v-if="currentPost.reactions"
+                         class="news__detail__like-wrapper">
+                        <Reactions :id="Number(currentPost.id)"
+                                   :reactions="currentPost.reactions"
+                                   :type="'postPreview'" />
                     </div>
-                    <div v-if="currentPost.indirect_data && 'tags' in currentPost.indirect_data"
-                         class="tags">
-                        <div v-for="tag in currentPost.indirect_data.tags"
-                             :key="tag.id"
-                             class="tag__wrapper ">
-                            <div class="tag section__item__link btn-air"
-                                 @click="$emit('pickTag', tag.id)">
-                                #{{ tag.tag_name }}
-                            </div>
+                </div>
+                <div v-if="currentPost.indirect_data && 'tags' in currentPost.indirect_data"
+                     class="tags">
+                    <div v-for="tag in currentPost.indirect_data.tags"
+                         :key="tag.id"
+                         class="tag__wrapper ">
+                        <div class="tag section__item__link btn-air"
+                             @click="$emit('pickTag', tag.id)">
+                            #{{ tag.tag_name }}
+                        </div>
 
-                        </div>
                     </div>
-                    <div v-if="currentPost.indirect_data?.phone_number"
-                         class="news__detail__phone-care">
-                        Телефон организатора:
-                        <br />
-                        {{ currentPost.indirect_data?.phone_number }}
-                    </div>
-                    <div v-if="currentPost.content_text"
-                         class="news__detail__discr"
-                         v-html="currentPost.content_text"></div>
-                    <div v-if="currentPost.documentation"
-                         class="news__detail__documents">
-                        <div class="news__detail__document"
-                             v-for="(doc, index) in currentPost.documentation"
-                             :key="'doc' + index">
-                            <a class="news__detail__document__link"
-                               :href="String(doc.file_url)"
-                               _blank>Открыть {{ doc.original_name }}
-                                <DocIcon />
-                            </a>
-                        </div>
+                </div>
+                <div v-if="currentPost.indirect_data?.phone_number"
+                     class="news__detail__phone-care">
+                    Телефон организатора:
+                    <br />
+                    {{ currentPost.indirect_data?.phone_number }}
+                </div>
+                <div v-if="currentPost.content_text"
+                     class="news__detail__discr"
+                     v-html="currentPost.content_text"></div>
+                <div v-if="currentPost.documentation"
+                     class="news__detail__documents">
+                    <div class="news__detail__document"
+                         v-for="(doc, index) in currentPost.documentation"
+                         :key="'doc' + index">
+                        <a class="news__detail__document__link"
+                           :href="String(doc.file_url)"
+                           _blank>Открыть {{ doc.original_name }}
+                            <DocIcon />
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </template>
-
 
 <script lang="ts">
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
-import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
 import { defineComponent, type Ref, ref, type PropType, watch } from "vue";
 import type { IBaseEntity, IReportage } from "@/interfaces/IEntities";
@@ -103,7 +101,6 @@ export default defineComponent({
     name: 'PostInner',
     components: {
         SwiperBlank,
-        LikeIcon,
         DocIcon,
         Reactions
     },

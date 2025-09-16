@@ -1,47 +1,47 @@
 <template>
-    <div class="admin-panel">
-        <div class="admin-panel__sidebar">
-            <div v-if="needDefaultNav"
-                 class="admin-panel__header">
-                <h3 class="admin-panel__title">Панель редактора</h3>
-            </div>
-
-            <nav v-for="(item, index) in fullNavigation"
-                 :key="'nav' + index"
-                 class="admin-panel__nav">
-                <h6 class="admin-panel__nav-title">
-                    {{ item.title }}
-                </h6>
-                <ul v-if="item.nav.length"
-                    class="admin-panel__nav-list">
-                    <li v-for="(section, index) in item.nav"
-                        :key="'section' + index"
-                        class="admin-panel__nav-item">
-                        <RouterLink :to="defineRoute(item.id, section)"
-                                    class="admin-panel__nav-link"
-                                    active-class="admin-panel__nav-link--active">
-                            <div class="admin-panel__nav-icon">
-                                <NavArrow />
-                            </div>
-                            <span class="admin-panel__nav-text">
-                                {{ section.name }}
-                            </span>
-                        </RouterLink>
-                    </li>
-                </ul>
-            </nav>
-
-            <slot>
-            </slot>
+<div class="admin-panel">
+    <div class="admin-panel__sidebar">
+        <div v-if="needDefaultNav"
+             class="admin-panel__header">
+            <h3 class="admin-panel__title">Панель редактора</h3>
         </div>
-        <div class="admin-panel__content ">
-            <!-- <RouterView /> -->
-        </div>
+
+        <nav v-for="(item, index) in fullNavigation"
+             :key="'nav' + index"
+             class="admin-panel__nav">
+            <h6 class="admin-panel__nav-title">
+                {{ item.title }}
+            </h6>
+            <ul v-if="item.nav.length"
+                class="admin-panel__nav-list">
+                <li v-for="(section, index) in item.nav"
+                    :key="'section' + index"
+                    class="admin-panel__nav-item">
+                    <RouterLink :to="defineRoute(item.id, section)"
+                                class="admin-panel__nav-link"
+                                active-class="admin-panel__nav-link--active">
+                        <div class="admin-panel__nav-icon">
+                            <NavArrow />
+                        </div>
+                        <span class="admin-panel__nav-text">
+                            {{ section.name }}
+                        </span>
+                    </RouterLink>
+                </li>
+            </ul>
+        </nav>
+
+        <slot>
+        </slot>
     </div>
+    <div class="admin-panel__content ">
+        <!-- <RouterView /> -->
+    </div>
+</div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
@@ -105,14 +105,11 @@ export default defineComponent({
                 return {
                     name: 'adminBlockInner', params: { id: String(section.id) }
                 }
-            }
-            else
+            } else
                 return {
                     name: String(section.id)
                 }
         }
-
-        console.log(fullNavigation);
 
         return {
             myId,

@@ -1,66 +1,66 @@
 <template>
-    <div class="mt20">
-        <h2 class="page__title">Обратная связь: Есть идея!</h2>
-        <div class="page__description"
-             v-html="greetings"></div>
-        <div class="col-sm-6 mt20">
-            <Form class="form-floating new-idea__form mb-3"
-                  ref="formRef"
-                  @submit="sendIdea">
+<div class="mt20">
+    <h2 class="page__title">Обратная связь: Есть идея!</h2>
+    <div class="page__description"
+         v-html="greetings"></div>
+    <div class="col-sm-6 mt20">
+        <VForm class="form-floating new-idea__form mb-3"
+               ref="formRef"
+               @submit="sendIdea">
 
-                <!-- Поле темы -->
-                <div class="invalid-feedback__wrapper">
-                    <ErrorMessage name="themeField"
-                                  class="invalid-feedback" />
-                </div>
-                <div class="form-floating">
-                    <Field class="form-control"
-                           name="themeField"
-                           :rules="isRequired"
-                           type="text"
-                           v-model="messageTheme"
-                           placeholder="Тема" />
-                    <label for="themeField">Тема</label>
-                </div>
+            <!-- Поле темы -->
+            <div class="invalid-feedback__wrapper">
+                <ErrorMessage name="themeField"
+                              class="invalid-feedback" />
+            </div>
+            <div class="form-floating">
+                <Field class="form-control"
+                       name="themeField"
+                       :rules="isRequired"
+                       type="text"
+                       v-model="messageTheme"
+                       placeholder="Тема" />
+                <label for="themeField">Тема</label>
+            </div>
 
-                <!-- Поле сообщения -->
-                <div class="invalid-feedback__wrapper">
-                    <ErrorMessage name="textField"
-                                  class="invalid-feedback" />
-                </div>
-                <div class="form-floating">
-                    <Field as="textarea"
-                           class="form-control new-idea__textarea"
-                           name="textField"
-                           :rules="isRequired"
-                           rows="8"
-                           placeholder="Добавьте сообщение"
-                           v-model="messageText" />
-                    <label for="textField">Сообщение</label>
-                </div>
+            <!-- Поле сообщения -->
+            <div class="invalid-feedback__wrapper">
+                <ErrorMessage name="textField"
+                              class="invalid-feedback" />
+            </div>
+            <div class="form-floating">
+                <Field as="textarea"
+                       class="form-control new-idea__textarea"
+                       name="textField"
+                       :rules="isRequired"
+                       rows="8"
+                       placeholder="Добавьте сообщение"
+                       v-model="messageText" />
+                <label for="textField">Сообщение</label>
+            </div>
 
-                <!-- Поле файла -->
-                <div class="">
-                    <label for="formFile"
-                           class="form-label">Добавить файл</label>
-                    <input class="form-control"
-                           name="attachments-files"
-                           ref="fileInput"
-                           type="file"
-                           @change="handleMessageFileLoad">
-                </div>
+            <!-- Поле файла -->
+            <div class="">
+                <label for="formFile"
+                       class="form-label">Добавить файл</label>
+                <input class="form-control"
+                       name="attachments-files"
+                       ref="fileInput"
+                       type="file"
+                       @change="handleMessageFileLoad">
+            </div>
 
-                <!-- Кнопка отправки -->
-                <div class="mb-3 mt20">
-                    <button :class="{ 'primary-button--disabled': buttonsIsDisabled }"
-                            :disabled="buttonsIsDisabled"
-                            class="primary-button">
-                        Отправить
-                    </button>
-                </div>
-            </Form>
-        </div>
+            <!-- Кнопка отправки -->
+            <div class="mb-3 mt20">
+                <button :class="{ 'primary-button--disabled': buttonsIsDisabled }"
+                        :disabled="buttonsIsDisabled"
+                        class="primary-button">
+                    Отправить
+                </button>
+            </div>
+        </VForm>
     </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -69,13 +69,13 @@ import { ref, type Ref, defineComponent } from 'vue';
 import { useBase64 } from '@vueuse/core'
 import { shallowRef } from 'vue'
 import { type IPostIdea } from '@/interfaces/IPostFetch';
-import { Field, Form, ErrorMessage, type GenericObject } from 'vee-validate';
+import { Field, Form as VForm, ErrorMessage, type GenericObject } from 'vee-validate';
 
 export default defineComponent({
     name: 'NewIdea',
     components: {
         Field,
-        Form,
+        VForm,
         ErrorMessage
     },
     emits: ['showToast'],

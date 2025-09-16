@@ -151,7 +151,7 @@ const router = createRouter({
       path: '/about/trainingcenter/excursions',
       name: 'excursions',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ pageTitle: 'Экскурсии' }),
+      props: () => ({ pageTitle: 'Экскурсии' }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
       }

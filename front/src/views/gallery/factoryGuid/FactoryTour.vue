@@ -1,9 +1,9 @@
 <template>
-    <div class="pano__wrapper mt20"
-         id="wrapper">
-        <div class="pano"
-             id="pano"></div>
-    </div>
+<div class="pano__wrapper mt20"
+     id="wrapper">
+    <div class="pano"
+         id="pano"></div>
+</div>
 </template>
 
 <script lang="ts">
@@ -28,7 +28,7 @@ export default defineComponent({
         const folder = ref('');
         const swf = ref();
         const xml = ref();
-        const basePath = '/src/assets/factoryTour/';
+        const basePath = `/src/assets/factoryTour/${currentTour.value}`;
 
         onBeforeMount(() => {
             folder.value = "3d-01";

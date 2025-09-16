@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
-import { type IActivityToSend } from "@/interfaces/IEntities";
+import type {  IActivityToSend, IActivityStatistics } from "@/interfaces/IEntities";
 
 export const useUserScore = defineStore('userScoreData', {
     state: () => ({
         currentScore: 0,
         availableActions: {} as IActivityToSend,
-        statistics: [],
+        statistics: {},
     }),
 
     actions: {
@@ -15,7 +15,7 @@ export const useUserScore = defineStore('userScoreData', {
         setActions(actions: IActivityToSend) {
             this.availableActions = actions;
         },
-        setStatistics(statData: any) {
+        setStatistics(statData: IActivityStatistics) {
             this.statistics = statData;
         }
     },

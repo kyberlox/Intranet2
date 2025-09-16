@@ -1,19 +1,19 @@
 <template>
-    <div class="experience__page mt20">
-        <div class="page__title">Корпоративная жизнь</div>
-        <div class="page__title__details"
-             v-if="title">{{ title }}</div>
-        <ContentGallery v-if="formattedSlides"
-                        class="mt20"
-                        :page=page
-                        :modifiers="modifiers"
-                        :slide="slide"
-                        @callModal="callModal" />
-    </div>
-    <ZoomModal v-if="slide && slide.images?.length && modalIsOpen == true"
-               :activeIndex="activeIndex"
-               :image="slide.images"
-               @close="modalIsOpen = false" />
+<div class="experience__page mt20">
+    <div class="page__title">Корпоративная жизнь</div>
+    <div class="page__title__details"
+         v-if="title">{{ title }}</div>
+    <ContentGallery v-if="formattedSlides"
+                    class="mt20"
+                    :page=page
+                    :modifiers="modifiers"
+                    :slide="slide"
+                    @callModal="callModal" />
+</div>
+<ZoomModal v-if="slide && slide.images?.length && modalIsOpen == true"
+           :activeIndex="activeIndex"
+           :image="slide.images"
+           @close="modalIsOpen = false" />
 </template>
 
 <script lang="ts">
@@ -24,6 +24,7 @@ import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import type { IContentGallerySlide } from "@/components/tools/gallery/ContentGallery.vue";
 
 export default defineComponent({
+    name: 'CorpLifeItem',
     components: {
         ContentGallery,
         ZoomModal
@@ -40,7 +41,7 @@ export default defineComponent({
         const activeIndex = ref<number>();
         const modalIsOpen = ref<boolean>();
 
-        const callModal = (a = null, b = null, index: number, d = null) => {
+        const callModal = (index: number) => {
             activeIndex.value = index;
             modalIsOpen.value = true;
         }

@@ -81,7 +81,7 @@
 
 <script lang="ts">
 import { textAreaRowsToContent } from "@/utils/StringUtils.js";
-import { ref, defineComponent, onMounted, watch, computed } from "vue";
+import { ref, defineComponent, onMounted, watch, computed, nextTick } from "vue";
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
@@ -131,7 +131,8 @@ export default defineComponent({
                 })
         })
 
-        const changeMsgCardIndex = (newIndex: number) => {
+        const changeMsgCardIndex = async (newIndex: number) => {
+            await nextTick()
             imageInMsg.value = currentSlides.value[newIndex].file_url
         }
 
@@ -148,7 +149,6 @@ export default defineComponent({
             }
             Api.post('/users/test_send_mail', body)
         }
-
         const validateEmail = (inputValue: unknown) => {
             if (!inputValue) {
                 return 'Email обязателен для заполнения';

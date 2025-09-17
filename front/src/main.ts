@@ -12,7 +12,6 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { vLazyLoad } from './customDirectives/lazyLoad'
 
-
 import App from './App.vue'
 import router from './router'
 

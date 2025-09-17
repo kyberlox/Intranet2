@@ -167,10 +167,14 @@
             display: grid;
             grid-template-rows: 1fr auto;
             height: 100%;
-            min-height: 400px;
+            min-height: 492px;
             overflow: hidden;
             transition: 0.2s all;
             width: 100%;
+
+            &--birthday{
+                height: 500px;
+            }
 
             &:hover {
                 .birthday__slide__image {
@@ -242,4 +246,9 @@
             display: flex !important;
         }
     }
+}
+
+.newWorkers__vertical-swiper{
+    min-height: 600px;
+    max-height: 600px;
 }

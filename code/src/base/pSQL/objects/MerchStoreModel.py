@@ -1,6 +1,6 @@
 from sqlalchemy.orm.attributes import flag_modified
 
-from ..models import User
+from ..models.User import User
 from .App import db
 from .ActiveUsersModel import ActiveUsersModel
 

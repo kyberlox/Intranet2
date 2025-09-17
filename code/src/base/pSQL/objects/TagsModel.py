@@ -1,6 +1,7 @@
 import json
 
-from ..models import Tags, Article
+from ..models.Tags import Tags
+from ..models.Article import Article
 from .App import db
 
 
@@ -64,7 +65,7 @@ class TagsModel:
         self.session.close()
         return {"msg": "Добавлены"}
     
-    def find_articles_by_tag_id(self, section_id):
+    def find_articles_by_tag_id(self, section_id : int):
         articles = self.session.query(self.Article).filter(self.Article.indirect_data["tags"].contains([self.id]), self.Article.active == True, self.Article.section_id == section_id).all()
         self.session.close()
         if articles:

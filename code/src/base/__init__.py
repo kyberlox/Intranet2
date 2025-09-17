@@ -2,7 +2,7 @@ from .pSQL.objects import UserModel
 from .pSQL.objects import DepartmentModel
 from .pSQL.objects import UsDepModel
 
-#from .pSQL.objects import SectionModel
+from .pSQL.objects import SectionModel
 
 from .pSQL.objects import ArticleModel
 from .pSQL.objects import LikesModel
@@ -19,6 +19,7 @@ from .pSQL.objects import ModersModel
 from .pSQL.objects import AdminModel
 
 from .pSQL.objects import MerchStoreModel
+
 
 from .pSQL import *
 
@@ -57,5 +58,6 @@ __all__ = [
     'StructureSearchModel',
     'ArticleSearchModel',
     'search_everywhere',
-    'search_router'
+    'search_router',
+    'SectionModel'
     ]

@@ -1,5 +1,4 @@
 from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
-from ..base.B24 import B24
 from ..services.LogsMaker import LogsMaker
 
 from fastapi import APIRouter, Body, Request
@@ -21,6 +20,7 @@ class Department:
         self.department = DepartmentModel()
 
     def fetch_departments_data(self):
+        from ..base.B24 import B24
         data = B24().getDeps()
         logg = LogsMaker()
 
@@ -33,7 +33,8 @@ class Department:
         return {"status" : True}
     
     def search_dep_by_id(self):
-        return self.department(Id=self.id).find_dep_by_id()
+        self.department.id = self.id
+        return self.department.find_dep_by_id()
 
 
 # Департаменты можно обновить

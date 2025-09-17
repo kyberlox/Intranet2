@@ -15,10 +15,11 @@ class B24:
 
 
     def getUsers(self):
-        res = self.bx24.callMethod('user.get')
-        return res
+        result = self.bx24.callMethod('user.get')
+        return result
 
     def getDeps(self):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
         result = self.bx24.callMethod('department.get')
         return result
 

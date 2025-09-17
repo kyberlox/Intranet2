@@ -1,4 +1,3 @@
-from ..base.pSQL.objects import UsDepModel
 from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
 from ..base.B24 import B24
 from ..services.LogsMaker import LogsMaker
@@ -20,12 +19,13 @@ class UsDep:
         self.ID = ID
         self.usr_id = usr_id
         self.dep_id = dep_id
-        self.UserSQL = UsDepModel
+
+        from ..base.pSQL.objects import UsDepModel
+        self.UserSQL = UsDepModel()
     
     def get_usr_dep(self):
         b24 = B24()
         data = b24.getUsers()
-        UserSQL = UsDepModel()
         logg = LogsMaker()
         
         result = dict()
@@ -41,7 +41,8 @@ class UsDep:
         return {"status" : True}
         
     def search_usdep_by_id(self):
-        return self.UserSQL(id = self.ID).find_dep_by_user_id()
+        self.UserSQL.id = self.ID
+        return self.UserSQL.find_dep_by_user_id()
 
 
 #Таблицу пользователей и департаментов можно обновить
@@ -50,9 +51,9 @@ def get_user():
     return UsDep().get_usr_dep()
 
 #Пользователя и его департамент можно выгрузить
-@usdep_router.get("/find_by/{id}")
-def get_usdepart(id):
-    return UsDep(id = id).search_usdep_by_id()
+@usdep_router.get("/find_by/{ID}")
+def get_usdepart(ID):
+    return UsDep(ID = ID).search_usdep_by_id()
 
 #поиск по id подразделения
 @usdep_router.get("/get_structure_by_dep_id/{parent_id}")

@@ -3,9 +3,9 @@ from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
 from .File import File
 from .User import User
 from .Tag import Tag
-from ..base.pSQL.objects import ArticleModel
-from ..base.pSQL.objects import LikesModel
-from ..base.pSQL.objects import ViewsModel
+from ..base.pSQL.objects.ArticleModel import ArticleModel
+from ..base.pSQL.objects.LikesModel import LikesModel
+from ..base.pSQL.objects.ViewsModel import ViewsModel
 from ..services.Idea import Idea
 from ..services.Auth import AuthService
 from ..services.LogsMaker import LogsMaker
@@ -56,6 +56,9 @@ class Article:
     def __init__(self, id=0, section_id=0):
         self.id = id
         self.section_id = section_id
+
+        # кастомный прогрессбар
+        self.logg = LogsMaker()
 
     def find(self, inf_id, art_id, property):
         return B24().find(inf_id, art_id, property)
@@ -204,14 +207,18 @@ class Article:
                 award = "Сотрудник года"
 
             user = User(id=uuid).search_by_id()
-            photo = user["photo_file_url"]
+            if "photo_file_url" not in user or user["photo_file_url"] == None:
+                photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
+            else:
+                photo = user["photo_file_url"]
+                photo_replace = photo.replace("user_files", "compress_image/user")
             indirect_data = json.dumps({
                 "uuid" : uuid,
                 "year" : year,
                 "position" : position,
                 "department" : department,
                 #внедряю компрессию
-                "photo_file_url" : photo.replace("user_files", "compress_image/user"),
+                "photo_file_url" : photo_replace,
                 "award" : award,
                 "location" : ""
             })
@@ -1080,9 +1087,6 @@ class Article:
         # создание индексов в Mongo
         File().index_files()
 
-        # кастомный прогрессбар
-        logg = LogsMaker()
-
         '''
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
@@ -1114,7 +1118,7 @@ class Article:
         
         
         #проходимся по инфоблокам
-        for i in logg.progress(sec_inf, f"Загрузка данных инфоблоков {sec_inf.values} "):
+        for i in self.logg.progress(sec_inf, f"Загрузка данных инфоблоков {sec_inf.values} "):
 
             # запрос в B24
             self.section_id = sec_inf[i]
@@ -1126,7 +1130,7 @@ class Article:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
                     if artDB.need_add():
-                        logg.warning_message(f'Добавил статью, {inf["ID"]}')
+                        self.logg.warning_message(f'Добавил статью, {inf["ID"]}')
                         self.add(inf)
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
@@ -1147,7 +1151,7 @@ class Article:
         #Учебный центр (Проведённые тренинги)
         self.section_id = "61"
         sec_inf_title = self.get_inf()
-        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
+        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
             title_id = title_inf["ID"]
             title_data = title_inf
 
@@ -1184,7 +1188,7 @@ class Article:
         #пройти по инфоблоку заголовков
         self.section_id = "75"
         sec_inf_title = self.get_inf()
-        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 75, 77 "):
+        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 75, 77 "):
             title_id = title_inf["ID"]
             title_data = title_inf
 
@@ -1220,7 +1224,7 @@ class Article:
         # пройти по инфоблоку заголовков
         self.section_id = "82"
         sec_inf_title = self.get_inf()
-        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):
+        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):
             title_id = title_inf["ID"]
             title_data = title_inf
 
@@ -1263,7 +1267,7 @@ class Article:
         # пройти по инфоблоку заголовков
         self.section_id = "78"
         sec_inf_title = self.get_inf()
-        for title_inf in logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 и 84"):
+        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 и 84"):
             art_id = title_inf["ID"]
             data = title_inf
             data["reports"] = []
@@ -1333,9 +1337,9 @@ class Article:
         # пройти по инфоблоку
         self.section_id = "50"
         art_inf = self.get_inf()
-        for art in logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
+        for art in self.logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
             if art["ID"] == '13486':
-                logg.warning_message(f'{art["ID"]} новостьь которая проникает не туда')
+                self.logg.warning_message(f'{art["ID"]} новостьь которая проникает не туда')
                 # print(art, ' новость')
             else:
                 pass
@@ -1365,7 +1369,7 @@ class Article:
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
                 if artDB.need_add():
                     self.add(art)
-                    logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
+                    self.logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
                     # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
                 elif artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
@@ -1381,7 +1385,7 @@ class Article:
         # Фотогалерея
         self.section_id = "68"
         art_inf = self.get_inf()
-        for art in logg.progress(art_inf, "Загрузка данных разделов \"Официальные события\" и \"Корпоративная жизнь в фото\" "):
+        for art in self.logg.progress(art_inf, "Загрузка данных разделов \"Официальные события\" и \"Корпоративная жизнь в фото\" "):
             art_id = art["ID"]
 
             if "PROPERTY_403" in art:
@@ -1504,7 +1508,7 @@ class Article:
         self.section_id = "128"
         competitions_info = self.get_inf()
         if competitions_info != []:
-            for inf in logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
+            for inf in self.logg.progress(competitions_info, "Загрузка 'Конкурсы ЭМК'"):
                 #art_id = inf["ID"]
                 self.section_id = 71
                 art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)

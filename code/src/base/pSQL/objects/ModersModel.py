@@ -3,7 +3,9 @@ from sqlalchemy.sql.expression import func
 
 import json
 
-from ..models import ActiveUsers, Activities, Moders
+from ..models.ActiveUsers import ActiveUsers
+from ..models.Activities import Activities
+from ..models.Moders import Moders
 from .App import db
 
 

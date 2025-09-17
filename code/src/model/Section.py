@@ -11,10 +11,11 @@ section_router = APIRouter(prefix="/section", tags=["Разделы"])
 
 
 class Section:
-    def __init__(self, id=0, name="", parent_id=0):
+    def __init__(self, id=0, name="", parent_id=0, sectionHref=""):
         self.id = id
         self.name = name
         self.parent_id = parent_id
+        self.sectionHref = sectionHref
 
     def load(self):
         #загрузить из JSON

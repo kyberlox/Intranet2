@@ -1,4 +1,6 @@
-from ..models import UservisionsRoot, User, Fieldvision
+from ..models.UservisionsRoot import UservisionsRoot
+from ..models.User import User
+from ..models.Fieldvision import Fieldvision
 from .App import db
 
 

@@ -1,13 +1,16 @@
-from .App import elastic_client, helpers
-from .App import ArticleModel
+from .App import elastic_client, helpers, json, sections
 from .App import DOMAIN
 
+from src.model.File import File
+from src.model.Section import Section
 
+#from ....model.File import File
 
 class ArticleSearchModel:
 
     def __init__(self):
-        self.ArticleModel = ArticleModel
+        from ..pSQL.objects.ArticleModel import ArticleModel
+        self.ArticleModel = ArticleModel()
         self.index = "articles"
 
     def create_index(self):
@@ -118,7 +121,7 @@ class ArticleSearchModel:
         return responce
 
     def dump(self):
-        from ....model.File import File
+
         try:
             # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
             self.delete_index()
@@ -126,7 +129,7 @@ class ArticleSearchModel:
             pass
         self.create_index()
 
-        article_SQL_data = ArticleModel().all()
+        article_SQL_data = self.ArticleModel.all()
         article_data_ES = []
         article_action = {}
         for article_data in article_SQL_data:
@@ -206,6 +209,7 @@ class ArticleSearchModel:
         return {"status": True}
 
     def elasticsearch_article(self, key_word):
+        sections = Section().get_all()
         result = []
         res = elastic_client.search(
             index=self.index,

@@ -222,7 +222,9 @@ class UserModel:
                             list_departs_id.append(dp.__dict__['id'])
 
             if "uf_usr_department_main" in indirect_data:
-                dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                #print(indirect_data["uf_usr_department_main"])
+                dedep = DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                #print(dedep)
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
             indirect_data['uf_department'] = list_departs
@@ -321,7 +323,7 @@ class UserModel:
             return None
 
     def find_by_uuid(self):
-        user = self.db.query(self.user).filter(self.user.uuid == self.id).one()
+        user = self.db.query(self.user).filter(self.user.uuid == self.id).first()
         if user is not None:
             return {
                 "ID": user.id,

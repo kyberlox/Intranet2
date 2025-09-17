@@ -3,12 +3,12 @@ from fastapi.responses import JSONResponse
 from typing import Annotated, List
 
 from .LogsMaker import LogsMaker
-from ..base.pSQL.objects import ArticleModel
+from ..base.pSQL.objects.ArticleModel import ArticleModel
 from ..base.mongodb import FileModel
-from ..model import Article
-from ..model import Section
+from ..model.Article import Article
+from ..model.Section import Section
 from ..model.File import File as storeFile
-from ..model import User
+from ..model.User import User
 
 from bson.objectid import ObjectId
 

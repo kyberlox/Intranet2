@@ -5,7 +5,7 @@ from typing import List, Optional, Dict
 
 from datetime import datetime, timedelta
 
-from ..models import Likes
+from ..models.Likes import Likes
 from .App import db
 from .ViewsModel import ViewsModel
 
@@ -87,7 +87,7 @@ class LikesModel:
         reactions = {}
         # Проверяем, есть ли уже активный лайк
         existing_like = self.session.query(self.Likes).filter(
-            self.Likesv.user_id == self.user_id,
+            self.Likes.user_id == self.user_id,
             self.Likes.article_id == self.art_id
         ).first()
         views = ViewsModel(art_id=self.art_id).get_art_viewes()

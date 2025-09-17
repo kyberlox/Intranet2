@@ -1,4 +1,4 @@
-from ..models import Section
+from ..models.Section import Section
 from .App import db
 
 #!!!!!!!!!!!!!!!
@@ -16,7 +16,7 @@ class SectionModel:
 
     def upload(self, section_data):
         for section in section_data:
-            sec = self.db.query(self.Section).filter(self.Section.id == section["id"]).first()
+            sec = self.db.query(Section).filter(self.Section.id == section["id"]).first()
 
             if sec is not None:
                 #надо ли обновить?
@@ -24,8 +24,13 @@ class SectionModel:
                    sec.name = section["name"]
                 if sec.parent_id != section["parent_id"]:
                     sec.parent_id = section["parent_id"]
+                if "sectionHref" in section and sec.sectionHref != section["sectionHref"]:
+                    sec.sectionHref = section["sectionHref"]
             else:
-                sec = self.Section(id=section["id"], name=section["name"], parent_id=section["parent_id"])
+                if "sectionHref" in section:
+                    sec = self.Section(id=section["id"], name=section["name"], parent_id=section["parent_id"], sectionHref=section["sectionHref"])
+                else:
+                    sec = self.Section(id=section["id"], name=section["name"], parent_id=section["parent_id"])
             self.db.add(sec)
             self.db.commit()
             self.db.close()
@@ -33,11 +38,11 @@ class SectionModel:
         return section_data
 
     def search_by_id(self):
-        result = self.db.query(self.Section).filter(self.Section.id == self.id).first()
+        result = self.db.query(Section).filter(self.Section.id == self.id).first()
         self.db.close()
         return result
 
     def search_by_parent_id(self):
-        result = self.db.query(self.Section).filter(self.Section.parent_id == self.parent_id).all()
+        result = self.db.query(Section).filter(self.Section.parent_id == self.parent_id).all()
         self.db.close()
-        return self.close()
+        return result

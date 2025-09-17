@@ -20,6 +20,8 @@ from .AdminModel import AdminModel
 
 from .MerchStoreModel import MerchStoreModel
 
+from .SectionModel import SectionModel
+
 
 ## Control imports
 __all__ = [
@@ -36,5 +38,6 @@ __all__ = [
     'ActiveUsersModel',
     'ModersModel',
     'AdminModel',
-    'MerchStoreModel'
+    'MerchStoreModel',
+    'SectionModel'
     ]

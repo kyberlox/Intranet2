@@ -16,6 +16,8 @@ from .Moders import Moders
 from .UservisionsRoot import UservisionsRoot
 from .Fieldvision import Fieldvision
 
+from .Section import Section
+
 ## Control imports
 __all__ = ['App',
            'User',
@@ -29,4 +31,6 @@ __all__ = ['App',
            'Tags',
            'Activities',
            'ActiveUsers',
-           'Moders']
+           'Moders',
+           'Section'
+           ]

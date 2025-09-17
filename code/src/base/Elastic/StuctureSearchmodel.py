@@ -1,13 +1,18 @@
 from .App import elastic_client, helpers
-from .App import UserModel, DepartmentModel, UsDepModel
 from .App import DOMAIN
 
 
 class StructureSearchModel:
     def __init__(self):
-        # self.DepartmentModel = DepartmentModel
-        # self.UsDepModel = UsDepModel
-        # self.UserModel = UserModel
+        from ..pSQL.objects.UserModel import UserModel
+        self.UserModel = UserModel()
+
+        from ..pSQL.objects.DepartmentModel import DepartmentModel
+        self.DepartmentModel = DepartmentModel()
+
+        from ..pSQL.objects.UsDepModel import UsDepModel
+        self.UsDepModel = UsDepModel()
+
         self.index = 'departs'
 
     def create_index(self):
@@ -141,12 +146,12 @@ class StructureSearchModel:
         # list_for_deps = []
         dep_data_ES = [] # список для bulk
         dep_data = {}  # словарь для данных
-        usr_sql_data = UserModel().all()
+        usr_sql_data = self.UserModel.all()
 
         """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления верхушки айсберга⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
         # находим верхушку айсберга, ее father_id будет None
-        # list_children = DepartmentModel().find_deps_by_father_id(53)
-        N_0 = DepartmentModel().find_deps_by_father_id(None)[0]
+        # list_children = self.DepartmentModel().find_deps_by_father_id(53)
+        N_0 = self.DepartmentModel.find_deps_by_father_id(None)[0]
         path_N_0_depart = str(N_0.id) # путь для департамента
         dep_data['id'] = N_0.id
         dep_data['name'] = N_0.name
@@ -155,7 +160,8 @@ class StructureSearchModel:
         dep_data['path_depart'] = path_N_0_depart
         """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
         users_list = []
-        users = UsDepModel(id=N_0.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+        self.UsDepModel.id = N_0.id
+        users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
         if isinstance(users, list):
             for usr in usr_sql_data:
                 user = usr.__dict__
@@ -196,7 +202,7 @@ class StructureSearchModel:
         """⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆"""
         # print(dep_data_ES)
         """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления первого разветвления⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
-        N_1_list = DepartmentModel().find_deps_by_father_id(N_0.id)
+        N_1_list = self.DepartmentModel.find_deps_by_father_id(N_0.id)
         for N_1 in N_1_list:
             path_N_1_depart = str(N_1.id)
             dep_data = {}
@@ -207,7 +213,8 @@ class StructureSearchModel:
             dep_data['path_depart'] = path_N_0_depart + '.' + path_N_1_depart
             """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
             users_list = []
-            users = UsDepModel(id=N_1.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+            self.UsDepModel.id = N_1.id
+            users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
             if isinstance(users, list):
                 for usr in usr_sql_data:
                     user = usr.__dict__
@@ -243,7 +250,7 @@ class StructureSearchModel:
             }
             dep_data_ES.append(data_action)
             # второе разветвление
-            N_2_list = DepartmentModel().find_deps_by_father_id(N_1.id)
+            N_2_list = self.DepartmentModel.find_deps_by_father_id(N_1.id)
             if N_2_list == []:
                 continue
             else:
@@ -257,7 +264,8 @@ class StructureSearchModel:
                     dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart
                     """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
                     users_list = []
-                    users = UsDepModel(id=N_2.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                    self.UsDepModel.id = N_2.id
+                    users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
                     if isinstance(users, list):
                         for usr in usr_sql_data:
                             user = usr.__dict__
@@ -295,7 +303,7 @@ class StructureSearchModel:
                     dep_data_ES.append(data_action)
 
                     # третье разветвление
-                    N_3_list = DepartmentModel().find_deps_by_father_id(N_2.id)
+                    N_3_list = self.DepartmentModel.find_deps_by_father_id(N_2.id)
                     if N_3_list == []:
                         continue
                     else:
@@ -309,8 +317,8 @@ class StructureSearchModel:
                             dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart
                             """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
                             users_list = []
-                            users = UsDepModel \
-                                (id=N_3.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                            self.UsDepModel.id = N_3.id
+                            users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
                             if isinstance(users, list):
                                 for usr in usr_sql_data:
                                     user = usr.__dict__
@@ -346,7 +354,7 @@ class StructureSearchModel:
                                 "_source": dep_data
                             }
                             dep_data_ES.append(data_action)
-                            N_4_list = DepartmentModel().find_deps_by_father_id(N_3.id)
+                            N_4_list = self.DepartmentModel.find_deps_by_father_id(N_3.id)
                             if N_4_list == []:
                                 continue
                             else:
@@ -360,8 +368,8 @@ class StructureSearchModel:
                                     dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart
                                     """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
                                     users_list = []
-                                    users = UsDepModel \
-                                        (id=N_4.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                    self.UsDepModel.id = N_4.id
+                                    users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
                                     if isinstance(users, list):
                                         for usr in usr_sql_data:
                                             user = usr.__dict__
@@ -397,7 +405,7 @@ class StructureSearchModel:
                                         "_source": dep_data
                                     }
                                     dep_data_ES.append(data_action)
-                                    N_5_list = DepartmentModel().find_deps_by_father_id(N_4.id)
+                                    N_5_list = self.DepartmentModel.find_deps_by_father_id(N_4.id)
                                     if N_5_list == []:
                                         continue
                                     else:
@@ -411,8 +419,8 @@ class StructureSearchModel:
                                             dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart + '.' + path_N_5_depart
                                             """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
                                             users_list = []
-                                            users = UsDepModel \
-                                                (id=N_5.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                            self.UsDepModel.id = N_5.id
+                                            users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
                                             if isinstance(users, list):
                                                 for usr in usr_sql_data:
                                                     user = usr.__dict__
@@ -449,7 +457,7 @@ class StructureSearchModel:
                                                 "_source": dep_data
                                             }
                                             dep_data_ES.append(data_action)
-                                            N_6_list = DepartmentModel().find_deps_by_father_id(N_5.id)
+                                            N_6_list = self.DepartmentModel.find_deps_by_father_id(N_5.id)
                                             if N_6_list == []:
                                                 continue
                                             else:
@@ -463,8 +471,8 @@ class StructureSearchModel:
                                                     dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart + '.' + path_N_5_depart + '.' + path_N_6_depart
                                                     """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
                                                     users_list = []
-                                                    users = UsDepModel \
-                                                        (id=N_6.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                                    self.UsDepModel.id = N_6.id
+                                                    users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
                                                     if isinstance(users, list):
                                                         for usr in usr_sql_data:
                                                             user = usr.__dict__
@@ -500,7 +508,7 @@ class StructureSearchModel:
                                                         "_source": dep_data
                                                     }
                                                     dep_data_ES.append(data_action)
-                                                    N_7_list = DepartmentModel().find_deps_by_father_id(N_6.id)
+                                                    N_7_list = self.DepartmentModel.find_deps_by_father_id(N_6.id)
                                                     if N_7_list == []:
                                                         continue
                                                     else:
@@ -514,7 +522,8 @@ class StructureSearchModel:
                                                             dep_data['path_depart'] = path_N_1_depart + '.' + path_N_2_depart + '.' + path_N_3_depart + '.' + path_N_4_depart + '.' + path_N_5_depart + '.' + path_N_6_depart + '.' + path_N_7_depart
                                                             """⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇Блок для добавления юезров которые относятся к этому департаменту⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇"""
                                                             users_list = []
-                                                            users = UsDepModel(id=N_7.id).find_user_by_dep_id()  # берём id всех пользователей департамента
+                                                            self.UsDepModel.id = N_7.id
+                                                            users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
                                                             if isinstance(users, list):
                                                                 for usr in usr_sql_data:
                                                                     user = usr.__dict__

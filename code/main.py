@@ -299,38 +299,39 @@ def total_users_update():
     return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 
+
 @app.put("/api/total_update")
 def total_update():
     time_start = time.time()
     status = 0
 
-    print("Обновление информации о подразделениях")
-    if Department().fetch_departments_data()["status"]:
-        status += 1
-        print("Успешно!")
-    else:
-        print("Ошибка!")
+    # print("Обновление информации о подразделениях")
+    # if Department().fetch_departments_data()["status"]:
+    #     status += 1
+    #     print("Успешно!")
+    # else:
+    #     print("Ошибка!")
 
-    print("Обновление информации о пользователях")
-    from src.model.User import User
-    dowload_status = User().fetch_users_data()["status"]
-    if dowload_status:
-        status += 1
-        print("Успешно!")
-    else:
-        print("Ошибка!")
+    # print("Обновление информации о пользователях")
+    # from src.model.User import User
+    # dowload_status = User().fetch_users_data()["status"]
+    # if dowload_status:
+    #     status += 1
+    #     print("Успешно!")
+    # else:
+    #     print("Ошибка!")
 
-    print("Обновление информации о связи подразделений и пользователей")
-    if UsDep().get_usr_dep()["status"]:
-        status += 1
-        print("Успешно!")
-    else:
-        print("Ошибка!")
+    # print("Обновление информации о связи подразделений и пользователей")
+    # if UsDep().get_usr_dep()["status"]:
+    #     status += 1
+    #     print("Успешно!")
+    # else:
+    #     print("Ошибка!")
 
-    print("Обновление информации о разделах сайта")
-    Section().load()
-    status += 1
-    print("Успешно!")
+    # print("Обновление информации о разделах сайта")
+    # Section().load()
+    # status += 1
+    # print("Успешно!")
 
     print("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:

@@ -1,7 +1,7 @@
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm.attributes import flag_modified
 
-from ..models import Article
+from ..models.Article import Article
 from .App import db
 
 import json

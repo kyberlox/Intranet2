@@ -37,6 +37,8 @@ from .objects import AdminModel
 
 from .objects import MerchStoreModel
 
+from .objects import SectionModel
+
 ## Control imports
 __all__ = [
     'UserModel',
@@ -52,5 +54,6 @@ __all__ = [
     'ActiveUsersModel',
     'ModersModel',
     'AdminModel',
-    'MerchStoreModel'
+    'MerchStoreModel',
+    'SectionModel'
     ]

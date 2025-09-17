@@ -2,11 +2,6 @@ from elasticsearch import Elasticsearch
 from elasticsearch import AsyncElasticsearch
 from elasticsearch import helpers
 
-from ..pSQL.objects import UserModel
-from ..pSQL.objects import DepartmentModel
-from ..pSQL.objects import UsDepModel
-from ..pSQL.objects import ArticleModel
-
 
 
 import json

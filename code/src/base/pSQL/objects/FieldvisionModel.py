@@ -1,4 +1,4 @@
-from ..models import Fieldvision
+from ..models.Fieldvision import Fieldvision
 from .App import db
 
 

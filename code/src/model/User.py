@@ -1,6 +1,5 @@
-from ..base.pSQL.objects import LikesModel
+from ..base.pSQL.objects.LikesModel import LikesModel
 
-from ..base.Elastic.UserSearchModel import UserSearchModel
 from ..base.B24 import B24
 from ..model.File import File
 from ..services.LogsMaker import LogsMaker
@@ -20,8 +19,12 @@ class User:
     def __init__(self, id=0, uuid=""):
         self.id = id
         self.uuid = uuid
+
         from ..base.pSQL.objects.UserModel import UserModel
         self.UserModel = UserModel()
+
+        from ..base.Elastic.UserSearchModel import UserSearchModel
+        self.UserSearchModel = UserSearchModel()
 
     def fetch_users_data(self):
         data = B24().getUsers()
@@ -47,14 +50,15 @@ class User:
             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             '''
             self.UserModel.upsert_user(usr_data)
-        #status = self.set_users_photo()
+        status = self.set_users_photo()
         #дампим данные в эластик
         self.dump_users_data_es()
         
         return {"status" : True}
 
     def search_by_id(self):
-        return self.UserModel(Id = self.id).find_by_id()
+        self.UserModel.id = self.id
+        return self.UserModel.find_by_id()
 
     def get_dep_usrs(self):
         users_data = sorted(B24().getUsers(), key=lambda d: int(d['ID']))
@@ -73,7 +77,8 @@ class User:
         return self.UserModel.find_uf_depart()
 
     def user_inf_by_uuid(self):
-        usr_inf = self.UserModel(uuid=self.uuid).find_by_uuid()
+        self.UserModel.uuid = self.uuid
+        usr_inf = self.UserModel.find_by_uuid()
         return usr_inf
 
     def set_users_photo(self):
@@ -99,7 +104,8 @@ class User:
                 #if usr_data['ID'] in cool_users:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
-                psql_user = self.UserModel(uuid=uuid).find_by_id()
+                self.UserModel.uuid = uuid
+                psql_user = self.UserModel.find_by_id()
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #проверим url первоисточника текущей аватарки
@@ -112,7 +118,8 @@ class User:
                         #если есть несоответствие - скачать новую
                         file_data = File().add_user_img(b24_url, uuid)
                         #обновить данные в pSQL
-                        self.UserModel(uuid).set_user_photo(file_data['id'])
+                        self.UserModel.uuid = uuid
+                        self.UserModel.set_user_photo(file_data['id'])
                     else:
                         continue
                         
@@ -158,7 +165,7 @@ class User:
 
     # дамп данных в эластик
     def dump_users_data_es(self):
-        return UserSearchModel.dump()
+        return self.UserSearchModel.dump()
 
     # для статистики
     def get_user_likes(self):
@@ -214,6 +221,7 @@ def find_by_user(id):
 # поиск по статьям еластик
 @users_router.get("/search/full_search_users/{keyword}")
 def elastic_search(keyword: str):
+    from ..base.Elastic.UserSearchModel import UserSearchModel
     return UserSearchModel().elasticsearch_users(key_word=keyword)
 
 @users_router.get("/test_update_photo")

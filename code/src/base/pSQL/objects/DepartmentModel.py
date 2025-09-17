@@ -49,7 +49,7 @@ class DepartmentModel:
             # если такой id существует - проверить необходимость обновленияs
             if dep_exist:
 
-                dep = self.db.execute(select(self.department).where(self.department.id == dep_data["id"])).scalar()
+                dep = self.db.execute(select(Department).where(self.department.id == dep_data["id"])).scalar()
                                 
                 for column in DB_columns_dep:
 
@@ -109,9 +109,13 @@ class DepartmentModel:
         """
         Ищет департамент по id
         """
-        res = self.db.execute(select(self.department).where(self.department.id == self.id)).scalar()
+        res = self.db.query(Department).get(self.id) #self.db.execute(select(self.department).where(self.department.id == self.id)).scalar()
+
         if res is not None:
+            # res = res.__dict__
+            # res.pop('_sa_instance_state')
             return [res]
+
         else:
             # return {'err': 'Нет такого департамента'}
             #return LogsMaker().warning_message('Нет такого департамента')
@@ -131,7 +135,7 @@ class DepartmentModel:
         result = []
         #null_depart = self.db.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
         #res = self.db.query(self.department).filter(self.department.father_id == father_id).all()
-        res = self.db.execute(select(self.department).where(self.department.father_id == father_id)).scalars().all()
+        res = self.db.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
         if res is not None:
             return res
         else:
@@ -140,4 +144,4 @@ class DepartmentModel:
             return []
 
     def all(self):
-        return self.db.query(self.department).all()
+        return self.db.query(Department).all()

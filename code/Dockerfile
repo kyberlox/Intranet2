@@ -5,7 +5,7 @@ COPY ./requirements.txt /data/app/requirements.txt
 
 # Устанавливаем системные зависимости
 RUN apk update && apk add --no-cache \
-    vips-dev
+    vips-dev \
     # vips \
     # vips-cpp \
     # glib-dev \
@@ -17,7 +17,7 @@ RUN apk update && apk add --no-cache \
     # gcc \
     # g++ \
     # make \
-    # && pip install --no-cache-dir pyvips
+    && pip install --no-cache-dir pyvips
 
 RUN pip install --upgrade pip
 

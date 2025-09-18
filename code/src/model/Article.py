@@ -1130,7 +1130,7 @@ class Article:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
                     if artDB.need_add():
-                        self.logg.warning_message(f'Добавил статью, {inf["ID"]}')
+                        self.logg.info_message(f'Добавил статью, {inf["ID"]}')
                         self.add(inf)
                     elif artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
@@ -1235,7 +1235,7 @@ class Article:
                 if "PROPERTY_480" in data_inf:
                     data_title_id = list(data_inf["PROPERTY_480"].values())[0]
                 else:
-                    logg.warning_message(f'##################, {data_inf["ID"]}')
+                    self.logg.info_message(f'##################, {data_inf["ID"]}')
                     
 
                 # если эта статья принадлежит инфоблоку
@@ -1339,7 +1339,7 @@ class Article:
         art_inf = self.get_inf()
         for art in self.logg.progress(art_inf, "Загрузка данных разделов \"Актуальные новости\", \"Корпоративные события\" и \"Видеорепортажи\" "):
             if art["ID"] == '13486':
-                self.logg.warning_message(f'{art["ID"]} новостьь которая проникает не туда')
+                self.logg.warning_message(f'{art["ID"]} новость которая проникает не туда')
                 # print(art, ' новость')
             else:
                 pass

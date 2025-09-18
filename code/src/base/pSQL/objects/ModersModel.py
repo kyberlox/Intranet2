@@ -2,21 +2,12 @@ from sqlalchemy import update
 from sqlalchemy.sql.expression import func
 
 import json
-
-from ..models.ActiveUsers import ActiveUsers
-from ..models.Activities import Activities
-from ..models.Moders import Moders
 from .App import db
-
-
 
 ADMINS_PEER = []
 
-
-
-#!!!!!!!!!!!!!!!
-from ....services.LogsMaker import LogsMaker
-#!!!!!!!!!!!!!!!
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы модераторов")
 
 class ModersModel:
     def __init__(self, activities_id: int = 0, uuid: int = 0, id: int = 0):
@@ -24,8 +15,14 @@ class ModersModel:
         self.activities_id = activities_id
         self.uuid = uuid
         self.id = id
+
+        from ..models.Moders import Moders
         self.Moders = Moders
+
+        from ..models.ActiveUsers import ActiveUsers
         self.Activities = Activities
+
+        from ..models.Activities import Activities
         self.ActiveUsers = ActiveUsers
 
     def upload_past_moders(self):

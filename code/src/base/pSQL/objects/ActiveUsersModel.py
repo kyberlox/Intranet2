@@ -10,9 +10,8 @@ from .App import db
 
 
 
-#!!!!!!!!!!!!!!!
-from ....services.LogsMaker import LogsMaker
-#!!!!!!!!!!!!!!!
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы истории активностей пользователей")
 
 class ActiveUsersModel:
 

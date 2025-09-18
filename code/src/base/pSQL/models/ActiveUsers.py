@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 
 from .App import Base
 
+from src.services.LogsMaker import LogsMaker
+
 class ActiveUsers(Base):
     __tablename__ = "activeusers"
   
@@ -15,3 +17,4 @@ class ActiveUsers(Base):
     activities_id = Column(Integer, ForeignKey("activities.id", ondelete="CASCADE"), nullable=False)
 
     activities = relationship("Activities", back_populates="activeusers")
+

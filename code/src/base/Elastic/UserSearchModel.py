@@ -1,4 +1,4 @@
-from .App import elastic_client
+from .App import elastic_client, DOMAIN
 
 from fastapi import HTTPException
 

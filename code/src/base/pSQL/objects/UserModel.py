@@ -198,7 +198,7 @@ class UserModel:
         """
         Ищет пользователя по id
         """
-        user = self.db.query(self.user).filter(id = self.id).first()
+        user = self.db.query(self.user).get(self.id)
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
         print(user)

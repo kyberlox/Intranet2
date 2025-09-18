@@ -306,12 +306,12 @@ def total_update():
     time_start = time.time()
     status = 0
 
-    print("Обновление информации о подразделениях")
-    if Department().fetch_departments_data()["status"]:
-        status += 1
-        print("Успешно!")
-    else:
-        print("Ошибка!")
+    # print("Обновление информации о подразделениях")
+    # if Department().fetch_departments_data()["status"]:
+    #     status += 1
+    #     print("Успешно!")
+    # else:
+    #     print("Ошибка!")
 
     print("Обновление информации о пользователях")
     from src.model.User import User

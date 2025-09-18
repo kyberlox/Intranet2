@@ -1,75 +1,79 @@
 <template>
-    <div class="merchStoreItem__wrapper">
-        <div class="merchStoreItem mt20">
-            <div class="merchStoreItem__images__wrapper">
-                <div class="merchStoreItem__images__flex-gallery">
-                    <div v-for="(card, index) in merchItemPlug.images"
-                         :key="index"
-                         class="merchStoreItem__images__flex-gallery__card__wrapper">
-                        <div class="merchStoreItem__images__flex-gallery__card">
-                            <img class="pos-rel"
-                                 :src="card"
-                                 @click="setZoomImg(card)" />
-                            <ZoomInIcon class="merchStoreItem__images__flex-gallery__card__zoom-icon" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="merchStoreItem__info">
-                <div class="merchStoreItem__info__category">{{ merchItemPlug.category }}</div>
-                <div class="merchStoreItem__info__title">
-                    {{ merchItemPlug.title }}
-                </div>
-                <div class="merchStoreItem__info__description"
-                     v-html="merchItemPlug.description">
-                </div>
-                <div class="merchStoreItem__info__sizes__title">
-                    Размер
-                </div>
-                <div class="merchStoreItem__info__sizes">
-                    <div class="merchStoreItem__info__size"
-                         :class="{ 'merchStoreItem__info__size--active': item == currentSize }"
-                         v-for="item in merchItemPlug.sizes"
-                         :key="'size' + item"
-                         @click="setCurrentSize(item)">
-                        {{ item }}
-                    </div>
-                </div>
-
-                <div class="merchStoreItem__info__price">
-                    <span class="count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
-                </div>
-
-                <div class="merchStoreItem__info__count">
-                    <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
-                </div>
-                <div class="merchStoreItem__action__wrapper">
-                    <div class="merchStoreItem__action__button">
-                        Оформить
+<div class="merchStoreItem__wrapper">
+    <div class="merchStoreItem mt20">
+        <div class="merchStoreItem__images__wrapper">
+            <div class="merchStoreItem__images__flex-gallery">
+                <div v-for="(card, index) in merchItemPlug.images"
+                     :key="index"
+                     class="merchStoreItem__images__flex-gallery__card__wrapper">
+                    <div class="merchStoreItem__images__flex-gallery__card">
+                        <img class="pos-rel"
+                             :src="card"
+                             @click="setZoomImg(card)" />
+                        <ZoomInIcon class="merchStoreItem__images__flex-gallery__card__zoom-icon" />
                     </div>
                 </div>
             </div>
         </div>
-        <ZoomModal v-if="modalIsOpen == true"
-                   :image="[activeImage]"
-                   @close="modalIsOpen = false" />
+        <div class="merchStoreItem__info">
+            <div class="merchStoreItem__info__category">{{ merchItemPlug.category }}</div>
+            <div class="merchStoreItem__info__title">
+                {{ merchItemPlug.title }}
+            </div>
+            <div class="merchStoreItem__info__description"
+                 v-html="merchItemPlug.description">
+            </div>
+            <div class="merchStoreItem__info__sizes__title">
+                Размер
+            </div>
+            <div class="merchStoreItem__info__sizes">
+                <div class="merchStoreItem__info__size"
+                     :class="{ 'merchStoreItem__info__size--active': item == currentSize }"
+                     v-for="item in merchItemPlug.sizes"
+                     :key="'size' + item"
+                     @click="setCurrentSize(item)">
+                    {{ item }}
+                </div>
+            </div>
+
+            <div class="merchStoreItem__info__price">
+                <span class="count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
+            </div>
+
+            <div class="merchStoreItem__info__count">
+                <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
+            </div>
+            <div class="merchStoreItem__action__wrapper">
+                <div class="merchStoreItem__action__button">
+                    Оформить
+                </div>
+            </div>
+        </div>
     </div>
+    <ZoomModal v-if="modalIsOpen == true"
+               :image="[activeImage]"
+               @close="modalIsOpen = false" />
+    <AcceptBuyModal />
+</div>
 </template>
 
 <script lang="ts">
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { defineComponent, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
+import AcceptBuyModal from './components/AcceptBuyModal.vue';
+
 export default defineComponent({
+    components: {
+        ZoomModal,
+        ZoomInIcon,
+        AcceptBuyModal
+    },
     props: {
         id: {
             type: Number,
             default: 1
         },
-    },
-    components: {
-        ZoomModal,
-        ZoomInIcon
     },
     setup() {
         const merchItemPlug = {

@@ -32,12 +32,12 @@ import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import HoverGallery from './components/HoverGallery.vue';
 
 export default defineComponent({
     components: {
-        HoverGallery
+        HoverGallery,
     },
     setup() {
         const storePlug = [
@@ -127,17 +127,20 @@ export default defineComponent({
             },
         ]
 
-
         const sliderConfig = {
             modules: [Pagination],
             slidesPerView: 1,
         };
 
         const swiperInstance = ref<SwiperType | null>(null);
-
         const swiperOn = (swiper: SwiperType) => {
             swiperInstance.value = swiper;
         }
+
+        onMounted(() => {
+            console.log('d')
+        })
+
         return {
             storePlug,
             sliderConfig,

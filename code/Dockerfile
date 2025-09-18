@@ -4,7 +4,7 @@ WORKDIR /data/app
 COPY ./requirements.txt /data/app/requirements.txt
 
 # Устанавливаем системные зависимости
-RUN apk update && apk add --no-cache \
+RUN apk update && apk add --no-cache 
     # vips-dev \
     # vips \
     # vips-cpp \

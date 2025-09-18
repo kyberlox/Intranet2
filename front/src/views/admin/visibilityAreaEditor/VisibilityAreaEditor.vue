@@ -1,12 +1,13 @@
 <template>
     <div class="visibility-editor__title page__title mt20">Редактор областей видимости</div>
     <div class="visibility-editor__wrapper">
-        <AdminSidebar :isVisibilityArea="true"
-                      :visibilityAreas="allAreas"
-                      :activeId="activeArea"
-                      @addNewArea="modalIsOpen = true"
-                      @deleteArea="deleteArea"
-                      @areaClicked="(i) => changeActiveArea(i)" />
+        <AdminSidebar :needDefaultNav="false">
+            <VisibilityAreaSlotLeftSidebar :visibilityAreas="allAreas"
+                                           :activeId="activeArea"
+                                           @addNewArea="modalIsOpen = true"
+                                           @deleteArea="deleteArea"
+                                           @areaClicked="(i: number) => changeActiveArea(i)" />
+        </AdminSidebar>
 
         <SlotModal v-if="modalIsOpen"
                    @close="modalIsOpen = false">
@@ -29,6 +30,7 @@
                                      :filteredUsers="filteredUsers"
                                      :fioFilter="fioFilterValue"
                                      :depFilter="depFilterValue"
+                                     :activeArea="activeArea"
                                      @deleteDep="deleteDepFromVision"
                                      @pickUser="fixUserChoice" />
 
@@ -68,6 +70,7 @@ import Loader from '@/components/layout/Loader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiError } from '@/utils/ApiResponseCheck';
+import VisibilityAreaSlotLeftSidebar from './components/VisibilityAreaSlotLeftSidebar.vue';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -79,6 +82,7 @@ export default defineComponent({
         VisibilityAreaUsersList,
         SlotModal,
         VisibilityAreaSlotModal,
+        VisibilityAreaSlotLeftSidebar,
         Loader
     },
     setup() {
@@ -100,7 +104,7 @@ export default defineComponent({
         const departmentMap = new Map();
         const formattedUsers = computed(() => {
             const formattedGroup: IFormattedUserGroup[] = [];
-            activeAreaUsers.value.forEach((user) => {
+            activeAreaUsers.value?.forEach((user) => {
                 const target = formattedGroup.find((formatItem) => formatItem.depart == user.depart);
                 if (!target) {
                     formattedGroup.push({ depart: user.depart, users: [user], depart_id: user.depart_id })
@@ -220,8 +224,9 @@ export default defineComponent({
                     }
                 })
                 .finally(() => {
-                    getAllVisions();
                     activeArea.value = Number('');
+                    activeAreaUsers.value.length = 0;
+                    getAllVisions();
                 })
         }
 
@@ -253,7 +258,6 @@ export default defineComponent({
                     }
                 }
             });
-
             allDepStructure.value = rootDepartments;
         };
 
@@ -442,380 +446,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style lang="scss">
-p .visibility-editor__areas {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0;
-}
-
-.visibility-editor__area {
-    border: 1px solid var(--emk-brand-color);
-    max-width: 30%;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    align-content: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 5px;
-    transition: all 0.2s;
-
-    &:hover {
-        background: var(--emk-brand-color);
-        color: white;
-    }
-}
-
-.visibility-editor__area-users__wrapper {
-    flex: 1;
-    padding: 0 10px;
-    margin-left: 0;
-}
-
-.visibility-editor__wrapper {
-    display: flex;
-}
-
-.visibility-editor__area-users {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    max-height: 1000px;
-    overflow-y: auto;
-    padding: 8px 0;
-}
-
-
-.visibility-editor__area-user {
-    background: #ffffff;
-    border: 1px solid #e9ecef;
-    color: black;
-    border-radius: 12px;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
-
-    &--inDep:last-child {
-        padding: 8px;
-        margin-bottom: 15px;
-    }
-}
-
-.visibility-editor__area-user:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    border-color: var(--emk-brand-color);
-    background: #fafbfc;
-}
-
-.visibility-editor__user-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-}
-
-.visibility-editor__user-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: all 0.3s ease;
-}
-
-.visibility-editor__area-user:hover .visibility-editor__user-photo {
-    transform: scale(1.1);
-}
-
-.visibility-editor__user-fio {
-    color: black;
-}
-
-.visibility-editor__area-users__edit-methods__search {
-    // margin-top: 16px;
-}
-
-.user-choices-table__row {
-    border-bottom: 1px solid rgba(128, 128, 128, 0.325);
-    margin-top: 5px;
-    padding: 5px;
-
-    &>td {
-        padding: 5px 0;
-    }
-}
-
-.visibility-editor__area-users__edit-methods {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: center;
-    gap: 16px;
-}
-
-.visibility-editor__area-departments {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0;
-}
-
-.visibility-editor__area-department {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    align-items: flex-start;
-    justify-content: flex-start;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-left: 1px solid #6666666a;
-    padding-left: 5px;
-
-
-    &:hover:not(.visibility-editor__area-user) {
-        // color: var(--emk-brand-color);
-    }
-
-    &:hover {
-        &>svg {
-            color: var(--emk-brand-color);
-
-            &+.visibility-editor__area-department__info>span {
-                color: var(--emk-brand-color);
-            }
-        }
-    }
-
-    &>svg {
-        min-width: 20px;
-        width: 20px;
-        height: 20px;
-        transition: all 0.2s ease;
-
-        &:hover {
-            color: var(--emk-brand-color);
-
-            &+.visibility-editor__area-department__info>span {
-                color: var(--emk-brand-color);
-            }
-        }
-    }
-}
-
-.visibility-editor__area-department__info {
-    user-select: none;
-}
-
-.visibility-editor__area-department__info__users {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    user-select: none;
-}
-
-.visibility-editor__area-user-avatar {
-    max-width: 20px;
-    border-radius: 10px;
-}
-
-.visibility-editor__area-department--active {
-    color: var(--emk-brand-color);
-}
-
-.visibility-editor__right-sidebar {
-    border-left: 1px solid #e9ecef;
-    border-top: 1px solid #e9ecef;
-    background-color: #f8f9fa;
-    min-height: 100vh;
-    max-width: 160px;
-    min-width: 160px;
-    padding: 10px;
-    // position: fixed;
-}
-
-.visibility-editor__button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.visibility-editor__area-users__department-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    &>svg {
-        cursor: pointer;
-        color: red;
-        width: 30px;
-
-        &:hover {
-            color: rgba(255, 0, 0, 0.497);
-        }
-    }
-}
-
-.visibility-editor__area-users__department-title {
-    font-size: 18px;
-    transition: 0.2s;
-    cursor: pointer;
-    flex-grow: 1;
-    user-select: none;
-
-    &:hover {
-        color: var(--emk-brand-color)
-    }
-}
-
-.admin-panel__nav__button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-top: 15px;
-
-    &>button {
-        margin-top: 0;
-        min-width: 139px;
-    }
-}
-
-.visibility-editor__add-new-area__slot {
-    padding: 15px 20px 0 15px !important;
-}
-
-.visibility-editor__add-new-area__slot__buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.visibility-editor__add-new-area__slot__button--accept {
-    &:hover {
-        background: green;
-    }
-}
-
-.visibility-editor__add-new-area__slot__button--cancel {
-    &:hover {
-        background: red;
-    }
-}
-
-.visibility-editor__add-new-area__slot__button {
-    &>svg {
-        width: 30px;
-
-        &:hover {
-            color: white;
-        }
-    }
-}
-
-.visibility-editor__add-new-area__slot__button--disabled {
-    background: rgba(128, 128, 128, 0.41);
-
-    &:hover {
-        background: rgba(128, 128, 128, 0.41) !important;
-
-        color: black !important;
-
-        &>svg {
-            color: black !important;
-        }
-    }
-}
-
-.visibility-editor__area-user--chosen {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    border-color: var(--emk-brand-color);
-    background: #fafbfc;
-}
-
-.visibility-editor__area-users__department-header {
-    display: flex;
-    flex-direction: row;
-}
-
-.user-choices-table__row {
-    cursor: pointer;
-
-    &:hover {
-        opacity: 0.7;
-
-        &>svg {
-            &:hover {
-                color: rgba(255, 0, 0, 0.497);
-            }
-        }
-    }
-
-    &>svg {
-        width: 20px;
-        color: red;
-        cursor: pointer;
-    }
-}
-
-.visibility-editor__area-users__edit-methods {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.visibility-editor__area-users__edit-methods__input-wrapper {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.visibility-editor__area-users__edit-methods__search--disabled {
-    &>input {
-        background: #6666662d;
-    }
-}
-
-.visibility-editor__area-users--userMode {
-    gap: 5px;
-    display: flex;
-    flex-direction: column;
-}
-
-.visibility-editor__add-new-area__slot__button>svg {
-    display: flex;
-    height: 100%;
-}
-
-.visibility-editor__area__loader__wrapper {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &>.loader {
-        width: 120px;
-        height: 120px;
-    }
-}
-</style>

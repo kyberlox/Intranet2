@@ -167,10 +167,14 @@
             display: grid;
             grid-template-rows: 1fr auto;
             height: 100%;
-            min-height: 400px;
+            min-height: 492px;
             overflow: hidden;
             transition: 0.2s all;
             width: 100%;
+
+            &--birthday{
+                height: 500px;
+            }
 
             &:hover {
                 .birthday__slide__image {
@@ -185,6 +189,17 @@
             background-repeat: no-repeat;
             min-height: 300px;
             transition: 0.2s all;
+            position: relative;
+
+            &__icon {
+                position: absolute;
+                bottom: 15px;
+                right: 15px;
+
+                &>svg {
+                    width: 40px;
+                }
+            }
         }
 
         &__info {
@@ -231,4 +246,9 @@
             display: flex !important;
         }
     }
+}
+
+.newWorkers__vertical-swiper{
+    min-height: 600px;
+    max-height: 600px;
 }

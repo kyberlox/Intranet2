@@ -1,20 +1,20 @@
 <template>
-    <div class="page__title mt20">Актуальные новости</div>
-    <div class="page__filter">
-        <DateFilter :params="filterYears"
-                    :buttonText="currentYear ?? 'Год'"
-                    @pickFilter="(year: string) => currentYear = year" />
-        <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
-    </div>
-    <div class="row">
-        <SampleGallery v-if="!emptyTag"
-                       :gallery="visibleNews"
-                       :type="'postPreview'"
-                       :routeTo="'actualArticle'"
-                       :modifiers="['noReactionUpdates']" />
-        <p class="mt20"
-           v-else>Нет новостей в этой категории</p>
-    </div>
+<div class="page__title mt20">Актуальные новости</div>
+<div class="page__filter">
+    <DateFilter :params="filterYears"
+                :buttonText="currentYear ?? 'Год'"
+                @pickFilter="(year: string) => currentYear = year" />
+    <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
+</div>
+<div class="row">
+    <SampleGallery v-if="!emptyTag"
+                   :gallery="visibleNews"
+                   :type="'postPreview'"
+                   :routeTo="'actualArticle'"
+                   :modifiers="['noReactionUpdates']" />
+    <p class="mt20"
+       v-else>Нет новостей в этой категории</p>
+</div>
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
@@ -47,7 +47,7 @@ export default defineComponent({
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
-                await useNewsFilterWatch(currentTag, currentYear, allNews, visibleNews);
+                await useNewsFilterWatch(currentTag, currentYear, allNews);
 
             visibleNews.value = newVisibleNews.value;
             emptyTag.value = newEmptyTag.value;

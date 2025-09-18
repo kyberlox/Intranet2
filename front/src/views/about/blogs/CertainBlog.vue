@@ -1,30 +1,30 @@
 <template>
-	<div class="page__wrapper mt20">
-		<div class="row d-flex mt20 blog__articles-wrapper">
-			<div class="avatar__wrapper col-sm-4">
-				<BlogAvatar :author="targetAuthor"
-							:from="'blogsArticles'"
-							:needLink="true" />
+<div class="page__wrapper mt20">
+	<div class="row d-flex mt20 blog__articles-wrapper">
+		<div class="blog__avatar__wrapper col-sm-4">
+			<BlogAvatar :author="targetAuthor"
+						:from="'blogsArticles'"
+						:needLink="true" />
+		</div>
+		<div v-if="currentArticle && 'name' in currentArticle"
+			 class="col-sm-8">
+			<h2>{{ currentArticle.name }}</h2>
+			<div v-if="currentArticle.content_text"
+				 class="mt20"
+				 v-html="parseMarkdown(currentArticle.content_text)">
 			</div>
-			<div v-if="currentArticle && 'name' in currentArticle"
-				 class="col-sm-8">
-				<h2>{{ currentArticle.name }}</h2>
-				<div v-if="currentArticle.content_text"
-					 class="mt20"
-					 v-html="parseMarkdown(currentArticle.content_text)">
-				</div>
-				<div v-if="(currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed)"
-					 class="blog-list__video__wrapper">
-					<iframe style="width: 100%; min-height: 480px;"
-							id="you-player"
-							:src="currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed"
-							title="YouTube video player"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-							allowfullscreen></iframe>
-				</div>
+			<div v-if="(currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed)"
+				 class="blog-list__video__wrapper">
+				<iframe style="width: 100%; min-height: 480px;"
+						id="you-player"
+						:src="currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed"
+						title="YouTube video player"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowfullscreen></iframe>
 			</div>
 		</div>
 	</div>
+</div>
 </template>
 
 <script lang="ts">

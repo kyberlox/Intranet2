@@ -151,7 +151,7 @@ const router = createRouter({
       path: '/about/trainingcenter/excursions',
       name: 'excursions',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ pageTitle: 'Экскурсии' }),
+      props: () => ({ pageTitle: 'Экскурсии' }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
       }
@@ -522,6 +522,30 @@ const router = createRouter({
       path: '/admin/files',
       name: 'fileManager',
       component: () => import('@/views/admin/visibilityAreaEditor/VisibilityAreaEditor.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
+    {
+      path: '/admin/scoreAdmin',
+      name: 'pointsAdministrator',
+      component: () => import('@/views/admin/pointsSystem/superAdminPanel/SuperAdminPanel.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
+    {
+      path: '/admin/pointsmoderation',
+      name: 'pointsModeration',
+      component: () => import('@/views/admin/pointsSystem/moderatorPanel/ModeratorValidationPanel.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
+    {
+      path: '/admin/curatorhistory',
+      name: 'curatorHistory',
+      component: () => import('@/views/admin/pointsSystem/curatorHistory/CuratorHistory.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }

@@ -11,7 +11,7 @@
 <script lang="ts">
 import { defineComponent, type PropType, ref } from 'vue';
 import TextEditor from '@/components/tools/common/TextEditor.vue';
-import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
+import type { IAdminListItem } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
 
 export default defineComponent({

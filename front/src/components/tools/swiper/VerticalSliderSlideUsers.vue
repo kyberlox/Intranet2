@@ -3,6 +3,8 @@
                 class="birthday__slide__grid">
         <div class="birthday__slide__image"
              :style="{ backgroundImage: `url('${slide?.image}')` }">
+            <BirthdayCake class="birthday__slide__image__icon"
+                          v-if="needCakeIcon" />
         </div>
         <div class="birthday__slide__info">
             <div class="birthday__page__swiper__slide__title">{{ slide?.user_fio }}</div>
@@ -20,6 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
+import BirthdayCake from "@/assets/icons/birthdayCake.svg?component"
 
 interface IBirthdaySlide {
     department: string[],
@@ -34,7 +37,14 @@ export default defineComponent({
     props: {
         slide: {
             type: Object as PropType<IBirthdaySlide>
+        },
+        needCakeIcon: {
+            type: Boolean,
+            default: () => false
         }
+    },
+    components: {
+        BirthdayCake
     },
     setup() {
         return {

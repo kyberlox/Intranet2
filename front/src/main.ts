@@ -1,5 +1,6 @@
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap/dist/js/bootstrap.js"
+import '@/assets/styles/_main.scss'
 import VueDatePicker from '@vuepic/vue-datepicker';
 
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -10,7 +11,6 @@ import ToastService from 'primevue/toastservice';
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { vLazyLoad } from './customDirectives/lazyLoad'
-
 
 import App from './App.vue'
 import router from './router'

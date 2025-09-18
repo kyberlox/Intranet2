@@ -1,4 +1,4 @@
-import type { IBirthdayDateNav, ISlidesForBirthday } from "@/interfaces/entities/IBirthday";
+import type { IBirthdayDateNav, ISlidesForBirthday } from "@/interfaces/IEntities";
 
 export const slidesForBirthday: ISlidesForBirthday[] = [
     {

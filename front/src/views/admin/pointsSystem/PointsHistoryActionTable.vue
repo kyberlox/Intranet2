@@ -1,0 +1,93 @@
+<template>
+<div v-if="activitiesInTable?.length"
+     class="moderator-panel__content">
+    <div class="moderator-panel__list">
+        <div class="moderator-panel__table-item"
+             v-for="item in activitiesInTable"
+             :key="item.id">
+            <table class="moderator-panel__table">
+                <thead class="moderator-panel__thead">
+                    <tr class="moderator-panel__row">
+                        <th class="moderator-panel__head">Дата</th>
+                        <th class="moderator-panel__head">Параметр</th>
+                        <th class="moderator-panel__head">От кого</th>
+                        <th class="moderator-panel__head">Куда</th>
+                        <th class="moderator-panel__head">Комментарий</th>
+                        <th class="moderator-panel__head">
+                            <CancelIcon @click="moderate('cancel', item.id, item.uuid_to)"
+                                        class="moderator-panel__action-btn moderator-panel__action-btn--cancel" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="moderator-panel__tbody">
+                    <tr class="moderator-panel__row">
+                        <td class="moderator-panel__cell moderator-panel__cell--date">
+                            {{ dateConvert(item.date_time, 'toStringType') }}
+                        </td>
+                        <td class="moderator-panel__cell moderator-panel__cell--parameter">
+                            {{ item.name }}
+                        </td>
+                        <td class="moderator-panel__cell moderator-panel__cell--from">
+                            {{ item.uuid_from }}
+                        </td>
+                        <td class="moderator-panel__cell moderator-panel__cell--to">
+                            {{ item.uuid_to }}
+                        </td>
+                        <td class="moderator-panel__cell moderator-panel__cell--comment">
+                            {{ item.description }}
+                        </td>
+                        <td class="moderator-panel__cell moderator-panel__cell--actions">
+                            <CheckIcon v-if="needCheckButton"
+                                       @click="moderate('accept', item.id, item.uuid_to)"
+                                       class="moderator-panel__action-btn moderator-panel__action-btn--accept" />
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot class="moderator-panel__tfoot"></tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { dateConvert } from '@/utils/dateConvert';
+import CheckIcon from '@/assets/icons/common/Check.svg?component';
+import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
+
+export interface IActivityToConfirm {
+    coast: number
+    date_time: string
+    description: string
+    id: number
+    name: number
+    need_valid: boolean
+    uuid_from: number
+    uuid_to: number
+}
+
+export default defineComponent({
+    components: {
+        CheckIcon,
+        CancelIcon
+    },
+    props: {
+        activitiesInTable: {
+            type: Array<IActivityToConfirm>
+        },
+        needCheckButton: {
+            type: Boolean,
+            default: () => false
+        }
+    },
+    emits: ['moderate'],
+    setup(_, { emit }) {
+
+        return {
+            dateConvert,
+            moderate: (type: string, id: number, uuidTo: number) => emit('moderate', type, id, uuidTo),
+        }
+    }
+})
+</script>

@@ -1,27 +1,27 @@
 <template>
-    <div v-if="isLogin">
-        <LayoutHeader />
-        <main>
-            <div class="container-fluid"
-                 :class="{ 'container-fluid--nopadding': !isLogin }">
-                <div class="row main-layout"
-                     :class="{ 'row--nomargin': !isLogin }">
-                    <div class="main-content flex-grow">
-                        <Breadcrumbs />
-                        <RouterView />
-                    </div>
-                    <div v-if="isLogin"
-                         class="main-sidebar flex-shrink d-print-none">
-                        <Sidebar />
-                    </div>
+<div v-if="isLogin">
+    <LayoutHeader />
+    <main>
+        <div class="container-fluid"
+             :class="{ 'container-fluid--nopadding': !isLogin }">
+            <div class="row main-layout"
+                 :class="{ 'row--nomargin': !isLogin }">
+                <div class="main-content flex-grow">
+                    <Breadcrumbs />
+                    <RouterView />
+                </div>
+                <div v-if="isLogin"
+                     class="main-sidebar flex-shrink d-print-none">
+                    <Sidebar />
                 </div>
             </div>
-        </main>
-    </div>
-    <div v-else>
-        <AuthPage />
-    </div>
-    <Toast :position="'bottom-right'" />
+        </div>
+    </main>
+</div>
+<div v-else>
+    <AuthPage />
+</div>
+<Toast :position="'bottom-right'" />
 </template>
 
 <script lang="ts">
@@ -79,7 +79,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style lang="scss">
-@use "./assets/styles/mixins/mixins.scss" as *;
-</style>

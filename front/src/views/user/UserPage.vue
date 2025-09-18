@@ -20,7 +20,8 @@
                            target="_blank"
                            class="personal__user__mess__link">Профиль в Bitrix24</a>
                         <button v-if="user.id !== myId"
-                                class="personal__user__mess__link">Отправить баллы</button>
+                                class="personal__user__mess__link"
+                                @click="isPointsModalOpen = true">Отправить баллы</button>
                     </div>
                 </div>
 
@@ -107,6 +108,9 @@
         <ZoomModal :image="[user.indirect_data.personal_photo ?? 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg']"
                    v-if="modalIsOpen == true"
                    @close="modalIsOpen = false" />
+        <SendPoints v-if="isPointsModalOpen"
+                    @sendPoints="sendPoints"
+                    @close="isPointsModalOpen = false" />
     </div>
 </template>
 
@@ -117,6 +121,12 @@ import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
 import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
+import SendPoints from '../admin/pointsSystem/SendPointsModalSlot.vue';
+import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+import { useToastCompose } from '@/composables/useToastСompose';
+import { useToast } from 'primevue/usetoast';
+import type { IPointsForm } from '@/interfaces/IPutFetchData';
+
 export default defineComponent({
     props: {
         id: {
@@ -125,11 +135,16 @@ export default defineComponent({
     },
     components: {
         ZoomModal,
+        SendPoints
     },
     setup(props) {
         const userData = useUserData();
         const user = ref();
         const modalIsOpen = ref(false);
+        const isPointsModalOpen = ref(false);
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
+
         watch(props, (newVal) => {
             if (newVal) {
                 Api.get(`users/find_by/${newVal.id}`)
@@ -158,11 +173,25 @@ export default defineComponent({
             return `${day} ${russianMonths[month]}`;
         }
 
+        const senderId = computed(() => useUserData().getMyId);
+
+        const sendPoints = (comment: string, activityId: number) => {
+            const sendingData: IPointsForm = { "uuid_from": senderId.value, "uuid_to": Number(props.id), "activities_id": activityId, "description": comment };
+            Api.put('peer/send_points', sendingData)
+                .catch((error) => handleApiError(error, toast))
+                .then((data) => {
+                    handleApiResponse(data, toast, 'trySupportError', 'pointsSendSuccess');
+                })
+                .finally(() => isPointsModalOpen.value = false)
+        }
+
         return {
             user,
             modalIsOpen,
+            isPointsModalOpen,
+            myId: computed(() => userData.getMyId),
+            sendPoints,
             formatBirthday,
-            myId: computed(() => userData.getMyId)
         }
     }
 })

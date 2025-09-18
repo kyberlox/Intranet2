@@ -27,7 +27,8 @@
                         @swiper="swiperOn">
                     <swiper-slide v-for="(slide, index) in slidesForBirthday"
                                   :key="'vertSlide' + index">
-                        <VerticalSliderSlide :slide="slide" />
+                        <VerticalSliderSlide :needCakeIcon="true"
+                                             :slide="slide" />
                     </swiper-slide>
                 </swiper>
                 <SwiperButtons :isBeginning="isBeginning"
@@ -65,6 +66,7 @@ import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUs
 import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.jpg";
 
+
 export default defineComponent({
     components: {
         DatePicker,
@@ -72,7 +74,7 @@ export default defineComponent({
         SwiperSlide,
         VerticalSliderSlide,
         SwiperButtons,
-        ZoomModal
+        ZoomModal,
     },
     setup() {
         const today = new Date();

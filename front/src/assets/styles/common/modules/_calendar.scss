@@ -6,11 +6,11 @@
     }
 
     &__today {
-        border: 1px solid var(--emk-brand-color-dark);
+        border: 1px solid var(--emk-brand-color-dark) !important;
     }
 
     &__active_date {
-        background: var(--emk-brand-color-dark);
+        background: var(--emk-brand-color) !important;
     }
 
     &__flex_display {
@@ -25,7 +25,7 @@
 
     &__tooltip_text {
         display: flex;
-        flex-direction: column;
+        flex-direction: column !important;
         width: 250px !important;
         word-break: break-word;
         white-space: normal;

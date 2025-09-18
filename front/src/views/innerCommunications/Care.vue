@@ -41,10 +41,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style>
-.vertical__card {
-    width: 100%;
-    background-size: cover;
-}
-</style>

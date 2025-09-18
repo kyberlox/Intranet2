@@ -106,7 +106,7 @@ class User:
                 #if usr_data['ID'] in cool_users:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
-                self.UserModel.uuid = uuid
+                self.UserModel.id = uuid
                 print(uuid)
                 psql_user = self.UserModel.find_by_id()
                 print(psql_user)

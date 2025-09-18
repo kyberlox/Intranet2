@@ -308,40 +308,40 @@ def total_update():
 
     loger = LogsMaker()
 
-    # print("Обновление информации о подразделениях")
+    # LogsMaker().info_message("Обновление информации о подразделениях")
     # if Department().fetch_departments_data()["status"]:
     #     status += 1
     #     print("Успешно!")
     # else:
     #     print("Ошибка!")
 
-    print("Обновление информации о пользователях")
+    LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User
     dowload_status = User().fetch_users_data()["status"]
     if dowload_status:
         status += 1
-        print("Успешно!")
+        LogsMaker().ready_status_message("Успешно!")
     else:
-        print("Ошибка!")
+        LogsMaker().error_message("Ошибка!")
 
-    print("Обновление информации о связи подразделений и пользователей")
+    LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
     if UsDep().get_usr_dep()["status"]:
         status += 1
-        print("Успешно!")
+        LogsMaker().ready_status_message("Успешно!")
     else:
-        print("Ошибка!")
+        LogsMaker().error_message("Ошибка!")
 
-    print("Обновление информации о разделах сайта")
+    LogsMaker().info_message("Обновление информации о разделах сайта")
     Section().load()
     status += 1
-    print("Успешно!")
+    LogsMaker().ready_status_message("Успешно!")
 
-    print("Обновление информации о статьях сайта")
+    LogsMaker().info_message("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:
         status += 1
-        print("Успешно!")
+        LogsMaker().ready_status_message("Успешно!")
     else:
-        print("Ошибка!")
+        LogsMaker().error_message("Ошибка!")
 
     time_end = time.time()
     total_time_sec = time_end - time_start

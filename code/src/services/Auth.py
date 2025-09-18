@@ -11,9 +11,9 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
-from src.base.RedisStorage import RedisStorage
+from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
-from src.model.User import User
+from ..model import User
 
 import json
 
@@ -60,14 +60,14 @@ class AuthService:
         """Аутентификация пользователя"""
         # Проверка подключения к Redis
         if not self.redis.check_connection():
-            return {"err" : "Cannot connect to Redis"}
+            return LogsMaker().fatal_message("Cannot connect to Redis")
 
         # Проверяем учетные данные в AD
         user_uuid = self.check_ad_credentials(username, password)
         if user_uuid is not None and "GUID" in user_uuid:
             user_uuid = user_uuid['GUID']
         else:
-            return {"err" : "Auth error! Invalid login or password!"}
+            return LogsMaker.error_message("Auth error! Invalid login or password!")
         
         
 
@@ -208,7 +208,7 @@ class AuthService:
             if username == user_data["login"]:
                 log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
                 ret_str = "#"*len(log_str)
-                print(f"{ret_str}\n{log_str}\n{ret_str}")
+                LogsMaker().info_message(f"{ret_str}\n{log_str}\n{ret_str}")
                 return user_data
         
         return None

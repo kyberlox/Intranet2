@@ -139,7 +139,7 @@ class B24:
         
         ID = response.json()['result']
             
-        bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\Lists\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
+        bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\\Lists\\BizprocDocumentLists&DOCUMENT_ID[]={ID}"
         
         bis_response = requests.get(bis_url)
 

@@ -7,8 +7,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText 
 
-from src.services.LogsMaker import LogsMaker
-from src.model.File import File
+from .LogsMaker import LogsMaker
 
 load_dotenv()
 

@@ -1,8 +1,8 @@
-from src.base.pSQLmodels import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
+from ..base.pSQL.objects import ActivitiesModel, ModersModel, ActiveUsersModel, AdminModel
 from fastapi import APIRouter, Body, Request
 
-from src.model.User import User
-from src.services.Auth import AuthService
+from ..model import User
+from .Auth import AuthService
 
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
@@ -78,7 +78,7 @@ class Peer:
 
     
     
-    def statistics_history(self):
+    def statistic_history(self):
         return ActiveUsersModel(uuid_to=self.user_uuid, activities_id=self.activities_id).statistics_history()
 
     def new_a_week(self): 
@@ -110,6 +110,7 @@ class Peer:
             user_inf = User(uuid = user_uuid).user_inf_by_uuid()
             return user_inf["ID"]
         return None
+
 
 
 # дампит старые данные
@@ -201,7 +202,7 @@ def history_mdr(activity_name: str):
 
 @peer_router.get("/statistics_history/{activities_id}/{uuid}")
 def statistics_history(activities_id: int, uuid: int):
-    return Peer(activities_id=activities_id, user_uuid=uuid).statistics_history()
+    return Peer(activities_id=activities_id, user_uuid=uuid).statistic_history()
 
 @peer_router.get("/top")
 def top():
@@ -212,9 +213,9 @@ def my_place(uuid: int):
     return Peer(user_uuid=uuid).my_place()
 
 
-@peer_router.get("/statistics_history/{activities_id}/{uuid}")
-def statistics_history(activities_id: int, uuid: int):
-    return Peer(user_uuid=uuid, activities_id=activities_id).statistics_history() 
+# @peer_router.get("/statistics_history/{activities_id}/{uuid}")
+# def statistics_history(activities_id: int, uuid: int):
+#     return Peer(user_uuid=uuid, activities_id=activities_id).statistic_history()
 
 @peer_router.get("/new_a_week/{uuid}")
 def new_a_week(uuid: int):

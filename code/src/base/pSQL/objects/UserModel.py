@@ -201,6 +201,7 @@ class UserModel:
         user = self.db.query(self.user).get(self.id)
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
+        print(user)
         if user is not None:
             for key in DB_columns:
                 result[key] = user.__dict__[key]

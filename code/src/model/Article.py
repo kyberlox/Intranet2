@@ -1235,7 +1235,7 @@ class Article:
                 if "PROPERTY_480" in data_inf:
                     data_title_id = list(data_inf["PROPERTY_480"].values())[0]
                 else:
-                    logg.info_message(f'##################, {data_inf["ID"]}')
+                    self.logg.info_message(f'##################, {data_inf["ID"]}')
                     
 
                 # если эта статья принадлежит инфоблоку

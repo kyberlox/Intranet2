@@ -5,15 +5,15 @@ COPY ./requirements.txt /data/app/requirements.txt
 
 # Устанавливаем системные зависимости
 RUN apk update && apk add --no-cache \
-    vips-dev \
-    vips \
-    vips-cpp \
-    glib-dev \
-    expat-dev \
-    tiff-dev \
-    jpeg-dev \
-    libpng-dev \
-    libwebp-dev \
+    #vips-dev \
+    #vips \
+    #vips-cpp \
+    #glib-dev \
+    #expat-dev \
+    #tiff-dev \
+    #jpeg-dev \
+    #libpng-dev \
+    #libwebp-dev \
     gcc \
     g++ \
     make \

@@ -6,10 +6,10 @@ from .App import db
 
 
 
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы Тэгов")
 
-#!!!!!!!!!!!!!!!
-from ....services.LogsMaker import LogsMaker
-#!!!!!!!!!!!!!!!
+
 
 class TagsModel:
     def __init__(self, id: int = 0, tag_name: str = ''):

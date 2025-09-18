@@ -6,7 +6,7 @@ from .App import db
 
 
 from src.services.LogsMaker import LogsMaker
-LogsMaker().ready_status_message("Успешная инициализация таблицы активностей")
+LogsMaker().ready_status_message("Успешная инициализация таблицы Активностей")
 
 class ActivitiesModel:
     def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False):

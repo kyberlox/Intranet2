@@ -5,9 +5,10 @@ from .App import db
 
 
 
-#!!!!!!!!!!!!!!!
-from ....services.LogsMaker import LogsMaker
-#!!!!!!!!!!!!!!!
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы Пользователь-Подразделение")
+
+
 
 class UsDepModel():
     def __init__(self, id=0, user_id=0, dep_id=0):

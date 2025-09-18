@@ -103,7 +103,7 @@ services:
     container_name: vue
     build: ./front
     volumes:
-      - ./front/:/app/
+      #- ./front/:/app/
       - ./app_logs/frontend:/app/logs  # Логи фронтенда
     ports:
       - 5173:5173

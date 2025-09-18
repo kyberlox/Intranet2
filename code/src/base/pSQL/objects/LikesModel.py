@@ -11,9 +11,10 @@ from .ViewsModel import ViewsModel
 
 
 
-#!!!!!!!!!!!!!!!
-from ....services.LogsMaker import LogsMaker
-#!!!!!!!!!!!!!!!
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы Лайков")
+
+
 
 class LikesModel:
     def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None, user_uuid: Optional[str] = None):

@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 import asyncio
 import aiofiles
 
+from src.services.LogsMaker import LogsMaker
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')

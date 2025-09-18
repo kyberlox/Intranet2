@@ -23,7 +23,6 @@ from src.base.Elastic import StructureSearchModel, ArticleSearchModel, UserSearc
 from src.base.B24 import B24, b24_router
 
 from src.services.VCard import vcard_app
-from src.services.LogsMaker import LogsMaker
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
 from src.services.Idea import idea_router
@@ -32,6 +31,8 @@ from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
+
+from src.services.LogsMaker import LogsMaker
 
 from typing import Awaitable, Callable, Optional
 
@@ -214,7 +215,7 @@ def test_file_get(file_id):
 @app.get("/api/full_search/{keyword}")
 def elastic_search(keyword: str):
     from .src.base.Elastic.App import search_everywhere
-    return search_everywhere(key_word=keyword) 
+    return search_everywhere(key_word=keyword)
 
 @app.put("/api/full_elastic_dump")
 def elastic_dump():
@@ -305,33 +306,33 @@ def total_update():
     time_start = time.time()
     status = 0
 
-    # print("Обновление информации о подразделениях")
-    # if Department().fetch_departments_data()["status"]:
-    #     status += 1
-    #     print("Успешно!")
-    # else:
-    #     print("Ошибка!")
+    print("Обновление информации о подразделениях")
+    if Department().fetch_departments_data()["status"]:
+        status += 1
+        print("Успешно!")
+    else:
+        print("Ошибка!")
 
-    # print("Обновление информации о пользователях")
-    # from src.model.User import User
-    # dowload_status = User().fetch_users_data()["status"]
-    # if dowload_status:
-    #     status += 1
-    #     print("Успешно!")
-    # else:
-    #     print("Ошибка!")
+    print("Обновление информации о пользователях")
+    from src.model.User import User
+    dowload_status = User().fetch_users_data()["status"]
+    if dowload_status:
+        status += 1
+        print("Успешно!")
+    else:
+        print("Ошибка!")
 
-    # print("Обновление информации о связи подразделений и пользователей")
-    # if UsDep().get_usr_dep()["status"]:
-    #     status += 1
-    #     print("Успешно!")
-    # else:
-    #     print("Ошибка!")
+    print("Обновление информации о связи подразделений и пользователей")
+    if UsDep().get_usr_dep()["status"]:
+        status += 1
+        print("Успешно!")
+    else:
+        print("Ошибка!")
 
-    # print("Обновление информации о разделах сайта")
-    # Section().load()
-    # status += 1
-    # print("Успешно!")
+    print("Обновление информации о разделах сайта")
+    Section().load()
+    status += 1
+    print("Успешно!")
 
     print("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:

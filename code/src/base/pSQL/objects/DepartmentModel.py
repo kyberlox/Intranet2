@@ -6,9 +6,12 @@ from .App import db, engine
 
 from sqlalchemy.exc import SQLAlchemyError
 
-#!!!!!!!!!!!!!!!
-from ....services import LogsMaker
-#!!!!!!!!!!!!!!!
+
+
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы Подразделений")
+
+
 
 class DepartmentModel:
 

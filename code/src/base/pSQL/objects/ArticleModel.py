@@ -9,9 +9,9 @@ import json
 from sqlalchemy.exc import SQLAlchemyError
 
 
-#!!!!!!!!!!!!!!!
-from ....services.LogsMaker import LogsMaker
-#!!!!!!!!!!!!!!!
+
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы Cтатей")
 
 class ArticleModel:
 

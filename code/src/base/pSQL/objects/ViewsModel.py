@@ -3,7 +3,8 @@ from typing import Optional
 from ..models.Views import Views
 from .App import db
 
-from ....services.LogsMaker import LogsMaker
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация представления Новых Сотрудников")
 
 class ViewsModel:
     def __init__(self, views_count: Optional[int] = None, art_id: Optional[int] = None):

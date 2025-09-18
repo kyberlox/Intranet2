@@ -4,7 +4,12 @@ from ..models.User import User
 from .App import db
 from .ActiveUsersModel import ActiveUsersModel
 
-from ....services.LogsMaker import LogsMaker
+
+
+from src.services.LogsMaker import LogsMaker
+LogsMaker().ready_status_message("Успешная инициализация таблицы Мерча")
+
+
 
 class MerchStoreModel:
 

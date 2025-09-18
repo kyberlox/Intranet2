@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch import AsyncElasticsearch
 from elasticsearch import helpers
 
-
+from src.services.LogsMaker import LogsMaker
 
 import json
 
@@ -28,9 +28,9 @@ elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=(
 
 
 if elastic_client.ping():
-    print("✅ Успешное подключение!")
+    LogsMaker().ready_status_message("✅ Успешное подключение Elasticsearch!")
 else:
-    print("❌ Ошибка аутентификации!")
+    LogsMaker().fatal_message("❌ Ошибка аутентификации Elasticsearch!")
 
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)

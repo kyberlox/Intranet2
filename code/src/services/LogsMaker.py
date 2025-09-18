@@ -32,7 +32,7 @@ class LogsMaker:
         """Выводит сообщение о критической ошибке в консоль"""
         error_msg = str(message)
         logging.error(f"🔥 {error_msg}")
-        print(f"🔥 \033[91m[ERROR] 🔥 {error_msg}\033[0m")  # 91 - красный цвет
+        print(f"🔥 \033[91m[FATAL ERROR] 🔥 {error_msg}\033[0m")  # 91 - красный цвет
         return {"status" : "error", "message" : error_msg}
 
     def error_message(self, error: Exception) -> None:

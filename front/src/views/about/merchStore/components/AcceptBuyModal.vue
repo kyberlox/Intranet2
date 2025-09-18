@@ -8,7 +8,8 @@
                    value="1"
                    min="0" />
         </div>
-        <button class="accept-buy-modal__button">Подтвердить</button>
+        <button @click="accept"
+                class="accept-buy-modal__button">Подтвердить</button>
     </div>
 </SlotModal>
 </template>
@@ -20,9 +21,9 @@ export default defineComponent({
     components: {
         SlotModal
     },
-    setup() {
+    setup(props, { emit }) {
         return {
-
+            accept: () => emit('acceptBuy')
         }
     }
 })

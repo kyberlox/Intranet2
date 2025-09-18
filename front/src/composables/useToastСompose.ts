@@ -17,7 +17,8 @@ const messages: messages = {
         adminDeleteSuccess: 'Элемент успешно удален',
         adminAddElementSuccess: 'Элемент успешно добавлен',
         adminUpdateElementSuccess: 'Элемент успешно обновлен',
-        pointsSendSuccess: 'Баллы успешно отправлены'
+        pointsSendSuccess: 'Баллы успешно отправлены',
+        merchBuySuccess: 'Ваш запрос успешно отправлен! Скоро с вами свяжутся для уточнения',
 
     }
 }

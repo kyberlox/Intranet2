@@ -45,7 +45,7 @@
             </div>
             <div class="merchStoreItem__action__wrapper">
                 <div class="merchStoreItem__action__button"
-                     @click="AcceptBuyModalOpen = true">
+                     @click="acceptBuyModalOpen = true">
                     Оформить
                 </div>
             </div>
@@ -55,8 +55,9 @@
                :image="[activeImage]"
                @close="modalIsOpen = false" />
 
-    <AcceptBuyModal v-if="AcceptBuyModalOpen"
-                    @closeModal="AcceptBuyModalOpen = false" />
+    <AcceptBuyModal v-if="acceptBuyModalOpen"
+                    @closeModal="acceptBuyModalOpen = false"
+                    @acceptBuy="acceptBuy" />
 </div>
 </template>
 
@@ -65,6 +66,8 @@ import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { defineComponent, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
 import AcceptBuyModal from './components/AcceptBuyModal.vue';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
 
 export default defineComponent({
     components: {
@@ -95,7 +98,10 @@ export default defineComponent({
         const activeImage = ref();
         const modalIsOpen = ref(false);
         const currentSize = ref('');
-        const AcceptBuyModalOpen = ref(false);
+        const acceptBuyModalOpen = ref(false);
+
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const setZoomImg = (image: string) => {
             activeImage.value = image;
@@ -106,14 +112,20 @@ export default defineComponent({
             currentSize.value = size;
         }
 
+        const acceptBuy = () => {
+            toast.showSuccess('merchBuySuccess');
+            acceptBuyModalOpen.value = false
+        }
+
         return {
             merchItemPlug,
             activeImage,
             modalIsOpen,
             currentSize,
+            acceptBuyModalOpen,
             setZoomImg,
             setCurrentSize,
-            AcceptBuyModalOpen
+            acceptBuy,
         }
     }
 })

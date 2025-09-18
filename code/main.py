@@ -306,6 +306,8 @@ def total_update():
     time_start = time.time()
     status = 0
 
+    loger = LogsMaker()
+
     # print("Обновление информации о подразделениях")
     # if Department().fetch_departments_data()["status"]:
     #     status += 1

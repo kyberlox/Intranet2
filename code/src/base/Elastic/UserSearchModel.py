@@ -2,6 +2,8 @@ from .App import elastic_client
 
 from fastapi import HTTPException
 
+from src.model.File import File
+
 class UserSearchModel:
     def __init__(self):
         from ..pSQL.objects.UserModel import UserModel

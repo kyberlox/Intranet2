@@ -107,7 +107,6 @@ class User:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
                 self.UserModel.id = uuid
-                print(uuid)
                 psql_user = self.UserModel.find_by_id()
                 print(psql_user)
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():

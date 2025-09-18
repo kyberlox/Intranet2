@@ -7,39 +7,32 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, HTTPException, status
 
-
-
+from src.services.VCard import dowload_file
 # from bson import Binary
-
 from src.model.User import User, users_router
 from src.model.Department import Department, depart_router
 from src.model.UsDep import UsDep, usdep_router
-
 from src.model.Section import Section, section_router
 from src.model.Article import Article, article_router
-
+from src.model.Tag import Tag, tag_router
 from src.model.File import File, file_router
-from src.services.VCard import vcard_app
-from src.services.LogsMaker import LogsMaker
 
-from src.base.SearchModel import UserSearchModel, StructureSearchModel, search_router, search_everywhere, ArticleSearchModel
 
+from src.base.Elastic.App import search_router
+from src.base.Elastic import StructureSearchModel, ArticleSearchModel, UserSearchModel
 from src.base.B24 import B24, b24_router
 
+from src.services.VCard import vcard_app
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
 from src.services.Idea import idea_router
-
-from src.services.Editor import Editor, editor_router
-
-from src.services.FieldsVisions import Visions, fieldsvisions_router
-
-from src.services.Peer import Peer, peer_router
-from src.services.MerchStore import MerchStore, store_router
-
-from src.model.Tag import Tag, tag_router
-
+from src.services.Editor import editor_router
+from src.services.FieldsVisions import fieldsvisions_router
+from src.services.Peer import peer_router
+from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
+
+from src.services.LogsMaker import LogsMaker
 
 from typing import Awaitable, Callable, Optional
 
@@ -92,8 +85,8 @@ app.include_router(store_router, prefix="/api")
 origins = [
     "http://localhost:8000",
     DOMAIN,
-    "http://intranet.emk.org.ru:8000",
-    "http://intranet.emk.org.ru"
+    #"http://intranet.emk.org.ru:8000",
+    #"http://intranet.emk.org.ru"
 ]
 
 app.add_middleware(
@@ -132,7 +125,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/users_update",
         "/openapi.json",
         "/api/auth_router",
-        "/total_update",
+        "/api/total_update",
         "/api/files/",
         "/api/compress_image",
         "/api/user_files",
@@ -142,15 +135,17 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     for open_link in open_links:
         if open_link in request.url.path:
-            try:
-                return await call_next(request)
-            except TypeError:
-                return call_next(request)
-            else:
-                return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Error when trying to follow the link without authorization")
-                )
+            return await call_next(request)
+
+            # try:
+            #     #return call_next(request)
+            #     print('тут')
+            #     return await call_next(request)
+            # except:
+            #     return JSONResponse(
+            #         status_code = status.HTTP_401_UNAUTHORIZED,
+            #         content = log.warning_message(message="Error when trying to follow the link without authorization")
+            #     )
 
 
 
@@ -162,7 +157,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             if token is None:
                 return JSONResponse(
                     status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Authorization cookies or headers missing")
+                    content = log.warning_message(message="Authorization cookies or headers missing")
                 )
                 # raise HTTPException(
                 #     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -174,7 +169,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             if not session:
                 return JSONResponse(
                     status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Invalid token")
+                    content = log.warning_message(message="Invalid token")
                 )
                 # raise HTTPException(
                 #     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -184,7 +179,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         except IndexError:
             return JSONResponse(
                     status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = await log.warning_message(message="Invalid authorization cookies or headers format")
+                    content = log.warning_message(message="Invalid authorization cookies or headers format")
                 )
             # raise HTTPException(
             #     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -218,11 +213,15 @@ def test_file_get(file_id):
     return file_data
 
 @app.get("/api/full_search/{keyword}")
-def elastic_search(keyword: str): 
-    return search_everywhere(key_word=keyword) 
+def elastic_search(keyword: str):
+    from .src.base.Elastic.App import search_everywhere
+    return search_everywhere(key_word=keyword)
 
 @app.put("/api/full_elastic_dump")
 def elastic_dump():
+    from src.base.Elastic.UserSearchModel import UserSearchModel
+    from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
+    from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
     UserSearchModel().dump()
     StructureSearchModel().dump()
     ArticleSearchModel().dump()
@@ -301,6 +300,7 @@ def total_users_update():
     return {"status_code" : status, "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
 
+
 @app.put("/api/total_update")
 def total_update():
     time_start = time.time()
@@ -314,7 +314,9 @@ def total_update():
         print("Ошибка!")
 
     print("Обновление информации о пользователях")
-    if User().fetch_users_data()["status"]:
+    from src.model.User import User
+    dowload_status = User().fetch_users_data()["status"]
+    if dowload_status:
         status += 1
         print("Успешно!")
     else:

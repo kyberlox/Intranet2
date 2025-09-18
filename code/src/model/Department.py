@@ -1,10 +1,5 @@
-from src.base.pSQLmodels import DepartmentModel
-from src.base.SearchModel import StructureSearchModel
-from src.base.B24 import B24
-from src.services.LogsMaker import LogsMaker
-
-import requests
-import json
+from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
+from ..services.LogsMaker import LogsMaker
 
 from fastapi import APIRouter, Body, Request
 from fastapi.templating import Jinja2Templates
@@ -21,22 +16,25 @@ class Department:
         self.father_id = father_id
         self.data = data
 
+        from ..base.pSQL.objects.DepartmentModel import DepartmentModel
+        self.department = DepartmentModel()
+
     def fetch_departments_data(self):
-        b24 = B24()
-        data = b24.getDeps()
-        DepSQL = DepartmentModel()
+        from ..base.B24 import B24
+        data = B24().getDeps()
         logg = LogsMaker()
 
         #отправить записи
         for dep in logg.progress(data, "Загрузка данных подразделений "):
             #if dep['ID'] == '420':
-            DepSQL.upsert_dep(dep)
+            self.department.upsert_dep(dep)
             
         StructureSearchModel().create_index()
         return {"status" : True}
     
     def search_dep_by_id(self):
-        return DepartmentModel(self.id).find_dep_by_id()
+        self.department.id = self.id
+        return self.department.find_dep_by_id()
 
 
 # Департаменты можно обновить

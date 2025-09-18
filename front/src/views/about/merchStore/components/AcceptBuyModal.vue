@@ -1,8 +1,12 @@
 <template>
-<SlotModal>
+<SlotModal @close="$emit('closeModal')">
     <div class="accept-buy-modal__wrapper">
         <div class="accept-buy-modal__content">
             <p class="accept-buy-modal__title">Укажите кол-во</p>
+            <input class="accept-buy-modal__quantity-input"
+                   type="number"
+                   value="1"
+                   min="0" />
         </div>
         <button class="accept-buy-modal__button">Подтвердить</button>
     </div>
@@ -29,52 +33,44 @@ export default defineComponent({
 
 .accept-buy-modal {
     &__wrapper {
-        background: white;
         border-radius: 8px;
         padding: 2rem;
-        width: 100%;
-        max-width: 400px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        width: 500px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    &__quantity-input {
+        width: 16ch;
+        padding: 12px 16px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #303030;
+        background: #ffffff;
+        outline: none;
+        transition: all 0.2s ease;
     }
 
     &__content {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: 1rem;
-        margin-bottom: 1.5rem;
+        align-items: baseline;
+        flex-wrap: wrap;
     }
 
     &__title {
-        font-style: normal;
         font-weight: 600;
         font-size: 16px;
-        line-height: 20px;
-        color: #303030;
-        margin: 0;
         text-align: center;
     }
 
-    &__input {
-        width: 100%;
 
-        :deep(.admin-edit-input) {
-            width: 100%;
-
-            input {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #dee2e6;
-                border-radius: 4px;
-                font-size: 14px;
-                outline: none;
-                transition: border-color 0.2s ease;
-
-                &:focus {
-                    border-color: #ef7f1b;
-                }
-            }
-        }
-    }
 
     &__button {
         width: 100%;
@@ -88,13 +84,6 @@ export default defineComponent({
         cursor: pointer;
         transition: background-color 0.2s ease;
 
-        &:hover {
-            background: darken(#ef7f1b, 10%);
-        }
-
-        &:active {
-            background: darken(#ef7f1b, 15%);
-        }
     }
 }
 

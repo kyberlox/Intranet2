@@ -44,7 +44,8 @@
                 <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
             </div>
             <div class="merchStoreItem__action__wrapper">
-                <div class="merchStoreItem__action__button">
+                <div class="merchStoreItem__action__button"
+                     @click="AcceptBuyModalOpen = true">
                     Оформить
                 </div>
             </div>
@@ -53,7 +54,9 @@
     <ZoomModal v-if="modalIsOpen == true"
                :image="[activeImage]"
                @close="modalIsOpen = false" />
-    <AcceptBuyModal />
+
+    <AcceptBuyModal v-if="AcceptBuyModalOpen"
+                    @closeModal="AcceptBuyModalOpen = false" />
 </div>
 </template>
 
@@ -92,6 +95,7 @@ export default defineComponent({
         const activeImage = ref();
         const modalIsOpen = ref(false);
         const currentSize = ref('');
+        const AcceptBuyModalOpen = ref(false);
 
         const setZoomImg = (image: string) => {
             activeImage.value = image;
@@ -108,7 +112,8 @@ export default defineComponent({
             modalIsOpen,
             currentSize,
             setZoomImg,
-            setCurrentSize
+            setCurrentSize,
+            AcceptBuyModalOpen
         }
     }
 })

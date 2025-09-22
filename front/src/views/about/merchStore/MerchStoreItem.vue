@@ -1,84 +1,85 @@
 <template>
-    <div class="merchStoreItem__wrapper">
-        <div class="merchStoreItem mt20">
-            <div class="merchStoreItem__images__wrapper">
-                <div class="merchStoreItem__images__flex-gallery">
-                    <div v-if="merchItemPlug.images"
-                         v-for="(card, index) in merchItemPlug.images"
-                         :key="index"
-                         class="merchStoreItem__images__flex-gallery__card__wrapper">
-                        <div class="merchStoreItem__images__flex-gallery__card">
-                            <img class="pos-rel"
-                                 :src="card"
-                                 @click="setZoomImg(card)" />
-                            <ZoomInIcon class="merchStoreItem__images__flex-gallery__card__zoom-icon" />
-                        </div>
-                    </div>
-                    <div v-else
-                         v-for="n in 4"
-                         :key="`skeleton-${n}`"
-                         class="merchStoreItem__images__flex-gallery__card__wrapper">
-                        <div class="merchStoreItem__images__flex-gallery__card skeleton">
-                            <div class="skeleton-image"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="merchStoreItem__info">
-                <div class="merchStoreItem__info__category">{{ merchItemPlug.category }}</div>
-                <div class="merchStoreItem__info__title">
-                    {{ merchItemPlug.title }}
-                </div>
-                <div class="merchStoreItem__info__description"
-                     v-html="merchItemPlug.description">
-                </div>
-                <div class="merchStoreItem__info__sizes__title">
-                    Размер
-                </div>
-                <div class="merchStoreItem__info__sizes">
-                    <div class="merchStoreItem__info__size"
-                         :class="{ 'merchStoreItem__info__size--active': item == currentSize }"
-                         v-for="item in merchItemPlug.sizes"
-                         :key="'size' + item"
-                         @click="setCurrentSize(item)">
-                        {{ item }}
-                    </div>
-                </div>
-
-                <div class="merchStoreItem__info__price">
-                    <span class="count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
-                </div>
-
-                <div class="merchStoreItem__info__count">
-                    <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
-                </div>
-                <div class="merchStoreItem__action__wrapper">
-                    <div class="merchStoreItem__action__button">
-                        Оформить
+<div class="merchStoreItem__wrapper">
+    <div class="merchStoreItem mt20">
+        <div class="merchStoreItem__images__wrapper">
+            <div class="merchStoreItem__images__flex-gallery">
+                <div v-for="(card, index) in merchItemPlug.images"
+                     :key="index"
+                     class="merchStoreItem__images__flex-gallery__card__wrapper">
+                    <div class="merchStoreItem__images__flex-gallery__card">
+                        <img class="pos-rel"
+                             :src="card"
+                             @click="setZoomImg(card)" />
+                        <ZoomInIcon class="merchStoreItem__images__flex-gallery__card__zoom-icon" />
                     </div>
                 </div>
             </div>
         </div>
-        <ZoomModal v-if="modalIsOpen == true"
-                   :image="[activeImage]"
-                   @close="modalIsOpen = false" />
+        <div class="merchStoreItem__info">
+            <div class="merchStoreItem__info__category">{{ merchItemPlug.category }}</div>
+            <div class="merchStoreItem__info__title">
+                {{ merchItemPlug.title }}
+            </div>
+            <div class="merchStoreItem__info__description"
+                 v-html="merchItemPlug.description">
+            </div>
+            <div class="merchStoreItem__info__sizes__title">
+                Размер
+            </div>
+            <div class="merchStoreItem__info__sizes">
+                <div class="merchStoreItem__info__size"
+                     :class="{ 'merchStoreItem__info__size--active': item == currentSize }"
+                     v-for="item in merchItemPlug.sizes"
+                     :key="'size' + item"
+                     @click="setCurrentSize(item)">
+                    {{ item }}
+                </div>
+            </div>
+
+            <div class="merchStoreItem__info__price">
+                <span class="count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
+            </div>
+
+            <div class="merchStoreItem__info__count">
+                <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
+            </div>
+            <div class="merchStoreItem__action__wrapper">
+                <div class="merchStoreItem__action__button"
+                     @click="acceptBuyModalOpen = true">
+                    Оформить
+                </div>
+            </div>
+        </div>
     </div>
+    <ZoomModal v-if="modalIsOpen == true"
+               :image="[activeImage]"
+               @close="modalIsOpen = false" />
+
+    <AcceptBuyModal v-if="acceptBuyModalOpen"
+                    @closeModal="acceptBuyModalOpen = false"
+                    @acceptBuy="acceptBuy" />
+</div>
 </template>
 
 <script lang="ts">
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { defineComponent, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
+import AcceptBuyModal from './components/AcceptBuyModal.vue';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
+
 export default defineComponent({
+    components: {
+        ZoomModal,
+        ZoomInIcon,
+        AcceptBuyModal
+    },
     props: {
         id: {
             type: Number,
             default: 1
         },
-    },
-    components: {
-        ZoomModal,
-        ZoomInIcon
     },
     setup() {
         const merchItemPlug = {
@@ -97,6 +98,10 @@ export default defineComponent({
         const activeImage = ref();
         const modalIsOpen = ref(false);
         const currentSize = ref('');
+        const acceptBuyModalOpen = ref(false);
+
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const setZoomImg = (image: string) => {
             activeImage.value = image;
@@ -107,43 +112,21 @@ export default defineComponent({
             currentSize.value = size;
         }
 
+        const acceptBuy = () => {
+            toast.showSuccess('merchBuySuccess');
+            acceptBuyModalOpen.value = false
+        }
+
         return {
             merchItemPlug,
             activeImage,
             modalIsOpen,
             currentSize,
+            acceptBuyModalOpen,
             setZoomImg,
-            setCurrentSize
+            setCurrentSize,
+            acceptBuy,
         }
     }
 })
 </script>
-
-<style>
-.skeleton {
-    background-color: #f0f0f0;
-    position: relative;
-    overflow: hidden;
-}
-
-.skeleton::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.6),
-            transparent);
-    animation: skeleton-loading 1.5s infinite;
-}
-
-.skeleton-image {
-    width: 100%;
-    height: 100%;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-}
-</style>

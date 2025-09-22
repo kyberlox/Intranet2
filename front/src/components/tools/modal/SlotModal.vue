@@ -1,23 +1,23 @@
 <template>
-    <div class="modal__overlay modal__overlay--zoom">
-        <div @click.stop.prevent="close()"
-             class="modal__overlay__close-button">
-            <CloseIcon />
-        </div>
-        <div @click.stop.prevent
-             class="modal__wrapper modal__wrapper--zoom  modal__text">
-            <div class="modal__body modal__body--zoom">
-                <div class="modal__text__content modal__text__content--points-modal">
-                    <div class="row mb-3">
-                        <div class="col">
-                            <slot>
-                            </slot>
-                        </div>
+<div @click.stop.prevent="close()"
+     class="modal__overlay modal__overlay--zoom">
+    <div class="modal__overlay__close-button">
+        <CloseIcon />
+    </div>
+    <div class="modal__wrapper modal__wrapper--zoom  modal__text">
+        <div class="modal__body modal__body--zoom">
+            <div @click.stop.self
+                 class="modal__text__content modal__text__content--points-modal">
+                <div class="row mb-3">
+                    <div class="col">
+                        <slot>
+                        </slot>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </template>
 <script lang="ts">
 import { repairVideoUrl } from "@/utils/embedVideoUtil";

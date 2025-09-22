@@ -1,5 +1,5 @@
 
-import type { IBook } from '@/interfaces/entities/IBook';
+import type { IBook } from '@/interfaces/IEntities';
 
 export const bookNavigation: IBook[] = [
     {

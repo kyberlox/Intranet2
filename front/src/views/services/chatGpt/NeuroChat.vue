@@ -87,7 +87,7 @@ import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
-import type { INeuroChat } from '@/interfaces/entities/INeuroChat';
+import type { INeuroChat } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
 
 export type IChatType = "textChat" | "createImg";

@@ -1,9 +1,8 @@
-from src.base.pSQLmodels import UsDepModel
-from src.base.SearchModel import StructureSearchModel
-from src.base.B24 import B24
-from src.services.LogsMaker import LogsMaker
+from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
+from ..base.B24 import B24
+from ..services.LogsMaker import LogsMaker
 
-#from fastapi import APIRouter
+from fastapi import APIRouter
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
@@ -20,11 +19,13 @@ class UsDep:
         self.ID = ID
         self.usr_id = usr_id
         self.dep_id = dep_id
+
+        from ..base.pSQL.objects import UsDepModel
+        self.UserSQL = UsDepModel()
     
     def get_usr_dep(self):
         b24 = B24()
         data = b24.getUsers()
-        UserSQL = UsDepModel()
         logg = LogsMaker()
         
         result = dict()
@@ -35,12 +36,13 @@ class UsDep:
             if usr['ID'] is not None:
                 result['id'] = int(usr['ID'])
                 result['depart'] = usr['UF_DEPARTMENT']
-                UserSQL.put_uf_depart(result)
+                self.UserSQL.put_uf_depart(result)
         StructureSearchModel().dump()
         return {"status" : True}
         
     def search_usdep_by_id(self):
-        return UsDepModel(self.ID).find_dep_by_user_id()
+        self.UserSQL.id = self.ID
+        return self.UserSQL.find_dep_by_user_id()
 
 
 #Таблицу пользователей и департаментов можно обновить
@@ -49,9 +51,9 @@ def get_user():
     return UsDep().get_usr_dep()
 
 #Пользователя и его департамент можно выгрузить
-@usdep_router.get("/find_by/{id}")
-def get_usdepart(id):
-    return UsDep(id).search_usdep_by_id()
+@usdep_router.get("/find_by/{ID}")
+def get_usdepart(ID):
+    return UsDep(ID = ID).search_usdep_by_id()
 
 #поиск по id подразделения
 @usdep_router.get("/get_structure_by_dep_id/{parent_id}")

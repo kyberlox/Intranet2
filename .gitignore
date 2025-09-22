@@ -1,12 +1,13 @@
+/app_logs
 /pSQL/data
 /mongodb/data
 /elasticsearch/data
 /redis_data
 /code/files_db
+/code/logs
 
 **/__pycache__/
 .env
 .idea
 
-/front/node_modules
-/front/.vscode
+/front/

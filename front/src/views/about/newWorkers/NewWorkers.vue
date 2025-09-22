@@ -1,25 +1,26 @@
 <template>
-    <h2 class="page__title mt20">
-        Новые сотрудники
-    </h2>
-    <div class="row mb-5 mt20">
-        <div class="newWorkers__page-swiper__wrapper pos-rel"
-             v-if="newWorkers.length">
-            <swiper class="newWorkers__page__swiper"
-                    v-bind="sliderConfig"
-                    @swiper="swiperOn">
-                <swiper-slide v-for="(slide, index) in newWorkers"
-                              :key="'vertSlide' + index">
-                    <VerticalSliderSlide :slide="slide" />
-                </swiper-slide>
-            </swiper>
+<h2 class="page__title mt20">
+    Новые сотрудники
+</h2>
+<div class="row mb-5 mt20">
+    <div class="newWorkers__page-swiper__wrapper pos-rel"
+         v-if="newWorkers.length">
+        <swiper class="newWorkers__page__swiper"
+                v-bind="sliderConfig"
+                @swiper="swiperOn">
+            <swiper-slide v-for="(slide, index) in newWorkers"
+                          :key="'vertSlide' + index">
+                <VerticalSliderSlide class="newWorkers__vertical-swiper"
+                                     :slide="slide" />
+            </swiper-slide>
+        </swiper>
 
-            <SwiperButtons :isBeginning="isBeginning"
-                           :isEnd="isEnd"
-                           @slideNext="slideNext"
-                           @slidePrev="slidePrev" />
-        </div>
+        <SwiperButtons :isBeginning="isBeginning"
+                       :isEnd="isEnd"
+                       @slideNext="slideNext"
+                       @slidePrev="slidePrev" />
     </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -43,7 +44,7 @@ export default defineComponent({
     },
     setup() {
         const newWorkers = ref([]);
-        const swiperConf = useSwiperconf('newWorkers');
+        const swiperConf = useSwiperconf('vertical');
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
@@ -64,8 +65,3 @@ export default defineComponent({
     }
 })
 </script>
-<style>
-.vertical-swiper__wrapper {
-    max-width: 100%;
-}
-</style>

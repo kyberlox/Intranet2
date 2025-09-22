@@ -37,11 +37,12 @@ import { defineComponent, onMounted, ref, watch, type PropType } from 'vue';
 import PostInner from '@/components/tools/common/PostInner.vue';
 import Interview from '@/views/about/ourPeople/components/Interview.vue';
 import CertainBlog from '@/views/about/blogs/CertainBlog.vue';
-import type { IPostInner } from '@/components/tools/common/PostInner.vue';
-import type { INewFileData } from '@/interfaces/entities/IAdmin';
 import LayoutLeft from "@/assets/icons/admin/LayoutLeft.svg?component";
 import LayoutTop from "@/assets/icons/admin/LayoutTop.svg?component";
 import { useblogDataStore } from '@/stores/blogData';
+
+import type { IPostInner } from '@/components/tools/common/PostInner.vue';
+import type { INewFileData } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'AdminPostPreview',

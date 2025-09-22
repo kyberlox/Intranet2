@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
-import type { INews, IAfishaItem, ICareSlide, IOurPeople, IVideoInterview, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
+import type { INews, ICalendar, IAfishaItem, ICareSlide, IOurPeople, IVideoInterview, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
-import type { ICalendar } from "@/interfaces/entities/ICalendar";
 
 interface DataState {
     homeData: MainPageCards,

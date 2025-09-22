@@ -1,20 +1,20 @@
 <template>
-    <h1 class="page__title mt20">Видеорепортажи</h1>
-    <div class="page__filter">
-        <DateFilter :params="filterYears"
-                    :buttonText="currentYear ?? 'Год'"
-                    @pickFilter="(year: string) => currentYear = year" />
-        <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
-    </div>
-    <div class="row">
-        <GridGallery v-if="!emptyTag"
-                     class="mt20"
-                     :gallery="visibleReports"
-                     :routeTo="'videoReport'"
-                     :type="'video'" />
-        <p class="mt20"
-           v-else>Нет новостей в этой категории</p>
-    </div>
+<h1 class="page__title mt20">Видеорепортажи</h1>
+<div class="page__filter">
+    <DateFilter :params="filterYears"
+                :buttonText="currentYear ?? 'Год'"
+                @pickFilter="(year: string) => currentYear = year" />
+    <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
+</div>
+<div class="row">
+    <GridGallery v-if="!emptyTag"
+                 class="mt20"
+                 :gallery="visibleReports"
+                 :routeTo="'videoReport'"
+                 :type="'video'" />
+    <p class="mt20"
+       v-else>Нет новостей в этой категории</p>
+</div>
 </template>
 <script lang="ts">
 import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
@@ -46,7 +46,7 @@ export default defineComponent({
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
-                await useNewsFilterWatch(currentTag, currentYear, videoReports, visibleReports);
+                await useNewsFilterWatch(currentTag, currentYear, videoReports);
 
             visibleReports.value = newVisibleNews.value;
             emptyTag.value = newEmptyTag.value;

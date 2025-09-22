@@ -1,47 +1,48 @@
 <template>
-    <div v-if="!editGroupMode && formattedUsers?.length">
-        <ul v-for="userDep in formattedUsers"
-            :key="userDep.depart">
-            <div v-if="depNeedToBeShown(userDep)">
-                <div class="mt20 visibility-editor__area-users__department-header">
-                    <div class="visibility-editor__area-users__department-title"
-                         @click="showThisDep(userDep.depart_id)">
-                        {{ userDep.depart }}
-                    </div>
-                    <CloseIcon @click="$emit('deleteDep', userDep.depart_id)" />
+<div v-if="!editGroupMode && formattedUsers?.length">
+    <ul v-for="userDep in formattedUsers"
+        :key="userDep.depart">
+        <div v-if="depNeedToBeShown(userDep)">
+            <div class="mt20 visibility-editor__area-users__department-header">
+                <div class="visibility-editor__area-users__department-title"
+                     @click="showThisDep(userDep.depart_id)">
+                    {{ userDep.depart }}
                 </div>
-                <div class="visibility-editor__area-users"
-                     v-if="showingDeps.includes(userDep.depart_id) || showAllDepsUsers">
-                    <li v-for="user in userDep.users"
-                        class="visibility-editor__area-user"
-                        :class="{ 'visibility-editor__area-user--chosen': userChoices?.find((e) => e.id == user.id) }"
-                        :key="user.id"
-                        @click="$emit('pickUser', user)">
-                        <div class="visibility-editor__user-avatar">
-                            <img v-if="user.image"
-                                 :src="user.image"
-                                 :alt="`${user.name} ${user.last_name}`"
-                                 class="visibility-editor__user-photo">
-                        </div>
-                        <div class="visibility-editor__user-fio">
-                            {{ user.name }}
-                        </div>
-                    </li>
-                </div>
+                <CloseIcon @click="deleteDep(userDep.depart_id)" />
             </div>
-        </ul>
-    </div>
-    <div class="mt20"
-         v-else>
-        Добавьте пользователей в текущую облась видимости
-    </div>
+            <div class="visibility-editor__area-users"
+                 v-if="showingDeps.includes(userDep.depart_id) || showAllDepsUsers">
+                <li v-for="user in userDep.users"
+                    :key="user.id"
+                    class="visibility-editor__area-user"
+                    :class="{ 'visibility-editor__area-user--chosen': userChoices?.find((e) => e.id == user.id) }"
+                    @click="pickUser(user)">
+                    <div class="visibility-editor__user-avatar">
+                        <img v-if="user.image"
+                             :src="user.image"
+                             :alt="`${user.name} ${user.last_name}`"
+                             class="visibility-editor__user-photo">
+                    </div>
+                    <div class="visibility-editor__user-fio">
+                        {{ user.name }}
+                    </div>
+                </li>
+            </div>
+        </div>
+    </ul>
+</div>
+<div class="mt20"
+     v-else>
+    {{ activeArea ? 'Добавьте пользователей в облась видимости' : 'Создайте и выберите область видимости' }}
+</div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import type { IFormattedUserGroup, IChoice } from '@/interfaces/IEntities';
+import type { IFormattedUserGroup, IChoice, IVisionUser } from '@/interfaces/IEntities';
 import CloseIcon from '@/assets/icons/common/Cancel.svg?component';
 export default defineComponent({
+    name: 'VisibilityAreaUsersList',
     props: {
         editGroupMode: {
             type: Boolean
@@ -58,6 +59,9 @@ export default defineComponent({
         },
         depFilter: {
             type: String
+        },
+        activeArea: {
+            type: Number
         }
     },
     components: {
@@ -93,6 +97,8 @@ export default defineComponent({
         return {
             showAllDepsUsers,
             showingDeps,
+            deleteDep: (id: number) => emit('deleteDep', id),
+            pickUser: (user: IVisionUser) => emit('pickUser', user),
             showThisDep,
             depNeedToBeShown
         }

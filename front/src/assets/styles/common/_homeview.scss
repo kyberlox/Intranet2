@@ -3,6 +3,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         column-gap: 30px;
+        row-gap: 10px;
         min-width: 100%;
 
         &__card {
@@ -36,6 +37,12 @@
 
             &__banners {
                 margin-top: 20px;
+            }
+
+            &__date {
+                text-align: right;
+                font-size: small;
+                color: #61606097;
             }
 
             &__image {

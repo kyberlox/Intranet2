@@ -5,8 +5,8 @@
                        :page="'conductedTrainings'"
                        @openModal="(item: IConductedTrainings) => handleModal('open', item)" />
 
-        <SlotModal v-if="modalIsVisible == true"
-                   @closeModal="handleModal('close', null)">
+        <SlotModal v-if="modalIsVisible"
+                   @close="handleModal('close', null)">
             <FeedBackModalInner :trainingInModal="trainingInModal" />
         </SlotModal>
     </div>
@@ -40,9 +40,6 @@ export default defineComponent({
         })
 
         const handleModal = (type: string, item: IConductedTrainings | null) => {
-            console.log(type);
-            console.log(item);
-
             if (type == 'open' && item) {
                 trainingInModal.value = item;
                 modalIsVisible.value = true;

@@ -1,16 +1,16 @@
 <template>
-    <h1 class="page__title mt20">Корпоративные события</h1>
-    <DateFilter v-if="allEvents"
-                :buttonText="buttonText"
-                :params="extractYears(allEvents)"
-                @pickFilter="(year: string) => filterYear(year)" />
-    <SampleGallery v-if="visibleEvents"
-                   :gallery="visibleEvents"
-                   :routeTo="'corpEvent'" />
+<h1 class="page__title mt20">Корпоративные события</h1>
+<DateFilter v-if="allEvents"
+            :buttonText="buttonText"
+            :params="extractYears(allEvents)"
+            @pickFilter="(year: string) => filterYear(year)" />
+<SampleGallery v-if="visibleEvents"
+               :gallery="visibleEvents"
+               :routeTo="'corpEvent'" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, type Ref, type ComputedRef, watch } from "vue";
+import { computed, defineComponent, onMounted, ref, type Ref, type ComputedRef } from "vue";
 import DateFilter from "@/components/tools/common/DateFilter.vue";
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from "@/utils/Api";

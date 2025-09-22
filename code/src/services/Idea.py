@@ -1,12 +1,12 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 
-from src.base.B24 import B24
-from src.services.Auth import AuthService
-from src.model.User import User
+from ..base.B24 import B24
 
-from src.services.LogsMaker import LogsMaker
+from ..model.User import User
 
-import json
+from .LogsMaker import LogsMaker
+
+
 
 idea_router = APIRouter(prefix="/idea", tags=["Битрикс24"])
 
@@ -78,6 +78,7 @@ class Idea:
         self.username = None
 
     def get_user(self, session_id):
+        from src.services.Auth import AuthService
         self.user = dict(AuthService().get_user_by_seesion_id(session_id))
 
         if self.user is not None:

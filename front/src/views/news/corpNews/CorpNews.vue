@@ -2,14 +2,15 @@
     <h1 class="page__title mt20">Новости организационного развития</h1>
     <div class="row">
         <div class="news__list">
-            <GridGallery :gallery="news"
-                         :type="'postPreview'"
-                         :routeTo="'corpNewsArticle'" />
+            <SampleGallery :gallery="news"
+                           :needDate="true"
+                           :type="'postPreview'"
+                           :routeTo="'corpNewsArticle'" />
         </div>
     </div>
 </template>
 <script lang="ts">
-import GridGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
+import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import { defineComponent, type Ref, onMounted, computed } from "vue";
 import type { INews } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
@@ -18,7 +19,7 @@ import { useViewsDataStore } from "@/stores/viewsData"
 import { useLoadingStore } from "@/stores/loadingStore";
 export default defineComponent({
     components: {
-        GridGallery
+        SampleGallery
     },
     props: {
         id: Number,

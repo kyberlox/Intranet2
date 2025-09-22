@@ -1,6 +1,6 @@
 <template>
   <div class="admin-page__wrapper">
-    <AdminSidebar />
+    <AdminSidebar :needDefaultNav="true" />
     <div class="admin-block-inner"
          v-if="items">
       <div class="admin-block-inner__content">

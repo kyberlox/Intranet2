@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, type PropType, ref } from 'vue';
-import type { IAdminListItem } from '@/interfaces/entities/IAdmin';
+import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
     props: {

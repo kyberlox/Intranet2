@@ -3,7 +3,7 @@
     <div class="admin-element__reportage-group__wrapper mt20">
         <transition-group tag="div"
                           name="slide-down"
-                          class="reportage-list">
+                          class="admin-element__reportage-list">
             <AdminEditInput v-for="(reportage, index) in formattedReportages"
                             :key="index + 'reportage'"
                             :item="reportage"
@@ -25,7 +25,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref, type PropType } from 'vue';
 import AdminEditInput from './AdminEditInput.vue';
-import type { IReportage } from '@/interfaces/entities/IAdmin';
+import type { IReportage } from '@/interfaces/IEntities';
 import PlusIcon from '@/assets/icons/admin/PlusIcon.svg?component'
 import MinusIcon from '@/assets/icons/admin/MinusIcon.svg?component'
 export default defineComponent({

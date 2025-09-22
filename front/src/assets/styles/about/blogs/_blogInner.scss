@@ -1,13 +1,14 @@
 @use "@/assets/styles/mixins/mixins.scss" as *;
 
-.blog__articles-wrapper {
-    @include sm {
-        flex-direction: column;
+.blog{
+    &__articles-wrapper{
+        @include sm {
+            flex-direction: column;
+        }
     }
-}
-
-.avatar__wrapper {
-    @include sm {
-        width: 100%;
+    &__avatar__wrapper{
+        @include sm {
+            width: 100%;
+        }
     }
 }

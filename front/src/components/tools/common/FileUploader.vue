@@ -69,10 +69,10 @@
 import { defineComponent, ref, type PropType } from 'vue';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
 import DocIcon from '@/assets/icons/posts/DocIcon.svg?component';
-import type { IBXFileType } from '@/interfaces/IEntities';
-import type { IFileToUpload } from '@/interfaces/entities/IAdmin';
 import { useFileUtil } from '@/composables/useFile';
 import Api from '@/utils/Api';
+
+import type { IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'FileUploader',

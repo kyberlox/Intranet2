@@ -13,6 +13,7 @@ services:
       - NGINX_HOST=${DOMAIN}
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
+      - ./app_logs/nginx:/var/log/nginx  # Логи nginx
     networks:
       - app-network
   
@@ -26,6 +27,7 @@ services:
     volumes:
       - ./pSQL/data:/var/lib/postgresql/data
       #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./app_logs/postgres:/var/log/postgresql  # Логи PostgreSQL
     ports:
       - "5432:5432"
     networks:
@@ -36,6 +38,7 @@ services:
     container_name: mongodb
     volumes:
       - ./mongodb/data:/data/db
+      - ./app_logs/mongodb:/var/log/mongodb  # Логи MongoDB
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${user}
       - MONGO_INITDB_ROOT_PASSWORD=${pswd}
@@ -58,6 +61,7 @@ services:
     volumes:
       - ./elasticsearch/data:/usr/share/elasticsearch/data
       # Убираем монтирование elasticsearch.yml - используем переменные окружения
+      - ./app_logs/elasticsearch:/usr/share/elasticsearch/logs  # Добавляем логи Elasticsearch
     ports:
       - "127.0.0.1:9200:9200"  # Только localhost!
       - "127.0.0.1:9300:9300"  # Только localhost!
@@ -71,6 +75,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis_data:/data
+      - ./app_logs/redis:/var/log/redis  # Добавляем, если redis настроен писать логи в файл
     environment:
       - REDIS_PASSWORD=${pswd}  # пароль из .env
     command: [ "redis-server", "--requirepass", "${pswd}" ]
@@ -83,6 +88,7 @@ services:
     container_name: fastapi
     volumes:
       - ./code:/data/app
+      - ./app_logs/fastapi:/data/app/logs  # Добавляем том для логов FastAPI
     env_file:
       - .env
     ports:
@@ -96,12 +102,15 @@ services:
   frontend:
     container_name: vue
     build: ./front
-    #volumes:
+    volumes:
       #- ./front/:/app/
+      - ./app_logs/frontend:/app/logs  # Логи фронтенда
     ports:
       - 5173:5173
     networks:
       - app-network
+
+
 
 networks:
   app-network:

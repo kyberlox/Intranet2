@@ -197,24 +197,24 @@ class StructureSearchModel:
         dep_data = {}  # словарь для данных
         usr_sql_data = self.UserModel.all()
 
-        N_ = []
+        # N_ = []
 
-        path_depart = ""
-        #иду по слоям
-        for i in range(8):
-            #первый слой - верхушка
-            if i == 0:
-                N_.insert(i, [self.DepartmentModel.find_deps_by_father_id(None)[0]])
-            else:
-                #собираю слой
-                layer
-                for father in N_[i-1]:
-                    father_id = father.id
-                    N_.insert(i, self.DepartmentModel.find_deps_by_father_id(father_id) )
-                    for father_obj in N_[i]:
-                        path_depart += f"{}"
-                        data_action = get_child_info_by_father_obj(father_obj, path_depart)
-                        dep_data_ES.append(data_action)
+        # path_depart = ""
+        # #иду по слоям
+        # for i in range(8):
+        #     #первый слой - верхушка
+        #     if i == 0:
+        #         N_.insert(i, [self.DepartmentModel.find_deps_by_father_id(None)[0]])
+        #     else:
+        #         #собираю слой
+        #         layer
+        #         for father in N_[i-1]:
+        #             father_id = father.id
+        #             N_.insert(i, self.DepartmentModel.find_deps_by_father_id(father_id) )
+        #             for father_obj in N_[i]:
+        #                 path_depart += f"{}"
+        #                 data_action = get_child_info_by_father_obj(father_obj, path_depart)
+        #                 dep_data_ES.append(data_action)
         
         
         parents=[]  #родители - по ним собираем

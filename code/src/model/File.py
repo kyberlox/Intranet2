@@ -1,6 +1,5 @@
 from ..base.mongodb import FileModel
 from ..base.B24 import B24
-from ..services.LogsMaker import LogsMaker
 
 from fastapi import FastAPI, UploadFile
 from fastapi import File as webFile
@@ -244,7 +243,7 @@ class File:
             file_path = os.path.join(STORAGE_PATH, unique_name)
 
             #скачать файл по ссылке
-            print(url)
+            #print(url)
             response = requests.get(url)
             with open(file_path, 'wb') as file:
                 file.write(response.content)
@@ -417,7 +416,7 @@ class File:
                 "b24_url" : b24_url,
                 "is_archive" : False
             }
-            print(file_data, uuid)
+            # print(file_data, uuid)
 
             new_id = FileModel().add_user_photo(file_data)
 
@@ -425,7 +424,7 @@ class File:
 
             return file_data
         except:
-            print(uuid)
+            # print(uuid)
     
     def delete_user_img(self):
         file_data = FileModel(id = self.id).find_user_photo_by_id()

@@ -1,5 +1,6 @@
 #Файл нициализации пакета
-#from .App import Base
+from .App import Base
+from .App import engine
 from .User import User 
 from .Department import Department
 from .UsDep import UsDep
@@ -23,7 +24,8 @@ from .Section import Section
 
 ## Control imports
 __all__ = [
-    #'Base',
+    'Base',
+    'engine',
     'User',
     'Department',
     'UsDep',

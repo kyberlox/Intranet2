@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 
 from datetime import datetime
 
-from .App import NewUser
-from .App import db, engine, DOMAIN
+
+
+
 from .DepartmentModel import DepartmentModel
 
 import json
@@ -14,7 +15,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 #!!!!!!!!!!!!!!!
-from ....model.File import File
+#from src.model.File import File
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Пользователей")
 #!!!!!!!!!!!!!!!
@@ -25,15 +26,17 @@ class UserModel:
     def __init__(self, Id=None, uuid=None):
         self.id = Id
         self.uuid = uuid
-        
         from ..models.User import User
         self.user = User#.__table__
         #self.inspector = inspect(engine)
+
+        from .App import db
         self.db = db
     
     
 
     def upsert_user(self, user_data : dict):
+        from .App import engine
         """
         Добавляет или обновляет запись в таблице.
         user_data: словарь с данными пользователя
@@ -56,7 +59,7 @@ class UserModel:
             #usr = db.query(self.user).get(user_data['id'])
             #usr = db.query(User).filter(self.user.id == user_data['id']).first()
 
-            q = self.db.query(User).filter(User.id == user_data["id"])
+            q = self.db.query(self.user).filter(self.user.id == user_data["id"])
             usr = self.db.query(q.exists()).scalar()  # returns True or False
 
             DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
@@ -64,7 +67,7 @@ class UserModel:
             #если есть - проверить необходимость обновления
             if usr:
                 #user = db.query(self.user).filter(User.id == user_data["id"]).first()
-                user = self.db.query(User).get(user_data['id'])
+                user = self.db.query(self.user).get(user_data['id'])
 
                 #проверить есть ли изменения
                 need_update = False
@@ -103,11 +106,12 @@ class UserModel:
                 # если есть изменения - внести
                 if need_update:
                     for cls in new_params:
-                        sql = text(f"UPDATE {User.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
+                        sql = text(f"UPDATE {self.user.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
                         with engine.connect() as connection:
                             connection.execute(sql, user_data)
                             connection.commit()
-
+                    
+                    LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
 
 
                 # проверить есть ли изменения
@@ -124,10 +128,12 @@ class UserModel:
                 # если есть изменения - внести
                 if need_update_indirect_data:
                     indirect_jsnb = json.dumps(user.indirect_data)
-                    sql = text(f"UPDATE {User.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
+                    sql = text(f"UPDATE {self.user.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
                     with engine.connect() as connection:
                         connection.execute(sql, user_data)
                         connection.commit()
+                
+                LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
 
 
 
@@ -164,12 +170,15 @@ class UserModel:
                 indirect_jsnb = json.dumps(meta)
                 values += f", \'{indirect_jsnb}\'"
                 # Запрос
-                sql = text(f"INSERT INTO {User.__tablename__} ({columns}) VALUES ({values})")
+                sql = text(f"INSERT INTO {self.user.__tablename__} ({columns}) VALUES ({values})")
 
                 # Выполняем SQL-запрос
                 with engine.connect() as connection:
                     connection.execute(sql, user_data)
                     connection.commit()
+                user_id = user_data["id"]
+                LogsMaker().info_message(f"Создан пользователь с id = {user_id}")
+
             # тут создать представление
             view = text(f"CREATE VIEW NewUsers AS\n"
             f"SELECT users.id,\n"
@@ -184,22 +193,88 @@ class UserModel:
             f"WHERE users.active = true AND to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) >= (date_trunc('week'::text, CURRENT_DATE::timestamp with time zone) - '14 days'::interval)\n"
             f"ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));"
             )
-            try:
-                with engine.connect() as connection:
-                    connection.execute(view)
-                    connection.commit()
-            except:
-                pass
-        except SQLAlchemyError as e:
-            db.rollback()
-            #print(f"An error occurred: {e}")
-            #LogsMaker().error_message(e)
 
-    def find_by_id(self):
+            with engine.connect() as connection:
+                connection.execute(view)
+                connection.commit()
+            
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            #print(f"An error occurred: {e}")
+            LogsMaker().error_message(str(e))
+        finally:
+            self.db.close()
+
+    def find_by_id_all(self):
+        from src.model.File import File
+        from .App import DOMAIN
         """
         Ищет пользователя по id
         """
-        user = self.db.query(self.user).get(self.id)
+        user = self.db.query(self.user).filter(self.user.id == self.id).first()
+        result = dict()
+        DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
+        
+        if user is not None:
+            for key in DB_columns:
+                result[key] = user.__dict__[key]
+
+            indirect_data = user.indirect_data
+            list_departs = []
+            list_departs_id = []
+            if len(indirect_data['uf_department']) != 0:
+                for dep in indirect_data['uf_department']:
+                    dedep = DepartmentModel(dep).find_dep_by_id()
+                    if type(dedep) == type(dict()):
+                        if 'name' in dedep:
+                            list_departs.append(dedep['name'])
+                            list_departs_id.append(dedep['id'])
+                        else:
+                            print(dedep)
+                    else: #если объект
+                        for dp in dedep:
+                            list_departs.append(dp.__dict__['name'])
+                            list_departs_id.append(dp.__dict__['id'])
+
+            if "uf_usr_department_main" in indirect_data:
+                #print(indirect_data["uf_usr_department_main"])
+                dedep = DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                #print(dedep)
+                indirect_data["uf_usr_department_main"] = dedep[0].name
+
+            indirect_data['uf_department'] = list_departs
+            indirect_data['uf_department_id'] = list_departs_id
+            result['indirect_data'] = indirect_data
+            
+            #информация о фото
+            #вывод ID фотографии пользователя
+            result['photo_file_id'] = user.__dict__['photo_file_id']
+            if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
+                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
+
+                #вывод URL фотографии пользователя
+                url = photo_inf['URL']
+                result['photo_file_url'] = f"{DOMAIN}{url}"
+                
+                result['photo_file_b24_url'] = photo_inf['b24_url']
+            else:
+                result['photo_file_id'] = None
+                result['photo_file_url'] = None
+                result['photo_file_b24_url'] = None
+            self.db.close()    
+            return result
+        else:
+            self.db.close() 
+            LogsMaker().warning_message(f"Invalid user id = {self.id}")
+            return None
+
+    def find_by_id(self):
+        from src.model.File import File
+        from .App import DOMAIN
+        """
+        Ищет пользователя по id
+        """
+        user = self.db.query(self.user).filter(self.user.id == self.id, self.user.active == True).first()
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
         
@@ -254,7 +329,7 @@ class UserModel:
 
         else:
             self.db.close() 
-            LogsMaker().warning_message("Invalid user id")
+            LogsMaker().warning_message(f"Invalid user id = {self.id}")
             '''
             user_not_found = {
                 "id": 9999999,
@@ -342,9 +417,11 @@ class UserModel:
         return result
     
     def set_user_photo(self, file_id):
+        from .App import engine
+
         #update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.id == self.id)
         with Session(engine) as session:
-            stmt = update(User).where(User.id == self.id).values(photo_file_id=str(file_id))
+            stmt = update(self.user).where(self.user.id == self.id).values(photo_file_id=str(file_id))
             result = session.execute(stmt)
             session.commit()
             session.close()
@@ -352,6 +429,8 @@ class UserModel:
             return result
     
     def find_all_celebrants(self, date):
+        from src.model.File import File
+        from .App import DOMAIN
         """
         Выводит список пользователей, у кого день рождение в этот день (date)
         Важно! Не выводит пользователей, у кого департамент Аксиома и у кого нет фото
@@ -397,6 +476,10 @@ class UserModel:
         return normal_list
 
     def new_workers(self):
+        from src.model.File import File
+        from .App import DOMAIN
+        from .App import NewUser
+
         # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
         result = self.db.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
         # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id

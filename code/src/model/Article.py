@@ -852,11 +852,11 @@ class Article:
                         for f_id in files_to_add:
                             
                             try:
-                                LogsMaker.info_message(f"🖼 Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
+                                LogsMaker.info_message(f" Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, True, inf_id)
                                 files_data.append(file_data)
                             except:
-                                LogsMaker.info_message(f"🖼 Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
+                                LogsMaker.info_message(f" Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
                                 files_data.append(file_data) 
                 
@@ -889,12 +889,12 @@ class Article:
                     
                     if files_to_add != []:
                         for f_id in files_to_add:
-                            LogsMaker.info_message(f"🖼 Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            LogsMaker.info_message(f" Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
                             try:
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
                                 files_data.append(file_data)
                             except:
-                                LogsMaker.warning_message(f"🖼 Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
+                                LogsMaker.warning_message(f" Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, not need_all_method, inf_id)
                                 files_data.append(file_data)
                     

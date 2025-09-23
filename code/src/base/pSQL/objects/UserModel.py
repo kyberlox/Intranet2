@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from datetime import datetime
 
-from ..models.User import User
 from .App import NewUser
 from .App import db, engine, DOMAIN
 from .DepartmentModel import DepartmentModel
@@ -26,6 +25,8 @@ class UserModel:
     def __init__(self, Id=None, uuid=None):
         self.id = Id
         self.uuid = uuid
+        
+        from ..models.User import User
         self.user = User#.__table__
         #self.inspector = inspect(engine)
         self.db = db

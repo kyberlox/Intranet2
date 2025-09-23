@@ -423,8 +423,8 @@ class File:
             file_data["id"] = new_id
 
             return file_data
-        except:
-            # print(uuid)
+        except Exception as e:
+                    return LogsMaker().error_message(e)
     
     def delete_user_img(self):
         file_data = FileModel(id = self.id).find_user_photo_by_id()

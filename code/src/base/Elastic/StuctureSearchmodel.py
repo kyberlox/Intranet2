@@ -3,22 +3,32 @@ from .App import DOMAIN
 
 
 
-def get_info_by_obj(obj):#, path_depart):
-    path_depart += f".{obj.id}"
+
+def get_info_by_obj(obj, parent_path_depart):
+    from ..pSQL.objects.UsDepModel import UsDepModel
+    from ..pSQL.objects.UserModel import UserModel
+
+    if obj.id == 53:
+        path_depart = "53"
+    else:
+        path_depart = parent_path_depart + f".{obj.id}"
+
+    dep_data = dict()
     dep_data['id'] = obj.id
     dep_data['name'] = obj.name
     dep_data['user_head_id'] = obj.user_head_id
     dep_data['father_id'] = obj.father_id
-    #dep_data['path_depart'] = path_depart
+    dep_data['path_depart'] = path_depart
 
     users_list = []
-
-    self.UsDepModel.id =obj.id
-    users = self.UsDepModel.find_user_by_dep_id()  # берём id всех пользователей департамента
+    
+    usdep_modelo = UsDepModel()
+    usdep_modelo.id =obj.id
+    users = usdep_modelo.find_user_by_dep_id()  # берём id всех пользователей департамента
     if isinstance(users, list):
-        for usr in usr_sql_data:
-            user = usr.__dict__
-            if user['id'] in users:
+        for usr_id in users:
+            user = UserModel(Id=usr_id).find_by_id()
+            if user:
                 user_data = {}
                 if user['active'] is True:
                     user_data['id'] = user['id']
@@ -41,9 +51,11 @@ def get_info_by_obj(obj):#, path_depart):
                         user_data['image'] = None
 
                     users_list.append(user_data)
+            else:
+                continue
     dep_data['users'] = users_list
     data_action = {
-        "_index": self.index,
+        "_index": 'departs',
         "_op_type": "index",
         "_id": obj.id,
         "_source": dep_data
@@ -53,16 +65,14 @@ def get_info_by_obj(obj):#, path_depart):
 
 class StructureSearchModel:
     def __init__(self):
-        from ..pSQL.objects.UserModel import UserModel
-        self.UserModel = UserModel()
-
         from ..pSQL.objects.DepartmentModel import DepartmentModel
         self.DepartmentModel = DepartmentModel()
 
-        from ..pSQL.objects.UsDepModel import UsDepModel
-        self.UsDepModel = UsDepModel()
+        # from ..pSQL.objects.UsDepModel import UsDepModel
+        # self.UsDepModel = UsDepModel()
 
         self.index = 'departs'
+
 
     def create_index(self):
         request_body = {
@@ -195,55 +205,48 @@ class StructureSearchModel:
         # list_for_deps = []
         dep_data_ES = [] # список для bulk
         dep_data = {}  # словарь для данных
-        usr_sql_data = self.UserModel.all()
 
-        # N_ = []
-
-        # path_depart = ""
-        # #иду по слоям
-        # for i in range(8):
-        #     #первый слой - верхушка
-        #     if i == 0:
-        #         N_.insert(i, [self.DepartmentModel.find_deps_by_father_id(None)[0]])
-        #     else:
-        #         #собираю слой
-        #         layer
-        #         for father in N_[i-1]:
-        #             father_id = father.id
-        #             N_.insert(i, self.DepartmentModel.find_deps_by_father_id(father_id) )
-        #             for father_obj in N_[i]:
-        #                 path_depart += f"{}"
-        #                 data_action = get_child_info_by_father_obj(father_obj, path_depart)
-        #                 dep_data_ES.append(data_action)
-        
-        
         parents=[]  #родители - по ним собираем
         children=[] #дети - их собираем
+        parent_path_depart = dict()
+        roots = dict()
         #иду по слоям
         for i in range(8):
             #первый слой - верхушка
             if i == 0:
-                children.insert(i, [self.DepartmentModel.find_deps_by_father_id(None)[0]])
-                #path_depart = ""
+                children.insert(i, self.DepartmentModel.find_deps_by_father_id(None)[0])
+                # parent_path_depart = "53"
+                parent_path_depart = {
+                    53 : "."
+                }
+                roots = {
+                    53 : 53
+                }
             else:
                 #дети становятся родителями
                 parents = children
                 children = []
+                
                 #для каждого родителя
                 for father in parents:
                     #получаем его детей
                     for child in self.DepartmentModel.find_deps_by_father_id(father.id):
                         #и всех детей кидаем в один слой
                         children.append(child)
-                
+                        roots[child.id] = father.id
+                        
+
+            
             #заполняю вывод
             for obj in children:
-                layer = get_info_by_obj(obj)#, path_depart)
+                layer = get_info_by_obj(obj, parent_path_depart[roots[obj.id]])
+                parent_path_depart[obj.id] = layer["_source"]['path_depart']
                 dep_data_ES.append(layer)
 
 
         helpers.bulk(elastic_client, dep_data_ES)
         return {"status": True}
+
 
 
 

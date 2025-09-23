@@ -14,3 +14,5 @@ rm -rf ./mongodb/data/*
 rm -rf ./pSQL/data/*
 
 rm -rf ./elasticsearch/data*
+
+docker-compose up -d

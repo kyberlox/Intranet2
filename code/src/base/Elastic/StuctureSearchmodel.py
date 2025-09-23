@@ -7,6 +7,8 @@ def get_info_by_obj(obj, parent_path_depart):
     from ..pSQL.objects.UsDepModel import UsDepModel
     from ..pSQL.objects.UserModel import UserModel
 
+    from src.model.File import File
+
     if obj.id == 53:
         path_depart = "53"
     else:

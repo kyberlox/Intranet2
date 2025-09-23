@@ -33,6 +33,36 @@ class UserModel:
         from .App import db
         self.db = db
     
+    def create_new_user_view(self ):
+        from .App import engine
+        try:
+            # тут создать представление
+            view = text(f"CREATE VIEW NewUsers AS\n"
+            f"SELECT users.id,\n"
+                f"users.active,\n"
+                f"users.last_name,\n"
+                f"users.name,\n"
+                f"users.second_name,\n"
+                f"to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) AS dat,\n"
+                f"users.indirect_data,\n"
+                f"users.photo_file_id\n"
+            f"FROM users\n"
+            f"WHERE users.active = true AND to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) >= (date_trunc('week'::text, CURRENT_DATE::timestamp with time zone) - '14 days'::interval)\n"
+            f"ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));"
+            )
+
+            with engine.connect() as connection:
+                connection.execute(view)
+                connection.commit()
+            
+            LogsMaker().info_message("Создано представление для получения новых сотрудников")
+
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            LogsMaker().error_message(str(e))
+
+
+
     
 
     def upsert_user(self, user_data : dict):
@@ -179,24 +209,7 @@ class UserModel:
                 user_id = user_data["id"]
                 LogsMaker().info_message(f"Создан пользователь с id = {user_id}")
 
-            # тут создать представление
-            view = text(f"CREATE VIEW NewUsers AS\n"
-            f"SELECT users.id,\n"
-                f"users.active,\n"
-                f"users.last_name,\n"
-                f"users.name,\n"
-                f"users.second_name,\n"
-                f"to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) AS dat,\n"
-                f"users.indirect_data,\n"
-                f"users.photo_file_id\n"
-            f"FROM users\n"
-            f"WHERE users.active = true AND to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text) >= (date_trunc('week'::text, CURRENT_DATE::timestamp with time zone) - '14 days'::interval)\n"
-            f"ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));"
-            )
-
-            with engine.connect() as connection:
-                connection.execute(view)
-                connection.commit()
+            
             
         except SQLAlchemyError as e:
             self.db.rollback()

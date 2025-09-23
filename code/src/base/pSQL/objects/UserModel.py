@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from datetime import datetime
 
-from ..models.User import User
 from .App import NewUser
 from .App import db, engine, DOMAIN
 from .DepartmentModel import DepartmentModel
@@ -15,7 +14,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 #!!!!!!!!!!!!!!!
-from ....model.File import File
+from src.model.File import File
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Пользователей")
 #!!!!!!!!!!!!!!!
@@ -26,6 +25,8 @@ class UserModel:
     def __init__(self, Id=None, uuid=None):
         self.id = Id
         self.uuid = uuid
+
+        from ..models.User import User
         self.user = User#.__table__
         #self.inspector = inspect(engine)
         self.db = db
@@ -53,17 +54,17 @@ class UserModel:
         #проверить по id есть ли такой пользователь
         try:
             #usr = db.query(self.user).get(user_data['id'])
-            #usr = db.query(User).filter(self.user.id == user_data['id']).first()
+            #usr = db.query(self.user).filter(self.user.id == user_data['id']).first()
 
-            q = self.db.query(User).filter(User.id == user_data["id"])
+            q = self.db.query(self.user).filter(self.user.id == user_data["id"])
             usr = self.db.query(q.exists()).scalar()  # returns True or False
 
             DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
 
             #если есть - проверить необходимость обновления
             if usr:
-                #user = db.query(self.user).filter(User.id == user_data["id"]).first()
-                user = self.db.query(User).get(user_data['id'])
+                #user = db.query(self.user).filter(self.user.id == user_data["id"]).first()
+                user = self.db.query(self.user).get(user_data['id'])
 
                 #проверить есть ли изменения
                 need_update = False
@@ -102,7 +103,7 @@ class UserModel:
                 # если есть изменения - внести
                 if need_update:
                     for cls in new_params:
-                        sql = text(f"UPDATE {User.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
+                        sql = text(f"UPDATE {self.user.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
                         with engine.connect() as connection:
                             connection.execute(sql, user_data)
                             connection.commit()
@@ -123,7 +124,7 @@ class UserModel:
                 # если есть изменения - внести
                 if need_update_indirect_data:
                     indirect_jsnb = json.dumps(user.indirect_data)
-                    sql = text(f"UPDATE {User.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
+                    sql = text(f"UPDATE {self.user.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
                     with engine.connect() as connection:
                         connection.execute(sql, user_data)
                         connection.commit()
@@ -163,14 +164,14 @@ class UserModel:
                 indirect_jsnb = json.dumps(meta)
                 values += f", \'{indirect_jsnb}\'"
                 # Запрос
-                sql = text(f"INSERT INTO {User.__tablename__} ({columns}) VALUES ({values})")
+                sql = text(f"INSERT INTO {self.user.__tablename__} ({columns}) VALUES ({values})")
 
                 # Выполняем SQL-запрос
                 with engine.connect() as connection:
                     connection.execute(sql, user_data)
                     connection.commit()
             # тут создать представление
-            view = text(f"CREATE VIEW NewUsers AS\n"
+            view = text(f"CREATE VIEW Newself.users AS\n"
             f"SELECT users.id,\n"
                 f"users.active,\n"
                 f"users.last_name,\n"
@@ -341,9 +342,9 @@ class UserModel:
         return result
     
     def set_user_photo(self, file_id):
-        #update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.id == self.id)
+        #update(self.user).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(self.user.id == self.id)
         with Session(engine) as session:
-            stmt = update(User).where(User.id == self.id).values(photo_file_id=str(file_id))
+            stmt = update(self.user).where(self.user.id == self.id).values(photo_file_id=str(file_id))
             result = session.execute(stmt)
             session.commit()
             session.close()

@@ -2,7 +2,7 @@
 from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date
 from sqlalchemy.dialects.postgresql import JSONB
 
-import .models
+import ..models
 #from models.App import Base
 #from models.App import engine
 from sqlalchemy.orm import sessionmaker

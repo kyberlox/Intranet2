@@ -109,7 +109,7 @@ class User:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
                 self.UserModel.id = uuid
-                psql_user = self.UserModel.find_by_id() 
+                psql_user = self.UserModel.find_by_id_all() 
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #проверим url первоисточника текущей аватарки

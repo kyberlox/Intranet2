@@ -13,10 +13,10 @@ from .base.pSQL.objects import UservisionsRootModel
 
 from .base.pSQL.objects import TagsModel
 
-from .base.pSQL.objects import ActivitiesModel
-from .base.pSQL.objects import ActiveUsersModel
-from .base.pSQL.objects import ModersModel
-from .base.pSQL.objects import AdminModel
+from .pSQL.objects.ActivitiesModel import ActivitiesModel
+from .pSQL.objects.ActiveUsersModel import ActiveUsersModel
+from .pSQL.objects.PeerUserModel import PeerUserModel
+from .pSQL.objects.RootsModel import RootsModel
 
 from .base.pSQL.objects import MerchStoreModel
 

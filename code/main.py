@@ -8,7 +8,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import Request, HTTPException, status
 
 
-from src.services.VCard import dowload_file
 
 # from bson import Binary
 from src.model.User import User, users_router

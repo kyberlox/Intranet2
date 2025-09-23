@@ -1,5 +1,5 @@
 #Файл нициализации пакета
-from .App import Base
+#from .App import Base
 from .User import User 
 from .Department import Department
 from .UsDep import UsDep
@@ -22,18 +22,19 @@ from .Fieldvision import Fieldvision
 from .Section import Section
 
 ## Control imports
-__all__ = ['Base',
-           'User',
-           'Department',
-           'UsDep',
-           'Article',
-           'Likes',
-           'Views',
-           'Roots',
-           'Fieldvision',
-           'PeerHistory',
-           'Tags',
-           'Activities',
-           'ActiveUsers',
-           'Section'
-           ]
+__all__ = [
+    #'Base',
+    'User',
+    'Department',
+    'UsDep',
+    'Article',
+    'Likes',
+    'Views',
+    'Roots',
+    'Fieldvision',
+    'PeerHistory',
+    'Tags',
+    'Activities',
+    'ActiveUsers',
+    'Section'
+]

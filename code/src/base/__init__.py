@@ -21,16 +21,9 @@ from .pSQL.objects.RootsModel import RootsModel
 
 from .pSQL.objects.MerchStoreModel import MerchStoreModel
 
-# from .SectionModel import SectionModel
+import .pSQL
 
 
-
-
-
-
-
-
-from .pSQL import *
 
 from .RedisStorage import RedisStorage
 from .B24 import B24, b24_router
@@ -41,10 +34,13 @@ from .Elastic.UserSearchModel import UserSearchModel
 from .Elastic.StuctureSearchmodel import StructureSearchModel
 from .Elastic.ArticleSearchModel import ArticleSearchModel
 
+import .Elastic
+
 
 
 __all__ = [
     'pSQL',
+    'Elastic',
     'UserModel',
     'DepartmentModel',
     'UsDepModel',

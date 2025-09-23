@@ -21,7 +21,7 @@ from .pSQL.objects.RootsModel import RootsModel
 
 from .pSQL.objects.MerchStoreModel import MerchStoreModel
 
-import .pSQL
+import pSQL
 
 
 
@@ -34,7 +34,7 @@ from .Elastic.UserSearchModel import UserSearchModel
 from .Elastic.StuctureSearchmodel import StructureSearchModel
 from .Elastic.ArticleSearchModel import ArticleSearchModel
 
-import .Elastic
+import Elastic
 
 
 

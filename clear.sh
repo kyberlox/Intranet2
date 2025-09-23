@@ -15,6 +15,6 @@ rm -rf ./pSQL/data/*
 
 rm -rf ./elasticsearch/data*
 
-chmod -r 777 ./
-
 docker-compose up -d
+
+chmod -r 777 ./

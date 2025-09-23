@@ -49,9 +49,9 @@ class User:
 
             '''
             self.UserModel.upsert_user(usr_data)
-            self.UsDepModel.create_new_user_view()
             
         status = self.set_users_photo()
+        self.UsDepModel.create_new_user_view()
         #дампим данные в эластик
         self.dump_users_data_es()
         

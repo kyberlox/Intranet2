@@ -889,7 +889,8 @@ class Article:
                     
                     if files_to_add != []:
                         for f_id in files_to_add:
-                            LogsMaker.info_message(f" Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            msg = f" Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}"
+                            LogsMaker.info_message(msg)
                             try:
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
                                 files_data.append(file_data)

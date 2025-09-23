@@ -12,4 +12,3 @@ class Activities(Base):
     need_valid = Column(Boolean, nullable=True)
 
     activeusers = relationship("ActiveUsers", back_populates="activities")
-    moders = relationship("Moders", back_populates="activities")

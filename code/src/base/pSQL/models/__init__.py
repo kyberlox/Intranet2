@@ -1,5 +1,6 @@
 #Файл нициализации пакета
-from .User import User
+from .App import Base
+from .User import User 
 from .Department import Department
 from .UsDep import UsDep
 
@@ -11,26 +12,28 @@ from .Tags import Tags
 
 from .Activities import Activities
 from .ActiveUsers import ActiveUsers
-from .Moders import Moders
+from .Roots import Roots
+from .PeerHistory import PeerHistory
 
-from .UservisionsRoot import UservisionsRoot
+# from .Roots import Roots
+# from .PeerHistory import PeerHistory
 from .Fieldvision import Fieldvision
 
 from .Section import Section
 
 ## Control imports
-__all__ = ['App',
+__all__ = ['Base',
            'User',
            'Department',
            'UsDep',
            'Article',
            'Likes',
            'Views',
-           'UservisionsRoot',
+           'Roots',
            'Fieldvision',
+           'PeerHistory',
            'Tags',
            'Activities',
            'ActiveUsers',
-           'Moders',
            'Section'
            ]

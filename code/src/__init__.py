@@ -20,6 +20,7 @@ from .base.pSQL.objects import AdminModel
 
 from .base.pSQL.objects import MerchStoreModel
 
+
 from .base.RedisStorage import RedisStorage
 from .base.B24 import B24, b24_router
 from .base.mongodb import FileModel
@@ -46,13 +47,17 @@ from .model.File import File, file_router
 
 
 
-from .services.AIchat import Dialog, History, GPT
+
+#from .services.AIchat import Dialog, History, GPT
+
 from .services.Auth import AuthService, auth_router
 from .services.Comporession import compress_router
 from .services.Editor import Editor, editor_router
 from .services.FieldsVisions import Visions, fieldsvisions_router
 from .services.Idea import Idea, idea_router
+
 from .services.LogsMaker import LogsMaker
+
 from .services.MerchStore import MerchStore, store_router
 from .services.Peer import Peer, peer_router
 from .services.SendMail import SendEmail
@@ -73,8 +78,9 @@ __all__ = [
     'TagsModel',
     'ActivitiesModel',
     'ActiveUsersModel',
-    'ModersModel',
-    'AdminModel',
+    'PeerUserModel',
+    'RootsModel',
+
     'MerchStoreModel',
     'RedisStorage'
     'B24',
@@ -99,9 +105,9 @@ __all__ = [
     'section_router'
     'File',
     'file_router',
-    'Dialog',
-    'History',
-    'GPT',
+    # 'Dialog',
+    # 'History',
+    # 'GPT',
     'AuthService',
     'auth_router',
     'compress_router',

@@ -2,7 +2,6 @@ from .App import elastic_client, DOMAIN
 
 from fastapi import HTTPException
 
-from src.model.File import File
 
 class UserSearchModel:
     def __init__(self):
@@ -211,7 +210,6 @@ class UserSearchModel:
                 ]
             }
         }
-        print("Я тут!")
         index_name = self.index
         try:
             if elastic_client.indices.exists(index=index_name):
@@ -228,6 +226,7 @@ class UserSearchModel:
             )
 
     def dump(self):
+        from src.model.File import File
         try:
             self.delete_index()
         except:

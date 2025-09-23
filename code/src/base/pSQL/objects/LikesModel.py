@@ -5,9 +5,6 @@ from typing import List, Optional, Dict
 
 from datetime import datetime, timedelta
 
-from ..models.Likes import Likes
-from .App import db
-from .ViewsModel import ViewsModel
 
 
 
@@ -18,13 +15,19 @@ LogsMaker().ready_status_message("Успешная инициализация т
 
 class LikesModel:
     def __init__(self, user_id: Optional[int] = None, art_id: Optional[int] = None, user_uuid: Optional[str] = None):
-        self.session = db
+        
         self.user_id = user_id
         self.art_id = art_id
         self.user_uuid = user_uuid
+
+        from .App import db
+        self.session = db
+
+        from ..models.Likes import Likes
         self.Likes = Likes
 
     def add_or_remove_like(self ) -> bool:
+        from .ViewsModel import ViewsModel
         """
         Ставит лайк статье если пользователь его еще не ставил
         Убрает лайк со статьи
@@ -82,6 +85,7 @@ class LikesModel:
 
 
     def has_liked(self ) -> bool:
+        from .ViewsModel import ViewsModel
         """
         Проверяет, поставил ли пользователь лайк статье.
         """

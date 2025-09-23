@@ -13,7 +13,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
-from ..model import User
+from ..model.User import User
 
 import json
 

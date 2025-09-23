@@ -1,5 +1,3 @@
-from ..base.pSQL.objects.LikesModel import LikesModel
-
 from ..base.B24 import B24
 from ..model.File import File
 from ..services.LogsMaker import LogsMaker
@@ -61,6 +59,10 @@ class User:
     def search_by_id(self):
         self.UserModel.id = self.id
         return self.UserModel.find_by_id()
+    
+    def search_by_id_all(self):
+        self.UserModel.id = self.id
+        return self.UserModel.find_by_id_all()
 
     def get_dep_usrs(self):
         users_data = sorted(B24().getUsers(), key=lambda d: int(d['ID']))
@@ -153,6 +155,7 @@ class User:
         return result
     
     def has_liked(self, art_id):
+        from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id, art_id=art_id).has_liked()
 
     # день рождения
@@ -171,6 +174,7 @@ class User:
 
     # для статистики
     def get_user_likes(self):
+        from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id).get_user_likes()
 
 '''

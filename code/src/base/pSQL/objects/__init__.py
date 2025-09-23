@@ -1,3 +1,4 @@
+from .App import db
 from .UserModel import UserModel
 from .DepartmentModel import DepartmentModel
 from .UsDepModel import UsDepModel
@@ -15,16 +16,18 @@ from .TagsModel import TagsModel
 
 from .ActivitiesModel import ActivitiesModel
 from .ActiveUsersModel import ActiveUsersModel
-from .ModersModel import ModersModel
-from .AdminModel import AdminModel
+from .PeerUserModel import PeerUserModel
+from .RootsModel import RootsModel
 
 from .MerchStoreModel import MerchStoreModel
 
 from .SectionModel import SectionModel
 
 
+
 ## Control imports
 __all__ = [
+    'db',
     'UserModel',
     'DepartmentModel',
     'UsDepModel',
@@ -36,8 +39,8 @@ __all__ = [
     'TagsModel',
     'ActivitiesModel',
     'ActiveUsersModel',
-    'ModersModel',
-    'AdminModel',
+    'PeerUserModel',
+    'RootsModel',
     'MerchStoreModel',
     'SectionModel'
     ]

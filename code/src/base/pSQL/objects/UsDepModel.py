@@ -1,6 +1,6 @@
 from sqlalchemy.sql.expression import select
 
-from ..models import UsDep
+from ..models.UsDep import UsDep
 from .App import db
 
 

@@ -1,18 +1,16 @@
-from ..models.Fieldvision import Fieldvision
-from .App import db
-
-
-
 from src.services.LogsMaker import LogsMaker
-LogsMaker().ready_status_message("Успешная инициализация таблицы ...")
+LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 
 
 
 class FieldvisionModel:
     def __init__(self, vision_name: str = '', id: int = 0):
+        from .App import db
         self.session = db
         self.vision_name = vision_name
         self.id = id
+
+        from ..models.Fieldvision import Fieldvision
         self.Fieldvision = Fieldvision
 
     def add_field_vision(self):

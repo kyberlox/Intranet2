@@ -1,10 +1,7 @@
 from .App import elastic_client, helpers, json, sections
 from .App import DOMAIN
 
-from src.model.File import File
-from src.model.Section import Section
 
-#from ....model.File import File
 
 class ArticleSearchModel:
 
@@ -121,6 +118,7 @@ class ArticleSearchModel:
         return responce
 
     def dump(self):
+        from src.model.File import File
 
         try:
             # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
@@ -199,16 +197,16 @@ class ArticleSearchModel:
                         "_source": data_row
                     }
 
-            else:
-                pass
+                    article_data_ES.append(article_action)
 
-            article_data_ES.append(article_action)
 
         helpers.bulk(elastic_client, article_data_ES)
 
         return {"status": True}
 
     def elasticsearch_article(self, key_word):
+        from src.model.Section import Section
+
         sections = Section().get_all()
         result = []
         res = elastic_client.search(
@@ -313,3 +311,4 @@ class ArticleSearchModel:
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+

@@ -250,20 +250,6 @@ class StructureSearchModel:
 
 
 
-        # article_action = {
-        #                 "_index": self.index,
-        #                 "_op_type": "index",
-        #                 "_id": int(article_data['id']),
-        #                 "_source": data_row
-        #             }
-
-        #     else:
-        #         pass
-
-        #     article_data_ES.append(article_action)
-
-        # helpers.bulk(elastic_client, article_data_ES)
-
     def get_full_structure(self):
         result = []
         res = elastic_client.search(

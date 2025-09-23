@@ -199,11 +199,7 @@ class ArticleSearchModel:
                         "_id": int(article_data['id']),
                         "_source": data_row
                     }
-
-            else:
-                pass
-
-            article_data_ES.append(article_action)
+                    article_data_ES.append(article_action)
 
         helpers.bulk(elastic_client, article_data_ES)
 

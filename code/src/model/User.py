@@ -59,6 +59,10 @@ class User:
     def search_by_id(self):
         self.UserModel.id = self.id
         return self.UserModel.find_by_id()
+    
+    def search_by_id_all(self):
+        self.UserModel.id = self.id
+        return self.UserModel.find_by_id_all()
 
     def get_dep_usrs(self):
         users_data = sorted(B24().getUsers(), key=lambda d: int(d['ID']))

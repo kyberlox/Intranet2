@@ -205,6 +205,69 @@ class UserModel:
         finally:
             self.db.close()
 
+    def find_by_id_all(self):
+        from src.model.File import File
+        from .App import DOMAIN
+        """
+        Ищет пользователя по id
+        """
+        user = self.db.query(self.user).filter(self.user.id == self.id).first()
+        result = dict()
+        DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
+        
+        if user is not None:
+            for key in DB_columns:
+                result[key] = user.__dict__[key]
+
+            indirect_data = user.indirect_data
+            list_departs = []
+            list_departs_id = []
+            if len(indirect_data['uf_department']) != 0:
+                for dep in indirect_data['uf_department']:
+                    dedep = DepartmentModel(dep).find_dep_by_id()
+                    if type(dedep) == type(dict()):
+                        if 'name' in dedep:
+                            list_departs.append(dedep['name'])
+                            list_departs_id.append(dedep['id'])
+                        else:
+                            print(dedep)
+                    else: #если объект
+                        for dp in dedep:
+                            list_departs.append(dp.__dict__['name'])
+                            list_departs_id.append(dp.__dict__['id'])
+
+            if "uf_usr_department_main" in indirect_data:
+                #print(indirect_data["uf_usr_department_main"])
+                dedep = DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                #print(dedep)
+                indirect_data["uf_usr_department_main"] = dedep[0].name
+
+            indirect_data['uf_department'] = list_departs
+            indirect_data['uf_department_id'] = list_departs_id
+            result['indirect_data'] = indirect_data
+            
+            #информация о фото
+            #вывод ID фотографии пользователя
+            result['photo_file_id'] = user.__dict__['photo_file_id']
+            if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
+                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
+
+                #вывод URL фотографии пользователя
+                url = photo_inf['URL']
+                result['photo_file_url'] = f"{DOMAIN}{url}"
+                
+                result['photo_file_b24_url'] = photo_inf['b24_url']
+            else:
+                result['photo_file_id'] = None
+                result['photo_file_url'] = None
+                result['photo_file_b24_url'] = None
+            self.db.close()    
+            return result
+        else:
+            self.db.close() 
+            LogsMaker().warning_message(f"Invalid user id = {self.id}")
+            return None
+
     def find_by_id(self):
         from src.model.File import File
         from .App import DOMAIN

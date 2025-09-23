@@ -154,7 +154,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        self.search_files(data["IBLOCK_ID"], self.id, data)
+        # self.search_files(data["IBLOCK_ID"], self.id, data)
         # article_data["indirect_data"]["files"]
 
         # определяем превью
@@ -206,7 +206,7 @@ class Article:
             else:
                 award = "Сотрудник года"
 
-            user = User(id=uuid).search_by_id()
+            user = User(id=uuid).search_by_id_all()
             if "photo_file_url" not in user or user["photo_file_url"] == None:
                 photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
             else:
@@ -2469,10 +2469,10 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
 #     return ArticleSearchModel().search_by_text(text)
 
 
-#загрузить дату в эластик
-# @article_router.put("/elastic_data")
-# def upload_articles_to_es():
-#     return ArticleSearchModel().dump()
+# загрузить дату в эластик
+@article_router.put("/elastic_data")
+def upload_articles_to_es():
+    return ArticleSearchModel().dump()
 
 
 #лайки и просмотры для статистики

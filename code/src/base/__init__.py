@@ -21,7 +21,7 @@ from .pSQL.objects.RootsModel import RootsModel
 
 from .pSQL.objects.MerchStoreModel import MerchStoreModel
 
-#import pSQL
+from .pSQL import *
 
 
 
@@ -39,7 +39,7 @@ from .Elastic.ArticleSearchModel import ArticleSearchModel
 
 
 __all__ = [
-    #'pSQL',
+    'pSQL',
     #'Elastic',
     'UserModel',
     'DepartmentModel',

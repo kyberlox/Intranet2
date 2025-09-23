@@ -1,26 +1,25 @@
-from .src.services.LogsMaker import LogsMaker
 
-from .src.base.pSQL.objects.UserModel import UserModel
-from .src.base.pSQL.objects.DepartmentModel import DepartmentModel
-from .src.base.pSQL.objects.UsDepModel import UsDepModel
+from .src.base.pSQL.objects import UserModel
+from .src.base.pSQL.objects import DepartmentModel
+from .src.base.pSQL.objects import UsDepModel
 
-#from .pSQL.objects.SectionModel import SectionModel
+#from .pSQL.objects import SectionModel
 
-from .src.base.pSQL.objects.ArticleModel import ArticleModel
-from .src.base.pSQL.objects.LikesModel import LikesModel
-from .src.base.pSQL.objects.ViewsModel import ViewsModel
+from .src.base.pSQL.objects import ArticleModel
+from .src.base.pSQL.objects import LikesModel
+from .src.base.pSQL.objects import ViewsModel
 
-from .src.base.pSQL.objects.FieldvisionModel import FieldvisionModel
-from .src.base.pSQL.objects.UservisionsRootModel import UservisionsRootModel
+from .src.base.pSQL.objects import FieldvisionModel
+from .src.base.pSQL.objects import UservisionsRootModel
 
-from .src.base.pSQL.objects.TagsModel import TagsModel
+from .src.base.pSQL.objects import TagsModel
 
-from .src.base.pSQL.objects.ActivitiesModel import ActivitiesModel
-from .src.base.pSQL.objects.ActiveUsersModel import ActiveUsersModel
-from .src.base.pSQL.objects.PeerUserModel import PeerUserModel
-from .src.base.pSQL.objects.RootsModel import RootsModel
+from .src.base.pSQL.objects import ActivitiesModel
+from .src.base.pSQL.objects import ActiveUsersModel
+from .src.base.pSQL.objects import ModersModel
+from .src.base.pSQL.objects import AdminModel
 
-from .src.base.pSQL.objects.MerchStoreModel import MerchStoreModel
+from .src.base.pSQL.objects import MerchStoreModel
 
 from .src.base.RedisStorage import RedisStorage
 from .src.base.B24 import B24, b24_router
@@ -54,6 +53,10 @@ from .src.services.Comporession import compress_router
 from .src.services.Editor import Editor, editor_router
 from .src.services.FieldsVisions import Visions, fieldsvisions_router
 from .src.services.Idea import Idea, idea_router
+<<<<<<< HEAD
+=======
+from .src.services.LogsMaker import LogsMaker
+>>>>>>> d60bb98835d0aee104988467def3bea820a5ddc4
 from .src.services.MerchStore import MerchStore, store_router
 from .src.services.Peer import Peer, peer_router
 from .src.services.SendMail import SendEmail
@@ -63,7 +66,10 @@ from .src.services.VCard import User_Vcard, vcard_app
 
 
 __all__ = [
+<<<<<<< HEAD
     'LogsMaker',
+=======
+>>>>>>> d60bb98835d0aee104988467def3bea820a5ddc4
     'UserModel',
     'DepartmentModel',
     'UsDepModel',
@@ -75,8 +81,13 @@ __all__ = [
     'TagsModel',
     'ActivitiesModel',
     'ActiveUsersModel',
+<<<<<<< HEAD
     'PeerUserModel',
     'RootsModel',
+=======
+    'ModersModel',
+    'AdminModel',
+>>>>>>> d60bb98835d0aee104988467def3bea820a5ddc4
     'MerchStoreModel',
     'RedisStorage'
     'B24',
@@ -113,6 +124,10 @@ __all__ = [
     'fieldsvisions_router',
     'Idea',
     'idea_router',
+<<<<<<< HEAD
+=======
+    'LogsMaker',
+>>>>>>> d60bb98835d0aee104988467def3bea820a5ddc4
     'MerchStore',
     'store_router',
     'Peer',

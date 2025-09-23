@@ -1,9 +1,6 @@
 from .App import elastic_client, helpers, json, sections
 from .App import DOMAIN
 
-#from src.model.File import File
-#from src.model.Section import Section
-
 
 
 class ArticleSearchModel:
@@ -199,7 +196,9 @@ class ArticleSearchModel:
                         "_id": int(article_data['id']),
                         "_source": data_row
                     }
+
                     article_data_ES.append(article_action)
+
 
         helpers.bulk(elastic_client, article_data_ES)
 
@@ -207,6 +206,7 @@ class ArticleSearchModel:
 
     def elasticsearch_article(self, key_word):
         from src.model.Section import Section
+
         sections = Section().get_all()
         result = []
         res = elastic_client.search(
@@ -311,3 +311,4 @@ class ArticleSearchModel:
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+

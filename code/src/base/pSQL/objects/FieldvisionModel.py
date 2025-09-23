@@ -1,4 +1,3 @@
-
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 

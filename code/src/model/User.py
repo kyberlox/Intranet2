@@ -50,7 +50,7 @@ class User:
             '''
             self.UserModel.upsert_user(usr_data)
             
-        # status = self.set_users_photo()
+        status = self.set_users_photo()
         #дампим данные в эластик
         self.dump_users_data_es()
         

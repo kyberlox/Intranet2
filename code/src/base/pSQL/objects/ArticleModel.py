@@ -2,7 +2,6 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy.orm.attributes import flag_modified
 
 
-
 import json
 
 from sqlalchemy.exc import SQLAlchemyError

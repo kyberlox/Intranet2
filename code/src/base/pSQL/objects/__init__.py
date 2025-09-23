@@ -3,7 +3,7 @@ from .UserModel import UserModel
 from .DepartmentModel import DepartmentModel
 from .UsDepModel import UsDepModel
 
-# from .SectionModel import SectionModel
+from .SectionModel import SectionModel
 
 from .ArticleModel import ArticleModel
 from .LikesModel import LikesModel

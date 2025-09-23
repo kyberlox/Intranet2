@@ -3,7 +3,6 @@ from .App import DOMAIN
 
 
 
-
 def get_info_by_obj(obj, parent_path_depart):
     from ..pSQL.objects.UsDepModel import UsDepModel
     from ..pSQL.objects.UserModel import UserModel
@@ -72,6 +71,7 @@ class StructureSearchModel:
         # self.UsDepModel = UsDepModel()
 
         self.index = 'departs'
+
 
 
     def create_index(self):
@@ -244,9 +244,9 @@ class StructureSearchModel:
                 dep_data_ES.append(layer)
 
 
+
         helpers.bulk(elastic_client, dep_data_ES)
         return {"status": True}
-
 
 
 

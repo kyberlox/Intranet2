@@ -7,7 +7,6 @@ from ..base.pSQL.objects.ArticleModel import ArticleModel
 from ..base.pSQL.objects.LikesModel import LikesModel
 from ..base.pSQL.objects.ViewsModel import ViewsModel
 from ..services.Idea import Idea
-
 from ..services.LogsMaker import LogsMaker
 
 import re
@@ -154,7 +153,10 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        # self.search_files(data["IBLOCK_ID"], self.id, data)
+        self.search_files(data["IBLOCK_ID"], self.id, data)
+
+
+        
         # article_data["indirect_data"]["files"]
 
         # определяем превью

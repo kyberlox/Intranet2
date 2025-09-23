@@ -33,7 +33,7 @@ class UserModel:
         from .App import db
         self.db = db
     
-    def create_new_user_view(self, ):
+    def create_new_user_view(self ):
         from .App import engine
         try:
             # тут создать представление
@@ -56,10 +56,9 @@ class UserModel:
                 connection.commit()
             
             LogsMaker().info_message("Создано представление для получения новых сотрудников")
-            
+
         except SQLAlchemyError as e:
             self.db.rollback()
-            #print(f"An error occurred: {e}")
             LogsMaker().error_message(str(e))
 
 

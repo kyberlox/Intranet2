@@ -1,4 +1,4 @@
-#from .App import db
+from .App import db
 from .UserModel import UserModel
 from .DepartmentModel import DepartmentModel
 from .UsDepModel import UsDepModel
@@ -25,7 +25,7 @@ from .MerchStoreModel import MerchStoreModel
 
 ## Control imports
 __all__ = [
-    #'db',
+    'db',
     'UserModel',
     'DepartmentModel',
     'UsDepModel',

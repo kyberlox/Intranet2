@@ -1,3 +1,4 @@
+from .services.LogsMaker import LogsMaker
 from .base.pSQL.objects import UserModel
 from .base.pSQL.objects import DepartmentModel
 from .base.pSQL.objects import UsDepModel
@@ -13,10 +14,10 @@ from .base.pSQL.objects import UservisionsRootModel
 
 from .base.pSQL.objects import TagsModel
 
-from .pSQL.objects.ActivitiesModel import ActivitiesModel
-from .pSQL.objects.ActiveUsersModel import ActiveUsersModel
-from .pSQL.objects.PeerUserModel import PeerUserModel
-from .pSQL.objects.RootsModel import RootsModel
+from .base.pSQL.objects.ActivitiesModel import ActivitiesModel
+from .base.pSQL.objects.ActiveUsersModel import ActiveUsersModel
+from .base.pSQL.objects.PeerUserModel import PeerUserModel
+from .base.pSQL.objects.RootsModel import RootsModel
 
 from .base.pSQL.objects import MerchStoreModel
 
@@ -56,7 +57,7 @@ from .services.Editor import Editor, editor_router
 from .services.FieldsVisions import Visions, fieldsvisions_router
 from .services.Idea import Idea, idea_router
 
-from .services.LogsMaker import LogsMaker
+
 
 from .services.MerchStore import MerchStore, store_router
 from .services.Peer import Peer, peer_router

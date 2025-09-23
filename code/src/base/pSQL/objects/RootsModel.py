@@ -46,3 +46,24 @@ class RootsModel:
                 elif key == "VisionRoots":
                     roots["VisionRoots"] = value
         return roots
+
+    def create_primary_admins(self):
+        BOYS_DONT_CRY = [2366, 2375, 4133]
+        try:
+            for guy in BOYS_DONT_CRY:
+                new_moder = self.Roots
+                self.Roots.user_uuid=guy,
+                self.Roots.root_token={
+                    "PeerAdmin": True,
+                    "VisionAdmin": True
+                }
+                
+                self.session.add(new_moder)
+                self.session.commit()
+                return True
+            
+        except Exception as e:
+            self.session.rollback()
+            return LogsMaker().error_message(f"Ошибка создания первичных админов: {e}")
+        finally:
+            self.session.close()

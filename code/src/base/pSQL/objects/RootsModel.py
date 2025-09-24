@@ -51,16 +51,16 @@ class RootsModel:
         BOYS_DONT_CRY = [2366, 2375, 4133]
         try:
             for guy in BOYS_DONT_CRY:
-                new_moder = self.Roots
-                self.Roots.user_uuid=guy,
-                self.Roots.root_token={
+                new_moder = self.Roots()
+                new_moder.user_uuid=guy
+                new_moder.root_token={
                     "PeerAdmin": True,
                     "VisionAdmin": True
                 }
                 
                 self.session.add(new_moder)
                 self.session.commit()
-                return True
+            return True
             
         except Exception as e:
             self.session.rollback()

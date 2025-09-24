@@ -57,6 +57,7 @@ from .src.services.Idea import Idea, idea_router
 
 from .src.services.MerchStore import MerchStore, store_router
 from .src.services.Peer import Peer, peer_router
+from .src.services.Peer import Roots, roots_router
 from .src.services.SendMail import SendEmail
 #from .src.services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
 from .src.services.VCard import User_Vcard, vcard_app

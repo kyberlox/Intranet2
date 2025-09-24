@@ -4,8 +4,6 @@ from fastapi import HTTPException
 
 from src.services.LogsMaker import LogsMaker
 
-if elastic_client.ping():
-    LogsMaker().ready_status_message("Успешное подключение Elasticsearch!")
 
 class UserSearchModel:
     def __init__(self):
@@ -216,6 +214,9 @@ class UserSearchModel:
         }
         index_name = self.index
         try:
+            if elastic_client.ping():
+                LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+
             if elastic_client.indices.exists(index=index_name):
                 # Обновляем маппинг существующего индекса
                 elastic_client.indices.put_mapping(index=index_name, body=mapping)

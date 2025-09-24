@@ -213,15 +213,14 @@ class UserSearchModel:
             }
         }
         index_name = self.index
-        try:
-            if elastic_client.ping():
-                LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        try:    
 
             if elastic_client.indices.exists(index=index_name):
                 # Обновляем маппинг существующего индекса
                 elastic_client.indices.put_mapping(index=index_name, body=mapping)
                 return {"status": "updated", "message": f"Mapping for {index_name} updated"}
             else:
+                LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
                 elastic_client.indices.create(index=index_name, body=mapping)
                 return {"status": "created", "message": f"Index {index_name} created"}
             

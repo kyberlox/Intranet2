@@ -1,4 +1,4 @@
-@use "@/assets/styles/mixins/mixins.scss" as *;
+@use '/src/assets/styles/mixins' as *;
 
 .blog {
     &__articles-wrapper {

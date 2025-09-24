@@ -173,3 +173,36 @@
         font-size: 14px;
     }
 }
+
+:root {
+    // fileuploader
+    --p-fileupload-background: #ffffff;
+    --p-fileupload-border-color: #dfe7ef;
+    --p-fileupload-color: #495057;
+    --p-fileupload-border-radius: 8px;
+    --p-fileupload-transition-duration: 0.2s;
+
+
+    --p-fileupload-header-background: transparent;
+    --p-fileupload-header-color: #495057;
+    --p-fileupload-header-padding: 1.25rem;
+    --p-fileupload-header-border-color: #dfe7ef;
+    --p-fileupload-header-border-width: 0 0 1px 0;
+    --p-fileupload-header-border-radius: 8px 8px 0 0;
+    --p-fileupload-header-gap: 0.5rem;
+
+
+    --p-fileupload-content-highlight-border-color: #4a6cf7;
+    --p-fileupload-content-padding: 2rem;
+    --p-fileupload-content-gap: 1rem;
+
+
+    --p-fileupload-file-padding: 1rem;
+    --p-fileupload-file-gap: 0.5rem;
+    --p-fileupload-file-border-color: #edf2f7;
+    --p-fileupload-file-info-gap: 0.5rem;
+    --p-fileupload-file-list-gap: 1rem;
+
+    --p-fileupload-progressbar-height: 6px;
+    --p-fileupload-basic-gap: 0.5rem;
+}

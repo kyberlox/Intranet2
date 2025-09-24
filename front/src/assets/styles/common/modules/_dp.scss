@@ -1,4 +1,4 @@
-@use '@/assets/styles/mixins/_mixins.scss' as *;
+@use '/src/assets/styles/mixins' as *;
 
 .dp {
     &__input_icon {
@@ -45,4 +45,10 @@
         display: flex;
         flex-direction: row;
     }
+}
+
+:root {
+    --p-datepicker-date-selected-background: orange;
+    --p-datepicker-date-selected-color: white;
+    --p-datepicker-date-border-radius: 5px;
 }

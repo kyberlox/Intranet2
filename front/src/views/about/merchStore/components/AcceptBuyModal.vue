@@ -30,7 +30,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/mixins/_mixins.scss" as *;
+@use "@/assets/styles/mixins" as *;
 
 .accept-buy-modal {
     &__wrapper {

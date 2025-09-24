@@ -248,3 +248,14 @@
         opacity: 1;
     }
 }
+
+:root {
+    --p-toast-border-radius: 12px;
+    --p-toast-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --p-toast-success-background: #f0f9ff;
+    --p-toast-success-border-color: #0ea5e9;
+    --p-toast-success-color: #0c4a6e;
+    --p-toast-error-background: #fef2f2;
+    --p-toast-error-border-color: #ef4444;
+    --p-toast-error-color: #991b1b;
+}

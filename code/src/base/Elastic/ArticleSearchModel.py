@@ -131,7 +131,7 @@ class ArticleSearchModel:
             self.delete_index()
         except:
             pass
-        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
+        
         self.create_index()
 
         article_SQL_data = self.ArticleModel.all()

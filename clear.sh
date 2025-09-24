@@ -17,4 +17,4 @@ rm -rf ./elasticsearch/data*
 
 docker-compose up -d
 
-chmod -r 777 ./
+chmod -R 777 ./

@@ -226,7 +226,7 @@ def elastic_dump():
     from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
     from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
     UserSearchModel().dump()
-    StructureSearchModel().dump()
+    # StructureSearchModel().dump()
     ArticleSearchModel().dump()
     return {"status": True}
 

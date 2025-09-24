@@ -219,7 +219,7 @@ class UserSearchModel:
             else:
                 elastic_client.indices.create(index=index_name, body=mapping)
                 return {"status": "created", "message": f"Index {index_name} created"}
-            LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
+            
         except Exception as e:
             raise HTTPException(
                 status_code=500,

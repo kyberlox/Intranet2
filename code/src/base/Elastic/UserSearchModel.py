@@ -213,23 +213,27 @@ class UserSearchModel:
             }
         }
         index_name = self.index
-        try:    
 
-            if elastic_client.indices.exists(index=index_name):
-                # Обновляем маппинг существующего индекса
-                elastic_client.indices.put_mapping(index=index_name, body=mapping)#["mappings"])
-                return {"status": "updated", "message": f"Mapping for {index_name} updated"}
-            else:
-                LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
-                elastic_client.indices.create(index=index_name, body=mapping)
-                LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
-                return {"status": "created", "message": f"Index {index_name} created"}
+        res = elastic_client.indices.create(index=self.index, body=mapping)
+        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        return res
+        # try:    
+
+        #     if elastic_client.indices.exists(index=index_name):
+        #         # Обновляем маппинг существующего индекса
+        #         elastic_client.indices.put_mapping(index=index_name, body=mapping)#["mappings"])
+        #         return {"status": "updated", "message": f"Mapping for {index_name} updated"}
+        #     else:
+        #         LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        #         elastic_client.indices.create(index=index_name, body=mapping)
+        #         LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        #         return {"status": "created", "message": f"Index {index_name} created"}
             
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Index operation failed: {str(e)}"
-            )
+        # except Exception as e:
+        #     raise HTTPException(
+        #         status_code=500,
+        #         detail=f"Index operation failed: {str(e)}"
+        #     )
 
     def dump(self):
         from src.model.File import File

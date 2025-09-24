@@ -266,7 +266,7 @@ class UserSearchModel:
                             continue
 
                     user_id = int(data['id'])
-
+                    LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
                     elastic_client.index(index=self.index, id=user_id, body=data_row)
 
         return {"status": True}

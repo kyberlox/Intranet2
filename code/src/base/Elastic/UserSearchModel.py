@@ -214,6 +214,7 @@ class UserSearchModel:
         }
         index_name = self.index
 
+        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         res = elastic_client.indices.create(index=self.index, body=mapping)
         LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         return res

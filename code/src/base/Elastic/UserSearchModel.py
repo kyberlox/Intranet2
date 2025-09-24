@@ -2,6 +2,8 @@ from .App import elastic_client, DOMAIN
 
 from fastapi import HTTPException
 
+if elastic_client.ping():
+    LogsMaker().ready_status_message("Успешное подключение Elasticsearch!")
 
 class UserSearchModel:
     def __init__(self):

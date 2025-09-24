@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 import os
+import time
 from dotenv import load_dotenv
 
 from src.services.LogsMaker import LogsMaker

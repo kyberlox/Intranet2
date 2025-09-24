@@ -214,10 +214,8 @@ class UserSearchModel:
             }
         }
         index_name = self.index
-
-        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        
         res = elastic_client.indices.create(index=self.index, body=mapping)
-        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         return res
         # try:    
 
@@ -226,9 +224,7 @@ class UserSearchModel:
         #         elastic_client.indices.put_mapping(index=index_name, body=mapping)#["mappings"])
         #         return {"status": "updated", "message": f"Mapping for {index_name} updated"}
         #     else:
-        #         LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         #         elastic_client.indices.create(index=index_name, body=mapping)
-        #         LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         #         return {"status": "created", "message": f"Index {index_name} created"}
             
         # except Exception as e:
@@ -243,10 +239,8 @@ class UserSearchModel:
             self.delete_index()
         except:
             pass
-
-        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
-        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        
         
         
         users_data = self.UserModel.all()
@@ -280,18 +274,18 @@ class UserSearchModel:
                     
                     elastic_client.index(index=self.index, id=user_id, body=data_row)
 
-        #             usr_data = data_row
+                    usr_data = data_row
         
-        #             data_action = {
-        #                 "_index": self.index,
-        #                 "_op_type": "index",
-        #                 "_id": user_id,
-        #                 "_source": usr_data
-        #             }
+                    data_action = {
+                        "_index": self.index,
+                        "_op_type": "index",
+                        "_id": user_id,
+                        "_source": usr_data
+                    }
 
-        #             users_data_ES.append(data_action)
+                    users_data_ES.append(data_action)
         
-        # success, errors = helpers.bulk(elastic_client, users_data_ES)
+        success, errors = helpers.bulk(elastic_client, users_data_ES)
 
         # # print(success, errors)
         # LogsMaker().ready_status_message(f"в чем беда: {success} {errors}")

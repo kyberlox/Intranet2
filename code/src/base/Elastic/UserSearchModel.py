@@ -10,6 +10,7 @@ class UserSearchModel:
         from ..pSQL.objects.UserModel import UserModel
         self.UserModel = UserModel()
         self.index = 'user'
+        self.
 
     def create_index(self):
         mapping = {

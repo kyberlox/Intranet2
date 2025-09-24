@@ -189,10 +189,10 @@ class LikesModel:
         Возвращает True, если лайк успешно добавлен, False если лайк уже существует.
         """
         # Проверяем, есть ли уже активный лайк
-        existing_like = self.session.query(Likes).filter(
-            Likes.user_id == self.user_id,
-            Likes.article_id == self.art_id,
-            Likes.is_active == True
+        existing_like = self.session.query(self.Likes).filter(
+            self.Likes.user_id == self.user_id,
+            self.Likes.article_id == self.art_id,
+            self.Likes.is_active == True
         ).first()
 
         if existing_like:
@@ -210,7 +210,7 @@ class LikesModel:
         #     inactive_like.created_at = datetime.utcnow()
         # else:
             # Создаем новый лайк
-        new_like = Likes(
+        new_like = self.Likes(
             user_id=self.user_id,
             article_id=self.art_id,
             is_active=True,
@@ -242,12 +242,12 @@ class LikesModel:
             [{'article_id': int, 'likes_count': int}, ...]
         """
         popular_articles = db.query(
-            Likes.article_id,
-            func.count(Likes.id).label('likes_count')
+            self.Likes.article_id,
+            func.count(self.Likes.id).label('likes_count')
         ).filter(
-            Likes.is_active == True
+            self.Likes.is_active == True
         ).group_by(
-            Likes.article_id
+            self.Likes.article_id
         ).order_by(
             desc('likes_count')
         ).limit(limit).all()
@@ -267,13 +267,13 @@ class LikesModel:
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
         popular = db.query(
-            Likes.article_id,
-            func.count(Likes.id).label('likes_count')
+            self.Likes.article_id,
+            func.count(self.Likes.id).label('likes_count')
         ).filter(
-            Likes.is_active == True,
-            Likes.created_at >= cutoff_date
+            self.Likes.is_active == True,
+            self.Likes.created_at >= cutoff_date
         ).group_by(
-            Likes.article_id
+            self.Likes.article_id
         ).order_by(
             desc('likes_count')
         ).limit(limit).all()

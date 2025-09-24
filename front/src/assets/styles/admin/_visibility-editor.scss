@@ -306,44 +306,32 @@
             }
         }
     }
-}
 
-.user-choices-table__row {
-    border-bottom: 1px solid rgba(128, 128, 128, 0.325);
-    margin-top: 5px;
-    padding: 5px;
-    cursor: pointer;
+    &__user-choices-table__row {
+        border-bottom: 1px solid rgba(128, 128, 128, 0.325);
+        margin-top: 5px;
+        padding: 5px;
+        cursor: pointer;
 
-    &:hover {
-        opacity: 0.7;
+        &:hover {
+            opacity: 0.7;
 
-        &>svg {
-            &:hover {
-                color: rgba(255, 0, 0, 0.497);
+            &>svg {
+                &:hover {
+                    color: rgba(255, 0, 0, 0.497);
+                }
             }
         }
-    }
 
-    &>td {
-        padding: 5px 0;
-    }
+        &>td {
+            padding: 5px 0;
+        }
 
-    &>svg {
-        width: 20px;
-        color: red;
-        cursor: pointer;
-    }
-}
-
-.admin-panel__nav__button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-top: 15px;
-
-    &>button {
-        margin-top: 0;
-        min-width: 139px;
+        &>svg {
+            width: 20px;
+            color: red;
+            cursor: pointer;
+        }
     }
 }
 

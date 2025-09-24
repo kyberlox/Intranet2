@@ -236,9 +236,11 @@ class UserSearchModel:
             self.delete_index()
         except:
             pass
+
+        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
         self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
         
-        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        
         
         users_data = self.UserModel.all()
         users_data_ES = []

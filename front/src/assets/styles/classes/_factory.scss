@@ -1,0 +1,23 @@
+.factory {
+    &-reports {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+        gap: 40px;
+
+        &__report {
+            border-radius: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            padding: 10px;
+
+            &>iframe {
+                border-radius: 15px;
+                aspect-ratio: 16/9;
+            }
+
+            &>p {
+                margin-top: 5px;
+                padding: 0px 10px;
+            }
+        }
+    }
+}

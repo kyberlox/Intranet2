@@ -1,0 +1,9 @@
+.care {
+    &__section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
+        justify-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+}

@@ -42,7 +42,7 @@ def create_elastic_client():
 
 
             if elastic_client.ping():
-                LogsMaker().ready_status_message("pSQL успешно подключен!")
+                LogsMaker().ready_status_message("✅ Успешное подключение Elasticsearch!")
                 return elastic_client
         except Exception as e:
             LogsMaker().warning_message(f"❌ Connection attempt {i+1}/{max_retries} failed: {e}")

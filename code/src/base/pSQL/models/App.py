@@ -28,7 +28,7 @@ pswd = os.getenv('pswd')
 
 def create_db_engine():
     max_retries = 5
-    retry_delay = 15
+    retry_delay = 5
     
     for i in range(max_retries):
         try:

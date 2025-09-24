@@ -1,6 +1,7 @@
 from .App import elastic_client, helpers, json, sections
 from .App import DOMAIN
 
+from src.services.LogsMaker import LogsMaker
 
 
 class ArticleSearchModel:
@@ -128,9 +129,12 @@ class ArticleSearchModel:
         self.create_index()
 
         article_SQL_data = self.ArticleModel.all()
+
         article_data_ES = []
         article_action = {}
         for article_data in article_SQL_data:
+            art_id = article_data['id']
+            LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
             data_row = {}
             if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
 
@@ -149,6 +153,7 @@ class ArticleSearchModel:
                     preview_photo = None
                     # обработка превью
                     files = File(art_id=article_data['id']).get_files_by_art_id()
+                    
                     for file in files:
                         if file["is_preview"]:
                             url = file["file_url"]
@@ -166,9 +171,11 @@ class ArticleSearchModel:
 
                     # находим любую картинку, если она есть
                     for file in files:
+                        
                         if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
                             "original_name"] or "png" in file["original_name"]:
                             url = file["file_url"]
+                            LogsMaker().info_message(f"Найден файл URL={url}")
                             # внедряю компрессию
                             if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
                                 preview_link = url.split("/")
@@ -199,7 +206,7 @@ class ArticleSearchModel:
 
                     article_data_ES.append(article_action)
 
-
+        LogsMaker().ready_status_message("Осталось только задампиить данные в Эластик")
         helpers.bulk(elastic_client, article_data_ES)
 
         return {"status": True}

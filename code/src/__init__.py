@@ -1,3 +1,4 @@
+from .services.LogsMaker import LogsMaker
 from .base.pSQL.objects import UserModel
 from .base.pSQL.objects import DepartmentModel
 from .base.pSQL.objects import UsDepModel
@@ -13,12 +14,13 @@ from .base.pSQL.objects import UservisionsRootModel
 
 from .base.pSQL.objects import TagsModel
 
-from .base.pSQL.objects import ActivitiesModel
-from .base.pSQL.objects import ActiveUsersModel
-from .base.pSQL.objects import ModersModel
-from .base.pSQL.objects import AdminModel
+from .base.pSQL.objects.ActivitiesModel import ActivitiesModel
+from .base.pSQL.objects.ActiveUsersModel import ActiveUsersModel
+from .base.pSQL.objects.PeerUserModel import PeerUserModel
+from .base.pSQL.objects.RootsModel import RootsModel
 
 from .base.pSQL.objects import MerchStoreModel
+
 
 from .base.RedisStorage import RedisStorage
 from .base.B24 import B24, b24_router
@@ -46,15 +48,20 @@ from .model.File import File, file_router
 
 
 
-from .services.AIchat import Dialog, History, GPT
+
+#from .services.AIchat import Dialog, History, GPT
+
 from .services.Auth import AuthService, auth_router
 from .services.Comporession import compress_router
 from .services.Editor import Editor, editor_router
 from .services.FieldsVisions import Visions, fieldsvisions_router
 from .services.Idea import Idea, idea_router
-from .services.LogsMaker import LogsMaker
+
+
+
 from .services.MerchStore import MerchStore, store_router
 from .services.Peer import Peer, peer_router
+from .services.Roots import Roots, roots_router
 from .services.SendMail import SendEmail
 #from .services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
 from .services.VCard import User_Vcard, vcard_app
@@ -73,8 +80,9 @@ __all__ = [
     'TagsModel',
     'ActivitiesModel',
     'ActiveUsersModel',
-    'ModersModel',
-    'AdminModel',
+    'PeerUserModel',
+    'RootsModel',
+
     'MerchStoreModel',
     'RedisStorage'
     'B24',
@@ -99,9 +107,9 @@ __all__ = [
     'section_router'
     'File',
     'file_router',
-    'Dialog',
-    'History',
-    'GPT',
+    # 'Dialog',
+    # 'History',
+    # 'GPT',
     'AuthService',
     'auth_router',
     'compress_router',
@@ -116,6 +124,8 @@ __all__ = [
     'store_router',
     'Peer',
     'peer_router',
+    'Roots',
+    'roots_router',
     'SendEmail',
     'User_Vcard',
     'vcard_app'

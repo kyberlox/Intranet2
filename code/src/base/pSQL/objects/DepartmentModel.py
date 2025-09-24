@@ -2,7 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.sql.expression import select
 
 from ..models.Department import Department
-from .App import db, engine
+from .App import engine
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -17,7 +17,11 @@ class DepartmentModel:
 
     def __init__(self, Id=None): #убрать None в будущем
         self.id = Id
-        self.department = Department()
+
+        from ..models.Department import Department
+        self.department = Department
+
+        from .App import db
         self.db = db
 
     def upsert_dep(self, dep_data):

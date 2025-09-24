@@ -13,7 +13,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
-from ..model import User
+from ..model.User import User
 
 import json
 
@@ -73,7 +73,7 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
-        print(user_data)
+        # print(user_data, user_uuid)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
         #if user_data is None:
             #получаю ID по GUID или по почте

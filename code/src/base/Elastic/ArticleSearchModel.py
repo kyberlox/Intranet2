@@ -1,10 +1,8 @@
 from .App import elastic_client, helpers, json, sections
 from .App import DOMAIN
 
-from src.model.File import File
-from src.model.Section import Section
+from src.services.LogsMaker import LogsMaker
 
-#from ....model.File import File
 
 class ArticleSearchModel:
 
@@ -14,6 +12,8 @@ class ArticleSearchModel:
         self.index = "articles"
 
     def create_index(self):
+        
+        
         request_body = {
             "settings": {
                 "analysis": {
@@ -117,22 +117,30 @@ class ArticleSearchModel:
                 }
             }
         }
+        LogsMaker().info_message("Тут всё может пойти не по плану")
         responce = elastic_client.indices.create(index=self.index, body=request_body)
+        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
         return responce
 
     def dump(self):
+        from src.model.File import File
 
+        
         try:
             # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
             self.delete_index()
         except:
             pass
+        
         self.create_index()
 
         article_SQL_data = self.ArticleModel.all()
+
         article_data_ES = []
         article_action = {}
         for article_data in article_SQL_data:
+            art_id = article_data['id']
+            LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
             data_row = {}
             if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
 
@@ -151,6 +159,7 @@ class ArticleSearchModel:
                     preview_photo = None
                     # обработка превью
                     files = File(art_id=article_data['id']).get_files_by_art_id()
+                    
                     for file in files:
                         if file["is_preview"]:
                             url = file["file_url"]
@@ -168,9 +177,11 @@ class ArticleSearchModel:
 
                     # находим любую картинку, если она есть
                     for file in files:
+                        
                         if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
                             "original_name"] or "png" in file["original_name"]:
                             url = file["file_url"]
+                            LogsMaker().info_message(f"Найден файл URL={url}")
                             # внедряю компрессию
                             if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
                                 preview_link = url.split("/")
@@ -199,16 +210,16 @@ class ArticleSearchModel:
                         "_source": data_row
                     }
 
-            else:
-                pass
+                    article_data_ES.append(article_action)
 
-            article_data_ES.append(article_action)
-
+        LogsMaker().ready_status_message("Осталось только задампиить данные в Эластик")
         helpers.bulk(elastic_client, article_data_ES)
 
         return {"status": True}
 
     def elasticsearch_article(self, key_word):
+        from src.model.Section import Section
+
         sections = Section().get_all()
         result = []
         res = elastic_client.search(
@@ -313,3 +324,4 @@ class ArticleSearchModel:
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+

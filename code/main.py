@@ -7,7 +7,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, HTTPException, status
 
-from src.services.VCard import dowload_file
+
+
 # from bson import Binary
 from src.model.User import User, users_router
 from src.model.Department import Department, depart_router
@@ -29,6 +30,7 @@ from src.services.Idea import idea_router
 from src.services.Editor import editor_router
 from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
+from src.services.Roots import roots_router
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
 
@@ -75,6 +77,7 @@ app.include_router(tag_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
 
 app.include_router(peer_router, prefix="/api")
+app.include_router(roots_router, prefix="/api")
 app.include_router(store_router, prefix="/api")
 
 
@@ -311,9 +314,9 @@ def total_update():
     # LogsMaker().info_message("Обновление информации о подразделениях")
     # if Department().fetch_departments_data()["status"]:
     #     status += 1
-    #     print("Успешно!")
+    #     LogsMaker().ready_status_message("Успешно!")
     # else:
-    #     print("Ошибка!")
+    #     LogsMaker().error_message("Ошибка!")
 
     # LogsMaker().info_message("Обновление информации о пользователях")
     # from src.model.User import User

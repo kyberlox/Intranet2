@@ -1,7 +1,6 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie#, Header
 
 from ..base.B24 import B24
-from .Auth import AuthService
 from ..model.User import User
 
 from .LogsMaker import LogsMaker
@@ -78,6 +77,7 @@ class Idea:
         self.username = None
 
     def get_user(self, session_id):
+        from src.services.Auth import AuthService
         self.user = dict(AuthService().get_user_by_seesion_id(session_id))
 
         if self.user is not None:

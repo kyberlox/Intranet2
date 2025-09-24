@@ -10,5 +10,4 @@
 .env
 .idea
 
-/front/node_modules
-/front/.vscode
+/front/

@@ -1,4 +1,4 @@
-from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
+# from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
 from ..services.LogsMaker import LogsMaker
 
 from fastapi import APIRouter, Body, Request
@@ -29,7 +29,7 @@ class Department:
             #if dep['ID'] == '420':
             self.department.upsert_dep(dep)
             
-        StructureSearchModel().create_index()
+        # StructureSearchModel().create_index()
         return {"status" : True}
     
     def search_dep_by_id(self):

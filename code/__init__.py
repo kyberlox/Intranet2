@@ -1,3 +1,5 @@
+
+from .src.services.LogsMaker import LogsMaker
 from .src.base.pSQL.objects import UserModel
 from .src.base.pSQL.objects import DepartmentModel
 from .src.base.pSQL.objects import UsDepModel
@@ -52,9 +54,10 @@ from .src.services.Comporession import compress_router
 from .src.services.Editor import Editor, editor_router
 from .src.services.FieldsVisions import Visions, fieldsvisions_router
 from .src.services.Idea import Idea, idea_router
-from .src.services.LogsMaker import LogsMaker
+
 from .src.services.MerchStore import MerchStore, store_router
 from .src.services.Peer import Peer, peer_router
+from .src.services.Peer import Roots, roots_router
 from .src.services.SendMail import SendEmail
 #from .src.services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
 from .src.services.VCard import User_Vcard, vcard_app
@@ -62,6 +65,7 @@ from .src.services.VCard import User_Vcard, vcard_app
 
 
 __all__ = [
+    'LogsMaker',
     'UserModel',
     'DepartmentModel',
     'UsDepModel',
@@ -73,8 +77,8 @@ __all__ = [
     'TagsModel',
     'ActivitiesModel',
     'ActiveUsersModel',
-    'ModersModel',
-    'AdminModel',
+    'PeerUserModel',
+    'RootsModel',
     'MerchStoreModel',
     'RedisStorage'
     'B24',
@@ -111,7 +115,6 @@ __all__ = [
     'fieldsvisions_router',
     'Idea',
     'idea_router',
-    'LogsMaker',
     'MerchStore',
     'store_router',
     'Peer',

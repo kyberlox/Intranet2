@@ -7,7 +7,6 @@ from ..base.pSQL.objects.ArticleModel import ArticleModel
 from ..base.pSQL.objects.LikesModel import LikesModel
 from ..base.pSQL.objects.ViewsModel import ViewsModel
 from ..services.Idea import Idea
-from ..services.Auth import AuthService
 from ..services.LogsMaker import LogsMaker
 
 import re
@@ -155,6 +154,9 @@ class Article:
 
         # записываем файлы в БД
         self.search_files(data["IBLOCK_ID"], self.id, data)
+
+
+        
         # article_data["indirect_data"]["files"]
 
         # определяем превью
@@ -206,7 +208,7 @@ class Article:
             else:
                 award = "Сотрудник года"
 
-            user = User(id=uuid).search_by_id()
+            user = User(id=uuid).search_by_id_all()
             if "photo_file_url" not in user or user["photo_file_url"] == None:
                 photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
             else:
@@ -850,11 +852,11 @@ class Article:
                         for f_id in files_to_add:
                             
                             try:
-                                print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
+                                LogsMaker().info_message(f" Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, True, inf_id)
                                 files_data.append(file_data)
                             except:
-                                print(f"Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
+                                LogsMaker().info_message(f" Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
                                 files_data.append(file_data) 
                 
@@ -887,12 +889,13 @@ class Article:
                     
                     if files_to_add != []:
                         for f_id in files_to_add:
-                            print(f"Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}")
+                            msg = f" Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}"
+                            LogsMaker().info_message(msg)
                             try:
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
                                 files_data.append(file_data)
                             except:
-                                print(f"Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
+                                LogsMaker().warning_message(f" Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
                                 file_data = File(b24_id=f_id).upload_inf_art(art_id, False, not need_all_method, inf_id)
                                 files_data.append(file_data)
                     
@@ -1091,10 +1094,13 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        self.upload_uniquely()
-        self.upload_with_parameter()
-        self.upload_many_to_many()
-        self.upload_services()
+        # self.upload_uniquely()
+        # self.upload_with_parameter()
+        # self.upload_many_to_many()
+        # self.upload_services()
+
+        # Дамп данных в эластик
+        self.dump_articles_data_es()
 
         self.upload_likes()
 
@@ -1550,8 +1556,7 @@ class Article:
             # YandexGPT5 + Yandex ART ❌
             # Юбилей САЗ ❌
 
-        # Дамп данных в эластик
-        self.dump_articles_data_es()
+        
 
     def search_by_id(self, session_id=""):
         art = ArticleModel(id = self.id).find_by_id()
@@ -2314,6 +2319,7 @@ class Article:
         return LikesModel().get_recent_popular_articles(days=days, limit=limit)
 
     def get_user_by_session_id(self, session_id):
+        from src.services.Auth import AuthService
         user = dict(AuthService().get_user_by_seesion_id(session_id))
 
         if user is not None:
@@ -2468,10 +2474,10 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
 #     return ArticleSearchModel().search_by_text(text)
 
 
-#загрузить дату в эластик
-# @article_router.put("/elastic_data")
-# def upload_articles_to_es():
-#     return ArticleSearchModel().dump()
+# загрузить дату в эластик
+@article_router.put("/elastic_data")
+def upload_articles_to_es():
+    return ArticleSearchModel().dump()
 
 
 #лайки и просмотры для статистики

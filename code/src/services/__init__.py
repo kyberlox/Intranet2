@@ -1,10 +1,10 @@
-from .AIchat import Dialog, History, GPT
+#from .AIchat import Dialog, History, GPT
+from .LogsMaker import LogsMaker
 from .Auth import AuthService, auth_router
 from .Comporession import compress_router
 from .Editor import Editor, editor_router
 from .FieldsVisions import Visions, fieldsvisions_router
 from .Idea import Idea, idea_router
-from .LogsMaker import LogsMaker
 from .MerchStore import MerchStore, store_router
 from .Peer import Peer, peer_router
 from .SendMail import SendEmail
@@ -12,9 +12,9 @@ from .SendMail import SendEmail
 from .VCard import User_Vcard, vcard_app
 
 __all__ = [
-    'Dialog',
-    'History',
-    'GPT',
+    # 'Dialog',
+    # 'History',
+    # 'GPT',
     'AuthService',
     'auth_router',
     'compress_router',

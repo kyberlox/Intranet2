@@ -1,5 +1,3 @@
-from ..base.pSQL.objects.LikesModel import LikesModel
-
 from ..base.B24 import B24
 from ..model.File import File
 from ..services.LogsMaker import LogsMaker
@@ -53,6 +51,7 @@ class User:
             self.UserModel.upsert_user(usr_data)
             
         status = self.set_users_photo()
+        self.UserModel.create_new_user_view()
         #дампим данные в эластик
         self.dump_users_data_es()
         
@@ -61,6 +60,10 @@ class User:
     def search_by_id(self):
         self.UserModel.id = self.id
         return self.UserModel.find_by_id()
+    
+    def search_by_id_all(self):
+        self.UserModel.id = self.id
+        return self.UserModel.find_by_id_all()
 
     def get_dep_usrs(self):
         users_data = sorted(B24().getUsers(), key=lambda d: int(d['ID']))
@@ -107,9 +110,7 @@ class User:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
                 self.UserModel.id = uuid
-                print(uuid)
-                psql_user = self.UserModel.find_by_id()
-                print(psql_user)
+                psql_user = self.UserModel.find_by_id_all() 
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #проверим url первоисточника текущей аватарки
@@ -155,6 +156,7 @@ class User:
         return result
     
     def has_liked(self, art_id):
+        from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id, art_id=art_id).has_liked()
 
     # день рождения
@@ -173,6 +175,7 @@ class User:
 
     # для статистики
     def get_user_likes(self):
+        from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id).get_user_likes()
 
 '''

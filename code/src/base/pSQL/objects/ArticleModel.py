@@ -1,8 +1,6 @@
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm.attributes import flag_modified
 
-from ..models.Article import Article
-from .App import db
 
 import json
 
@@ -18,19 +16,22 @@ class ArticleModel:
     def __init__(self, id=0, section_id=0):
         self.id = id
         self.section_id = section_id
+
+        from ..models.Article import Article
         self.article = Article
 
+        from .App import db
         self.db = db
     
     def get_current_id(self ):
-        current_id = self.db.query(func.max(Article.id)).scalar()
+        current_id = self.db.query(func.max(self.article.id)).scalar()
         current_id = int(current_id) + 1
         self.id = current_id
         self.db.close()
         return current_id
 
     def add_article(self, article_data):
-        article = Article(**article_data)
+        article = self.article(**article_data)
         self.db.add(article)
         self.db.commit()
         self.db.close()
@@ -38,7 +39,7 @@ class ArticleModel:
         return article_data
 
     def need_add(self):
-        db_art = self.db.query(Article).filter(Article.section_id == self.section_id).all()
+        db_art = self.db.query(self.article).filter(self.article.section_id == self.section_id).all()
         # если в таблице есть раздел
         self.db.close()
         if db_art != []:
@@ -56,7 +57,7 @@ class ArticleModel:
 
     def update(self, article_data):
         #удалить статью
-        self.db.query(Article).filter(Article.id==int(self.id)).delete()
+        self.db.query(self.article).filter(self.article.id==int(self.id)).delete()
         #залить заново
         self.add_article(article_data)
         self.db.commit()
@@ -86,9 +87,9 @@ class ArticleModel:
         #return self.db.execute(delete(Article).where(Article.id == self.id))
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
         
-        art = self.db.query(Article).get(self.id)
+        art = self.db.query(self.article).get(self.id)
         if art is not None:
-            self.db.query(Article).filter(Article.id==int(self.id)).delete()
+            self.db.query(self.article).filter(self.article.id==int(self.id)).delete()
             self.db.commit()
             self.db.close()
             return True
@@ -105,7 +106,7 @@ class ArticleModel:
         return True
 
     def find_by_id(self):
-        art = self.db.query(Article).get(self.id)
+        art = self.db.query(self.article).get(self.id)
         try:
             art.__dict__["indirect_data"] = json.loads(art.indirect_data)
         except:
@@ -121,7 +122,7 @@ class ArticleModel:
 
     def find_by_section_id(self):
         
-        data = self.db.query(Article).filter(Article.section_id == self.section_id).all()
+        data = self.db.query(self.article).filter(self.article.section_id == self.section_id).all()
         new_data = []
         try:
             for art in data:
@@ -136,7 +137,7 @@ class ArticleModel:
         return new_data
     
     def all(self):
-        data = db.query(Article).all()
+        data = self.db.query(self.article).all()
         new_data = []
         try:
             for art in data:

@@ -1,6 +1,8 @@
-from .App import elastic_client, DOMAIN
+from .App import elastic_client, DOMAIN, helpers
 
 from fastapi import HTTPException
+
+from src.services.LogsMaker import LogsMaker
 
 
 class UserSearchModel:
@@ -8,6 +10,7 @@ class UserSearchModel:
         from ..pSQL.objects.UserModel import UserModel
         self.UserModel = UserModel()
         self.index = 'user'
+        self.elastic_client = elastic_client
 
     def create_index(self):
         mapping = {
@@ -211,19 +214,24 @@ class UserSearchModel:
             }
         }
         index_name = self.index
-        try:
-            if elastic_client.indices.exists(index=index_name):
-                # Обновляем маппинг существующего индекса
-                elastic_client.indices.put_mapping(index=index_name, body=mapping["mappings"])
-                return {"status": "updated", "message": f"Mapping for {index_name} updated"}
-            else:
-                elastic_client.indices.create(index=index_name, body=mapping)
-                return {"status": "created", "message": f"Index {index_name} created"}
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Index operation failed: {str(e)}"
-            )
+        
+        res = elastic_client.indices.create(index=self.index, body=mapping)
+        return res
+        # try:    
+
+        #     if elastic_client.indices.exists(index=index_name):
+        #         # Обновляем маппинг существующего индекса
+        #         elastic_client.indices.put_mapping(index=index_name, body=mapping)#["mappings"])
+        #         return {"status": "updated", "message": f"Mapping for {index_name} updated"}
+        #     else:
+        #         elastic_client.indices.create(index=index_name, body=mapping)
+        #         return {"status": "created", "message": f"Index {index_name} created"}
+            
+        # except Exception as e:
+        #     raise HTTPException(
+        #         status_code=500,
+        #         detail=f"Index operation failed: {str(e)}"
+        #     )
 
     def dump(self):
         from src.model.File import File
@@ -232,7 +240,9 @@ class UserSearchModel:
         except:
             pass
         self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
-
+        
+        
+        
         users_data = self.UserModel.all()
         users_data_ES = []
         for user in users_data:
@@ -261,9 +271,24 @@ class UserSearchModel:
                             continue
 
                     user_id = int(data['id'])
-
+                    
                     elastic_client.index(index=self.index, id=user_id, body=data_row)
 
+                    usr_data = data_row
+        
+                    data_action = {
+                        "_index": self.index,
+                        "_op_type": "index",
+                        "_id": user_id,
+                        "_source": usr_data
+                    }
+
+                    users_data_ES.append(data_action)
+        
+        success, errors = helpers.bulk(elastic_client, users_data_ES)
+
+        # # print(success, errors)
+        # LogsMaker().ready_status_message(f"в чем беда: {success} {errors}")
         return {"status": True}
 
     '''

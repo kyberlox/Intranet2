@@ -23,7 +23,7 @@ search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту
 
 
 
-elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=30)
+elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=100)
 
 
 
@@ -31,6 +31,7 @@ if elastic_client.ping():
     LogsMaker().ready_status_message("✅ Успешное подключение Elasticsearch!")
 else:
     LogsMaker().fatal_message("❌ Ошибка аутентификации Elasticsearch!")
+
 
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)

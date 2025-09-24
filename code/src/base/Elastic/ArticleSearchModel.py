@@ -4,6 +4,7 @@ from .App import DOMAIN
 from src.services.LogsMaker import LogsMaker
 
 
+
 class ArticleSearchModel:
 
     def __init__(self):
@@ -117,9 +118,9 @@ class ArticleSearchModel:
                 }
             }
         }
-        LogsMaker().info_message("Тут всё может пойти не по плану")
+        
         responce = elastic_client.indices.create(index=self.index, body=request_body)
-        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
+        
         return responce
 
     def dump(self):

@@ -1,21 +1,21 @@
 <template>
-    <div class="literature__training__page mt20">
-        <div class="page__title">Учебные пособия и литература ЭМК</div>
-        <div class="trainings-table__navigation-header">
-            <!-- фильтр по авторам -->
-            <TagDateNavBar @pickFilter="(e) => pickFilter(e, 'автор')"
-                           :modifiers="'noTag'"
-                           :buttonText="'Автор'"
-                           :params="authors" />
-            <!-- фильтр по разделам -->
-            <TagDateNavBar @pickFilter="(e) => pickFilter(e, 'раздел')"
-                           :buttonText="'Раздел'"
-                           :modifiers="'noTag'"
-                           :params="sections" />
-        </div>
-        <TrainingTable :page="'literature'"
-                       :tableElements="renderedLiterature" />
+<div class="literature__training__page mt20">
+    <div class="page__title">Учебные пособия и литература ЭМК</div>
+    <div class="conducted-training-table__navigation-header">
+        <!-- фильтр по авторам -->
+        <TagDateNavBar @pickFilter="(e) => pickFilter(e, 'автор')"
+                       :modifiers="'noTag'"
+                       :buttonText="'Автор'"
+                       :params="authors" />
+        <!-- фильтр по разделам -->
+        <TagDateNavBar @pickFilter="(e) => pickFilter(e, 'раздел')"
+                       :buttonText="'Раздел'"
+                       :modifiers="'noTag'"
+                       :params="sections" />
     </div>
+    <TrainingTable :page="'literature'"
+                   :tableElements="renderedLiterature" />
+</div>
 </template>
 
 <script lang="ts">

@@ -1,5 +1,5 @@
 <template>
-<div class="post-inner__page__wrapper mt20">
+<div class="news-inner__page__wrapper mt20">
     <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
          class="row row-gap-50">
         <div class="col-12 col-lg-6 mb-2 pos-rel">
@@ -38,7 +38,7 @@
                     <div v-for="tag in currentPost.indirect_data.tags"
                          :key="tag.id"
                          class="tag__wrapper ">
-                        <div class="tag section__item__link btn-air"
+                        <div class="tasg__tag section__item__link btn-air"
                              @click="$emit('pickTag', tag.id)">
                             #{{ tag.tag_name }}
                         </div>

@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </div> -->
-        <div class="datepicker__wrapper">
+        <div class="dp__wrapper">
             <DatePicker month-picker
                         disable-year-select
                         :calendarType="'month'"

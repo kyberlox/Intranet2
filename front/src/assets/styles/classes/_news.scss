@@ -1,10 +1,5 @@
 @use '../mixins/mixins' as *;
 
-.post-inner__page__wrapper {
-    min-height: 490px;
-    padding: 8px;
-}
-
 .news {
     &__detail {
         display: flex;
@@ -165,27 +160,9 @@
             font-size: .75em;
         }
     }
-}
 
-.section {
-    &__item {
-        &__link {
-            font-size: 14px;
-            color: #303030;
-            height: 36px;
-            line-height: 36px;
-            display: inline-block;
-            padding: 0 17px;
-            border: 1px solid #ef7f1b;
-            border-radius: 18px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--default-transition);
-
-            &:hover {
-                background: #ef7f1b;
-                color: #ffffff;
-            }
-        }
+    &-inner__page__wrapper {
+        min-height: 490px;
+        padding: 8px;
     }
 }

@@ -84,19 +84,19 @@
             margin-top: 20px;
         }
     }
-}
 
-.eCources-block {
-    &>ul>li>a {
-        text-decoration: underline;
+    &__electron-block {
+        &>ul>li>a {
+            text-decoration: underline;
 
-        &:hover {
-            color: var(--emk-brand-color);
+            &:hover {
+                color: var(--emk-brand-color);
+            }
         }
-    }
 
-    &>p {
-        margin: 0;
-        padding: 0;
+        &>p {
+            margin: 0;
+            padding: 0;
+        }
     }
 }

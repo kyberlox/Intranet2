@@ -1,6 +1,6 @@
 <template>
 <div class="page__title mt20">Актуальные новости</div>
-<div class="page__filter">
+<div class="tags__page__filter">
     <DateFilter :params="filterYears"
                 :buttonText="currentYear ?? 'Год'"
                 @pickFilter="(year: string) => currentYear = year" />

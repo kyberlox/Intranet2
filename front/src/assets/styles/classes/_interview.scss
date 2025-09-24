@@ -1,0 +1,32 @@
+.interview {
+    &__question {
+        display: block;
+        margin: 1em 0 0.4em;
+        font-size: 1.2em;
+        font-style: italic;
+    }
+
+    &__img {
+        display: block;
+        width: 100%;
+        height: 0;
+        padding-bottom: 133.33%;
+        margin: 0 auto;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        transition: all 0.3s ease;
+        border: gray;
+
+        &__caption {
+            margin: 15px;
+            max-width: 500px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        &--blog {
+            cursor: pointer;
+        }
+    }
+}

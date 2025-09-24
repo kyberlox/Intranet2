@@ -1,29 +1,29 @@
 <template>
-    <div>
-        <div class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle"
-             @click="tagsVisible = !tagsVisible">
-            {{ activeTag?.tag_name ?? 'Теги' }}
-        </div>
-        <Transition name="slide-down">
-            <div v-if="tagsVisible"
-                 class=" tags">
-                <div v-for="tag in tags"
-                     :key="tag.id"
-                     class="tag__wrapper">
-                    <div class="tag section__item__link btn-air"
-                         @click="setActiveTag(tag)">
-                        #{{ tag.tag_name }}
-                    </div>
-                </div>
-                <div class="tag__wrapper">
-                    <div class="tag section__item__link btn-air"
-                         @click="setActiveTag({ id: '' })">
-                        Очистить
-                    </div>
+<div>
+    <div class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle"
+         @click="tagsVisible = !tagsVisible">
+        {{ activeTag?.tag_name ?? 'Теги' }}
+    </div>
+    <Transition name="slide-down">
+        <div v-if="tagsVisible"
+             class="tags">
+            <div v-for="tag in tags"
+                 :key="tag.id"
+                 class="tag__wrapper">
+                <div class="tags__tag section__item__link btn-air"
+                     @click="setActiveTag(tag)">
+                    #{{ tag.tag_name }}
                 </div>
             </div>
-        </Transition>
-    </div>
+            <div class="tag__wrapper">
+                <div class="tags__tag section__item__link btn-air"
+                     @click="setActiveTag({ id: '' })">
+                    Очистить
+                </div>
+            </div>
+        </div>
+    </Transition>
+</div>
 </template>
 
 

@@ -30,6 +30,7 @@ from src.services.Idea import idea_router
 from src.services.Editor import editor_router
 from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
+from src.services.Roots import roots_router
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
 
@@ -76,6 +77,7 @@ app.include_router(tag_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
 
 app.include_router(peer_router, prefix="/api")
+app.include_router(roots_router, prefix="/api")
 app.include_router(store_router, prefix="/api")
 
 

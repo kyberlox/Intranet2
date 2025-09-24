@@ -61,6 +61,7 @@ from .services.Idea import Idea, idea_router
 
 from .services.MerchStore import MerchStore, store_router
 from .services.Peer import Peer, peer_router
+from .services.Roots import Roots, roots_router
 from .services.SendMail import SendEmail
 #from .services.Test import FastAPIUser, SAMPLE_PAYLOADS, FILES_PAYLOADS
 from .services.VCard import User_Vcard, vcard_app
@@ -123,6 +124,8 @@ __all__ = [
     'store_router',
     'Peer',
     'peer_router',
+    'Roots',
+    'roots_router',
     'SendEmail',
     'User_Vcard',
     'vcard_app'

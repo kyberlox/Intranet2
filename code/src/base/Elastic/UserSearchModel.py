@@ -278,23 +278,23 @@ class UserSearchModel:
 
                     user_id = int(data['id'])
                     
-                    #elastic_client.index(index=self.index, id=user_id, body=data_row)
+                    elastic_client.index(index=self.index, id=user_id, body=data_row)
 
-                    usr_data = data_row
+        #             usr_data = data_row
         
-                    data_action = {
-                        "_index": self.index,
-                        "_op_type": "index",
-                        "_id": user_id,
-                        "_source": usr_data
-                    }
+        #             data_action = {
+        #                 "_index": self.index,
+        #                 "_op_type": "index",
+        #                 "_id": user_id,
+        #                 "_source": usr_data
+        #             }
 
-                    users_data_ES.append(data_action)
+        #             users_data_ES.append(data_action)
         
-        success, errors = helpers.bulk(elastic_client, users_data_ES)
+        # success, errors = helpers.bulk(elastic_client, users_data_ES)
 
-        # print(success, errors)
-        LogsMaker().ready_status_message(f"в чем беда: {success, errors}")
+        # # print(success, errors)
+        # LogsMaker().ready_status_message(f"в чем беда: {success} {errors}")
         return {"status": True}
 
     '''

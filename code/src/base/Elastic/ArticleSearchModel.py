@@ -117,9 +117,9 @@ class ArticleSearchModel:
                 }
             }
         }
-        LogsMaker().info_message("Тут всё может пойти не по плану")
+        
         responce = elastic_client.indices.create(index=self.index, body=request_body)
-        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
+        
         return responce
 
     def dump(self):
@@ -131,7 +131,7 @@ class ArticleSearchModel:
             self.delete_index()
         except:
             pass
-        
+        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
         self.create_index()
 
         article_SQL_data = self.ArticleModel.all()

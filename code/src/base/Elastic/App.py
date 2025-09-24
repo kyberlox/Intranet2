@@ -32,9 +32,11 @@ if elastic_client.ping():
 else:
     LogsMaker().fatal_message("❌ Ошибка аутентификации Elasticsearch!")
 
+
+LogsMaker().info_message("Тут всё может пойти не по плану")
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)
-
+LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
 
 def search_everywhere(key_word):  # , size_res: Optional[int] = 40
     result = []

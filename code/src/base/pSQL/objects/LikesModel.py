@@ -95,9 +95,11 @@ class LikesModel:
             self.Likes.user_id == self.user_id,
             self.Likes.article_id == self.art_id
         ).first()
+        self.session.close()
+
         views = ViewsModel(art_id=self.art_id).get_art_viewes()
         
-        self.session.close()
+        
         
         if not existing_like:
             # если лайк никогда не существовал, значит False

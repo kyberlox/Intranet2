@@ -15,9 +15,3 @@
 *.sln
 *.sw?
 **.log
-
-/front/node_modules
-/front/dist
-/front/dist-ssr
-/front/coverage
-/front/cypress

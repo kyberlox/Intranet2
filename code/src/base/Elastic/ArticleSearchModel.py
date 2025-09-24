@@ -13,7 +13,7 @@ class ArticleSearchModel:
 
     def create_index(self):
         LogsMaker().info_message("Тут всё может пойти не по плану")
-        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
+        
         request_body = {
             "settings": {
                 "analysis": {
@@ -117,6 +117,8 @@ class ArticleSearchModel:
                 }
             }
         }
+
+        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
 

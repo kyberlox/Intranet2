@@ -1095,9 +1095,9 @@ class Article:
         '''
 
         # self.upload_uniquely()
-        self.upload_with_parameter()
-        self.upload_many_to_many()
-        self.upload_services()
+        # self.upload_with_parameter()
+        # self.upload_many_to_many()
+        # self.upload_services()
 
         # Дамп данных в эластик
         self.dump_articles_data_es()

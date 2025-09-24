@@ -1,21 +1,21 @@
 <template>
 <div class="mt20">
     <div class="page__title">Магазин мерча</div>
-    <div class="merchStore__grid__wrapper">
-        <div class="merchStore__grid">
+    <div class="merch-store__grid__wrapper">
+        <div class="merch-store">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
-                        class="merchStore__grid__item"
+                        class="merch-store__grid__item"
                         v-for="item in storePlug"
                         :key="item.id">
-                <div class="merchStore__grid__item__info">
+                <div class="merch-store__grid__item__info">
                     <HoverGallery :images="item.images"
                                   :showIndicators="true" />
                 </div>
-                <div class="merchStore__grid__item__title">
+                <div class="merch-store__grid__item__title">
                     {{ item.title }}
                 </div>
                 <div
-                     class="merchStore__grid__item__price merchStore__grid__item__info__item__price merchStore__grid__item__info__item">
+                     class="merch-store__grid__item__price merch-store__grid__item__info__item__price merch-store__grid__item__info__item">
                     <span class="">
                         {{ item.price }}
                     </span> эмк-коинов

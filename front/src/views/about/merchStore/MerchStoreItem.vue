@@ -1,34 +1,34 @@
 <template>
-<div class="merchStoreItem__wrapper">
-    <div class="merchStoreItem mt20">
-        <div class="merchStoreItem__images__wrapper">
-            <div class="merchStoreItem__images__flex-gallery">
+<div class="merch-store-item__wrapper">
+    <div class="merch-store-item mt20">
+        <div class="merch-store-item__images__wrapper">
+            <div class="merch-store-item__images__flex-gallery">
                 <div v-for="(card, index) in merchItemPlug.images"
                      :key="index"
-                     class="merchStoreItem__images__flex-gallery__card__wrapper">
-                    <div class="merchStoreItem__images__flex-gallery__card">
+                     class="merch-store-item__images__flex-gallery__card__wrapper">
+                    <div class="merch-store-item__images__flex-gallery__card">
                         <img class="pos-rel"
                              :src="card"
                              @click="setZoomImg(card)" />
-                        <ZoomInIcon class="merchStoreItem__images__flex-gallery__card__zoom-icon" />
+                        <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
                     </div>
                 </div>
             </div>
         </div>
-        <div class="merchStoreItem__info">
-            <div class="merchStoreItem__info__category">{{ merchItemPlug.category }}</div>
-            <div class="merchStoreItem__info__title">
+        <div class="merch-store-item__info">
+            <div class="merch-store-item__info__category">{{ merchItemPlug.category }}</div>
+            <div class="merch-store-item__info__title">
                 {{ merchItemPlug.title }}
             </div>
-            <div class="merchStoreItem__info__description"
+            <div class="merch-store-item__info__description"
                  v-html="merchItemPlug.description">
             </div>
-            <div class="merchStoreItem__info__sizes__title">
+            <div class="merch-store-item__info__sizes__title">
                 Размер
             </div>
-            <div class="merchStoreItem__info__sizes">
-                <div class="merchStoreItem__info__size"
-                     :class="{ 'merchStoreItem__info__size--active': item == currentSize }"
+            <div class="merch-store-item__info__sizes">
+                <div class="merch-store-item__info__size"
+                     :class="{ 'merch-store-item__info__size--active': item == currentSize }"
                      v-for="item in merchItemPlug.sizes"
                      :key="'size' + item"
                      @click="setCurrentSize(item)">
@@ -36,15 +36,15 @@
                 </div>
             </div>
 
-            <div class="merchStoreItem__info__price">
-                <span class="count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
+            <div class="merch-store-item__info__price">
+                <span class="merch-store-item__info__count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
             </div>
 
-            <div class="merchStoreItem__info__count">
-                <span class="count-text"> {{ merchItemPlug.count }}</span> шт. осталось
+            <div class="merch-store-item__info__count">
+                <span class="merch-store-item__info__count-text"> {{ merchItemPlug.count }}</span> шт. осталось
             </div>
-            <div class="merchStoreItem__action__wrapper">
-                <div class="merchStoreItem__action__button"
+            <div class="merch-store-item__action__wrapper">
+                <div class="merch-store-item__action__button"
                      @click="acceptBuyModalOpen = true">
                     Оформить
                 </div>
@@ -87,7 +87,7 @@ export default defineComponent({
             title: 'Панама',
             price: '1000',
             count: '1',
-            images: ['/imgs/merchStore/10futb.png', '/imgs/merchStore/2.png', '/imgs/merchStore/1.png', '/imgs/merchStore/2.png'],
+            images: ['/imgs/merchStore/2.png', '/imgs/merchStore/1.png'],
             sizes: ['s', 'm', 'l', 'xl', 'xxl'],
             description: 'Стильная хлопковая панамка с широкими полями для максимальной защиты от солнца. Выполнена из дышащего материала премиум-качества с влагоотводящей подкладкой. Идеально подходит для пляжного отдыха, рыбалки и активного отдыха на природе. Регулируемый размер благодаря внутренней тесьме.',
             category: 'Головные уборы',

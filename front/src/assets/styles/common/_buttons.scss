@@ -33,3 +33,13 @@
         color: #ffffff;
     }
 }
+
+.primary-button--disabled {
+    background: #d1d0d09a;
+    cursor: not-allowed;
+
+    &:hover {
+        color: black;
+        background: #d1d0d09a;
+    }
+}

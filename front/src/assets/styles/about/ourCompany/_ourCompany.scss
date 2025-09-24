@@ -1,3 +1,11 @@
+.company {
+    &__mission {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+}
+
 .company-values {
     color: #ffffff;
     background-color: #ee7e1c;
@@ -27,10 +35,4 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-}
-
-.emk-mission {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
 }

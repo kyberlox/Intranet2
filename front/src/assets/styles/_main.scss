@@ -2,12 +2,13 @@
 @forward './_vars';
 @forward './buttons';
 @forward './layout/_layout';
-@forward './about/_about';
+// @forward './about/_about';
 @forward './common/_common';
 @forward './gallery/gallery';
 @forward './services/_services';
 @forward './news/news';
 @forward './admin/admin';
+@forward './classes/classes';
 @use '@/assets/styles/mixins/_mixins.scss' as *;
 
 

@@ -1,42 +1,42 @@
 <template>
-    <div class="sidebar">
-        <div class="sidebar__burger"
-             @click="rollSidebar">
-            <div class="sidebar__burger__switch-icon"
-                 id="burgerMenuOpen">
-                <ListSidebar />
-            </div>
+<div class="book-nav__sidebar">
+    <div class="book-nav__sidebar__burger"
+         @click="rollSidebar">
+        <div class="book-nav__sidebar__burger__switch-icon"
+             id="burgerMenuOpen">
+            <ListSidebar />
         </div>
-        <ul class="level-1">
-            <div class="bookNav__wrapper"
-                 v-for="(point, index) in bookNavigation"
-                 :key="'bookNav' + index">
-                <li class="bookNav__li"
-                    :class="{ 'bookNav__li--active': point.href?.params?.id && point.href.params.id == id }"
-                    @click="handlePointClick(point?.id)">
-                    <RouterLink v-if="point.href"
-                                :to="point.href">{{ point.name }}</RouterLink>
-                    <span v-else>{{ point.name }}
-                        <ListArrowDown />
-                    </span>
-                </li>
-                <ul class="level-2"
-                    :class="{ 'level-2--hidden': point.id && !openThisPageBlocks.includes(point.id) }"
-                    v-if="point.subpages.length">
-                    <li class="bookNav__li"
-                        v-for="(subpoint, index) in point.subpages"
-                        :key="'bookNavSub' + index"
-                        :class="{ 'bookNav__li--active': subpoint.href && subpoint.href.params.id == id }">
-                        <RouterLink v-if="subpoint.href"
-                                    :to="subpoint.href">
-                            {{ subpoint.name }}
-                        </RouterLink>
-                        <span v-else>{{ subpoint.name }}</span>
-                    </li>
-                </ul>
-            </div>
-        </ul>
     </div>
+    <ul class="book-nav__level-1">
+        <div class="book-nav__wrapper"
+             v-for="(point, index) in bookNavigation"
+             :key="'book-nav' + index">
+            <li class="book-nav__li"
+                :class="{ 'book-nav__li--active': point.href?.params?.id && point.href.params.id == id }"
+                @click="handlePointClick(point?.id)">
+                <RouterLink v-if="point.href"
+                            :to="point.href">{{ point.name }}</RouterLink>
+                <span v-else>{{ point.name }}
+                    <ListArrowDown />
+                </span>
+            </li>
+            <ul class="book-nav__level-2"
+                :class="{ 'book-nav__level-2--hidden': point.id && !openThisPageBlocks.includes(point.id) }"
+                v-if="point.subpages.length">
+                <li class="book-nav__li"
+                    v-for="(subpoint, index) in point.subpages"
+                    :key="'book-navSub' + index"
+                    :class="{ 'book-nav__li--active': subpoint.href && subpoint.href.params.id == id }">
+                    <RouterLink v-if="subpoint.href"
+                                :to="subpoint.href">
+                        {{ subpoint.name }}
+                    </RouterLink>
+                    <span v-else>{{ subpoint.name }}</span>
+                </li>
+            </ul>
+        </div>
+    </ul>
+</div>
 </template>
 
 <script lang="ts">

@@ -149,18 +149,18 @@ export default defineComponent({
             }
             Api.post('/users/test_send_mail', body)
         }
-        const validateEmail = (inputValue: string) => {
-            if (!inputValue) {
+        const validateEmail = (value: unknown): boolean | string => {
+            if (typeof value !== 'string' || value.trim() === '') {
                 return 'Email обязателен для заполнения';
             }
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(String(inputValue))) {
+            if (!emailRegex.test(value)) {
                 return 'Введите корректный email адрес';
             }
 
             return true;
-        }
+        };
 
         return {
             currentSlides,

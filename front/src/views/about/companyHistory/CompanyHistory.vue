@@ -1,29 +1,29 @@
 <template>
-    <div class="row flex-nowrap bookPages__wrapper mt20">
-        <div class="col-sm-3 bookPages"
-             :class="{ bookPages_rolled: rollSidebar }">
-            <SideBarNavigation :id="Number(currentPage)"
-                               @rollSidebar="rollSidebar = !rollSidebar" />
-        </div>
-        <div class="col-sm-9 bookContent"
-             v-if="Object.keys(pages).length">
-            <Transition name="fade"
-                        mode="out-in">
-                <div class="bookContent__inner"
-                     :key="currentPage">
-                    <component :is="pages[Number(currentPage)]"></component>
-                </div>
-            </Transition>
-            <div class="bookContent__navDiv">
-                <a class="bookContent__navDiv__arrowBackward"
-                   :class="{ hidden: Number(currentPage) == 0 }"
-                   @click="navigate(Number(currentPage) - 1)"> <i class="fa-solid fa-arrow-left"></i> Назад</a>
-                <a class="bookContent__navDiv__arrowForward"
-                   :class="{ hidden: Number(currentPage) == 20 }"
-                   @click="navigate(Number(currentPage) + 1)">Вперед <i class="fa-solid fa-arrow-right"></i></a>
+<div class="row flex-nowrap book-pages__wrapper mt20">
+    <div class="col-sm-3 book-pages"
+         :class="{ 'book-pages_rolled': rollSidebar }">
+        <SideBarNavigation :id="Number(currentPage)"
+                           @rollSidebar="rollSidebar = !rollSidebar" />
+    </div>
+    <div class="col-sm-9 book-content"
+         v-if="Object.keys(pages).length">
+        <Transition name="fade"
+                    mode="out-in">
+            <div class="book-content__inner"
+                 :key="currentPage">
+                <component :is="pages[Number(currentPage)]"></component>
             </div>
+        </Transition>
+        <div class="book-content__navDiv">
+            <a class="book-content__navDiv__arrowBackward"
+               :class="{ hidden: Number(currentPage) == 0 }"
+               @click="navigate(Number(currentPage) - 1)"> <i class="fa-solid fa-arrow-left"></i> Назад</a>
+            <a class="book-content__navDiv__arrowForward"
+               :class="{ hidden: Number(currentPage) == 20 }"
+               @click="navigate(Number(currentPage) + 1)">Вперед <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
+</div>
 </template>
 
 <script lang="ts">

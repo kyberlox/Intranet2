@@ -37,18 +37,18 @@
     </div>
 </div>
 <div class="row mt-5 justify-content-center">
-    <div class="col-sm-10 achievments">
+    <div class="col-sm-10 company__achievments">
         <div class="mb-3 col-12 col-md p-2 text-center"
              v-for="(item, index) in achievments"
              :key="index">
-            <span class="plus-num">{{ item.plusNum }}</span>
-            <span class="plus-desc">{{ item.plusDesc }}</span>
+            <span class="company__num">{{ item.plusNum }}</span>
+            <span class="company__plus-desc">{{ item.plusDesc }}</span>
         </div>
     </div>
 </div>
 <div class="row mt-5">
     <div class="col-sm-12 d-flex align-items-stretch">
-        <div class="company-values">
+        <div class="company__values">
             <h3 class="page__title">Ценности компании</h3>
             <ul>
                 <li v-for="(item, index) in ourPleasures"

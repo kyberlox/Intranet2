@@ -217,7 +217,7 @@ class UserSearchModel:
 
             if elastic_client.indices.exists(index=index_name):
                 # Обновляем маппинг существующего индекса
-                elastic_client.indices.put_mapping(index=index_name, body=mapping)
+                elastic_client.indices.put_mapping(index=index_name, body=mapping#["mappings"])
                 return {"status": "updated", "message": f"Mapping for {index_name} updated"}
             else:
                 LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")

@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 from bson.objectid import ObjectId
 
+from src.services.LogsMaker import LogsMaker
+
 load_dotenv()
 
 user = os.getenv('user')

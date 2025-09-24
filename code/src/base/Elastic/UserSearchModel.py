@@ -2,6 +2,8 @@ from .App import elastic_client, DOMAIN
 
 from fastapi import HTTPException
 
+from src.services.LogsMaker import LogsMaker
+
 if elastic_client.ping():
     LogsMaker().ready_status_message("Успешное подключение Elasticsearch!")
 

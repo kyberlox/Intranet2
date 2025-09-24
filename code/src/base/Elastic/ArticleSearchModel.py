@@ -4,6 +4,7 @@ from .App import DOMAIN
 from src.services.LogsMaker import LogsMaker
 
 
+
 class ArticleSearchModel:
 
     def __init__(self):

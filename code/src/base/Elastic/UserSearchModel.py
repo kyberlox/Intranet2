@@ -291,7 +291,10 @@ class UserSearchModel:
 
                     users_data_ES.append(data_action)
         
-        helpers.bulk(elastic_client, users_data_ES)
+        success, errors = helpers.bulk(elastic_client, users_data_ES)
+
+        # print(success, errors)
+        LogsMaker().ready_status_message(f"в чем беда: {success, errors}")
         return {"status": True}
 
     '''

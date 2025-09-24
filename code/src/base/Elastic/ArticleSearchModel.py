@@ -12,6 +12,8 @@ class ArticleSearchModel:
         self.index = "articles"
 
     def create_index(self):
+        LogsMaker().info_message("Тут всё может пойти не по плану")
+        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
         request_body = {
             "settings": {
                 "analysis": {
@@ -121,17 +123,14 @@ class ArticleSearchModel:
     def dump(self):
         from src.model.File import File
 
-        LogsMaker().info_message("Тут всё может пойти не по плану")
+        
         try:
             # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
             self.delete_index()
         except:
             pass
-        LogsMaker().ready_status_message("ВСЁ ХОРОШО! 👍")
         
         self.create_index()
-        
-
 
         article_SQL_data = self.ArticleModel.all()
 

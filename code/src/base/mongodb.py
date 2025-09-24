@@ -13,14 +13,14 @@ STORAGE_PATH = "./files_db"
 
 # MongoDB connection
 
-client = MongoClient(
-    host="mongodb",
-    port=27017,
-    username=user,
-    password=pswd,
-    authSource="admin"
-)
-client.admin.command('ismaster')
+# client = MongoClient(
+#     host="mongodb",
+#     port=27017,
+#     username=user,
+#     password=pswd,
+#     authSource="admin"
+# )
+# client.admin.command('ismaster')
 
 def create_db_client():
     max_retries = 5

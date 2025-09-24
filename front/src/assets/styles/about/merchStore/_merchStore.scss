@@ -269,6 +269,7 @@
 
         &__item {
             width: fit-content;
+            min-width: 100%;
 
             &:hover {
                 .merchStore__grid__item__price span::after {

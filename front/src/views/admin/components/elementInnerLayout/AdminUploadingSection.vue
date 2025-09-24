@@ -4,9 +4,17 @@
     <div class="admin-element-inner__fields"
          v-for="itemKey in Object.keys(newFileData)"
          :key="'key' + itemKey">
-        <div v-if="newFileData && itemKey !== 'videos_embed'"
-             class="">
-            <p class="admin-element-inner__field-title fs-l">{{ blockTitle(itemKey) }} </p>
+        <div v-if="newFileData && itemKey !== 'videos_embed'">
+            <p class="admin-element-inner__field-title fs-l">
+                {{ blockTitle(itemKey) }}
+            </p>
+            <div v-if="itemKey == 'images' && newFileData['images']?.length">
+                превью
+                <FileUploader @upload="(e) => $emit('handleUpload', e)"
+                              @reloadData="$emit('reloadData')"
+                              :uploadType="(itemKey as keyof IKeyToWord)"
+                              :existFiles="[(newFileData[itemKey as keyof IKeyToWord])![0]]" />
+            </div>
             <FileUploader @upload="(e) => $emit('handleUpload', e)"
                           @reloadData="$emit('reloadData')"
                           :uploadType="(itemKey as keyof IKeyToWord)"

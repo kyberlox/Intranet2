@@ -149,7 +149,7 @@ export default defineComponent({
             }
             Api.post('/users/test_send_mail', body)
         }
-        const validateEmail = (inputValue: unknown) => {
+        const validateEmail = (inputValue: string) => {
             if (!inputValue) {
                 return 'Email обязателен для заполнения';
             }

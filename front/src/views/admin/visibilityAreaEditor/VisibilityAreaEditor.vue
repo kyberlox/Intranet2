@@ -1,58 +1,58 @@
 <template>
-    <div class="visibility-editor__title page__title mt20">Редактор областей видимости</div>
-    <div class="visibility-editor__wrapper">
-        <AdminSidebar :needDefaultNav="false">
-            <VisibilityAreaSlotLeftSidebar :visibilityAreas="allAreas"
-                                           :activeId="activeArea"
-                                           @addNewArea="modalIsOpen = true"
-                                           @deleteArea="deleteArea"
-                                           @areaClicked="(i: number) => changeActiveArea(i)" />
-        </AdminSidebar>
+<div class="visibility-editor__title page__title mt20">Редактор областей видимости</div>
+<div class="visibility-editor__wrapper">
+    <AdminSidebar :needDefaultNav="false">
+        <VisibilityAreaSlotLeftSidebar :visibilityAreas="allAreas"
+                                       :activeId="activeArea"
+                                       @addNewArea="modalIsOpen = true"
+                                       @deleteArea="deleteArea"
+                                       @areaClicked="(i: number) => changeActiveArea(i)" />
+    </AdminSidebar>
 
-        <SlotModal v-if="modalIsOpen"
-                   @close="modalIsOpen = false">
-            <VisibilityAreaSlotModal @cancelArea="modalIsOpen = false"
-                                     @acceptArea="createNewArea" />
-        </SlotModal>
+    <SlotModal v-if="modalIsOpen"
+               @close="modalIsOpen = false">
+        <VisibilityAreaSlotModal @cancelArea="modalIsOpen = false"
+                                 @acceptArea="createNewArea" />
+    </SlotModal>
 
-        <div class="visibility-editor__area-users__wrapper">
-            <VisibilityAreaControls v-if="activeArea"
-                                    :editGroupMode="editGroupMode"
-                                    class="visibility-editor__area-users__edit-methods"
-                                    @changeEditMode="(value) => changeEditMode(value)"
-                                    @depFilterChanged="(depValue) => handleFilterChanged(depValue, 'dep')"
-                                    @fioFilterChanged="(fioValue) => handleFilterChanged(fioValue, 'fio')" />
+    <div class="visibility-editor__area-users__wrapper">
+        <VisibilityAreaControls v-if="activeArea"
+                                :editGroupMode="editGroupMode"
+                                class="visibility-editor__area-users__edit-methods"
+                                @changeEditMode="(value) => changeEditMode(value)"
+                                @depFilterChanged="(depValue) => handleFilterChanged(depValue, 'dep')"
+                                @fioFilterChanged="(fioValue) => handleFilterChanged(fioValue, 'fio')" />
 
-            <VisibilityAreaUsersList v-if="!editGroupMode && !isLoading"
-                                     :editGroupMode="editGroupMode"
-                                     :userChoices="choices"
-                                     :formattedUsers="formattedUsers"
-                                     :filteredUsers="filteredUsers"
-                                     :fioFilter="fioFilterValue"
-                                     :depFilter="depFilterValue"
-                                     :activeArea="activeArea"
-                                     @deleteDep="deleteDepFromVision"
-                                     @pickUser="fixUserChoice" />
+        <VisibilityAreaUsersList v-if="!editGroupMode && !isLoading"
+                                 :editGroupMode="editGroupMode"
+                                 :userChoices="choices"
+                                 :formattedUsers="formattedUsers"
+                                 :filteredUsers="filteredUsers"
+                                 :fioFilter="fioFilterValue"
+                                 :depFilter="depFilterValue"
+                                 :activeArea="activeArea"
+                                 @deleteDep="deleteDepFromVision"
+                                 @pickUser="fixUserChoice" />
 
-            <VisibilityAreaEditorTree v-else-if="editGroupMode && !isLoading"
-                                      @fixUserChoice="fixUserChoiceFromDepTree"
-                                      :filteredDepartments="filteredDepartments"
-                                      :filteredUsers="filteredUsers"
-                                      :choices="choices"
-                                      :departments="allDepStructure" />
-            <div v-else
-                 class="visibility-editor__area__loader__wrapper">
-                <Loader />
-            </div>
+        <VisibilityAreaEditorTree v-else-if="editGroupMode && !isLoading"
+                                  @fixUserChoice="fixUserChoiceFromDepTree"
+                                  :filteredDepartments="filteredDepartments"
+                                  :filteredUsers="filteredUsers"
+                                  :choices="choices"
+                                  :departments="allDepStructure" />
+        <div v-else
+             class="visibility-editor__area__loader__wrapper">
+            <Loader />
         </div>
-
-        <VisibilityRightSidebar :choices="choices"
-                                :editMode="editGroupMode"
-                                @deleteMultipleUsers="deleteMultipleUsers"
-                                @saveChoices="saveChoices"
-                                @clearChoices="clearChoices"
-                                @deleteFromChoice="deleteFromChoice" />
     </div>
+
+    <VisibilityRightSidebar :choices="choices"
+                            :editMode="editGroupMode"
+                            @deleteMultipleUsers="deleteMultipleUsers"
+                            @saveChoices="saveChoices"
+                            @clearChoices="clearChoices"
+                            @deleteFromChoice="deleteFromChoice" />
+</div>
 </template>
 
 <script lang="ts">

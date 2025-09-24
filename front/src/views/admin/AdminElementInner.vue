@@ -1,69 +1,67 @@
 <template>
-  <div class="admin-element-inner">
-    <div class="admin-element-inner__wrapper mt20"
-         :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth || isMobileScreen }">
-      <div v-if="newElementSkeleton.length"
-           class="admin-element-inner__editor"
-           :class="[
-            { 'admin-element-inner__editor--preview-full-width': previewFullWidth || isMobileScreen },
-            { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
-          ]">
-        <div v-for="(item, index) in newElementSkeleton"
-             class="admin-element-inner__field"
-             :key="index">
+<div class="admin-element-inner">
+  <div class="admin-element-inner__wrapper mt20"
+       :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth || isMobileScreen }">
+    <div v-if="newElementSkeleton.length"
+         :class="['admin-element-inner__editor',
+          { 'admin-element-inner__editor--preview-full-width': previewFullWidth || isMobileScreen },
+          { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
+        ]">
+      <div v-for="(item, index) in newElementSkeleton"
+           class="admin-element-inner__field"
+           :key="index">
 
-          <Component :is="inputComponentChecker(item)"
-                     :item="item"
-                     @pick="(value: string) => handleEmitValueChange(item, value)" />
+        <Component :is="inputComponentChecker(item)"
+                   :item="item"
+                   @pick="(value: string) => handleEmitValueChange(item, value)" />
 
-          <AdminEditReportage v-if="item.field == 'reports'"
-                              :item="(item.value as IReportage[])"
-                              @pick="handleReportChange" />
-
-        </div>
-
-        <div class="admin-element-inner__field mt10">
-          <AdminEditInput v-if="newFileData.videos_embed"
-                          :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
-                          @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
-        </div>
-        <AdminUploadingSection class="mt10"
-                               :newFileData="newFileData"
-                               :newData="newData"
-                               @reloadData="reloadElementData(true)"
-                               @handleUpload="handleUpload" />
+        <AdminEditReportage v-if="item.field == 'reports'"
+                            :item="(item.value as IReportage[])"
+                            @pick="handleReportChange" />
       </div>
 
-      <div v-else
-           class="admin-element-inner__editor">
-        <Loader class="admin-element-inner__editor__loader loader" />
+      <div class="admin-element-inner__field mt10">
+        <AdminEditInput v-if="newFileData.videos_embed"
+                        :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
+                        @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
       </div>
-
-      <AdminPostPreview :previewFullWidth="previewFullWidth"
-                        :isMobileScreen="isMobileScreen"
-                        :newFileData="newFileData"
-                        :newData="newData"
-                        :activeType="activeType"
-                        :sectionId="id"
-                        :newId="String(newId)"
-                        :currentItem="currentItem"
-                        @noPreview="previewFullWidth = true"
-                        @changePreviewWidth="previewFullWidth = !previewFullWidth" />
-
+      <AdminUploadingSection class="mt10"
+                             :newFileData="newFileData"
+                             :newData="newData"
+                             @reloadData="reloadElementData(true)"
+                             @handleUpload="handleUpload" />
     </div>
 
-    <div class="admin-element-inner__actions">
-      <button @click="applyNewData"
-              :disabled="buttonIsDisabled"
-              class="admin-element-inner__action-button admin-element-inner__action-button--save">
-        <span class="admin-element-inner__action-text">Сохранить</span>
-      </button>
-      <RouterLink :to="{ name: 'adminBlockInner', params: { id: id } }"
-                  class="admin-element-inner__action-button admin-element-inner__action-button--cancel">
-        <span class="admin-element-inner__action-text">Назад</span>
-      </RouterLink>
+    <div v-else
+         class="admin-element-inner__editor">
+      <Loader class="admin-element-inner__editor__loader loader" />
     </div>
+
+    <AdminPostPreview :previewFullWidth="previewFullWidth"
+                      :isMobileScreen="isMobileScreen"
+                      :newFileData="newFileData"
+                      :newData="newData"
+                      :activeType="activeType"
+                      :sectionId="id"
+                      :newId="String(newId)"
+                      :currentItem="currentItem"
+                      @noPreview="previewFullWidth = true"
+                      @changePreviewWidth="previewFullWidth = !previewFullWidth" />
+
   </div>
+
+  <div class="admin-element-inner__actions">
+    <button @click="applyNewData"
+            :disabled="buttonIsDisabled"
+            class="admin-element-inner__action-button admin-element-inner__action-button--save">
+      <span class="admin-element-inner__action-text">Сохранить</span>
+    </button>
+    <RouterLink :to="{ name: 'adminBlockInner', params: { id: id } }"
+                class="admin-element-inner__action-button admin-element-inner__action-button--cancel">
+      <span class="admin-element-inner__action-text">Назад</span>
+    </RouterLink>
+  </div>
+</div>
 </template>
 
 <script lang="ts">

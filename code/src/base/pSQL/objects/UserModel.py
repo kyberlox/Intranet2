@@ -61,10 +61,6 @@ class UserModel:
             self.db.rollback()
             LogsMaker().error_message(str(e))
 
-
-
-    
-
     def upsert_user(self, user_data : dict):
         from .App import engine
         """
@@ -414,7 +410,7 @@ class UserModel:
             return None
 
     def find_by_uuid(self):
-        user = self.db.query(self.user).filter(self.user.uuid == self.id).first()
+        user = self.db.query(self.user).filter(self.user.uuid == self.uuid).first()
         if user is not None:
             return {
                 "ID": user.id,

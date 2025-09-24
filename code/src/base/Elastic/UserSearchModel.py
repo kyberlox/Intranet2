@@ -237,7 +237,9 @@ class UserSearchModel:
         except:
             pass
         self.create_index()  # создаем индекс перед dump-ом / ВОпрос: надо ли удалять предыдущий индекс на вский случай ?
-
+        
+        LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
+        
         users_data = self.UserModel.all()
         users_data_ES = []
         for user in users_data:
@@ -266,9 +268,21 @@ class UserSearchModel:
                             continue
 
                     user_id = int(data['id'])
-                    LogsMaker().ready_status_message("ВСЁ ХРОШО! 👍")
-                    elastic_client.index(index=self.index, id=user_id, body=data_row)
+                    
+                    #elastic_client.index(index=self.index, id=user_id, body=data_row)
 
+                    usr_data = data_row
+        
+                    data_action = {
+                        "_index": self.index,
+                        "_op_type": "index",
+                        "_id": user_id,
+                        "_source": usr_data
+                    }
+
+                    users_data_ES.append(data_action)
+        
+        helpers.bulk(elastic_client, usr_data_ES)
         return {"status": True}
 
     '''

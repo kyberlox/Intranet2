@@ -27,9 +27,9 @@ import { onMounted, defineComponent, ref } from 'vue';
 import ContentGallery from '@/components/tools/gallery/ContentGallery.vue';
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { type IContentGallerySlide } from '@/components/tools/gallery/ContentGallery.vue';
-import firstPlaceMedal from '@/assets/imgs/1placeMedal.png'
-import secondPlaceMedal from '@/assets/imgs/2placeMedal.png'
-import thirdPlaceMedal from '@/assets/imgs/3placeMedal.png'
+// import firstPlaceMedal from '@/assets/imgs/1placeMedal.png'
+// import secondPlaceMedal from '@/assets/imgs/2placeMedal.png'
+// import thirdPlaceMedal from '@/assets/imgs/3placeMedal.png'
 
 
 export default defineComponent({

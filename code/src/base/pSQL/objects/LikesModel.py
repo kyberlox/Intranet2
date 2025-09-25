@@ -136,7 +136,7 @@ class LikesModel:
             # ).count() > 0
         except Exception as e:
             self.session.rollback()
-            return LogsMaker().error_message(f"Ошибка при выводе лайка: {e}")
+            return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
         finally:
             self.session.close()
 

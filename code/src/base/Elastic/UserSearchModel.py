@@ -261,7 +261,8 @@ class UserSearchModel:
                             continue
 
                     user_id = int(data['id'])
-
+                    if user_id == 58:
+                        print(data_row)
                     elastic_client.index(index=self.index, id=user_id, body=data_row)
 
         return {"status": True}

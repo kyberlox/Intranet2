@@ -38,7 +38,12 @@ class Visions:
         return FieldvisionModel(id=self.vision_id).find_vision_by_id()
 
     def delete_vision(self):
-        return FieldvisionModel(id=self.vision_id).remove_field_vision()
+        users = self.get_users_in_vision()
+        users_id = [usr['id'] for usr in users]
+        FieldvisionModel(id=self.vision_id).remove_field_vision()
+        UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(user_data=users_id, roots=self.roots)
+        # self.delete_users_from_vision(users=users_id)
+        return True
     
     def get_all_visions(self):
         return FieldvisionModel().find_all_visions()
@@ -64,8 +69,9 @@ class Visions:
             dep = self.get_dep_structure(dep_id)
             for de in dep:
                 for user in de['users']:
-                    all_dep_users.append(user['user_id'])
-        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(self.roots, all_dep_users)
+                    all_dep_users.append(user['id'])
+        print(all_dep_users)
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(roots=self.roots, user_data=all_dep_users)
     
     def add_dep_users_only(self, dep_id):
         all_dep_users = []
@@ -73,20 +79,20 @@ class Visions:
         for de in dep:
             if de['id'] == dep_id:
                 for user in de['users']:
-                    all_dep_users.append(user['user_id'])
+                    all_dep_users.append(user['id'])
                 break
             else:
                 pass
-        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(self.roots, all_dep_users)
+        return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(roots=self.roots, user_data=all_dep_users)
         
     def add_users_list_to_vision(self, users):
         return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(users, self.roots)
 
     def delete_user_from_vision(self, user):
-        return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).remove_user_from_vision(self.roots)
+        return UservisionsRootModel(vision_id=self.vision_id, user_id=user).remove_user_from_vision(self.roots)
     
     def delete_users_from_vision(self, users):
-        return UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(users, self.roots)
+        return UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(user_data=users, roots=self.roots)
 
     def get_users_in_vision(self):
         return UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision()
@@ -137,8 +143,9 @@ def create_new_vision(vision_name: str):
     return Visions(vision_name).create_new_vision()
 
 @fieldsvisions_router.delete("/delete_vision/{vision_id}")
-def delete_vision(vision_id: int):
-    return Visions(vision_id=vision_id).delete_vision()
+def delete_vision(request: Request, vision_id: int):
+    uuid = get_uuid_from_request(request)
+    return Visions(vision_id=vision_id, user_id=uuid).delete_vision()
 
 @fieldsvisions_router.put("/add_user_to_vision/{vision_id}/{user_id}")
 def add_user_to_vision(request: Request, vision_id: int, user_id: int):

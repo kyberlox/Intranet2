@@ -85,12 +85,14 @@ app.include_router(store_router, prefix="/api")
 
 #templates = Jinja2Templates(directory="./front_jinja") 
 
-origins = [
-    "http://localhost:8000",
-    DOMAIN,
-    #"http://intranet.emk.org.ru:8000",
-    #"http://intranet.emk.org.ru"
-]
+# origins = [
+#     "http://localhost:8000",
+#     DOMAIN,
+#     #"http://intranet.emk.org.ru:8000",
+#     #"http://intranet.emk.org.ru"
+# ]
+
+origins = [*]
 
 app.add_middleware(
     CORSMiddleware,

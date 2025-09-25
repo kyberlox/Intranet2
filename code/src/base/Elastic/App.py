@@ -23,14 +23,37 @@ search_router = APIRouter(prefix="/elastic", tags=["Поиск по тексту
 
 
 
-elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=30)
+# elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=100)
+
+# if elastic_client.ping():
+#     LogsMaker().ready_status_message("✅ Успешное подключение Elasticsearch!")
+# else:
+#     LogsMaker().fatal_message("❌ Ошибка аутентификации Elasticsearch!")
 
 
 
-if elastic_client.ping():
-    LogsMaker().ready_status_message("✅ Успешное подключение Elasticsearch!")
-else:
+def create_elastic_client():
+    max_retries = 5
+    retry_delay = 15
+    
+    for i in range(max_retries):
+        try:
+            elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=100)
+
+
+            if elastic_client.ping():
+                LogsMaker().ready_status_message("✅ Успешное подключение Elasticsearch!")
+                return elastic_client
+        except Exception as e:
+            LogsMaker().warning_message(f"❌ Connection attempt {i+1}/{max_retries} failed: {e}")
+            if i < max_retries - 1:
+                LogsMaker().info_message(f"🕐 Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+    
     LogsMaker().fatal_message("❌ Ошибка аутентификации Elasticsearch!")
+
+elastic_client = create_elastic_client()
+
 
 with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
     sections = json.load(f)

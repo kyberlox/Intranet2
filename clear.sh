@@ -9,12 +9,19 @@ rm -rf ./code/files_db/
 mkdir ./code/files_db
 mkdir ./code/files_db/user_photo
 
-rm -rf ./mongodb/data/*
+rm -rf ./code/vcard_db/
+mkdir ./code/vcard_db
 
-rm -rf ./pSQL/data/*
 
-rm -rf ./elasticsearch/data*
+
+sudo rm -rf ./mongodb/data/*
+
+sudo rm -rf ./pSQL/data/*
+
+sudo rm -rf ./elasticsearch/data*
+
+
 
 docker-compose up -d
 
-chmod -r 777 ./
+sudo chmod -R 777 ./

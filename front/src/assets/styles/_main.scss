@@ -1,19 +1,13 @@
 @forward './animation';
-@forward './_vars';
-@forward './buttons';
+@forward './vars';
+@forward './classes';
+
 @forward './layout/_layout';
-@forward './about/_about';
 @forward './common/_common';
-@forward './gallery/gallery';
-@forward './services/_services';
-@forward './news/news';
 @forward './admin/admin';
-@use '@/assets/styles/mixins/_mixins.scss' as *;
 
+@use '/src/assets/styles/mixins' as *;
 
-body {
-    overflow-x: hidden;
-}
 
 .main {
     &-content {

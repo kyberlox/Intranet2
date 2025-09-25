@@ -1,21 +1,21 @@
 <template>
 <div class="mt20">
     <div class="page__title">Магазин мерча</div>
-    <div class="merchStore__grid__wrapper">
-        <div class="merchStore__grid">
+    <div class="merch-store__grid__wrapper">
+        <div class="merch-store">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
-                        class="merchStore__grid__item"
+                        class="merch-store__grid__item"
                         v-for="item in storePlug"
                         :key="item.id">
-                <div class="merchStore__grid__item__info">
+                <div class="merch-store__grid__item__info">
                     <HoverGallery :images="item.images"
                                   :showIndicators="true" />
                 </div>
-                <div class="merchStore__grid__item__title">
+                <div class="merch-store__grid__item__title">
                     {{ item.title }}
                 </div>
                 <div
-                     class="merchStore__grid__item__price merchStore__grid__item__info__item__price merchStore__grid__item__info__item">
+                     class="merch-store__grid__item__price merch-store__grid__item__info__item__price merch-store__grid__item__info__item">
                     <span class="">
                         {{ item.price }}
                     </span> эмк-коинов
@@ -44,7 +44,7 @@ export default defineComponent({
             {
                 id: 9,
                 title: 'Подушка для самолета',
-                images: ['/imgs/merchStore/9pod.png', '/imgs/merchStore/10futb.png'],
+                images: ['/imgs/merchStore/9pod.png', '/imgs/merchStore/10pod.png'],
                 price: '1000',
                 count: '1'
             },
@@ -70,6 +70,34 @@ export default defineComponent({
                 count: '1'
             },
             {
+                id: 6,
+                title: 'Бутылка для воды (пластик)',
+                images: ['/imgs/merchStore/6voda.png'],
+                price: '1000',
+                count: '1'
+            },
+            {
+                id: 4,
+                title: 'Панама',
+                images: ['/imgs/merchStore/4panama.png', '/imgs/merchStore/5panama.png'],
+                price: '1000',
+                count: '1'
+            },
+            {
+                id: 7,
+                title: 'Вечный карандаш',
+                images: ['/imgs/merchStore/7karandash.png'],
+                price: '1000',
+                count: '1'
+            },
+            {
+                id: 8,
+                title: 'Сумка',
+                images: ['/imgs/merchStore/8sumka.png'],
+                price: '1000',
+                count: '1'
+            },
+            {
                 id: 1,
                 title: 'Зонт складной (черный)',
                 images: ['/imgs/merchStore/1zont.png'],
@@ -90,38 +118,11 @@ export default defineComponent({
                 price: '1000',
                 count: '1'
             },
-            {
-                id: 4,
-                title: 'Панама',
-                images: ['/imgs/merchStore/4panama.png'],
-                price: '1000',
-                count: '1'
-            },
+
             {
                 id: 5,
                 title: 'Бутылка для воды (стекло)',
                 images: ['/imgs/merchStore/5voda.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 6,
-                title: 'Бутылка для воды (пластик)',
-                images: ['/imgs/merchStore/6voda.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 7,
-                title: 'Вечный карандаш',
-                images: ['/imgs/merchStore/7karandash.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 8,
-                title: 'Сумка',
-                images: ['/imgs/merchStore/8sumka.png'],
                 price: '1000',
                 count: '1'
             },
@@ -154,5 +155,7 @@ export default defineComponent({
 .hover-gallery__image {
     max-width: 100%;
     object-fit: contain;
+    background: whitesmoke;
+    border-radius: 20px;
 }
 </style>

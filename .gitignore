@@ -9,5 +9,15 @@
 **/__pycache__/
 .env
 .idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+**.log
 
-/front/
+/front/node_modules
+/front/dist
+/front/dist-ssr
+/front/coverage
+/front/cypress

@@ -1,42 +1,42 @@
 <template>
-    <div class="mt20">
-        <h2 class="page__title">Есть идея! (Мои идеи)</h2>
-        <div class="row mb-5">
-            <div class="col">
-                <RouterLink :to="{ name: 'newIdeaPage' }"
-                            class="btn btn-primary"
-                            title="Отправить новую идею!">Предложить идею</RouterLink>
-            </div>
+<div class="mt20">
+    <h2 class="page__title">Есть идея! (Мои идеи)</h2>
+    <div class="row mb-5">
+        <div class="col">
+            <RouterLink :to="{ name: 'newIdeaPage' }"
+                        class="btn btn-primary"
+                        title="Отправить новую идею!">Предложить идею</RouterLink>
         </div>
-        <div class="row mb-5">
-            <table class="table"
-                   v-if="ideas">
-                <tbody>
-                    <tr>
-                        <th>№</th>
-                        <th>Дата</th>
-                        <th>Название</th>
-                        <th>Статус</th>
-                    </tr>
-                    <tr v-for="idea in ideas.sort((a, b) => Number(b.number) - Number(a.number))"
-                        :key="idea.id"
-                        class="table__idea"
-                        @click="callModal(idea)">
-                        <td>{{ idea.number }}</td>
-                        <td>{{ idea.date_create.split(' ')[0] }}</td>
-                        <td> {{ idea.name }} </td>
-                        <td>{{ idea.status }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <SlotModal>
-            <MyIdeaModalInner v-if="modalIsVisible"
-                              :currentUser="currentUser"
-                              :textContent="ideaInModal"
-                              @close="modalIsVisible = false" />
-        </SlotModal>
     </div>
+    <div class="row mb-5">
+        <table class="table"
+               v-if="ideas">
+            <tbody>
+                <tr>
+                    <th>№</th>
+                    <th>Дата</th>
+                    <th>Название</th>
+                    <th>Статус</th>
+                </tr>
+                <tr v-for="idea in ideas.sort((a, b) => Number(b.number) - Number(a.number))"
+                    :key="idea.id"
+                    class="idea__table"
+                    @click="callModal(idea)">
+                    <td>{{ idea.number }}</td>
+                    <td>{{ idea.date_create.split(' ')[0] }}</td>
+                    <td> {{ idea.name }} </td>
+                    <td>{{ idea.status }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <SlotModal>
+        <MyIdeaModalInner v-if="modalIsVisible"
+                          :currentUser="currentUser"
+                          :textContent="ideaInModal"
+                          @close="modalIsVisible = false" />
+    </SlotModal>
+</div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed, type Ref } from 'vue';

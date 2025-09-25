@@ -1,4 +1,4 @@
-@use '@/assets/styles/mixins/_mixins.scss' as *;
+@use '/src/assets/styles/mixins' as *;
 
 .header {
     background: linear-gradient(180deg, #ececec 38.13%, #fcfcfc 66.26%, #fbfbfb 76.34%, #e8e8e8 100%);

@@ -1,9 +1,9 @@
 <template>
-    <div class="excursions__training__page mt20">
-        <div class="page__title">Посещение производственных площадок</div>
-        <PostInner v-if="safetyTechnicsFactoryInner.content"
-                   :previewElement="safetyTechnicsFactoryInner.content" />
-    </div>
+<div class="mt20">
+    <div class="page__title">Посещение производственных площадок</div>
+    <PostInner v-if="safetyTechnicsFactoryInner.content"
+               :previewElement="safetyTechnicsFactoryInner.content" />
+</div>
 </template>
 
 <script lang="ts">

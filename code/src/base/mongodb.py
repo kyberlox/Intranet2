@@ -1,8 +1,11 @@
 from pymongo import MongoClient
 import os
+import time
 from dotenv import load_dotenv
 
 from bson.objectid import ObjectId
+
+from src.services.LogsMaker import LogsMaker
 
 load_dotenv()
 
@@ -12,15 +15,35 @@ pswd = os.getenv('pswd')
 STORAGE_PATH = "./files_db"
 
 # MongoDB connection
-client = MongoClient(
-    host="mongodb",
-    port=27017,
-    username=user,
-    password=pswd,
-    authSource="admin"
-)
 
-client.admin.command('ismaster')
+# client = MongoClient(
+#     host="mongodb",
+#     port=27017,
+#     username=user,
+#     password=pswd,
+#     authSource="admin"
+# )
+# client.admin.command('ismaster')
+
+def create_db_client():
+    max_retries = 5
+    retry_delay = 15
+    
+    for i in range(max_retries):
+        try:
+            client = MongoClient(host="mongodb", port=27017, username=user, password=pswd, authSource="admin")
+            client.admin.command('ismaster')
+            LogsMaker().ready_status_message("mongodb успешно подключен!")
+            return client
+        except Exception as e:
+            LogsMaker().warning_message(f"❌ Connection attempt {i+1}/{max_retries} failed: {e}")
+            if i < max_retries - 1:
+                LogsMaker().info_message(f"🕐 Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+    
+    LogsMaker().fatal_message("Failed to connect to mongodb after multiple attempts")
+
+client = create_db_client()
 
 db = client["file_storage"]
 files_collection = db["files"]

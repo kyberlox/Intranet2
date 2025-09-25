@@ -1099,6 +1099,9 @@ class Article:
         self.upload_many_to_many()
         self.upload_services()
 
+        # Дамп данных в эластик
+        self.dump_articles_data_es()
+
         self.upload_likes()
 
     def upload_uniquely(self ):
@@ -1553,8 +1556,7 @@ class Article:
             # YandexGPT5 + Yandex ART ❌
             # Юбилей САЗ ❌
 
-        # Дамп данных в эластик
-        self.dump_articles_data_es()
+        
 
     def search_by_id(self, session_id=""):
         art = ArticleModel(id = self.id).find_by_id()

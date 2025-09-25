@@ -3,7 +3,7 @@
     <div>
         <table>
             <tbody>
-                <tr class="user-choices-table__row"
+                <tr class="visibility-editor__user-choices-table__row"
                     v-for="choice in choices"
                     :key="choice.type + choice.id"
                     @click="$emit('deleteFromChoice', choice.id)">

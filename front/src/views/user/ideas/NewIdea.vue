@@ -4,16 +4,16 @@
     <div class="page__description"
          v-html="greetings"></div>
     <div class="col-sm-6 mt20">
-        <VForm class="form-floating new-idea__form mb-3"
+        <VForm class="form-floating idea-new__form-floating idea-new__form mb-3"
                ref="formRef"
                @submit="sendIdea">
 
             <!-- Поле темы -->
-            <div class="invalid-feedback__wrapper">
+            <div class="idea-new__form__invalid-feedback__wrapper">
                 <ErrorMessage name="themeField"
-                              class="invalid-feedback" />
+                              class="idea-new__form__invalid-feedback" />
             </div>
-            <div class="form-floating">
+            <div class="form-floating idea-new__form-floating">
                 <Field class="form-control"
                        name="themeField"
                        :rules="isRequired"
@@ -24,13 +24,13 @@
             </div>
 
             <!-- Поле сообщения -->
-            <div class="invalid-feedback__wrapper">
+            <div class="idea-new__form__invalid-feedback__wrapper">
                 <ErrorMessage name="textField"
-                              class="invalid-feedback" />
+                              class="idea-new__form__invalid-feedback" />
             </div>
-            <div class="form-floating">
+            <div class="form-floating idea-new__form-floating">
                 <Field as="textarea"
-                       class="form-control new-idea__textarea"
+                       class="form-control idea-new__textarea"
                        name="textField"
                        :rules="isRequired"
                        rows="8"

@@ -1,0 +1,112 @@
+@use '/src/assets/styles/mixins' as *;
+
+.refer-page {
+    display: flex;
+    gap: 30px;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+
+    @include sm {
+        flex-direction: column;
+        max-height: none;
+    }
+
+    &__wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+
+        @include md {
+            max-width: 400px;
+        }
+
+        @include sm {
+            max-width: 100%;
+        }
+    }
+
+    &__img {
+        background-size: contain !important;
+        background-color: white;
+        width: 100%;
+        aspect-ratio: 4 / 6;
+    }
+
+    &__jobs {
+        &__wrapper {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            max-height: 800px;
+            padding-right: 15px;
+            scrollbar-width: thin;
+
+            @include xxl {
+                max-height: 650px;
+
+            }
+
+            @include xl {
+                max-height: 100%;
+
+            }
+        }
+
+        &-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+
+            &+ul {
+                padding: 0;
+            }
+
+            & h2 {
+                color: #333;
+                font-size: 24px;
+                margin: 0;
+            }
+        }
+
+        &-link {
+            display: block;
+            text-decoration: none;
+            color: #2c3e50;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+            border-left: 4px solid #F5821F;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            font-size: 16px;
+            font-weight: 500;
+
+            &:hover {
+                transform: translateX(5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                border-left-color: #F5821F;
+                color: #F5821F;
+            }
+
+            &--nohover {
+                transform: none !important;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+                border-left-color: #F5821F !important;
+                color: #2c3e50 !important;
+            }
+        }
+
+        &-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+
+            & li {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

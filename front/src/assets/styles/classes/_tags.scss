@@ -1,0 +1,29 @@
+.tags {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 5px;
+    padding-bottom: 10px;
+    gap: 10px;
+
+    &__page__filter {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    &__tag {
+        font-size: 14px;
+        color: #303030;
+        height: 36px;
+        line-height: 36px;
+        display: inline-block;
+        padding: 0 1.5rem;
+        padding: 0 17px;
+        border: 1px solid #ef7f1b;
+        border-radius: 18px;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+}

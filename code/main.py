@@ -314,9 +314,9 @@ def total_update():
     LogsMaker().info_message("Обновление информации о подразделениях")
     if Department().fetch_departments_data()["status"]:
         status += 1
-        print("Успешно!")
+        LogsMaker().ready_status_message("Успешно!")
     else:
-        print("Ошибка!")
+        LogsMaker().error_message("Ошибка!")
 
     LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User

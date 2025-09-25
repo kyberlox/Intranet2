@@ -92,7 +92,7 @@ app.include_router(store_router, prefix="/api")
 #     #"http://intranet.emk.org.ru"
 # ]
 
-origins = [*]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

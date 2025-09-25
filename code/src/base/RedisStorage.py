@@ -23,7 +23,7 @@ class RedisStorage:
         :param password: Пароль Redis (опционально)
         """
         # Настройки Redis из .env
-        redis_host = "Redis"
+        redis_host = "redis"
         redis_port = 6379
         redis_db = 0
         #redis_username = os.getenv("user")

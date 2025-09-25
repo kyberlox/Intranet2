@@ -38,7 +38,7 @@ def create_elastic_client():
     
     for i in range(max_retries):
         try:
-            elastic_client = Elasticsearch(hosts=["http://Elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=100)
+            elastic_client = Elasticsearch(hosts=["http://elasticsearch:9200"], basic_auth=('elastic', pswd), verify_certs=False, request_timeout=100)
 
 
             if elastic_client.ping():

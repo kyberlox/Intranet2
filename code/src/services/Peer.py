@@ -34,19 +34,20 @@ class Peer:
     
     """Ручки которые доступны любому пользователю"""
     def sum(self): 
-        return self.ActiveUsersModel().sum(self.user_uuid)
+        return self.ActiveUsersModel.sum(self.user_uuid)
     
     def statistics(self):
-        return self.ActiveUsersModel(uuid_to=self.user_uuid).statistics()
+        self.ActiveUsersModel.uuid_to = self.user_uuid
+        return self.ActiveUsersModel.statistics()
     
     def actions(self):
-        return self.ActiveUsersModel().actions(self.roots)
+        return self.ActiveUsersModel.actions(self.roots)
     """"""
     def get_all_activities(self):
-        return self.ActivitiesModel().find_all_activities()
+        return self.ActivitiesModel.find_all_activities()
 
     def upload_base_activities(self):
-        return self.ActivitiesModel().upload_base_activities()
+        return self.ActivitiesModel.upload_base_activities()
     
     def edit_activity(self):
         return self.ActivitiesModel(id=self.id, name=self.name, coast=self.coast, need_valid=self.need_valid).update_activity(self.roots)

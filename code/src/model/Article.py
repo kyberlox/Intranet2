@@ -2327,7 +2327,9 @@ class Article:
             username = user["username"]
 
             #получить и вывести его id
-            user_inf = User(uuid = user_uuid).user_inf_by_uuid()
+            usr = User()
+            usr.uuid = user_uuid
+            user_inf = usr.user_inf_by_uuid()
             return user_inf["ID"]
         return None
     

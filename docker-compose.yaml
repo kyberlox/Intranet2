@@ -85,7 +85,7 @@ services:
 
   fastapi:
     build: ./code
-    container_name: fastapi
+    container_name: Fastapi
     volumes:
       - ./code:/data/app
       - ./app_logs/fastapi:/data/app/logs  # Добавляем том для логов FastAPI

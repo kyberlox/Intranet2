@@ -35,7 +35,7 @@ services:
 
   mongodb:
     image: mongo:latest
-    container_name: mongodb
+    container_name: Mongodb
     volumes:
       - ./mongodb/data:/data/db
       - ./app_logs/mongodb:/var/log/mongodb  # Логи MongoDB

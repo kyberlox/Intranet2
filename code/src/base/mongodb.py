@@ -31,7 +31,7 @@ def create_db_client():
     
     for i in range(max_retries):
         try:
-            client = MongoClient(host="mongodb", port=27017, username=user, password=pswd, authSource="admin")
+            client = MongoClient(host="Mongodb", port=27017, username=user, password=pswd, authSource="admin")
             client.admin.command('ismaster')
             LogsMaker().ready_status_message("mongodb успешно подключен!")
             return client

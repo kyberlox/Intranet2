@@ -246,7 +246,7 @@ class LikesModel:
 
         popular_articles = db.query(
             Likes.article_id,
-            func.count(self.Likes.id).label('likes_count')
+            func.count(Likes.id).label('likes_count')
         ).filter(
             Likes.is_active == True
         ).group_by(

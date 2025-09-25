@@ -49,7 +49,7 @@ class Visions:
         return FieldvisionModel().find_all_visions()
 
     def add_user_to_vision(self, user_to):
-        return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).upload_user_to_vision(user_to, self.roots)
+        return UservisionsRootModel(vision_id=self.vision_id, user_id=user_to).upload_user_to_vision(self.roots)
 
     def add_full_usdep_list_to_vision(self, dep_id):
         all_dep_users = []

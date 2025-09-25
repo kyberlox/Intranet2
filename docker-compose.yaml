@@ -2,7 +2,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: Nginx
     depends_on:
       - fastapi
       #- frontend

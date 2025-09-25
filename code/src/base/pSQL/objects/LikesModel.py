@@ -85,54 +85,61 @@ class LikesModel:
 
 
     def has_liked(self ) -> bool:
-        from .ViewsModel import ViewsModel
-        """
-        Проверяет, поставил ли пользователь лайк статье.
-        """
-        reactions = {}
-        # Проверяем, есть ли уже активный лайк
-        existing_like = self.session.query(self.Likes).filter(
-            self.Likes.user_id == self.user_id,
-            self.Likes.article_id == self.art_id
-        ).first()
-        self.session.close()
+        try:
+            from .ViewsModel import ViewsModel
+            """
+            Проверяет, поставил ли пользователь лайк статье.
+            """
+            reactions = {}
+            # Проверяем, есть ли уже активный лайк
+            existing_like = self.session.query(self.Likes).filter(
+                self.Likes.user_id == self.user_id,
+                self.Likes.article_id == self.art_id
+            ).first()
+            # self.session.close()
 
-        views = ViewsModel(art_id=self.art_id).get_art_viewes()
-        
-        
-        
-        if not existing_like:
-            # если лайк никогда не существовал, значит False
-            likes_count = self.get_likes_count()
+            views = ViewsModel(art_id=self.art_id).get_art_viewes()
+            
+            
+            
+            if not existing_like:
+                # если лайк никогда не существовал, значит False
+                likes_count = self.get_likes_count()
 
-            likes = {'count': likes_count, 'likedByMe': False}
-            reactions['views'] = views
-            reactions['likes'] = likes
-            return reactions
+                likes = {'count': likes_count, 'likedByMe': False}
+                reactions['views'] = views
+                reactions['likes'] = likes
+                return reactions
 
-        elif existing_like.is_active is False:
-            # если лайк не был поставлен, но когда то стоял возвращаем False
-            likes_count = self.get_likes_count()
+            elif existing_like.is_active is False:
+                # если лайк не был поставлен, но когда то стоял возвращаем False
+                likes_count = self.get_likes_count()
 
-            likes = {'count': likes_count, 'likedByMe': False}
-            reactions['views'] = views
-            reactions['likes'] = likes
-            return reactions
+                likes = {'count': likes_count, 'likedByMe': False}
+                reactions['views'] = views
+                reactions['likes'] = likes
+                return reactions
 
-        elif existing_like.is_active is True:
-            # если лайк был поставлен, возвращаем True
+            elif existing_like.is_active is True:
+                # если лайк был поставлен, возвращаем True
 
-            likes_count = self.get_likes_count()
+                likes_count = self.get_likes_count()
 
-            likes = {'count': likes_count, 'likedByMe': True}
-            reactions['views'] = views
-            reactions['likes'] = likes
-            return reactions
-        # return self.session.query(Likes).filter(
-        #     Likes.user_id == self.user_id,
-        #     Likes.article_id == self.art_id,
-        #     Likes.is_active == True
-        # ).count() > 0
+                likes = {'count': likes_count, 'likedByMe': True}
+                reactions['views'] = views
+                reactions['likes'] = likes
+                return reactions
+            # return self.session.query(Likes).filter(
+            #     Likes.user_id == self.user_id,
+            #     Likes.article_id == self.art_id,
+            #     Likes.is_active == True
+            # ).count() > 0
+        except Exception as e:
+            self.session.rollback()
+            return LogsMaker().error_message(f"Ошибка при выводе лайка: {e}")
+        finally:
+            self.session.close()
+
 
     def get_likes_count(self ) -> int:
         """

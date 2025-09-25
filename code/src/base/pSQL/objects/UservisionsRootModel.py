@@ -89,7 +89,7 @@ class UservisionsRootModel:
         finally:
             self.session.close()
 
-    def remove_users_from_vision(self, user_data):
+    def remove_users_from_vision(self, user_data, roots):
         try:
             for user in user_data:
                 self.user_id = user

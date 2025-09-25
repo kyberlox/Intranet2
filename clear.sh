@@ -4,7 +4,7 @@
 docker-compose down
 docker system prune -a
 
-#чистим файлы и базы данных
+#Очистим файлы и базы данных
 rm -rf ./code/files_db/
 mkdir ./code/files_db
 mkdir ./code/files_db/user_photo

@@ -4,8 +4,19 @@
 docker-compose down
 
 #чистим файлы и базы данных
-rm -r ./code/files_db/
+rm -rf ./code/files_db/
 mkdir ./code/files_db
 mkdir ./code/files_db/user_photo
+
+rm -rf ./code/vcard_db/
+mkdir ./code/vcard_db
+
+
+
+sudo rm -rf ./mongodb/data/*
+
+sudo rm -rf ./pSQL/data/*
+
+sudo rm -rf ./elasticsearch/data*
 
 docker-compose up -d

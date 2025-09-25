@@ -241,7 +241,7 @@ class LikesModel:
             Список словарей с данными статей:               @self.session
             [{'article_id': int, 'likes_count': int}, ...]
         """
-        popular_articles = db.query(
+        popular_articles = self.session .query(
             self.Likes.article_id,
             func.count(self.Likes.id).label('likes_count')
         ).filter(
@@ -252,7 +252,7 @@ class LikesModel:
             desc('likes_count')
         ).limit(limit).all()
 
-        db.close()
+        self.session.close()
         
         return [{
             'article_id': article.article_id,
@@ -266,7 +266,7 @@ class LikesModel:
         """
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
-        popular = db.query(
+        popular = self.session.query(
             self.Likes.article_id,
             func.count(self.Likes.id).label('likes_count')
         ).filter(
@@ -278,6 +278,6 @@ class LikesModel:
             desc('likes_count')
         ).limit(limit).all()
 
-        db.close()
+        self.session.close()
         
         return [dict(article_id=row.article_id, likes_count=row.likes_count) for row in popular]

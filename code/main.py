@@ -346,6 +346,11 @@ def total_update():
     else:
         LogsMaker().error_message("Ошибка!")
 
+    #Права пользователей
+    # Лайки и просмотры
+    # Тэги
+    # Система эфективности
+
     time_end = time.time()
     total_time_sec = time_end - time_start
 

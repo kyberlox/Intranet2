@@ -242,13 +242,15 @@ class LikesModel:
             [{'article_id': int, 'likes_count': int}, ...]
         """
         from .App import db
+        from ..models.Likes import Likes
+
         popular_articles = db.query(
-            self.Likes.article_id,
+            Likes.article_id,
             func.count(self.Likes.id).label('likes_count')
         ).filter(
-            self.Likes.is_active == True
+            Likes.is_active == True
         ).group_by(
-            self.Likes.article_id
+            Likes.article_id
         ).order_by(
             desc('likes_count')
         ).limit(limit).all()
@@ -268,14 +270,16 @@ class LikesModel:
         from .App import db
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
+        from ..models.Likes import Likes
+
         popular = db.query(
-            self.Likes.article_id,
-            func.count(self.Likes.id).label('likes_count')
+            Likes.article_id,
+            func.count(Likes.id).label('likes_count')
         ).filter(
-            self.Likes.is_active == True,
-            self.Likes.created_at >= cutoff_date
+            Likes.is_active == True,
+            Likes.created_at >= cutoff_date
         ).group_by(
-            self.Likes.article_id
+            Likes.article_id
         ).order_by(
             desc('likes_count')
         ).limit(limit).all()

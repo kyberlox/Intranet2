@@ -27,8 +27,8 @@ class Peer:
         from ..base.pSQL.objects.PeerUserModel import PeerUserModel
         self.PeerUserModel = PeerUserModel()
 
-        self.Roots = self.RootsModel(user_uuid=self.user_id).get_token_by_uuid()
-        self.roots = self.RootsModel(user_uuid=self.user_id).token_processing_for_vision(self.Roots)
+        self.Roots = self.RootsModel(user_uuid=self.user_uuid).get_token_by_uuid()
+        self.roots = self.RootsModel(user_uuid=self.user_uuid).token_processing_for_vision(self.Roots)
     
     """Ручки которые доступны любому пользователю"""
     def sum(self): 

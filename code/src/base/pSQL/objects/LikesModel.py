@@ -90,6 +90,7 @@ class LikesModel:
             """
             Проверяет, поставил ли пользователь лайк статье.
             """
+            views = ViewsModel(art_id=self.art_id).get_art_viewes()
             reactions = {}
             # Проверяем, есть ли уже активный лайк
             existing_like = self.session.query(self.Likes).filter(
@@ -98,7 +99,7 @@ class LikesModel:
             ).first()
             # self.session.close()
 
-            views = ViewsModel(art_id=self.art_id).get_art_viewes()
+            
             
             
             

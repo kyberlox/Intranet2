@@ -219,7 +219,7 @@ def test_file_get(file_id):
 
 @app.get("/api/full_search/{keyword}")
 def elastic_search(keyword: str):
-    from .src.base.Elastic.App import search_everywhere
+    from src.base.Elastic.App import search_everywhere
     return search_everywhere(key_word=keyword)
 
 @app.put("/api/full_elastic_dump")

@@ -311,35 +311,35 @@ def total_update():
     time_start = time.time()
     status = 0
 
-    loger = LogsMaker()
+    
 
-    LogsMaker().info_message("Обновление информации о подразделениях")
-    if Department().fetch_departments_data()["status"]:
-        status += 1
-        LogsMaker().ready_status_message("Успешно!")
-    else:
-        LogsMaker().error_message("Ошибка!")
+    # LogsMaker().info_message("Обновление информации о подразделениях")
+    # if Department().fetch_departments_data()["status"]:
+    #     status += 1
+    #     LogsMaker().ready_status_message("Успешно!")
+    # else:
+    #     LogsMaker().error_message("Ошибка!")
 
-    LogsMaker().info_message("Обновление информации о пользователях")
-    from src.model.User import User
-    dowload_status = User().fetch_users_data()["status"]
-    if dowload_status:
-        status += 1
-        LogsMaker().ready_status_message("Успешно!")
-    else:
-        LogsMaker().error_message("Ошибка!")
+    # LogsMaker().info_message("Обновление информации о пользователях")
+    # from src.model.User import User
+    # dowload_status = User().fetch_users_data()["status"]
+    # if dowload_status:
+    #     status += 1
+    #     LogsMaker().ready_status_message("Успешно!")
+    # else:
+    #     LogsMaker().error_message("Ошибка!")
 
-    LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
-    if UsDep().get_usr_dep()["status"]:
-        status += 1
-        LogsMaker().ready_status_message("Успешно!")
-    else:
-        LogsMaker().error_message("Ошибка!")
+    # LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
+    # if UsDep().get_usr_dep()["status"]:
+    #     status += 1
+    #     LogsMaker().ready_status_message("Успешно!")
+    # else:
+    #     LogsMaker().error_message("Ошибка!")
 
-    LogsMaker().info_message("Обновление информации о разделах сайта")
-    Section().load()
-    status += 1
-    LogsMaker().ready_status_message("Успешно!")
+    # LogsMaker().info_message("Обновление информации о разделах сайта")
+    # Section().load()
+    # status += 1
+    # LogsMaker().ready_status_message("Успешно!")
 
     LogsMaker().info_message("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:

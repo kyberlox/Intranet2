@@ -2280,7 +2280,7 @@ class Article:
                 # все остальное
                 else:
                     likes_info = B24().get_likes_views(inf['id'])
-                    print(likes_info)
+                    print(likes_info['VIEWS'])
                     if likes_info != "Not found" and 'VOTES' in likes_info.keys():
                         for vote in likes_info['VOTES']:
                             # проверяем есть ли такие юзеры в бд

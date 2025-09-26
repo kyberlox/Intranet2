@@ -21,8 +21,8 @@ class ViewsModel:
             self.Views.article_id == self.art_id
         ).scalar()
         print(res)
-        # existing_view = self.session.query(self.Views).where(self.Views.article_id == self.art_id).first()
-
+        existing_view = self.session.query(self.Views).where(self.Views.article_id == self.art_id).first()
+        print(existing_view)
         # if existing_view:
         #     existing_view.viewes_count = self.views_count
         #     print()

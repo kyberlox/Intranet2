@@ -2280,7 +2280,6 @@ class Article:
                 # все остальное
                 else:
                     likes_info = B24().get_likes_views(inf['id'])
-                    print(likes_info)
                     if likes_info != "Not found" and 'VOTES' in likes_info.keys():
                         for vote in likes_info['VOTES']:
                             # проверяем есть ли такие юзеры в бд
@@ -2298,8 +2297,9 @@ class Article:
                                 LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
                             else:
                                 pass
-                    
-                    ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+
+                    if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
+                        ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
                         
 
         return {"status": True}

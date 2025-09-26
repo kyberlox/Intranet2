@@ -51,6 +51,7 @@ class ViewsModel:
         existing_view = self.session.query(self.Views).where(self.Views.article_id == self.art_id).first()
         if existing_view:
             existing_view.viewes_count = existing_view.viewes_count + 1
+            print(existing_view.viewes_count)
             self.session.commit()
             self.session.close()
             return {"views": existing_view.viewes_count}

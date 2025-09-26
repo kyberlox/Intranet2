@@ -110,7 +110,8 @@ class LikesModel:
                 self.Likes.user_id == self.user_id,
                 self.Likes.article_id == self.art_id
             ).first()
-            #self.session.close()
+            self.session.close()
+            
             if views is not None:
                 if not existing_like:
                     # если лайк никогда не существовал, значит False
@@ -147,8 +148,8 @@ class LikesModel:
                 }
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     self.session.close()
 
 
     def get_likes_count(self ) -> int:

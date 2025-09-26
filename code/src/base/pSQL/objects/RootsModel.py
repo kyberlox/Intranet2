@@ -17,9 +17,12 @@ class RootsModel:
         return result
 
     def get_token_by_uuid(self):
-        result = self.session.query(self.Roots.root_token).filter(self.Roots.user_uuid == self.user_uuid).scalar()
-        self.session.close()
-        return result  
+        try:
+            result = self.session.query(self.Roots.root_token).filter(self.Roots.user_uuid == self.user_uuid).scalar()
+            self.session.close()
+            return result
+        except Exception as e:
+            LogsMaker().error_message(str(e))
 
     def token_processing_for_peer(self, root_token):
         roots = {

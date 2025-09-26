@@ -2330,7 +2330,7 @@ class Article:
             usr = User()
             usr.uuid = user_uuid
             user_inf = usr.user_inf_by_uuid()
-            if "ID" in user_inf.keys():
+            if user_inf is not None and "ID" in user_inf.keys():
                 return user_inf["ID"]
         return None
     

@@ -2298,7 +2298,7 @@ class Article:
                                 LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
                             else:
                                 pass
-                    if 
+                    
                     ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
                         
 

@@ -53,7 +53,6 @@ class LikesModel:
         ).first()
 
         
-        
 
         if not existing_like:
             # создаем новый лайк если прежде никогда не стоял
@@ -66,35 +65,40 @@ class LikesModel:
             self.session.add(new_like)
             self.session.commit()
 
-            
-
             self.reactions["likes"]["likedByMe"] = True
 
         else:
+            if existing_like.is_active:
+                self.reactions["likes"]["count"] -= 1
+            else:
+                self.reactions["likes"]["count"] += 1
+
             existing_like.is_active = not existing_like.is_active
             self.session.commit()
 
             self.reactions["likes"]["likedByMe"] = existing_like.is_active
 
-        elif existing_like.is_active is False:
-            # если лайк не был поставлен, ставим
-            existing_like.is_active = True
-            self.session.commit()
 
-            likes_count = self.get_likes_count()
 
-            likes = {'count': likes_count, 'likedByMe': True}
-            reactions['likes'] = likes
+        # elif existing_like.is_active is False:
+        #     # если лайк не был поставлен, ставим
+        #     existing_like.is_active = True
+        #     self.session.commit()
 
-        elif existing_like.is_active is True:
-            # если лайк был поставлен, убираем
-            existing_like.is_active = False
-            self.session.commit()
+        #     likes_count = self.get_likes_count()
 
-            likes_count = self.get_likes_count()
+        #     likes = {'count': likes_count, 'likedByMe': True}
+        #     reactions['likes'] = likes
 
-        likes = {'count': likes_count, 'likedByMe': False}
-        reactions['likes'] = likes
+        # elif existing_like.is_active is True:
+        #     # если лайк был поставлен, убираем
+        #     existing_like.is_active = False
+        #     self.session.commit()
+
+        #     likes_count = self.get_likes_count()
+
+        # likes = {'count': likes_count, 'likedByMe': False}
+        # reactions['likes'] = likes
 
         return self.reactions
 

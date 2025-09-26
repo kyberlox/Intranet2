@@ -2307,8 +2307,9 @@ class Article:
         articles_info = ArticleModel().all()
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 71, 34] # список секций где нет лайков
         for inf in articles_info:
-            likes_info = B24().get_likes_views(inf['id'])
             if inf['section_id'] not in null_list:
+                
+                likes_info = B24().get_likes_views(inf['id'])
                 if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
                     
                     VM = ViewsModel()

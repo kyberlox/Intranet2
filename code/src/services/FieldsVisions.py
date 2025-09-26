@@ -44,12 +44,18 @@ class Visions:
         UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(user_data=users_id, roots=self.roots)
         # self.delete_users_from_vision(users=users_id)
         return True
+        users = self.get_users_in_vision()
+        users_id = [usr['id'] for usr in users]
+        FieldvisionModel(id=self.vision_id).remove_field_vision()
+        UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(user_data=users_id, roots=self.roots)
+        # self.delete_users_from_vision(users=users_id)
+        return True
     
     def get_all_visions(self):
         return FieldvisionModel().find_all_visions()
 
     def add_user_to_vision(self, user_to):
-        return UservisionsRootModel(vision_id=self.vision_id, user_id=self.user_id).upload_user_to_vision(user_to, self.roots)
+        return UservisionsRootModel(vision_id=self.vision_id, user_id=user_to).upload_user_to_vision(self.roots)
 
     def add_full_usdep_list_to_vision(self, dep_id):
         all_dep_users = []
@@ -70,7 +76,6 @@ class Visions:
             for de in dep:
                 for user in de['users']:
                     all_dep_users.append(user['id'])
-        print(all_dep_users)
         return UservisionsRootModel(vision_id=self.vision_id).upload_users_to_vision(roots=self.roots, user_data=all_dep_users)
     
     def add_dep_users_only(self, dep_id):

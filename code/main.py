@@ -85,12 +85,14 @@ app.include_router(store_router, prefix="/api")
 
 #templates = Jinja2Templates(directory="./front_jinja") 
 
-origins = [
-    "http://localhost:8000",
-    DOMAIN,
-    #"http://intranet.emk.org.ru:8000",
-    #"http://intranet.emk.org.ru"
-]
+# origins = [
+#     "http://localhost:8000",
+#     DOMAIN,
+#     #"http://intranet.emk.org.ru:8000",
+#     #"http://intranet.emk.org.ru"
+# ]
+
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -217,7 +219,7 @@ def test_file_get(file_id):
 
 @app.get("/api/full_search/{keyword}")
 def elastic_search(keyword: str):
-    from .src.base.Elastic.App import search_everywhere
+    from src.base.Elastic.App import search_everywhere
     return search_everywhere(key_word=keyword)
 
 @app.put("/api/full_elastic_dump")
@@ -345,6 +347,11 @@ def total_update():
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
+
+    #Права пользователей
+    # Лайки и просмотры
+    # Тэги
+    # Система эфективности
 
     time_end = time.time()
     total_time_sec = time_end - time_start

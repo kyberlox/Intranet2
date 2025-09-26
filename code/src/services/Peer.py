@@ -27,24 +27,27 @@ class Peer:
         from ..base.pSQL.objects.PeerUserModel import PeerUserModel
         self.PeerUserModel = PeerUserModel()
 
-        self.Roots = self.RootsModel(user_uuid=self.user_id).get_token_by_uuid()
-        self.roots = self.RootsModel(user_uuid=self.user_id).token_processing_for_vision(self.Roots)
+
+        self.RootsModel.user_uuid = self.user_uuid
+        self.Roots = self.RootsModel.get_token_by_uuid()
+        self.roots = self.RootsModel.token_processing_for_vision(self.Roots)
     
     """Ручки которые доступны любому пользователю"""
     def sum(self): 
-        return self.ActiveUsersModel().sum(self.user_uuid)
+        return self.ActiveUsersModel.sum(self.user_uuid)
     
     def statistics(self):
-        return self.ActiveUsersModel(uuid_to=self.user_uuid).statistics()
+        self.ActiveUsersModel.uuid_to = self.user_uuid
+        return self.ActiveUsersModel.statistics()
     
     def actions(self):
-        return self.ActiveUsersModel().actions(self.roots)
+        return self.ActiveUsersModel.actions(self.roots)
     """"""
     def get_all_activities(self):
-        return self.ActivitiesModel().find_all_activities()
+        return self.ActivitiesModel.find_all_activities()
 
     def upload_base_activities(self):
-        return self.ActivitiesModel().upload_base_activities()
+        return self.ActivitiesModel.upload_base_activities()
     
     def edit_activity(self):
         return self.ActivitiesModel(id=self.id, name=self.name, coast=self.coast, need_valid=self.need_valid).update_activity(self.roots)

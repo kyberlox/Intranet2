@@ -313,7 +313,7 @@ class Article:
                     uuid = int(list(data['PROPERTY_444'].values())[0])
                     
                 #отдельно вытащить превьюшки людей
-                user = User(id=uuid).search_by_id()
+                user = User(id=uuid).search_by_id_all()
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None
@@ -506,7 +506,7 @@ class Article:
             participants = []
             if "participants" in indirect_data:
                 for user_uuid in indirect_data["participants"]:
-                    user = User(id=user_uuid).search_by_id()
+                    user = User(id=user_uuid).search_by_id_all()
                     if user is not None:
                         last_name = user['last_name']
                         name = user['name']
@@ -2266,7 +2266,7 @@ class Article:
                 if inf['section_id'] == 71:
                     if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
                         for user_id in inf['indirect_data']['likes_from_b24']:
-                            user_exist = User(int(user_id)).search_by_id()
+                            user_exist = User(int(user_id)).search_by_id_all()
                             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
                                 continue
                             else:
@@ -2284,7 +2284,7 @@ class Article:
                     if likes_info != "Not found" and 'VOTES' in likes_info.keys():
                         for vote in likes_info['VOTES']:
                             # проверяем есть ли такие юзеры в бд
-                            user_exist = User(vote['USER_ID']).search_by_id()
+                            user_exist = User(vote['USER_ID']).search_by_id_all()
                             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
                                 continue
                             else:
@@ -2327,7 +2327,9 @@ class Article:
             username = user["username"]
 
             #получить и вывести его id
-            user_inf = User(uuid = user_uuid).user_inf_by_uuid()
+            usr = User()
+            usr.uuid = user_uuid
+            user_inf = usr.user_inf_by_uuid()
             return user_inf["ID"]
         return None
     

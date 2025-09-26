@@ -410,15 +410,20 @@ class UserModel:
             return None
 
     def find_by_uuid(self):
-        user = self.db.query(self.user).filter(self.user.uuid == self.uuid).first()
-        if user is not None:
-            return {
-                "ID": user.id,
-                "email" : user.email,
-                "full_name" : f"{user.second_name} {user.name} {user.last_name}"
-            }
-        else:
-            return LogsMaker().warning_message("Invalid user uuid")
+        try:
+            user = self.db.query(self.user).filter(self.user.uuid == self.uuid).first()
+            self.db.close()
+            if user is not None:
+                return {
+                    "ID": user.id,
+                    "email" : user.email,
+                    "full_name" : f"{user.second_name} {user.name} {user.last_name}"
+                }
+            else:
+                return LogsMaker().warning_message("Invalid user uuid")
+        except Exception as e:
+            LogsMaker().error_message(str(e))
+
     
     def all(self):
         result = self.db.query(self.user).all()

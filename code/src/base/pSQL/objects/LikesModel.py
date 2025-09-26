@@ -90,16 +90,18 @@ class LikesModel:
             """
             Проверяет, поставил ли пользователь лайк статье.
             """
-            views = ViewsModel(art_id=self.art_id).get_art_viewes()
+            
             reactions = {}
             # Проверяем, есть ли уже активный лайк
             existing_like = self.session.query(self.Likes).filter(
                 self.Likes.user_id == self.user_id,
                 self.Likes.article_id == self.art_id
             ).first()
-            # self.session.close()
+            self.session.close()
 
-            
+            VM = ViewsModel()
+            VM.art_id = self.art_id
+            views = VM.get_art_viewes()
             
             likes_count = self.get_likes_count()
             
@@ -132,7 +134,6 @@ class LikesModel:
             #     Likes.is_active == True
             # ).count() > 0
         except Exception as e:
-            self.session.rollback()
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
         finally:
             self.session.close()

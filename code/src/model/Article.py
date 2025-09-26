@@ -2330,7 +2330,8 @@ class Article:
             usr = User()
             usr.uuid = user_uuid
             user_inf = usr.user_inf_by_uuid()
-            return user_inf["ID"]
+            if user_inf is not None and "ID" in user_inf.keys():
+                return user_inf["ID"]
         return None
     
     def search_articles_by_tags(self, tag_id, session_id=''):
@@ -2379,7 +2380,9 @@ def get_article(ID : int, request: Request):
             session_id = token
     else:
         session_id = token
-    return Article(id = ID).search_by_id(session_id=session_id)
+    art = Article()
+    art.id = ID
+    return art.search_by_id(session_id=session_id)
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
@@ -2396,7 +2399,9 @@ def get_articles(section_id, request: Request):
     if section_id == "undefind":
         return {"err" : "Undefined section_id!"}
     else:
-        return Article(section_id = section_id).search_by_section_id(session_id=session_id)
+        art = Article()
+        art.section_id = section_id
+        return art.search_by_section_id(session_id=session_id)
 
 @article_router.put("/add_or_remove_like/{article_id}")
 def add_or_remove_like(article_id, request: Request):
@@ -2408,8 +2413,9 @@ def add_or_remove_like(article_id, request: Request):
             session_id = token
     else:
         session_id = token
-    
-    return Article(id=article_id).add_like(session_id=session_id)
+    art = Article()
+    art.id = article_id
+    return art.add_like(session_id=session_id)
 
 @article_router.get("/has_user_liked/{article_id}")
 def has_user_liked(article_id, request: Request):
@@ -2421,8 +2427,9 @@ def has_user_liked(article_id, request: Request):
             session_id = token
     else:
         session_id = token
-    
-    return Article(id=article_id).has_user_liked(session_id=session_id)
+    art = Article()
+    art.id = article_id
+    return art.has_user_liked(session_id=session_id)
 
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")
@@ -2438,7 +2445,9 @@ def put_b24_likes():
 #лайки и просмотры для статистики
 @article_router.get("/get_article_likers/{ID}")
 def get_article_likers(ID: int):
-    return Article(id = ID).get_article_likers()
+    art = Article()
+    art.id = ID
+    return art.get_article_likers()
 
 @article_router.get("/get_popular_articles/{limit}")
 def get_popular_articles(limit: int):
@@ -2458,7 +2467,9 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
             session_id = token
     else:
         session_id = token
-    return Article(section_id=section_id).search_articles_by_tags(tag_id, session_id=session_id)
+    art = Article()
+    art.section_id = section_id
+    return art.search_articles_by_tags(tag_id, session_id=session_id)
 
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")

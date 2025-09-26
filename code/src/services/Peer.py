@@ -157,7 +157,9 @@ def get_uuid_from_request(request):
         username = user["username"]
 
         #получить и вывести его id
-        user_inf = User(uuid = user_uuid).user_inf_by_uuid()
+        user = User()
+        user.uuid = user_uuid
+        user_inf = user.user_inf_by_uuid()
         return user_inf["ID"]
     return None
 

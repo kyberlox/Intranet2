@@ -1100,7 +1100,7 @@ class Article:
         # self.upload_services()
 
         # Дамп данных в эластик
-        self.dump_articles_data_es()
+        # self.dump_articles_data_es()
 
         self.upload_likes()
 

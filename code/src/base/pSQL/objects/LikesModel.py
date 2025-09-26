@@ -83,6 +83,15 @@ class LikesModel:
             reactions['likes'] = likes
             return reactions
 
+    def _get_VM(self):
+        try:
+            VM = ViewsModel()
+            VM.art_id = self.art_id
+            views = VM.get_art_viewes()
+            return views
+        except Exception as e:
+            return None
+            LogsMaker().error_message(str(e))
 
     def has_liked(self ) -> bool:
         try:
@@ -90,6 +99,10 @@ class LikesModel:
             """
             Проверяет, поставил ли пользователь лайк статье.
             """
+
+            views = self._get_VM()
+            
+            likes_count = self.get_likes_count()
             
             reactions = {}
             # Проверяем, есть ли уже активный лайк
@@ -97,13 +110,7 @@ class LikesModel:
                 self.Likes.user_id == self.user_id,
                 self.Likes.article_id == self.art_id
             ).first()
-            self.session.close()
-
-            VM = ViewsModel()
-            VM.art_id = self.art_id
-            views = VM.get_art_viewes()
-            
-            likes_count = self.get_likes_count()
+            #self.session.close()
             
             if not existing_like:
                 # если лайк никогда не существовал, значит False

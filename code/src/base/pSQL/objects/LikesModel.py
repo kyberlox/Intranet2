@@ -111,13 +111,14 @@ class LikesModel:
                 self.Likes.article_id == self.art_id
             ).first()
             self.session.close()
-            
+
             if existing_like:
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
             
             return self.reactions
 
         except Exception as e:
+            self.session.close()
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
 
 

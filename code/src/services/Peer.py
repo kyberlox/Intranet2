@@ -27,7 +27,6 @@ class Peer:
         from ..base.pSQL.objects.PeerUserModel import PeerUserModel
         self.PeerUserModel = PeerUserModel()
 
-
         self.RootsModel.user_uuid = self.user_uuid
         self.Roots = self.RootsModel.get_token_by_uuid()
         self.roots = self.RootsModel.token_processing_for_peer(self.Roots)

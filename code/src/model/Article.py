@@ -2299,8 +2299,8 @@ class Article:
                                 pass
 
                     if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
+                        print(likes_info)
                         ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
-                        
 
         return {"status": True}
 

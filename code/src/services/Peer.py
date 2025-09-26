@@ -4,6 +4,8 @@ from fastapi import APIRouter, Body, Request
 from ..model import User
 from .Auth import AuthService
 
+#тут придется отладить ВСЕ
+
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
 class Peer:

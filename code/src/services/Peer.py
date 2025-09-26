@@ -82,6 +82,7 @@ class Peer:
         return self.PeerUserModel.get_curators()
     
     def new_activity(self, data): 
+        data["uuid"] = self.user_uuid
         return self.ActivitiesModel.new_activity(data, self.roots)
 
     """"""
@@ -185,7 +186,7 @@ def sum(request: Request):
 #     return Peer(user_uuid=uuid).statistics()
 
 @peer_router.get("/actions")
-def actions(request: Request):
+def get_actions(request: Request):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).actions()
 """"""
@@ -194,35 +195,35 @@ def get_activities():
     return Peer().get_all_activities()
 
 @peer_router.post("/edit_activity")
-def edit_activity(request: Request, data = Body()):
+def post_edit_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid']).edit_activity()
 
 @peer_router.delete("/remove_activity")
-def remove_activity(request: Request, id: str):
+def del_remove_activity(request: Request, id: str):
     uuid = get_uuid_from_request(request)
     return Peer(id=id, user_uuid=uuid).remove_activity()
 """"""
 @peer_router.post("/do_valid/{action_id}/{uuid_to}")
-def do_valid(request: Request, action_id: int, uuid_to: int):
+def post_do_valid(request: Request, action_id: int, uuid_to: int):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).do_valid(action_id, uuid_to) 
 
 @peer_router.post("/do_not_valid/{action_id}")
-def do_not_valid(request: Request, action_id: int):
+def post_do_not_valid(request: Request, action_id: int):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).do_not_valid(action_id) 
 
 @peer_router.get("/points_to_confirm/{activities_id}")
-def points_to_confirm(activities_id: int):
+def get_points_to_confirm(activities_id: int):
     return Peer(activities_id=activities_id).points_to_confirm()
 
 @peer_router.get("/get_curators")
-def get_curators():
+def get_req_curators():
     return Peer().get_curators()
 
 @peer_router.put("/new_activity")
-def new_activity(request: Request, data = Body()):
+def put_new_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).new_activity(data) # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
 

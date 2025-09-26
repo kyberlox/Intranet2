@@ -56,13 +56,13 @@ class ViewsModel:
             print(existing_view.viewes_count)
             self.session.commit()
             self.session.close()
-            return {"views": existing_view.viewes_count}
+            return existing_view.viewes_count
         else:
-            new_view = self.Views(
-                article_id=self.art_id,
-                viewes_count=1
-            )
+            new_view = self.Views()
+            new_view.article_id=self.art_id,
+            new_view.viewes_count=1
+            
             self.session.add(new_view)
             self.session.commit()
             self.session.close()
-            return {"views": new_view.viewes_count}
+            return new_view.viewes_count

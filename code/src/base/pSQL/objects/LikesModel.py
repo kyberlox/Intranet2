@@ -40,6 +40,7 @@ class LikesModel:
             self.Likes.article_id == self.art_id
         ).first()
         views = ViewsModel(art_id=self.art_id).get_art_viewes()
+        
         if not existing_like:
             # создаем новый лайк если прежде никогда не стоял
             new_like = self.Likes(

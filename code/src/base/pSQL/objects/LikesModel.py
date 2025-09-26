@@ -111,6 +111,7 @@ class LikesModel:
                 self.Likes.article_id == self.art_id
             ).first()
             self.session.close()
+            
             if existing_like:
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
             

@@ -17,25 +17,22 @@ class ViewsModel:
         """
         Добавляет запись о количестве просмотров статьи
         """
-        res = self.session.query(self.Views.viewes_count).where(
-            self.Views.article_id == self.art_id
-        ).scalar()
-        print(res)
-        existing_view = self.session.query(self.Views).where(self.Views.article_id == self.art_id).first()
-        print(existing_view)
-        # if existing_view:
-        #     existing_view.viewes_count = self.views_count
-        #     print()
-        # else:
-        #     new_view = self.Views(
-        #         article_id=self.art_id,
-        #         viewes_count=self.views_count
-        #     )
-        #     self.session.add(new_view)
 
-        # self.session.commit()
-        # self.session.close()
-        # return {"msg": "добавили"}
+        existing_view = self.session.query(self.Views).where(self.Views.article_id == self.art_id).first()
+
+        if existing_view:
+            existing_view.viewes_count = self.views_count
+            print()
+        else:
+            new_view = self.Views(
+                article_id=self.art_id,
+                viewes_count=self.views_count
+            )
+            self.session.add(new_view)
+
+        self.session.commit()
+        self.session.close()
+        return {"msg": "добавили"}
 
 
 

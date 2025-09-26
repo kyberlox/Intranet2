@@ -8,7 +8,7 @@ from ..models.User import User
 
 from .MerchStoreModel import MerchStoreModel
 
-from .App import db
+from .App import db, flag_modified
 
 from src.services.LogsMaker import LogsMaker
 
@@ -44,14 +44,15 @@ class PeerUserModel:
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 active_info = self.session.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
-                if active_info.need_valid == True:
+                if active_info and active_info.need_valid == True:
                     stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=1)
                     res = True
 
                     MerchStoreModel(uuid_to).upload_user_sum(active_info.coast)
                     self.session.execute(stmt) 
                     self.session.commit()
-                       
+                else:
+                    return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
             return res
         except Exception as e:
             self.session.rollback()
@@ -64,11 +65,13 @@ class PeerUserModel:
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 active_info = self.session.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
-                if active_info.need_valid == True:
+                if active_info and active_info.need_valid == True:
                     stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
                     res = True
                     self.session.execute(stmt) 
                     self.session.commit()
+                else:
+                    return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
             return res
         except Exception as e:
             self.session.rollback()
@@ -219,14 +222,15 @@ class PeerUserModel:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 admins = self.session.query(self.Roots).filter(self.Roots.root_token.has_key("PeerAdmin")).all()
                 for admin in admins:
-                    admin_fio = self.session.query(User.name, User.second_name, User.last_name).filter(User.id == admin.user_uuid).first()
-                    admin_info = {
-                        "admin_id": admin.user_uuid,
-                        "admin_name": admin_fio.name,
-                        "admin_second_name": admin_fio.second_name,
-                        "admin_last_name": admin_fio.last_name
-                    }
-                    result.append(admin_info)
+                    if admin.root_token["PeerAdmin"] == True:
+                        admin_fio = self.session.query(User.name, User.second_name, User.last_name).filter(User.id == admin.user_uuid).first()
+                        admin_info = {
+                            "admin_id": admin.user_uuid,
+                            "admin_name": admin_fio.name,
+                            "admin_second_name": admin_fio.second_name,
+                            "admin_last_name": admin_fio.last_name
+                        }
+                        result.append(admin_info)
                 return result
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав")
@@ -339,14 +343,15 @@ class PeerUserModel:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 moders = self.session.query(self.Roots).filter(self.Roots.root_token.has_key("PeerModer")).all()
                 for moder in moders:
-                    moder_fio = self.session.query(User.name, User.second_name, User.last_name).filter(User.id == moder.user_uuid).first()
-                    moder_info = {
-                        "moder_id": moder.user_uuid,
-                        "moder_name": moder_fio.name,
-                        "moder_second_name": moder_fio.second_name,
-                        "moder_last_name": moder_fio.last_name
-                    }
-                    result.append(moder_info)
+                    if moder.root_token["PeerModer"] == True:
+                        moder_fio = self.session.query(User.name, User.second_name, User.last_name).filter(User.id == moder.user_uuid).first()
+                        moder_info = {
+                            "moder_id": moder.user_uuid,
+                            "moder_name": moder_fio.name,
+                            "moder_second_name": moder_fio.second_name,
+                            "moder_last_name": moder_fio.last_name
+                        }
+                        result.append(moder_info)
                 return result
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав")
@@ -384,7 +389,6 @@ class PeerUserModel:
                 return True
             else:
                 return LogsMaker().error_message(f"Ошибка при удалении записи c id = {note_id} из PeerHistory")
-                return {"msg": "ошибка при удалении записи из PeerHistory"}
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при возрате средств пользователю с id = {user_uuid}: {e}")
         finally:

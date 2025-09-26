@@ -101,11 +101,10 @@ class LikesModel:
 
             
             
-            
+            likes_count = self.get_likes_count()
             
             if not existing_like:
                 # если лайк никогда не существовал, значит False
-                likes_count = self.get_likes_count()
 
                 likes = {'count': likes_count, 'likedByMe': False}
                 reactions['views'] = views
@@ -114,8 +113,7 @@ class LikesModel:
 
             elif existing_like.is_active is False:
                 # если лайк не был поставлен, но когда то стоял возвращаем False
-                likes_count = self.get_likes_count()
-
+                
                 likes = {'count': likes_count, 'likedByMe': False}
                 reactions['views'] = views
                 reactions['likes'] = likes
@@ -123,8 +121,6 @@ class LikesModel:
 
             elif existing_like.is_active is True:
                 # если лайк был поставлен, возвращаем True
-
-                likes_count = self.get_likes_count()
 
                 likes = {'count': likes_count, 'likedByMe': True}
                 reactions['views'] = views
@@ -138,8 +134,8 @@ class LikesModel:
         except Exception as e:
             self.session.rollback()
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
-        # finally:
-        #     self.session.close()
+        finally:
+            self.session.close()
 
 
     def get_likes_count(self ) -> int:

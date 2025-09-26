@@ -142,8 +142,8 @@ class LikesModel:
                 # ).count() > 0
             else:
                 return {
-                    'views' : 0,
-                    'likes' : {'count': 0, 'likedByMe': False}
+                    'views' : "0",
+                    'likes' : {'count': "0", 'likedByMe': False}
                 }
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")

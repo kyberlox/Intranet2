@@ -2330,7 +2330,8 @@ class Article:
             usr = User()
             usr.uuid = user_uuid
             user_inf = usr.user_inf_by_uuid()
-            return user_inf["ID"]
+            if "ID" in user_inf.keys():
+                return user_inf["ID"]
         return None
     
     def search_articles_by_tags(self, tag_id, session_id=''):

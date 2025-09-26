@@ -90,7 +90,7 @@ class LikesModel:
             views = VM.get_art_viewes()
             return views
         except Exception as e:
-            return None
+            return 0
             LogsMaker().error_message(str(e))
 
     def has_liked(self ) -> bool:

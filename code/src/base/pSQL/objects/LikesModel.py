@@ -26,21 +26,35 @@ class LikesModel:
         from ..models.Likes import Likes
         self.Likes = Likes
 
+        self.reactions = {
+            "views" : 0,
+            "likes" : {'count': likes_count, 'likedByMe': True}
+        }
+
     def add_or_remove_like(self ) -> bool:
-        from .ViewsModel import ViewsModel
         """
         Ставит лайк статье если пользователь его еще не ставил
         Убрает лайк со статьи
         Меняет статус лайка
         """
-        reactions = {}
+
+        from .ViewsModel import ViewsModel
+        views = ViewsModel(art_id=self.art_id).get_art_viewes()
+        self.reactions["views"] = views
+
+        likes_count = self.get_likes_count()
+        self.reactions["likes"]["count"] = likes_count
+        
+        
         # Проверяем, есть ли уже активный лайк
         existing_like = self.session.query(self.Likes).filter(
             self.Likes.user_id == self.user_id,
             self.Likes.article_id == self.art_id
         ).first()
-        views = ViewsModel(art_id=self.art_id).get_art_viewes()
+
         
+        
+
         if not existing_like:
             # создаем новый лайк если прежде никогда не стоял
             new_like = self.Likes(
@@ -51,38 +65,18 @@ class LikesModel:
             )
             self.session.add(new_like)
             self.session.commit()
-            self.session.close()
-            likes_count = self.get_likes_count()
 
-            likes = {'count': likes_count, 'likedByMe': True}
-            reactions['views'] = views
-            reactions['likes'] = likes
-            return reactions
+            self.reactions["likes"]["likedByMe"] = True
 
-        elif existing_like.is_active is False:
-            # если лайк не был поставлен, ставим
-            existing_like.is_active = True
+        else:
+            existing_like.is_active = not existing_like.is_active
             self.session.commit()
-            self.session.close()
-            likes_count = self.get_likes_count()
 
-            likes = {'count': likes_count, 'likedByMe': True}
-            reactions['views'] = views
-            reactions['likes'] = likes
-            return reactions
+            self.reactions["likes"]["likedByMe"] = existing_like.is_active
 
-        elif existing_like.is_active is True:
-            # если лайк был поставлен, убираем
-            existing_like.is_active = False
-            self.session.commit()
-            self.session.close()
+        
 
-            likes_count = self.get_likes_count()
-
-            likes = {'count': likes_count, 'likedByMe': False}
-            reactions['views'] = views
-            reactions['likes'] = likes
-            return reactions
+        return self.reactions
 
     def _get_VM(self):
         try:

@@ -97,7 +97,7 @@ class LikesModel:
                 self.Likes.user_id == self.user_id,
                 self.Likes.article_id == self.art_id
             ).first()
-            # self.session.close()
+            self.session.close()
 
             
             

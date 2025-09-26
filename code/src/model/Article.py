@@ -2299,7 +2299,7 @@ class Article:
                             else:
                                 pass
 
-                        ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+                    ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
                         
 
         return {"status": True}

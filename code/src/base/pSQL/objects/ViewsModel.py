@@ -54,7 +54,6 @@ class ViewsModel:
         curr_count = 0
         if existing_view:
             existing_view.viewes_count = existing_view.viewes_count + 1
-
             curr_count = existing_view.viewes_count
 
             self.session.commit()
@@ -64,9 +63,8 @@ class ViewsModel:
             new_view = self.Views()
             new_view.article_id=self.art_id,
             new_view.viewes_count=1
-
             curr_count = 1
-            
+
             self.session.add(new_view)
             self.session.commit()
             self.session.close()

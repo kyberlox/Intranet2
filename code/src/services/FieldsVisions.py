@@ -44,6 +44,12 @@ class Visions:
         UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(user_data=users_id, roots=self.roots)
         # self.delete_users_from_vision(users=users_id)
         return True
+        users = self.get_users_in_vision()
+        users_id = [usr['id'] for usr in users]
+        FieldvisionModel(id=self.vision_id).remove_field_vision()
+        UservisionsRootModel(vision_id=self.vision_id).remove_users_from_vision(user_data=users_id, roots=self.roots)
+        # self.delete_users_from_vision(users=users_id)
+        return True
     
     def get_all_visions(self):
         return FieldvisionModel().find_all_visions()

@@ -3,7 +3,9 @@ from .App import db, flag_modified, select, exists, JSONB, func
 
 
 
-#!!!!!!!!!!!!!!!
+
+
+#!!!!!!!!!!!!!!! 
 from src.services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
 
@@ -71,6 +73,7 @@ class UservisionsRootModel:
             self.session.close()
     
     def remove_user_from_vision(self, roots):
+
         try:
             if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
                 existing_user = self.session.query(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).filter(self.Roots.user_uuid == self.user_id).first()

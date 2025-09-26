@@ -63,33 +63,29 @@ class ActiveUsersModel:
             likes_left = 0
 
         actions_for_all = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True).all()
-        if 'PeerCurator' not in roots.keys() or len(roots['PeerCurator']) == 0:
-            activities_list = [
-                {"value": activity.id, "name": activity.name}
-                for activity in actions_for_all
-            ]
-            self.session.close()
-            return {
-                "likes_left": likes_left,
-                "activities": activities_list
-            }
-        else:
+        if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
             activities_list = []
-            if len(roots['PeerCurator']) == 1:
-                activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == roots['PeerCurator'][0]).first()
+            for activity_id in roots['PeerCurator']:
+                activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
                 part = {"value": activity_info.id, "name": activity_info.name}
                 activities_list.append(part)
-            elif len(roots['PeerCurator']) >= 2:
-                for activity_id in roots['PeerCurator']:
-                    activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
-                    part = {"value": activity_info.id, "name": activity_info.name}
-                    activities_list.append(part)
 
             for activity in actions_for_all:
                 part = {"value": activity.id, "name": activity.name}
                 activities_list.append(part)
             # сюда добавить обработку
             
+            self.session.close()
+            return {
+                "likes_left": likes_left,
+                "activities": activities_list
+            }
+        else:
+            
+            activities_list = [
+                {"value": activity.id, "name": activity.name}
+                for activity in actions_for_all
+            ]
             self.session.close()
             return {
                 "likes_left": likes_left,

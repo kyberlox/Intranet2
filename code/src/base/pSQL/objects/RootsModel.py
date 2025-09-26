@@ -54,7 +54,10 @@ class RootsModel:
         BOYS_DONT_CRY = [2366, 2375, 4133]
         try:
             for guy in BOYS_DONT_CRY:
+                max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                new_id = max_id + 1
                 new_moder = self.Roots()
+                new_moder.id=new_id
                 new_moder.user_uuid=guy
                 new_moder.root_token={
                     "PeerAdmin": True,

@@ -2310,8 +2310,13 @@ class Article:
             likes_info = B24().get_likes_views(inf['id'])
             if inf['section_id'] not in null_list:
                 if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
-                    print(likes_info["ID"])#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+                    
+                    VM = ViewsModel()
+                    VM.views_count=likes_info['VIEWS']
+                    VM.art_id=inf['id']
+                    VM.add_view_b24()
+                    
+                    print(likes_info["ID"], "добавил просмотры")#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         return {"status": True}
 

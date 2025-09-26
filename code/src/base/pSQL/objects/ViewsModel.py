@@ -58,7 +58,6 @@ class ViewsModel:
 
             self.session.commit()
             self.session.close()
-            return existing_view.viewes_count
         else:
             new_view = self.Views()
             new_view.article_id=self.art_id,

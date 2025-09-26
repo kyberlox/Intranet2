@@ -28,7 +28,7 @@ class LikesModel:
 
         self.reactions = {
             "views" : 0,
-            "likes" : {'count': likes_count, 'likedByMe': True}
+            "likes" : {'count': 0, 'likedByMe': False}
         }
 
     def add_or_remove_like(self ) -> bool:

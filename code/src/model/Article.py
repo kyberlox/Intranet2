@@ -1103,6 +1103,7 @@ class Article:
         # self.dump_articles_data_es()
 
         self.upload_likes()
+        self.upload_views()
 
     def upload_uniquely(self ):
         '''однозначно'''
@@ -2255,7 +2256,7 @@ class Article:
     def add_art_view(self):
         return ViewsModel(art_id=self.id).add_art_view()
 
-    # дамп данных по лайкам и просмотрам из Б24
+    # дамп данных по лайкам из Б24
     def upload_likes(self):
         result = [] 
         articles_info = ArticleModel().all()
@@ -2298,9 +2299,19 @@ class Article:
                             else:
                                 pass
 
-                    if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
-                        print(likes_info["ID"])
-                        ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
+        return {"status": True}
+    
+    # дамп данных по просмотрам из Б24
+    def upload_views(self):
+        result = [] 
+        articles_info = ArticleModel().all()
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 71, 34] # список секций где нет лайков
+        for inf in articles_info:
+            likes_info = B24().get_likes_views(inf['id'])
+            if inf['section_id'] not in null_list:
+                if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
+                    print(likes_info["ID"])
+                    ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
 
         return {"status": True}
 
@@ -2441,6 +2452,10 @@ def elastic_search(keyword: str):
 @article_router.put("/put_b24_likes")
 def put_b24_likes():
     return Article().upload_likes()
+
+@article_router.put("/put_b24_views")
+def put_b24_views():
+    return Article().upload_views()
 
 #лайки и просмотры для статистики
 @article_router.get("/get_article_likers/{ID}")

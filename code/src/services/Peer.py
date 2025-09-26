@@ -159,7 +159,8 @@ def get_uuid_from_request(request):
         user = User()
         user.uuid = user_uuid
         user_inf = user.user_inf_by_uuid()
-        return user_inf["ID"]
+        if user_inf is not None and "ID" in user_inf.keys():
+            return user_inf["ID"]
     return None
 
 

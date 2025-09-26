@@ -111,35 +111,40 @@ class LikesModel:
                 self.Likes.article_id == self.art_id
             ).first()
             #self.session.close()
-            
-            if not existing_like:
-                # если лайк никогда не существовал, значит False
+            if views is not None:
+                if not existing_like:
+                    # если лайк никогда не существовал, значит False
 
-                likes = {'count': likes_count, 'likedByMe': False}
-                reactions['views'] = views
-                reactions['likes'] = likes
-                return reactions
+                    likes = {'count': likes_count, 'likedByMe': False}
+                    reactions['views'] = views
+                    reactions['likes'] = likes
+                    return reactions
 
-            elif existing_like.is_active is False:
-                # если лайк не был поставлен, но когда то стоял возвращаем False
-                
-                likes = {'count': likes_count, 'likedByMe': False}
-                reactions['views'] = views
-                reactions['likes'] = likes
-                return reactions
+                elif existing_like.is_active is False:
+                    # если лайк не был поставлен, но когда то стоял возвращаем False
+                    
+                    likes = {'count': likes_count, 'likedByMe': False}
+                    reactions['views'] = views
+                    reactions['likes'] = likes
+                    return reactions
 
-            elif existing_like.is_active is True:
-                # если лайк был поставлен, возвращаем True
+                elif existing_like.is_active is True:
+                    # если лайк был поставлен, возвращаем True
 
-                likes = {'count': likes_count, 'likedByMe': True}
-                reactions['views'] = views
-                reactions['likes'] = likes
-                return reactions
-            # return self.session.query(Likes).filter(
-            #     Likes.user_id == self.user_id,
-            #     Likes.article_id == self.art_id,
-            #     Likes.is_active == True
-            # ).count() > 0
+                    likes = {'count': likes_count, 'likedByMe': True}
+                    reactions['views'] = views
+                    reactions['likes'] = likes
+                    return reactions
+                # return self.session.query(Likes).filter(
+                #     Likes.user_id == self.user_id,
+                #     Likes.article_id == self.art_id,
+                #     Likes.is_active == True
+                # ).count() > 0
+            else:
+                return {
+                    'views' : 0,
+                    'likes' : {'count': 0, 'likedByMe': False}
+                }
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
         finally:

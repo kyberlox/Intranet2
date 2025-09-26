@@ -51,9 +51,12 @@ class ViewsModel:
         Добавляет просмотр к статье и возвращает итоговое количество просмотров у статьи
         """
         existing_view = self.session.query(self.Views).where(self.Views.article_id == self.art_id).first()
+        curr_count = 0
         if existing_view:
             existing_view.viewes_count = existing_view.viewes_count + 1
-            print(existing_view.viewes_count)
+
+            curr_count = existing_view.viewes_count
+
             self.session.commit()
             self.session.close()
             return existing_view.viewes_count
@@ -61,8 +64,11 @@ class ViewsModel:
             new_view = self.Views()
             new_view.article_id=self.art_id,
             new_view.viewes_count=1
+
+            curr_count = 1
             
             self.session.add(new_view)
             self.session.commit()
             self.session.close()
-            return new_view.viewes_count
+
+        return curr_count

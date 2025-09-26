@@ -66,6 +66,8 @@ class LikesModel:
             self.session.add(new_like)
             self.session.commit()
 
+            
+
             self.reactions["likes"]["likedByMe"] = True
 
         else:
@@ -74,7 +76,25 @@ class LikesModel:
 
             self.reactions["likes"]["likedByMe"] = existing_like.is_active
 
-        
+        elif existing_like.is_active is False:
+            # если лайк не был поставлен, ставим
+            existing_like.is_active = True
+            self.session.commit()
+
+            likes_count = self.get_likes_count()
+
+            likes = {'count': likes_count, 'likedByMe': True}
+            reactions['likes'] = likes
+
+        elif existing_like.is_active is True:
+            # если лайк был поставлен, убираем
+            existing_like.is_active = False
+            self.session.commit()
+
+            likes_count = self.get_likes_count()
+
+        likes = {'count': likes_count, 'likedByMe': False}
+        reactions['likes'] = likes
 
         return self.reactions
 

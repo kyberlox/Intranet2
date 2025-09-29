@@ -206,7 +206,7 @@ def post_edit_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid']).edit_activity()
 
-@peer_router.delete("/remove_activity")
+@peer_router.delete("/remove_activity/{id}")
 def del_remove_activity(request: Request, id: str):
     uuid = get_uuid_from_request(request)
     return Peer(id=id, user_uuid=uuid).remove_activity()

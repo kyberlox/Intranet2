@@ -133,6 +133,9 @@ class PeerUserModel:
         finally:
             self.session.close()
 
+    def delete_curator(self, roots):
+        pass
+
     def send_points(self, data, roots):
         res = False
         uuid_from = str(roots['user_id'])

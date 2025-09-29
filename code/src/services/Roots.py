@@ -11,6 +11,6 @@ class Roots:
         result = self.RootsModel.create_primary_admins()
         return True
 
-@roots_router.put("create_primary_admins")
+@roots_router.put("/create_primary_admins")
 def create_primary_admins():
     return Roots().create_primary_admins()

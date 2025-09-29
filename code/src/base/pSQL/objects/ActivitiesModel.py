@@ -64,7 +64,7 @@ class ActivitiesModel:
                 if existing_activity:
                     self.session.delete(existing_activity)
                     self.session.commit()
-                    PeerUserModel(activities_id=existing_activity.id).delete_curator(roots)
+                    PeerUserModel(activities_id=existing_activity.id).delete_curators(roots)
                     return LogsMaker().info_message(f"Удаление активности c id = {self.id} звершено успешно")
                 else:
                     return LogsMaker().warning_message(f"Активности с id = {self.id} не существует!")

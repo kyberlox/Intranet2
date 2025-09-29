@@ -1,6 +1,6 @@
 # Определим базовые переменные пакета
 # from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func
-from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func
+from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func, update
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm.attributes import flag_modified
 from ..models.App import Base, engine

@@ -1,6 +1,6 @@
 from datetime import datetime
 from ..models.Roots import Roots
-
+from datetime import timedelta
 from ..models.ActiveUsers import ActiveUsers
 from ..models.Activities import Activities
 from ..models.PeerHistory import PeerHistory
@@ -8,7 +8,7 @@ from ..models.User import User
 
 from .MerchStoreModel import MerchStoreModel
 
-from .App import db, flag_modified
+from .App import db, flag_modified, func, update
 
 from src.services.LogsMaker import LogsMaker
 

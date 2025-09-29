@@ -458,7 +458,6 @@ class UserModel:
                 pass
             else:
                 if user['active'] and user['photo_file_id'] is not None:
-                    print(user)
                     user_info = {}
                     indirect_data = user['indirect_data']
                     list_departs = []

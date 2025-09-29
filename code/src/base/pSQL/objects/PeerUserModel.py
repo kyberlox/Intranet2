@@ -303,7 +303,7 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
                 else:
-                    new_admin = self.Roots
+                    new_admin = self.Roots()
                     self.Roots.user_uuid=int(self.uuid)
                     self.Roots.root_token={"PeerAdmin": True}
                     self.session.add(new_admin)
@@ -352,7 +352,7 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
                 else:
-                    new_moder = self.Roots
+                    new_moder = self.Roots()
                     self.Roots.user_uuid=int(self.uuid)
                     self.Roots.root_token={"PeerModer": True}
                     self.session.add(new_moder)

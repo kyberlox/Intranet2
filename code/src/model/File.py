@@ -476,10 +476,8 @@ class File:
             file.file.seek(0, 2)  # Перемещаемся в конец файла
             file_size = file.file.tell()  # Получаем размер
             file.file.seek(0)  # Возвращаемся в начало
-            if list(UPLOAD_PROGRESS.keys()) == []:
-                upload_id = 1
-            else:
-                upload_id = UPLOAD_PROGRESS.keys()[-1] + 1
+            
+            upload_id = int(self.art_id)
 
             async with aiofiles.open(file_path, "wb") as f:
                 while True:

@@ -54,7 +54,7 @@ class ActiveUsersModel:
     def actions(self, roots):
         """выводит список доступных пользователю активностей"""
         month_ago = datetime.now() - timedelta(days=30)
-        likes_count = self.session.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == 0, self.ActiveUsers.date_time >= month_ago).count()
+        likes_count = self.session.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == 1, self.ActiveUsers.date_time >= month_ago).count()
 
 
         #проверить остаток доступных лайков
@@ -66,6 +66,7 @@ class ActiveUsersModel:
         if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
             activities_list = []
             for activity_id in roots['PeerCurator']:
+                print(roots['PeerCurator'])
                 activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
                 part = {"value": activity_info.id, "name": activity_info.name}
                 activities_list.append(part)
@@ -110,6 +111,7 @@ class ActiveUsersModel:
 
     def sum(self, uuid):
         user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == uuid).first()
+        # user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == 2375).first()
         if user_info:
             if user_info.user_points:
                 return user_info.user_points

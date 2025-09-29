@@ -79,11 +79,16 @@ class ActivitiesModel:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 max_id = self.session.query(func.max(self.Activities.id)).scalar() or 0
                 new_id = max_id + 1
-                new_active = self.Activities
-                self.Activities.id=new_id,
-                self.Activities.name=data['name']
-                self.Activities.coast=data['coast']
-                self.Activities.need_valid=data['need_valid']
+                new_active = self.Activities(
+                    id=new_id,
+                    name=data['name'],
+                    coast=data['coast'],
+                    need_valid=data['need_valid']
+                )
+                # self.Activities.id=new_id,
+                # self.Activities.name=data['name']
+                # self.Activities.coast=data['coast']
+                # self.Activities.need_valid=data['need_valid']
                 # self.session.add(new_active)
                 # self.session.commit()
                 # добавляем модера

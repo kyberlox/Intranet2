@@ -244,6 +244,19 @@ class ActiveUsersModel:
         return {"sum": total_sum, "activities": activities}
 
     def user_history(self):
+        # results = self.session.query(
+        #     self.ActiveUsers.id,
+        #     self.ActiveUsers.uuid_from,
+        #     self.ActiveUsers.description,
+        #     self.ActiveUsers.date_time,
+        #     self.Activities.name,
+        #     self.Activities.coast,
+        #     self.Activities.id,
+        # ).join(self.Activities).filter(
+        #     self.ActiveUsers.uuid_to == self.uuid_to,
+        #     self.ActiveUsers.valid == 1
+        # ).all()
+
         results = self.session.query(
             self.ActiveUsers.id,
             self.ActiveUsers.uuid_from,
@@ -256,7 +269,7 @@ class ActiveUsersModel:
             self.ActiveUsers.uuid_to == self.uuid_to,
             self.ActiveUsers.valid == 1
         ).all()
-
+        self.session.close()
         activities = []
         for result in results:
             activities.append({
@@ -277,5 +290,5 @@ class ActiveUsersModel:
                 "date_time": merch.date_time,
                 "merch_coast": merch.merch_coast
             })
-        self.session.close()
+        
         return activities

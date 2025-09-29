@@ -193,6 +193,7 @@ def get_uuid_from_request(request):
 @peer_router.get("/sum")
 def sum(request: Request):
     uuid = get_uuid_from_request(request)
+
     return Peer(user_uuid=uuid).sum()
 
 

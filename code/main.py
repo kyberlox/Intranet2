@@ -197,7 +197,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 #Прогресс процесса через вебсокет
-@app.websocket("/api/pogress/{upload_id}")
+#@app.websocket("/api/pogress/{upload_id}")
+@app.get("/api/pogress/{upload_id}")
 async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
     global UPLOAD_PROGRESS

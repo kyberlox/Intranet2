@@ -118,7 +118,7 @@ class PeerUserModel:
                         self.session.commit()
                         return True
                 else:
-                    max_id = self.session.query(func.max(self.Roots)).scalar() or 0
+                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_moder = self.Roots(
                         id=new_id,
@@ -306,7 +306,7 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
                 else:
-                    max_id = self.session.query(func.max(self.Roots)).scalar() or 0
+                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_admin = self.Roots(
                         id=new_id,
@@ -361,7 +361,7 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
                 else:
-                    max_id = self.session.query(func.max(self.Roots)).scalar() or 0
+                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_moder = self.Roots(
                         id=new_id,

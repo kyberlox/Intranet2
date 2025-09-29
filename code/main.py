@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request
+from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi import BackgroundTasks #, Cookie, Header
 from fastapi.responses import Response, JSONResponse#, FileResponse
@@ -193,6 +194,29 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     return await call_next(request)
 
+
+
+#Прогресс процесса через вебсокет
+@app.websocket("/api/pogress/{upload_id}")
+async def websocket_endpoint(websocket: WebSocket, upload_id: str):
+    from src.model.File import UPLOAD_PROGRESS
+    global UPLOAD_PROGRESS
+    await websocket.accept()
+    try:
+        while True:
+            # Отправляем прогресс каждые 0.1 секунду
+            if upload_id in UPLOAD_PROGRESS:
+                progress = UPLOAD_PROGRESS[upload_id]
+                await websocket.send_text(f"{progress}")
+                
+                # Если загрузка завершена, удаляем из хранилища
+                if progress >= 100:
+                    del UPLOAD_PROGRESS[upload_id]
+                    break
+            await asyncio.sleep(0.1)
+    except WebSocketDisconnect:
+        if upload_id in UPLOAD_PROGRESS:
+            del UPLOAD_PROGRESS[upload_id]
 
 
 @app.get("/get_test_elastic/{word}")

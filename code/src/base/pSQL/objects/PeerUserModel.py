@@ -352,9 +352,12 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
                 else:
-                    new_moder = self.Roots()
-                    self.Roots.user_uuid=int(self.uuid)
-                    self.Roots.root_token={"PeerModer": True}
+                    new_moder = self.Roots(
+                        user_uuid=int(self.uuid),
+                        root_token={"PeerModer": True}
+                    )
+                    # self.Roots.user_uuid=int(self.uuid)
+                    # self.Roots.root_token={"PeerModer": True}
                     self.session.add(new_moder)
                     self.session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")

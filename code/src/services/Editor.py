@@ -376,6 +376,7 @@ class Editor:
                 art = dict()
 
                 #вписываю значения нередактируемых параметров сам:
+                art["id"] = self.art_id
                 art["active"] = False
                 art["section_id"] = self.section_id
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))

@@ -100,31 +100,33 @@ class PeerUserModel:
         finally:
             self.session.close()
 
-    def add_curator(self):
+    def add_curator(self, roots):
         try:
-            existing_curator = self.session.query(Roots).filter(Roots.user_uuid == int(self.uuid)).first()
-            if existing_curator:
-                if "PeerCurator" in existing_curator.root_token.keys() and self.activities_id in existing_curator.root_token['PeerCurator']:
-                    return False
-                elif "PeerCurator" in existing_curator.root_token.keys():
-                    existing_curator.root_token["PeerCurator"].append(self.activities_id)
-                    flag_modified(existing_curator, 'root_token')
-                    self.session.commit()
-                    return True
+            if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                existing_curator = self.session.query(Roots).filter(Roots.user_uuid == int(self.uuid)).first()
+                if existing_curator:
+                    if "PeerCurator" in existing_curator.root_token.keys() and self.activities_id in existing_curator.root_token['PeerCurator']:
+                        return False
+                    elif "PeerCurator" in existing_curator.root_token.keys():
+                        existing_curator.root_token["PeerCurator"].append(self.activities_id)
+                        flag_modified(existing_curator, 'root_token')
+                        self.session.commit()
+                        return True
+                    else:
+                        existing_curator.root_token["PeerCurator"] = [self.activities_id]
+                        flag_modified(existing_curator, 'root_token')
+                        self.session.commit()
+                        return True
                 else:
-                    existing_curator.root_token["PeerCurator"] = [self.activities_id]
-                    flag_modified(existing_curator, 'root_token')
+                    new_moder = Roots(
+                        user_uuid=int(self.uuid),
+                        root_token={"PeerCurator": [self.activities_id]}
+                    )
+                    self.session.add(new_moder)
                     self.session.commit()
                     return True
             else:
-                new_moder = Roots(
-                    user_uuid=int(self.uuid),
-                    root_token={"PeerCurator": [self.activities_id]}
-                )
-                self.session.add(new_moder)
-                self.session.commit()
-                return True
-            
+                return LogsMaker().warning_message(f"У Вас недостаточно прав")
         except Exception as e:
             self.session.rollback()
             return LogsMaker().error_message(f"Ошибка добавления куратора: {e}")

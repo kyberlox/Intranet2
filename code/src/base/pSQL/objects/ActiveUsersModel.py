@@ -111,6 +111,7 @@ class ActiveUsersModel:
     def sum(self, uuid):
         user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == uuid).first()
         # user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == 2375).first()
+        self.session.close()
         if user_info:
             if user_info.user_points:
                 points = user_info.user_points

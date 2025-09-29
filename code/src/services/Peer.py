@@ -34,15 +34,17 @@ class Peer:
         self.roots = self.RootsModel.token_processing_for_peer(self.Roots)
     
     """Ручки которые доступны любому пользователю"""
-    def sum(self): 
-        return self.ActiveUsersModel.sum(self.user_uuid)
+    def sum(self):
+        result = self.ActiveUsersModel.sum(self.user_uuid)
+        return result
     
     def statistics(self):
         self.ActiveUsersModel.uuid_to = self.user_uuid
         return self.ActiveUsersModel.statistics()
     
     def actions(self):
-        return self.ActiveUsersModel.actions(self.roots)
+        result = self.ActiveUsersModel.actions(self.roots)
+        return result
     """"""
     def get_all_activities(self):
         return self.ActivitiesModel.find_all_activities()

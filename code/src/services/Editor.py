@@ -382,6 +382,7 @@ class Editor:
 
                 #добавить статью
                 Article().set_new(art)
+                print(f"Создал {self.art_id}")
 
             elif field["field"] == "active":
                 field["value"] = False
@@ -582,8 +583,8 @@ async def get_form(section_id : int):
 
 @editor_router.post("/add/{art_id}")
 async def set_new(art_id : int, data = Body()):
-    section_id = data["section_id"]
-    return Editor(art_id=art_id, section_id=section_id).add(data)
+    #section_id = data["section_id"]
+    return Editor(art_id=art_id).add(data)
 
 
 

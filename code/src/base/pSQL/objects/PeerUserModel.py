@@ -103,7 +103,7 @@ class PeerUserModel:
     def add_curator(self, roots):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_curator = self.session.query(Roots).filter(Roots.user_uuid == int(self.uuid)).first()
+                existing_curator = self.session.query(self.Roots).filter(Roots.user_uuid == int(self.uuid)).first()
                 if existing_curator:
                     if "PeerCurator" in existing_curator.root_token.keys() and self.activities_id in existing_curator.root_token['PeerCurator']:
                         return False
@@ -118,7 +118,10 @@ class PeerUserModel:
                         self.session.commit()
                         return True
                 else:
-                    new_moder = Roots(
+                    max_id = self.session.query(func.max(self.Roots)).scalar() or 0
+                    new_id = max_id + 1
+                    new_moder = self.Roots(
+                        id=new_id,
                         user_uuid=int(self.uuid),
                         root_token={"PeerCurator": [self.activities_id]}
                     )
@@ -303,9 +306,15 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
                 else:
-                    new_admin = self.Roots()
-                    self.Roots.user_uuid=int(self.uuid)
-                    self.Roots.root_token={"PeerAdmin": True}
+                    max_id = self.session.query(func.max(self.Roots)).scalar() or 0
+                    new_id = max_id + 1
+                    new_admin = self.Roots(
+                        id=new_id,
+                        user_uuid=int(self.uuid),
+                        root_token={"PeerAdmin": True}
+                    )
+                    # self.Roots.user_uuid=int(self.uuid)
+                    # self.Roots.root_token={"PeerAdmin": True}
                     self.session.add(new_admin)
                     self.session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
@@ -352,7 +361,10 @@ class PeerUserModel:
                         self.session.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
                 else:
+                    max_id = self.session.query(func.max(self.Roots)).scalar() or 0
+                    new_id = max_id + 1
                     new_moder = self.Roots(
+                        id=new_id,
                         user_uuid=int(self.uuid),
                         root_token={"PeerModer": True}
                     )

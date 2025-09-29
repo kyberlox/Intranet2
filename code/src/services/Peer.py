@@ -193,6 +193,7 @@ def get_uuid_from_request(request):
 @peer_router.get("/sum")
 def sum(request: Request):
     uuid = get_uuid_from_request(request)
+
     return Peer(user_uuid=uuid).sum()
 
 
@@ -313,7 +314,7 @@ def add_peer_moder(uuid: int, request: Request):
 @peer_router.delete("/delete_peer_moder/{uuid}")
 def delete_peer_moder(uuid: str, request: Request):
     user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).delete_peer_moder(uuid)
+    return Peer(user_uuid=use r_uuid).delete_peer_moder(uuid)
 
 @peer_router.get("/get_moders_history")
 def get_moders_history(request: Request):

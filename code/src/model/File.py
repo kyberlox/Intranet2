@@ -477,27 +477,10 @@ class File:
             file_size = file.file.tell()  # Получаем размер
             file.file.seek(0)  # Возвращаемся в начало
             
-            upload_id = int(self.art_id)
-
-            async with aiofiles.open(file_path, "wb") as f:
-                while True:
-                    chunk = file.file.read(chunk_size)
-                    if not chunk:
-                        break
-                    
-                    await f.write(chunk)
-                    total_written += len(chunk)
-                    
-                    # Обновляем прогресс
-                    if file_size > 0:
-                        progress = (total_written / file_size) * 100
-                        UPLOAD_PROGRESS[upload_id] = progress
-                    
-                    # Небольшая задержка для демонстрации прогресса
-                    await asyncio.sleep(0.01)
-            
-            # Файл успешно сохранен
-            UPLOAD_PROGRESS[upload_id] = 100
+            with file.file:
+                contents = file.file.read()
+                async with aiofiles.open(file_path, "wb") as f:
+                    await f.write(contents)
 
             file_info = {
                 "original_name": filename,
@@ -509,11 +492,6 @@ class File:
                 "is_preview" : False,
                 "file_url": f"/api/files/{unique_name}"
             }
-
-            # Удаляем прогресс после успешной загрузки
-            if upload_id in UPLOAD_PROGRESS:
-                del UPLOAD_PROGRESS[upload_id]
-
 
             inserted_id = FileModel().add(file_info)
 

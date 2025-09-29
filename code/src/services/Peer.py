@@ -90,6 +90,12 @@ class Peer:
         self.PeerUserModel.uuid = user_id
         return self.PeerUserModel.add_curator(roots=self.roots)
     
+    def delete_curator(self, user_id):
+        self.PeerUserModel.activities_id = self.activities_id
+        self.PeerUserModel.uuid = user_id
+        result = self.PeerUserModel.delete_curator(roots=self.roots)
+        return result
+
     def new_activity(self, data): 
         data["uuid"] = self.user_uuid
         return self.ActivitiesModel.new_activity(data, self.roots)
@@ -235,6 +241,11 @@ def get_req_curators():
 def add_curator(uuid: int, request: Request, activities_id: int):
     user_uuid = get_uuid_from_request(request)
     return Peer(user_uuid=user_uuid, activities_id=activities_id).add_curator(uuid)
+
+@peer_router.delete("/delete_curator/{uuid}/{activities_id}")
+def delete_curator(uuid: int, request: Request, activities_id: int):
+    user_uuid = get_uuid_from_request(request)
+    return Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(uuid)
 
 @peer_router.put("/new_activity")
 def put_new_activity(request: Request, data = Body()):

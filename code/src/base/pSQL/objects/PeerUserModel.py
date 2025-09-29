@@ -133,7 +133,7 @@ class PeerUserModel:
         finally:
             self.session.close()
 
-    def delete_curator(self, roots):
+    def delete_curators(self, roots):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 existing_activity = self.session.query(self.Activities).get(self.activities_id)
@@ -156,7 +156,27 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Ошибка при удалении кураторов из активности с id = {self.activities_id}: {e}")
         finally:
             self.session.close()
-        
+    
+    def delete_curator(self, roots):
+        try:
+            if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                user = self.session.query(self.Roots).filter(
+                    self.Roots.user_id = self.uuid,
+                    self.Roots.root_token['PeerCurator'].contains([self.activities_id])
+                ).all()
+                if user:
+                    user.root_token['PeerCurator'].remove(self.activities_id)
+                    self.session.commit()
+                    return LogsMaker().info_message(f"У активности с id = {self.activities_id} пользователь с id = {self.uuid} больше не является куратором")
+                else:
+                    return LogsMaker().info_message(f"Активности с id = {self.activities_id} не курировал пользователь с id = {self.uuid}")
+            else:
+                return LogsMaker().warning_message(f"Недостаточно прав")
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при удалении куратора с id = {self.uuid} из активности с id = {self.activities_id}: {e}")
+        finally:
+            self.session.close()
+            
     def send_points(self, data, roots):
         res = False
         uuid_from = str(roots['user_id'])

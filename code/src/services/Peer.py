@@ -47,7 +47,8 @@ class Peer:
         return result
     """"""
     def get_all_activities(self):
-        return self.ActivitiesModel.find_all_activities()
+        result = self.ActivitiesModel.find_all_activities()
+        return result
 
     # def upload_base_activities(self):
     #     return self.ActivitiesModel.upload_base_activities()

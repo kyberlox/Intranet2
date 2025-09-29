@@ -17,6 +17,8 @@ import aiofiles
 
 from src.services.LogsMaker import LogsMaker
 
+from typing import Dict
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')

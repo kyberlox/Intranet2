@@ -66,7 +66,6 @@ class ActiveUsersModel:
         if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
             activities_list = []
             for activity_id in roots['PeerCurator']:
-                print(roots['PeerCurator'])
                 activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
                 part = {"value": activity_info.id, "name": activity_info.name}
                 activities_list.append(part)

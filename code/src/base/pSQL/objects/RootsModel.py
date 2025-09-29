@@ -54,18 +54,23 @@ class RootsModel:
         BOYS_DONT_CRY = [2366, 2375, 4133]
         try:
             for guy in BOYS_DONT_CRY:
-                max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
-                new_id = max_id + 1
-                new_moder = self.Roots()
-                new_moder.id=new_id
-                new_moder.user_uuid=guy
-                new_moder.root_token={
-                    "PeerAdmin": True,
-                    "VisionAdmin": True
-                }
-                
-                self.session.add(new_moder)
-                self.session.commit()
+                existing_admin = self.session.query(Roots).filter(Roots.user_uuid == guy).first()
+                if "PeerAdmin" in existing_admin.root_token.keys() and "VisionAdmin" in existing_admin.root_token.keys():
+                    continue
+                    
+                else:
+                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                    new_id = max_id + 1
+                    new_moder = self.Roots()
+                    new_moder.id=new_id
+                    new_moder.user_uuid=guy
+                    new_moder.root_token={
+                        "PeerAdmin": True,
+                        "VisionAdmin": True
+                    }
+                    
+                    self.session.add(new_moder)
+                    self.session.commit()
             return True
             
         except Exception as e:

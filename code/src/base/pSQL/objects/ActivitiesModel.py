@@ -2,7 +2,7 @@ import json
 
 from ..models.Activities import Activities
 from .PeerUserModel import PeerUserModel
-from .App import db
+from .App import db, func
 
 
 

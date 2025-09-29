@@ -161,7 +161,7 @@ class PeerUserModel:
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 user = self.session.query(self.Roots).filter(
-                    self.Roots.user_id = self.uuid,
+                    self.Roots.user_id == self.uuid,
                     self.Roots.root_token['PeerCurator'].contains([self.activities_id])
                 ).all()
                 if user:

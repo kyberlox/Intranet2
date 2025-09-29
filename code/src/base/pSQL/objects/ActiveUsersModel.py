@@ -113,7 +113,8 @@ class ActiveUsersModel:
         # user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == 2375).first()
         if user_info:
             if user_info.user_points:
-                return user_info.user_points
+                points = user_info.user_points
+                return points
         return 0
     
     def top(self):

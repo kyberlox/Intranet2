@@ -8,7 +8,7 @@ from ..models.User import User
 
 from .MerchStoreModel import MerchStoreModel
 
-from .App import db, flag_modified, func, update
+from .App import db, flag_modified, func, update, JSONB
 
 from src.services.LogsMaker import LogsMaker
 
@@ -134,8 +134,29 @@ class PeerUserModel:
             self.session.close()
 
     def delete_curator(self, roots):
-        pass
-
+        try:
+            if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                existing_activity = self.session.query(self.Activities).get(self.activities_id)
+                if existing_activity:
+                    users_with_activity = self.session.query(self.Roots).filter(
+                        self.Roots.root_token['PeerCurator'].contains([self.activities_id])
+                    ).all()
+                    for user in users_with_activity:
+                        root_token = user.root_token
+                        if 'PeerCurator' in user.root_token.keys() and self.activities_id in user.root_token['PeerCurator']:
+                            if self.activities_id in root_token['PeerCurator']:
+                                user.root_token['PeerCurator'].remove(self.activities_id)
+                    self.session.commit()
+                    return LogsMaker().info_message(f"У активности с id = {self.activities_id} больше нет кураторов")
+                else:
+                    return LogsMaker().info_message(f"Активности с id = {self.activities_id} не существует")
+            else:
+                return LogsMaker().warning_message(f"Недостаточно прав")
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при удалении кураторов из активности с id = {self.activities_id}: {e}")
+        finally:
+            self.session.close()
+        
     def send_points(self, data, roots):
         res = False
         uuid_from = str(roots['user_id'])

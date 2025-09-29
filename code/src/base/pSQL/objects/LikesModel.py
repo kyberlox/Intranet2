@@ -118,7 +118,6 @@ class LikesModel:
             return self.reactions
 
         except Exception as e:
-            self.session.close()
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
 
 

@@ -98,7 +98,7 @@ class ActivitiesModel:
                     return LogsMaker().info_message(f"Обновление активности {self.name} звершено успешно")
                 else:
                     uuid = data['uuid']
-                    curator_status = PeerUserModel(activities_id=new_id, uuid=uuid).add_curator()
+                    curator_status = PeerUserModel(activities_id=new_id, uuid=uuid).add_curator(roots)
                     if curator_status:
                         self.session.add(new_active)
                         self.session.commit()

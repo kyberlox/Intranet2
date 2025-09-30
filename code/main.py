@@ -195,36 +195,43 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     return await call_next(request)
 
 
-
-#Прогресс процесса через вебсокет
-#@app.websocket("/api/pogress/{upload_id}")
-# async def websocket_endpoint(websocket: WebSocket, upload_id: int):
-#     from src.model.File import UPLOAD_PROGRESS
-#     global UPLOAD_PROGRESS
-#     await websocket.accept()
-#     try:
-#         while True:
-#             # Отправляем прогресс каждые 0.1 секунду
-#             if upload_id in UPLOAD_PROGRESS:
-#                 progress = UPLOAD_PROGRESS[upload_id]
-#                 await websocket.send_text(f"{progress}")         
-#                 # Если загрузка завершена, удаляем из хранилища
-#                 if progress >= 100:
-#                     del UPLOAD_PROGRESS[upload_id]
-#                     break
-#             await asyncio.sleep(0.1)
-#     except WebSocketDisconnect:
-#         if upload_id in UPLOAD_PROGRESS:
-#             del UPLOAD_PROGRESS[upload_id]
-
-@app.get("/api/pogress/{upload_id}")
-async def websocket_endpoint(upload_id: int):
+# Прогресс процесса через вебсокет
+@app.websocket("/api/pogress/{upload_id}")
+async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
-    if upload_id in UPLOAD_PROGRESS:
-        progress = UPLOAD_PROGRESS[upload_id]
-        return progress
-    else:
-        return f'нет такого upload_id = {upload_id}'
+    global UPLOAD_PROGRESS
+    await websocket.accept()
+    try:
+        while True:
+            # Отправляем прогресс каждые 0.1 секунду
+            if upload_id in UPLOAD_PROGRESS:
+                progress = UPLOAD_PROGRESS[upload_id]
+                await websocket.send_text(f"{progress}")
+                
+                # Если загрузка завершена или произошла ошибка, удаляем из хранилища
+                if progress >= 100 or progress == -1:
+                    # Ждем немного перед закрытием, чтобы клиент получил финальное значение
+                    await asyncio.sleep(0.5)
+                    if upload_id in UPLOAD_PROGRESS:
+                        del UPLOAD_PROGRESS[upload_id]
+                    break
+            else:
+                # Если upload_id не найден, отправляем 0
+                await websocket.send_text("0")
+                
+            await asyncio.sleep(0.1)
+    except WebSocketDisconnect:
+        # Клиент отключился, но не удаляем прогресс - загрузка может продолжаться
+        print(f"Client disconnected for upload {upload_id}")
+
+# @app.get("/api/pogress/{upload_id}")
+# async def websocket_endpoint(upload_id: int):
+#     from src.model.File import UPLOAD_PROGRESS
+#     if upload_id in UPLOAD_PROGRESS:
+#         progress = UPLOAD_PROGRESS[upload_id]
+#         return progress
+#     else:
+#         return f'нет такого upload_id = {upload_id}'
 
 
 

@@ -167,7 +167,7 @@ class User:
     def update_inf_from_b24(self ):
         data = B24().getUsers()
         for usr_data in data:
-            if usr_data["ID"] == self.id
+            if int(usr_data["ID"]) == int(self.id)
                 self.UserModel.upsert_user(usr_data)
                 return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
@@ -209,6 +209,10 @@ class User:
 def update_user():
     usr = User()
     return usr.fetch_users_data()
+
+@users_router.put("/update_user_info/{user_id}")
+def update_user_info(user_id : int):
+    return User(id = user_id).update_inf_from_b24()
 
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")

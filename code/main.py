@@ -137,7 +137,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/user_files",
         "test", "dump", "get_file", "get_all_files",
         "/api/total_background_task_update",
-        "progress"
+        "/progress"
     ]
 
     for open_link in open_links:

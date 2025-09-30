@@ -217,10 +217,12 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
                     if upload_id in UPLOAD_PROGRESS:
                         del UPLOAD_PROGRESS[upload_id]
                         websocket.send_text("Загрузка завершена!")
+                        await websocket.close()
                     break
             else:
                 # Если upload_id не найден, отправляем 0
                 await websocket.send_text("upload_id не найден")
+                await websocket.close()
                 
             await asyncio.sleep(0.1)
     except WebSocketDisconnect:

@@ -39,6 +39,8 @@ def get_type(value):
         tp = "str"
     return tp
 
+
+
 class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):

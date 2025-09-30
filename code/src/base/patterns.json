@@ -1,1 +1,1077 @@
-{}
+{
+  "13": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "14": {
+    "fields": [
+      {
+        "name": "ID пользователя",
+        "field": "uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "год",
+        "field": "year",
+        "data_type": "str"
+      },
+      {
+        "name": "Должность",
+        "field": "position",
+        "data_type": "str"
+      },
+      {
+        "name": "Подразделение",
+        "field": "department",
+        "data_type": "str"
+      },
+      {
+        "name": "Награда",
+        "field": "award",
+        "data_type": "str"
+      },
+      {
+        "name": "Локация",
+        "field": "location",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {}
+  },
+  "15": {
+    "fields": [
+      {
+        "name": "Ссылка",
+        "field": "link",
+        "data_type": "str"
+      },
+      {
+        "name": "Заголовок",
+        "field": "TITLE",
+        "data_type": "str"
+      },
+      {
+        "name": "Предприятие",
+        "field": "company",
+        "data_type": "str"
+      },
+      {
+        "name": "ID автора",
+        "field": "author_uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Ссылка на YouTube",
+        "field": "youtube_link",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "documentation": [],
+      "videos_embed": [],
+      "images": []
+    }
+  },
+  "16": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "videos_native": []
+    }
+  },
+  "18": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "documentation": []
+    }
+  },
+  "22": {
+    "fields": [],
+    "files": {}
+  },
+  "31": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "videos_native": [],
+      "images": [],
+      "videos_embed": [],
+      "documentation": []
+    }
+  },
+  "32": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "34": {
+    "fields": [
+      {
+        "name": "год",
+        "field": "year",
+        "data_type": "str"
+      },
+      {
+        "name": "Фотография (URL)",
+        "field": "photo_file_url",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "documentation": []
+    }
+  },
+  "41": {
+    "fields": [
+      {
+        "name": "Репортажи",
+        "field": "reports",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "42": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "videos_embed": []
+    }
+  },
+  "51": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "videos_embed": [],
+      "documentation": []
+    }
+  },
+  "52": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "videos_embed": []
+    }
+  },
+  "53": {
+    "fields": [
+      {
+        "name": "Дата окончания",
+        "field": "date_to",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата начала",
+        "field": "date_from",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "54": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "55": {
+    "fields": [
+      {
+        "name": "Тема",
+        "field": "theme",
+        "data_type": "str"
+      },
+      {
+        "name": "Организатор",
+        "field": "organizer",
+        "data_type": "str"
+      },
+      {
+        "name": "Номер телефона",
+        "field": "phone_number",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "110": {
+    "fields": [],
+    "files": {}
+  },
+  "111": {
+    "fields": [
+      {
+        "name": "Ссылка",
+        "field": "link",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {}
+  },
+  "172": {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {}
+  },
+  "175": {
+    "fields": [
+      {
+        "name": "Подраздел",
+        "field": "subsection",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "videos_native": [],
+      "documentation": [],
+      "videos_embed": []
+    }
+  }
+}

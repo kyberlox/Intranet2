@@ -279,19 +279,20 @@ class Editor:
                 if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
                     files_keys[f_key] = []
 
-            #if "photo_file_url" in art.keys():
-                # "Фотография (URL)",
+            for field in fields:
+                #if "photo_file_url" in art.keys():
+                    # "Фотография (URL)",
 
-            if field["field"] == "active":
-                field["value"] = False
+                if field["field"] == "active":
+                    field["value"] = False
 
-            # если значения варьируются
-            if field["field"] in self.variable.keys():
-                field["values"] = self.variable[field["field"]]
+                # если значения варьируются
+                if field["field"] in self.variable.keys():
+                    field["values"] = self.variable[field["field"]]
 
-            # если поле нередактируемое
-            if field["field"] in self.notEditble:
-                    field["disabled"] = True
+                # если поле нередактируемое
+                if field["field"] in self.notEditble:
+                        field["disabled"] = True
             
         need_del = False 
         indx = None

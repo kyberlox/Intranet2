@@ -39,6 +39,8 @@ def get_type(value):
         tp = "str"
     return tp
 
+
+
 class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
@@ -74,6 +76,8 @@ class Editor:
         for sec in all_sections:
             if sec["id"] in valid_id:
                 edited_sections.append(sec)
+
+        #Пропишу тут дамп шаблонов статей разделов
         return edited_sections
 
     def section_rendering(self ):
@@ -243,7 +247,6 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-
             
                     
 
@@ -382,8 +385,8 @@ class Editor:
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
                 #добавить статью
-                Article().set_new(art)
-                print(f"Создал {self.art_id}")
+                #Article().set_new(art)
+                LogsMaker().ready_status_message(f"Создал {self.art_id}")
 
             elif field["field"] == "active":
                 field["value"] = False

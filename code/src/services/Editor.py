@@ -283,14 +283,14 @@ class Editor:
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
 
-            elif field["field"] == "active":
+            if field["field"] == "active":
                 field["value"] = False
 
             # если значения варьируются
             if field["field"] in self.variable.keys():
                 field["values"] = self.variable[field["field"]]
 
-            # если поле нередаактируемое
+            # если поле нередактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
             

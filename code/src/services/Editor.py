@@ -45,6 +45,7 @@ class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
+        
         self.section_id = section_id
         self.art_id = art_id
         if self.art_id is not None and section_id is None:
@@ -622,15 +623,30 @@ class Editor:
 
 
 
-#рендеринг статьи
+
+#получить паттерн
+@editor_router.get("/pattern/{section_id}")
+def get_pattern_by_sec_id(section_id : int):
+    return Editor(section_id = section_id).get_pattern()
+
+#заменить/создать паттерн
+@editor_router.post("/pattern")
+def get_pattern_by_sec_id(data = Body()):
+    section_id = int(data["section_id"])
+    data.pop("section_id")
+    return Editor(section_id = section_id).get_pattern(data)
+
+#автосборка паттернов
 @editor_router.get("/edit_sections/")
 async def get_edit_sections():
     return Editor().get_sections()
 
+#рендеринг статьи
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id : int ):
     return Editor(art_id=art_id).rendering()
 
+#рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
 async def sec_render(sec_id):
     return Editor(section_id = sec_id).section_rendering()

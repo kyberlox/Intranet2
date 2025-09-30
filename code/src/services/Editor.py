@@ -49,7 +49,6 @@ class Editor:
         self.art_id = art_id
         if self.art_id is not None and section_id is None:
             art = ArticleModel(id = self.art_id).find_by_id()
-            print(self.art_id)
             self.section_id = art["section_id"]
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
@@ -111,6 +110,309 @@ class Editor:
         pattern_data_file.close()
 
         return pattern_data
+
+        def get_fast_format(self ):
+        #собрать поля статьи
+        section = ArticleModel(section_id = self.section_id).find_by_section_id()
+        
+        fields = []
+        files_keys = dict()
+        #иду по всем статьям раздела
+        for art in section:
+            #иду по всем полям статьи
+            for k in art.keys():
+                values = []
+
+                #если такого поля ещё нет
+                fields_names = [f["field"] for f in fields]
+                if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                        
+                    field = {
+                        "name" : self.fields[k], #хватай имя
+                        "field" : k, #хватай поле
+                        "data_type" : get_type(art[k]) #хватай тип данных
+                    }
+                    fields.append(field)
+                #если есть
+                else:
+                    #если тип не совпадает - вписать тот, который не None
+                    for field in fields:
+                        if field["data_type"] != get_type(art[k]):
+                            if field["data_type"] == "NoneType":
+                                field["data_type"] = get_type(art[k])
+                            elif get_type(art[k]) != "NoneType":
+                                field["data_type"] = "str"
+
+                # вытащить поля из psql -> indirect_data
+                if "indirect_data" in art and art["indirect_data"] is not None:
+                    for k in art["indirect_data"].keys():
+                        fields_names = [f["field"] for f in fields]
+
+                        if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                            field = {
+                                "name" : self.fields[k], #хватай имя
+                                "field" : k, #хватай поле
+                                "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных
+                            }
+                            fields.append(field)
+                        #если есть
+                        else:
+                            #если тип не совпадает - вписать тот, который не None
+                            for field in fields:
+                                if field["data_type"] != get_type(art["indirect_data"][k]):
+                                    if field["data_type"] == "NoneType":
+                                        field["data_type"] = get_type(art["indirect_data"][k])
+                                    elif get_type(art["indirect_data"][k]) != "NoneType":
+                                        field["data_type"] = "str"
+            
+                    
+
+            #теперь проверим какие файлы бывают у статей раздела
+            self.art_id = int(art['id'])
+            files=self.get_files()
+            
+            # беру ключи словаря
+            for f_key in files.keys():
+                # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
+                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
+                    files_keys[f_key] = []
+
+            
+            #if "photo_file_url" in art.keys():
+                # "Фотография (URL)",
+
+        #пост обработка
+        for field in fields:
+            # если значения варьируются
+            if field["field"] in self.variable.keys():
+                field["values"] = self.variable[field["field"]]
+
+            # если поле нередаактируемое
+            if field["field"] in self.notEditble:
+                    field["disabled"] = True
+            
+        need_del = False 
+        indx = None
+        del_key = ["photo_file_url", ""]
+        del_val = []
+        for i, field in enumerate(fields):
+            #если есть uuid
+            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
+                field["data_type"] = "search_by_uuid"
+                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
+                need_del = True
+            if field["field"] in del_key:
+                del_val.append(i)
+        
+        if need_del:
+            for i in del_val:
+                fields.pop(i)
+        
+        return {"fields" : fields, "files" : files_keys}
+
+
+
+    def get_fast_format(self ):
+        #собрать поля статьи
+        section = ArticleModel(section_id = self.section_id).find_by_section_id()
+        
+        fields = []
+        files_keys = dict()
+        #иду по всем статьям раздела
+        for art in section:
+            #иду по всем полям статьи
+            for k in art.keys():
+                values = []
+
+                #если такого поля ещё нет
+                fields_names = [f["field"] for f in fields]
+                if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                        
+                    field = {
+                        "name" : self.fields[k], #хватай имя
+                        "field" : k, #хватай поле
+                        "data_type" : get_type(art[k]) #хватай тип данных
+                    }
+                    fields.append(field)
+                #если есть
+                else:
+                    #если тип не совпадает - вписать тот, который не None
+                    for field in fields:
+                        if field["data_type"] != get_type(art[k]):
+                            if field["data_type"] == "NoneType":
+                                field["data_type"] = get_type(art[k])
+                            elif get_type(art[k]) != "NoneType":
+                                field["data_type"] = "str"
+
+                # вытащить поля из psql -> indirect_data
+                if "indirect_data" in art and art["indirect_data"] is not None:
+                    for k in art["indirect_data"].keys():
+                        fields_names = [f["field"] for f in fields]
+
+                        if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                            field = {
+                                "name" : self.fields[k], #хватай имя
+                                "field" : k, #хватай поле
+                                "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных
+                            }
+                            fields.append(field)
+                        #если есть
+                        else:
+                            #если тип не совпадает - вписать тот, который не None
+                            for field in fields:
+                                if field["data_type"] != get_type(art["indirect_data"][k]):
+                                    if field["data_type"] == "NoneType":
+                                        field["data_type"] = get_type(art["indirect_data"][k])
+                                    elif get_type(art["indirect_data"][k]) != "NoneType":
+                                        field["data_type"] = "str"
+            
+                    
+
+            #теперь проверим какие файлы бывают у статей раздела
+            self.art_id = int(art['id'])
+            files=self.get_files()
+            
+            # беру ключи словаря
+            for f_key in files.keys():
+                # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
+                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
+                    files_keys[f_key] = []
+
+            
+            #if "photo_file_url" in art.keys():
+                # "Фотография (URL)",
+
+        #пост обработка
+        for field in fields:
+            # если значения варьируются
+            if field["field"] in self.variable.keys():
+                field["values"] = self.variable[field["field"]]
+
+            # если поле нередаактируемое
+            if field["field"] in self.notEditble:
+                    field["disabled"] = True
+            
+        need_del = False 
+        indx = None
+        del_key = ["photo_file_url", ""]
+        del_val = []
+        for i, field in enumerate(fields):
+            #если есть uuid
+            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
+                field["data_type"] = "search_by_uuid"
+                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
+                need_del = True
+            if field["field"] in del_key:
+                del_val.append(i)
+        
+        if need_del:
+            for i in del_val:
+                fields.pop(i)
+        
+        return {"fields" : fields, "files" : files_keys}
+
+    def get_format(self ):
+        #собрать поля статьи
+        section = ArticleModel(section_id = self.section_id).find_by_section_id()
+        
+        fields = []
+        files_keys = dict()
+        #иду по всем статьям раздела
+        for art in section:
+            #иду по всем полям статьи
+            for k in art.keys():
+                values = []
+
+                #если такого поля ещё нет
+                fields_names = [f["field"] for f in fields]
+                if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                        
+                    field = {
+                        "name" : self.fields[k], #хватай имя
+                        "field" : k, #хватай поле
+                        "data_type" : get_type(art[k]) #хватай тип данных
+                    }
+                    fields.append(field)
+                #если есть
+                else:
+                    #если тип не совпадает - вписать тот, который не None
+                    for field in fields:
+                        if field["data_type"] != get_type(art[k]):
+                            if field["data_type"] == "NoneType":
+                                field["data_type"] = get_type(art[k])
+                            elif get_type(art[k]) != "NoneType":
+                                field["data_type"] = "str"
+
+                # вытащить поля из psql -> indirect_data
+                if "indirect_data" in art and art["indirect_data"] is not None:
+                    for k in art["indirect_data"].keys():
+                        fields_names = [f["field"] for f in fields]
+
+                        if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
+                            field = {
+                                "name" : self.fields[k], #хватай имя
+                                "field" : k, #хватай поле
+                                "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных
+                            }
+                            fields.append(field)
+                        #если есть
+                        else:
+                            #если тип не совпадает - вписать тот, который не None
+                            for field in fields:
+                                if field["data_type"] != get_type(art["indirect_data"][k]):
+                                    if field["data_type"] == "NoneType":
+                                        field["data_type"] = get_type(art["indirect_data"][k])
+                                    elif get_type(art["indirect_data"][k]) != "NoneType":
+                                        field["data_type"] = "str"
+
+            
+                    
+
+            #теперь проверим какие файлы бывают у статей раздела
+            self.art_id = int(art['id'])
+            files=self.get_files()
+            
+            # беру ключи словаря
+            for f_key in files.keys():
+                # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
+                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
+                    files_keys[f_key] = []
+
+            
+            #if "photo_file_url" in art.keys():
+                # "Фотография (URL)",
+
+            elif field["field"] == "active":
+                field["value"] = False
+
+            # если значения варьируются
+            if field["field"] in self.variable.keys():
+                field["values"] = self.variable[field["field"]]
+
+            # если поле нередаактируемое
+            if field["field"] in self.notEditble:
+                    field["disabled"] = True
+            
+        need_del = False 
+        indx = None
+        del_key = ["photo_file_url", ""]
+        del_val = []
+        for i, field in enumerate(fields):
+            #если есть uuid
+            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
+                field["data_type"] = "search_by_uuid"
+                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
+                need_del = True
+            if field["field"] in del_key:
+                del_val.append(i)
+        
+        if need_del:
+            for i in del_val:
+                fields.pop(i)
+                
+            
+
+        return {"fields" : fields, "files" : files_keys}
 
     def get_sections(self ):
         all_sections = Section().get_all()
@@ -246,179 +548,13 @@ class Editor:
         # вывести
         return {"fields" : field, "files" : files, "may_be_added" : may_be_added}
 
-    def get_fast_format(self ):
-        #собрать поля статьи
-        section = ArticleModel(section_id = self.section_id).find_by_section_id()
-        
-        fields = []
-        files_keys = dict()
-        #иду по всем статьям раздела
-        for art in section:
-            #иду по всем полям статьи
-            for k in art.keys():
-                values = []
-
-                #если такого поля ещё нет
-                fields_names = [f["field"] for f in fields]
-                if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                        
-                    field = {
-                        "name" : self.fields[k], #хватай имя
-                        "field" : k, #хватай поле
-                        "data_type" : get_type(art[k]) #хватай тип данных
-                    }
-                    fields.append(field)
-                #если есть
-                else:
-                    #если тип не совпадает - вписать тот, который не None
-                    for field in fields:
-                        if field["data_type"] != get_type(art[k]):
-                            if field["data_type"] == "NoneType":
-                                field["data_type"] = get_type(art[k])
-                            elif get_type(art[k]) != "NoneType":
-                                field["data_type"] = "str"
-
-                # вытащить поля из psql -> indirect_data
-                if "indirect_data" in art and art["indirect_data"] is not None:
-                    for k in art["indirect_data"].keys():
-                        fields_names = [f["field"] for f in fields]
-
-                        if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                            field = {
-                                "name" : self.fields[k], #хватай имя
-                                "field" : k, #хватай поле
-                                "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных
-                            }
-                            fields.append(field)
-                        #если есть
-                        else:
-                            #если тип не совпадает - вписать тот, который не None
-                            for field in fields:
-                                if field["data_type"] != get_type(art["indirect_data"][k]):
-                                    if field["data_type"] == "NoneType":
-                                        field["data_type"] = get_type(art["indirect_data"][k])
-                                    elif get_type(art["indirect_data"][k]) != "NoneType":
-                                        field["data_type"] = "str"
-            
-                    
-
-            #теперь проверим какие файлы бывают у статей раздела
-            self.art_id = int(art['id'])
-            files=self.get_files()
-            
-            # беру ключи словаря
-            for f_key in files.keys():
-                # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
-                    files_keys[f_key] = []
-
-            
-            #if "photo_file_url" in art.keys():
-                # "Фотография (URL)",
-
-        #пост обработка
-        for field in fields:
-            # если значения варьируются
-            if field["field"] in self.variable.keys():
-                field["values"] = self.variable[field["field"]]
-
-            # если поле нередаактируемое
-            if field["field"] in self.notEditble:
-                    field["disabled"] = True
-            
-        need_del = False 
-        indx = None
-        del_key = ["photo_file_url", ""]
-        del_val = []
-        for i, field in enumerate(fields):
-            #если есть uuid
-            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
-                field["data_type"] = "search_by_uuid"
-                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
-                need_del = True
-            if field["field"] in del_key:
-                del_val.append(i)
-        
-        if need_del:
-            for i in del_val:
-                fields.pop(i)
-        
-        return {"fields" : fields, "files" : files_keys}
 
 
+    def pre_add(self, ):
+        #Получаю поля паттерна       
+        fields = self.pattern["fields"]
 
-    def get_format(self ):
-        #собрать поля статьи
-        section = ArticleModel(section_id = self.section_id).find_by_section_id()
-        
-        fields = []
-        files_keys = dict()
-        #иду по всем статьям раздела
-        for art in section:
-            #иду по всем полям статьи
-            for k in art.keys():
-                values = []
-
-                #если такого поля ещё нет
-                fields_names = [f["field"] for f in fields]
-                if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                        
-                    field = {
-                        "name" : self.fields[k], #хватай имя
-                        "field" : k, #хватай поле
-                        "data_type" : get_type(art[k]) #хватай тип данных
-                    }
-                    fields.append(field)
-                #если есть
-                else:
-                    #если тип не совпадает - вписать тот, который не None
-                    for field in fields:
-                        if field["data_type"] != get_type(art[k]):
-                            if field["data_type"] == "NoneType":
-                                field["data_type"] = get_type(art[k])
-                            elif get_type(art[k]) != "NoneType":
-                                field["data_type"] = "str"
-
-                # вытащить поля из psql -> indirect_data
-                if "indirect_data" in art and art["indirect_data"] is not None:
-                    for k in art["indirect_data"].keys():
-                        fields_names = [f["field"] for f in fields]
-
-                        if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                            field = {
-                                "name" : self.fields[k], #хватай имя
-                                "field" : k, #хватай поле
-                                "data_type" : get_type(art["indirect_data"][k]) #хватай тип данных
-                            }
-                            fields.append(field)
-                        #если есть
-                        else:
-                            #если тип не совпадает - вписать тот, который не None
-                            for field in fields:
-                                if field["data_type"] != get_type(art["indirect_data"][k]):
-                                    if field["data_type"] == "NoneType":
-                                        field["data_type"] = get_type(art["indirect_data"][k])
-                                    elif get_type(art["indirect_data"][k]) != "NoneType":
-                                        field["data_type"] = "str"
-
-            
-                    
-
-            #теперь проверим какие файлы бывают у статей раздела
-            self.art_id = int(art['id'])
-            files=self.get_files()
-            
-            # беру ключи словаря
-            for f_key in files.keys():
-                # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
-                if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
-                    files_keys[f_key] = []
-
-            
-            #if "photo_file_url" in art.keys():
-                # "Фотография (URL)",
-
-        #пост обработка
+        #пост обработка и создание пустой болванки
         for field in fields:
 
             #если это ID статьи
@@ -437,40 +573,13 @@ class Editor:
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
                 #добавить статью
-                #Article().set_new(art)
+                Article().set_new(art)
                 LogsMaker().ready_status_message(f"Создал {self.art_id}")
-
-            elif field["field"] == "active":
-                field["value"] = False
-
-            # если значения варьируются
-            if field["field"] in self.variable.keys():
-                field["values"] = self.variable[field["field"]]
-
-            # если поле нередаактируемое
-            if field["field"] in self.notEditble:
-                    field["disabled"] = True
-            
-        need_del = False 
-        indx = None
-        del_key = ["photo_file_url", ""]
-        del_val = []
-        for i, field in enumerate(fields):
-            #если есть uuid
-            if field["field"] == "uuid" or field['field'] == "author_uuid" or "uuid" in field['field']:
-                field["data_type"] = "search_by_uuid"
-                #стереть возможность грузить photo_file_url и заполнить заранее по uuid
-                need_del = True
-            if field["field"] in del_key:
-                del_val.append(i)
         
-        if need_del:
-            for i in del_val:
-                fields.pop(i)
-                
-            
-
-        return {"fields" : fields, "files" : files_keys}
+        #Вношу изменеения
+        self.pattern["fields"] = fields
+        
+        return self.pattern
 
 
 
@@ -633,7 +742,7 @@ async def updt(art_id : int, data = Body()):
 #добавить статью
 @editor_router.get("/add/{section_id}")
 async def get_form(section_id : int):
-    return Editor(section_id=section_id).get_format()
+    return Editor(section_id=section_id).pre_add()
 
 
 

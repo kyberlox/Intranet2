@@ -49,6 +49,7 @@ class Editor:
         self.art_id = art_id
         if self.art_id is not None and section_id is None:
             art = ArticleModel(id = self.art_id).find_by_id()
+            print(self.art_id)
             self.section_id = art["section_id"]
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]

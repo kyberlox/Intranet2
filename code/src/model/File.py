@@ -466,21 +466,53 @@ class File:
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
+        # Инициализируем upload_id и прогресс
+        upload_id = int(self.art_id)
+        UPLOAD_PROGRESS[upload_id] = 0
+
         try:
-            # Читаем и сохраняем файл с отслеживанием прогресса
-            file_size = 0
-            total_written = 0
-            chunk_size = 1024 * 1024  # 1MB chunks
-            
             # Получаем размер файла для расчета прогресса
             file.file.seek(0, 2)  # Перемещаемся в конец файла
             file_size = file.file.tell()  # Получаем размер
             file.file.seek(0)  # Возвращаемся в начало
             
-            with file.file:
-                contents = file.file.read()
-                async with aiofiles.open(file_path, "wb") as f:
-                    await f.write(contents)
+            # Читаем и сохраняем файл с отслеживанием прогресса
+            total_written = 0
+            chunk_size = 1024 * 1024  # 1MB chunks
+            
+            # Обычная загрузка файла
+            # with file.file:
+            #     contents = file.file.read()
+            #     async with aiofiles.open(file_path, "wb") as f:
+            #         await f.write(contents)
+
+            # Асинхронная загрузка с мониторингом прогресса
+            async with aiofiles.open(file_path, "wb") as f:
+                while True:
+                    # Читаем чанк данных
+                    chunk = file.file.read(chunk_size)
+                    if not chunk:
+                        break
+                    
+                    # Записываем чанк в файл
+                    await f.write(chunk)
+                    total_written += len(chunk)
+                    
+                    # Обновляем прогресс
+                    if file_size > 0:
+                        progress = (total_written / file_size) * 100
+                        UPLOAD_PROGRESS[upload_id] = progress
+                        print(f"Upload progress for {upload_id}: {progress:.1f}%")  # Для отладки
+
+            # Загрузка завершена успешно
+            UPLOAD_PROGRESS[upload_id] = 100
+
+            # Даем время WebSocket отправить финальный прогресс
+            await asyncio.sleep(0.5)
+
+            # Удаляем прогресс из хранилища после успешной загрузки
+            if upload_id in UPLOAD_PROGRESS:
+                del UPLOAD_PROGRESS[upload_id]
 
             file_info = {
                 "original_name": filename,

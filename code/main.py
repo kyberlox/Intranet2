@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, Body, Request, UploadFile, HTTPException, Response, Request
+from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi import BackgroundTasks #, Cookie, Header
 from fastapi.responses import Response, JSONResponse#, FileResponse
@@ -85,12 +86,14 @@ app.include_router(store_router, prefix="/api")
 
 #templates = Jinja2Templates(directory="./front_jinja") 
 
-origins = [
-    "http://localhost:8000",
-    DOMAIN,
-    #"http://intranet.emk.org.ru:8000",
-    #"http://intranet.emk.org.ru"
-]
+# origins = [
+#     "http://localhost:8000",
+#     DOMAIN,
+#     #"http://intranet.emk.org.ru:8000",
+#     #"http://intranet.emk.org.ru"
+# ]
+
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -126,6 +129,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     open_links = [
         "/docs",
         "/api/users_update",
+        "/api/users/update_user_info",
         "/openapi.json",
         "/api/auth_router",
         "/api/total_update",
@@ -134,6 +138,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/user_files",
         "test", "dump", "get_file", "get_all_files",
         "/api/total_background_task_update",
+        "/ws/progress"
     ]
 
     for open_link in open_links:
@@ -192,6 +197,76 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     return await call_next(request)
 
 
+# Прогресс процесса через вебсокет
+@app.websocket("/ws/progress/{upload_id}")
+async def websocket_endpoint(websocket: WebSocket, upload_id: int):
+    from src.model.File import UPLOAD_PROGRESS
+    global UPLOAD_PROGRESS
+    await websocket.accept()
+    LogsMaker().info_message(f"Трансляция на вебсокет по upload_id = {upload_id}")
+    try:
+        while True:
+            # Отправляем прогресс каждые 0.1 секунду
+            if upload_id in UPLOAD_PROGRESS:
+                progress = UPLOAD_PROGRESS[upload_id]
+                await websocket.send_text(f"{progress}")
+
+                LogsMaker().info_message(f"Значение статуса загрузки = {UPLOAD_PROGRESS[upload_id]}%")
+                
+                # Если загрузка завершена или произошла ошибка, удаляем из хранилища
+                if progress >= 100 or progress == -1:
+                    # Сначала отправляем финальное сообщение
+                    if progress >= 100:
+                        await websocket.send_text("Загрузка завершена!")
+                        LogsMaker().ready_status_message("Загрузка завершена!")
+                    else:
+                        await websocket.send_text("Ошибка загрузки!")
+                        LogsMaker().warning_message("Ошибка загрузки!")
+                    
+                    # Ждем немного перед закрытием
+                    await asyncio.sleep(0.5)
+                    
+                    # Удаляем из хранилища
+                    if upload_id in UPLOAD_PROGRESS:
+                        del UPLOAD_PROGRESS[upload_id]
+                    
+                    # Закрываем соединение
+                    await websocket.close()
+                    break
+            else:
+                # Если upload_id не найден, отправляем сообщение и закрываем
+                await websocket.send_text("upload_id не найден")
+                LogsMaker().warning_message("upload_id не найден")
+                await asyncio.sleep(0.5)  # Даем время отправить сообщение
+                await websocket.close()
+                break
+                
+            await asyncio.sleep(0.1)
+            
+
+    except WebSocketDisconnect:
+        # Клиент отключился
+        LogsMaker().warning_message(f"Client disconnected for upload {upload_id}")
+    except RuntimeError as e:
+        # Игнорируем ошибки "send after close"
+        if "close message" not in str(e):
+            LogsMaker().error_message(f"WebSocket error: {e}")
+    finally:
+        # Очистка при любом выходе
+        if upload_id in UPLOAD_PROGRESS and (UPLOAD_PROGRESS[upload_id] >= 100 or UPLOAD_PROGRESS[upload_id] == -1):
+            del UPLOAD_PROGRESS[upload_id]
+
+# @app.get("/api/progress/{upload_id}")
+# async def websocket_endpoint(upload_id: int):
+#     from src.model.File import UPLOAD_PROGRESS
+#     if upload_id in UPLOAD_PROGRESS:
+#         progress = UPLOAD_PROGRESS[upload_id]
+#         return progress
+#     else:
+#         return f'нет такого upload_id = {upload_id}'
+
+
+
 
 @app.get("/get_test_elastic/{word}")
 def get_test_elastic(word: str):
@@ -217,7 +292,7 @@ def test_file_get(file_id):
 
 @app.get("/api/full_search/{keyword}")
 def elastic_search(keyword: str):
-    from .src.base.Elastic.App import search_everywhere
+    from src.base.Elastic.App import search_everywhere
     return search_everywhere(key_word=keyword)
 
 @app.put("/api/full_elastic_dump")
@@ -309,7 +384,7 @@ def total_update():
     time_start = time.time()
     status = 0
 
-    loger = LogsMaker()
+    
 
     # LogsMaker().info_message("Обновление информации о подразделениях")
     # if Department().fetch_departments_data()["status"]:
@@ -345,6 +420,11 @@ def total_update():
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
+
+    #Права пользователей
+    # Лайки и просмотры
+    # Тэги
+    # Система эфективности
 
     time_end = time.time()
     total_time_sec = time_end - time_start

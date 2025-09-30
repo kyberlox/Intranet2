@@ -22,8 +22,8 @@ class ActiveUsersModel:
         self.uuid_to = uuid_to
         self.activities_id = activities_id
 
-        from .App import db
-        self.session = db
+        # from .App import db
+        # self.session = db
 
         from ..models.ActiveUsers import ActiveUsers
         self.ActiveUsers = ActiveUsers
@@ -38,23 +38,29 @@ class ActiveUsersModel:
         self.Roots = Roots
 
     def upload_past_table_ActiveUsers(self):
+        from .App import get_db
+        db_gen = get_db()
+        database = next(db_gen)
         with open('./src/base/peer-data/active_users.json', mode='r', encoding='UTF-8') as f:
             cur_activities = json.load(f)
         for activity in cur_activities:
-            existing_activity = self.session.query(self.ActiveUsers).filter(self.ActiveUsers.id == activity['id']).first()
+            existing_activity = database.query(self.ActiveUsers).filter(self.ActiveUsers.id == activity['id']).first()
             if existing_activity:
                 continue
             else:
                 new_activity = self.ActiveUsers(id=activity['id'], uuid_from=activity['uuid_from'], uuid_to=activity['uuid_to'], description=activity['description'], valid=activity['valid'], date_time=activity['date_time'], activities_id=activity['activities_id'])
-                self.session.add(new_activity)
-                self.session.commit()
-        self.session.close()
+                database.add(new_activity)
+                database.commit()
+        # database.close()
         return {"status": True}
 
     def actions(self, roots):
+        from .App import get_db
+        db_gen = get_db()
+        database = next(db_gen)
         """выводит список доступных пользователю активностей"""
         month_ago = datetime.now() - timedelta(days=30)
-        likes_count = self.session.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == 0, self.ActiveUsers.date_time >= month_ago).count()
+        likes_count = database.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == 1, self.ActiveUsers.date_time >= month_ago).count()
 
 
         #проверить остаток доступных лайков
@@ -62,43 +68,42 @@ class ActiveUsersModel:
         if likes_count > 10:
             likes_left = 0
 
-        actions_for_all = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True).all()
-        if 'PeerCurator' not in roots.keys() or len(roots['PeerCurator']) == 0:
-            activities_list = [
-                {"value": activity.id, "name": activity.name}
-                for activity in actions_for_all
-            ]
-            self.session.close()
-            return {
-                "likes_left": likes_left,
-                "activities": activities_list
-            }
-        else:
+        actions_for_all = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True).all()
+        if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
             activities_list = []
-            if len(roots['PeerCurator']) == 1:
-                activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == roots['PeerCurator'][0]).first()
+            for activity_id in roots['PeerCurator']:
+                activity_info = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
                 part = {"value": activity_info.id, "name": activity_info.name}
                 activities_list.append(part)
-            elif len(roots['PeerCurator']) >= 2:
-                for activity_id in roots['PeerCurator']:
-                    activity_info = self.session.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
-                    part = {"value": activity_info.id, "name": activity_info.name}
-                    activities_list.append(part)
 
             for activity in actions_for_all:
                 part = {"value": activity.id, "name": activity.name}
                 activities_list.append(part)
             # сюда добавить обработку
             
-            self.session.close()
+            # database.close()
+            return {
+                "likes_left": likes_left,
+                "activities": activities_list
+            }
+        else:
+            
+            activities_list = [
+                {"value": activity.id, "name": activity.name}
+                for activity in actions_for_all
+            ]
+            # database.close()
             return {
                 "likes_left": likes_left,
                 "activities": activities_list
             }
 
     def history_mdr(self, activity_name):
+        from .App import get_db
+        db_gen = get_db()
+        database = next(db_gen)
         result = []
-        res = self.session.scalars(self.session.query(self.ActiveUsers).join(Activities, and_(self.ActiveUsers.activities_id == Activities.id, Activities.name == activity_name))).all()
+        res = database.scalars(database.query(self.ActiveUsers).join(Activities, and_(self.ActiveUsers.activities_id == Activities.id, Activities.name == activity_name))).all()
         stat = {0 : "Не подтверждено", 1 : "Подтверждено", 2 : "Отказано"}
         if res:
             for re in res:
@@ -107,20 +112,26 @@ class ActiveUsersModel:
                 info['stat'] = stat
                 info.pop('valid')
                 result.append(info)
-            self.session.close()
+            database.close()
             return result
-        self.session.close()
+        # database.close()
         return res
 
     def sum(self, uuid):
-        user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == uuid).first()
+        from .App import get_db
+        db_gen = get_db()
+        database = next(db_gen)
+        user_info = database.query(self.Roots).filter(self.Roots.user_uuid == uuid).first()
+        # user_info = database.query(self.Roots).filter(self.Roots.user_uuid == 2375).first()
+        # database.close()
         if user_info:
             if user_info.user_points:
-                return user_info.user_points
+                points = user_info.user_points
+                return points
         return 0
     
     def top(self):
-        stmt = self.session.query(
+        stmt = database.query(
             self.ActiveUsers.uuid_to,
             func.sum(self.Activities.coast)
         ).join(
@@ -131,12 +142,12 @@ class ActiveUsersModel:
         ).order_by(
             func.sum(self.Activities.coast).desc()
         ).limit(10)
-        res = self.session.scalars(stmt).all()
-        self.session.close()
+        res = database.scalars(stmt).all()
+        database.close()
         return res
 
     def my_place(self):
-        results = self.session.query(
+        results = database.query(
             self.ActiveUsers.uuid_to,
             func.sum(self.Activities.coast).label('total_coast')
         ).join(
@@ -153,11 +164,11 @@ class ActiveUsersModel:
         for rank, (uuid, coast) in enumerate(results, 1):
             if uuid == self.uuid_to:
                 return rank
-        self.session.close()
+        database.close()
         return "Либо Вы вне всяких оценок, либо ВЫ ЕЩЁ СПИТЕ!"
 
     def statistics(self):
-        results = self.session.query(
+        results = database.query(
             self.Activities.id,
             self.Activities.name,
             func.coalesce(func.sum(self.Activities.coast), 0)
@@ -173,7 +184,7 @@ class ActiveUsersModel:
         ).order_by(
             func.sum(self.Activities.coast).desc()
         ).all()
-        self.session.close()
+        database.close()
         return [
             {
                 'activity_id': activity_id,
@@ -184,7 +195,7 @@ class ActiveUsersModel:
         ]   
 
     def statistics_history(self):
-        results = self.session.query(
+        results = database.query(
             self.ActiveUsers.id,
             self.ActiveUsers.uuid_from,
             self.ActiveUsers.description,
@@ -210,12 +221,12 @@ class ActiveUsersModel:
                 'coast': result.coast,
                 'activity_id': result.id
             })
-        self.session.close()
+        database.close()
         return processed_results
 
     def new_a_week(self):
         week_start = func.date_trunc('week', func.now())
-        results = self.session.query(
+        results = database.query(
             self.ActiveUsers.id,
             self.ActiveUsers.uuid_from,
             self.ActiveUsers.description,
@@ -242,11 +253,26 @@ class ActiveUsersModel:
                 "id_activites": result.id
             })
         total_sum = results[0].total_sum if results else 0
-        self.session.close()
+        database.close()
         return {"sum": total_sum, "activities": activities}
 
     def user_history(self):
-        results = self.session.query(
+        # results = database.query(
+        #     self.ActiveUsers.id,
+        #     self.ActiveUsers.uuid_from,
+        #     self.ActiveUsers.description,
+        #     self.ActiveUsers.date_time,
+        #     self.Activities.name,
+        #     self.Activities.coast,
+        #     self.Activities.id,
+        # ).join(self.Activities).filter(
+        #     self.ActiveUsers.uuid_to == self.uuid_to,
+        #     self.ActiveUsers.valid == 1
+        # ).all()
+        from .App import get_db
+        db_gen = get_db()
+        database = next(db_gen)
+        results = database.query(
             self.ActiveUsers.id,
             self.ActiveUsers.uuid_from,
             self.ActiveUsers.description,
@@ -258,7 +284,7 @@ class ActiveUsersModel:
             self.ActiveUsers.uuid_to == self.uuid_to,
             self.ActiveUsers.valid == 1
         ).all()
-
+        # database.close()
         activities = []
         for result in results:
             activities.append({
@@ -271,7 +297,7 @@ class ActiveUsersModel:
                 "id_activites": result.id
             })
 
-        merch_history = self.session.query(self.PeerHistory).filter(self.PeerHistory.user_uuid == self.uuid_to, self.PeerHistory.info_type == 'merch').all()
+        merch_history = database.query(self.PeerHistory).filter(self.PeerHistory.user_uuid == self.uuid_to, self.PeerHistory.info_type == 'merch').all()
         for merch in merch_history:
             activities.append({
                 "id": merch.id,
@@ -279,5 +305,5 @@ class ActiveUsersModel:
                 "date_time": merch.date_time,
                 "merch_coast": merch.merch_coast
             })
-        self.session.close()
+        
         return activities

@@ -313,7 +313,7 @@ class Article:
                     uuid = int(list(data['PROPERTY_444'].values())[0])
                     
                 #отдельно вытащить превьюшки людей
-                user = User(id=uuid).search_by_id()
+                user = User(id=uuid).search_by_id_all()
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None
@@ -506,7 +506,7 @@ class Article:
             participants = []
             if "participants" in indirect_data:
                 for user_uuid in indirect_data["participants"]:
-                    user = User(id=user_uuid).search_by_id()
+                    user = User(id=user_uuid).search_by_id_all()
                     if user is not None:
                         last_name = user['last_name']
                         name = user['name']
@@ -1094,30 +1094,31 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        self.upload_uniquely()
-        self.upload_with_parameter()
-        self.upload_many_to_many()
-        self.upload_services()
+        # self.upload_uniquely()
+        # self.upload_with_parameter()
+        # self.upload_many_to_many()
+        # self.upload_services()
 
         # Дамп данных в эластик
-        self.dump_articles_data_es()
+        # self.dump_articles_data_es()
 
         self.upload_likes()
+        self.upload_views()
 
     def upload_uniquely(self ):
         '''однозначно'''
         sec_inf = {
-            # 13 : "149", # Наши люди ✔️
-            # 14 : "123", # Доска почёта ✔️
-            # 16 : "122", # Видеоитервью ✔️
+            13 : "149", # Наши люди ✔️
+            14 : "123", # Доска почёта ✔️
+            16 : "122", # Видеоитервью ✔️
             
             32 : "132", # Новости организационного развития ✔️
             53 : "62", # Афиша ✔️
-            # 54 : "55", # Предложения партнеров ✔️
-            # 55 : "56", # Благотворительные проекты ✔️
+            54 : "55", # Предложения партнеров ✔️
+            55 : "56", # Благотворительные проекты ✔️
 
-            # 25 : "100", #Референсы и опыт поставок ✔️
-            # 175 : "60", # Учебный центр (Литература) ✔️
+            25 : "100", #Референсы и опыт поставок ✔️
+            175 : "60", # Учебный центр (Литература) ✔️
             7 : "66", #Конкурсы (Главная) ✔️
             71 : "128", #Конкурсы (Непосредственно)
         }
@@ -1147,9 +1148,9 @@ class Article:
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
             15 : ["75", "77"], #Блоги ✔️
-            # 18 : ["81", "82"], #Памятка ✔️
-            # 41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
-            # 172 : ["61", "83"] #Учебный центр (Проведённые тренинги) ✔️
+            18 : ["81", "82"], #Памятка ✔️
+            41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
+            172 : ["61", "83"] #Учебный центр (Проведённые тренинги) ✔️
         }
 
         
@@ -1330,7 +1331,7 @@ class Article:
 
     def upload_many_to_many(self, ):
         self.upload_current_news()
-        # self.upload_corporate_events()
+        self.upload_corporate_events()
 
     def upload_current_news(self, ):
 
@@ -2255,7 +2256,7 @@ class Article:
     def add_art_view(self):
         return ViewsModel(art_id=self.id).add_art_view()
 
-    # дамп данных по лайкам и просмотрам из Б24
+    # дамп данных по лайкам из Б24
     def upload_likes(self):
         result = [] 
         articles_info = ArticleModel().all()
@@ -2266,7 +2267,7 @@ class Article:
                 if inf['section_id'] == 71:
                     if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
                         for user_id in inf['indirect_data']['likes_from_b24']:
-                            user_exist = User(int(user_id)).search_by_id()
+                            user_exist = User(int(user_id)).search_by_id_all()
                             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
                                 continue
                             else:
@@ -2280,11 +2281,10 @@ class Article:
                 # все остальное
                 else:
                     likes_info = B24().get_likes_views(inf['id'])
-                    
                     if likes_info != "Not found" and 'VOTES' in likes_info.keys():
                         for vote in likes_info['VOTES']:
                             # проверяем есть ли такие юзеры в бд
-                            user_exist = User(vote['USER_ID']).search_by_id()
+                            user_exist = User(vote['USER_ID']).search_by_id_all()
                             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
                                 continue
                             else:
@@ -2299,8 +2299,25 @@ class Article:
                             else:
                                 pass
 
-                        ViewsModel(views_count=likes_info['VIEWS'], art_id=inf['id']).add_view_b24()
-                        
+        return {"status": True}
+    
+    # дамп данных по просмотрам из Б24
+    def upload_views(self):
+        result = [] 
+        articles_info = ArticleModel().all()
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 71, 34] # список секций где нет лайков
+        for inf in articles_info:
+            if inf['section_id'] not in null_list:
+                
+                likes_info = B24().get_likes_views(inf['id'])
+                if likes_info != "Not found" and 'VIEWS' in likes_info.keys():
+                    
+                    VM = ViewsModel()
+                    VM.views_count=likes_info['VIEWS']
+                    VM.art_id=inf['id']
+                    VM.add_view_b24()
+                    
+                    print(likes_info["ID"], "добавил просмотры")#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         return {"status": True}
 
@@ -2327,8 +2344,11 @@ class Article:
             username = user["username"]
 
             #получить и вывести его id
-            user_inf = User(uuid = user_uuid).user_inf_by_uuid()
-            return user_inf["ID"]
+            usr = User()
+            usr.uuid = user_uuid
+            user_inf = usr.user_inf_by_uuid()
+            if user_inf is not None and "ID" in user_inf.keys():
+                return user_inf["ID"]
         return None
     
     def search_articles_by_tags(self, tag_id, session_id=''):
@@ -2377,7 +2397,9 @@ def get_article(ID : int, request: Request):
             session_id = token
     else:
         session_id = token
-    return Article(id = ID).search_by_id(session_id=session_id)
+    art = Article()
+    art.id = ID
+    return art.search_by_id(session_id=session_id)
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
@@ -2394,7 +2416,9 @@ def get_articles(section_id, request: Request):
     if section_id == "undefind":
         return {"err" : "Undefined section_id!"}
     else:
-        return Article(section_id = section_id).search_by_section_id(session_id=session_id)
+        art = Article()
+        art.section_id = section_id
+        return art.search_by_section_id(session_id=session_id)
 
 @article_router.put("/add_or_remove_like/{article_id}")
 def add_or_remove_like(article_id, request: Request):
@@ -2406,8 +2430,9 @@ def add_or_remove_like(article_id, request: Request):
             session_id = token
     else:
         session_id = token
-    
-    return Article(id=article_id).add_like(session_id=session_id)
+    art = Article()
+    art.id = article_id
+    return art.add_like(session_id=session_id)
 
 @article_router.get("/has_user_liked/{article_id}")
 def has_user_liked(article_id, request: Request):
@@ -2419,8 +2444,9 @@ def has_user_liked(article_id, request: Request):
             session_id = token
     else:
         session_id = token
-    
-    return Article(id=article_id).has_user_liked(session_id=session_id)
+    art = Article()
+    art.id = article_id
+    return art.has_user_liked(session_id=session_id)
 
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")
@@ -2433,10 +2459,16 @@ def elastic_search(keyword: str):
 def put_b24_likes():
     return Article().upload_likes()
 
+@article_router.put("/put_b24_views")
+def put_b24_views():
+    return Article().upload_views()
+
 #лайки и просмотры для статистики
 @article_router.get("/get_article_likers/{ID}")
 def get_article_likers(ID: int):
-    return Article(id = ID).get_article_likers()
+    art = Article()
+    art.id = ID
+    return art.get_article_likers()
 
 @article_router.get("/get_popular_articles/{limit}")
 def get_popular_articles(limit: int):
@@ -2456,7 +2488,9 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
             session_id = token
     else:
         session_id = token
-    return Article(section_id=section_id).search_articles_by_tags(tag_id, session_id=session_id)
+    art = Article()
+    art.section_id = section_id
+    return art.search_articles_by_tags(tag_id, session_id=session_id)
 
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")

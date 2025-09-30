@@ -163,6 +163,22 @@ class User:
         from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id).get_user_likes()
 
+    # Обновляет данные конкретного пользователя
+    def update_inf_from_b24(self ):
+        data = B24().getUsers()
+        for usr_data in data:
+            if int(usr_data["ID"]) == int(self.id):
+                self.UserModel.upsert_user(usr_data)
+                return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
+        return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
+
+    def update_user_elastic(self):
+        user_data = self.search_by_id()
+        result = UserSearchModel().update_user_el_index(user_data)
+        if result:
+            return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
+        else:
+            LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -200,6 +216,10 @@ class User:
 def update_user():
     usr = User()
     return usr.fetch_users_data()
+
+@users_router.put("/update_user_info/{user_id}")
+def update_user_info(user_id : int):
+    return User(id = user_id).update_inf_from_b24()
 
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")

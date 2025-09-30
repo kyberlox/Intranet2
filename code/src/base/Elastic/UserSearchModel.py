@@ -274,18 +274,18 @@ class UserSearchModel:
                     
                     elastic_client.index(index=self.index, id=user_id, body=data_row)
 
-                    usr_data = data_row
+        #             usr_data = data_row
         
-                    data_action = {
-                        "_index": self.index,
-                        "_op_type": "index",
-                        "_id": user_id,
-                        "_source": usr_data
-                    }
+        #             data_action = {
+        #                 "_index": self.index,
+        #                 "_op_type": "index",
+        #                 "_id": user_id,
+        #                 "_source": usr_data
+        #             }
 
-                    users_data_ES.append(data_action)
+        #             users_data_ES.append(data_action)
         
-        success, errors = helpers.bulk(elastic_client, users_data_ES)
+        # success, errors = helpers.bulk(elastic_client, users_data_ES)
 
         # # print(success, errors)
         # LogsMaker().ready_status_message(f"в чем беда: {success} {errors}")
@@ -452,6 +452,39 @@ class UserSearchModel:
         result.append(sec_user)
         return result  # result  res['hits']['hits']
 
+    def update_user_el_index(self, user_data):
+        important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data", "photo_file_id"]
+        data = user_data.__dict__
+        result = None
+        if data['id'] == 1:
+            pass
+        else:
+            if data['active']:
+                if data['second_name'] is None:
+                    fio = f'{data['last_name']} {data['name']}'
+                else:
+                    fio = f'{data['last_name']} {data['name']} {data['second_name']}'
+                data_row = {"user_fio": fio}
+                for param in important_list:
+                    if param in data.keys():
+                        if param == "photo_file_id" and data['photo_file_id'] is not None:
+                            file_inf = File(data['photo_file_id']).get_users_photo()
+                            data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                        else:
+                            data_row[param] = data[param]
+                    else:
+                        continue
+
+                user_id = int(data['id'])
+                doc = {
+                    "doc": data_row
+                }
+                result = elastic_client.update(index=self.index, id=user_id, body=doc)
+        if result:
+            return True
+        else:
+            return False
+    
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}

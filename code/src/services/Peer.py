@@ -4,6 +4,8 @@ from fastapi import APIRouter, Body, Request
 from ..model import User
 from .Auth import AuthService
 
+#тут придется отладить ВСЕ
+
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
 class Peer:
@@ -27,100 +29,131 @@ class Peer:
         from ..base.pSQL.objects.PeerUserModel import PeerUserModel
         self.PeerUserModel = PeerUserModel()
 
-        self.Roots = self.RootsModel(user_uuid=self.user_id).get_token_by_uuid()
-        self.roots = self.RootsModel(user_uuid=self.user_id).token_processing_for_vision(self.Roots)
+        self.RootsModel.user_uuid = self.user_uuid
+        self.Roots = self.RootsModel.get_token_by_uuid()
+        self.roots = self.RootsModel.token_processing_for_peer(self.Roots)
     
     """Ручки которые доступны любому пользователю"""
-    def sum(self): 
-        return self.ActiveUsersModel().sum(self.user_uuid)
+    def sum(self):
+        result = self.ActiveUsersModel.sum(self.user_uuid)
+        return result
     
     def statistics(self):
-        return self.ActiveUsersModel(uuid_to=self.user_uuid).statistics()
+        self.ActiveUsersModel.uuid_to = self.user_uuid
+        return self.ActiveUsersModel.statistics()
     
     def actions(self):
-        return self.ActiveUsersModel().actions(self.roots)
+        result = self.ActiveUsersModel.actions(self.roots)
+        return result
     """"""
     def get_all_activities(self):
-        return self.ActivitiesModel().find_all_activities()
+        result = self.ActivitiesModel.find_all_activities()
+        return result
 
-    def upload_base_activities(self):
-        return self.ActivitiesModel().upload_base_activities()
+    # def upload_base_activities(self):
+    #     return self.ActivitiesModel.upload_base_activities()
     
     def edit_activity(self):
-        return self.ActivitiesModel(id=self.id, name=self.name, coast=self.coast, need_valid=self.need_valid).update_activity(self.roots)
+        self.ActivitiesModel.id = self.id
+        self.ActivitiesModel.name = self.name
+        self.ActivitiesModel.coast = self.coast
+        self.ActivitiesModel.need_valid = self.need_valid
+        return self.ActivitiesModel.update_activity(self.roots)
     
     def remove_activity(self):
-        return self.ActivitiesModel(id=self.id).delete_activity(self.roots)
+        self.ActivitiesModel.id = self.id
+        return self.ActivitiesModel.delete_activity(self.roots)
     """"""
-    def upload_past_moders(self):
-        return self.PeerUserModel().upload_past_moders()
+    # def upload_past_moders(self):
+    #     return self.PeerUserModel().upload_past_moders()
     
     def confirmation(self): 
-        return self.PeerUserModel(activities_id=self.activities_id).confirmation()
+        self.PeerUserModel.activities_id = self.activities_id
+        return self.PeerUserModel.confirmation()
     
     def do_valid(self, action_id, uuid_to): 
-        return self.PeerUserModel(uuid=self.user_uuid).do_valid(action_id, uuid_to, self.roots)
+        self.PeerUserModel.uuid = self.user_uuid
+        return self.PeerUserModel.do_valid(action_id, uuid_to, self.roots)
 
     def do_not_valid(self, action_id): 
-        return self.PeerUserModel(uuid=self.user_uuid).do_not_valid(action_id, self.roots)
+        self.PeerUserModel.uuid = self.user_uuid
+        return self.PeerUserModel.do_not_valid(action_id, self.roots)
 
     def points_to_confirm(self): 
-        return self.PeerUserModel(activities_id=self.activities_id).points_to_confirm()
+        self.PeerUserModel.activities_id = self.activities_id
+        return self.PeerUserModel.points_to_confirm()
     
     def get_curators(self): 
-        return self.PeerUserModel().get_curators()
+        return self.PeerUserModel.get_curators()
     
+    def add_curator(self, user_id):
+        self.PeerUserModel.activities_id = self.activities_id
+        self.PeerUserModel.uuid = user_id
+        return self.PeerUserModel.add_curator(roots=self.roots)
+    
+    def delete_curator(self, user_id):
+        self.PeerUserModel.activities_id = self.activities_id
+        self.PeerUserModel.uuid = user_id
+        result = self.PeerUserModel.delete_curator(roots=self.roots)
+        return result
+
     def new_activity(self, data): 
-        return self.ActivitiesModel().new_activity(data, self.roots)
+        data["uuid"] = self.user_uuid
+        return self.ActivitiesModel.new_activity(data, self.roots)
 
     """"""
-    def upload_past_activeusers(self): 
-        return self.ActiveUsersModel().upload_past_table_ActiveUsers()
+    # def upload_past_activeusers(self): 
+    #     return self.ActiveUsersModel().upload_past_table_ActiveUsers()
         
-    def history_mdr(self, activity_name): 
-        return self.ActiveUsersModel().history_mdr(activity_name)
+    # def history_mdr(self, activity_name): 
+    #     return self.ActiveUsersModel().history_mdr(activity_name)
 
-    def top(self): 
-        return self.ActiveUsersModel().top()
+    # def top(self): 
+    #     return self.ActiveUsersModel().top()
 
-    def my_place(self): 
-        return self.ActiveUsersModel(uuid_to=self.user_uuid).my_place()
+    # def my_place(self): 
+    #     return self.ActiveUsersModel(uuid_to=self.user_uuid).my_place()
     
-    def statistics_history(self):
-        return self.ActiveUsersModel(uuid_to=self.user_uuid, activities_id=self.activities_id).statistics_history()
+    # def statistics_history(self):
+    #     return self.ActiveUsersModel(uuid_to=self.user_uuid, activities_id=self.activities_id).statistics_history()
 
-    def new_a_week(self): 
-        return self.ActiveUsersModel(uuid_to=self.user_uuid).new_a_week()
+    # def new_a_week(self): 
+    #     return self.ActiveUsersModel(uuid_to=self.user_uuid).new_a_week()
     
     def user_history(self): 
-        return self.ActiveUsersModel(uuid_to=self.user_uuid).user_history()
+        self.ActiveUsersModel.uuid_to = self.user_uuid
+        return self.ActiveUsersModel.user_history()
     """"""
     def send_points(self, data):
-        return self.PeerUserModel().send_points(data=data, roots=self.roots)
+        return self.PeerUserModel.send_points(data=data, roots=self.roots)
 
     def get_admins_list(self):
-        return self.PeerUserModel().get_admins_list(self.roots)
+        return self.PeerUserModel.get_admins_list(self.roots)
 
     def add_peer_admin(self, uuid):
-        return self.PeerUserModel(uuid=uuid).add_peer_admin(self.roots)
+        self.PeerUserModel.uuid = uuid
+        return self.PeerUserModel.add_peer_admin(self.roots)
 
     def delete_admin(self, uuid):
-        return self.PeerUserModel(uuid=uuid).delete_admin(self.roots)
+        self.PeerUserModel.uuid = uuid
+        return self.PeerUserModel.delete_admin(self.roots)
     
     def get_moders_list(self):
-        return self.PeerUserModel().get_moders_list(self.roots)
+        return self.PeerUserModel.get_moders_list(self.roots)
 
     def add_peer_moder(self, uuid):
-        return self.PeerUserModel(uuid=uuid).add_peer_moder(self.roots)
+        self.PeerUserModel.uuid = uuid
+        return self.PeerUserModel.add_peer_moder(self.roots)
 
     def delete_peer_moder(self, uuid):
-        return self.PeerUserModel(uuid=uuid).delete_peer_moder(self.roots)
+        self.PeerUserModel.uuid = uuid
+        return self.PeerUserModel.delete_peer_moder(self.roots)
     
     def get_moders_history(self):
-        return self.PeerUserModel().get_moders_history(self.roots)
+        return self.PeerUserModel.get_moders_history(self.roots)
 
     def return_points_to_user(self, note_id, user_uuid):
-        return self.PeerUserModel().return_points_to_user(note_id, user_uuid)
+        return self.PeerUserModel.return_points_to_user(note_id, user_uuid)
     
 
 def get_uuid_from_request(request):
@@ -140,8 +173,11 @@ def get_uuid_from_request(request):
         username = user["username"]
 
         #получить и вывести его id
-        user_inf = User(uuid = user_uuid).user_inf_by_uuid()
-        return user_inf["ID"]
+        user = User()
+        user.uuid = user_uuid
+        user_inf = user.user_inf_by_uuid()
+        if user_inf is not None and "ID" in user_inf.keys():
+            return user_inf["ID"]
     return None
 
 
@@ -157,6 +193,7 @@ def get_uuid_from_request(request):
 @peer_router.get("/sum")
 def sum(request: Request):
     uuid = get_uuid_from_request(request)
+
     return Peer(user_uuid=uuid).sum()
 
 
@@ -166,7 +203,7 @@ def sum(request: Request):
 #     return Peer(user_uuid=uuid).statistics()
 
 @peer_router.get("/actions")
-def actions(request: Request):
+def get_actions(request: Request):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).actions()
 """"""
@@ -175,35 +212,45 @@ def get_activities():
     return Peer().get_all_activities()
 
 @peer_router.post("/edit_activity")
-def edit_activity(request: Request, data = Body()):
+def post_edit_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid']).edit_activity()
 
-@peer_router.delete("/remove_activity")
-def remove_activity(request: Request, id: str):
+@peer_router.delete("/remove_activity/{id}")
+def del_remove_activity(request: Request, id: str):
     uuid = get_uuid_from_request(request)
     return Peer(id=id, user_uuid=uuid).remove_activity()
 """"""
 @peer_router.post("/do_valid/{action_id}/{uuid_to}")
-def do_valid(request: Request, action_id: int, uuid_to: int):
+def post_do_valid(request: Request, action_id: int, uuid_to: int):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).do_valid(action_id, uuid_to) 
 
 @peer_router.post("/do_not_valid/{action_id}")
-def do_not_valid(request: Request, action_id: int):
+def post_do_not_valid(request: Request, action_id: int):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).do_not_valid(action_id) 
 
 @peer_router.get("/points_to_confirm/{activities_id}")
-def points_to_confirm(activities_id: int):
+def get_points_to_confirm(activities_id: int):
     return Peer(activities_id=activities_id).points_to_confirm()
 
 @peer_router.get("/get_curators")
-def get_curators():
+def get_req_curators():
     return Peer().get_curators()
 
+@peer_router.put("/add_curator/{uuid}/{activities_id}")
+def add_curator(uuid: int, request: Request, activities_id: int):
+    user_uuid = get_uuid_from_request(request)
+    return Peer(user_uuid=user_uuid, activities_id=activities_id).add_curator(uuid)
+
+@peer_router.delete("/delete_curator/{uuid}/{activities_id}")
+def delete_curator(uuid: int, request: Request, activities_id: int):
+    user_uuid = get_uuid_from_request(request)
+    return Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(uuid)
+
 @peer_router.put("/new_activity")
-def new_activity(request: Request, data = Body()):
+def put_new_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).new_activity(data) # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
 

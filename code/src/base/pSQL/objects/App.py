@@ -1,9 +1,11 @@
 # Определим базовые переменные пакета
-from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date
+# from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func
+from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func, update
 from sqlalchemy.dialects.postgresql import JSONB
-
+from sqlalchemy.orm.attributes import flag_modified
 from ..models.App import Base, engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import exists
 
 import os
 from dotenv import load_dotenv
@@ -30,3 +32,9 @@ NewUser = Table('newusers', metadata,
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
 db = SessionLocal()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

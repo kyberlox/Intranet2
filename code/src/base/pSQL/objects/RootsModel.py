@@ -17,9 +17,12 @@ class RootsModel:
         return result
 
     def get_token_by_uuid(self):
-        result = self.session.query(self.Roots.root_token).filter(self.Roots.user_uuid == self.user_uuid).scalar()
-        self.session.close()
-        return result  
+        try:
+            result = self.session.query(self.Roots.root_token).filter(self.Roots.user_uuid == self.user_uuid).scalar()
+            self.session.close()
+            return result
+        except Exception as e:
+            LogsMaker().error_message(str(e))
 
     def token_processing_for_peer(self, root_token):
         roots = {
@@ -51,15 +54,23 @@ class RootsModel:
         BOYS_DONT_CRY = [2366, 2375, 4133]
         try:
             for guy in BOYS_DONT_CRY:
-                new_moder = self.Roots()
-                new_moder.user_uuid=guy
-                new_moder.root_token={
-                    "PeerAdmin": True,
-                    "VisionAdmin": True
-                }
-                
-                self.session.add(new_moder)
-                self.session.commit()
+                existing_admin = self.session.query(Roots).filter(Roots.user_uuid == guy).first()
+                if "PeerAdmin" in existing_admin.root_token.keys() and "VisionAdmin" in existing_admin.root_token.keys():
+                    continue
+                    
+                else:
+                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                    new_id = max_id + 1
+                    new_moder = self.Roots()
+                    new_moder.id=new_id
+                    new_moder.user_uuid=guy
+                    new_moder.root_token={
+                        "PeerAdmin": True,
+                        "VisionAdmin": True
+                    }
+                    
+                    self.session.add(new_moder)
+                    self.session.commit()
             return True
             
         except Exception as e:

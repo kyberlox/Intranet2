@@ -198,6 +198,7 @@ class ArticleSearchModel:
                     data_row["section_id"] = article_data["section_id"]
                     if article_data["section_id"] == 15:
                         data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
+                        data_row["company"] = article_data["indirect_data"]["company"]
                     data_row["title"] = article_data["name"]
                     data_row["preview_text"] = article_data["preview_text"]
                     data_row["content_text"] = article_data["content_text"]
@@ -308,6 +309,8 @@ class ArticleSearchModel:
             art_info['id'] = int(res_info["_id"])
             if "authorId" in res_info["_source"].keys() and res_info["_source"]["authorId"] is not None:
                 art_info['authorId'] = res_info["_source"]["authorId"]
+            elif "company" in res_info["_source"].keys() and res_info["_source"]["company"] is not None:
+                art_info['authorId'] = res_info["_source"]['company']
             art_info['image'] = res_info["_source"]["preview_photo"]
             art_info['coincident'] = res_info['highlight']
             articles.append(art_info)

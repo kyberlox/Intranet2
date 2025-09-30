@@ -54,6 +54,7 @@ class UserModel:
             with engine.connect() as connection:
                 connection.execute(view)
                 connection.commit()
+                connection.close()
             
             LogsMaker().info_message("Создано представление для получения новых сотрудников")
 
@@ -410,15 +411,20 @@ class UserModel:
             return None
 
     def find_by_uuid(self):
-        user = self.db.query(self.user).filter(self.user.uuid == self.uuid).first()
-        if user is not None:
-            return {
-                "ID": user.id,
-                "email" : user.email,
-                "full_name" : f"{user.second_name} {user.name} {user.last_name}"
-            }
-        else:
-            return LogsMaker().warning_message("Invalid user uuid")
+        try:
+            user = self.db.query(self.user).filter(self.user.uuid == self.uuid).first()
+            self.db.close()
+            if user is not None:
+                return {
+                    "ID": user.id,
+                    "email" : user.email,
+                    "full_name" : f"{user.second_name} {user.name} {user.last_name}"
+                }
+            else:
+                return LogsMaker().warning_message("Invalid user uuid")
+        except Exception as e:
+            LogsMaker().error_message(str(e))
+
     
     def all(self):
         result = self.db.query(self.user).all()
@@ -448,12 +454,10 @@ class UserModel:
         users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         for usr in users:
             user = usr.__dict__
-            
             if 112 in user['indirect_data']['uf_department']:
                 pass
             else:
                 if user['active'] and user['photo_file_id'] is not None:
-                    print(user)
                     user_info = {}
                     indirect_data = user['indirect_data']
                     list_departs = []
@@ -529,6 +533,7 @@ class UserModel:
         self.db.close()
         return users
     
+
     """
     def put_uf_depart(self, usr_dep):
         

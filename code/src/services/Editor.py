@@ -39,16 +39,17 @@ def get_type(value):
         tp = "str"
     return tp
 
+
+
 class Editor:
     
     def __init__(self, id=None, art_id=None, section_id=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
         self.section_id = section_id
         self.art_id = art_id
-        if self.art_id is not None:
+        if self.art_id is not None and section_id is None:
             art = ArticleModel(id = self.art_id).find_by_id()
             self.section_id = art["section_id"]
-        
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
 
@@ -75,6 +76,8 @@ class Editor:
         for sec in all_sections:
             if sec["id"] in valid_id:
                 edited_sections.append(sec)
+
+        #Пропишу тут дамп шаблонов статей разделов
         return edited_sections
 
     def section_rendering(self ):
@@ -244,7 +247,6 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-
             
                     
 
@@ -377,12 +379,14 @@ class Editor:
                 art = dict()
 
                 #вписываю значения нередактируемых параметров сам:
+                art["id"] = self.art_id
                 art["active"] = False
                 art["section_id"] = self.section_id
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
                 #добавить статью
-                Article().set_new(art)
+                #Article().set_new(art)
+                LogsMaker().ready_status_message(f"Создал {self.art_id}")
 
             elif field["field"] == "active":
                 field["value"] = False
@@ -583,6 +587,7 @@ async def get_form(section_id : int):
 
 @editor_router.post("/add/{art_id}")
 async def set_new(art_id : int, data = Body()):
+    #section_id = data["section_id"]
     return Editor(art_id=art_id).add(data)
 
 
@@ -599,9 +604,9 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
+async def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = storeFile(art_id = int(art_id)).editor_add_file(file=file)
+    f_inf = await storeFile(art_id = int(art_id)).editor_add_file(file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')

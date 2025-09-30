@@ -17,6 +17,8 @@ import aiofiles
 
 from src.services.LogsMaker import LogsMaker
 
+from typing import Dict
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')
@@ -24,7 +26,12 @@ DOMAIN = os.getenv('HOST')
 STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
 
+
+
 file_router = APIRouter(prefix="/file", tags=["Файлы"])
+
+# Хранилище для отслеживания прогресса
+UPLOAD_PROGRESS: Dict[int, float] = {}
 
 class File:
     def __init__(self, id=None, art_id =None, b24_id=None):
@@ -459,34 +466,77 @@ class File:
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
-        
+        # Инициализируем upload_id и прогресс
+        upload_id = int(self.art_id)
+        UPLOAD_PROGRESS[upload_id] = 0
 
-        # Если нужно сохранить файл на диск
-        # with file.file:
-        #     contents = file.file.read()
-        #     with open(file_path, "wb") as f:
-        #         f.write(contents)
-        
-        with file.file:
-            contents = file.file.read()
+        try:
+            # Получаем размер файла для расчета прогресса
+            file.file.seek(0, 2)  # Перемещаемся в конец файла
+            file_size = file.file.tell()  # Получаем размер
+            file.file.seek(0)  # Возвращаемся в начало
+            
+            # Читаем и сохраняем файл с отслеживанием прогресса
+            total_written = 0
+            chunk_size = 1024 * 1024  # 1MB chunks
+            
+            # Обычная загрузка файла
+            # with file.file:
+            #     contents = file.file.read()
+            #     async with aiofiles.open(file_path, "wb") as f:
+            #         await f.write(contents)
+
+            # Асинхронная загрузка с мониторингом прогресса
             async with aiofiles.open(file_path, "wb") as f:
-                await f.write(contents)
+                while True:
+                    # Читаем чанк данных
+                    chunk = file.file.read(chunk_size)
+                    if not chunk:
+                        break
+                    
+                    # Записываем чанк в файл
+                    await f.write(chunk)
+                    total_written += len(chunk)
+                    
+                    # Обновляем прогресс
+                    if file_size > 0:
+                        progress = (total_written / file_size) * 100
+                        UPLOAD_PROGRESS[upload_id] = progress
+                        print(f"Upload progress for {upload_id}: {progress:.1f}%")  # Для отладки
 
-        file_info = {
-            "original_name": filename,
-            "stored_name": unique_name,
-            "content_type": str(file.content_type),
-            "article_id": int(self.art_id),
-            "b24_id": None,
-            "is_archive": False,
-            "is_preview" : False,
-            "file_url": f"/api/files/{unique_name}"
-        }
+            # Загрузка завершена успешно
+            UPLOAD_PROGRESS[upload_id] = 100
 
-        inserted_id = FileModel().add(file_info)
+            # Даем время WebSocket отправить финальный прогресс
+            await asyncio.sleep(0.5)
 
-        file_info.pop("_id")
-        return file_info
+            # Удаляем прогресс из хранилища после успешной загрузки
+            if upload_id in UPLOAD_PROGRESS:
+                del UPLOAD_PROGRESS[upload_id]
+
+            file_info = {
+                "original_name": filename,
+                "stored_name": unique_name,
+                "content_type": str(file.content_type),
+                "article_id": int(self.art_id),
+                "b24_id": None,
+                "is_archive": False,
+                "is_preview" : False,
+                "file_url": f"/api/files/{unique_name}"
+            }
+
+            inserted_id = FileModel().add(file_info)
+
+            file_info.pop("_id")
+            return file_info
+        
+        except Exception as e:
+            # В случае ошибки
+            UPLOAD_PROGRESS[upload_id] = -1  # -1 означает ошибку
+            await asyncio.sleep(1)
+            if upload_id in UPLOAD_PROGRESS:
+                del UPLOAD_PROGRESS[upload_id]
+            raise e
     
     def editor_del_file(self ):
         file_data = FileModel(id = self.id).find_by_id()

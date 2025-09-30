@@ -1,4 +1,5 @@
 from src.services.LogsMaker import LogsMaker
+
 LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 
 
@@ -14,12 +15,14 @@ class FieldvisionModel:
         self.Fieldvision = Fieldvision
 
     def add_field_vision(self):
+        from .App import func
         existing_vision = self.session.query(self.Fieldvision).filter(self.Fieldvision.vision_name == self.vision_name).first()
         if existing_vision:
             self.session.close()
             return {"msg": "Уже создано"}
-        
-        new_vision = self.Fieldvision(vision_name=self.vision_name)
+        max_id = self.session.query(func.max(self.Fieldvision.id)).scalar() or 0
+        new_id = max_id + 1
+        new_vision = self.Fieldvision(id=new_id, vision_name=self.vision_name)
         self.session.add(new_vision)
         self.session.commit()
         self.session.close()

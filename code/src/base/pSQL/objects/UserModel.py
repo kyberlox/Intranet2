@@ -454,7 +454,6 @@ class UserModel:
         users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         for usr in users:
             user = usr.__dict__
-            
             if 112 in user['indirect_data']['uf_department']:
                 pass
             else:
@@ -534,6 +533,7 @@ class UserModel:
         self.db.close()
         return users
     
+
     """
     def put_uf_depart(self, usr_dep):
         

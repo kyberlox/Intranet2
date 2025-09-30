@@ -94,7 +94,7 @@ class PeerUserModel:
             for curator in curators:
                 for active_id in curator.root_token['PeerCurator']:
                     active_name = database.query(Activities.name).filter(Activities.id == active_id).scalar()
-                    curator_fio = database.query(User.name, User.second_name, User.last_name).filter(User.id == admin.user_uuid).first()
+                    curator_fio = database.query(User.name, User.second_name, User.last_name).filter(User.id == curator.user_uuid).first()
                     active_info = {
                         'curator_id': curator.user_uuid,
                         "curator_name": curator_fio.name,

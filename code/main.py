@@ -196,7 +196,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 # Прогресс процесса через вебсокет
-@app.websocket("/api/pogress/{upload_id}")
+@app.websocket("/api/progress/{upload_id}")
 async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
     global UPLOAD_PROGRESS
@@ -224,7 +224,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
         # Клиент отключился, но не удаляем прогресс - загрузка может продолжаться
         print(f"Client disconnected for upload {upload_id}")
 
-# @app.get("/api/pogress/{upload_id}")
+# @app.get("/api/progress/{upload_id}")
 # async def websocket_endpoint(upload_id: int):
 #     from src.model.File import UPLOAD_PROGRESS
 #     if upload_id in UPLOAD_PROGRESS:

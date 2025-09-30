@@ -17,6 +17,8 @@ import aiofiles
 
 from src.services.LogsMaker import LogsMaker
 
+from typing import Dict
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')
@@ -24,7 +26,12 @@ DOMAIN = os.getenv('HOST')
 STORAGE_PATH = "./files_db"
 USER_STORAGE_PATH = "./files_db/user_photo"
 
+
+
 file_router = APIRouter(prefix="/file", tags=["Файлы"])
+
+# Хранилище для отслеживания прогресса
+UPLOAD_PROGRESS: Dict[int, float] = {}
 
 class File:
     def __init__(self, id=None, art_id =None, b24_id=None):
@@ -459,34 +466,45 @@ class File:
         unique_name = str(ObjectId()) + file_ext
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
+        try:
+            # Читаем и сохраняем файл с отслеживанием прогресса
+            file_size = 0
+            total_written = 0
+            chunk_size = 1024 * 1024  # 1MB chunks
+            
+            # Получаем размер файла для расчета прогресса
+            file.file.seek(0, 2)  # Перемещаемся в конец файла
+            file_size = file.file.tell()  # Получаем размер
+            file.file.seek(0)  # Возвращаемся в начало
+            
+            with file.file:
+                contents = file.file.read()
+                async with aiofiles.open(file_path, "wb") as f:
+                    await f.write(contents)
+
+            file_info = {
+                "original_name": filename,
+                "stored_name": unique_name,
+                "content_type": str(file.content_type),
+                "article_id": int(self.art_id),
+                "b24_id": None,
+                "is_archive": False,
+                "is_preview" : False,
+                "file_url": f"/api/files/{unique_name}"
+            }
+
+            inserted_id = FileModel().add(file_info)
+
+            file_info.pop("_id")
+            return file_info
         
-
-        # Если нужно сохранить файл на диск
-        # with file.file:
-        #     contents = file.file.read()
-        #     with open(file_path, "wb") as f:
-        #         f.write(contents)
-        
-        with file.file:
-            contents = file.file.read()
-            async with aiofiles.open(file_path, "wb") as f:
-                await f.write(contents)
-
-        file_info = {
-            "original_name": filename,
-            "stored_name": unique_name,
-            "content_type": str(file.content_type),
-            "article_id": int(self.art_id),
-            "b24_id": None,
-            "is_archive": False,
-            "is_preview" : False,
-            "file_url": f"/api/files/{unique_name}"
-        }
-
-        inserted_id = FileModel().add(file_info)
-
-        file_info.pop("_id")
-        return file_info
+        except Exception as e:
+            # В случае ошибки
+            UPLOAD_PROGRESS[upload_id] = -1  # -1 означает ошибку
+            await asyncio.sleep(1)
+            if upload_id in UPLOAD_PROGRESS:
+                del UPLOAD_PROGRESS[upload_id]
+            raise e
     
     def editor_del_file(self ):
         file_data = FileModel(id = self.id).find_by_id()

@@ -167,7 +167,7 @@ class User:
     def update_inf_from_b24(self ):
         data = B24().getUsers()
         for usr_data in data:
-            if int(usr_data["ID"]) == int(self.id)
+            if int(usr_data["ID"]) == int(self.id):
                 self.UserModel.upsert_user(usr_data)
                 return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")

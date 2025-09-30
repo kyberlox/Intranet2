@@ -202,21 +202,25 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
     global UPLOAD_PROGRESS
     await websocket.accept()
-    LogsMaker().info_message(f"Трансляция на вебсокет по upload_id = {upload_id} значение = {UPLOAD_PROGRESS[upload_id]}%")
+    LogsMaker().info_message(f"Трансляция на вебсокет по upload_id = {upload_id}")
     try:
         while True:
             # Отправляем прогресс каждые 0.1 секунду
             if upload_id in UPLOAD_PROGRESS:
                 progress = UPLOAD_PROGRESS[upload_id]
                 await websocket.send_text(f"{progress}")
+
+                LogsMaker().info_message(f"Значение статуса загрузки = {UPLOAD_PROGRESS[upload_id]}%")
                 
                 # Если загрузка завершена или произошла ошибка, удаляем из хранилища
                 if progress >= 100 or progress == -1:
                     # Сначала отправляем финальное сообщение
                     if progress >= 100:
                         await websocket.send_text("Загрузка завершена!")
+                        LogsMaker().ready_status_message("Загрузка завершена!")
                     else:
                         await websocket.send_text("Ошибка загрузки!")
+                        LogsMaker().warning_message("Ошибка загрузки!")
                     
                     # Ждем немного перед закрытием
                     await asyncio.sleep(0.5)
@@ -231,11 +235,13 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
             else:
                 # Если upload_id не найден, отправляем сообщение и закрываем
                 await websocket.send_text("upload_id не найден")
+                LogsMaker().warning_message("upload_id не найден")
                 await asyncio.sleep(0.5)  # Даем время отправить сообщение
                 await websocket.close()
                 break
                 
             await asyncio.sleep(0.1)
+            
 
     except WebSocketDisconnect:
         # Клиент отключился

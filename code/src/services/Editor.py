@@ -68,17 +68,68 @@ class Editor:
         fields_data_file = open("./src/base/fields.json", "r")
         self.fields = json.load(fields_data_file)
         fields_data_file.close()
-    
+        
+        #список шаблонов для каждого раздела
+        pattern_data_file = open("./src/base/patterns.json", "r")
+        pattern_data = json.load(pattern_data_file)
+        if self.section_id is not None:
+            for sec_pattern in pattern_data:
+                if self.section_id in sec_pattern["section_id"].keys():
+                    self.pattern = sec_pattern
+        else:
+            self.pattern = None
+        pattern_data_file.close()
+
+    def get_pattern(self ):
+        #список шаблонов для каждого раздела
+        pattern_data_file = open("./src/base/patterns.json", "r")
+        pattern_data = json.load(pattern_data_file)
+        if self.section_id is not None:
+            for sec_pattern in pattern_data:
+                if self.section_id in sec_pattern["section_id"].keys():
+                    self.pattern = sec_pattern
+        else:
+            self.pattern = None
+        pattern_data_file.close()
+
+        return self.pattern
+
+    def set_pattern(self, new_pattern):
+        
+        #получить текущие паттерны
+        pattern_data_file = open("./src/base/patterns.json", "r")
+        pattern_data = json.load(pattern_data_file)
+        pattern_data_file.close()
+
+        #заменить паттерн
+        pattern_data[self.section_id] = new_pattern
+
+        #сохранить в файле
+        pattern_data_file = open("./src/base/patterns.json", "w")
+        json.dump(pattern_data, pattern_data_file, indent=4) 
+        pattern_data_file.close()
+
+        return pattern_data
+
     def get_sections(self ):
         all_sections = Section().get_all()
         valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
-                edited_sections.append(sec)
+                #Пропишу тут дамп шаблонов статей разделов
+                self.section_id = sec["id"]
 
-        #Пропишу тут дамп шаблонов статей разделов
-        return edited_sections
+                #Собрать шаблон
+                Pattern = self.get_format()
+
+                #записать паттерн
+                self.set_pattern(Pattern)
+        
+        pattern_data_file = open("./src/base/patterns.json", "r")
+        pattern_data = json.load(pattern_data_file)
+        pattern_data_file.close()
+        return pattern_data
 
     def section_rendering(self ):
         result = Article(section_id = self.section_id).all_serch_by_date()

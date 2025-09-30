@@ -201,6 +201,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
     global UPLOAD_PROGRESS
     await websocket.accept()
+    LogsMaker().info_message(f"Трансляция на вебсокет по upload_id = {upload_id}")
     try:
         while True:
             # Отправляем прогресс каждые 0.1 секунду
@@ -222,7 +223,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
             await asyncio.sleep(0.1)
     except WebSocketDisconnect:
         # Клиент отключился, но не удаляем прогресс - загрузка может продолжаться
-        print(f"Client disconnected for upload {upload_id}")
+        LogsMaker().warning_message(f"Client disconnected for upload {upload_id}")
 
 # @app.get("/api/progress/{upload_id}")
 # async def websocket_endpoint(upload_id: int):

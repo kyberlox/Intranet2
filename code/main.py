@@ -129,6 +129,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     open_links = [
         "/docs",
         "/api/users_update",
+        "/api/update_user_info",
         "/openapi.json",
         "/api/auth_router",
         "/api/total_update",

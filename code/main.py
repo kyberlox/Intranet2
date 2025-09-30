@@ -137,7 +137,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/api/user_files",
         "test", "dump", "get_file", "get_all_files",
         "/api/total_background_task_update",
-        "/progress"
+        "/ws/progress"
     ]
 
     for open_link in open_links:
@@ -197,7 +197,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 # Прогресс процесса через вебсокет
-@app.websocket("/api/progress/{upload_id}")
+@app.websocket("/ws/progress/{upload_id}")
 async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
     global UPLOAD_PROGRESS

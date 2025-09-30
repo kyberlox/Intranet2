@@ -54,6 +54,7 @@ class UserModel:
             with engine.connect() as connection:
                 connection.execute(view)
                 connection.commit()
+                connection.close()
             
             LogsMaker().info_message("Создано представление для получения новых сотрудников")
 

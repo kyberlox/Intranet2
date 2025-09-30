@@ -8,21 +8,23 @@ from ..models.User import User
 
 from .MerchStoreModel import MerchStoreModel
 
-from .App import db, flag_modified, func, update, JSONB
+from .App import db, flag_modified, func, update, JSONB, get_db
 
 from src.services.LogsMaker import LogsMaker
 
 class PeerUserModel:
     def __init__(self, activities_id: int = 0, uuid: int = 0, id: int = 0):
-        self.session = db
+        # self.session = db
         self.activities_id = activities_id
         self.uuid = uuid
         self.id = id
         self.Roots = Roots
     
     def points_to_confirm(self):
-        res = self.session.query(ActiveUsers, Activities).join(Activities, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.activities_id == Activities.id, ActiveUsers.valid == 0, Activities.id == self.activities_id).all()
-        self.session.close()
+        db_gen = get_db()
+        database = next(db_gen)
+        res = database.query(ActiveUsers, Activities).join(Activities, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.activities_id == Activities.id, ActiveUsers.valid == 0, Activities.id == self.activities_id).all()
+        # database.close()
         result = []
         if res:
             for activities in res:
@@ -40,52 +42,58 @@ class PeerUserModel:
         return result
     
     def do_valid(self, action_id, uuid_to, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         res = False
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                active_info = self.session.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
+                active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
                 if active_info and active_info.need_valid == True:
                     stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=1)
                     res = True
 
                     MerchStoreModel(uuid_to).upload_user_sum(active_info.coast)
-                    self.session.execute(stmt) 
-                    self.session.commit()
+                    database.execute(stmt) 
+                    database.commit()
                 else:
                     return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
             return res
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"Ошибка валидации: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def do_not_valid(self, action_id, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         res = False
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                active_info = self.session.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
+                active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
                 if active_info and active_info.need_valid == True:
                     stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
                     res = True
-                    self.session.execute(stmt) 
-                    self.session.commit()
+                    database.execute(stmt) 
+                    database.commit()
                 else:
                     return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
             return res
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"Ошибка валидации активности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
 
     def get_curators(self):
+        db_gen = get_db()
+        database = next(db_gen)
         result = []
         try:
-            curators = self.session.query(self.Roots).filter(self.Roots.root_token.has_key("PeerCurator")).all()
+            curators = database.query(self.Roots).filter(self.Roots.root_token.has_key("PeerCurator")).all()
             for curator in curators:
                 for active_id in curator.root_token['PeerCurator']:
-                    active_name = self.session.query(Activities.name).filter(Activities.id == active_id).scalar()
+                    active_name = database.query(Activities.name).filter(Activities.id == active_id).scalar()
                     active_info = {
                         'curator_id': curator.user_uuid,
                         'activity_id': active_id,
@@ -95,53 +103,57 @@ class PeerUserModel:
 
             return result
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"Ошибка вывода кураторов: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
 
     def add_curator(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_curator = self.session.query(self.Roots).filter(Roots.user_uuid == int(self.uuid)).first()
+                existing_curator = database.query(self.Roots).filter(Roots.user_uuid == int(self.uuid)).first()
                 if existing_curator:
                     if "PeerCurator" in existing_curator.root_token.keys() and self.activities_id in existing_curator.root_token['PeerCurator']:
                         return False
                     elif "PeerCurator" in existing_curator.root_token.keys():
                         existing_curator.root_token["PeerCurator"].append(self.activities_id)
                         flag_modified(existing_curator, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return True
                     else:
                         existing_curator.root_token["PeerCurator"] = [self.activities_id]
                         flag_modified(existing_curator, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return True
                 else:
-                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                    max_id = database.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_moder = self.Roots(
                         id=new_id,
                         user_uuid=int(self.uuid),
                         root_token={"PeerCurator": [self.activities_id]}
                     )
-                    self.session.add(new_moder)
-                    self.session.commit()
+                    database.add(new_moder)
+                    database.commit()
                     return True
             else:
                 return LogsMaker().warning_message(f"У Вас недостаточно прав")
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"Ошибка добавления куратора: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
 
     def delete_curators(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_activity = self.session.query(self.Activities).get(self.activities_id)
+                existing_activity = database.query(self.Activities).get(self.activities_id)
                 if existing_activity:
-                    users_with_activity = self.session.query(self.Roots).filter(
+                    users_with_activity = database.query(self.Roots).filter(
                         self.Roots.root_token['PeerCurator'].contains([self.activities_id])
                     ).all()
                     for user in users_with_activity:
@@ -149,7 +161,8 @@ class PeerUserModel:
                         if 'PeerCurator' in user.root_token.keys() and self.activities_id in user.root_token['PeerCurator']:
                             if self.activities_id in root_token['PeerCurator']:
                                 user.root_token['PeerCurator'].remove(self.activities_id)
-                                self.session.commit()
+                                flag_modified(user, 'root_token')
+                                database.commit()
                     return LogsMaker().info_message(f"У активности с id = {self.activities_id} больше нет кураторов")
                 else:
                     return LogsMaker().info_message(f"Активности с id = {self.activities_id} не существует")
@@ -157,19 +170,22 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении кураторов из активности с id = {self.activities_id}: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def delete_curator(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                user = self.session.query(self.Roots).filter(
-                    self.Roots.user_id == self.uuid,
+                user = database.query(self.Roots).filter(
+                    self.Roots.user_uuid == self.uuid,
                     self.Roots.root_token['PeerCurator'].contains([self.activities_id])
-                ).all()
+                ).first()
                 if user:
                     user.root_token['PeerCurator'].remove(self.activities_id)
-                    self.session.commit()
+                    flag_modified(user, 'root_token')
+                    database.commit()
                     return LogsMaker().info_message(f"У активности с id = {self.activities_id} пользователь с id = {self.uuid} больше не является куратором")
                 else:
                     return LogsMaker().info_message(f"Активности с id = {self.activities_id} не курировал пользователь с id = {self.uuid}")
@@ -177,23 +193,25 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении куратора с id = {self.uuid} из активности с id = {self.activities_id}: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
             
     def send_points(self, data, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         res = False
         uuid_from = str(roots['user_id'])
         uuid_to =  data["uuid_to"]
         activities_id = data["activities_id"]
         description = data["description"]
-        existing_user = self.session.query(User).filter(User.id == uuid_to, User.active == True).first()
+        existing_user = database.query(User).filter(User.id == uuid_to, User.active == True).first()
         if not existing_user:
             return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует")
         try:
             month_ago = datetime.now() - timedelta(days=30)
-            likes_count = self.session.query(ActiveUsers).filter(ActiveUsers.uuid_from == uuid_from, ActiveUsers.activities_id == 0, ActiveUsers.date_time >= month_ago).count()
+            likes_count = database.query(ActiveUsers).filter(ActiveUsers.uuid_from == uuid_from, ActiveUsers.activities_id == 0, ActiveUsers.date_time >= month_ago).count()
             likes_left = 10 - likes_count
-            needs = self.session.scalars(self.session.query(Activities.id).where(Activities.need_valid == True)).all()
+            needs = database.scalars(database.query(Activities.id).where(Activities.need_valid == True)).all()
     
             if activities_id in needs:
                 if likes_left < 0:
@@ -201,7 +219,7 @@ class PeerUserModel:
                 elif uuid_from == uuid_to:
                     return LogsMaker().warning_message(f"Пользователь с id = {uuid_to} пытается поставить быллы сам себе!")
                 else:
-                    max_id = self.session.query(func.max(ActiveUsers.id)).scalar() or 0
+                    max_id = database.query(func.max(ActiveUsers.id)).scalar() or 0
                     new_id = max_id + 1
                     new_action = ActiveUsers(
                         id=new_id,
@@ -212,11 +230,11 @@ class PeerUserModel:
                         valid=0,
                         date_time=datetime.now()
                     )
-                    self.session.add(new_action)
-                    self.session.commit()
+                    database.add(new_action)
+                    database.commit()
                     return LogsMaker().info_message(f"Вы успешно отправили активность пользователю с id = {uuid_to} ")
             elif "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys():
-                max_id = self.session.query(func.max(ActiveUsers.id)).scalar() or 0
+                max_id = database.query(func.max(ActiveUsers.id)).scalar() or 0
                 new_id = max_id + 1
                 new_action = ActiveUsers(
                     id=new_id,
@@ -230,17 +248,17 @@ class PeerUserModel:
                 value = 0
                 flag = False
                 if activities_id in roots["PeerCurator"]:
-                    self.session.add(new_action)
-                    self.session.commit()
+                    database.add(new_action)
+                    database.commit()
                     # тут начислить пользователю баллы
-                    value = self.session.query(Activities.coast).filter(Activities.id == activities_id).scalar()
+                    value = database.query(Activities.coast).filter(Activities.id == activities_id).scalar()
                     MerchStoreModel(uuid_to).upload_user_sum(value)
                     flag = True
                 elif roots["PeerAdmin"] == True:
-                    self.session.add(new_action)
-                    self.session.commit()
+                    database.add(new_action)
+                    database.commit()
                     # тут начислить пользователю баллы
-                    value = self.session.query(Activities.coast).filter(Activities.id == activities_id).scalar()
+                    value = database.query(Activities.coast).filter(Activities.id == activities_id).scalar()
                     MerchStoreModel(uuid_to).upload_user_sum(value)
                     flag = True
 
@@ -254,25 +272,27 @@ class PeerUserModel:
                         info_type='activity',
                         date_time=datetime.now()
                     )
-                    self.session.add(add_history) 
-                    self.session.commit()
+                    database.add(add_history) 
+                    database.commit()
                     return LogsMaker().info_message(f"Вы успешно отправили активность пользователю с id = {uuid_to} ")
                 else:
                     return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"Ошибка отправления баллов: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def get_admins_list(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         result = []
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                admins = self.session.query(self.Roots).filter(self.Roots.root_token.has_key("PeerAdmin")).all()
+                admins = database.query(self.Roots).filter(self.Roots.root_token.has_key("PeerAdmin")).all()
                 for admin in admins:
                     if admin.root_token["PeerAdmin"] == True:
-                        admin_fio = self.session.query(User.name, User.second_name, User.last_name).filter(User.id == admin.user_uuid).first()
+                        admin_fio = database.query(User.name, User.second_name, User.last_name).filter(User.id == admin.user_uuid).first()
                         admin_info = {
                             "admin_id": admin.user_uuid,
                             "admin_name": admin_fio.name,
@@ -285,28 +305,30 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе админов системы эффективности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def add_peer_admin(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_admin = self.session.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
+                existing_admin = database.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
                 if existing_admin:
                     if "PeerAdmin" in existing_admin.root_token.keys() and existing_admin.root_token["PeerAdmin"] == True:
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} уже является администратором системы эффективности")
                     elif "PeerAdmin" in existing_admin.root_token.keys() and existing_admin.root_token["PeerAdmin"] == False:
                         existing_admin.root_token["PeerAdmin"] = True
                         flag_modified(existing_admin, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
                     else:
                         existing_admin.root_token["PeerAdmin"] = True
                         flag_modified(existing_admin, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
                 else:
-                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                    max_id = database.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_admin = self.Roots(
                         id=new_id,
@@ -315,53 +337,57 @@ class PeerUserModel:
                     )
                     # self.Roots.user_uuid=int(self.uuid)
                     # self.Roots.root_token={"PeerAdmin": True}
-                    self.session.add(new_admin)
-                    self.session.commit()
+                    database.add(new_admin)
+                    database.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен администратором системы эффективности")
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при назначении пользователя с id = {self.uuid} администратором системы эффективности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def delete_admin(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_admin = self.session.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
+                existing_admin = database.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
                 if existing_admin:
                     if "PeerAdmin" in existing_admin.root_token.keys() and existing_admin.root_token["PeerAdmin"] == True:
                         existing_admin.root_token["PeerAdmin"] = False
                         flag_modified(existing_admin, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} больше не администратор системы эффективности")
                 return LogsMaker().info_message(f"Пользователь с id = {self.uuid} не был администратор системы эффективности")
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении пользователя с id = {self.uuid} из администраторов системы эффективности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def add_peer_moder(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_moder = self.session.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
+                existing_moder = database.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
                 if existing_moder:
                     if "PeerModer" in existing_moder.root_token.keys() and existing_moder.root_token["PeerModer"] == True:
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} уже является модератором системы эффективности")
                     elif "PeerModer" in existing_moder.root_token.keys() and existing_moder.root_token["PeerModer"] == False:
                         existing_moder.root_token["PeerModer"] = True
                         flag_modified(existing_moder, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
                     else:
                         existing_moder.root_token["PeerModer"] = True
                         flag_modified(existing_moder, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
                 else:
-                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                    max_id = database.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_moder = self.Roots(
                         id=new_id,
@@ -370,42 +396,46 @@ class PeerUserModel:
                     )
                     # self.Roots.user_uuid=int(self.uuid)
                     # self.Roots.root_token={"PeerModer": True}
-                    self.session.add(new_moder)
-                    self.session.commit()
+                    database.add(new_moder)
+                    database.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} назначен модератором системы эффективности")
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при назначении пользователя с id = {self.uuid} модератором системы эффективности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
 
     def delete_peer_moder(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_moder = self.session.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
+                existing_moder = database.query(self.Roots).join(User, self.Roots.user_uuid == User.id).filter(self.Roots.user_uuid == self.uuid).first()
                 if existing_moder:
                     if "PeerModer" in existing_moder.root_token.keys() and existing_moder.root_token["PeerModer"] == True:
                         existing_moder.root_token["PeerModer"] = False
                         flag_modified(existing_moder, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Пользователь с id = {self.uuid} больше не модератор системы эффективности")
                 return LogsMaker().info_message(f"Пользователь с id = {self.uuid} не был модератор системы эффективности")
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении пользователя с id = {self.uuid} из модераторов системы эффективности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
     
     def get_moders_list(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         result = []
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                moders = self.session.query(self.Roots).filter(self.Roots.root_token.has_key("PeerModer")).all()
+                moders = database.query(self.Roots).filter(self.Roots.root_token.has_key("PeerModer")).all()
                 for moder in moders:
                     if moder.root_token["PeerModer"] == True:
-                        moder_fio = self.session.query(User.name, User.second_name, User.last_name).filter(User.id == moder.user_uuid).first()
+                        moder_fio = database.query(User.name, User.second_name, User.last_name).filter(User.id == moder.user_uuid).first()
                         moder_info = {
                             "moder_id": moder.user_uuid,
                             "moder_name": moder_fio.name,
@@ -418,12 +448,14 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Недостаточно прав")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе модераторов системы эффективности: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()
             
     def get_moders_history(self, roots):
+        db_gen = get_db()
+        database = next(db_gen)
         if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
-            user_history = self.session.query(PeerHistory).filter(PeerHistory.user_uuid == roots['user_id'], PeerHistory.info_type == 'activity').all()
+            user_history = database.query(PeerHistory).filter(PeerHistory.user_uuid == roots['user_id'], PeerHistory.info_type == 'activity').all()
             if user_history:
                 activity_history = [{
                     "id": active.id,
@@ -432,7 +464,7 @@ class PeerUserModel:
                     "active_info": active.active_info,
                     "active_coast": active.active_coast
                 } for active in activity_history] 
-                self.session.close()
+                # database.close()
                 return activity_history
             else:
                 return []
@@ -440,17 +472,19 @@ class PeerUserModel:
             return LogsMaker().warning_message(f"Недостаточно прав")
     
     def return_points_to_user(self, note_id, user_uuid):
+        db_gen = get_db()
+        database = next(db_gen)
         try:
-            points = self.session.query(PeerHistory.merch_coast).filter(PeerHistory.id == note_id).scalar()
-            status = self.session.query(PeerHistory).filter(PeerHistory.id == note_id).delete()
+            points = database.query(PeerHistory.merch_coast).filter(PeerHistory.id == note_id).scalar()
+            status = database.query(PeerHistory).filter(PeerHistory.id == note_id).delete()
             if status:
-                user_info = self.session.query(self.Roots).filter(self.Roots.user_uuid == user_uuid).first()
+                user_info = database.query(self.Roots).filter(self.Roots.user_uuid == user_uuid).first()
                 user_info.user_points = user_info.user_points + points
-                self.session.commit()
+                database.commit()
                 return True
             else:
                 return LogsMaker().error_message(f"Ошибка при удалении записи c id = {note_id} из PeerHistory")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при возрате средств пользователю с id = {user_uuid}: {e}")
-        finally:
-            self.session.close()
+        # finally:
+        #     database.close()

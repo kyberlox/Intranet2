@@ -163,6 +163,15 @@ class User:
         from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id).get_user_likes()
 
+    # Обновляет данные конкретного пользователя
+    def update_inf_from_b24(self ):
+        data = B24().getUsers()
+        for usr_data in data:
+            if usr_data["ID"] == self.id
+                self.UserModel.upsert_user(usr_data)
+                return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
+        return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
+
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"

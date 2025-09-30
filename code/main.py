@@ -219,7 +219,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
                     break
             else:
                 # Если upload_id не найден, отправляем 0
-                await websocket.send_text("0")
+                await websocket.send_text("---")
                 
             await asyncio.sleep(0.1)
     except WebSocketDisconnect:

@@ -210,7 +210,7 @@ def update_user():
     usr = User()
     return usr.fetch_users_data()
 
-@users_router.get("/update_user_info/{user_id}")
+@users_router.put("/update_user_info/{user_id}")
 def update_user_info(user_id : int):
     return User(id = user_id).update_inf_from_b24()
 

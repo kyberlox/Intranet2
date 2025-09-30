@@ -279,7 +279,6 @@ class Editor:
                 if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
                     files_keys[f_key] = []
 
-            
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
 

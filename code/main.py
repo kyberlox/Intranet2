@@ -202,7 +202,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
     from src.model.File import UPLOAD_PROGRESS
     global UPLOAD_PROGRESS
     await websocket.accept()
-    LogsMaker().info_message(f"Трансляция на вебсокет по upload_id = {upload_id}")
+    LogsMaker().info_message(f"Трансляция на вебсокет по upload_id = {upload_id} значение = {UPLOAD_PROGRESS[upload_id]}%")
     try:
         while True:
             # Отправляем прогресс каждые 0.1 секунду

@@ -99,7 +99,7 @@ class PeerUserModel:
                         'curator_id': curator.user_uuid,
                         "curator_name": curator_fio.name,
                         "curator_second_name": curator_fio.second_name,
-                        "curator_last_name": curator_fio.last_name
+                        "curator_last_name": curator_fio.last_name,
                         'activity_id': active_id,
                         'activity_name': active_name
                     }

@@ -212,22 +212,42 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
                 
                 # Если загрузка завершена или произошла ошибка, удаляем из хранилища
                 if progress >= 100 or progress == -1:
-                    # Ждем немного перед закрытием, чтобы клиент получил финальное значение
+                    # Сначала отправляем финальное сообщение
+                    if progress >= 100:
+                        await websocket.send_text("Загрузка завершена!")
+                    else:
+                        await websocket.send_text("Ошибка загрузки!")
+                    
+                    # Ждем немного перед закрытием
                     await asyncio.sleep(0.5)
+                    
+                    # Удаляем из хранилища
                     if upload_id in UPLOAD_PROGRESS:
                         del UPLOAD_PROGRESS[upload_id]
-                        websocket.send_text("Загрузка завершена!")
-                        await websocket.close()
+                    
+                    # Закрываем соединение
+                    await websocket.close()
                     break
             else:
-                # Если upload_id не найден, отправляем 0
+                # Если upload_id не найден, отправляем сообщение и закрываем
                 await websocket.send_text("upload_id не найден")
+                await asyncio.sleep(0.5)  # Даем время отправить сообщение
                 await websocket.close()
+                break
                 
             await asyncio.sleep(0.1)
+
     except WebSocketDisconnect:
-        # Клиент отключился, но не удаляем прогресс - загрузка может продолжаться
+        # Клиент отключился
         LogsMaker().warning_message(f"Client disconnected for upload {upload_id}")
+    except RuntimeError as e:
+        # Игнорируем ошибки "send after close"
+        if "close message" not in str(e):
+            LogsMaker().error_message(f"WebSocket error: {e}")
+    finally:
+        # Очистка при любом выходе
+        if upload_id in UPLOAD_PROGRESS and (UPLOAD_PROGRESS[upload_id] >= 100 or UPLOAD_PROGRESS[upload_id] == -1):
+            del UPLOAD_PROGRESS[upload_id]
 
 # @app.get("/api/progress/{upload_id}")
 # async def websocket_endpoint(upload_id: int):

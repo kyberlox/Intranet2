@@ -1,25 +1,25 @@
 <template>
-    <div class="visibility-editor__area-users__edit-methods">
-        <button @click="changeEditMode"
-                class="visibility-editor__area-users__edit-methods__add primary-button">
-            {{ buttonText }}
-        </button>
-        <div class="visibility-editor__area-users__edit-methods__input-wrapper">
+<div class="visibility-editor__area-users__edit-methods">
+    <button @click="changeEditMode"
+            class="visibility-editor__area-users__edit-methods__add primary-button">
+        {{ buttonText }}
+    </button>
+    <div class="visibility-editor__area-users__edit-methods__input-wrapper">
 
-            <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
-                            :class="{ 'disabled visibility-editor__area-users__edit-methods__search--disabled': fioFilter }"
-                            :item="{ name: '', value: depFilter }"
-                            @pick="(inputValue: string) => handleInputFilter(inputValue, 'dep')"
-                            :placeholder="'Поиск по подразделениям'" />
+        <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
+                        :class="{ 'disabled visibility-editor__area-users__edit-methods__search--disabled': fioFilter }"
+                        :item="{ name: '', value: depFilter }"
+                        @pick="(inputValue: string) => handleInputFilter(inputValue, 'dep')"
+                        :placeholder="'Поиск по подразделениям'" />
 
-            <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
-                            :class="{ 'disabled visibility-editor__area-users__edit-methods__search--disabled': depFilter }"
-                            :item="{ name: '', value: fioFilter }"
-                            @pick="(inputValue: string) => handleInputFilter(inputValue, 'fio')"
-                            :placeholder="'Поиск по фио'" />
+        <AdminEditInput class="visibility-editor__area-users__edit-methods__search"
+                        :class="{ 'disabled visibility-editor__area-users__edit-methods__search--disabled': depFilter }"
+                        :item="{ name: '', value: fioFilter }"
+                        @pick="(inputValue: string) => handleInputFilter(inputValue, 'fio')"
+                        :placeholder="'Поиск по фио'" />
 
-        </div>
     </div>
+</div>
 </template>
 
 <script lang="ts">

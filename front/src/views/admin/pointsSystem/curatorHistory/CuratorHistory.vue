@@ -6,8 +6,8 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import PointsHistoryActionTable, { type IActivityToConfirm } from '../PointsHistoryActionTable.vue';
-
+import PointsHistoryActionTable from '../PointsHistoryActionTable.vue';
+import type { IActivityToConfirm } from '@/interfaces/IEntities';
 export default defineComponent({
     components: {
         PointsHistoryActionTable

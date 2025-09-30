@@ -1,27 +1,26 @@
 <template>
-    <div class="homeview__grid__card__group-buttons"
-         :class="{ 'homeview__grid__card__group--blog': type == 'blog' }">
-        <div v-if="needReadMoreBtn"
-             class="homeview__grid__card__group-buttons__more-button">
-            {{
-                type == "video" ? "Смотреть" : "Читать далее"
-            }}</div>
-        <div v-if="newTypeReaction"
-             class="homeview__grid__card__group-buttons__reaction-buttons">
-            <div v-if="newTypeReaction.views && (type == 'postPreview' || type == 'blog' || type == 'video' || type == 'interview')"
-                 class="homeview__grid__card__group-buttons__reaction-buttons--views">
-                <ViewsIcon />
-                {{ newTypeReaction.views }}
-            </div>
-            <div v-if="newTypeReaction.likes"
-                 @click.stop.prevent="setLike(id)"
-                 class="homeview__grid__card__group-buttons__reaction-buttons--like"
-                 :class="{ 'homeview__grid__card__group-buttons__reaction-buttons--like_active': newTypeReaction.likes.likedByMe }">
-                <LikeIcon />
-                {{ newTypeReaction.likes.count }}
-            </div>
+<div class="homeview__grid__card__group-buttons"
+     :class="{ 'homeview__grid__card__group--blog': type == 'blog' }">
+    <div v-if="needReadMoreBtn"
+         class="homeview__grid__card__group-buttons__more-button">
+        {{
+            type == "video" ? "Смотреть" : "Читать далее"
+        }}</div>
+    <div v-if="newTypeReaction"
+         class="homeview__grid__card__group-buttons__reaction-buttons">
+        <div class="homeview__grid__card__group-buttons__reaction-buttons--views">
+            <ViewsIcon />
+            {{ newTypeReaction.views }}
+        </div>
+        <div v-if="newTypeReaction.likes"
+             @click.stop.prevent="setLike(id)"
+             class="homeview__grid__card__group-buttons__reaction-buttons--like"
+             :class="{ 'homeview__grid__card__group-buttons__reaction-buttons--like_active': newTypeReaction.likes.likedByMe }">
+            <LikeIcon />
+            {{ newTypeReaction.likes.count }}
         </div>
     </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -53,18 +52,13 @@ export default defineComponent({
             type: Boolean,
             default: false
         },
-        modifiers: {
-            type: Array<string>
-        }
     },
     setup(props) {
+        const newTypeReaction: Ref<IReaction> = ref(props.reactions);
         onMounted(() => {
-            if (props.modifiers?.includes('noReactionUpdates')) return;
             Api.get(`article/has_user_liked/${props.id}`)
                 .then(data => { newTypeReaction.value = data });
         })
-
-        const newTypeReaction: Ref<IReaction> = ref(props.reactions);
 
         const setLike = (id: number) => {
             Api.put(`article/add_or_remove_like/${id}`)

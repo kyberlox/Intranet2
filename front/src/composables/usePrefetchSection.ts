@@ -49,7 +49,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 functionName: useUserScore().setActions
             },
             {
-                route: '/peer/statistics',
+                route: '/peer/user_history',
                 functionName: useUserScore().setStatistics
             },
             {
@@ -59,7 +59,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             ]
             scoreRoutes.map((e) => {
                 Api.get(e.route)
-                    .then((data) => {
+                    .then((data) => {                        
                         e.functionName(data);
                     });
             })

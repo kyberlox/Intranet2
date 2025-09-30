@@ -270,10 +270,15 @@
 
             &--points-modal {
                 padding: 0;
+                width: 50%;
+            }
+
+            &--user-points {
+                padding: 0;
             }
 
             &__user-photo {
-                max-width: 350px;
+                max-width: 250px;
             }
         }
     }

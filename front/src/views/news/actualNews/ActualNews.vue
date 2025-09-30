@@ -10,8 +10,7 @@
     <SampleGallery v-if="!emptyTag"
                    :gallery="visibleNews"
                    :type="'postPreview'"
-                   :routeTo="'actualArticle'"
-                   :modifiers="['noReactionUpdates']" />
+                   :routeTo="'actualArticle'" />
     <p class="mt20"
        v-else>Нет новостей в этой категории</p>
 </div>

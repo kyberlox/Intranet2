@@ -6,20 +6,21 @@
                               :moderatorsActivities="activitiesToConfirm" />
     </AdminSidebar>
 
-    <PointsHistoryActionTable :needCheckButton="true"
+    <PointsHistoryActionTable v-if="activeId"
+                              :onlyHistory="true"
                               :activitiesInTable="activitiesInTable" />
 </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import Api from '@/utils/Api';
 import { usePointsData } from '@/stores/PointsData';
 import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
 import { dateConvert } from '@/utils/dateConvert';
 import ModeratorSidebarSlot from './ModeratorSidebarSlot.vue';
 import PointsHistoryActionTable from '../PointsHistoryActionTable.vue';
-import type { IActivityToConfirm } from '../PointsHistoryActionTable.vue';
+import type { IActivityToConfirm } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'moderatorValidationPanel',
@@ -38,14 +39,14 @@ export default defineComponent({
         }
 
         const tableInit = () => {
-            Api.get(`peer/confirmation/${activeId.value}`)
+            Api.get(`peer/points_to_confirm/${activeId.value}`)
                 .then((data) => {
                     activitiesInTable.value = data
                 })
         }
 
         watch((activeId), () => {
-            if (!activeId.value && activeId.value !== 0) return
+            if (!activeId.value) return
             tableInit();
         }, { immediate: true, deep: true });
 
@@ -55,12 +56,6 @@ export default defineComponent({
                 .finally(() => tableInit())
         }
 
-        onMounted(() => {
-            Api.get(`peer/confirmation/${activeId.value}`)
-                .then((data) => {
-                    activitiesInTable.value = data
-                })
-        })
 
         return {
             activitiesToConfirm,

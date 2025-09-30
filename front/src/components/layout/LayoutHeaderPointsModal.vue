@@ -1,11 +1,11 @@
 <template>
-    <div class="modal__text__content modal__text__content--points-modal">
-        <div class="row ">
-            <div class="col">
-                <PointsInfoTable />
-            </div>
+<div class="modal__text__content modal__text__content--user-points">
+    <div class="row ">
+        <div class="col">
+            <PointsInfoTable />
         </div>
     </div>
+</div>
 </template>
 
 <script lang="ts">

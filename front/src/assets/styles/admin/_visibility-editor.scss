@@ -261,6 +261,10 @@
     &__add-new-area {
         &__slot {
             padding: 15px 20px 0 15px !important;
+            // width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
 
             &__buttons {
                 display: flex;

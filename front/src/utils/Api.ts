@@ -9,6 +9,8 @@ import type { IValidatePoints } from '@/interfaces/IPostFetch';
 
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
 
+import type { INewActivityData } from '@/interfaces/IPutFetchData';
+
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 const authKey = computed(() => useUserData().getAuthKey);
 
@@ -47,7 +49,7 @@ export default class Api {
         return (await api.post(url, data)).data;
     }
 
-    static async put(url: string, data?: number[] | IPointsForm) {
+    static async put(url: string, data?: number[] | IPointsForm | INewActivityData) {
         return (await api.put(url, data)).data
     }
 

@@ -41,7 +41,7 @@
                                   :choices="choices"
                                   :departments="allDepStructure" />
         <div v-else
-             class="visibility-editor__area__loader__wrapper">
+             class="visibility-editor__area__loader__wrapper mt20">
             <Loader />
         </div>
     </div>
@@ -190,6 +190,7 @@ export default defineComponent({
         }
 
         const addUsersToArea = (visionId: number, userIds: number[]) => {
+            isLoading.value = true
             Api.put(`fields_visions/add_users_list_to_vision/${visionId}`, userIds)
                 .catch(error => {
                     if (error.response?.status == 500) {
@@ -198,6 +199,7 @@ export default defineComponent({
                 })
                 .finally(() => {
                     getVisionUser(visionId)
+                    isLoading.value = false
                 })
         }
 
@@ -341,6 +343,7 @@ export default defineComponent({
                 userIds.push(e.id)
             })
 
+            isLoading.value = true
             Api.delete(`fields_visions/delete_users_from_vision/${activeArea.value}`, userIds)
                 .catch(error => {
                     if (error.response?.status == 500) {
@@ -348,6 +351,7 @@ export default defineComponent({
                     }
                 })
                 .finally(() => {
+                    isLoading.value = false
                     getVisionUser(activeArea.value!);
                 })
         }

@@ -8,17 +8,20 @@
             <p class="admin-element-inner__field-title fs-l">
                 {{ blockTitle(itemKey) }}
             </p>
-            <div v-if="itemKey == 'images' && newFileData['images']?.length">
-                превью
+            <!-- <div v-if="itemKey == 'images' && newFileData['images']?.length == 0">
+                Превью
                 <FileUploader @upload="(e) => $emit('handleUpload', e)"
                               @reloadData="$emit('reloadData')"
                               :uploadType="(itemKey as keyof IKeyToWord)"
                               :existFiles="[(newFileData[itemKey as keyof IKeyToWord])![0]]" />
+            </div> -->
+            <div class="">
+                <FileUploader @upload="(e) => $emit('handleUpload', e)"
+                              @reloadData="$emit('reloadData')"
+                              :uploadType="(itemKey as keyof IKeyToWord)"
+                              :existFiles="(newFileData[itemKey as keyof IKeyToWord])" />
+
             </div>
-            <FileUploader @upload="(e) => $emit('handleUpload', e)"
-                          @reloadData="$emit('reloadData')"
-                          :uploadType="(itemKey as keyof IKeyToWord)"
-                          :existFiles="(newFileData[itemKey as keyof IKeyToWord])" />
         </div>
     </div>
 </div>
@@ -37,6 +40,9 @@ interface IKeyToWord {
 }
 
 export default defineComponent({
+    components: {
+        FileUploader,
+    },
     props: {
         newFileData: {
             type: Object as PropType<INewFileData>,
@@ -47,9 +53,6 @@ export default defineComponent({
         newData: {
             type: Object as PropType<IPostInner>
         },
-    },
-    components: {
-        FileUploader
     },
     setup() {
         const keyToWord = {

@@ -30,11 +30,11 @@
             </tbody>
         </table>
     </div>
-    <SlotModal>
-        <MyIdeaModalInner v-if="modalIsVisible"
-                          :currentUser="currentUser"
-                          :textContent="ideaInModal"
-                          @close="modalIsVisible = false" />
+    <SlotModal v-if="modalIsVisible"
+               class="idea__modal"
+               @close="modalIsVisible = false">
+        <MyIdeaModalInner :currentUser="currentUser"
+                          :textContent="ideaInModal" />
     </SlotModal>
 </div>
 </template>

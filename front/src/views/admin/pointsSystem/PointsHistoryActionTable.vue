@@ -14,7 +14,8 @@
                         <th class="moderator-panel__head">Куда</th>
                         <th class="moderator-panel__head">Комментарий</th>
                         <th class="moderator-panel__head">
-                            <CancelIcon @click="moderate('cancel', item.id, item.uuid_to)"
+                            <CancelIcon v-if="onlyHistory"
+                                        @click="moderate('cancel', item.id, item.uuid_to)"
                                         class="moderator-panel__action-btn moderator-panel__action-btn--cancel" />
                         </th>
                     </tr>
@@ -37,7 +38,7 @@
                             {{ item.description }}
                         </td>
                         <td class="moderator-panel__cell moderator-panel__cell--actions">
-                            <CheckIcon v-if="needCheckButton"
+                            <CheckIcon v-if="onlyHistory"
                                        @click="moderate('accept', item.id, item.uuid_to)"
                                        class="moderator-panel__action-btn moderator-panel__action-btn--accept" />
                         </td>
@@ -48,6 +49,9 @@
         </div>
     </div>
 </div>
+<div v-else>
+    {{ onlyHistory ? 'Нет активностей на подтвержение' : 'У вас нет истории отправленных баллов' }}
+</div>
 </template>
 
 <script lang="ts">
@@ -55,17 +59,7 @@ import { defineComponent } from 'vue';
 import { dateConvert } from '@/utils/dateConvert';
 import CheckIcon from '@/assets/icons/common/Check.svg?component';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
-
-export interface IActivityToConfirm {
-    coast: number
-    date_time: string
-    description: string
-    id: number
-    name: number
-    need_valid: boolean
-    uuid_from: number
-    uuid_to: number
-}
+import type { IActivityToConfirm } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
@@ -76,7 +70,7 @@ export default defineComponent({
         activitiesInTable: {
             type: Array<IActivityToConfirm>
         },
-        needCheckButton: {
+        onlyHistory: {
             type: Boolean,
             default: () => false
         }

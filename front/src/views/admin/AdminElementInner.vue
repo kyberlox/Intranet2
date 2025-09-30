@@ -22,7 +22,7 @@
 
       <div class="admin-element-inner__field mt10">
         <AdminEditInput v-if="newFileData.videos_embed"
-                        :item="{ name: 'Видео с источников', field: 'videos_embed', value: newFileData?.videos_embed[0]?.original_name ?? undefined }"
+                        :item="{ name: 'Видео с источников', field: 'videos_embed', values: [{ name: '2', id: '1' }] }"
                         @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
       </div>
       <AdminUploadingSection class="mt10"
@@ -68,16 +68,11 @@
 import { defineComponent, onMounted, ref, type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
-
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';
 import AdminEditDatePicker from '@/views/admin/components/inputFields/AdminEditDatePicker.vue';
 import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.vue';
 import AdminEditReportage from '@/views/admin/components/inputFields/AdminEditReportage.vue';
-
-import { type IPostInner } from '@/components/tools/common/PostInner.vue';
-import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
-
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 import FileUploader from '../../components/tools/common/FileUploader.vue';
@@ -87,6 +82,9 @@ import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
 import AdminPostPreview from './components/elementInnerLayout/AdminPostPreview.vue';
 import AdminUploadingSection from './components/elementInnerLayout/AdminUploadingSection.vue';
+
+import { type IPostInner } from '@/components/tools/common/PostInner.vue';
+import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
 
 type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
@@ -207,12 +205,14 @@ export default defineComponent({
     }
 
     const handleUpload = (e: IFileToUpload) => {
+      const idToUpload = isCreateNew.value ? newId.value : props.elementId
       if (!e || !e.file) return
-      const fileToUpload = e.file;
-      const formData = new FormData();
-      formData.append('file', fileToUpload)
-      Api.post(`/editor/upload_file/${isCreateNew.value ? newId.value : props.elementId}`, formData)
-        .then(() => reloadElementData(true))
+
+      const formData = new FormData()
+      formData.append('file', e.file)
+
+      Api.post(`/editor/upload_file/${idToUpload}`, formData)
+        .finally(() => reloadElementData(true))
     }
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {

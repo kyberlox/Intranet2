@@ -2,6 +2,11 @@
     display: flex;
     flex-direction: column;
 
+    &__wrapper {
+        min-height: 100vh;
+        background: #fafafa;
+    }
+
     &__navigation {
         padding: 8px 14px;
         border-radius: 10px;
@@ -20,6 +25,9 @@
         border: 1px solid transparent;
 
         &__wrapper {
+            max-width: 1200px;
+            margin: auto;
+            width: 100%;
             display: flex;
             flex-direction: row;
             gap: 8px;

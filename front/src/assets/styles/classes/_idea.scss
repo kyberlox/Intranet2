@@ -40,4 +40,25 @@
             }
         }
     }
+
+    &__modal {
+
+        &>.modal__wrapper {
+
+            padding: 20px;
+
+            &>.modal__body {
+                &>.modal__text__content {
+                    padding: 0 !important;
+                    overflow-y: scroll;
+                    max-height: 794px;
+
+                    &>.row>.col>.modal__text {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+
+    }
 }

@@ -1,13 +1,14 @@
 <template>
-    <div class="admin-element-inner__field-content">
-        <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
-        <input class="admin-element-inner__input fs-m"
-               v-model="value"
-               @input="handleValuePick"
-               :type="'text'"
-               :disabled="Boolean(item?.disabled)"
-               :placeholder="placeholder" />
-    </div>
+<div class="admin-element-inner__field-content">
+    <p v-if="item?.name"
+       class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
+    <input class="admin-element-inner__input fs-m"
+           v-model="value"
+           @input="handleValuePick"
+           :type="type"
+           :disabled="Boolean(item?.disabled)"
+           :placeholder="placeholder" />
+</div>
 </template>
 
 <script lang="ts">
@@ -21,6 +22,10 @@ export default defineComponent({
         },
         placeholder: {
             type: String
+        },
+        type: {
+            type: String,
+            default: () => 'text'
         }
     },
     setup(props, { emit }) {

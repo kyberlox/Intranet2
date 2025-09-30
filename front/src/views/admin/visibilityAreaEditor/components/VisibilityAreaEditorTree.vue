@@ -1,5 +1,5 @@
 <template>
-<ul class="visibility-editor__area-departments"
+<ul class="visibility-editor__area-departments mt20"
     v-if="!userDisplayMode">
     <li class="visibility-editor__area-department"
         v-for="dep in departmentsToShow"

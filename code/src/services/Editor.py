@@ -75,7 +75,7 @@ class Editor:
         pattern_data = json.load(pattern_data_file)
         if self.section_id is not None:
             for sec_pattern in pattern_data:
-                LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}')
+                LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}, self.section_id = {self.section_id}')
                 if self.section_id in sec_pattern["section_id"].keys():
                     self.pattern = sec_pattern
         else:

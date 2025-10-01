@@ -452,7 +452,9 @@ class UserModel:
         """
         normal_list = []
         users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
-        LogsMaker().error_message(f"тут он принимает за id строку {users}")
+        
+        users_list = [user.__dict__ for user in users]
+        LogsMaker().error_message(f"тут он принимает за id строку {users_list}")
         for usr in users:
             user = usr.__dict__
             if 112 in user['indirect_data']['uf_department']:

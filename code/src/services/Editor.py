@@ -73,23 +73,39 @@ class Editor:
         #список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
+
+        #ошибка тут
+        # if self.section_id is not None:
+        #     for sec_pattern in pattern_data:
+        #         LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}, self.section_id = {self.section_id}')
+        #         if self.section_id in sec_pattern["section_id"].keys():
+        #             self.pattern = sec_pattern
+        # else:
+        #     self.pattern = None
+
         if self.section_id is not None:
-            for sec_pattern in pattern_data:
-                LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}, self.section_id = {self.section_id}')
-                if self.section_id in sec_pattern["section_id"].keys():
-                    self.pattern = sec_pattern
+            for sec_pattern, value in pattern_data.items():
+                if self.section_id == int(sec_pattern):
+                    self.pattern = value
         else:
             self.pattern = None
         pattern_data_file.close()
 
     def get_pattern(self ):
+        #и ошибка тут
         #список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
+        # if self.section_id is not None:
+        #     for sec_pattern in pattern_data:
+        #         if self.section_id in sec_pattern["section_id"].keys():
+        #             self.pattern = sec_pattern
+        # else:
+        #     self.pattern = None
         if self.section_id is not None:
-            for sec_pattern in pattern_data:
-                if self.section_id in sec_pattern["section_id"].keys():
-                    self.pattern = sec_pattern
+            for sec_pattern, value in pattern_data.items():
+                if self.section_id == int(sec_pattern):
+                    self.pattern = value
         else:
             self.pattern = None
         pattern_data_file.close()

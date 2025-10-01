@@ -458,15 +458,15 @@ class UserModel:
                 pass
             else:
                 if user['active'] and user['photo_file_id'] is not None:
-                    print(user['id'], user['indirect_data']['uf_department'])
                     user_info = {}
                     indirect_data = user['indirect_data']
                     list_departs = []
                     if len(indirect_data['uf_department']) != 0:
                         for dep in indirect_data['uf_department']:
-                            dep_str = DepartmentModel(dep).find_dep_by_id()
-                            for de in dep_str:
-                                list_departs.append(de.__dict__['name'])
+                            if isinstance(dep, int):
+                                dep_str = DepartmentModel(dep).find_dep_by_id()
+                                for de in dep_str:
+                                    list_departs.append(de.__dict__['name'])
                     
                             
                     indirect_data['uf_department'] = list_departs

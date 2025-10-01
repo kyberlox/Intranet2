@@ -452,21 +452,18 @@ class UserModel:
         """
         normal_list = []
         users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
-        
-        users_list = [user.__dict__ for user in users]
-        LogsMaker().error_message(f"тут он принимает за id строку {users_list}")
         for usr in users:
             user = usr.__dict__
             if 112 in user['indirect_data']['uf_department']:
                 pass
             else:
                 if user['active'] and user['photo_file_id'] is not None:
+                    print(user['id'], user['indirect_data']['uf_department'])
                     user_info = {}
                     indirect_data = user['indirect_data']
                     list_departs = []
                     if len(indirect_data['uf_department']) != 0:
                         for dep in indirect_data['uf_department']:
-                            # LogsMaker().error_message(f"тут он принимает за id строку {dep} в {indirect_data}")
                             dep_str = DepartmentModel(dep).find_dep_by_id()
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])

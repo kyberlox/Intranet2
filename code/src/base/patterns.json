@@ -936,6 +936,11 @@
         "data_type": "int"
       },
       {
+        "name": "Цена",
+        "field": "price",
+        "data_type": "int"
+      },
+      {
         "name": "ID",
         "field": "id",
         "data_type": "str"

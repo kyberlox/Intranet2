@@ -621,7 +621,14 @@ class Editor:
 
         return result
 
-
+    def get_sections_list(self ):
+        all_sections = Section().get_all()
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
+        edited_sections = []
+        for sec in all_sections:
+            if sec["id"] in valid_id:
+                edited_sections.append(sec)
+        return edited_sections
 
 
 #получить паттерн
@@ -637,9 +644,14 @@ def get_pattern_by_sec_id(data = Body()):
     return Editor(section_id = section_id).get_pattern(data)
 
 #автосборка паттернов
-@editor_router.get("/edit_sections/")
+@editor_router.get("/edit_sections")
 async def get_edit_sections():
     return Editor().get_sections()
+
+# вывод списка редактируемых секций
+@editor_router.get("/get_sections_list")
+async def get_sections_list():
+    return Editor().get_sections_list()
 
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")

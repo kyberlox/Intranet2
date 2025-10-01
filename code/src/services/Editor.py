@@ -309,7 +309,7 @@ class Editor:
 
                 # если поле нередактируемое
                 if field["field"] in self.notEditble:
-                        field["disabled"] = True
+                    field["disabled"] = True
             
         need_del = False 
         indx = None

@@ -15,7 +15,7 @@
     "company" : "Предприятие",
     "author_uuid" : "ID автора",
     "youtube_link" : "Ссылка на YouTube",
-    "year" : "год",
+    "year" : "Год",
     "uuid" : "ID пользователя",
     "photo_file_url" : "Фотография (URL)",
     "position" : "Должность",
@@ -28,6 +28,12 @@
     "date_to" : "Дата окончания",
     "reports" : "Репортажи",
     "subsection" : "Подраздел",
-    "images_url" : "URL изображений"
-    
+    "images_url" : "URL изображений",
+    "s" : "Размер s",
+    "m" : "Размер m",
+    "l" : "Размер l",
+    "xl" : "Размер xl",
+    "xxl" : "Размер xxl",
+    "no_size" : "Безразмерный",
+    "price" : "Цена"
 }

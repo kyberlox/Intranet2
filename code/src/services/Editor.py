@@ -341,10 +341,8 @@ class Editor:
                 
                 #Пропишу тут дамп шаблонов статей разделов
                 self.section_id = sec["id"]
-                print(self.section_id, "проверяем тот ли id секции")
                 #Собрать шаблон
                 Pattern = self.get_format()
-                print(Pattern, "смотрим паттерн получившийся")
                 #записать паттерн
                 self.set_pattern(Pattern)
         

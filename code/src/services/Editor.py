@@ -338,12 +338,13 @@ class Editor:
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
+                
                 #Пропишу тут дамп шаблонов статей разделов
                 self.section_id = sec["id"]
-
+                print(self.section_id, "проверяем тот ли id секции")
                 #Собрать шаблон
                 Pattern = self.get_format()
-
+                print(Pattern, "смотрим паттерн получившийся")
                 #записать паттерн
                 self.set_pattern(Pattern)
         
@@ -546,7 +547,7 @@ class Editor:
             art["content_type"] = data["content_type"]
         else:
             art["content_type"] = None
-        
+
         #вставить данные в статью
         return ArticleModel(id = self.art_id).update(art)
     

@@ -1,21 +1,22 @@
 <template>
-    <div v-if="card"
-         class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
-        <RouterLink :to="{ name: href, params: { id: card.id } }"
-                    class="homeview__grid__card__link">
-            <span v-if="modifiers?.includes('mixedType')"
-                  class="homeview__grid__card__group-title homeview__grid__card__group-title--mixed">
-            </span>
-            <div class="homeview__grid__card__image"
-                 v-lazy-load="card.image"></div>
-            <div v-if="card.title"
-                 class="homeview__grid__card__title homeview__grid__card__title--gallery">{{ card.title }}</div>
-            <Reactions v-if="card.reactions"
-                       :reactions="card.reactions"
-                       :id="card.id"
-                       :type="'interview'" />
-        </RouterLink>
-    </div>
+<div v-if="card"
+     class="homeview__grid__card col-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 d-flex flex-column">
+    <slot></slot>
+    <RouterLink :to="{ name: href, params: { id: card.id } }"
+                class="homeview__grid__card__link">
+        <span v-if="modifiers?.includes('mixedType')"
+              class="homeview__grid__card__group-title homeview__grid__card__group-title--mixed">
+        </span>
+        <div class="homeview__grid__card__image"
+             v-lazy-load="card.image"></div>
+        <div v-if="card.title"
+             class="homeview__grid__card__title homeview__grid__card__title--gallery">{{ card.title }}</div>
+        <Reactions v-if="card.reactions"
+                   :reactions="card.reactions"
+                   :id="card.id"
+                   :type="'interview'" />
+    </RouterLink>
+</div>
 </template>
 
 <script lang="ts">

@@ -546,7 +546,7 @@ class Editor:
             art["content_type"] = data["content_type"]
         else:
             art["content_type"] = None
-
+        
         #вставить данные в статью
         return ArticleModel(id = self.art_id).update(art)
     

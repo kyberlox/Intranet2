@@ -640,7 +640,7 @@ class Editor:
 
     def get_sections_list(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:

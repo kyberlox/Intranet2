@@ -903,6 +903,84 @@
       "images": []
     }
   },
+  "56": {
+    "fields": [
+      {
+        "name": "Размер s",
+        "field": "s",
+        "data_type": "int"
+      },
+      {
+        "name": "Размер m",
+        "field": "m",
+        "data_type": "int"
+      },
+      {
+        "name": "Размер l",
+        "field": "l",
+        "data_type": "int"
+      },
+      {
+        "name": "Размер xl",
+        "field": "xl",
+        "data_type": "int"
+      },
+      {
+        "name": "Размер xxl",
+        "field": "xxl",
+        "data_type": "int"
+      },
+      {
+        "name": "Безразмерный",
+        "field": "no_size",
+        "data_type": "int"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str"
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
   "110": {
     "fields": [],
     "files": {}

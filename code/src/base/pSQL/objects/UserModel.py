@@ -464,9 +464,10 @@ class UserModel:
                     list_departs = []
                     if len(indirect_data['uf_department']) != 0:
                         for dep in indirect_data['uf_department']:
-                            dep_str = DepartmentModel(dep).find_dep_by_id()
-                            for de in dep_str:
-                                list_departs.append(de.__dict__['name'])
+                            if isinstance(dep, int):
+                                dep_str = DepartmentModel(dep).find_dep_by_id()
+                                for de in dep_str:
+                                    list_departs.append(de.__dict__['name'])
                     
                             
                     indirect_data['uf_department'] = list_departs

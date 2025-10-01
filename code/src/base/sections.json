@@ -239,7 +239,7 @@
     "id" : 56,
     "name" : "Магазин Мерча",
     "parent_id" : 5,
-    "sectionHref": "carePost"
+    "sectionHref": "merchStore"
   },
   {
     "id" : 6,

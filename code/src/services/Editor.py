@@ -53,7 +53,6 @@ class Editor:
             self.section_id = art["section_id"]
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
-
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
         if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172] :
                 self.notEditble.append("preview_text")
@@ -73,22 +72,39 @@ class Editor:
         #список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
+
+        #ошибка тут
+        # if self.section_id is not None:
+        #     for sec_pattern in pattern_data:
+        #         LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}, self.section_id = {self.section_id}')
+        #         if self.section_id in sec_pattern["section_id"].keys():
+        #             self.pattern = sec_pattern
+        # else:
+        #     self.pattern = None
+
         if self.section_id is not None:
-            for sec_pattern in pattern_data:
-                if self.section_id in sec_pattern["section_id"].keys():
-                    self.pattern = sec_pattern
+            for sec_pattern, value in pattern_data.items():
+                if self.section_id == int(sec_pattern):
+                    self.pattern = value
         else:
             self.pattern = None
         pattern_data_file.close()
 
     def get_pattern(self ):
+        #и ошибка тут
         #список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
+        # if self.section_id is not None:
+        #     for sec_pattern in pattern_data:
+        #         if self.section_id in sec_pattern["section_id"].keys():
+        #             self.pattern = sec_pattern
+        # else:
+        #     self.pattern = None
         if self.section_id is not None:
-            for sec_pattern in pattern_data:
-                if self.section_id in sec_pattern["section_id"].keys():
-                    self.pattern = sec_pattern
+            for sec_pattern, value in pattern_data.items():
+                if self.section_id == int(sec_pattern):
+                    self.pattern = value
         else:
             self.pattern = None
         pattern_data_file.close()
@@ -318,16 +334,15 @@ class Editor:
 
     def get_sections(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
+                
                 #Пропишу тут дамп шаблонов статей разделов
                 self.section_id = sec["id"]
-
                 #Собрать шаблон
                 Pattern = self.get_format()
-
                 #записать паттерн
                 self.set_pattern(Pattern)
         
@@ -623,7 +638,7 @@ class Editor:
 
     def get_sections_list(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
@@ -647,6 +662,11 @@ def get_pattern_by_sec_id(data = Body()):
 @editor_router.get("/edit_sections")
 async def get_edit_sections():
     return Editor().get_sections()
+
+# вывод списка редактируемых секций
+@editor_router.get("/get_sections_list")
+async def get_sections_list():
+    return Editor().get_sections_list()
 
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")

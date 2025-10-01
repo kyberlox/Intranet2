@@ -64,7 +64,7 @@ class LikesModel:
             )
             self.session.add(new_like)
             self.session.commit()
-
+            self.reactions["likes"]["count"] += 1
             self.reactions["likes"]["likedByMe"] = True
 
         else:

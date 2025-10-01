@@ -26,21 +26,22 @@
             </div>
 
             <!-- Все вместе -->
-            <div class="homeview__grid homeview__grid--mixed"
+            <div class="homeview__grid"
                  v-else-if="item.type == 'mixedRowBlock'">
                 <div v-for="(block, index) in item.content"
-                     :key="index">
-                    <MainPageSoloBlock v-for="(her, index) in item.content.filter((e => e.type == 'singleBlock'))"
-                                       :key="index"
-                                       :card="her" />
-
-                    <!-- <MainPageRowBlocks v-for="(blockSlides, index) in block.images"
-                                       :card="typeof blockSlides === 'string' ? { id: item.id, image: blockSlides } : blockSlides"
-                                       :key="index + 'fullrowblock'"
-                                       :blockTitle="'Корпоративные события'"
-                                       :href="block.href"
-                                       :modifiers="['mixedType']" /> -->
-
+                     :key="index"
+                     :class="{ 'grid-span-4': block.type == 'fullRowBlock' }">
+                    <MainPageSoloBlock v-if="(block.type == 'singleBlock' && typeof block.images !== 'string')"
+                                       :card="block" />
+                    <div class="homeview__grid homeview__grid--mixed"
+                         v-else-if="block.type == 'fullRowBlock'">
+                        <MainPageRowBlocks v-for="(blockSlides, index) in block.images"
+                                           :card="typeof blockSlides === 'string' ? { id: item.id, image: blockSlides } : blockSlides"
+                                           :key="index + 'fullrowblock'"
+                                           :blockTitle="'Корпоративные события'"
+                                           :href="block.href"
+                                           :modifiers="['mixedType']" />
+                    </div>
                 </div>
             </div>
         </div>

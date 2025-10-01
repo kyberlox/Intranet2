@@ -53,7 +53,6 @@ class Editor:
             self.section_id = art["section_id"]
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
-
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
         if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172] :
                 self.notEditble.append("preview_text")
@@ -335,7 +334,7 @@ class Editor:
 
     def get_sections(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 110, 111, 172, 175]
+        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:

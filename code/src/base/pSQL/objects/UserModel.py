@@ -457,7 +457,8 @@ class UserModel:
             if 112 in user['indirect_data']['uf_department']:
                 pass
             else:
-                if user['active'] and user['photo_file_id'] is not None:
+                # if user['active'] and user['photo_file_id'] is not None:
+                if user['active']:
                     user_info = {}
                     indirect_data = user['indirect_data']
                     list_departs = []
@@ -471,7 +472,7 @@ class UserModel:
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
-                    user_image = File(user['photo_file_id']).get_users_photo()
+                    # user_image = File(user['photo_file_id']).get_users_photo()
                     user_info['id'] = user['id']
                     if user['second_name'] == '' or user['second_name'] is None:
                         user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
@@ -482,7 +483,7 @@ class UserModel:
                     if "uf_usr_department_main" in indirect_data:
                         dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                         user_info['uf_usr_department_main'] = dedep[0].name
-                    user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
+                    # user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
                     
                     normal_list.append(user_info)
         self.db.close()

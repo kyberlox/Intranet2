@@ -267,6 +267,10 @@ class Article:
                     nomination = 'Дети от 8 до 11 лет'
                 elif int(data['PROPERTY_1071'][0]) == 1776:
                     nomination = 'Дети от 12 до 16 лет'
+                elif int(data['PROPERTY_1071'][0]) == 2162:
+                    nomination = 'Наше лето'
+                elif int(data['PROPERTY_1071'][0]) == 2182:
+                    nomination = 'Арматура как объект искусства'
         
 
 

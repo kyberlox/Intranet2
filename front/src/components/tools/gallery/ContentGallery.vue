@@ -7,7 +7,7 @@
         <div v-if="slide.images"
              @click="callModal(slide.images, index)"
              class="contentGallery__card__img"
-             v-lazy-load="image.file_url"
+             v-lazy-load="image.file_url || image.preview_file_url"
              alt="slide">
         </div>
         <Reactions v-if="modifiers?.includes('likes')"
@@ -55,13 +55,19 @@ interface IImageItem extends IBXFileType {
     file_url: string;
     preview_file_url?: string;
     reactions?: IReaction;
+
+    // для конкурсов
+    indirect_data?: {
+        nomination?: string
+    }
 }
 
 export interface IContentGallerySlide {
-    name: string;
+    name?: string;
     images?: IImageItem[];
     videos_native?: IBXFileType[];
     videos_embed?: IBXFileType[];
+
 }
 
 export default defineComponent({

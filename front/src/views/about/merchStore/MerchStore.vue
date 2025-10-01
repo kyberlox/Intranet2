@@ -2,7 +2,7 @@
 <div class="mt20">
     <div class="page__title">Магазин мерча</div>
     <div class="merch-store__grid__wrapper">
-        <div class="merch-store">
+        <div class="merch-store__grid">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
                         v-for="item in storePlug"

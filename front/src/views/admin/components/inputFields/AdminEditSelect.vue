@@ -7,9 +7,10 @@
             v-model="value">
         <option class="admin-element-inner__select-option"
                 v-for="(option, index) in item?.values"
-                :value="typeof option === 'string' ? option : option.id"
+                :value="typeof option === 'string' || typeof option === 'boolean' ? option : option.id"
                 :key=index>
-            {{ typeof option === 'string' ? (yesOrNoFormat ? renderOptionText(option) : option) : option.name }}
+            {{ (typeof option === 'string' || typeof option === 'boolean' ? (yesOrNoFormat ?
+                renderOptionText(option) : option) : option.name) }}
         </option>
     </select>
 </div>

@@ -9,8 +9,12 @@
         </div>
     </div>
     <div class="row mb-5">
+        <div class="contest__page__loader__wrapper"
+             v-if="isLoading">
+            <Loader class="contest__page__loader" />
+        </div>
         <table class="table"
-               v-if="ideas">
+               v-else-if="ideas">
             <tbody>
                 <tr>
                     <th>№</th>
@@ -29,6 +33,7 @@
                 </tr>
             </tbody>
         </table>
+
     </div>
     <SlotModal v-if="modalIsVisible"
                class="idea__modal"
@@ -45,17 +50,19 @@ import { sectionTips } from '@/assets/static/sectionTips';
 import { useUserData } from '@/stores/userData';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import MyIdeaModalInner from './MyIdeaModalInner.vue';
+import Loader from '@/components/layout/Loader.vue';
 import type { IIdeaData } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'MyIdeas',
     components: {
         SlotModal,
-        MyIdeaModalInner
+        MyIdeaModalInner,
+        Loader
     },
     setup() {
         const currentUser = computed(() => useUserData().getUser)
-
+        const isLoading = ref(true);
         const ideas: Ref<IIdeaData[]> = ref([]);
         const ideaInModal = ref();
         const modalIsVisible = ref(false);
@@ -70,10 +77,12 @@ export default defineComponent({
                 .then((data) => {
                     ideas.value = data;
                 })
+                .finally(() => isLoading.value = false)
         })
 
         return {
             ideas,
+            isLoading,
             modalIsVisible,
             ideaInModal,
             callModal,

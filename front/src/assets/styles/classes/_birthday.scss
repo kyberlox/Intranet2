@@ -6,7 +6,7 @@
         flex-direction: row;
         gap: 12px;
 
-        @include sm {
+        @include lg {
             flex-direction: column;
         }
     }
@@ -89,7 +89,7 @@
 
     &__static {
         &__greetings {
-            flex-grow: 1;
+            flex-grow: 0;
             max-width: fit-content;
             cursor: zoom-in;
             margin: auto;
@@ -102,11 +102,6 @@
 
             img {
                 max-width: 341px;
-
-                @include sm {
-                    max-width: 100%;
-                    width: 100%;
-                }
             }
         }
     }
@@ -123,7 +118,7 @@
                 min-height: 100%;
                 position: relative;
 
-                @include sm {
+                @include lg {
                     max-width: 100% !important;
                 }
             }

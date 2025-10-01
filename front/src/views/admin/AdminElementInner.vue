@@ -13,6 +13,7 @@
 
         <Component :is="inputComponentChecker(item)"
                    :item="item"
+                   :type="item.data_type == 'int' ? 'number' : 'text'"
                    @pick="(value: string) => handleEmitValueChange(item, value)" />
 
         <AdminEditReportage v-if="item.field == 'reports'"
@@ -22,7 +23,7 @@
 
       <div class="admin-element-inner__field mt10">
         <AdminEditInput v-if="newFileData.videos_embed"
-                        :item="{ name: 'Видео с источников', field: 'videos_embed', values: [{ name: '2', id: '1' }] }"
+                        :item="{ name: 'Видео с источников', field: 'videos_embed', values: [{ name: '', id: '' }] }"
                         @pick="(value: string) => handleEmitValueChange({ name: 'Видео с источников', field: 'videos_embed' }, value)" />
       </div>
       <AdminUploadingSection class="mt10"
@@ -142,7 +143,7 @@ export default defineComponent({
           return AdminEditSelect
         case item.data_type == 'str' && item.field?.includes('text'):
           return AdminEditTextarea
-        case item.data_type == 'str':
+        case item.data_type == 'str' || item.data_type == 'int':
           return AdminEditInput
       }
     }

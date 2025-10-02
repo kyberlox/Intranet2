@@ -309,7 +309,9 @@ class Editor:
 
                 # если поле нередактируемое
                 if field["field"] in self.notEditble:
-                        field["disabled"] = True
+                    print(123)
+                    field["disabled"] = True
+            print("после условий где disabled")
             
         need_del = False 
         indx = None
@@ -338,7 +340,6 @@ class Editor:
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
-                
                 #Пропишу тут дамп шаблонов статей разделов
                 self.section_id = sec["id"]
                 #Собрать шаблон

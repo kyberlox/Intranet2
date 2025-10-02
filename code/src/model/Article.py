@@ -1688,7 +1688,7 @@ class Article:
 
     def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 9, 53, 51] #111
+            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 53, 51] #111
             page_view = []
 
             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -1696,8 +1696,8 @@ class Article:
             for page in main_page: # проходимся по каждой секции
                 sec = self.main_page(page, user_id)
                 page_view.append(sec) 
-            page_view[-3]['content'] = [page_view[-2], page_view[-1]]
-            del page_view[-2:]
+            # page_view[-3]['content'] = [page_view[-2], page_view[-1]]
+            # del page_view[-2:]
 
             return page_view
         
@@ -1852,7 +1852,7 @@ class Article:
                 img_new_workers.append(user)
             new_workers_view = {
                 'id': section_id,
-                'type': 'singleBlock',
+                'type': 'swiper',
                 'title': 'Новые сотрудники',
                 'images': img_new_workers,
                 'href': 'newWorkers',
@@ -1872,7 +1872,7 @@ class Article:
 
             birthday = {
                 'id': section_id,
-                'type': 'singleBlock',
+                'type': 'swiper',
                 'title': 'С днем рождения!',
                 'images': images_for_bday,
                 'href': 'birthdays',
@@ -1903,7 +1903,7 @@ class Article:
             image_URL = self.get_preview()
             second_page = {
                 'id': section_id, 
-                'type': 'singleBlock', 
+                'type': 'swiper', 
                 'title': 'Организационное развитие', 
                 "href": "corpNews", 
                 'images': [{'id': news_id, 'image': image_URL}]
@@ -1914,7 +1914,7 @@ class Article:
         elif section_id == 4:
             idea_block = {
                 'id': 4,
-                'type': 'singleBlock',
+                'type': 'swiper',
                 'title': 'Предложить идею',
                 'images': [{
                     "id": 1,
@@ -1949,7 +1949,7 @@ class Article:
                     images.append(art_img)
             second_page = {
                 "id": 7,
-                "type": "singleBlock",
+                "type": "swiper",
                 "title": "Конкурсы ЭМК",
                 "images": images
             }
@@ -1994,7 +1994,7 @@ class Article:
 
             second_page = {
                 'id': section_id,
-                'type': 'fullRowBlock',
+                'type': 'section',
                 'title': 'Бизнес-новости',
                 'href': 'actualArticle',
                 'sectionId': 'actualNews',
@@ -2047,7 +2047,7 @@ class Article:
 
             second_page = {
                 'id': section_id,
-                'type': 'fullRowBlock',
+                'type': 'section',
                 'title': 'Видеоинтервью',
                 'href': 'videoInterview',
                 'sectionId': 'videoInterviews',
@@ -2100,7 +2100,7 @@ class Article:
 
             second_page = {
                 'id': section_id,
-                'type': 'fullRowBlock',
+                'type': 'section',
                 'title': 'Видеорепортажи',
                 'href': 'videoReport',
                 'sectionId': 'videoReports',
@@ -2134,14 +2134,14 @@ class Article:
             second_page['images'] = video_news
             return second_page
 
-        # микс
-        elif section_id == 9:
-            second_page = {
-                "id": 9,
-                "type": "mixedRowBlock",
-                "content": []
-            }
-            return second_page
+        # # микс
+        # elif section_id == 9:
+        #     second_page = {
+        #         "id": 9,
+        #         "type": "mixedRowBlock",
+        #         "content": []
+        #     }
+        #     return second_page
 
         # Афиша
         elif section_id == 53:
@@ -2158,7 +2158,8 @@ class Article:
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
             afisha = {
-                'type': "singleBlock",
+                "id": 53,
+                'type': "swiper",
                 'title': "Афиша",
                 'href': 'eventAnnounces',
                 'images': []
@@ -2203,8 +2204,8 @@ class Article:
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
             corpevents = {
-                'id': section_id,
-                'type': "fullRowBlock",
+                'id': 51,
+                'type': "section",
                 'title': "Корпоративные события",
                 'href': 'corpEvent',
                 'sectionId': 'corpEvents',

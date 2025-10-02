@@ -1,1155 +1,1355 @@
 {
-  "13": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
+    "13": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "14": {
+        "fields": [
+            {
+                "name": "ID \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f",
+                "field": "uuid",
+                "data_type": "search_by_uuid"
+            },
+            {
+                "name": "\u0413\u043e\u0434",
+                "field": "year",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u043e\u043b\u0436\u043d\u043e\u0441\u0442\u044c",
+                "field": "position",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041f\u043e\u0434\u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d\u0438\u0435",
+                "field": "department",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041d\u0430\u0433\u0440\u0430\u0434\u0430",
+                "field": "award",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041b\u043e\u043a\u0430\u0446\u0438\u044f",
+                "field": "location",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "15": {
+        "fields": [
+            {
+                "name": "\u0421\u0441\u044b\u043b\u043a\u0430",
+                "field": "link",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a",
+                "field": "TITLE",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041f\u0440\u0435\u0434\u043f\u0440\u0438\u044f\u0442\u0438\u0435",
+                "field": "company",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0430\u0432\u0442\u043e\u0440\u0430",
+                "field": "author_uuid",
+                "data_type": "search_by_uuid"
+            },
+            {
+                "name": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 YouTube",
+                "field": "youtube_link",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {
+            "images": []
+        }
+    },
+    "16": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "18": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "22": {
+        "fields": [],
+        "files": {}
+    },
+    "31": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "32": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "34": {
+        "fields": [
+            {
+                "name": "\u0413\u043e\u0434",
+                "field": "year",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0424\u043e\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u044f (URL)",
+                "field": "photo_file_url",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {
+            "images": [],
+            "documentation": []
+        }
+    },
+    "41": {
+        "fields": [
+            {
+                "name": "\u0420\u0435\u043f\u043e\u0440\u0442\u0430\u0436\u0438",
+                "field": "reports",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "42": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "51": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "52": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "53": {
+        "fields": [
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f",
+                "field": "date_to",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043d\u0430\u0447\u0430\u043b\u0430",
+                "field": "date_from",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "54": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "55": {
+        "fields": [
+            {
+                "name": "\u0422\u0435\u043c\u0430",
+                "field": "theme",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0442\u043e\u0440",
+                "field": "organizer",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041d\u043e\u043c\u0435\u0440 \u0442\u0435\u043b\u0435\u0444\u043e\u043d\u0430",
+                "field": "phone_number",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "56": {
+        "fields": [
+            {
+                "name": "\u0420\u0430\u0437\u043c\u0435\u0440 s",
+                "field": "s",
+                "data_type": "int"
+            },
+            {
+                "name": "\u0420\u0430\u0437\u043c\u0435\u0440 m",
+                "field": "m",
+                "data_type": "int"
+            },
+            {
+                "name": "\u0420\u0430\u0437\u043c\u0435\u0440 l",
+                "field": "l",
+                "data_type": "int"
+            },
+            {
+                "name": "\u0420\u0430\u0437\u043c\u0435\u0440 xl",
+                "field": "xl",
+                "data_type": "int"
+            },
+            {
+                "name": "\u0420\u0430\u0437\u043c\u0435\u0440 xxl",
+                "field": "xxl",
+                "data_type": "int"
+            },
+            {
+                "name": "\u0411\u0435\u0437\u0440\u0430\u0437\u043c\u0435\u0440\u043d\u044b\u0439",
+                "field": "no_size",
+                "data_type": "int"
+            },
+            {
+                "name": "\u0426\u0435\u043d\u0430",
+                "field": "price",
+                "data_type": "int"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {
+            "images": []
+        }
+    },
+    "110": {
+        "fields": [],
+        "files": {}
+    },
+    "111": {
+        "fields": [
+            {
+                "name": "\u0421\u0441\u044b\u043b\u043a\u0430",
+                "field": "link",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "172": {
+        "fields": [
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
+    },
+    "175": {
+        "fields": [
+            {
+                "name": "\u041f\u043e\u0434\u0440\u0430\u0437\u0434\u0435\u043b",
+                "field": "subsection",
+                "data_type": "str"
+            },
+            {
+                "name": "ID",
+                "field": "id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u0410\u043a\u0442\u0438\u0432\u043d\u0430",
+                "field": "active",
+                "data_type": "str",
+                "value": false,
+                "values": [
+                    true,
+                    false
+                ]
+            },
+            {
+                "name": "\u0421\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0435",
+                "field": "content_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u0438",
+                "field": "date_publiction",
+                "data_type": "str"
+            },
+            {
+                "name": "ID \u0440\u0430\u0437\u0434\u0435\u043b\u0430",
+                "field": "section_id",
+                "data_type": "str",
+                "disabled": true
+            },
+            {
+                "name": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0441\u0442\u0430\u0442\u044c\u0438",
+                "field": "name",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0410\u043d\u043d\u043e\u0442\u0430\u0446\u0438\u044f",
+                "field": "preview_text",
+                "data_type": "str"
+            },
+            {
+                "name": "\u0422\u0438\u043f \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f",
+                "field": "content_type",
+                "data_type": "str",
+                "values": [
+                    "HTML",
+                    "Markdown",
+                    null
+                ],
+                "disabled": true
+            },
+            {
+                "name": "\u0414\u0430\u0442\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                "field": "date_creation",
+                "data_type": "str",
+                "disabled": true
+            }
+        ],
+        "files": {}
     }
-  },
-  "14": {
-    "fields": [
-      {
-        "name": "ID пользователя",
-        "field": "uuid",
-        "data_type": "search_by_uuid"
-      },
-      {
-        "name": "год",
-        "field": "year",
-        "data_type": "str"
-      },
-      {
-        "name": "Должность",
-        "field": "position",
-        "data_type": "str"
-      },
-      {
-        "name": "Подразделение",
-        "field": "department",
-        "data_type": "str"
-      },
-      {
-        "name": "Награда",
-        "field": "award",
-        "data_type": "str"
-      },
-      {
-        "name": "Локация",
-        "field": "location",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {}
-  },
-  "15": {
-    "fields": [
-      {
-        "name": "Ссылка",
-        "field": "link",
-        "data_type": "str"
-      },
-      {
-        "name": "Заголовок",
-        "field": "TITLE",
-        "data_type": "str"
-      },
-      {
-        "name": "Предприятие",
-        "field": "company",
-        "data_type": "str"
-      },
-      {
-        "name": "ID автора",
-        "field": "author_uuid",
-        "data_type": "search_by_uuid"
-      },
-      {
-        "name": "Ссылка на YouTube",
-        "field": "youtube_link",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "documentation": [],
-      "videos_embed": [],
-      "images": []
-    }
-  },
-  "16": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": [],
-      "videos_native": []
-    }
-  },
-  "18": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": [],
-      "documentation": []
-    }
-  },
-  "22": {
-    "fields": [],
-    "files": {}
-  },
-  "31": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "videos_native": [],
-      "images": [],
-      "videos_embed": [],
-      "documentation": []
-    }
-  },
-  "32": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
-    }
-  },
-  "34": {
-    "fields": [
-      {
-        "name": "год",
-        "field": "year",
-        "data_type": "str"
-      },
-      {
-        "name": "Фотография (URL)",
-        "field": "photo_file_url",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": [],
-      "documentation": []
-    }
-  },
-  "41": {
-    "fields": [
-      {
-        "name": "Репортажи",
-        "field": "reports",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
-    }
-  },
-  "42": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": [],
-      "videos_embed": []
-    }
-  },
-  "51": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": [],
-      "videos_embed": [],
-      "documentation": []
-    }
-  },
-  "52": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": [],
-      "videos_embed": []
-    }
-  },
-  "53": {
-    "fields": [
-      {
-        "name": "Дата окончания",
-        "field": "date_to",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата начала",
-        "field": "date_from",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
-    }
-  },
-  "54": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
-    }
-  },
-  "55": {
-    "fields": [
-      {
-        "name": "Тема",
-        "field": "theme",
-        "data_type": "str"
-      },
-      {
-        "name": "Организатор",
-        "field": "organizer",
-        "data_type": "str"
-      },
-      {
-        "name": "Номер телефона",
-        "field": "phone_number",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
-    }
-  },
-  "56": {
-    "fields": [
-      {
-        "name": "Размер s",
-        "field": "s",
-        "data_type": "int"
-      },
-      {
-        "name": "Размер m",
-        "field": "m",
-        "data_type": "int"
-      },
-      {
-        "name": "Размер l",
-        "field": "l",
-        "data_type": "int"
-      },
-      {
-        "name": "Размер xl",
-        "field": "xl",
-        "data_type": "int"
-      },
-      {
-        "name": "Размер xxl",
-        "field": "xxl",
-        "data_type": "int"
-      },
-      {
-        "name": "Безразмерный",
-        "field": "no_size",
-        "data_type": "int"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "images": []
-    }
-  },
-  "110": {
-    "fields": [],
-    "files": {}
-  },
-  "111": {
-    "fields": [
-      {
-        "name": "Ссылка",
-        "field": "link",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {}
-  },
-  "172": {
-    "fields": [
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {}
-  },
-  "175": {
-    "fields": [
-      {
-        "name": "Подраздел",
-        "field": "subsection",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str"
-      },
-      {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "ID раздела",
-        "field": "section_id",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Тип форматирования",
-        "field": "content_type",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата создания",
-        "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      }
-    ],
-    "files": {
-      "videos_native": [],
-      "documentation": [],
-      "videos_embed": []
-    }
-  }
 }

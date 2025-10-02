@@ -15,7 +15,7 @@ export interface IConductedTrainings {
         {
             fio?: string,
             image?: string | null,
-            work_position?: string
+            position?: string
         }[],
     },
     id: number,

@@ -31,6 +31,8 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 getBlogAuthorsToStore();
             break;
         case 'calendar':
+            console.log(useViewsDataStore().getData('calendarData').length);
+            
             if (!useViewsDataStore().getData('calendarData').length) {
                 const currentYear = new Date().getFullYear();
                 Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)

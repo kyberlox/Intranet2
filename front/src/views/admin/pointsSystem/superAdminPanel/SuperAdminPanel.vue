@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 
-import EditTable from './components/PointsEditTable.vue';
+import EditTable from './components/EditTable.vue';
 export default defineComponent({
     components: {
         EditTable

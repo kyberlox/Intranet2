@@ -45,6 +45,8 @@
     text-decoration: none;
     cursor: pointer;
     font-weight: 600;
+    display: flex;
+    align-items: center;
 
     &:hover {
         background-color: #ef7f1b;

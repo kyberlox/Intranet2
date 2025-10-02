@@ -57,7 +57,6 @@ export default defineComponent({
             if (isLogin.value) {
                 const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
                 const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
-                prefetchSection('calendar');
 
                 if (blogsRoutes.includes(String(route.name))) {
                     prefetchSection('blogs')
@@ -71,6 +70,7 @@ export default defineComponent({
             userData.initKeyFromStorage();
             prefetchSection('user');
             prefetchSection('score');
+            prefetchSection('calendar');
         })
 
         return {

@@ -1,64 +1,69 @@
 <template>
 <div class="mt20">
-    <h2 class="page__title">Обратная связь: Есть идея!</h2>
-    <div class="page__description"
-         v-html="greetings"></div>
-    <div class="col-sm-6 mt20">
-        <VForm class="form-floating idea-new__form-floating idea-new__form mb-3"
-               ref="formRef"
-               @submit="sendIdea">
+    <h1 class="page__title">Обратная связь: Есть идея!</h1>
+    <div class="idea-new">
+        <div class="idea-new__form-container">
+            <div v-html="greetings"></div>
+            <VForm class="idea-new__form"
+                   ref="formRef"
+                   @submit="sendIdea">
 
-            <!-- Поле темы -->
-            <div class="idea-new__form__invalid-feedback__wrapper">
-                <ErrorMessage name="themeField"
-                              class="idea-new__form__invalid-feedback" />
-            </div>
-            <div class="form-floating idea-new__form-floating">
-                <Field class="form-control"
-                       name="themeField"
-                       :rules="isRequired"
-                       type="text"
-                       v-model="messageTheme"
-                       placeholder="Тема" />
-                <label for="themeField">Тема</label>
-            </div>
+                <div class="idea-new__field-group">
+                    <div class="idea-new__error-wrapper">
+                        <ErrorMessage name="themeField"
+                                      class="idea-new__error-message" />
+                    </div>
+                    <div class="idea-new__input-group">
+                        <Field class="idea-new__input"
+                               name="themeField"
+                               :rules="isRequired"
+                               type="text"
+                               v-model="messageTheme"
+                               placeholder=" " />
+                        <label for="themeField"
+                               class="idea-new__input__label">Тема</label>
+                    </div>
+                </div>
 
-            <!-- Поле сообщения -->
-            <div class="idea-new__form__invalid-feedback__wrapper">
-                <ErrorMessage name="textField"
-                              class="idea-new__form__invalid-feedback" />
-            </div>
-            <div class="form-floating idea-new__form-floating">
-                <Field as="textarea"
-                       class="form-control idea-new__textarea"
-                       name="textField"
-                       :rules="isRequired"
-                       rows="8"
-                       placeholder="Добавьте сообщение"
-                       v-model="messageText" />
-                <label for="textField">Сообщение</label>
-            </div>
+                <div class="idea-new__field-group">
+                    <div class="idea-new__error-wrapper">
+                        <ErrorMessage name="textField"
+                                      class="idea-new__error-message" />
+                    </div>
+                    <div class="idea-new__input-group">
+                        <Field as="textarea"
+                               class="idea-new__input idea-new__textarea"
+                               name="textField"
+                               :rules="isRequired"
+                               rows="8"
+                               placeholder=" "
+                               v-model="messageText" />
+                        <label for="textField"
+                               class="idea-new__input__label">Сообщение</label>
+                    </div>
+                </div>
 
-            <!-- Поле файла -->
-            <div class="">
-                <label for="formFile"
-                       class="form-label">Добавить файл</label>
-                <input class="form-control"
-                       name="attachments-files"
-                       ref="fileInput"
-                       type="file"
-                       @change="handleMessageFileLoad">
-            </div>
+                <div class="idea-new__file-group">
+                    <label for="formFile"
+                           class="idea-new__file-label">Добавить файл</label>
+                    <input class="idea-new__file-input"
+                           name="attachments-files"
+                           ref="fileInput"
+                           type="file"
+                           @change="handleMessageFileLoad">
+                </div>
 
-            <!-- Кнопка отправки -->
-            <div class="mb-3 mt20">
-                <button :class="{ 'primary-button--disabled': buttonsIsDisabled }"
-                        :disabled="buttonsIsDisabled"
-                        class="primary-button">
-                    Отправить
-                </button>
-            </div>
-        </VForm>
+                <div class="idea-new__submit-group">
+                    <button :class="{
+                        'primary-button--disabled': buttonsIsDisabled,
+                        'primary-button': true
+                    }"
+                            :disabled="buttonsIsDisabled">
+                        Отправить
+                    </button>
+                </div>
+            </VForm>
+        </div>
     </div>
 </div>
 </template>

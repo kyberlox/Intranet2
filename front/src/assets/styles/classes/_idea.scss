@@ -1,5 +1,4 @@
 .idea {
-
     &__table {
         transition: 0.2ms;
         cursor: pointer;
@@ -11,40 +10,8 @@
         }
     }
 
-    &-new {
-        &__form {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-
-            .invalid-feedback {
-                display: block;
-                width: 100%;
-                font-size: 0.875em;
-                color: #dc3545;
-                min-height: 21px;
-
-                &__wrapper {
-                    min-height: 21px;
-                }
-            }
-
-            &-floating {
-                &>.form-control:focus {
-                    padding: 1rem 0.75rem !important;
-                }
-
-                &>label {
-                    opacity: 0.6;
-                }
-            }
-        }
-    }
-
     &__modal {
-
         &>.modal__wrapper {
-
             padding: 20px;
 
             &>.modal__body {

@@ -21,7 +21,9 @@
             <a class="activity-edit__add-btn primary-button"
                role="button"
                tabindex="0"
-               @click="addNewModalVisible = true">Добавить </a>
+               @click="addNewModalVisible = true">
+                Добавить
+            </a>
         </div>
     </div>
     <AddNewEntinyModal v-if="addNewModalVisible"

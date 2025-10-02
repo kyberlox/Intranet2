@@ -1,7 +1,9 @@
 <template>
 <div class="mt20">
     <div v-if="pageTitle"
-         class="page__title">{{ pageTitle }}</div>
+         class="page__title">
+        {{ pageTitle }}
+    </div>
     <PostInner :id="id == undefined ? undefined : String(id)"
                :type="type"
                :previewElement="pageTitle == 'Экскурсии' ? excursions : undefined" />

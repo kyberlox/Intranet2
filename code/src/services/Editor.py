@@ -531,7 +531,7 @@ class Editor:
 
         # вытащить файлы
         self.art_id = int(self.art_id)
-        got_files=self.get_files()
+        files=self.get_files()
 
         '''
         need_del = []

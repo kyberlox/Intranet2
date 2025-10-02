@@ -371,6 +371,7 @@ class File:
         if files_data is not None and files_data != []:
             for file_data in files_data:
                 #удалить по id файла
+                print(f"удаляю файл {self.id}")
                 self.id = file_data['id']
                 FileModel(id = self.id).remove()
 

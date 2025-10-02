@@ -155,7 +155,7 @@ class PeerUserModel:
         database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_activity = database.query(self.Activities).get(self.activities_id)
+                existing_activity = database.query(Activities).get(self.activities_id)
                 if existing_activity:
                     users_with_activity = database.query(self.Roots).filter(
                         self.Roots.root_token['PeerCurator'].contains([self.activities_id])

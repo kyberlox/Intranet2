@@ -750,7 +750,7 @@ class Editor:
                     result[field] = user_info['indirect_data']['uf_department']
                 elif field == "photo_file_url":
                     if "photo_file_url" not in user_info or user_info["photo_file_url"] == None:
-                        photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
+                        photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         photo = user_info["photo_file_url"]
                         photo_replace = photo.replace("user_files", "compress_image/user")

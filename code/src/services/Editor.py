@@ -548,11 +548,11 @@ class Editor:
                 #вписываем
         '''
         need_del = []
-        for f in got_files.keys():
-            if got_files[f] == [] and self.get_pattern()["files"].get(f) is None:
+        for f in files.keys():
+            if files[f] == [] and self.get_pattern()["files"].get(f) is None:
                 need_del.append(f)
         for f in need_del:
-            got_files.pop(f)
+            files.pop(f)
 
 
 

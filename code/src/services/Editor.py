@@ -559,8 +559,6 @@ class Editor:
         # вывести
         return {"fields" : result_fields, "files" : files}
 
-
-
     def pre_add(self, ):
         #Получаю поля паттерна       
         fields = self.pattern["fields"]
@@ -739,6 +737,38 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
+    def get_user_info(self, user_id):
+        result = {}
+        fields_to_return = {"14": ["work_position", "department", "photo_file_url"], "15": ["photo_file_url"], "172": ["name", "second_name", "last_name", "work_position", "photo_file_url"]}
+        user_info = User(id=user_id).search_by_id()
+        if str(self.section_id) in fields_to_return.keys():
+            fields = fields_to_return[str(self.section_id)]
+            for field in fields:
+                if field == "work_position":
+                    result['position'] = user_info['indirect_data'][field]
+                elif field == "department":
+                    result[field] = user_info['indirect_data']['uf_department']
+                elif field == "photo_file_url":
+                    if "photo_file_url" not in user_info or user_info["photo_file_url"] == None:
+                        photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
+                    else:
+                        photo = user_info["photo_file_url"]
+                        photo_replace = photo.replace("user_files", "compress_image/user")
+                    photo_file_url = photo_replace
+                    result[field] = photo_file_url
+                else:
+                    result[field] = user_info[field]
+        result['user_id'] = user_id
+        result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
+        result.pop('name')
+        result.pop('second_name')
+        result.pop('last_name')
+        return result
+
+
+@editor_router.get("/get_user_info/{section_id}/{user_id}")
+def get_user_info(section_id : int, user_id: int):
+    return Editor(section_id = section_id).get_user_info(user_id)
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")

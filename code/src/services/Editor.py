@@ -502,61 +502,62 @@ class Editor:
 
                 #загрузил
                 field.append(fl)
-        
+
+        got_fields = field
+
         #photo_file_url нужен только там, где он есть
         # for f, i in enumerate(field):
         #     if field["field"] == "photo_file_url" and field["value"] is None:
         #         field.pop(i)
 
-        
+
+
+        #заполнить роля по шаблону
+        result_fields = []
+        for need_field in self.get_pattern()["fields"]:
+            has_added = False
+            for got_field in got_fields:
+            
+                #если такое поле есть среди заполненных
+                if need_field["field"] == got_field["field"]:
+                    #вписываем
+                    result_fields.append(got_field)
+                    has_added = True
+            #если среди заполненных нет - вписать из шаблона
+            if not has_added:
+                result_fields.append(need_field)
+
+
 
         # вытащить файлы
         self.art_id = int(self.art_id)
         files=self.get_files()
 
+        '''
+        need_del = []
+        for f in got_files.keys():
+            if got_files[f] == []:
+                need_del.append(f)
+        for f in need_del:
+            got_files.pop(f)
+
+        #заполнить файлы по шаблону
+        for need_files in self.get_pattern()["files"].keys():
+            #если есть файлы
+            if got_files.get(need_files) is not None:
+                #вписываем
+        '''
         need_del = []
         for f in files.keys():
-            if files[f] == []:
+            if files[f] == [] and self.get_pattern()["files"].get(f) is None:
                 need_del.append(f)
         for f in need_del:
             files.pop(f)
-        
 
 
-        may_be_added = []
-        #получить формат данных
-        fast_format = self.get_fast_format()
-        
-        #беру список текущих полей
-        cus_fields = []
-        for cur_field in field:
-            cus_fields.append(cur_field['field'])
-        
-        #беру список полей раздела
-        need_add_fields = []
-        for need_add_field in fast_format["fields"]:
-            need_add_fields.append(need_add_field['field'])
-        
-        #сравнить
-        print(cus_fields)
-        print(need_add_fields)
-        need_add = []
-        for need_add_field in need_add_fields:
-            if need_add_field not in cus_fields:
-                #определить нехватающие
-                need_add.append(need_add_field)
-        
-        #добавить нехватающие
-        #беру список полей раздела
-        need_add_fields = []
-        for need_add_field in fast_format["fields"]:
-            if need_add_field['field'] in need_add:
-                may_be_added.append(need_add_field)
-
-        
 
         # вывести
-        return {"fields" : field, "files" : files, "may_be_added" : may_be_added}
+        return {"fields" : result_fields, "files" : files}
 
 
 

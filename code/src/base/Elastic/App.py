@@ -279,8 +279,10 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                     res_info["_source"]["section_id"])
                 art_info['sectionHref'] = section_href
                 art_info['id'] = int(res_info["_id"])
-                if "authorId" in res_info["_source"].keys():
+                if "authorId" in res_info["_source"].keys() and res_info["_source"]["authorId"] is not None:
                     art_info['authorId'] = res_info["_source"]["authorId"]
+                elif "company" in res_info["_source"].keys() and res_info["_source"]["company"] is not None:
+                    art_info['authorId'] = res_info["_source"]['company']
                 art_info['image'] = res_info["_source"]["preview_photo"]
                 art_info['coincident'] = res_info['highlight']
                 articles.append(art_info)

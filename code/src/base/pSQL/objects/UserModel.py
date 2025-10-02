@@ -473,7 +473,7 @@ class UserModel:
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
-                    # user_image = File(user['photo_file_id']).get_users_photo()
+                    user_image = File(user['photo_file_id']).get_users_photo()
                     user_info['id'] = user['id']
                     if user['second_name'] == '' or user['second_name'] is None:
                         user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
@@ -484,7 +484,7 @@ class UserModel:
                     if "uf_usr_department_main" in indirect_data:
                         dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                         user_info['uf_usr_department_main'] = dedep[0].name
-                    # user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
+                    user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
                     
                     normal_list.append(user_info)
         self.db.close()
@@ -535,6 +535,7 @@ class UserModel:
         self.db.close()
         return users
     
+
 
     """
     def put_uf_depart(self, usr_dep):

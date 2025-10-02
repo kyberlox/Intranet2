@@ -236,6 +236,12 @@ def elastic_search(keyword: str):
     from ..base.Elastic.UserSearchModel import UserSearchModel
     return UserSearchModel().elasticsearch_users(key_word=keyword)
 
+# поиск по статьям еластик
+@users_router.get("/search/full_search_users_for_editor/{keyword}/{size_res}")
+def elastic_search(keyword: str, size_res: int):
+    from ..base.Elastic.UserSearchModel import UserSearchModel
+    return UserSearchModel().elasticsearch_users(key_word=keyword, size_res=size_res)
+
 @users_router.get("/test_update_photo")
 def test_update_photo():
     return User().set_users_photo()

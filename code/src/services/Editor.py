@@ -338,7 +338,6 @@ class Editor:
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
-
                 self.section_id = sec["id"]
                 #Отдельно вручную укажу правильный шаблон для 56 Магазина Мерча
                 if sec["id"] == 56:

@@ -460,21 +460,24 @@ class PeerUserModel:
         database = next(db_gen)
         if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
             user_history = database.query(PeerHistory).filter(PeerHistory.user_uuid == roots['user_id'], PeerHistory.info_type == 'activity').all()
+            activity_history = []
             if user_history:
-                user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == active.user_to).first()
-                user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
-                activity_history = [{
-                    "id": active.id,
-                    "date_time": active.date_time,
-                    "user_to": active.user_to,
-                    "user_to_fio": user_fio,
-                    "active_info": active.active_info,
-                    "active_coast": active.active_coast
-                } for active in user_history] 
-                # database.close()
+                for active in user_history:
+                    user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == active.user_to).first()
+                    user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
+                    info = {
+                        "id": active.id,
+                        "date_time": active.date_time,
+                        "user_to": active.user_to,
+                        "user_to_fio": user_fio,
+                        "active_info": active.active_info,
+                        "active_coast": active.active_coast
+                    } 
+                    # database.close()
+                    activity_history.append(info)
                 return activity_history
             else:
-                return []
+                return activity_history
         else:
             return LogsMaker().warning_message(f"Недостаточно прав")
     

@@ -77,24 +77,22 @@ class ActiveUsersModel:
                 activities_list.append(part)
 
             for activity in actions_for_all:
-                part = {"value": activity.id, "name": activity.name}
+                part = {"value": activity.id, "name": activity.name, "likes_left": likes_left}
                 activities_list.append(part)
             # сюда добавить обработку
             
             # database.close()
             return {
-                "likes_left": likes_left,
                 "activities": activities_list
             }
         else:
             
             activities_list = [
-                {"value": activity.id, "name": activity.name}
+                {"value": activity.id, "name": activity.name, "likes_left": likes_left}
                 for activity in actions_for_all
             ]
             # database.close()
             return {
-                "likes_left": likes_left,
                 "activities": activities_list
             }
 

@@ -281,6 +281,8 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                 art_info['id'] = int(res_info["_id"])
                 if "authorId" in res_info["_source"].keys():
                     art_info['authorId'] = res_info["_source"]["authorId"]
+                elif "company" in res_info["_source"].keys() and res_info["_source"]["company"] is not None:
+                    art_info['authorId'] = res_info["_source"]['company']
                 art_info['image'] = res_info["_source"]["preview_photo"]
                 art_info['coincident'] = res_info['highlight']
                 articles.append(art_info)

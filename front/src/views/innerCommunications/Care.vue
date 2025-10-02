@@ -1,16 +1,16 @@
 <template>
-    <div class="page__title mt20">Благотворительные проекты</div>
-    <div v-if="careSlides.length"
-         class="care__section">
-        <div v-for="(item, index) in careSlides"
-             :key="'safe' + index"
-             class="vertical__card__wrapper">
-            <VerticalCard :card="item"
-                          :page="'care'"
-                          :modifiers="['needLogo']"
-                          :routeTo='"carePost"' />
-        </div>
+<div class="page__title mt20">Благотворительные проекты</div>
+<div v-if="careSlides.length"
+     class="care__section">
+    <div v-for="(item, index) in careSlides"
+         :key="'safe' + index"
+         class="vertical-card__wrapper">
+        <VerticalCard :card="item"
+                      :page="'care'"
+                      :modifiers="['needLogo']"
+                      :routeTo='"carePost"' />
     </div>
+</div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, computed, type ComputedRef } from "vue";

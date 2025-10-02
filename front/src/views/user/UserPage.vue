@@ -176,6 +176,8 @@ export default defineComponent({
         const senderId = computed(() => useUserData().getMyId);
 
         const sendPoints = (comment: string, activityId: number) => {
+            console.log('d');
+
             const sendingData: IPointsForm = { "uuid_from": senderId.value, "uuid_to": Number(props.id), "activities_id": activityId, "description": comment };
             Api.put('peer/send_points', sendingData)
                 .catch((error) => handleApiError(error, toast))

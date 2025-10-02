@@ -3,20 +3,19 @@
     <div v-if="mainPageCards.length"
          class="homeview__grid">
         <div v-for="item in mainPageCards"
-             :class="[{ 'homeview__grid__card--fullRowBlock': item.type == 'fullRowBlock' }, { 'homeview__grid__card--singleBlock': item.type == 'swiper' }]"
+             :class="[{ 'homeview__grid__card--section': item.type == 'section' }, { 'homeview__grid__card--swiper': item.type == 'swiper' }]"
              :key="item.id">
             <!-- Для слайдеров в одну ячейку -->
             <MainPageSoloBlock v-if="item.type == 'swiper'"
                                :card="item" />
 
             <!-- Для отдельных постов в одну строку -->
-            <div class="homeview__grid"
-                 v-else-if="item.type == 'fullRowBlock'">
-
+            <div class="homeview__grid homeview__grid__rows"
+                 v-else-if="item.type == 'section'">
                 <MainPageRowBlocks v-for="(block, index) in item.images"
                                    :card="block"
                                    :href="item.href"
-                                   :key="index + 'fullrowblock'">
+                                   :key="index + 'section'">
                     <RouterLink :to="{ name: item.sectionId }"
                                 class="homeview__grid__card__group-title">
                         {{ item.title }}
@@ -38,10 +37,8 @@ import type { MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
-import { watch } from "vue";
-import { useLoadingStore } from "@/stores/loadingStore";
 import SampleGallerySkeleton from "@/components/tools/gallery/sample/SampleGallerySkeleton.vue";
-import { homeslug } from "@/assets/static/home";
+
 export default defineComponent({
     name: "main-page",
     components: {
@@ -51,7 +48,6 @@ export default defineComponent({
     },
     setup() {
         const useViewsData = useViewsDataStore();
-        const loadingStore = useLoadingStore();
 
         const mainPageCards: ComputedRef<MainPageCards> = computed(() => {
             const data = useViewsData.getData('homeData') as MainPageCards;
@@ -60,26 +56,14 @@ export default defineComponent({
 
         onBeforeMount(() => {
             if (mainPageCards.value.length) return;
-            // loadingStore.setLoadingStatus(true);
-            // Api.get(`article/find_by/${sectionTips['Главная']}`)
-            //     .then((data: MainPageCards) => {
-            //         const result = data;
-            //         if (!result) return;
-            //         result.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
-            //             if (item.type == 'fullRowBlock' && item.images.length > 4) {
-            //                 item.images.length = 4
-            //             }
-            //         });
-            //         useViewsData.setData(result, 'homeData');
-            //     })
-            useViewsData.setData(homeslug, 'homeData');
-        })
+            Api.get(`article/find_by/${sectionTips['Главная']}`)
+                .then((data: MainPageCards) => {
+                    const result = data;
+                    if (!result) return;
 
-        watch(mainPageCards, (newVal) => {
-            if (newVal && newVal.length) {
-                loadingStore.setLoadingStatus(false);
-            }
-        }, { immediate: true, deep: true })
+                    useViewsData.setData(result, 'homeData');
+                })
+        })
 
         return {
             mainPageCards

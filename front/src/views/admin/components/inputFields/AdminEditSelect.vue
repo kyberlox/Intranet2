@@ -7,7 +7,7 @@
             v-model="value">
         <option class="admin-element-inner__select-option"
                 v-for="(option, index) in item?.values"
-                :value="typeof option === 'string' || typeof option === 'boolean' ? option : option.id"
+                :value="(typeof option === 'string' || typeof option === 'boolean') ? option : option.value"
                 :key=index>
             {{ (typeof option === 'string' || typeof option === 'boolean' ? (yesOrNoFormat ?
                 renderOptionText(option) : option) : option.name) }}
@@ -21,7 +21,7 @@ import { defineComponent, onMounted, type PropType, ref } from 'vue';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
-    name: 'SelectComponent',
+    name: 'AdminEditSelect',
     props: {
         yesOrNoFormat: {
             type: Boolean,
@@ -33,7 +33,9 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const value = ref(props.item?.value);
+
         onMounted(() => emit('pick', value.value))
+
         return {
             value,
             renderOptionText: (text: boolean | string) => { return (String(text) == 'true' ? 'Да' : 'Нет') },

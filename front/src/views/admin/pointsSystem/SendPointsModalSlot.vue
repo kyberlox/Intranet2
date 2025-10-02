@@ -5,9 +5,10 @@
                          :yesOrNoFormat="false"
                          @pick="(value: string) => chosenActivity = value" />
         <AdminEditInput @pick="(value: string) => pointsComment = value"
-                        :placeholder="'Укажите комментарий'" />
+                        :item="{ name: 'Укажите комментарий' }"
+                        :placeholder="'...'" />
         <span class="send-points-form__warning"
-              v-if="chosenActivity == 0">
+              v-if="chosenActivity == 1">
             Осталось {{ usersActivities.likes_left }} отправлений по выбранной активности
         </span>
         <div class="send-points-form__buttons">
@@ -50,10 +51,13 @@ export default defineComponent({
 
         onMounted(() => {
             if (!usersActivities.value || !usersActivities.value.activities) return
-            selectValue.value = { value: usersActivities.value.activities[0].id ?? 0, values: usersActivities.value.activities }
+            selectValue.value = { name: 'Выберите активность', value: usersActivities.value.activities[0].id ?? 0, values: usersActivities.value.activities }
         })
 
         const handlePointsSend = () => {
+            console.log(pointsComment.value);
+            console.log(chosenActivity.value);
+
             if (!pointsComment.value || !chosenActivity.value) return;
             emit('sendPoints', pointsComment.value, chosenActivity.value)
         }

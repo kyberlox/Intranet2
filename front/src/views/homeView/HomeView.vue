@@ -59,7 +59,7 @@ export default defineComponent({
         });
 
         onBeforeMount(() => {
-            // if (mainPageCards.value.length) return;
+            if (mainPageCards.value.length) return;
             // loadingStore.setLoadingStatus(true);
             // Api.get(`article/find_by/${sectionTips['Главная']}`)
             //     .then((data: MainPageCards) => {

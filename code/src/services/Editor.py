@@ -515,7 +515,7 @@ class Editor:
         #заполнить роля по шаблону
         result_fields = []
         for need_field in self.get_pattern()["fields"]:
-            has_added = Flase
+            has_added = False
             for got_field in got_fields:
             
                 #если такое поле есть среди заполненных

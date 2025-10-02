@@ -70,8 +70,7 @@
       {
         "name": "ID пользователя",
         "field": "uuid",
-        "data_type": "search_by_uuid",
-        "disabled": true
+        "data_type": "search_by_uuid"
       },
       {
         "name": "Год",
@@ -181,8 +180,7 @@
       {
         "name": "ID автора",
         "field": "author_uuid",
-        "data_type": "search_by_uuid",
-        "disabled": true
+        "data_type": "search_by_uuid"
       },
       {
         "name": "Ссылка на YouTube",

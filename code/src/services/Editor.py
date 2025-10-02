@@ -744,7 +744,7 @@ class Editor:
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
             for field in fields:
-                if field == "work_position":
+                if field == "work_position" and field in user_info['indirect_data'].keys():
                     result['position'] = user_info['indirect_data'][field]
                 elif field == "department":
                     result[field] = user_info['indirect_data']['uf_department']
@@ -768,7 +768,7 @@ class Editor:
         #форматирование под нужды фронта
 
         #получаю статью
-        art = ArticleModel(id=self.art_id, section_id=self.section_id)
+        art = ArticleModel(id = self.art_id).find_by_id()
         print(art.__dict__)
         #вписываю в неё эти значения
         for key in result.keys():

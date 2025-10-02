@@ -418,13 +418,13 @@ class Editor:
                                 "name": "Дата создания",
                                 "field": "date_creation",
                                 "data_type": "str",
-                                "disabled": true
+                                "disabled": True
                             },
                             {
                                 "name": "Аннотация",
                                 "field": "preview_text",
                                 "data_type": "str",
-                                "disabled": true
+                                "disabled": True
                             } 
                         ],
                         "files": {

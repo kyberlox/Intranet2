@@ -769,7 +769,7 @@ class Editor:
 
         #получаю статью
         art = ArticleModel(id=self.art_id, section_id=self.section_id)
-        print(art)
+        print(art.__dict__)
         #вписываю в неё эти значения
         for key in result.keys():
             art.__dict__['indirect_data'][key] = result[key]

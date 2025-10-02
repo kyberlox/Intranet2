@@ -744,7 +744,7 @@ class Editor:
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
             for field in fields:
-                if field == "work_position":
+                if field == "position":
                     result['position'] = user_info['indirect_data'][field]
                 elif field == "department":
                     result[field] = user_info['indirect_data']['uf_department']

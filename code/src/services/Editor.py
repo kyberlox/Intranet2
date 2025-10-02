@@ -54,7 +54,7 @@ class Editor:
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
-        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172] :
+        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172, 56] :
                 self.notEditble.append("preview_text")
         if self.section_id in [41, 42, 111, 52] :
                 self.notEditble.append("content_text")
@@ -338,11 +338,105 @@ class Editor:
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_id:
-                
-                #Пропишу тут дамп шаблонов статей разделов
+
                 self.section_id = sec["id"]
-                #Собрать шаблон
-                Pattern = self.get_format()
+                #Отдельно вручную укажу правильный шаблон для 56 Магазина Мерча
+                if sec["id"] == 56:
+                    Pattern = {
+                        "fields": [
+                            {
+                                "name": "Размер s",
+                                "field": "s",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "Размер m",
+                                "field": "m",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "Размер l",
+                                "field": "l",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "Размер xl",
+                                "field": "xl",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "Размер xxl",
+                                "field": "xxl",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "Безразмерный",
+                                "field": "no_size",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "Цена",
+                                "field": "price",
+                                "data_type": "int"
+                            },
+                            {
+                                "name": "ID",
+                                "field": "id",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "Активна",
+                                "field": "active",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "Содержимое",
+                                "field": "content_text",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "Дата публикации",
+                                "field": "date_publiction",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "Название статьи",
+                                "field": "name",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "ID раздела",
+                                "field": "section_id",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "Тип форматирования",
+                                "field": "content_type",
+                                "data_type": "str"
+                            },
+                            {
+                                "name": "Дата создания",
+                                "field": "date_creation",
+                                "data_type": "str",
+                                "disabled": true
+                            },
+                            {
+                                "name": "Аннотация",
+                                "field": "preview_text",
+                                "data_type": "str",
+                                "disabled": true
+                            } 
+                        ],
+                        "files": {
+                            "images": []
+                        }
+                    }
+
+                # Шаблон собирается по скаченным из Интранета статьям
+                else:
+                    #Собрать шаблон
+                    Pattern = self.get_format()
+                
                 #записать паттерн
                 self.set_pattern(Pattern)
         

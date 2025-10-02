@@ -52,7 +52,7 @@
             </div>
             <div class="file-uploader__preview-item"
                  v-if="isUploading">
-                <Loader class="" />
+                <Loader />
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType } from 'vue';
+import { defineComponent, ref, watch, type PropType } from 'vue';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
 import DocIcon from '@/assets/icons/posts/DocIcon.svg?component';
 import { useFileUtil } from '@/composables/useFile';
@@ -107,7 +107,7 @@ export default defineComponent({
                     uploadedFiles.value.push(processResult as IFileToUpload);
                     isUploading.value = true;
                     emit('upload', processResult, props.uploadType);
-                    console.log(isUploading.value);
+                    startWatchForUpload();
                 }
             }
         };
@@ -133,6 +133,17 @@ export default defineComponent({
         const handleFormFileSelect = (e: Event) => {
             isUploading.value = true
             emit('upload', (useFile.handleFileSelect(e)))
+            startWatchForUpload();
+        }
+
+        const startWatchForUpload = () => {
+            const existFilesState = props.existFiles?.length;
+
+            watch((props), (newVal) => {
+                if (newVal.existFiles?.length !== existFilesState) {
+                    isUploading.value = false
+                }
+            }, { once: true })
         }
 
         return {
@@ -143,6 +154,7 @@ export default defineComponent({
             uploadProgress,
             error,
             useFile,
+            startWatchForUpload,
             handleDrop,
             handleDragOver,
             handleDragLeave,

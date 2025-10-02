@@ -1,6 +1,5 @@
 import type { IReaction } from "./IEntities";
 
-// Common image types
 export interface ImageWithHref {
   id: number;
   image: string;
@@ -20,10 +19,9 @@ export interface BlockImage {
   blockTitle?: string;
 }
 
-// Top-level blocks
 export interface SingleBlock {
   id: number;
-  type: "singleBlock";
+  type: "swiper";
   title: string;
   images: ImageWithHref[];
   href?: string;
@@ -32,45 +30,15 @@ export interface SingleBlock {
 
 export interface FullRowBlock {
   id: number;
-  type: "fullRowBlock";
+  type: "section";
   title: string;
   href?: string;
   images: BlockImage[];
   sectionId: string;
 }
 
-// Mixed row block content (discriminated union)
-export interface MixedRowSingleBlockContent {
-  id?: number;
-  type: "singleBlock";
-  title: string;
-  images: ImageWithHref[]; // only ImageWithHref for single-block content
-  href?: string;
-  modifiers?: string[];
-  blockTitle?: string;
-}
 
-export interface MixedRowFullRowBlockContent {
-  id?: number;
-  type: "fullRowBlock";
-  title: string;
-  images: BlockImage[]; 
-  href?: string;
-  sectionId?: string;
-  blockTitle?: string;
-}
-
-export type MixedRowBlockContent =
-  | MixedRowSingleBlockContent
-  | MixedRowFullRowBlockContent;
-
-export interface MixedRowBlock {
-  id: number;
-  type: "mixedRowBlock";
-  content: MixedRowBlockContent[];
-}
-
-export type MainPageBlock = SingleBlock | FullRowBlock | MixedRowBlock;
+export type MainPageBlock = SingleBlock | FullRowBlock ;
 export type MainPageCards = MainPageBlock[];
 
 export type IHomeViewSoloBlock = SingleBlock;

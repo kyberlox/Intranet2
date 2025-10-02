@@ -1640,6 +1640,8 @@ class Article:
         return art
 
     def delete(self):
+        #удалить файлы статьи
+        File(art_id = self.id).delete_by_art_id()
         return ArticleModel(id = self.id).remove()
 
     def get_preview(self):

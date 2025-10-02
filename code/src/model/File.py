@@ -366,6 +366,15 @@ class File:
 
             return file_list
 
+    def delete_by_art_id(self):
+        files_data = self.get_files_by_art_id()
+        if files_data is not None and files_data != []:
+            for file_data in files_data:
+                #удалить по id файла
+                self.id = ObjectId(file_data['id'])
+                FileModel(id = self.id).remove()
+
+
     def need_update_link(self):
         pass
 

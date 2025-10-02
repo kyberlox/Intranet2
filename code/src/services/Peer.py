@@ -221,12 +221,12 @@ def del_remove_activity(request: Request, id: str):
     uuid = get_uuid_from_request(request)
     return Peer(id=id, user_uuid=uuid).remove_activity()
 """"""
-@peer_router.post("/do_valid/{action_id}/{uuid_to}")
+@peer_router.post("/do_valid")
 def post_do_valid(request: Request, action_id: int, uuid_to: int):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).do_valid(action_id, uuid_to) 
 
-@peer_router.post("/do_not_valid/{action_id}")
+@peer_router.post("/do_not_valid")
 def post_do_not_valid(request: Request, action_id: int):
     uuid = get_uuid_from_request(request)
     return Peer(user_uuid=uuid).do_not_valid(action_id) 

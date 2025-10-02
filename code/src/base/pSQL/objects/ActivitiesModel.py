@@ -68,9 +68,10 @@ class ActivitiesModel:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 existing_activity = database.query(self.Activities).get(self.id)
                 if existing_activity:
+                    PeerUserModel(activities_id=existing_activity.id).delete_curators(roots)
                     database.delete(existing_activity)
                     database.commit()
-                    PeerUserModel(activities_id=existing_activity.id).delete_curators(roots)
+                    
                     return LogsMaker().info_message(f"Удаление активности c id = {self.id} звершено успешно")
                 else:
                     return LogsMaker().warning_message(f"Активности с id = {self.id} не существует!")

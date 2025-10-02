@@ -2,6 +2,8 @@ from sqlalchemy import text, update
 from sqlalchemy.sql.expression import func, select
 from sqlalchemy.orm import Session
 
+from bson.objectid import ObjectId
+
 from datetime import datetime
 
 
@@ -473,7 +475,7 @@ class UserModel:
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
-                    user_image = File(id = user['photo_file_id']).get_users_photo()
+                    user_image = File(id = ObjectId(user['photo_file_id'])).get_users_photo()
                     user_info['id'] = user['id']
                     if user['second_name'] == '' or user['second_name'] is None:
                         user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'

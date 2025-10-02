@@ -83,7 +83,7 @@ export const homeslug = [
     },
     {
         "id": 31,
-        "type": "fullRowBlock",
+        "type": "section",
         "title": "Бизнес-новости",
         "href": "actualArticle",
         "sectionId": "actualNews",
@@ -152,7 +152,7 @@ export const homeslug = [
     },
     {
         "id": 16,
-        "type": "fullRowBlock",
+        "type": "section",
         "title": "Видеоинтервью",
         "href": "videoInterview",
         "sectionId": "videoInterviews",
@@ -226,7 +226,7 @@ export const homeslug = [
     },
     {
         "id": 33,
-        "type": "fullRowBlock",
+        "type": "section",
         "title": "Видеорепортажи",
         "href": "videoReport",
         "sectionId": "videoReports",
@@ -316,7 +316,7 @@ export const homeslug = [
             },
             {
                 "id": 51,
-                "type": "fullRowBlock",
+                "type": "section",
                 "title": "Корпоративные события",
                 "href": "corpEvent",
                 "sectionId": "corpEvents",

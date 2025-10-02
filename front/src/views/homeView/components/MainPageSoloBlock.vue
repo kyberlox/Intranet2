@@ -1,34 +1,34 @@
 <template>
-    <div class="homeview__grid__card homeview__grid__card--soloblock d-flex flex-column">
-        <RouterLink :to="{ name: card.href }"
-                    class="homeview__grid__card__group-title">
-            {{ card.title }}
-        </RouterLink>
-        <div class="homeview__grid__card__image">
-            <swiper v-bind="sliderConfig"
-                    @swiper="swiperOn">
-                <swiper-slide v-if="!card.images.length"
-                              :style="{ backgroundImage: `url(${chooseImgPlug()})` }"
-                              class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
-                </swiper-slide>
-                <swiper-slide v-else
-                              v-for="(slide, index) in card.images"
-                              :key="'postImg' + index"
-                              class="homeview__grid__card__image__swiper-slide">
-                    <RouterLink v-if="slide.image"
-                                class="homeview__grid__card__link
+<div class="homeview__grid__card homeview__grid__card--soloblock d-flex flex-column">
+    <RouterLink :to="{ name: card.href }"
+                class="homeview__grid__card__group-title">
+        {{ card.title }}
+    </RouterLink>
+    <div class="homeview__grid__card__image">
+        <swiper v-bind="sliderConfig"
+                @swiper="swiperOn">
+            <swiper-slide v-if="!card.images.length"
+                          :style="{ backgroundImage: `url(${chooseImgPlug()})` }"
+                          class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
+            </swiper-slide>
+            <swiper-slide v-else
+                          v-for="(slide, index) in card.images"
+                          :key="'postImg' + index"
+                          class="homeview__grid__card__image__swiper-slide">
+                <RouterLink v-if="slide.image"
+                            class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
-                                :to="{ name: card.id == 7 ? 'home' : card.href ?? slide.href }"
-                                v-lazy-load="slide.image" />
-                    <RouterLink v-else
-                                :to="{ name: card.href ?? slide.href }"
-                                class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug"
-                                v-lazy-load="chooseImgPlug(card)">
-                    </RouterLink>
-                </swiper-slide>
-            </swiper>
-        </div>
+                            :to="{ name: card.id == 7 ? 'home' : card.href ?? slide.href }"
+                            v-lazy-load="slide.image" />
+                <RouterLink v-else
+                            :to="{ name: card.href ?? slide.href }"
+                            class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug"
+                            v-lazy-load="chooseImgPlug(card)">
+                </RouterLink>
+            </swiper-slide>
+        </swiper>
     </div>
+</div>
 </template>
 
 <script lang="ts">

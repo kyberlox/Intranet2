@@ -90,7 +90,7 @@ export default defineComponent({
 
         watch((sections), () => {
             if (!sections.value.length) {
-                Api.get(`editor/edit_sections`)
+                Api.get(`editor/get_sections_list`)
                     .then((res) => {
                         useAdminData().setSections(res);
                     })

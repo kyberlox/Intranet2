@@ -10,12 +10,14 @@
         <input ref="fileInput"
                type="file"
                class="file-uploader__input"
-               @change="(e) => $emit('upload', (useFile.handleFileSelect(e)))"
+               @change="(e) => handleFormFileSelect(e)"
                multiple />
 
         <div v-if="!uploadedFiles.length"
              class="file-uploader__placeholder">
-            <p class="file-uploader__text">Перетащите файл сюда или нажмите для выбора</p>
+            <p class="file-uploader__text">
+                Перетащите файл сюда или нажмите для выбора
+            </p>
         </div>
 
         <div class="file-uploader__preview-list"
@@ -37,7 +39,9 @@
                 <div v-if="uploadType == 'documentation' && item.file_url"
                      class="file-uploader__preview-doc">
                     <span @click.stop.prevent="openFile(item.file_url)"
-                          v-if="item.original_name">{{ item.original_name }}</span>
+                          v-if="item.original_name">
+                        {{ item.original_name }}
+                    </span>
                     <DocIcon />
                 </div>
 
@@ -46,28 +50,17 @@
                     <RemoveIcon />
                 </button>
             </div>
-            <div class="file-uploader__preview-list__loader"
+            <div class="file-uploader__preview-item"
                  v-if="isUploading">
-                <Loader />
+                <Loader class="" />
             </div>
-
         </div>
     </div>
-
-    <!-- <div v-if="isUploading"
-         class="file-uploader__progress">
-        <div class="file-uploader__progress-bar">
-            <div class="file-uploader__progress-fill"
-                 :style="{ width: uploadProgress + '%' }"></div>
-        </div>
-        <span class="file-uploader__progress-text">{{ uploadProgress }}%</span>
-    </div> -->
-
 </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, type PropType } from 'vue';
+import { defineComponent, ref, type PropType } from 'vue';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
 import DocIcon from '@/assets/icons/posts/DocIcon.svg?component';
 import { useFileUtil } from '@/composables/useFile';
@@ -104,7 +97,6 @@ export default defineComponent({
         const handleDrop = (event: DragEvent) => {
             event.preventDefault();
             isDragOver.value = false;
-
             if (event.dataTransfer?.files) {
                 const processResult = useFile.processFiles(event.dataTransfer.files);
 
@@ -113,16 +105,12 @@ export default defineComponent({
                 }
                 else {
                     uploadedFiles.value.push(processResult as IFileToUpload);
-                    emit('upload', processResult);
-                    isUploading.value = true
+                    isUploading.value = true;
+                    emit('upload', processResult, props.uploadType);
+                    console.log(isUploading.value);
                 }
             }
         };
-
-        watch((() => props.existFiles), () => {
-            if (props.existFiles?.length)
-                isUploading.value = false
-        }, { deep: true })
 
         const handleDragOver = (event: DragEvent) => {
             event.preventDefault();
@@ -142,6 +130,11 @@ export default defineComponent({
                 .then(() => emit('reloadData'))
         };
 
+        const handleFormFileSelect = (e: Event) => {
+            isUploading.value = true
+            emit('upload', (useFile.handleFileSelect(e)))
+        }
+
         return {
             fileInput,
             uploadedFiles,
@@ -153,6 +146,7 @@ export default defineComponent({
             handleDrop,
             handleDragOver,
             handleDragLeave,
+            handleFormFileSelect,
             triggerFileInput,
             removeItem,
             openFile: (url: string) => window.open(url, '_blank')

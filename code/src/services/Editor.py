@@ -309,9 +309,7 @@ class Editor:
 
                 # если поле нередактируемое
                 if field["field"] in self.notEditble:
-                    print(123)
                     field["disabled"] = True
-            print("после условий где disabled")
             
         need_del = False 
         indx = None

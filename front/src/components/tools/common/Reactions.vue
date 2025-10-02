@@ -8,7 +8,8 @@
         }}</div>
     <div v-if="newTypeReaction"
          class="homeview__grid__card__group-buttons__reaction-buttons">
-        <div class="homeview__grid__card__group-buttons__reaction-buttons--views">
+        <div v-if="!modifiers.includes('noViews')"
+             class="homeview__grid__card__group-buttons__reaction-buttons--views">
             <ViewsIcon />
             {{ newTypeReaction.views }}
         </div>
@@ -52,6 +53,10 @@ export default defineComponent({
             type: Boolean,
             default: false
         },
+        modifiers: {
+            type: Array<string>,
+            default: () => []
+        }
     },
     setup(props) {
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
@@ -68,8 +73,8 @@ export default defineComponent({
         }
 
         return {
+            newTypeReaction,
             setLike,
-            newTypeReaction
         }
     }
 });

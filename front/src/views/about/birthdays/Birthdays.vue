@@ -1,53 +1,53 @@
 <template>
-    <div class="page__title mt20">Дни рождения</div>
-    <div class="row">
-        <div class="col-12">
-            <ul class="birthday__chain-nav">
-                <li v-for="nav in fastDayNavigation"
-                    :key="'picker' + nav.id"
-                    class="birthday__chain-nav__item"
-                    :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
-                    @click="pickDate(nav.value, true)">{{ nav.text }}</li>
-            </ul>
+<div class="page__title mt20">Дни рождения</div>
+<div class="row">
+    <div class="col-12">
+        <ul class="birthday__chain-nav">
+            <li v-for="nav in fastDayNavigation"
+                :key="'picker' + nav.id"
+                class="birthday__chain-nav__item"
+                :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
+                @click="pickDate(nav.value, true)">{{ nav.text }}</li>
+        </ul>
+    </div>
+</div>
+<div class="birthday__date-picker-wrapper mt20">
+    <div class="col-12 col-md-2 mb-3">
+        <DatePicker @pickDate="(date: string) => pickDate(date)"
+                    :calendarType="'dayAndMonth'"
+                    :nullifyDateInput="nullifyDateInput" />
+    </div>
+</div>
+<div class="birthday__workers-grid">
+    <div class="birthday__page-content">
+        <div class="birthday__page__swiper__wrapper"
+             v-if="slidesForBirthday.length">
+            <swiper class="birthday__page__swiper"
+                    v-bind="sliderConfig"
+                    @swiper="swiperOn">
+                <swiper-slide v-for="(slide, index) in slidesForBirthday"
+                              :key="'vertSlide' + index">
+                    <VerticalSliderSlide :needCakeIcon="true"
+                                         :slide="slide" />
+                </swiper-slide>
+            </swiper>
+            <SwiperButtons :isBeginning="isBeginning"
+                           :isEnd="isEnd"
+                           @slideNext="slideNext"
+                           @slidePrev="slidePrev" />
+        </div>
+        <div class="birthday__static__greetings">
+            <img @click="openModal([birthdayPageImg])"
+                 :src=birthdayPageImg
+                 alt="поздравление" />
         </div>
     </div>
-    <div class="birthday__date-picker-wrapper mt20">
-        <div class="col-12 col-md-2 mb-3">
-            <DatePicker @pickDate="(date: string) => pickDate(date)"
-                        :calendarType="'dayAndMonth'"
-                        :nullifyDateInput="nullifyDateInput" />
-        </div>
-    </div>
-    <div class="birthday__workers-grid">
-        <div class="birthday__page-content">
-            <div class="birthday__page__swiper__wrapper"
-                 v-if="slidesForBirthday.length">
-                <swiper class="birthday__page__swiper"
-                        v-bind="sliderConfig"
-                        @swiper="swiperOn">
-                    <swiper-slide v-for="(slide, index) in slidesForBirthday"
-                                  :key="'vertSlide' + index">
-                        <VerticalSliderSlide :needCakeIcon="true"
-                                             :slide="slide" />
-                    </swiper-slide>
-                </swiper>
-                <SwiperButtons :isBeginning="isBeginning"
-                               :isEnd="isEnd"
-                               @slideNext="slideNext"
-                               @slidePrev="slidePrev" />
-            </div>
-            <div class="birthday__static__greetings">
-                <img @click="openModal([birthdayPageImg])"
-                     :src=birthdayPageImg
-                     alt="поздравление" />
-            </div>
-        </div>
-    </div>
-    <Transition name="modal">
-        <ZoomModal v-if="!hiddenModal"
-                   :image="imageInModal"
-                   @close="hiddenModal = true; imageInModal = '';" />
-    </Transition>
+</div>
+<Transition name="modal">
+    <ZoomModal v-if="!hiddenModal"
+               :image="imageInModal"
+               @close="hiddenModal = true; imageInModal = '';" />
+</Transition>
 </template>
 
 <script lang="ts">
@@ -128,10 +128,10 @@ export default defineComponent({
             },
         ];
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['ДниРождения']}`)
-                .then((data) => slidesForBirthday.value = data)
-        })
+        // onMounted(() => {
+        //     Api.get(`article/find_by/${sectionTips['ДниРождения']}`)
+        //         .then((data) => slidesForBirthday.value = data)
+        // })
 
         watch((searchValue), (newVal) => {
             if (!newVal) return;
@@ -147,21 +147,21 @@ export default defineComponent({
         return {
             slidesForBirthday,
             imageInModal,
-            openModal,
             hiddenModal,
             fastDayNavigation,
             searchValue,
-            pickDate,
             dateFromDatepicker,
             nullifyDateInput,
+            openModal,
+            pickDate,
             isEnd: swiperConf.isEnd,
-            swiperOn: swiperConf.swiperOn,
-            slideNext: swiperConf.slideNext,
-            slidePrev: swiperConf.slidePrev,
             sliderConfig: swiperConf.sliderConfig,
             swiperInstance: swiperConf.swiperInstance,
             isBeginning: swiperConf.isBeginning,
-            birthdayPageImg
+            birthdayPageImg,
+            swiperOn: swiperConf.swiperOn,
+            slideNext: swiperConf.slideNext,
+            slidePrev: swiperConf.slidePrev,
         };
     },
 });

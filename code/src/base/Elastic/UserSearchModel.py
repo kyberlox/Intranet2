@@ -351,7 +351,7 @@ class UserSearchModel:
     #     return res['hits']['hits']
     '''
 
-    def elasticsearch_users(self, key_word):
+    def elasticsearch_users(self, key_word, size_res=1000):
         result = []
         res = elastic_client.search(
             index=self.index,
@@ -427,7 +427,7 @@ class UserSearchModel:
                         ]
                     }
                 },
-                "size": 1000
+                "size": size_res
             }
         )
         users = []

@@ -759,11 +759,15 @@ class Editor:
                 else:
                     result[field] = user_info[field]
         result['user_id'] = user_id
-        result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
-        result.pop('name')
-        result.pop('second_name')
-        result.pop('last_name')
+        if "name" in result.keys():
+            result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
+            result.pop('name')
+            result.pop('second_name')
+            result.pop('last_name')
+
+        #форматирование под нужды фронта
         return result
+
 
 
 @editor_router.get("/get_user_info/{section_id}/{user_id}")

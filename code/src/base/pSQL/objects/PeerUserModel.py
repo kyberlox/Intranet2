@@ -464,10 +464,10 @@ class PeerUserModel:
                 activity_history = [{
                     "id": active.id,
                     "date_time": active.date_time,
-                    "user_to": user_to.id,
+                    "user_to": active.user_to,
                     "active_info": active.active_info,
                     "active_coast": active.active_coast
-                } for active in activity_history] 
+                } for active in user_history] 
                 # database.close()
                 return activity_history
             else:

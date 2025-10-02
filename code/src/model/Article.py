@@ -210,7 +210,7 @@ class Article:
 
             user = User(id=uuid).search_by_id_all()
             if "photo_file_url" not in user or user["photo_file_url"] == None:
-                photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
+                photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
             else:
                 photo = user["photo_file_url"]
                 photo_replace = photo.replace("user_files", "compress_image/user")

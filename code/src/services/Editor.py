@@ -519,7 +519,7 @@ class Editor:
             for got_field in got_fields:
             
                 #если такое поле есть среди заполненных
-                if need_field["field"] == got_field["field"]
+                if need_field["field"] == got_field["field"]:
                     #вписываем
                     result_fields.append(got_field)
                     has_added = True

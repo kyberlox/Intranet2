@@ -368,11 +368,9 @@ class File:
 
     def delete_by_art_id(self):
         files_data = self.get_files_by_art_id()
-        print(files_data)
         if files_data is not None and files_data != []:
             for file_data in files_data:
                 #удалить по id файла
-                print(f"удаляю файл {self.id}")
                 self.id = ObjectId(file_data['id'])
                 FileModel(id = self.id).remove()
 

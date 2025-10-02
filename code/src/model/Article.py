@@ -1641,7 +1641,6 @@ class Article:
 
     def delete(self):
         #удалить файлы статьи
-        print("Удалаяю статью")
         File(art_id = self.id).delete_by_art_id()
         return ArticleModel(id = self.id).remove()
 

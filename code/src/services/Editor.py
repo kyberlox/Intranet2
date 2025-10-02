@@ -782,7 +782,7 @@ class Editor:
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-def get_user_info(section_id : int, user_id: int):
+def get_user_info(section_id : int, art_id : int, user_id: int):
     return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
 
 #получить паттерн

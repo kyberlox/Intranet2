@@ -138,7 +138,8 @@
       {
         "name": "Аннотация",
         "field": "preview_text",
-        "data_type": "str"
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",

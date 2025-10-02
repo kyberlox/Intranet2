@@ -19,7 +19,6 @@
     "uuid" : "ID пользователя",
     "photo_file_url" : "Фотография (URL)",
     "position" : "Должность",
-    "work_position" : "Должность",
     "department" : "Подразделение",
     "award" : "Награда",
     "location" : "Локация",

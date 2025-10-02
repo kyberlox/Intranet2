@@ -772,7 +772,7 @@ class Editor:
         
         #вписываю в неё эти значения
         for key in result.keys():
-            art.indirect_data[key] = result[key]
+            art.__dict__['indirect_data'][key] = result[key]
 
         #сохранил
         art.update(self.make_valid_article(data))

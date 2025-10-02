@@ -766,13 +766,24 @@ class Editor:
             result.pop('last_name')
 
         #форматирование под нужды фронта
+
+        #получаю статью
+        art = ArticleModel(id=self.art_id, section_id=self.section_id)
+        
+        #вписываю в неё эти значения
+        for key in result.keys():
+            art['indirect_data'][key] = result[key]
+
+        #сохранил
+        art.update(self.make_valid_article(data))
+
         return result
 
 
 
-@editor_router.get("/get_user_info/{section_id}/{user_id}")
+@editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 def get_user_info(section_id : int, user_id: int):
-    return Editor(section_id = section_id).get_user_info(user_id)
+    return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")

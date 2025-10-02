@@ -455,7 +455,7 @@ class PeerUserModel:
         # finally:
         #     database.close()
             
-    def get_moders_history(self, roots):
+    def get_curators_history(self, roots):
         db_gen = get_db()
         database = next(db_gen)
         if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():

@@ -149,8 +149,8 @@ class Peer:
         self.PeerUserModel.uuid = uuid
         return self.PeerUserModel.delete_peer_moder(self.roots)
     
-    def get_moders_history(self):
-        return self.PeerUserModel.get_moders_history(self.roots)
+    def get_curators_history(self):
+        return self.PeerUserModel.get_curators_history(self.roots)
 
     def return_points_to_user(self, note_id, user_uuid):
         return self.PeerUserModel.return_points_to_user(note_id, user_uuid)
@@ -316,10 +316,10 @@ def delete_peer_moder(uuid: str, request: Request):
     user_uuid = get_uuid_from_request(request)
     return Peer(user_uuid=user_uuid).delete_peer_moder(uuid)
 
-@peer_router.get("/get_moders_history")
-def get_moders_history(request: Request):
+@peer_router.get("/get_curators_history")
+def get_curators_history(request: Request):
     user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).get_moders_history()
+    return Peer(user_uuid=user_uuid).get_curators_history()
 
 @peer_router.post("/return_points_to_user/{user_uuid}/{note_id}")
 def return_points_to_user(user_uuid: int, note_id: int):

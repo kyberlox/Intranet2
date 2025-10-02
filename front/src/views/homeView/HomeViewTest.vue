@@ -3,20 +3,19 @@
     <div v-if="mainPageCards.length"
          class="homeview__grid">
         <div v-for="item in mainPageCards"
-             :class="[{ 'homeview__grid__card--fullRowBlock': item.type == 'fullRowBlock' }, { 'homeview__grid__card--singleBlock': item.type == 'swiper' }]"
+             :class="[{ 'homeview__grid__card--section': item.type == 'section' }, { 'homeview__grid__card--swiper': item.type == 'swiper' }]"
              :key="item.id">
             <!-- Для слайдеров в одну ячейку -->
             <MainPageSoloBlock v-if="item.type == 'swiper'"
                                :card="item" />
 
             <!-- Для отдельных постов в одну строку -->
-            <div class="homeview__grid"
-                 v-else-if="item.type == 'fullRowBlock'">
-
+            <div class="homeview__grid homeview__grid__rows"
+                 v-else-if="item.type == 'section'">
                 <MainPageRowBlocks v-for="(block, index) in item.images"
                                    :card="block"
                                    :href="item.href"
-                                   :key="index + 'fullrowblock'">
+                                   :key="index + 'section'">
                     <RouterLink :to="{ name: item.sectionId }"
                                 class="homeview__grid__card__group-title">
                         {{ item.title }}
@@ -66,7 +65,7 @@ export default defineComponent({
             //         const result = data;
             //         if (!result) return;
             //         result.find(item => item.type == 'mixedRowBlock')?.content.map((item) => {
-            //             if (item.type == 'fullRowBlock' && item.images.length > 4) {
+            //             if (item.type == 'section' && item.images.length > 4) {
             //                 item.images.length = 4
             //             }
             //         });

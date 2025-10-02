@@ -372,7 +372,7 @@ class File:
             for file_data in files_data:
                 #удалить по id файла
                 print(f"удаляю файл {self.id}")
-                self.id = file_data['id']
+                self.id = ObjectId(file_data['id'])
                 FileModel(id = self.id).remove()
 
 

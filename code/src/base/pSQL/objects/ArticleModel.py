@@ -60,6 +60,7 @@ class ArticleModel:
         self.db.query(self.article).filter(self.article.id==int(self.id)).delete()
         #залить заново
         self.add_article(article_data)
+        print(article_data)
         self.db.commit()
         self.db.close()    
         return True

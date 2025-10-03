@@ -772,7 +772,8 @@ class Editor:
         print(art)
         #вписываю в неё эти значения
         for key in result.keys():
-            art['indirect_data'] = dict()
+            if art['indirect_data'] is None:
+                art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
 
         #сохранил

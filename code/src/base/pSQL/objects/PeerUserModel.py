@@ -155,7 +155,7 @@ class PeerUserModel:
         database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_activity = database.query(self.Activities).get(self.activities_id)
+                existing_activity = database.query(Activities).get(self.activities_id)
                 if existing_activity:
                     users_with_activity = database.query(self.Roots).filter(
                         self.Roots.root_token['PeerCurator'].contains([self.activities_id])
@@ -455,23 +455,31 @@ class PeerUserModel:
         # finally:
         #     database.close()
             
-    def get_moders_history(self, roots):
+    def get_curators_history(self, roots):
         db_gen = get_db()
         database = next(db_gen)
         if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
             user_history = database.query(PeerHistory).filter(PeerHistory.user_uuid == roots['user_id'], PeerHistory.info_type == 'activity').all()
+            activity_history = []
             if user_history:
-                activity_history = [{
-                    "id": active.id,
-                    "date_time": active.date_time,
-                    "user_to": user_to.id,
-                    "active_info": active.active_info,
-                    "active_coast": active.active_coast
-                } for active in activity_history] 
-                # database.close()
+                for active in user_history:
+                    user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == active.user_to).first()
+                    user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
+                    active_name = database.query(Activities.name).join(ActiveUsers, ActiveUsers.activities_id == Activities.id).filter(ActiveUsers.id == active.id).scalar()
+                    info = {
+                        "id": active.id,
+                        "date_time": active.date_time,
+                        "uuid_to": active.user_to,
+                        "uuid_to_fio": user_fio,
+                        "description": active.active_info,
+                        "activity_name": active_name,
+                        "coast": active.active_coast
+                    } 
+                    # database.close()
+                    activity_history.append(info)
                 return activity_history
             else:
-                return []
+                return activity_history
         else:
             return LogsMaker().warning_message(f"Недостаточно прав")
     
@@ -492,3 +500,30 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Ошибка при возрате средств пользователю с id = {user_uuid}: {e}")
         # finally:
         #     database.close()
+    
+    def remove_user_points(self, action_id, roots):
+        db_gen = get_db()
+        database = next(db_gen)
+        res = False
+        try:
+            if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
+                print(active_info.__dict__)
+                if active_info:
+                    action_info = database.query(ActiveUsers).filter(ActiveUsers.id == action_id, ActiveUsers.valid == 1).first()
+                    if action_info:
+                        stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
+                        res = True
+                        database.execute(stmt) 
+                        user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
+                        user_info.user_points = user_info.user_points - active_info.coast  
+                        database.commit()
+                        return LogsMaker().info_message(f"Успешно сняты баллы у пользователя с id = {self.uuid}")
+                    else:
+                        return LogsMaker().info_message(f"Активности с id = {action_id} не была валидна, за нее нельзя списать баллы")
+                else:
+                    return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
+            return res
+        except Exception as e:
+            database.rollback()
+            return LogsMaker().error_message(f"Ошибка при удалении баллов у пользователя с id {self.uuid} за action_id = {action_id}: {e}")

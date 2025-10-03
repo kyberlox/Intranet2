@@ -60,6 +60,7 @@ class ArticleModel:
         self.db.query(self.article).filter(self.article.id==int(self.id)).delete()
         #залить заново
         self.add_article(article_data)
+        print(article_data)
         self.db.commit()
         self.db.close()    
         return True
@@ -118,6 +119,10 @@ class ArticleModel:
         
         res = art.__dict__
         self.db.close()
+
+        if '_sa_instance_state' in res.keys():
+            res.pop("_sa_instance_state")
+
         return res
 
     def find_by_section_id(self):

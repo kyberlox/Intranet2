@@ -210,7 +210,7 @@ class Article:
 
             user = User(id=uuid).search_by_id_all()
             if "photo_file_url" not in user or user["photo_file_url"] == None:
-                photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
+                photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
             else:
                 photo = user["photo_file_url"]
                 photo_replace = photo.replace("user_files", "compress_image/user")
@@ -1472,7 +1472,6 @@ class Article:
             elif artDB.update(self.make_valid_article(art)):
                 pass
 
-
     def upload_services(self, ):
         #Корпоративная газета ✔️
 
@@ -1685,7 +1684,33 @@ class Article:
                 return f"{DOMAIN}{url}"
         
         return None
-        
+
+    def find_by_id(self):
+        art = ArticleModel(id = self.id).find_by_id()
+        return art
+
+    def update(self, new_data):
+        #получаю статью
+        art = ArticleModel(id = self.id).find_by_id()
+        print(art)
+
+        for key in art.keys():
+            if key in new_data.keys():
+                art[key] = new_data[key]
+            elif key == "indirect_data":
+                if "indirect_data" in new_data.keys():
+                    for subkey in art["indirect_data"].keys():
+                        if subkey in new_data["indirect_data"].keys():
+                            art["indirect_data"][subkey] = new_data["indirect_data"][subkey]
+                else:
+                    for subkey in art["indirect_data"].keys():
+                        if subkey in new_data.keys():
+                            art["indirect_data"][subkey] = new_data[subkey]
+
+        ArticleModel(id = self.id).update(art)
+
+        return True
+
 
 
     def search_by_section_id(self, session_id=""):

@@ -455,9 +455,11 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
         
+        
         # вытащить основные поля из psql
-        art = ArticleModel(id = self.art_id).find_by_id()
-        self.section_id = art["section_id"]
+        art = Article(id = self.art_id).find_by_id()
+        if self.section_id is None:
+            self.section_id = art["section_id"]
 
         art_keys = []
         for k in art.keys():
@@ -470,7 +472,7 @@ class Editor:
                 if k not in art_keys:
                     art_keys.append(k)
 
-        # протащить через словарь полей
+        # Протащить через словарь полей
         field = []
         for k in art_keys:
             if k in self.fields:
@@ -503,6 +505,8 @@ class Editor:
                 #загрузил
                 field.append(fl)
 
+
+
         got_fields = field
 
         #photo_file_url нужен только там, где он есть
@@ -512,7 +516,7 @@ class Editor:
 
 
 
-        #заполнить роля по шаблону
+        #заполнить поля по шаблону
         result_fields = []
         for need_field in self.get_pattern()["fields"]:
             has_added = False
@@ -520,9 +524,17 @@ class Editor:
             
                 #если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
+
+                    #отдельно проверить валидность типа
+                    if need_field["data_type"] != got_field["data_type"]:
+                        got_field["data_type"] = need_field["data_type"]
+                    
                     #вписываем
                     result_fields.append(got_field)
                     has_added = True
+                    
+
+
             #если среди заполненных нет - вписать из шаблона
             if not has_added:
                 result_fields.append(need_field)
@@ -547,6 +559,7 @@ class Editor:
             if got_files.get(need_files) is not None:
                 #вписываем
         '''
+
         need_del = []
         for f in files.keys():
             if files[f] == [] and self.get_pattern()["files"].get(f) is None:
@@ -592,14 +605,12 @@ class Editor:
         
         return self.pattern
 
-
-
     def add(self, data : dict):
         #self.art_id = int(data["id"])
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art=ArticleModel(id=self.art_id).find_by_id()
+        art=Article(id=self.art_id).find_by_id()
         if '_sa_instance_state' in art:
             art.pop('_sa_instance_state')
         indirect_data = dict()
@@ -641,7 +652,7 @@ class Editor:
             art["content_type"] = None
 
         #вставить данные в статью
-        return ArticleModel(id = self.art_id).update(art)
+        return Article(id = self.art_id).update(art)
     
 
 
@@ -739,6 +750,87 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
+    def get_user_info(self, user_id):
+        result = {}
+        fields_to_return = {
+            "14" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department",
+                "photo_file_url"
+            ], 
+            "15" : [
+                "id",
+                "photo_file_url"
+            ],
+            "172" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "photo_file_url"
+            ]
+        }
+
+        user_info = User(id=user_id).search_by_id()
+        if str(self.section_id) in fields_to_return.keys():
+            fields = fields_to_return[str(self.section_id)]
+            for field in fields:
+                if field == "work_position" and field in user_info['indirect_data'].keys():
+                    result['position'] = user_info['indirect_data'][field]
+                elif field == "department":
+                    result[field] = user_info['indirect_data']['uf_department']
+                elif field == "photo_file_url":
+                    if "photo_file_url" not in user_info or user_info["photo_file_url"] == None:
+                        photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                    else:
+                        photo = user_info["photo_file_url"]
+                        photo_replace = photo.replace("user_files", "compress_image/user")
+                    photo_file_url = photo_replace
+                    result[field] = photo_file_url
+                elif field == "id":
+                    result["author_uuid"] = user_id
+                else:
+                    result[field] = user_info[field]
+        
+        result['user_id'] = user_id
+        if "name" in result.keys():
+            result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
+            result.pop('name')
+            result.pop('second_name')
+            result.pop('last_name')
+        
+        if "department" in result.keys() and type(result["department"]) == type(list()) :
+            res_dep = result["department"][0]
+            if len(result["department"]) > 1:
+                for dep_i in range(0, len(result["department"])):
+                    res_dep = res_dep + ", " + result["department"][dep_i]
+            result["department"] = res_dep
+
+        #получаю статью
+        art = Article(id = self.art_id).find_by_id()
+
+        if self.section_id == 14:
+            art["name"] = result["fio"]
+
+        #вписываю в неё эти значения
+        for key in result.keys():
+            if art['indirect_data'] is None:
+                art['indirect_data'] = dict()
+            art['indirect_data'][key] = result[key]
+
+        #сохранил
+        Article(id = self.art_id).update(art)
+
+        return result
+
+
+
+@editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
+def get_user_info(section_id : int, art_id : int, user_id: int):
+    return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")

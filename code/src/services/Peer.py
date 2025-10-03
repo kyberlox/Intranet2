@@ -9,12 +9,13 @@ from .Auth import AuthService
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
 class Peer:
-    def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False, activities_id: int = 0):
+    def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False, active: bool = False, activities_id: int = 0):
         self.id = id
         self.name = name
         self.coast = coast
         self.user_uuid = user_uuid
         self.need_valid = need_valid
+        self.active = active
         self.activities_id = activities_id
 
         from ..base.pSQL.objects.ActivitiesModel import ActivitiesModel
@@ -58,6 +59,7 @@ class Peer:
         self.ActivitiesModel.name = self.name
         self.ActivitiesModel.coast = self.coast
         self.ActivitiesModel.need_valid = self.need_valid
+        self.ActivitiesModel.active = self.active
         return self.ActivitiesModel.update_activity(self.roots)
     
     def remove_activity(self):
@@ -149,11 +151,16 @@ class Peer:
         self.PeerUserModel.uuid = uuid
         return self.PeerUserModel.delete_peer_moder(self.roots)
     
-    def get_moders_history(self):
-        return self.PeerUserModel.get_moders_history(self.roots)
+    def get_curators_history(self):
+        return self.PeerUserModel.get_curators_history(self.roots)
 
     def return_points_to_user(self, note_id, user_uuid):
         return self.PeerUserModel.return_points_to_user(note_id, user_uuid)
+    
+    def remove_user_points(self, action_id, user_uuid):
+        self.PeerUserModel.uuid = user_uuid
+        return self.PeerUserModel.remove_user_points(action_id, self.roots)
+        
     
 
 def get_uuid_from_request(request):
@@ -214,7 +221,7 @@ def get_activities():
 @peer_router.post("/edit_activity")
 def post_edit_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid']).edit_activity()
+    return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid'], active=data['active']).edit_activity()
 
 @peer_router.delete("/remove_activity/{id}")
 def del_remove_activity(request: Request, id: str):
@@ -316,11 +323,16 @@ def delete_peer_moder(uuid: str, request: Request):
     user_uuid = get_uuid_from_request(request)
     return Peer(user_uuid=user_uuid).delete_peer_moder(uuid)
 
-@peer_router.get("/get_moders_history")
-def get_moders_history(request: Request):
+@peer_router.get("/get_curators_history")
+def get_curators_history(request: Request):
     user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).get_moders_history()
+    return Peer(user_uuid=user_uuid).get_curators_history()
 
 @peer_router.post("/return_points_to_user/{user_uuid}/{note_id}")
 def return_points_to_user(user_uuid: int, note_id: int):
     return Peer().return_points_to_user(note_id, user_uuid)
+
+@peer_router.post("/remove_user_points/{uuid}/{action_id}")
+def remove_user_points(request: Request, uuid: int, action_id: int):
+    user_uuid = get_uuid_from_request(request)
+    return Peer(user_uuid=user_uuid).remove_user_points(action_id, uuid)

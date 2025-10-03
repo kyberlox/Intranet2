@@ -70,8 +70,7 @@
       {
         "name": "ID пользователя",
         "field": "uuid",
-        "data_type": "search_by_uuid",
-        "disabled": true
+        "data_type": "search_by_uuid"
       },
       {
         "name": "Год",
@@ -87,6 +86,12 @@
         "name": "Подразделение",
         "field": "department",
         "data_type": "str"
+      },
+      {
+        "name" : "Фотография (URL)",
+        "field" : "photo_file_url",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Награда",
@@ -181,8 +186,7 @@
       {
         "name": "ID автора",
         "field": "author_uuid",
-        "data_type": "search_by_uuid",
-        "disabled": true
+        "data_type": "search_by_uuid"
       },
       {
         "name": "Ссылка на YouTube",

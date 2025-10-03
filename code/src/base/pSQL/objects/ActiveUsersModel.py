@@ -68,11 +68,11 @@ class ActiveUsersModel:
         if likes_count > 10:
             likes_left = 0
 
-        actions_for_all = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True).all()
+        actions_for_all = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True, self.Activities.active == True).all()
         if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
             activities_list = []
             for activity_id in roots['PeerCurator']:
-                activity_info = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id).first()
+                activity_info = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id, self.Activities.active == True).first()
                 part = {"value": activity_info.id, "name": activity_info.name}
                 activities_list.append(part)
 
@@ -267,6 +267,8 @@ class ActiveUsersModel:
         #     self.ActiveUsers.uuid_to == self.uuid_to,
         #     self.ActiveUsers.valid == 1
         # ).all()
+        from ..models.User import User
+
         from .App import get_db
         db_gen = get_db()
         database = next(db_gen)
@@ -284,15 +286,21 @@ class ActiveUsersModel:
         ).all()
         # database.close()
         activities = []
+        
         for result in results:
+            user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == result.uuid_from).first()
+            user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
             activities.append({
-                "id_activeusers": result.id,
-                "uuid": result.uuid_from,
+                # "id_activeusers": result.id,
+                "id_activeusers": result[0],
+                "uuid_from": result.uuid_from,
+                "fio_from": user_fio,
                 "description": result.description,
                 "date_time": result.date_time,
                 "activity_name": result.name,
                 "cost": result.coast,
-                "id_activites": result.id
+                # "id_activites": result.id
+                "id_activites": result[-1]
             })
 
         merch_history = database.query(self.PeerHistory).filter(self.PeerHistory.user_uuid == self.uuid_to, self.PeerHistory.info_type == 'merch').all()

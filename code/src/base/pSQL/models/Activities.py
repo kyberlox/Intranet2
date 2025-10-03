@@ -10,5 +10,6 @@ class Activities(Base):
     name = Column(Text, nullable=True)
     coast = Column(Integer, nullable=True)
     need_valid = Column(Boolean, nullable=True)
+    active = Column(Boolean, nullable=True)
 
     activeusers = relationship("ActiveUsers", back_populates="activities")

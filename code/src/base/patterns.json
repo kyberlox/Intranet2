@@ -88,6 +88,12 @@
         "data_type": "str"
       },
       {
+        "name" : "Фотография (URL)",
+        "field" : "photo_file_url",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
         "name": "Награда",
         "field": "award",
         "data_type": "str"

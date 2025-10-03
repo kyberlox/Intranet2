@@ -506,13 +506,13 @@ class PeerUserModel:
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
+                print(active_info.__dict__)
                 if active_info:
                     stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
                     res = True
                     database.execute(stmt) 
                     database.commit()
                     user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
-                    print(active_info.coast)
                     user_info.user_points = user_info.user_points - active_info.coast  
                     database.commit()
                     return LogsMaker().info_message(f"Успешно сняты баллы у пользователя с id = {self.uuid}")

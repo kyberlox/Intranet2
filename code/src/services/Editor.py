@@ -769,10 +769,10 @@ class Editor:
 
         #получаю статью
         art = ArticleModel(id = self.art_id).find_by_id()
-        print(art.__dict__)
+        print(art)
         #вписываю в неё эти значения
         for key in result.keys():
-            art.__dict__['indirect_data'][key] = result[key]
+            art['indirect_data'][key] = result[key]
 
         #сохранил
         art.update(self.make_valid_article(data))

@@ -764,8 +764,12 @@ class Editor:
             result.pop('name')
             result.pop('second_name')
             result.pop('last_name')
-
-        #форматирование под нужды фронта
+        
+        if "department" in result.keys() and type(result["department"]) == type(list()) :
+            res_dep = ""
+            for dep in result["department"]:
+                res_dep = res_dep + " " + dep
+            result["department"] = res_dep
 
         #получаю статью
         art = Article(id = self.art_id).find_by_id()

@@ -506,6 +506,7 @@ class PeerUserModel:
         try:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
+                print(active_info.__dict__)
                 if active_info:
                     action_info = database.query(ActiveUsers).filter(ActiveUsers.id == action_id, ActiveUsers.valid == 1).first()
                     if action_info:
@@ -523,4 +524,4 @@ class PeerUserModel:
             return res
         except Exception as e:
             database.rollback()
-            return LogsMaker().error_message(f"Ошибка валидации активности: {e}")
+            return LogsMaker().error_message(f"Ошибка при удалении баллов у пользователя с id {self.uuid} за action_id = {action_id}: {e}")

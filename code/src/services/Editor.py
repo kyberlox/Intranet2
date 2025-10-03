@@ -777,7 +777,7 @@ class Editor:
             art['indirect_data'][key] = result[key]
 
         #сохранил
-        Article(id = self.art_id).update(self.make_valid_article(data))
+        Article(id = self.art_id).update(data)
 
         return result
 

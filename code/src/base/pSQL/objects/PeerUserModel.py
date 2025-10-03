@@ -512,6 +512,7 @@ class PeerUserModel:
                     database.execute(stmt) 
                     database.commit()
                     user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
+                    print(active_info.coast)
                     user_info.user_points = user_info.user_points - active_info.coast  
                     database.commit()
                     return LogsMaker().info_message(f"Успешно сняты баллы у пользователя с id = {self.uuid}")

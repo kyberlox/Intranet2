@@ -200,12 +200,6 @@
         "disabled": true
       },
       {
-        "name" : "author_uuid",
-        "field" : "ID автора",
-        "data_type" : "str",
-        "disabled" : true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",

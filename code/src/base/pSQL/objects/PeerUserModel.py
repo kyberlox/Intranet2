@@ -519,4 +519,4 @@ class PeerUserModel:
             return res
         except Exception as e:
             database.rollback()
-            return LogsMaker().error_message(f"Ошибка валидации активности: {e}")
+            return LogsMaker().error_message(f"Ошибка при удалении баллов у пользователя с id {self.uuid} за action_id = {action_id}: {e}")

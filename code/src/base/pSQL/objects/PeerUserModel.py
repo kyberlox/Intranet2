@@ -220,8 +220,8 @@ class PeerUserModel:
             if activities_id in needs:
                 if likes_left < 0:
                     return LogsMaker().warning_message(f"У пользователя с id = {uuid_to} закончились баллы для активности")
-                elif uuid_from == uuid_to:
-                    return LogsMaker().warning_message(f"Пользователь с id = {uuid_to} пытается поставить быллы сам себе!")
+                # elif uuid_from == uuid_to:
+                #     return LogsMaker().warning_message(f"Пользователь с id = {uuid_to} пытается поставить быллы сам себе!")
                 else:
                     max_id = database.query(func.max(ActiveUsers.id)).scalar() or 0
                     new_id = max_id + 1
@@ -507,13 +507,17 @@ class PeerUserModel:
             if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
                 if active_info:
-                    stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
-                    res = True
-                    database.execute(stmt) 
-                    user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
-                    user_info.user_points = user_info.user_points + points  
-                    database.commit()
-                    return LogsMaker().info_message(f"Успешно сняты баллы у пользователя с id = {self.uuid}")
+                    action_info = database.query(ActiveUsers).filter(ActiveUsers.id == action_id, ActiveUsers.valid == 1).first()
+                    if action_info:
+                        stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
+                        res = True
+                        database.execute(stmt) 
+                        user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
+                        user_info.user_points = user_info.user_points - active_info.coast  
+                        database.commit()
+                        return LogsMaker().info_message(f"Успешно сняты баллы у пользователя с id = {self.uuid}")
+                    else:
+                        return LogsMaker().info_message(f"Активности с id = {action_id} не была валидна, за нее нельзя списать баллы")
                 else:
                     return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
             return res

@@ -597,7 +597,7 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art=ArticleModel(id=self.art_id).find_by_id()
+        art=Article(id=self.art_id).find_by_id()
         if '_sa_instance_state' in art:
             art.pop('_sa_instance_state')
         indirect_data = dict()
@@ -639,7 +639,7 @@ class Editor:
             art["content_type"] = None
 
         #вставить данные в статью
-        return ArticleModel(id = self.art_id).update(art)
+        return Article(id = self.art_id).update(art)
     
 
 

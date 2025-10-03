@@ -8,14 +8,14 @@
         grid-template-columns: repeat(5, 1fr);
         gap: 30px;
         min-width: 100%;
-        align-items: flex-end;
+        // align-items: flex-end;
 
         @include xl {
             grid-template-columns: repeat(4, 1fr);
         }
 
         @include lg {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
         }
 
         @include md {
@@ -57,6 +57,22 @@
 
             &--swiper {
                 align-self: flex-end;
+
+                @include xl {
+                    align-self: flex-end;
+                }
+
+                @include md {
+                    align-self: flex-end !important;
+                }
+
+                // @include md {
+                //     align-self: auto !important;
+                // }
+
+                @include sm {
+                    align-self: auto !important;
+                }
 
                 &--afisha {
                     align-self: self-start !important;

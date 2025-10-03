@@ -34,6 +34,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { defineComponent, onMounted, ref } from 'vue';
 import HoverGallery from './components/HoverGallery.vue';
+import Api from '@/utils/Api';
+import { sectionTips } from '@/assets/static/sectionTips';
 
 export default defineComponent({
     components: {
@@ -139,7 +141,8 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            console.log('d')
+            Api.get(`article/find_by/${sectionTips['МагазинМерча']}`)
+                .then((data) => console.log(data))
         })
 
         return {

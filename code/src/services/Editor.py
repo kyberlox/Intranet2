@@ -739,7 +739,28 @@ class Editor:
 
     def get_user_info(self, user_id):
         result = {}
-        fields_to_return = {"14": ["name", "second_name", "last_name", "work_position", "department", "photo_file_url"], "15": ["photo_file_url"], "172": ["name", "second_name", "last_name", "work_position", "photo_file_url"]}
+        fields_to_return = {
+            "14" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department",
+                "photo_file_url"
+            ], 
+            "15" : [
+                "id",
+                "photo_file_url"
+            ],
+            "172" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "photo_file_url"
+            ]
+        }
+
         user_info = User(id=user_id).search_by_id()
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
@@ -756,8 +777,11 @@ class Editor:
                         photo_replace = photo.replace("user_files", "compress_image/user")
                     photo_file_url = photo_replace
                     result[field] = photo_file_url
+                elif field == "id":
+                    result["author_uuid"] = user_id
                 else:
                     result[field] = user_info[field]
+        
         result['user_id'] = user_id
         if "name" in result.keys():
             result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']

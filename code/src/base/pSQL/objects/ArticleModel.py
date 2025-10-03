@@ -118,6 +118,10 @@ class ArticleModel:
         
         res = art.__dict__
         self.db.close()
+
+        if '_sa_instance_state' in res.keys():
+            res.pop("_sa_instance_state")
+
         return res
 
     def find_by_section_id(self):

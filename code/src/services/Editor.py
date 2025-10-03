@@ -768,7 +768,7 @@ class Editor:
         #форматирование под нужды фронта
 
         #получаю статью
-        art = ArticleModel(id = self.art_id).find_by_id()
+        art = Article(id = self.art_id).find_by_id()
 
         #вписываю в неё эти значения
         for key in result.keys():

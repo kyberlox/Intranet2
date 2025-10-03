@@ -1684,7 +1684,11 @@ class Article:
                 return f"{DOMAIN}{url}"
         
         return None
-        
+
+    def find_by_id(self):
+        art = ArticleModel(id = self.id).find_by_id()
+        return art
+
     def update(self, new_data):
         #получаю статью
         art = ArticleModel(id = self.id).find_by_id()

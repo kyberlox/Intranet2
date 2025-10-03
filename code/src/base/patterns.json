@@ -409,9 +409,43 @@
         "name": "Название статьи",
         "field": "name",
         "data_type": "str"
+      },
+            {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str",
+        "values": [
+          "HTML",
+          "Markdown",
+          null
+        ],
+        "disabled": true
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
       }
     ],
-    "files": {  "images": []}
+    "files": {"images": []}
   },
   "31": {
     "fields": [
@@ -563,16 +597,6 @@
       {
         "name": "Название статьи",
         "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
         "data_type": "str"
       },
       {
@@ -917,11 +941,6 @@
         "data_type": "str"
       },
       {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
         "name": "Содержимое",
         "field": "content_text",
         "data_type": "str"
@@ -932,13 +951,13 @@
         "data_type": "str"
       },
       {
-        "name": "Дата окончания",
-        "field": "date_to",
+        "name": "Дата начала",
+        "field": "date_from",
         "data_type": "str"
       },
       {
-        "name": "Дата начала",
-        "field": "date_from",
+        "name": "Дата окончания",
+        "field": "date_to",
         "data_type": "str"
       },
       {
@@ -1056,11 +1075,6 @@
       {
         "name": "Название статьи",
         "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
         "data_type": "str"
       },
       {

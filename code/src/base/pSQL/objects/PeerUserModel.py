@@ -510,6 +510,7 @@ class PeerUserModel:
                     stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
                     res = True
                     database.execute(stmt) 
+                    database.commit()
                     user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
                     user_info.user_points = user_info.user_points - active_info.coast  
                     database.commit()

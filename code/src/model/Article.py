@@ -1687,7 +1687,7 @@ class Article:
         
     def update(self, new_data):
         #получаю статью
-        art = ArticleModel(id = self.art_id).find_by_id()
+        art = ArticleModel(id = self.id).find_by_id()
         print(art)
 
         for key in art.keys():

@@ -769,7 +769,7 @@ class Editor:
 
         #получаю статью
         art = ArticleModel(id = self.art_id).find_by_id()
-        print(art)
+        
         #вписываю в неё эти значения
         for key in result.keys():
             if art['indirect_data'] is None:

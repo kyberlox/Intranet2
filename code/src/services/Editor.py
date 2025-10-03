@@ -455,9 +455,11 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
         
+        
         # вытащить основные поля из psql
-        art = ArticleModel(id = self.art_id).find_by_id()
-        self.section_id = art["section_id"]
+        art = Article(id = self.art_id).find_by_id()
+        if self.section_id is None:
+            self.section_id = art["section_id"]
 
         art_keys = []
         for k in art.keys():
@@ -470,7 +472,7 @@ class Editor:
                 if k not in art_keys:
                     art_keys.append(k)
 
-        # протащить через словарь полей
+        # Протащить через словарь полей
         field = []
         for k in art_keys:
             if k in self.fields:
@@ -503,6 +505,8 @@ class Editor:
                 #загрузил
                 field.append(fl)
 
+
+
         got_fields = field
 
         #photo_file_url нужен только там, где он есть
@@ -512,7 +516,7 @@ class Editor:
 
 
 
-        #заполнить роля по шаблону
+        #заполнить поля по шаблону
         result_fields = []
         for need_field in self.get_pattern()["fields"]:
             has_added = False
@@ -520,9 +524,17 @@ class Editor:
             
                 #если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
+
+                    #отдельно проверить валидность типа
+                    if need_field["data_type"] != got_field["data_type"]:
+                        got_field["data_type"] = need_field["data_type"]
+                    
                     #вписываем
                     result_fields.append(got_field)
                     has_added = True
+                    
+
+
             #если среди заполненных нет - вписать из шаблона
             if not has_added:
                 result_fields.append(need_field)
@@ -547,6 +559,7 @@ class Editor:
             if got_files.get(need_files) is not None:
                 #вписываем
         '''
+
         need_del = []
         for f in files.keys():
             if files[f] == [] and self.get_pattern()["files"].get(f) is None:
@@ -558,6 +571,8 @@ class Editor:
 
         # вывести
         return {"fields" : result_fields, "files" : files}
+
+
 
     def pre_add(self, ):
         #Получаю поля паттерна       
@@ -589,8 +604,6 @@ class Editor:
         self.pattern["fields"] = fields
         
         return self.pattern
-
-
 
     def add(self, data : dict):
         #self.art_id = int(data["id"])

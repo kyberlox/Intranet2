@@ -7,7 +7,7 @@ from .LogsMaker import LogsMaker
 
 
 
-idea_router = APIRouter(prefix="/idea", tags=["Битрикс24"])
+idea_router = APIRouter(prefix="/idea", tags=["Есть Идея!"])
 
 
 

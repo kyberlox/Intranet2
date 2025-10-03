@@ -9,12 +9,13 @@ from .Auth import AuthService
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
 class Peer:
-    def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False, activities_id: int = 0):
+    def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False, active: bool = False, activities_id: int = 0):
         self.id = id
         self.name = name
         self.coast = coast
         self.user_uuid = user_uuid
         self.need_valid = need_valid
+        self.active = active
         self.activities_id = activities_id
 
         from ..base.pSQL.objects.ActivitiesModel import ActivitiesModel
@@ -58,6 +59,7 @@ class Peer:
         self.ActivitiesModel.name = self.name
         self.ActivitiesModel.coast = self.coast
         self.ActivitiesModel.need_valid = self.need_valid
+        self.ActivitiesModel.active = self.active
         return self.ActivitiesModel.update_activity(self.roots)
     
     def remove_activity(self):
@@ -219,7 +221,7 @@ def get_activities():
 @peer_router.post("/edit_activity")
 def post_edit_activity(request: Request, data = Body()):
     uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid']).edit_activity()
+    return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid'], active=data['active']).edit_activity()
 
 @peer_router.delete("/remove_activity/{id}")
 def del_remove_activity(request: Request, id: str):

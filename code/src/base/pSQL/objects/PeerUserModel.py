@@ -155,7 +155,7 @@ class PeerUserModel:
         database = next(db_gen)
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_activity = database.query(self.Activities).get(self.activities_id)
+                existing_activity = database.query(Activities).get(self.activities_id)
                 if existing_activity:
                     users_with_activity = database.query(self.Roots).filter(
                         self.Roots.root_token['PeerCurator'].contains([self.activities_id])
@@ -455,23 +455,29 @@ class PeerUserModel:
         # finally:
         #     database.close()
             
-    def get_moders_history(self, roots):
+    def get_curators_history(self, roots):
         db_gen = get_db()
         database = next(db_gen)
         if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
             user_history = database.query(PeerHistory).filter(PeerHistory.user_uuid == roots['user_id'], PeerHistory.info_type == 'activity').all()
+            activity_history = []
             if user_history:
-                activity_history = [{
-                    "id": active.id,
-                    "date_time": active.date_time,
-                    "uuid_to": active.user_to,
-                    "description": active.active_info,
-                    "coast": active.active_coast
-                } for active in user_history] 
-                # database.close()
+                for active in user_history:
+                    user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == active.user_to).first()
+                    user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
+                    info = {
+                        "id": active.id,
+                        "date_time": active.date_time,
+                        "uuid_to": active.user_to,
+                        "uuid_to_fio": user_fio,
+                        "description": active.active_info,
+                        "coast": active.active_coast
+                    } 
+                    # database.close()
+                    activity_history.append(info)
                 return activity_history
             else:
-                return []
+                return activity_history
         else:
             return LogsMaker().warning_message(f"Недостаточно прав")
     

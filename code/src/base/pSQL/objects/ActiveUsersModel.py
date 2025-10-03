@@ -267,6 +267,8 @@ class ActiveUsersModel:
         #     self.ActiveUsers.uuid_to == self.uuid_to,
         #     self.ActiveUsers.valid == 1
         # ).all()
+        from ..models.User import User
+
         from .App import get_db
         db_gen = get_db()
         database = next(db_gen)
@@ -284,10 +286,14 @@ class ActiveUsersModel:
         ).all()
         # database.close()
         activities = []
+        
         for result in results:
+            user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == result.uuid_from).first()
+            user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
             activities.append({
                 "id_activeusers": result.id,
-                "uuid": result.uuid_from,
+                "uuid_from": result.uuid_from,
+                "fio_from": user_fio,
                 "description": result.description,
                 "date_time": result.date_time,
                 "activity_name": result.name,

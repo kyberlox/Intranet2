@@ -61,7 +61,8 @@
                         <div class="header__user"
                              v-if="userFio && userAvatar"
                              @click="visibleSidebar = true">
-                            <div class="header__points-balance__wrapper">
+                            <div v-if="featureFlags.pointsSystem"
+                                 class="header__points-balance__wrapper">
                                 <div class="header__points-balance"
                                      title="Ваши баллы"
                                      @click.stop.prevent="pointsModalIsOpen = true">
@@ -83,7 +84,7 @@
                              v-else>
                             ...
                         </div>
-                        <SlotModal v-if="pointsModalIsOpen == true"
+                        <SlotModal v-if="pointsModalIsOpen == true && featureFlags.pointsSystem"
                                    @close="pointsModalIsOpen = false">
                             <LayoutHeaderPointsModal />
                         </SlotModal>
@@ -112,6 +113,8 @@ import { screenCheck } from "@/utils/screenCheck";
 import { useUserScore } from "@/stores/userScoreData";
 import SlotModal from "../tools/modal/SlotModal.vue";
 import LayoutHeaderPointsModal from "./LayoutHeaderPointsModal.vue";
+
+import { featureFlags } from "@/assets/static/featureFlags";
 
 export default defineComponent({
     components: {
@@ -168,6 +171,7 @@ export default defineComponent({
             userFio: computed(() => userData.getFio),
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
             isMobileScreen: computed(() => ['sm', 'md'].includes(screenCheck(width))),
+            featureFlags,
             handleDropdown,
             handleDropDownItemClick,
             toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,

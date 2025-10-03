@@ -19,7 +19,7 @@
                     <a :href='"https://portal.emk.ru/company/personal/user/" + user.id'
                        target="_blank"
                        class="personal__user__mess__link">Профиль в Bitrix24</a>
-                    <button v-if="user.id !== myId"
+                    <button v-if="user.id !== myId && featureFlags.pointsSystem"
                             class="personal__user__mess__link"
                             @click="isPointsModalOpen = true">Отправить баллы</button>
                 </div>
@@ -126,6 +126,7 @@ import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 export default defineComponent({
     props: {
@@ -189,6 +190,7 @@ export default defineComponent({
             user,
             modalIsOpen,
             isPointsModalOpen,
+            featureFlags,
             myId: computed(() => userData.getMyId),
             sendPoints,
             formatBirthday,

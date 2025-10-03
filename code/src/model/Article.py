@@ -1707,6 +1707,7 @@ class Article:
                         if subkey in new_data.keys():
                             art["indirect_data"][subkey] = new_data[subkey]
 
+        print(art)
         art.update(art)
         return True
 

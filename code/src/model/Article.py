@@ -1706,8 +1706,9 @@ class Article:
                     for subkey in art["indirect_data"].keys():
                         if subkey in new_data.keys():
                             art["indirect_data"][subkey] = new_data[subkey]
-                            
-        art.update(art)
+
+        ArticleModel(id = self.id).update(art)
+
         return True
 
 

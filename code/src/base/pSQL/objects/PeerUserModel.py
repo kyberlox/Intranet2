@@ -464,10 +464,10 @@ class PeerUserModel:
                 activity_history = [{
                     "id": active.id,
                     "date_time": active.date_time,
-                    "user_to": user_to.id,
-                    "active_info": active.active_info,
-                    "active_coast": active.active_coast
-                } for active in activity_history] 
+                    "uuid_to": active.user_to,
+                    "description": active.active_info,
+                    "coast": active.active_coast
+                } for active in user_history] 
                 # database.close()
                 return activity_history
             else:
@@ -492,3 +492,25 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Ошибка при возрате средств пользователю с id = {user_uuid}: {e}")
         # finally:
         #     database.close()
+    
+    def remove_user_points(self, action_id, roots):
+        db_gen = get_db()
+        database = next(db_gen)
+        res = False
+        try:
+            if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                active_info = database.query(Activities).join(ActiveUsers, Activities.id == ActiveUsers.activities_id).filter(ActiveUsers.id == action_id).scalar()
+                if active_info:
+                    stmt = update(ActiveUsers).where(ActiveUsers.id == action_id).values(valid=2)
+                    res = True
+                    database.execute(stmt) 
+                    user_info = database.query(self.Roots).filter(self.Roots.user_uuid == self.uuid).first()
+                    user_info.user_points = user_info.user_points + points  
+                    database.commit()
+                    return LogsMaker().info_message(f"Успешно сняты баллы у пользователя с id = {self.uuid}")
+                else:
+                    return LogsMaker().info_message(f"Активности с id = {action_id} не существует")
+            return res
+        except Exception as e:
+            database.rollback()
+            return LogsMaker().error_message(f"Ошибка валидации активности: {e}")

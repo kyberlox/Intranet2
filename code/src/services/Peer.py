@@ -155,6 +155,11 @@ class Peer:
     def return_points_to_user(self, note_id, user_uuid):
         return self.PeerUserModel.return_points_to_user(note_id, user_uuid)
     
+    def remove_user_points(self, action_id, user_uuid):
+        self.PeerUserModel.uuid = user_uuid
+        return self.PeerUserModel.remove_user_points(action_id, self.roots)
+        
+    
 
 def get_uuid_from_request(request):
     session_id = ""
@@ -324,3 +329,8 @@ def get_moders_history(request: Request):
 @peer_router.post("/return_points_to_user/{user_uuid}/{note_id}")
 def return_points_to_user(user_uuid: int, note_id: int):
     return Peer().return_points_to_user(note_id, user_uuid)
+
+@peer_router.post("/remove_user_points/{uuid}/{note_id}")
+def remove_user_points(request: Request, user_uuid: int, note_id: int):
+    user_uuid = get_uuid_from_request(request)
+    return Peer(user_uuid=user_uuid).remove_user_points(note_id, uuid)

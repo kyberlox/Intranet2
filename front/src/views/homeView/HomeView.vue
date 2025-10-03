@@ -2,13 +2,12 @@
 <div class="homeview mt20">
     <div v-if="mainPageCards.length"
          class="homeview__grid">
-        <div v-for="item in mainPageCards"
-             :class="[{ 'homeview__grid__card--section': item.type == 'section' }, { 'homeview__grid__card--swiper': item.type == 'swiper' }]"
+        <div v-for="item in mainPageCards.filter((e) => !(e.title == 'Афиша' && e.images.length == 0))"
+             :class="[{ 'homeview__grid__card--section': item.type == 'section' }, { 'homeview__grid__card--swiper': item.type == 'swiper', 'homeview__grid__card--swiper--afisha': item.title == 'Афиша' }]"
              :key="item.id">
             <!-- Для слайдеров в одну ячейку -->
             <MainPageSoloBlock v-if="item.type == 'swiper'"
                                :card="item" />
-
             <!-- Для отдельных постов в одну строку -->
             <div class="homeview__grid homeview__grid__rows"
                  v-else-if="item.type == 'section'">

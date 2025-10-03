@@ -7,9 +7,8 @@
         // grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-template-columns: repeat(5, 1fr);
         gap: 30px;
-        // align-items: end;
         min-width: 100%;
-
+        align-items: flex-end;
 
         @include xl {
             grid-template-columns: repeat(4, 1fr);
@@ -57,9 +56,13 @@
             }
 
             &--swiper {
+                align-self: flex-end;
 
-                // align-self: baseline;
-                &~.homeview__grid__card--section:is(:last-child) {
+                &--afisha {
+                    align-self: self-start !important;
+                }
+
+                &+.homeview__grid__card--section:is(:last-child) {
                     grid-column: 2/-1;
 
                     @include xl {

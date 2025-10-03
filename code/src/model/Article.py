@@ -1109,6 +1109,9 @@ class Article:
         self.upload_likes()
         self.upload_views()
 
+        return {'status' : True}
+
+
     def upload_uniquely(self ):
         '''однозначно'''
         sec_inf = {
@@ -1690,7 +1693,7 @@ class Article:
         art = ArticleModel(id = self.id).find_by_id()
         return art
 
-    def update(self, new_data):
+    def update(self, new_data):	
         #получаю статью
         art = ArticleModel(id = self.id).find_by_id()
         print(art)

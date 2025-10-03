@@ -776,7 +776,7 @@ class Editor:
         art = Article(id = self.art_id).find_by_id()
 
         if self.section_id == 14:
-            art["name"] = art["fio"]
+            art["name"] = result["fio"]
 
         #вписываю в неё эти значения
         for key in result.keys():

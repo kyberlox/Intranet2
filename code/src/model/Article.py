@@ -1629,7 +1629,7 @@ class Article:
             result['content_text'] = art['content_text']
             result['section_id'] = art['section_id']
             price = art['indirect_data'].pop('price')
-            photo = art['indirect_data'].pop('photo_file_url')
+            photo = art['indirect_data'].pop('preview_file_url')
             result['current_sizes'] = [art['indirect_data']]
             result['price'] = price
             

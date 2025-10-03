@@ -1098,16 +1098,19 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        # self.upload_uniquely()
-        # self.upload_with_parameter()
-        # self.upload_many_to_many()
-        # self.upload_services()
+        self.upload_uniquely()
+        self.upload_with_parameter()
+        self.upload_many_to_many()
+        self.upload_services()
 
         # Дамп данных в эластик
-        # self.dump_articles_data_es()
+        self.dump_articles_data_es()
 
         self.upload_likes()
         self.upload_views()
+
+        return {'status' : True}
+
 
     def upload_uniquely(self ):
         '''однозначно'''
@@ -1690,7 +1693,7 @@ class Article:
         art = ArticleModel(id = self.id).find_by_id()
         return art
 
-    def update(self, new_data):
+    def update(self, new_data):	
         #получаю статью
         art = ArticleModel(id = self.id).find_by_id()
         print(art)

@@ -1703,7 +1703,7 @@ class Article:
                         if subkey in new_data.keys():
                             art["indirect_data"][subkey] = new_data[subkey]
 
-        art.update(self.make_valid_article(data))
+        art.update(self.make_valid_article(art))
         return True
 
 

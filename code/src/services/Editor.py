@@ -769,7 +769,7 @@ class Editor:
             res_dep = result["department"][0]
             if len(result["department"]) > 1:
                 for dep_i in range(0, len(result["department"]):
-                    res_dep = res_dep + " " + result["department"][dep_i]
+                    res_dep = res_dep + ", " + result["department"][dep_i]
             result["department"] = res_dep
 
         #получаю статью

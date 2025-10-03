@@ -1,6 +1,4 @@
 <template>
-<h1>ds</h1>
-<div>{{ pickedUser }}</div>
 <AdminEditInput v-if="!pickedUser"
                 @pick="(value: string) => searchQuery = value"
                 :item="{ name: 'Сотрудник' }"
@@ -27,6 +25,7 @@ export default defineComponent({
         UsersSearchList,
         AdminEditInput
     },
+    emits: ['userPicked'],
     setup(_, { emit }) {
         const pickedUser = ref();
         const usersList = ref([]);
@@ -43,7 +42,7 @@ export default defineComponent({
 
         watchDebounced((searchQuery), () => {
             if (!searchQuery.value) return;
-            Api.get(`users/search/full_search_users/${searchQuery.value}`)
+            Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/5`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)

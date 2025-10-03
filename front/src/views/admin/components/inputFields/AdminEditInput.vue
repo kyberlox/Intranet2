@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, type PropType, ref } from 'vue';
+import { defineComponent, onMounted, type PropType, ref, watch } from 'vue';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
@@ -31,7 +31,9 @@ export default defineComponent({
     setup(props, { emit }) {
         const value = ref(props.item?.value);
         const handleValuePick = () => { emit('pick', value.value) };
-
+        watch((props), () => {
+            if (props.item?.value) value.value = props.item.value
+        })
         onMounted(() => {
             handleValuePick();
         })

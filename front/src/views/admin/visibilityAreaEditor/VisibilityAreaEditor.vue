@@ -407,7 +407,7 @@ export default defineComponent({
         }
 
         const getUserByName = (word: string) => {
-            Api.get(`users/search/full_search_users/${word}`)
+            Api.get(`users/search/full_search_users_for_editor/${word}/10`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)

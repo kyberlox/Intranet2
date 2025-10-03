@@ -15,9 +15,16 @@
         border-collapse: collapse;
         border-radius: 16px;
         background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.36);
         position: relative;
         transition: box-shadow 0.2s ease;
+
+        &__loader {
+            padding: 40px;
+
+            &>.loader {
+                margin: auto;
+            }
+        }
 
         thead {
             border-bottom: 1px solid #ddd;

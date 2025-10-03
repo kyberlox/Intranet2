@@ -6,12 +6,10 @@
     <td class="activity-edit__cell activity-edit__cell--parameter">
         <div class="activity-edit__field">
             <PencilIcon />
-            <input data-id="14"
-                   data-type="activityName"
+            <input data-type="activityName"
                    class="activity-edit__input activity-edit__input--name"
-                   :value=active.name
-                   aria-label="Название активности" />
-
+                   v-model="findActivity(active).name"
+                   @change="$emit('editActivity', findActivity(active))" />
         </div>
     </td>
     <td class="activity-edit__cell activity-edit__cell--cost">
@@ -21,8 +19,8 @@
                    max="999"
                    min="1"
                    class="activity-edit__input activity-edit__input--cost"
-                   :value="active.coast"
-                   aria-label="Стоимость балла" />
+                   v-model="findActivity(active).coast"
+                   @change="$emit('editActivity', findActivity(active))" />
         </div>
     </td>
     <td class="activity-edit__cell activity-edit__cell--actions">
@@ -33,21 +31,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, ref } from 'vue';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
 import PencilIcon from '@/assets/icons/common/Pencil.svg?component';
 import { usePointsData } from '@/stores/PointsData';
+import type { INewActivityData } from '@/interfaces/IPutFetchData';
+
 export default defineComponent({
     components: {
         CancelIcon,
         PencilIcon
     },
-    emits: ['deleteItem'],
+    emits: ['deleteItem', 'editActivity'],
     setup(_, { emit }) {
         const activities = computed(() => usePointsData().getActivities);
+        const newActivities = ref<INewActivityData[]>(activities.value);
 
+        const findActivity = (active: INewActivityData) => {
+            const target = newActivities.value.findIndex((e) => e.id == active.id)
+            if (target == -1) newActivities.value.push(active)
+            return newActivities.value[newActivities.value.findIndex((e) => e.id == active.id)]
+        }
         return {
+            newActivities,
             activities,
+            findActivity,
             deleteItem: (id: number) => emit('deleteItem', 'activity', id)
         }
     }

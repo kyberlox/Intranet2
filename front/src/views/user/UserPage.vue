@@ -121,7 +121,7 @@ import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
 import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
-import SendPoints from '../admin/pointsSystem/SendPointsModalSlot.vue';
+import SendPoints from './userPointsComponents/SendPointsModalSlot.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
@@ -176,8 +176,6 @@ export default defineComponent({
         const senderId = computed(() => useUserData().getMyId);
 
         const sendPoints = (comment: string, activityId: number) => {
-            console.log('d');
-
             const sendingData: IPointsForm = { "uuid_from": senderId.value, "uuid_to": Number(props.id), "activities_id": activityId, "description": comment };
             Api.put('peer/send_points', sendingData)
                 .catch((error) => handleApiError(error, toast))

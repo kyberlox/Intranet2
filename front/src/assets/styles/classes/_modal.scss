@@ -268,9 +268,17 @@
             overflow-y: auto;
             overflow-x: hidden;
 
+            &__detail {
+                padding: 0 10px;
+            }
+
             &--points-modal {
                 padding: 0;
                 width: 50%;
+
+                @include sm {
+                    width: 100%;
+                }
             }
 
             &--user-points {
@@ -279,6 +287,11 @@
 
             &__user-photo {
                 max-width: 250px;
+
+                @include sm {
+                    width: 150px;
+                    max-width: 100%;
+                }
             }
         }
     }

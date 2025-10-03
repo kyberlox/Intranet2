@@ -9,7 +9,7 @@ export interface INewActivityData{
     coast?: number | null
     name?:string
     need_valid?:boolean
-    id?: string
+    id?: number
     activity_id?: string
     uuid?: string | number 
 }

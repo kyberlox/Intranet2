@@ -85,8 +85,6 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
 
         const handleUserPick = (user: IUserSearch) => {
-            console.log(props.currentEntity);
-
             pickedUser.value = user;
             usersList.value = usersList.value.filter((e) => e.id == user.id);
             newActivity.value!.uuid = user.id;

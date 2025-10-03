@@ -1,3 +1,5 @@
+@use '/src/assets/styles/mixins' as *;
+
 .idea-new {
     max-width: 1200px;
     margin: 0 auto;
@@ -144,13 +146,18 @@
             background: transparent;
         }
 
-        &__submit-group {
-            text-align: center;
-            margin-top: 10px;
+    }
 
-            &>.primary-button {
-                margin: auto;
-                font-size: medium;
+    &__submit-group {
+        text-align: center;
+        margin-top: 10px;
+
+        &>.primary-button {
+            margin: auto;
+            font-size: medium;
+
+            @include sm {
+                font-size: 14px;
             }
         }
     }
@@ -165,26 +172,3 @@
     background: white;
     padding: 0 0.5rem;
 }
-
-// @media (max-width: 768px) {
-//     .idea-new {
-//         padding: 1rem;
-//     }
-
-//     .idea-new__title {
-//         font-size: 2rem;
-//     }
-
-//     .idea-new__description {
-//         padding: 1.5rem;
-//     }
-
-//     .idea-new__form-container {
-//         padding: 1.5rem;
-//     }
-
-//     .idea-new__button {
-//         width: 100%;
-//         padding: 1rem 2rem;
-//     }
-// }

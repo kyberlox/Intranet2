@@ -11,6 +11,10 @@
            class="admin-element-inner__field"
            :key="index">
 
+
+        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuid'"
+                             @userPicked="handleUserPick" />
+
         <Component :is="inputComponentChecker(item)"
                    :item="item"
                    :type="item.data_type == 'int' ? 'number' : 'text'"
@@ -86,6 +90,7 @@ import AdminUploadingSection from './components/elementInnerLayout/AdminUploadin
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
+import AdminEditUserSearch from './components/inputFields/AdminEditUserSearch.vue';
 
 type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
 
@@ -98,6 +103,7 @@ export default defineComponent({
     AdminEditDatePicker,
     AdminEditReportage,
     AdminEditInput,
+    AdminEditUserSearch,
     FileUploader,
     AdminUploadingSection
   },
@@ -137,6 +143,7 @@ export default defineComponent({
     const inputComponentChecker = (item: IAdminListItem) => {
       if (item.disabled) return;
       switch (true) {
+
         case (item.data_type == 'str' || item.data_type == 'datetime.datetime') && String(item.field)?.includes('date'):
           return AdminEditDatePicker
         case (item.data_type == 'str' || item.data_type == 'bool') && 'values' in item:
@@ -229,6 +236,16 @@ export default defineComponent({
       newData.value.reports = item
     }
 
+    const handleUserPick = (userId: number) => {
+      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
+        .then((data) => {
+          if (data) {
+            reloadElementData()
+          }
+        })
+
+    }
+
     return {
       events,
       router,
@@ -241,6 +258,7 @@ export default defineComponent({
       newFileData,
       isMobileScreen,
       newId,
+      handleUserPick,
       inputComponentChecker,
       applyNewData,
       handleEmitValueChange,

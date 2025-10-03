@@ -8,7 +8,7 @@
         <div class="modal__body modal__body--zoom">
             <div @click.stop.self
                  class="modal__text__content modal__text__content--points-modal">
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col">
                         <slot>
                         </slot>

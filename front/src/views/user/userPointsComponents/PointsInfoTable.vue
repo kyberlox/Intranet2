@@ -1,73 +1,54 @@
 <template>
-    <div>
-        <table class="point-info__table">
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Кто отправил</th>
-                    <th>Комментарий</th>
-                    <th>Баллов</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="item in pointTablePlug"
-                    :key="item.id">
-                    <td>{{ item.date }}</td>
-                    <td>{{ item.who }}</td>
-                    <td>{{ item.comment }}</td>
-                    <td>{{ item.score }}</td>
-                </tr>
-            </tbody>
-            <tfoot></tfoot>
-        </table>
-    </div>
+<div v-if="pointsHistory.length">
+    <table class="point-info__table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Активность</th>
+                <th>Кто отправил</th>
+                <th>Комментарий</th>
+                <th>Баллов</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="item in pointsHistory"
+                :key="item.id_activeusers">
+                <td>{{ dateConvert(item.date_time, 'toStringType') }}</td>
+                <td>{{ item.activity_name }}</td>
+                <td>{{ item.fio_from }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.cost }}</td>
+            </tr>
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+</div>
+<div class="user-points__table__slug"
+     v-else>
+    У вас пока нет начисленных баллов
+</div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed, type ComputedRef } from 'vue';
+import { useUserScore } from '@/stores/userScoreData';
+import type { IActivityStatistics } from '@/interfaces/IEntities';
+import { dateConvert } from '@/utils/dateConvert';
 
 export default defineComponent({
     name: 'pointsInfoTable',
-
     setup() {
-        const pointTablePlug = [
-            {
-                id: '1',
-                date: '05.02.2024',
-                who: 'Пользователь 1',
-                param: 'Благодарность за экспертизу коллеги',
-                comment: 'Консультация по сделке',
-                score: '1',
-            },
-            {
-                id: '2',
-                date: '05.02.2024',
-                who: 'Пользователь 2',
-                param: 'Внешние мероприятия',
-                comment: 'За участие в ПМГФ',
-                score: '3',
-            },
-            {
-                id: '3',
-                date: '05.02.2024',
-                who: 'Пользователь 3',
-                param: 'Внутренние мероприятия',
-                comment: 'За участие в масленице',
-                score: '1',
-            },
-            {
-                id: '4',
-                date: '05.02.2024',
-                who: 'Пользователь 4',
-                param: 'Пройдено обучение',
-                comment: 'Пройден курс 1-7',
-                score: '21',
-            },
-        ]
+        const pointsHistory: ComputedRef<IActivityStatistics[]> = computed(() => useUserScore().getStatistics)
 
         return {
-            pointTablePlug
+            pointsHistory,
+            dateConvert
         }
     }
 })
 </script>
+<style>
+.user-points__table__slug {
+    padding: 20px;
+}
+</style>

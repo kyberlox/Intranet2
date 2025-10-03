@@ -220,8 +220,8 @@ class PeerUserModel:
             if activities_id in needs:
                 if likes_left < 0:
                     return LogsMaker().warning_message(f"У пользователя с id = {uuid_to} закончились баллы для активности")
-                # elif uuid_from == uuid_to:
-                #     return LogsMaker().warning_message(f"Пользователь с id = {uuid_to} пытается поставить быллы сам себе!")
+                elif uuid_from == uuid_to:
+                    return LogsMaker().warning_message(f"Пользователь с id = {uuid_to} пытается поставить быллы сам себе!")
                 else:
                     max_id = database.query(func.max(ActiveUsers.id)).scalar() or 0
                     new_id = max_id + 1
@@ -465,12 +465,14 @@ class PeerUserModel:
                 for active in user_history:
                     user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == active.user_to).first()
                     user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
+                    active_name = database.query(Activities.name).join(ActiveUsers, ActiveUsers.activities_id == Activities.id).filter(ActiveUsers.id == active.id).scalar()
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
                         "uuid_to": active.user_to,
                         "uuid_to_fio": user_fio,
                         "description": active.active_info,
+                        "activity_name": active_name,
                         "coast": active.active_coast
                     } 
                     # database.close()

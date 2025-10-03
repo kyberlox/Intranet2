@@ -83,6 +83,11 @@
         "data_type": "str"
       },
       {
+        "name": "ID пользователя",
+        "field": "uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
         "name": "Аннотация",
         "field": "preview_text",
         "data_type": "str",
@@ -97,11 +102,6 @@
         "name": "Дата публикации",
         "field": "date_publiction",
         "data_type": "str"
-      },
-      {
-        "name": "ID пользователя",
-        "field": "uuid",
-        "data_type": "search_by_uuid"
       },
       {
         "name": "Год",
@@ -184,6 +184,11 @@
         "data_type": "str"
       },
       {
+        "name": "ID автора",
+        "field": "author_uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
         "name": "Аннотация",
         "field": "preview_text",
         "data_type": "str"
@@ -212,11 +217,6 @@
         "name": "Предприятие",
         "field": "company",
         "data_type": "str"
-      },
-      {
-        "name": "ID автора",
-        "field": "author_uuid",
-        "data_type": "search_by_uuid"
       },
       {
         "name": "Ссылка на YouTube",

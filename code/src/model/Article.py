@@ -1799,7 +1799,8 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['size_left'] = re['indirect_data']
-                art_info['photo'] = [None]
+                photo = re['indirect_data'].pop("preview_file_url")
+                art_info['photo'] = photo
                 result.append(art_info)
             return result
         

@@ -768,7 +768,7 @@ class Editor:
         if "department" in result.keys() and type(result["department"]) == type(list()) :
             res_dep = result["department"][0]
             if len(result["department"]) > 1:
-                for dep_i in range(0, len(result["department"]):
+                for dep_i in range(0, len(result["department"])):
                     res_dep = res_dep + ", " + result["department"][dep_i]
             result["department"] = res_dep
 

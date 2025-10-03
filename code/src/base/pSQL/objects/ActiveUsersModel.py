@@ -60,13 +60,7 @@ class ActiveUsersModel:
         database = next(db_gen)
         """выводит список доступных пользователю активностей"""
         month_ago = datetime.now() - timedelta(days=30)
-        likes_count = database.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == 1, self.ActiveUsers.date_time >= month_ago).count()
-
-
-        #проверить остаток доступных лайков
-        likes_left = 10 - likes_count
-        if likes_count > 10:
-            likes_left = 0
+        
 
         actions_for_all = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True, self.Activities.active == True).all()
         if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
@@ -77,6 +71,13 @@ class ActiveUsersModel:
                 activities_list.append(part)
 
             for activity in actions_for_all:
+                likes_count = database.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == activity.id, self.ActiveUsers.date_time >= month_ago).count()
+
+                #проверить остаток доступных лайков
+                likes_left = 10 - likes_count
+                if likes_count > 10:
+                    likes_left = 0
+
                 part = {"value": activity.id, "name": activity.name, "likes_left": likes_left}
                 activities_list.append(part)
             # сюда добавить обработку
@@ -86,11 +87,16 @@ class ActiveUsersModel:
                 "activities": activities_list
             }
         else:
-            
-            activities_list = [
-                {"value": activity.id, "name": activity.name, "likes_left": likes_left}
-                for activity in actions_for_all
-            ]
+            activities_list = []
+            for activity in actions_for_all:
+                likes_count = database.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == activity.id, self.ActiveUsers.date_time >= month_ago).count()
+
+                #проверить остаток доступных лайков
+                likes_left = 10 - likes_count
+                if likes_count > 10:
+                    likes_left = 0
+                action = {"value": activity.id, "name": activity.name, "likes_left": likes_left}
+                activities_list.append(action)
             # database.close()
             return {
                 "activities": activities_list

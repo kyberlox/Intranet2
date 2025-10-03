@@ -330,7 +330,7 @@ def get_curators_history(request: Request):
 def return_points_to_user(user_uuid: int, note_id: int):
     return Peer().return_points_to_user(note_id, user_uuid)
 
-@peer_router.post("/remove_user_points/{uuid}/{note_id}")
-def remove_user_points(request: Request, user_uuid: int, note_id: int):
+@peer_router.post("/remove_user_points/{uuid}/{action_id}")
+def remove_user_points(request: Request, uuid: int, action_id: int):
     user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).remove_user_points(note_id, uuid)
+    return Peer(user_uuid=user_uuid).remove_user_points(action_id, uuid)

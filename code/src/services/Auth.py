@@ -210,8 +210,8 @@ class AuthService:
         for user_data in user_json:
             if username == user_data["login"]:
                 log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
-                ret_str = "#"*len(log_str)
-                LogsMaker().ready_status_message(f"{ret_str}\n{log_str}\n{ret_str}")
+                # ret_str = "#"*len(log_str)
+                LogsMaker().ready_status_message(f"{log_str}")
                 return user_data
         
         return None

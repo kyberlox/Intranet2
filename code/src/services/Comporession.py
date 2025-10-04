@@ -21,9 +21,9 @@ YOWAIMO_TARGET_HEIGHT = 1024
 TARGET_USER_WIDTH = 359
 TARGET_USER_HEIGHT = 493
 
-QUALITY = 98  # Качество сохранения (1-100)
+QUALITY = 100  # Качество сохранения (1-100)
 YOWAIMO_QUALITY = 100
-QUALITY_USER = 98
+QUALITY_USER = 100
 
 RESAMPLE = Image.LANCZOS  # Лучший алгоритм интерполяции
 

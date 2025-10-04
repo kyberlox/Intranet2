@@ -21,3 +21,7 @@
 /front/dist-ssr
 /front/coverage
 /front/cypress
+
+# dev.ignore
+*.sh
+/nginx

@@ -1,27 +1,28 @@
 <template>
 <PointsHistoryActionTable :needCheckButton="false"
-                          :activitiesInTable="activitiesInTable"
-                          @moderate="cancelPoints" />
+                          :onlyHistory="true"
+                          :activitiesInTable="activitiesInTable" />
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import PointsHistoryActionTable from '../PointsHistoryActionTable.vue';
-import type { IActivityToConfirm } from '@/interfaces/IEntities';
+import type { ICuratorActivityHistory } from '@/interfaces/IEntities';
+import Api from '@/utils/Api';
 export default defineComponent({
     components: {
         PointsHistoryActionTable
     },
     setup() {
-        const activitiesInTable = ref<IActivityToConfirm[]>([]);
+        const activitiesInTable = ref<ICuratorActivityHistory[]>([]);
 
-        const cancelPoints = () => {
-            console.log('галя отмена');
-        }
+        onMounted(() => {
+            Api.get('peer/get_curators_history')
+                .then((data: ICuratorActivityHistory[]) => activitiesInTable.value = data)
+        })
 
         return {
             activitiesInTable,
-            cancelPoints
         }
     }
 })

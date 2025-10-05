@@ -5,7 +5,7 @@ export const useUserScore = defineStore('userScoreData', {
     state: () => ({
         currentScore: 0,
         availableActions: {} as IActivityToSend,
-        statistics: {},
+        statistics: [] as IActivityStatistics[]
     }),
 
     actions: {
@@ -15,7 +15,7 @@ export const useUserScore = defineStore('userScoreData', {
         setActions(actions: IActivityToSend) {
             this.availableActions = actions;
         },
-        setStatistics(statData: IActivityStatistics) {
+        setStatistics(statData: IActivityStatistics[]) {
             this.statistics = statData;
         }
     },

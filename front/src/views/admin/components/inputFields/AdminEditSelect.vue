@@ -1,13 +1,15 @@
 <template>
 <div class="admin-element-inner__field-content">
     <p v-if="item?.name"
-       class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
+       class="admin-element-inner__field-title fs-l">
+        {{ item?.name }}
+    </p>
     <select class="admin-element-inner__select"
             @change="handleValuePick"
             v-model="value">
         <option class="admin-element-inner__select-option"
                 v-for="(option, index) in item?.values"
-                :value="(typeof option === 'string' || typeof option === 'boolean') ? option : option.value"
+                :value="(typeof option === 'string' || typeof option === 'boolean') ? option : option.value ? option.value : option.id"
                 :key=index>
             {{ (typeof option === 'string' || typeof option === 'boolean' ? (yesOrNoFormat ?
                 renderOptionText(option) : option) : option.name) }}

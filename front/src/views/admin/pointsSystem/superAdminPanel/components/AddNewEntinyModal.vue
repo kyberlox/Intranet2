@@ -85,8 +85,6 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
 
         const handleUserPick = (user: IUserSearch) => {
-            console.log(props.currentEntity);
-
             pickedUser.value = user;
             usersList.value = usersList.value.filter((e) => e.id == user.id);
             newActivity.value!.uuid = user.id;
@@ -94,7 +92,7 @@ export default defineComponent({
 
         watchDebounced((searchQuery), () => {
             if (!searchQuery.value) return;
-            Api.get(`users/search/full_search_users/${searchQuery.value}`)
+            Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/10`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)

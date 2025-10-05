@@ -7,7 +7,7 @@
     </AdminSidebar>
 
     <PointsHistoryActionTable v-if="activeId"
-                              :onlyHistory="true"
+                              @moderate="moderate"
                               :activitiesInTable="activitiesInTable" />
 </div>
 </template>
@@ -51,11 +51,10 @@ export default defineComponent({
         }, { immediate: true, deep: true });
 
         const moderate = (type: 'accept' | 'cancel', rowId: number, uuidTo: number) => {
-            Api.post(`/api/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}`, { action_id: rowId, uuid_to: uuidTo })
+            Api.post(`/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}/${rowId}${type == 'accept' ? '/' + uuidTo : ''}`)
                 .then((data) => console.log(data))
                 .finally(() => tableInit())
         }
-
 
         return {
             activitiesToConfirm,

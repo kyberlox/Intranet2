@@ -11,7 +11,14 @@ export interface IActivityToSend {
 }
 
 export interface IActivityStatistics{
-    id: string,
+    id_activeusers: number,
+    uuid_from: number,
+    fio_from: string,
+    description: string,
+    date_time: string,
+    activity_name: string,
+    cost: number,
+    id_activites: number
 }
 
 export interface IPointsAdmin {
@@ -42,8 +49,17 @@ export interface IActivityToConfirm {
     date_time: string
     description: string
     id: number
-    name: number
+    name: string
     need_valid: boolean
     uuid_from: number
     uuid_to: number
+}
+
+export interface ICuratorActivityHistory{
+coast: number,
+description: string,
+date_time:string,
+id: number,
+uuid_to: number,
+user_to_fio:string,
 }

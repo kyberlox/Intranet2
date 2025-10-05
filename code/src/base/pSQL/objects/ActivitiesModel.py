@@ -71,7 +71,7 @@ class ActivitiesModel:
                 existing_activity = database.query(self.Activities).filter(self.Activities.id == self.id, self.Activities.active == True).first()
                 if existing_activity:
                     PeerUserModel(activities_id=existing_activity.id).delete_curators(roots)
-                    existing_activity.active = self.active
+                    existing_activity.active = False
                     database.commit()
                     
                     return LogsMaker().info_message(f"Удаление активности c id = {self.id} звершено успешно")

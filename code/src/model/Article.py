@@ -1098,16 +1098,19 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        # self.upload_uniquely()
-        # self.upload_with_parameter()
-        # self.upload_many_to_many()
-        # self.upload_services()
+        self.upload_uniquely()
+        self.upload_with_parameter()
+        self.upload_many_to_many()
+        self.upload_services()
 
         # Дамп данных в эластик
-        # self.dump_articles_data_es()
+        self.dump_articles_data_es()
 
         self.upload_likes()
         self.upload_views()
+
+        return {'status' : True}
+
 
     def upload_uniquely(self ):
         '''однозначно'''
@@ -1602,7 +1605,7 @@ class Article:
                 art['indirect_data']['tags'] = tags
 
 
-        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 56, 7, 71, 34, 175] # список секций где нет лайков
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 56,  7, 71, 34, 175] # список секций где нет лайков
 
         if art['section_id'] not in null_list:
             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -1690,7 +1693,7 @@ class Article:
         art = ArticleModel(id = self.id).find_by_id()
         return art
 
-    def update(self, new_data):
+    def update(self, new_data):	
         #получаю статью
         art = ArticleModel(id = self.id).find_by_id()
         print(art)

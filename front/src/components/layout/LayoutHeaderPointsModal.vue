@@ -1,10 +1,6 @@
 <template>
 <div class="modal__text__content modal__text__content--user-points">
-    <div class="row ">
-        <div class="col">
-            <PointsInfoTable />
-        </div>
-    </div>
+    <PointsInfoTable />
 </div>
 </template>
 

@@ -3,17 +3,19 @@
     <h2 class="page__title">Есть идея! (Мои идеи)</h2>
     <div class="row mb-5">
         <div class="col">
-            <RouterLink :to="{ name: 'newIdeaPage' }"
-                        class="btn btn-primary"
-                        title="Отправить новую идею!">Предложить идею</RouterLink>
+            <div>
+                <RouterLink :to="{ name: 'newIdeaPage' }"
+                            class="primary-button"
+                            title="Отправить новую идею!">Предложить идею</RouterLink>
+            </div>
         </div>
     </div>
-    <div class="row mb-5">
+    <div class="row mb-5 idea__table__wrapper">
         <div class="contest__page__loader__wrapper"
              v-if="isLoading">
             <Loader class="contest__page__loader" />
         </div>
-        <table class="table"
+        <table class="table idea__table"
                v-else-if="ideas">
             <tbody>
                 <tr>
@@ -24,7 +26,7 @@
                 </tr>
                 <tr v-for="idea in ideas.sort((a, b) => Number(b.number) - Number(a.number))"
                     :key="idea.id"
-                    class="idea__table"
+                    class="idea__table__tr"
                     @click="callModal(idea)">
                     <td>{{ idea.number }}</td>
                     <td>{{ idea.date_create.split(' ')[0] }}</td>

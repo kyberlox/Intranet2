@@ -17,27 +17,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, type PropType } from 'vue';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
-import Api from '@/utils/Api';
 import type { IPointsModer } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
         CancelIcon,
     },
-    emits: ['deleteItem'],
-    setup() {
-        const moders = ref<IPointsModer[]>([])
-        Api.get('peer/get_moders_list')
-            .then((data) => {
-                if (data.status) return
-                moders.value = data
-            })
-
-        return {
-            moders
+    props: {
+        moders: {
+            type: Array as PropType<IPointsModer[]>
         }
-    }
+    },
+    emits: ['deleteItem'],
 })
 </script>

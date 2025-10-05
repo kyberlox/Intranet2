@@ -8,7 +8,6 @@ import type { IPointsForm } from '@/interfaces/IPutFetchData';
 import type { IValidatePoints } from '@/interfaces/IPostFetch';
 
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
-
 import type { INewActivityData } from '@/interfaces/IPutFetchData';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
@@ -45,7 +44,9 @@ export default class Api {
     static async postVendor(url: string, data: INeuroChat[] | null) {
         return (await vendorApi.post(url, data)).data;
     }
-    static async post(url: string, data: IAuth | IPostIdea | IPostInner | FormData | IPostCardMsg | IValidatePoints) {
+    static async post(url: string, data?: IAuth | IPostIdea | IPostInner | FormData | IPostCardMsg | IValidatePoints |
+         INewActivityData
+    ) {
         return (await api.post(url, data)).data;
     }
 

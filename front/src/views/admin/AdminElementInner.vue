@@ -11,6 +11,10 @@
            class="admin-element-inner__field"
            :key="index">
 
+
+        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuid'"
+                             @userPicked="handleUserPick" />
+
         <Component :is="inputComponentChecker(item)"
                    :item="item"
                    :type="item.data_type == 'int' ? 'number' : 'text'"
@@ -66,8 +70,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, onMounted, ref, type Ref, computed, watch, onUnmounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';
@@ -83,6 +87,7 @@ import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
 import AdminPostPreview from './components/elementInnerLayout/AdminPostPreview.vue';
 import AdminUploadingSection from './components/elementInnerLayout/AdminUploadingSection.vue';
+import AdminEditUserSearch from './components/inputFields/AdminEditUserSearch.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
@@ -98,6 +103,7 @@ export default defineComponent({
     AdminEditDatePicker,
     AdminEditReportage,
     AdminEditInput,
+    AdminEditUserSearch,
     FileUploader,
     AdminUploadingSection
   },
@@ -122,6 +128,7 @@ export default defineComponent({
     const buttonIsDisabled = ref(false);
     const isCreateNew = ref(true);
     const { width } = useWindowSize();
+    const inputKey = ref(0);
 
     const newId = ref(props.elementId ?? null);
 
@@ -133,6 +140,8 @@ export default defineComponent({
     const newData: Ref<IPostInner> = ref({ id: Number(newId.value) });
     const newFileData = ref<INewFileData>({});
     const isMobileScreen = computed(() => ['sm'].includes(screenCheck(width)));
+
+    const needToBeDeleted = ref(true);
 
     const inputComponentChecker = (item: IAdminListItem) => {
       if (item.disabled) return;
@@ -180,8 +189,15 @@ export default defineComponent({
           }
           newId.value = data.fields.find((e: IAdminListItem) => e.field == 'id').value;
           newFileData.value = data.files;
+          // для превьюх
           if (data.files?.images && data.files?.images[0]?.file_url) {
             newData.value.preview_file_url = data.files?.images[0]?.file_url
+          }
+          // для привязки по uid к статьям
+          const targetDepartment = data.fields.find((e: { field: string }) => e.field == 'department')
+
+          if (targetDepartment) {
+            newData.value.department = targetDepartment.value
           }
           // newData.value.images = data.files.images;
           newData.value.videos_native = data.files.videos_native;
@@ -190,6 +206,7 @@ export default defineComponent({
     }
 
     const applyNewData = async () => {
+      needToBeDeleted.value = false;
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
       await Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
@@ -204,6 +221,12 @@ export default defineComponent({
           buttonIsDisabled.value = false;
         })
     }
+
+    onUnmounted(async () => {
+      if (needToBeDeleted.value && isCreateNew.value) {
+        await Api.delete(`editor/del/${newId.value}`)
+      }
+    })
 
     const handleUpload = (e: IFileToUpload) => {
       const idToUpload = isCreateNew.value ? newId.value : props.elementId
@@ -229,6 +252,16 @@ export default defineComponent({
       newData.value.reports = item
     }
 
+    const handleUserPick = (userId: number) => {
+      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
+        .then((data) => {
+          if (data) {
+            reloadElementData(false)
+          }
+        })
+
+    }
+
     return {
       events,
       router,
@@ -241,6 +274,8 @@ export default defineComponent({
       newFileData,
       isMobileScreen,
       newId,
+      inputKey,
+      handleUserPick,
       inputComponentChecker,
       applyNewData,
       handleEmitValueChange,

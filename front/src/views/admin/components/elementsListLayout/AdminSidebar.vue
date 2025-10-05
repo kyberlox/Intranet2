@@ -6,7 +6,7 @@
             <h3 class="admin-panel__title">Панель редактора</h3>
         </div>
 
-        <nav v-for="(item, index) in fullNavigation"
+        <nav v-for="(item, index) in filterNavigationByFeatureFlags(fullNavigation)"
              :key="'nav' + index"
              class="admin-panel__nav">
             <h6 class="admin-panel__nav-title">
@@ -47,6 +47,7 @@ import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import { useAdminData } from '@/stores/AdminData';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 type AdminSection = {
     name: string;
@@ -111,11 +112,16 @@ export default defineComponent({
                 }
         }
 
+        const filterNavigationByFeatureFlags = (fullNavigation: NavGroup[]) => {
+            return fullNavigation.filter((e: NavGroup) => (featureFlags.visibleArea == (e.title == 'Администрирование')) && (featureFlags.pointsSystem == (e.title == 'Бальная система')))
+        }
+
         return {
             myId,
             sections,
             fullNavigation,
-            defineRoute
+            defineRoute,
+            filterNavigationByFeatureFlags
         }
     }
 })

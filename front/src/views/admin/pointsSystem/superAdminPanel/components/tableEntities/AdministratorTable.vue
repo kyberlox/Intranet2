@@ -17,25 +17,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, type PropType } from 'vue';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
-import Api from '@/utils/Api';
 import type { IPointsAdmin } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
         CancelIcon,
     },
-    emits: ['deleteItem'],
-    setup() {
-        const admins = ref<IPointsAdmin[]>([]);
-        onMounted(() => {
-            Api.get('peer/get_admins_list')
-                .then((data) => { if (!data.status) admins.value = data })
-        })
-        return {
-            admins
+    props: {
+        admins: {
+            type: Array as PropType<IPointsAdmin[]>
         }
-    }
+    },
+    emits: ['deleteItem'],
 })
 </script>

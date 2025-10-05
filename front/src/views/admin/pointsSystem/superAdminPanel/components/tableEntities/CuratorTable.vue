@@ -18,30 +18,25 @@
     </td>
     <td class="activity-edit__cell activity-edit__cell--actions">
         <CancelIcon class="moderator__button cancelBtn"
-                    @click="deleteItem(String(curator.curator_id))" />
+                    @click="$emit('deleteItem', 'curator', String(curator.curator_id), curator.activity_id)" />
     </td>
 </tr>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, type PropType } from 'vue';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
-import Api from '@/utils/Api';
 import type { ICurator } from '@/interfaces/IEntities';
 
 export default defineComponent({
     components: {
         CancelIcon,
     },
-    emits: ['deleteItem'],
-    setup(_, { emit }) {
-        const curators = ref<ICurator[]>([])
-        Api.get('peer/get_curators')
-            .then((data: ICurator[]) => curators.value = data)
-        return {
-            curators,
-            deleteItem: (id: string) => emit('deleteItem', id)
+    props: {
+        curators: {
+            type: Array as PropType<ICurator[]>
         }
-    }
+    },
+    emits: ['deleteItem'],
 })
 </script>

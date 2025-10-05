@@ -95,6 +95,7 @@ export interface IPostInner extends IBaseEntity {
         }[]
     },
     reports?: IReportage[]
+    department?: string,
 }
 
 export default defineComponent({

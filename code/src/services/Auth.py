@@ -57,6 +57,9 @@ class AuthService:
         self.session_ttl = timedelta(minutes=240)
 
     async def authenticate(self, username: str, password: str) -> Optional[Dict[str, Any]]:
+
+        LogsMaker().info_message(f"login = {username}, password = {password}")
+
         """Аутентификация пользователя"""
         # Проверка подключения к Redis
         if not self.redis.check_connection():
@@ -207,8 +210,8 @@ class AuthService:
         for user_data in user_json:
             if username == user_data["login"]:
                 log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
-                ret_str = "#"*len(log_str)
-                LogsMaker().info_message(f"{ret_str}\n{log_str}\n{ret_str}")
+                # ret_str = "#"*len(log_str)
+                LogsMaker().ready_status_message(f"{log_str}")
                 return user_data
         
         return None

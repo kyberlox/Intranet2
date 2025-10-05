@@ -1,11 +1,17 @@
 .idea {
     &__table {
-        transition: 0.2ms;
-        cursor: pointer;
+        &__wrapper {
+            padding: 0 10px;
+        }
 
-        &:hover {
-            >td {
-                color: var(--emk-brand-color);
+        &__tr {
+            transition: 0.2ms;
+            cursor: pointer;
+
+            &:hover {
+                >td {
+                    color: var(--emk-brand-color);
+                }
             }
         }
     }

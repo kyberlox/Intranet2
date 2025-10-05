@@ -2,12 +2,6 @@
   "13": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -16,6 +10,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -28,20 +32,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -68,9 +68,40 @@
   "14": {
     "fields": [
       {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
         "name": "ID пользователя",
         "field": "uuid",
         "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
       },
       {
         "name": "Год",
@@ -88,8 +119,8 @@
         "data_type": "str"
       },
       {
-        "name" : "Фотография (URL)",
-        "field" : "photo_file_url",
+        "name": "Фотография (URL)",
+        "field": "photo_file_url",
         "data_type": "str",
         "disabled": true
       },
@@ -110,39 +141,8 @@
         "disabled": true
       },
       {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str",
-        "value": false,
-        "values": [
-          true,
-          false
-        ]
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
         "name": "ID раздела",
         "field": "section_id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
         "data_type": "str",
         "disabled": true
       },
@@ -169,6 +169,41 @@
   "15": {
     "fields": [
       {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "ID автора",
+        "field": "author_uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
         "name": "Ссылка",
         "field": "link",
         "data_type": "str"
@@ -184,11 +219,6 @@
         "data_type": "str"
       },
       {
-        "name": "ID автора",
-        "field": "author_uuid",
-        "data_type": "search_by_uuid"
-      },
-      {
         "name": "Ссылка на YouTube",
         "field": "youtube_link",
         "data_type": "str"
@@ -200,40 +230,10 @@
         "disabled": true
       },
       {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str",
-        "value": false,
-        "values": [
-          true,
-          false
-        ]
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
         "name": "ID раздела",
         "field": "section_id",
         "data_type": "str",
         "disabled": true
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
       },
       {
         "name": "Тип форматирования",
@@ -262,12 +262,6 @@
   "16": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -276,6 +270,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -288,20 +292,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -329,12 +329,6 @@
   "18": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -343,6 +337,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -355,20 +359,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -394,17 +394,61 @@
     }
   },
   "22": {
-    "fields": [],
-    "files": {}
-  },
-  "31": {
     "fields": [
+        {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+            {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
       {
         "name": "ID",
         "field": "id",
         "data_type": "str",
         "disabled": true
       },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str",
+        "values": [
+          "HTML",
+          "Markdown",
+          null
+        ],
+        "disabled": true
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {"images": []}
+  },
+  "31": {
+    "fields": [
       {
         "name": "Активна",
         "field": "active",
@@ -414,6 +458,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -426,20 +480,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -469,12 +519,6 @@
   "32": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -483,6 +527,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -495,20 +549,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -535,6 +585,26 @@
   "34": {
     "fields": [
       {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
         "name": "Год",
         "field": "year",
         "data_type": "str"
@@ -551,40 +621,10 @@
         "disabled": true
       },
       {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str",
-        "value": false,
-        "values": [
-          true,
-          false
-        ]
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
         "name": "ID раздела",
         "field": "section_id",
         "data_type": "str",
         "disabled": true
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
       },
       {
         "name": "Тип форматирования",
@@ -612,17 +652,6 @@
   "41": {
     "fields": [
       {
-        "name": "Репортажи",
-        "field": "reports",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -631,6 +660,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -643,20 +682,21 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "Репортажи",
+        "field": "reports",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -683,12 +723,6 @@
   "42": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -697,6 +731,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -709,20 +753,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -750,12 +790,6 @@
   "51": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -764,6 +798,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -776,20 +820,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -819,12 +859,6 @@
   "52": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -833,6 +867,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -845,20 +889,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -886,22 +926,6 @@
   "53": {
     "fields": [
       {
-        "name": "Дата окончания",
-        "field": "date_to",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата начала",
-        "field": "date_from",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -910,6 +934,11 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -922,20 +951,26 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "Дата начала",
+        "field": "date_from",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата окончания",
+        "field": "date_to",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -962,12 +997,6 @@
   "54": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -976,6 +1005,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -988,20 +1027,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -1028,6 +1063,31 @@
   "55": {
     "fields": [
       {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+      {
         "name": "Тема",
         "field": "theme",
         "data_type": "str"
@@ -1049,40 +1109,10 @@
         "disabled": true
       },
       {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str",
-        "value": false,
-        "values": [
-          true,
-          false
-        ]
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
         "name": "ID раздела",
         "field": "section_id",
         "data_type": "str",
         "disabled": true
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
       },
       {
         "name": "Тип форматирования",
@@ -1108,6 +1138,32 @@
   },
   "56": {
     "fields": [
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str"
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
       {
         "name": "Размер s",
         "field": "s",
@@ -1149,26 +1205,6 @@
         "data_type": "str"
       },
       {
-        "name": "Активна",
-        "field": "active",
-        "data_type": "str"
-      },
-      {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
-        "name": "Дата публикации",
-        "field": "date_publiction",
-        "data_type": "str"
-      },
-      {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
         "name": "ID раздела",
         "field": "section_id",
         "data_type": "str"
@@ -1181,12 +1217,6 @@
       {
         "name": "Дата создания",
         "field": "date_creation",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
         "data_type": "str",
         "disabled": true
       }
@@ -1202,17 +1232,6 @@
   "111": {
     "fields": [
       {
-        "name": "Ссылка",
-        "field": "link",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -1221,6 +1240,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -1233,20 +1262,21 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "Ссылка",
+        "field": "link",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -1271,12 +1301,6 @@
   "172": {
     "fields": [
       {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -1285,6 +1309,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -1297,20 +1331,16 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",
@@ -1335,17 +1365,6 @@
   "175": {
     "fields": [
       {
-        "name": "Подраздел",
-        "field": "subsection",
-        "data_type": "str"
-      },
-      {
-        "name": "ID",
-        "field": "id",
-        "data_type": "str",
-        "disabled": true
-      },
-      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",
@@ -1354,6 +1373,16 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
       },
       {
         "name": "Содержимое",
@@ -1366,20 +1395,21 @@
         "data_type": "str"
       },
       {
-        "name": "ID раздела",
-        "field": "section_id",
+        "name": "Подраздел",
+        "field": "subsection",
+        "data_type": "str"
+      },
+      {
+        "name": "ID",
+        "field": "id",
         "data_type": "str",
         "disabled": true
       },
       {
-        "name": "Название статьи",
-        "field": "name",
-        "data_type": "str"
-      },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Тип форматирования",

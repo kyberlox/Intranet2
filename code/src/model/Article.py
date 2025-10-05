@@ -1602,7 +1602,7 @@ class Article:
                 art['indirect_data']['tags'] = tags
 
 
-        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 71, 34, 175] # список секций где нет лайков
+        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 56, 7, 71, 34, 175] # список секций где нет лайков
 
         if art['section_id'] not in null_list:
             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -1628,11 +1628,12 @@ class Article:
             result['name'] = art['name']
             result['content_text'] = art['content_text']
             result['section_id'] = art['section_id']
-            result['price'] = str(art['indirect_data']['price']) + ' ' + art['indirect_data']['money']
-            art['indirect_data'].pop('price')
-            art['indirect_data'].pop('money')
+            price = art['indirect_data'].pop('price')
+            photo = art['indirect_data'].pop('preview_file_url')
             result['current_sizes'] = [art['indirect_data']]
-            result['photo'] = [None]
+            result['price'] = price
+            
+            result['photo'] = photo
             return result
         
         
@@ -1799,7 +1800,8 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['size_left'] = re['indirect_data']
-                art_info['photo'] = [None]
+                photo = re['indirect_data'].pop("preview_file_url")
+                art_info['photo'] = photo
                 result.append(art_info)
             return result
         

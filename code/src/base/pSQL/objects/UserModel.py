@@ -14,7 +14,9 @@ from .DepartmentModel import DepartmentModel
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-
+from .App import get_db
+db_gen = get_db()
+database = next(db_gen)
 
 #!!!!!!!!!!!!!!!
 #from src.model.File import File
@@ -32,8 +34,8 @@ class UserModel:
         self.user = User#.__table__
         #self.inspector = inspect(engine)
 
-        from .App import db
-        self.db = db
+        # from .App import db
+        # database = db
     
     def create_new_user_view(self ):
         from .App import engine
@@ -61,7 +63,7 @@ class UserModel:
             LogsMaker().info_message("Создано представление для получения новых сотрудников")
 
         except SQLAlchemyError as e:
-            self.db.rollback()
+            database.rollback()
             LogsMaker().error_message(str(e))
 
     def upsert_user(self, user_data : dict):
@@ -88,15 +90,15 @@ class UserModel:
             #usr = db.query(self.user).get(user_data['id'])
             #usr = db.query(User).filter(self.user.id == user_data['id']).first()
 
-            q = self.db.query(self.user).filter(self.user.id == user_data["id"])
-            usr = self.db.query(q.exists()).scalar()  # returns True or False
+            q = database.query(self.user).filter(self.user.id == user_data["id"])
+            usr = database.query(q.exists()).scalar()  # returns True or False
 
             DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
 
             #если есть - проверить необходимость обновления
             if usr:
                 #user = db.query(self.user).filter(User.id == user_data["id"]).first()
-                user = self.db.query(self.user).get(user_data['id'])
+                user = database.query(self.user).get(user_data['id'])
 
                 #проверить есть ли изменения
                 need_update = False
@@ -211,11 +213,10 @@ class UserModel:
             
             
         except SQLAlchemyError as e:
-            self.db.rollback()
+            database.rollback()
             #print(f"An error occurred: {e}")
             LogsMaker().error_message(str(e))
-        finally:
-            self.db.close()
+
 
     def find_by_id_all(self):
         from src.model.File import File
@@ -223,7 +224,7 @@ class UserModel:
         """
         Ищет пользователя по id
         """
-        user = self.db.query(self.user).filter(self.user.id == self.id).first()
+        user = database.query(self.user).filter(self.user.id == self.id).first()
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
         
@@ -273,10 +274,10 @@ class UserModel:
                 result['photo_file_id'] = None
                 result['photo_file_url'] = None
                 result['photo_file_b24_url'] = None
-            self.db.close()    
+  
             return result
         else:
-            self.db.close() 
+
             LogsMaker().warning_message(f"Invalid user id = {self.id}")
             return None
 
@@ -286,7 +287,7 @@ class UserModel:
         """
         Ищет пользователя по id
         """
-        user = self.db.query(self.user).filter(self.user.id == self.id, self.user.active == True).first()
+        user = database.query(self.user).filter(self.user.id == self.id, self.user.active == True).first()
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
         
@@ -336,11 +337,11 @@ class UserModel:
                 result['photo_file_id'] = None
                 result['photo_file_url'] = None
                 result['photo_file_b24_url'] = None
-            self.db.close()    
+  
             return result
 
         else:
-            self.db.close() 
+
             LogsMaker().warning_message(f"Invalid user id = {self.id}")
             '''
             user_not_found = {
@@ -414,8 +415,8 @@ class UserModel:
 
     def find_by_uuid(self):
         try:
-            user = self.db.query(self.user).filter(self.user.uuid == self.uuid).first()
-            self.db.close()
+            user = database.query(self.user).filter(self.user.uuid == self.uuid).first()
+
             if user is not None:
                 return {
                     "ID": user.id,
@@ -429,8 +430,8 @@ class UserModel:
 
     
     def all(self):
-        result = self.db.query(self.user).all()
-        self.db.close()
+        result = database.query(self.user).all()
+
         return result
     
     def set_user_photo(self, file_id):
@@ -453,7 +454,7 @@ class UserModel:
         Важно! Не выводит пользователей, у кого департамент Аксиома и у кого нет фото
         """
         normal_list = []
-        users = self.db.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
+        users = database.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         for usr in users:
             user = usr.__dict__
             if 112 in user['indirect_data']['uf_department']:
@@ -489,16 +490,15 @@ class UserModel:
                     user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
                     
                     normal_list.append(user_info)
-        self.db.close()
+
         return normal_list
 
     def new_workers(self):
         from src.model.File import File
         from .App import DOMAIN
         from .App import NewUser
-
         # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
-        result = self.db.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
+        result = database.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
         # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id
         
         users = []
@@ -534,7 +534,7 @@ class UserModel:
                     user_info['department'] = indirect_data['uf_department']
                     user_info['image'] = f'{DOMAIN}{user_image["URL"]}'
                     users.append(user_info)
-        self.db.close()
+
         return users
     
 
@@ -546,7 +546,7 @@ class UserModel:
         
         all_users = []
         print('Выполняю запрос')
-        users = self.db.execute(select(self.user)).scalars().all()
+        users = database.execute(select(self.user)).scalars().all()
         print('Запрос выполнен')
         for user in users:
             

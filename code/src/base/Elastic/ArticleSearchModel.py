@@ -325,6 +325,73 @@ class ArticleSearchModel:
 
         return result  # res['hits']['hits'] result
 
+    def update_art_el_index(self, article_data):
+        art_id = article_data['id']
+        LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
+        data_row = {}
+        if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
+
+            if isinstance(article_data['indirect_data'], str):
+                article_data['indirect_data'] = json.loads(article_data['indirect_data'])
+
+            preview_photo = None
+            # обработка превью
+            files = File(art_id=article_data['id']).get_files_by_art_id()
+            
+            for file in files:
+                if file["is_preview"]:
+                    url = file["file_url"]
+                    # внедряю компрессию
+                    if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    else:
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image"
+                        url = '/'.join(preview_link)
+
+                    preview_photo = f"{DOMAIN}{url}"
+
+            # находим любую картинку, если она есть
+            for file in files:
+                
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
+                    "original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    LogsMaker().info_message(f"Найден файл URL={url}")
+                    # внедряю компрессию
+                    if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    else:
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image"
+                        url = '/'.join(preview_link)
+
+                    preview_photo = f"{DOMAIN}{url}"
+
+            data_row["section_id"] = article_data["section_id"]
+            if article_data["section_id"] == 15:
+                data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
+                data_row["company"] = article_data["indirect_data"]["company"]
+            data_row["title"] = article_data["name"]
+            data_row["preview_text"] = article_data["preview_text"]
+            data_row["content_text"] = article_data["content_text"]
+            data_row["content_type"] = article_data["content_type"]
+            data_row["preview_photo"] = preview_photo
+
+            doc = {
+                    "doc": data_row
+                }
+
+            result = elastic_client.update(index=self.index, id=art_id, body=doc)
+            if result:
+                return True
+            else:
+                return False
+
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}

@@ -31,7 +31,7 @@ from src.services.Idea import idea_router
 from src.services.Editor import editor_router
 from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
-from src.services.Roots import roots_router
+from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
 
@@ -322,6 +322,7 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     background_tasks.add_task(Article().uplod)
     background_tasks.add_task(Article().upload_likes)
     background_tasks.add_task(Tag().add_b24_tag)
+    background_tasks.add_task(Roots().create_primary_admins)
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 
 

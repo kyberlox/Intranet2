@@ -1804,7 +1804,6 @@ class Article:
                 art_info['name'] = re['name']
                 art_info['indirect_data'] = re['indirect_data']
                 #photo = re['indirect_data'].pop("preview_file_url")
-                #
 
                 self.id = art_info['id']
                 art_to_photo = self.search_by_id()

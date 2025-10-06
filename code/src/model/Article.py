@@ -1802,9 +1802,14 @@ class Article:
                 art_info['id'] = re['id']
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
-                art_info['size_left'] = re['indirect_data']
+                art_info['indirect_data'] = re['indirect_data']
                 #photo = re['indirect_data'].pop("preview_file_url")
-                #art_info['photo'] = photo
+                #
+
+                self.id = art_info['id']
+                art_to_photo = self.search_by_id()
+                art_info['photo'] = art_to_photo["photo"]
+
                 result.append(art_info)
             return result
         

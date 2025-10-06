@@ -52,3 +52,5 @@ class FieldvisionModel:
         res = database.query(self.Fieldvision).all()
          
         return res
+    
+    

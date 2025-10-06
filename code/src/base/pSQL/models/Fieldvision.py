@@ -13,3 +13,4 @@ class Fieldvision(Base):
     vision_name = Column(Text, nullable=True)
     
     # uservisionsroot = relationship("UservisionsRoot", back_populates="fieldvision")
+    # artvis = relationship("ArtVis", back_populates="fieldvision")

@@ -429,6 +429,10 @@ class UserModel:
         except Exception as e:
             LogsMaker().error_message(str(e))
 
+    #временно для авторизации
+    def find_by_email(self, email):
+        user_uuid = database.query(self.user.uuid).filter(self.user.email == email).scalar()
+        return user_uuid
     
     def all(self):
         result = database.query(self.user).all()

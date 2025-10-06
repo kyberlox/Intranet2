@@ -2034,7 +2034,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if date_publiction["date_publiction"] is None or ("date_publiction" in date_publiction and values["date_publiction"] <= current_datetime):
+                    if values["date_publiction"] is None or ("date_publiction" in values and values["date_publiction"] <= current_datetime):
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])

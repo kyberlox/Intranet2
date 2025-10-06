@@ -75,7 +75,7 @@
                 }
 
                 &--afisha {
-                    align-self: self-start !important;
+                    align-self: self-start;
                 }
 
                 &+.homeview__grid__card--section:is(:last-child) {
@@ -94,9 +94,9 @@
                             grid-template-columns: repeat(4, 1fr);
                         }
 
-                        // @include lg {
-                        //     grid-template-columns: repeat(4, 1fr);
-                        // }
+                        @include lg {
+                            grid-template-columns: repeat(2, 1fr);
+                        }
 
                         @include md {
                             grid-template-columns: repeat(3, 1fr);

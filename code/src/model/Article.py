@@ -255,7 +255,6 @@ class Article:
             #     "PROPERTY_1074" : "representative_id",
             #     "representative_text" : "PROPERTY_1075",
             #     "PROPERTY_1073" : "likes_from_b24"
-
             # }
         
             # indirect_data = dict_to_indirect_data(data, property_dict)
@@ -1625,18 +1624,19 @@ class Article:
         
         # магазин мерча
         if art['section_id'] == 56:
+            print(art)
             result = {}
             result['id'] = art['id']
             result['active'] = art['active']
             result['name'] = art['name']
             result['content_text'] = art['content_text']
             result['section_id'] = art['section_id']
-            price = art['indirect_data'].pop('price')
+            #price = art['indirect_data'].pop('price')
             photo = art['indirect_data'].pop('preview_file_url')
-            result['current_sizes'] = [art['indirect_data']]
-            result['price'] = price
-            
-            result['photo'] = photo
+            result['indirect_data'] = [art['indirect_data']]
+            #result['price'] = price
+            result['images'] = photo
+
             return result
         
         
@@ -1797,6 +1797,7 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
+                print(re)
                 # отсюда достать все файлы
                 art_info = {}
                 art_info['id'] = re['id']
@@ -1804,11 +1805,10 @@ class Article:
                 art_info['name'] = re['name']
                 art_info['indirect_data'] = re['indirect_data']
                 #photo = re['indirect_data'].pop("preview_file_url")
-                #
 
                 self.id = art_info['id']
-                art_to_photo = self.search_by_id()
-                art_info['photo'] = art_to_photo["photo"]
+                #art_to_photo = self.search_by_id()
+                #art_info['photo'] = art_to_photo["photo"]
 
                 result.append(art_info)
             return result
@@ -1842,7 +1842,7 @@ class Article:
             for res in result:
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
-                        if res["date_publiction"] <= current_datetime:
+                        if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
                             self.id = res["id"]
                             res["preview_file_url"] = self.get_preview()
                             # сюда лайки и просмотры
@@ -2034,7 +2034,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] is None or ("date_publiction" in values and values["date_publiction"] <= current_datetime):
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
@@ -2090,7 +2090,7 @@ class Article:
             for values in articles_in_section:
                 if values["active"] is not False:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
@@ -2151,7 +2151,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])

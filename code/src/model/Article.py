@@ -1803,7 +1803,7 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['size_left'] = re['indirect_data']
-                photo = re['indirect_data'].pop("preview_file_url")
+                #photo = re['indirect_data'].pop("preview_file_url")
                 art_info['photo'] = photo
                 result.append(art_info)
             return result

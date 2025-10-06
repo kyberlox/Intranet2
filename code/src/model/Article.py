@@ -1800,7 +1800,7 @@ class Article:
             for re in res:
                 print(re)
                 images = []
-                self.id = res['id']
+                self.id = re['id']
                 files = File(art_id = self.id).get_files_by_art_id()
                 if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                     url = file["file_url"]

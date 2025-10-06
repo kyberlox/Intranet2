@@ -1624,6 +1624,7 @@ class Article:
         
         # магазин мерча
         if art['section_id'] == 56:
+            print(art)
             result = {}
             result['id'] = art['id']
             result['active'] = art['active']
@@ -1632,9 +1633,9 @@ class Article:
             result['section_id'] = art['section_id']
             #price = art['indirect_data'].pop('price')
             photo = art['indirect_data'].pop('preview_file_url')
-            result['current_sizes'] = [art['indirect_data']]
+            result['indirect_data'] = [art['indirect_data']]
             #result['price'] = price
-            result['photo'] = photo
+            result['images'] = photo
 
             return result
         

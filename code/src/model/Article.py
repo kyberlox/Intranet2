@@ -2089,7 +2089,7 @@ class Article:
             for values in articles_in_section:
                 if values["active"] is not False:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] <= current_datetime or values["date_publiction"] is None:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])

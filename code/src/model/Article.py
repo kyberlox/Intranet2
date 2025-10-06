@@ -1798,6 +1798,7 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
+                print(re)
                 images = []
                 self.id = res['id']
                 files = File(art_id = self.id).get_files_by_art_id()

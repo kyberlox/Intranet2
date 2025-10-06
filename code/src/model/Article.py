@@ -1659,7 +1659,8 @@ class Article:
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
-                elif self.section_id == "55" or self.section_id == "41":
+                open_picture_sections = ["55", "41"]
+                elif self.section_id in open_picture_sections:
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")

@@ -1841,7 +1841,7 @@ class Article:
             for res in result:
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
-                        if ("date_publiction" in res and res["date_publiction"] <= current_datetime) or res["date_publiction"] is None:
+                        if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
                             self.id = res["id"]
                             res["preview_file_url"] = self.get_preview()
                             # сюда лайки и просмотры
@@ -2033,7 +2033,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if ("date_publiction" in date_publiction and values["date_publiction"] <= current_datetime) or date_publiction["date_publiction"] is None:
+                    if date_publiction["date_publiction"] is None or ("date_publiction" in date_publiction and values["date_publiction"] <= current_datetime):
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
@@ -2089,7 +2089,7 @@ class Article:
             for values in articles_in_section:
                 if values["active"] is not False:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime or values["date_publiction"] is None:
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
@@ -2150,7 +2150,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime or values["date_publiction"] is None:
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])

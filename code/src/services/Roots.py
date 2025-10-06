@@ -120,4 +120,10 @@ def get_editors_list(sec_id: int, request: Request):
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return Roots().get_editors_list(sec_id)
     return LogsMaker().warning_message(f"Недостаточно прав")
+
+@roots_router.get("/get_root_token_by_uuid")
+def get_token_by_uuid(request: Request):
+    user_id = get_uuid_from_request(request)
+    user_roots = Roots(user_uuid=user_id).get_token_by_uuid()
+    return user_roots
     

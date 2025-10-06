@@ -31,7 +31,7 @@ NewUser = Table('newusers', metadata,
 
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autoflush=True, bind=engine)
-db = SessionLocal()
+# db = SessionLocal()
 def get_db():
     db = SessionLocal()
     try:

@@ -1833,26 +1833,39 @@ class Article:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            current_datetime = datetime.datetime.now()
             for res in result:
                 if res['active']:
-                    
-                    self.id = res["id"]
-                    res["preview_file_url"] = self.get_preview()
-                    # сюда лайки и просмотры
-                    if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                        user_id = self.get_user_by_session_id(session_id=session_id)
-                        if user_id is not None:
-                            has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                            res['reactions'] = has_user_liked
+                    if int(self.section_id) in [31, 16, 33]:
+                        if res["date_publiction"] <= current_datetime:
+                            self.id = res["id"]
+                            res["preview_file_url"] = self.get_preview()
+                            # сюда лайки и просмотры
+                             # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
+                            user_id = self.get_user_by_session_id(session_id=session_id)
+                            if user_id is not None:
+                                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                                res['reactions'] = has_user_liked
+                        else:
+                            continue
+                    else:
+                        self.id = res["id"]
+                        res["preview_file_url"] = self.get_preview()
+                        # сюда лайки и просмотры
+                        if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
+                            user_id = self.get_user_by_session_id(session_id=session_id)
+                            if user_id is not None:
+                                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                                res['reactions'] = has_user_liked
 
-                    #обработаем конкурсы эмк где есть лайки, но нет просмотров
-                    # elif res['section_id'] == 7:
-                    #     del res['indirect_data']['likes_from_b24']
-                    #     # вызов количества лайков
-                    #     user_id = self.get_user_by_session_id(session_id=session_id)
-                    #     if user_id is not None:
-                    #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                    #         res['reactions'] = has_user_liked
+                        #обработаем конкурсы эмк где есть лайки, но нет просмотров
+                        # elif res['section_id'] == 7:
+                        #     del res['indirect_data']['likes_from_b24']
+                        #     # вызов количества лайков
+                        #     user_id = self.get_user_by_session_id(session_id=session_id)
+                        #     if user_id is not None:
+                        #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        #         res['reactions'] = has_user_liked
 
 
                     active_articles.append(res)
@@ -2008,6 +2021,7 @@ class Article:
 
         # Актуальные новости
         elif section_id == 31:
+            current_datetime = datetime.datetime.now()
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
@@ -2015,12 +2029,16 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    date_value.append(values["id"])
-                    date_value.append(values["name"])
-                    date_value.append(values["preview_text"])
-                    date_value.append(values["date_creation"])
+                    if values["date_publiction"] <= current_datetime:
+                        date_value.append(values["id"])
+                        date_value.append(values["name"])
+                        date_value.append(values["preview_text"])
+                        date_value.append(values["date_creation"])
+                        date_list.append(date_value)
+                    else:
+                        continue
 
-                    date_list.append(date_value) # получили список с необходимыми данными
+                     # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 
@@ -2061,19 +2079,24 @@ class Article:
 
         # Видеоитервью
         elif section_id == 16:
+            current_datetime = datetime.datetime.now()
             data_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is not False:
-                    data_value = [] # список для хранения необходимых данных
-                    data_value.append(values["id"])
-                    data_value.append(values["name"])
-                    data_value.append(values["preview_text"])
-                    data_value.append(values["date_creation"])
+                    date_value = [] # список для хранения необходимых данных
+                    if values["date_publiction"] <= current_datetime:
+                        date_value.append(values["id"])
+                        date_value.append(values["name"])
+                        date_value.append(values["preview_text"])
+                        date_value.append(values["date_creation"])
+                        data_list.append(date_value)
+                    else:
+                        continue
 
                     self.id = values["id"]
 
-                    data_list.append(data_value) # получили список с необходимыми данными
+                    # data_list.append(data_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(data_list, key=lambda x: x[0], reverse=True)
 
@@ -2115,6 +2138,7 @@ class Article:
 
         # Видеорепортажи
         elif section_id == 33:
+            current_datetime = datetime.datetime.now()
             date_list = [] # список для сортировки по дате
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
@@ -2122,11 +2146,14 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    date_value.append(values["id"])
-                    date_value.append(values["name"])
-                    date_value.append(values["preview_text"])
-                    date_value.append(values["date_creation"])
-                    date_list.append(date_value) # получили список с необходимыми данными
+                    if values["date_publiction"] <= current_datetime:
+                        date_value.append(values["id"])
+                        date_value.append(values["name"])
+                        date_value.append(values["preview_text"])
+                        date_value.append(values["date_creation"])
+                        date_list.append(date_value)#  получили список с необходимыми данными
+                    else:
+                        continue 
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
 

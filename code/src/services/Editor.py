@@ -826,7 +826,38 @@ class Editor:
 
         return result
 
+def get_uuid_from_request(request):
+    from .Auth import AuthService
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+    
+    user = dict(AuthService().get_user_by_seesion_id(session_id))
 
+    if user is not None:
+        user_uuid = user["user_uuid"]
+        username = user["username"]
+
+        #получить и вывести его id
+        user = User()
+        user.uuid = user_uuid
+        user_inf = user.user_inf_by_uuid()
+        if user_inf is not None and "ID" in user_inf.keys():
+            return user_inf["ID"]
+    return None
+
+def get_editor_roots(user_uuid):
+    from ..base.pSQL.objects.RootsModel import RootsModel
+    roots_model = RootsModel()
+    roots_model.user_uuid = user_uuid
+    all_roots = roots_model.get_token_by_uuid()
+    editor_roots = roots_model.token_processing_for_editor(all_roots)
+    return editor_roots
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 def get_user_info(section_id : int, art_id : int, user_id: int):
@@ -861,8 +892,15 @@ async def render(art_id : int ):
 
 #рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
-async def sec_render(sec_id):
-    return Editor(section_id = sec_id).section_rendering()
+async def sec_render(sec_id: int, request: Request):
+    # user_uuid = get_uuid_from_request(request)
+    user_uuid = 2366
+    editor_roots = get_editor_roots(user_uuid)
+    # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
+    print(editor_roots)
+    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
+        return Editor(section_id = sec_id).section_rendering()
+    return LogsMaker().warning_message(f"Недостаточно прав")
 
 #изменить статью
 @editor_router.post("/update/{art_id}")

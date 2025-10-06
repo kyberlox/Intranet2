@@ -1798,16 +1798,23 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
-                print(re)
+                images = []
+                files = File(art_id = int(res['id'])).get_files_by_art_id()
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    images.append(file)
+
                 # отсюда достать все файлы
                 art_info = {}
                 art_info['id'] = re['id']
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['indirect_data'] = re['indirect_data']
+                art_info['images'] = images
                 #photo = re['indirect_data'].pop("preview_file_url")
 
-                self.id = art_info['id']
+                
                 #art_to_photo = self.search_by_id()
                 #art_info['photo'] = art_to_photo["photo"]
 

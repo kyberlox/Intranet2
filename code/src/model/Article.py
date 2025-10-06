@@ -255,7 +255,6 @@ class Article:
             #     "PROPERTY_1074" : "representative_id",
             #     "representative_text" : "PROPERTY_1075",
             #     "PROPERTY_1073" : "likes_from_b24"
-
             # }
         
             # indirect_data = dict_to_indirect_data(data, property_dict)
@@ -1807,8 +1806,8 @@ class Article:
                 #photo = re['indirect_data'].pop("preview_file_url")
 
                 self.id = art_info['id']
-                art_to_photo = self.search_by_id()
-                art_info['photo'] = art_to_photo["photo"]
+                #art_to_photo = self.search_by_id()
+                #art_info['photo'] = art_to_photo["photo"]
 
                 result.append(art_info)
             return result

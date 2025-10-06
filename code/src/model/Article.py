@@ -1841,7 +1841,7 @@ class Article:
             for res in result:
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
-                        if res["date_publiction"] <= current_datetime:
+                        if "date_publiction" in res and res["date_publiction"] is not None and res["date_publiction"] <= current_datetime:
                             self.id = res["id"]
                             res["preview_file_url"] = self.get_preview()
                             # сюда лайки и просмотры

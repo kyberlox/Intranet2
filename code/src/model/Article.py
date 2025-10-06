@@ -1799,7 +1799,8 @@ class Article:
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
                 images = []
-                files = File(art_id = int(res['id'])).get_files_by_art_id()
+                self.id = res['id']
+                files = File(art_id = self.id).get_files_by_art_id()
                 if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                     url = file["file_url"]
                     file["file_url"] = f"{DOMAIN}{url}"

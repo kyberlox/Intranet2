@@ -9,7 +9,7 @@ def check_and_add(username, password, ip_adress):
     need_update_wirewall = add_ip(ip_adress)
 
     #перезапускаю правила
-    if need_update_wirewall:
+    #if need_update_wirewall:
 
 
 def add_ip(ip_adress):
@@ -17,13 +17,13 @@ def add_ip(ip_adress):
     with open("../../../firewall/admin_ip.txt") as adm_ip_file:
         adm_ip = adm_ip_file.readlines()
     
-        if ip_adress in adm_ip:
-            return False
-        else:
-            #записываю в конец
-            with open("../../../firewall/admin_ip.txt", 'a') as adm_ip_file:  
-                adm_ip_file.write(ip_adress + '\n')
-            return True
+    if ip_adress in adm_ip:
+        return False
+    else:
+        #записываю в конец
+        with open("../../../firewall/admin_ip.txt", 'a') as adm_ip_file:  
+            adm_ip_file.write(ip_adress + '\n')
+        return True
 
 add_ip("217.65.222.242")
 

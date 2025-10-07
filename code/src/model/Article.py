@@ -1814,6 +1814,8 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['indirect_data'] = re['indirect_data']
+                if re['indirect_data'] == None:
+                    re['indirect_data'] = dict()
                 art_info['indirect_data']['images'] = images
                 #photo = re['indirect_data'].pop("preview_file_url")
 

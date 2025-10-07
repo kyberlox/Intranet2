@@ -21,7 +21,7 @@ def add_ip(ip_adress):
         return False
     else:
         #записываю в конец
-        with open('file.txt', 'a') as adm_ip_file:  
+        with open("../../../firewall/admin_ip.txt", 'a') as adm_ip_file:  
             adm_ip_file.write(ip_adress + '\n')
         return True
 

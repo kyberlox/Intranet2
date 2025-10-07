@@ -22,7 +22,8 @@ def add_ip(ip_adress):
     else:
         #записываю в конец
         with open('file.txt', 'a') as adm_ip_file:  
-            adm_ip_file.write(ip_adress + '\n')  
+            adm_ip_file.write(ip_adress + '\n')
+
         return True
 
 add_ip("217.65.222.242")

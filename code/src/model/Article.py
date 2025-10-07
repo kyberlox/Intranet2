@@ -1824,13 +1824,12 @@ class Article:
                     art_info['section_id'] = re['section_id']
                     art_info['name'] = re['name']
 
-                    print(art_info)
-                    if re['indirect_data'] is None:
-                        art_info['indirect_data'] = dict()
-                    else:
-                        art_info['indirect_data'] = re['indirect_data']
-                    
-                    art_info['indirect_data']['images'] = images
+                if re['indirect_data'] is None:
+                    art_info['indirect_data'] = dict()
+                else:
+                    art_info['indirect_data'] = re['indirect_data']
+                
+                art_info['indirect_data']['images'] = images
 
                     result.append(art_info)
             return result

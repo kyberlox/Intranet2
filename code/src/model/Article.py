@@ -1634,7 +1634,7 @@ class Article:
             result['section_id'] = art['section_id']
 
             if art['indirect_data'] is None:
-                    result['indirect_data'] = dict()
+                result['indirect_data'] = dict()
             else:
                 result['indirect_data'] = art['indirect_data']
             

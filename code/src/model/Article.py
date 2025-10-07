@@ -1816,9 +1816,8 @@ class Article:
                 art_info['indirect_data'] = re['indirect_data']
 
                 print(art_info)
-                if art_info['indirect_data'] == None:
-                    art_info['indirect_data'] = dict()
-                art_info['indirect_data']['images'] = images
+                
+                art_info['images'] = images
 
                 result.append(art_info)
             return result

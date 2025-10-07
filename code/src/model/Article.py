@@ -1671,13 +1671,15 @@ class Article:
                 # и для гида по предприятиям 
                 
                 elif self.section_id in ["55", "41", "32"]:
-                    print(self.section_id, "тут компрессия для орг развития 1")
+                    if 52414 == int(self.id):
+                        print(file, "тут компрессия для орг развития 1")
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
                     url = '/'.join(preview_link)
-                    print(self.section_id, "тут компрессия для орг развития 4")
+                    if 52414 == int(self.id):
+                        print(file, "тут компрессия для орг развития 4")
                 
                 return f"{DOMAIN}{url}"
 
@@ -1693,10 +1695,12 @@ class Article:
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
                 elif self.section_id in ["55", "41", "32"]:
-                    print(self.section_id, "тут компрессия для орг развития 2")
+                    if 52414 == int(self.id):
+                        print(file, "тут компрессия для орг развития 2")
                     return f"{DOMAIN}{url}"
                 else:
-                    print(self.section_id, "тут компрессия для орг развития 3")
+                    if 52414 == int(self.id):
+                        print(file, "тут компрессия для орг развития 3")
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
                     url = '/'.join(preview_link)

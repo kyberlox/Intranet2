@@ -1632,10 +1632,12 @@ class Article:
             result['name'] = art['name']
             result['content_text'] = art['content_text']
             result['section_id'] = art['section_id']
-            #price = art['indirect_data'].pop('price')
-            #photo = art['indirect_data'].pop('preview_file_url')
-            #result['price'] = price
-            result['indirect_data'] = art['indirect_data']
+
+            if art['indirect_data'] is None:
+                    result['indirect_data'] = dict()
+                else:
+                    result['indirect_data'] = art['indirect_data']
+            
             sizes_left = dict()
             for size in size_list:
                 if size in art['indirect_data'].keys() and art['indirect_data'][size] is not None:
@@ -1821,7 +1823,6 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
 
-                print(art_info)
                 if re['indirect_data'] is None:
                     art_info['indirect_data'] = dict()
                 else:

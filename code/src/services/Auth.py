@@ -216,6 +216,23 @@ class AuthService:
         
         return None
     
+
+    def check_admin_credentials(self, username, password):
+        #хватаю из json пользователей по логину для демки и возваращаю GUID
+        user_data_file = open("./src/base/admin_users.json", "r")
+        user_json = json.load(user_data_file)
+        user_data_file.close()
+        
+        for user_data in user_json:
+            if username == user_data["login"] and password == ["password"]:
+                log_str = f"!!!!!!!!!!!! ADMIN {username} подключился к серверу!!!!!!!!!!!!"
+                # ret_str = "#"*len(log_str)
+                LogsMaker().ready_status_message(f"{log_str}")
+                return user_data
+        
+        return None
+    
+
     # #ЗАГЛУШКА2
     # def check_ad_credentials(self, username, password):
     #     #хватаю uuid пользователя по логину

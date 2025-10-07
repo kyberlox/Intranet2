@@ -1,43 +1,44 @@
 <template>
-    <div class="hover-gallery"
-         @mousemove="handleMouseMove"
-         @mouseleave="resetToFirstImage">
+<div class="hover-gallery"
+     @mousemove="handleMouseMove"
+     @mouseleave="resetToFirstImage">
 
-        <div class="hover-gallery__indicators"
-             v-if="showIndicators && images.length > 1">
-            <div v-for="(image, index) in images"
-                 :key="index"
-                 class="hover-gallery__indicator"
-                 :class="{ 'active': currentImageIndex === index }">
-            </div>
-        </div>
-
-        <div class="hover-gallery__image-container">
-            <img :src="currentImage"
-                 :alt="alt"
-                 class="hover-gallery__image" />
-        </div>
-
-        <div class="hover-gallery__zones"
-             v-if="images.length > 1">
-            <div v-for="(image, index) in images"
-                 :key="index"
-                 class="hover-gallery__zone"
-                 :style="{ width: zoneWidth + '%' }"
-                 @mouseenter="setCurrentImage(index)">
-            </div>
+    <div class="hover-gallery__indicators"
+         v-if="showIndicators && images.length > 1">
+        <div v-for="(image, index) in images"
+             :key="index"
+             class="hover-gallery__indicator"
+             :class="{ 'active': currentImageIndex === index }">
         </div>
     </div>
+
+    <div class="hover-gallery__image-container">
+        <img :src="currentImage.file_url"
+             :alt="alt"
+             class="hover-gallery__image" />
+    </div>
+
+    <div class="hover-gallery__zones"
+         v-if="images.length > 1">
+        <div v-for="(image, index) in images"
+             :key="index"
+             class="hover-gallery__zone"
+             :style="{ width: zoneWidth + '%' }"
+             @mouseenter="setCurrentImage(index)">
+        </div>
+    </div>
+</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, type PropType } from 'vue'
+import type { IBXFileType } from '@/interfaces/IEntities';
+import { defineComponent, ref, computed, type PropType, watchEffect } from 'vue'
 
 export default defineComponent({
     name: 'HoverImageGallery',
     props: {
         images: {
-            type: Array as PropType<string[]>,
+            type: Array as PropType<IBXFileType[]>,
             required: true
         },
         alt: {
@@ -77,6 +78,8 @@ export default defineComponent({
         const resetToFirstImage = () => {
             currentImageIndex.value = 0;
         }
+
+        watchEffect(() => console.log(currentImage.value))
 
         return {
             currentImage,

@@ -94,7 +94,7 @@ export const safetyTechnicsFireInner: ISafetyTechnicsSlide =
 {
     content: {
         id: 1,
-        videos_native: [{ file_url: '@/assets/videos/fire.mp4' }],
+        videos_native: [{ file_url: 'https://intranet.emk.ru/api/files/68e37cb2da1f67368eff542d.mp4' }],
         content_text: `<div class="news__detail__discr safety__detail__discr">
                     <h2 class="news__detail__title mb-2">Техника безопасности</h2>
                     <strong>При возникновении локального возгорания</strong>

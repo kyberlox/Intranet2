@@ -45,8 +45,14 @@
     }
 
     &-inner {
-        &__field:empty {
-            display: none;
+        &__field {
+            &>img {
+                max-width: 250px;
+            }
+
+            &:empty {
+                display: none;
+            }
         }
 
         &__type-buttons {
@@ -160,6 +166,17 @@
             border-radius: 4px;
             font-size: 14px;
             box-sizing: border-box;
+
+
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+
+            &:focus {
+                border-color: var(--emk-brand-color);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
 
             &:disabled {
                 background-color: #f5f5f5;

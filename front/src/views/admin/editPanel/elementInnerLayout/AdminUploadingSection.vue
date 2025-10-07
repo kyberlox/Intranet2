@@ -1,6 +1,11 @@
 <template>
 <div class="admin-element-inner__field"
      v-if="newFileData">
+    <div class="admin-element-inner__field"
+         v-if="newFileData.images?.length && newFileData.images?.length > 0">
+        <p>Превью новости (берется первое загруженное из списка изображений)</p>
+        <img :src="newFileData.images[0].file_url" />
+    </div>
     <div class="admin-element-inner__fields"
          v-for="itemKey in Object.keys(newFileData)"
          :key="'key' + itemKey">

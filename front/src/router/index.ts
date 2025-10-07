@@ -487,24 +487,24 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/admin/components/elementsListLayout/AdminSidebar.vue')
+      component: () => import('@/views/admin/components/AdminSidebar.vue')
     },
     {
       path: '/admin/:id',
       name: 'adminBlockInner',
-      component: () => import('@/views/admin/AdminElements.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElements.vue'),
       props: (route) => ({ id: route.params.id })
     },
     {
       path: '/admin/:id/new',
       name: 'adminElementInnerAdd',
-      component: () => import('@/views/admin/AdminElementInner.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
     },
     {
       path: '/admin/:id/:elementId',
       name: 'adminElementInnerEdit',
-      component: () => import('@/views/admin/AdminElementInner.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]

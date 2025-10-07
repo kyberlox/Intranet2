@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import type { IUser } from "@/interfaces/IEntities";
+import type{ IRoots } from "@/interfaces/IEntities";
 
 export const useUserData = defineStore('userData', {
     state: () => ({
         myId: 0,
         authKey: '',
         user: {} as IUser,
+        roots: {PeerAdmin: false, EditorAdmin: false, VisionAdmin: false} as IRoots,
         isLogin: false
     }),
 
@@ -32,6 +34,11 @@ export const useUserData = defineStore('userData', {
         setUserInfo(userData: IUser) {
             this.user = userData;
         },
+        setUserRoots(data: IRoots){
+            this.roots.EditorAdmin = data.EditorAdmin
+            this.roots.VisionAdmin = data.VisionAdmin
+            this.roots.PeerAdmin = data.PeerAdmin
+        },
         logOut() {
             this.authKey = '';
             this.isLogin = false;
@@ -46,6 +53,8 @@ export const useUserData = defineStore('userData', {
         getMyId: (state) => state.myId,
         getIsLogin: (state) => state.isLogin,
         getAuthKey: (state) => state.authKey,
+        getUserRoots: (state)=> state.roots,
+        getNeedAdminLink: (state) => state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin,
         getUser: (state) => state.user,
         getPhoto: (state) => state.user.photo_file_url,
         getFio: (state) => state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name,

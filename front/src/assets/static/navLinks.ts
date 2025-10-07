@@ -266,7 +266,7 @@ export const supportLinks: SupportLink[] = [
     },
     {
         title: "Редактор Интранет",
-        href: "",
+        href: "admin",
         description: "Перейти",
         icon: DocsIcon,
     },

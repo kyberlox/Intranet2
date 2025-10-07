@@ -20,6 +20,9 @@
                    :type="item.data_type == 'int' ? 'number' : 'text'"
                    @pick="(value: string) => handleEmitValueChange(item, value)" />
 
+        <img v-if="item.field == 'photo_file_url'"
+             :src="(item.value as string)" />
+
         <AdminEditReportage v-if="item.field == 'reports'"
                             :item="(item.value as IReportage[])"
                             @pick="handleReportChange" />
@@ -70,8 +73,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref, computed, watch, onUnmounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { defineComponent, onMounted, ref, type Ref, computed, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';
@@ -80,14 +83,14 @@ import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.
 import AdminEditReportage from '@/views/admin/components/inputFields/AdminEditReportage.vue';
 import Loader from '@/components/layout/Loader.vue';
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
-import FileUploader from '../../components/tools/common/FileUploader.vue';
+import FileUploader from '@/components/tools/common/FileUploader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { screenCheck } from '@/utils/screenCheck';
 import { useWindowSize } from '@vueuse/core'
-import AdminPostPreview from './components/elementInnerLayout/AdminPostPreview.vue';
-import AdminUploadingSection from './components/elementInnerLayout/AdminUploadingSection.vue';
-import AdminEditUserSearch from './components/inputFields/AdminEditUserSearch.vue';
+import AdminPostPreview from '@/views/admin/editPanel/elementInnerLayout/AdminPostPreview.vue';
+import AdminUploadingSection from '@/views/admin/editPanel/elementInnerLayout/AdminUploadingSection.vue';
+import AdminEditUserSearch from '@/views/admin/components/inputFields/AdminEditUserSearch.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';

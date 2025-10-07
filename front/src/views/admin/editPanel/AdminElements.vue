@@ -107,7 +107,7 @@
 import { computed, defineComponent, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Api from '@/utils/Api';
-import AdminSidebar from './components/elementsListLayout/AdminSidebar.vue';
+import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useDateFormat } from '@vueuse/core';
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";

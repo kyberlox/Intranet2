@@ -2,46 +2,58 @@
 <div class="merch-store-item__wrapper">
     <div class="merch-store-item mt20">
         <div class="merch-store-item__images__wrapper">
-            <div class="merch-store-item__images__flex-gallery">
-                <div v-for="(card, index) in merchItemPlug.images"
+            <div v-if="currentItem?.indirect_data && currentItem.indirect_data.images"
+                 class="merch-store-item__images__flex-gallery">
+                <div v-for="(card, index) in currentItem?.indirect_data?.images"
                      :key="index"
                      class="merch-store-item__images__flex-gallery__card__wrapper">
                     <div class="merch-store-item__images__flex-gallery__card">
-                        <img class="pos-rel"
-                             :src="card"
-                             @click="setZoomImg(card)" />
+                        <img v-if="(typeof card !== 'string' && card.file_url)"
+                             class="pos-rel"
+                             :src="(card.file_url)"
+                             @click="setZoomImg(card.file_url)" />
                         <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
                     </div>
                 </div>
             </div>
         </div>
-        <div class="merch-store-item__info">
-            <div class="merch-store-item__info__category">{{ merchItemPlug.category }}</div>
+        <div class="merch-store-item__info"
+             v-if="currentItem">
+            <div class="merch-store-item__info__category"
+                 v-if="currentItem.indirect_data?.category">{{ currentItem.indirect_data?.category }}</div>
             <div class="merch-store-item__info__title">
-                {{ merchItemPlug.title }}
+                {{ currentItem.name }}
             </div>
-            <div class="merch-store-item__info__description"
-                 v-html="merchItemPlug.description">
+            <div v-if="currentItem.content_text"
+                 class="merch-store-item__info__description"
+                 v-html="currentItem.content_text">
             </div>
-            <div class="merch-store-item__info__sizes__title">
-                Размер
-            </div>
-            <div class="merch-store-item__info__sizes">
-                <div class="merch-store-item__info__size"
-                     :class="{ 'merch-store-item__info__size--active': item == currentSize }"
-                     v-for="item in merchItemPlug.sizes"
-                     :key="'size' + item"
-                     @click="setCurrentSize(item)">
-                    {{ item }}
+            <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && currentSize !== 'no_size' && currentSize"
+                 class="merch-store-item__info__sizes__title">
+                <span>Размер</span>
+                <div class="merch-store-item__info__sizes">
+                    <div class="merch-store-item__info__size"
+                         :class="{ 'merch-store-item__info__size--active': item == currentSize }"
+                         v-for="item in checkSizes(currentItem as IMerchItem).filter((e) => e !== 'no_size')"
+                         :key="'size' + item"
+                         @click="setCurrentSize(item)">
+                        {{ item }}
+                    </div>
                 </div>
             </div>
 
             <div class="merch-store-item__info__price">
-                <span class="merch-store-item__info__count-text"> {{ merchItemPlug.price }}</span> эмк-коинов
+                <span class="merch-store-item__info__count-text"> {{ currentItem?.indirect_data?.price }}</span>
+                эмк-коинов
             </div>
 
-            <div class="merch-store-item__info__count">
-                <span class="merch-store-item__info__count-text"> {{ merchItemPlug.count }}</span> шт. осталось
+            <div v-if="currentSize"
+                 class="merch-store-item__info__count">
+                <span class="merch-store-item__info__count-text">
+                    {{
+                        currentItem?.indirect_data?.sizes_left[currentSize]
+                    }}
+                </span> шт. осталось
             </div>
             <div class="merch-store-item__action__wrapper">
                 <div class="merch-store-item__action__button"
@@ -63,11 +75,13 @@
 
 <script lang="ts">
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
 import AcceptBuyModal from './components/AcceptBuyModal.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
+import Api from '@/utils/Api';
+import type { IMerchItem } from '@/interfaces/entities/IMerch';
 
 export default defineComponent({
     components: {
@@ -81,34 +95,23 @@ export default defineComponent({
             default: 1
         },
     },
-    setup() {
-        const merchItemPlug = {
-            id: 1,
-            title: 'Панама',
-            price: '1000',
-            count: '1',
-            images: ['/imgs/merchStore/2.png', '/imgs/merchStore/1.png'],
-            sizes: ['s', 'm', 'l', 'xl', 'xxl'],
-            description: 'Стильная хлопковая панамка с широкими полями для максимальной защиты от солнца. Выполнена из дышащего материала премиум-качества с влагоотводящей подкладкой. Идеально подходит для пляжного отдыха, рыбалки и активного отдыха на природе. Регулируемый размер благодаря внутренней тесьме.',
-            category: 'Головные уборы',
-            colors: ['оранжевый-черный'],
-            material: '100% хлопок',
-        }
-
+    setup(props) {
         const activeImage = ref();
         const modalIsOpen = ref(false);
-        const currentSize = ref('');
+        const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
         const acceptBuyModalOpen = ref(false);
 
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
+
+        const currentItem = ref<IMerchItem>();
 
         const setZoomImg = (image: string) => {
             activeImage.value = image;
             modalIsOpen.value = true;
         }
 
-        const setCurrentSize = (size: string) => {
+        const setCurrentSize = (size: 's' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size') => {
             currentSize.value = size;
         }
 
@@ -117,15 +120,34 @@ export default defineComponent({
             acceptBuyModalOpen.value = false
         }
 
+        const checkSizes = (item: IMerchItem) =>
+            Object.keys(item.indirect_data?.sizes_left ?? {}) as ('s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size')[];
+
+        onMounted(() => {
+            Api.get(`article/find_by_ID/${props.id}`)
+                .then((data) => currentItem.value = data)
+                .finally(() => {
+                    // if (currentItem?.value && 'indirect_data' in currentItem?.value && 'sizes_left' in currentItem.value && 'no_size' in currentItem.value.indirect_data?.sizes_left && currentItem.value?.indirect_data?.sizes_left?.no_size) {
+                    //     currentSize.value = 'no_size'
+                    // }
+                    // else if (!currentItem.value?.indirect_data || !currentItem.value?.indirect_data.sizes_left) {
+                    //     currentSize.value = 'no_size'
+                    // }
+
+                })
+        })
+
+
         return {
-            merchItemPlug,
             activeImage,
             modalIsOpen,
             currentSize,
             acceptBuyModalOpen,
+            currentItem,
             setZoomImg,
             setCurrentSize,
             acceptBuy,
+            checkSizes
         }
     }
 })

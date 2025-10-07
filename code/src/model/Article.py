@@ -1671,15 +1671,11 @@ class Article:
                 # и для гида по предприятиям 
                 
                 elif self.section_id in ["55", "41", "32"]:
-                    if 52414 == int(self.id):
-                        print(file, "тут компрессия для орг развития 1")
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
                     url = '/'.join(preview_link)
-                    if 52414 == int(self.id):
-                        print(file, "тут компрессия для орг развития 4")
                 
                 return f"{DOMAIN}{url}"
 
@@ -1695,12 +1691,8 @@ class Article:
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
                 elif self.section_id in ["55", "41", "32"]:
-                    if 52414 == int(self.id):
-                        print(file, "тут компрессия для орг развития 2")
                     return f"{DOMAIN}{url}"
                 else:
-                    if 52414 == int(self.id):
-                        print(file, "тут компрессия для орг развития 3")
                     preview_link = url.split("/")
                     preview_link[-2] = "compress_image"
                     url = '/'.join(preview_link)
@@ -1979,7 +1971,13 @@ class Article:
 
             
             self.id = news_id
-            image_URL = self.get_preview()
+            # image_URL = self.get_preview()
+            files = File(art_id = int(self.id)).get_files_by_art_id()
+            for file in files:
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    image_URL = DOMAIN + url
+
             second_page = {
                 'id': section_id, 
                 'type': 'swiper', 

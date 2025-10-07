@@ -1635,8 +1635,8 @@ class Article:
 
             if art['indirect_data'] is None:
                     result['indirect_data'] = dict()
-                else:
-                    result['indirect_data'] = art['indirect_data']
+            else:
+                result['indirect_data'] = art['indirect_data']
             
             sizes_left = dict()
             for size in size_list:

@@ -1,5 +1,5 @@
 from .LogsMaker import LogsMaker
-from .Auth import LogsMaker
+from .Auth import AuthService
 
 def check_and_add(username, password, ip_adress):
     #проверяю валидность на логин и пароль

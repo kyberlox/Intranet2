@@ -1624,6 +1624,7 @@ class Article:
         
         # магазин мерча
         if art['section_id'] == 56:
+            size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
             print(art)
             result = {}
             result['id'] = art['id']
@@ -1632,10 +1633,17 @@ class Article:
             result['content_text'] = art['content_text']
             result['section_id'] = art['section_id']
             #price = art['indirect_data'].pop('price')
-            photo = art['indirect_data'].pop('preview_file_url')
-            result['indirect_data'] = [art['indirect_data']]
+            #photo = art['indirect_data'].pop('preview_file_url')
             #result['price'] = price
-            result['images'] = photo
+            result['indirect_data'] = art['indirect_data']
+            sizes_left = dict()
+            for size in size_list:
+                if size in art['indirect_data'].keys() and art['indirect_data'][size] is not None:
+                    sizes_left[size] = art['indirect_data'][size]
+                    art['indirect_data'].pop(size)
+            
+            result['indirect_data']['sizes_left'] = sizes_left
+            result['indirect_data']['images'] = art['images']
 
             return result
         
@@ -1797,18 +1805,29 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
-                size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
+                
+                images = []
+                self.id = re['id']
+                files = File(art_id = self.id).get_files_by_art_id()
+                for file in files:
+                    if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                        url = file["file_url"]
+                        file["file_url"] = f"{DOMAIN}{url}"
+                        images.append(file)
+
                 # отсюда достать все файлы
                 art_info = {}
                 art_info['id'] = re['id']
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
-                art_info['indirect_data'] = re['indirect_data']
-                #photo = re['indirect_data'].pop("preview_file_url")
 
-                self.id = art_info['id']
-                #art_to_photo = self.search_by_id()
-                #art_info['photo'] = art_to_photo["photo"]
+                print(art_info)
+                if re['indirect_data'] is None:
+                    art_info['indirect_data'] = dict()
+                else:
+                    art_info['indirect_data'] = re['indirect_data']
+                
+                art_info['indirect_data']['images'] = images
 
                 result.append(art_info)
             return result

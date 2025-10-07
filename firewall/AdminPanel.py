@@ -14,14 +14,14 @@ def check_and_add(username, password, ip_adress):
 
 def add_ip(ip_adress):
     #собираю с список ip адреса
-    with open("../../../firewall/admin_ip.txt") as adm_ip_file:
+    with open("admin_ip.txt") as adm_ip_file:
         adm_ip = adm_ip_file.readlines()
     print(adm_ip)
     if ip_adress in adm_ip:
         return False
     else:
         #записываю в конец
-        with open("../../../firewall/admin_ip.txt", 'a') as adm_ip_file:  
+        with open("admin_ip.txt", 'a') as adm_ip_file:  
             adm_ip_file.write('\n' + ip_adress + '\n')
         return True
 

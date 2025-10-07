@@ -1820,7 +1820,7 @@ class Article:
                 else:
                     art_info['indirect_data'] = re['indirect_data']
                 
-                art_info['images'] = images
+                art_info['indirect_data']['images'] = images
 
                 result.append(art_info)
             return result

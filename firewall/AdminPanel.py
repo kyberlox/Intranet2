@@ -17,7 +17,7 @@ def add_ip(ip_adress):
     with open("admin_ip.txt") as adm_ip_file:
         adm_ip = []
         for ip in adm_ip_file:
-             adm_ip.append(ip)
+             adm_ip.append(ip.strip())
     print(ip_adress, adm_ip)
     if ip_adress in adm_ip:
         return False

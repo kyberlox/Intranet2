@@ -5,6 +5,8 @@ from .User import User
 from .Department import Department
 from .UsDep import UsDep
 
+from .ArtVis import ArtVis
+
 from .Article import Article
 from .Likes import Likes
 from .Views import Views
@@ -19,6 +21,7 @@ from .PeerHistory import PeerHistory
 # from .Roots import Roots
 # from .PeerHistory import PeerHistory
 from .Fieldvision import Fieldvision
+from .UservisionsRoot import UservisionsRoot
 
 from .Section import Section
 
@@ -38,5 +41,7 @@ __all__ = [
     'Tags',
     'Activities',
     'ActiveUsers',
-    'Section'
+    'Section',
+    'ArtVis',
+    'UservisionsRoot'
 ]

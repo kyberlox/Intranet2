@@ -255,7 +255,6 @@ class Article:
             #     "PROPERTY_1074" : "representative_id",
             #     "representative_text" : "PROPERTY_1075",
             #     "PROPERTY_1073" : "likes_from_b24"
-
             # }
         
             # indirect_data = dict_to_indirect_data(data, property_dict)
@@ -1625,19 +1624,29 @@ class Article:
         
         # магазин мерча
         if art['section_id'] == 56:
-            result = {}
-            result['id'] = art['id']
-            result['active'] = art['active']
-            result['name'] = art['name']
-            result['content_text'] = art['content_text']
-            result['section_id'] = art['section_id']
-            price = art['indirect_data'].pop('price')
-            photo = art['indirect_data'].pop('preview_file_url')
-            result['current_sizes'] = [art['indirect_data']]
-            result['price'] = price
-            
-            result['photo'] = photo
-            return result
+            if art['active'] == True:
+                size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
+                print(art)
+                result = {}
+                result['id'] = art['id']
+                result['active'] = art['active']
+                result['name'] = art['name']
+                result['content_text'] = art['content_text']
+                result['section_id'] = art['section_id']
+                #price = art['indirect_data'].pop('price')
+                #photo = art['indirect_data'].pop('preview_file_url')
+                #result['price'] = price
+                result['indirect_data'] = art['indirect_data']
+                sizes_left = dict()
+                for size in size_list:
+                    if size in art['indirect_data'].keys() and art['indirect_data'][size] is not None:
+                        sizes_left[size] = art['indirect_data'][size]
+                        art['indirect_data'].pop(size)
+                
+                result['indirect_data']['sizes_left'] = sizes_left
+                result['indirect_data']['images'] = art['images']
+
+                return result
         
         
         return art
@@ -1652,6 +1661,7 @@ class Article:
         for file in files:
             if file["is_preview"]:
                 url = file["file_url"]
+                
                 #внедряю компрессию
                 if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
                     preview_link = url.split("/")
@@ -1659,7 +1669,8 @@ class Article:
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
-                elif self.section_id == "55" or self.section_id == "41":
+                
+                elif self.section_id in ["55", "41", "32"]:
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
@@ -1679,7 +1690,7 @@ class Article:
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
-                elif self.section_id == "55" or self.section_id == "41":
+                elif self.section_id in ["55", "41", "32"]:
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
@@ -1797,15 +1808,30 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
-                # отсюда достать все файлы
-                art_info = {}
-                art_info['id'] = re['id']
-                art_info['section_id'] = re['section_id']
-                art_info['name'] = re['name']
-                art_info['size_left'] = re['indirect_data']
-                photo = re['indirect_data'].pop("preview_file_url")
-                art_info['photo'] = photo
-                result.append(art_info)
+                if re['active'] == True:
+                    images = []
+                    self.id = re['id']
+                    files = File(art_id = self.id).get_files_by_art_id()
+                    for file in files:
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            file["file_url"] = f"{DOMAIN}{url}"
+                            images.append(file)
+
+                    # отсюда достать все файлы
+                    art_info = {}
+                    art_info['id'] = re['id']
+                    art_info['section_id'] = re['section_id']
+                    art_info['name'] = re['name']
+
+                    if re['indirect_data'] is None:
+                        art_info['indirect_data'] = dict()
+                    else:
+                        art_info['indirect_data'] = re['indirect_data']
+                    
+                    art_info['indirect_data']['images'] = images
+
+                    result.append(art_info)
             return result
         
         # конкурсы ЭМК без компрессии
@@ -1837,7 +1863,7 @@ class Article:
             for res in result:
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
-                        if res["date_publiction"] <= current_datetime:
+                        if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
                             self.id = res["id"]
                             res["preview_file_url"] = self.get_preview()
                             # сюда лайки и просмотры
@@ -2029,7 +2055,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] is None or ("date_publiction" in values and values["date_publiction"] <= current_datetime):
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
@@ -2085,7 +2111,7 @@ class Article:
             for values in articles_in_section:
                 if values["active"] is not False:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
@@ -2146,7 +2172,7 @@ class Article:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных
-                    if values["date_publiction"] <= current_datetime:
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])

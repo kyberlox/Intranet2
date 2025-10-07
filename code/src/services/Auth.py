@@ -217,6 +217,37 @@ class AuthService:
         return None
     
 
+    def check_admin_credentials(self, username, password):
+        #хватаю из json пользователей по логину для демки и возваращаю GUID
+        user_data_file = open("./src/base/admin_users.json", "r")
+        user_json = json.load(user_data_file)
+        user_data_file.close()
+        
+        for user_data in user_json:
+            if username == user_data["login"] and password == ["password"]:
+                log_str = f"!!!!!!!!!!!! ADMIN {username} подключился к серверу!!!!!!!!!!!!"
+                # ret_str = "#"*len(log_str)
+                LogsMaker().ready_status_message(f"{log_str}")
+                return user_data
+        
+        return None
+    
+
+    # #ЗАГЛУШКА2
+    # def check_ad_credentials(self, username, password):
+    #     #хватаю uuid пользователя по логину
+    #     user_uuid = User().find_by_email(username)
+    #     if user_uuid:
+    #         log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+    #         # ret_str = "#"*len(log_str)
+    #         LogsMaker().ready_status_message(f"{log_str}")
+    #         user_data = {"login": username, "GUID": user_uuid}
+    #         return user_data
+        
+    #     return None
+    
+
+
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL
         return User(uuid = user_uuid).user_inf_by_uuid()
@@ -270,7 +301,27 @@ class AuthService:
         return session
 
 
+import smtplib
 
+server_mail_host = "smtp.emk.ru:587"
+
+def try_mail(login, password):
+    try:
+        server = smtplib.SMTP(server_mail_host)
+        server.starttls()
+        server.login(login, password)
+        
+
+        status = server.noop()[0]
+        server.quit()
+        if status == 250:
+            return True
+    except smtplib.SMTPAuthenticationError as e:
+        return False
+    except smtplib.SMTPException as e:
+        return False
+    except Exception as e:
+        return False
 
 @auth_router.post("/auth")
 async def authentication(response : Response, data = Body()):
@@ -278,13 +329,24 @@ async def authentication(response : Response, data = Body()):
         login = data["login"]
         password = data["password"]
     else:
-        return await LogsMaker().warning_message(message="Login or Password has missing")
+        # return await LogsMaker().warning_message(message="Login or Password has missing")
+        return LogsMaker().warning_message(message="Login or Password has missing")
     
+    # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
+    # check_email = try_mail(login, password)
+    # if check_email == False:
+    #     # return await LogsMaker().warning_message(message="Invalid credentials")
+    #     LogsMaker().info_message(f"login = {login}, password = {password} Пользователя у которого не получилось зайти")
+    #     return LogsMaker().warning_message(message="Invalid credentials")
+    # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
+
     session = await AuthService().authenticate(login, password)
     if not session :
-        return await LogsMaker().warning_message(message="Invalid credentials")
+        # return await LogsMaker().warning_message(message="Invalid credentials")
+        return LogsMaker().warning_message(message="Invalid credentials")
     elif "err" in session.keys():
-        return await LogsMaker().warning_message(message=session["err"])
+        # return await LogsMaker().warning_message(message=session["err"])
+        return LogsMaker().warning_message(message=session["err"])
     access_token = session["session_id"]
 
     #response.headers["Authorization"] = access_token

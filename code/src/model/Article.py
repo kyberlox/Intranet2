@@ -1636,7 +1636,7 @@ class Article:
             #result['price'] = price
             result['indirect_data'] = art['indirect_data']
             
-            result['images'] = art['images']
+            result['indirect_data']['images'] = art['images']
 
             return result
         
@@ -1814,7 +1814,7 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['indirect_data'] = re['indirect_data']
-                art_info['images'] = images
+                art_info['indirect_data']['images'] = images
                 #photo = re['indirect_data'].pop("preview_file_url")
 
                 

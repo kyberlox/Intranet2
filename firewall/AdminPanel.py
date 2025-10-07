@@ -17,12 +17,12 @@ def add_ip(ip_adress):
     with open("admin_ip.txt") as adm_ip_file:
         adm_ip = adm_ip_file.readlines()
     print(ip_adress, adm_ip)
-    if ip_adress in adm_ip:
+    if f'{ip_adress}\n' in adm_ip:
         return False
     else:
         #записываю в конец
         with open("admin_ip.txt", 'a') as adm_ip_file:  
-            adm_ip_file.write('\n' + ip_adress)
+            adm_ip_file.write(ip_adress + '\n')
         return True
 
 add_ip("217.65.222.242")

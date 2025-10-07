@@ -28,4 +28,3 @@ def add_ip(ip_adress):
 add_ip("217.65.222.242")
 
 add_ip("1.1.1.1")
-

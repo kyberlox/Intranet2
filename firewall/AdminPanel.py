@@ -1,5 +1,6 @@
 #from .LogsMaker import LogsMaker
-#from .Auth import AuthService
+from ..code.src.services.Auth import AuthService
+import subprocess
 
 def check_and_add(username, password, ip_adress):
     #проверяю валидность на логин и пароль
@@ -9,7 +10,9 @@ def check_and_add(username, password, ip_adress):
     need_update_wirewall = add_ip(ip_adress)
 
     #перезапускаю правила
-    #if need_update_wirewall:
+    if need_update_wirewall:
+        pass
+        #subprocess.call(['bash', './setup_firewall.sh'])
 
 
 def add_ip(ip_adress):
@@ -26,7 +29,3 @@ def add_ip(ip_adress):
         with open("admin_ip.txt", 'a') as adm_ip_file:  
             adm_ip_file.write(ip_adress + '\n')
         return True
-
-add_ip("217.65.222.242")
-
-add_ip("1.1.1.1")

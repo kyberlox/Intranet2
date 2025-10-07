@@ -12,21 +12,35 @@ iptables -F DOCKER-USER
 iptables -I DOCKER-USER -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 # Разрешаем порты 80 и 443 для всех.
+iptables -A DOCKER-USER -p tcp --dport 22 -j ACCEPT
 iptables -A DOCKER-USER -p tcp --dport 80 -j ACCEPT
 iptables -A DOCKER-USER -p tcp --dport 443 -j ACCEPT
 
-# Разрешаем все для IP-адресов из файла admin_ip.txt.
-if [ -f admin_ip.txt ]; then
-  while read ip; do
-    # Пропускаем пустые строки и комментарии.
-    [[ -z "$ip" || "$ip" =~ ^# ]] && continue
-    iptables -A DOCKER-USER -s "$ip" -j ACCEPT
-  done < admin_ip.txt
+# Файл с IP-адресами администраторов
+ADMIN_IPS_FILE="admin_ip.txt"
+
+# Порта, которые нужно защитить (добавьте нужные вам порты)
+PROTECTED_PORTS="5432 6379 8000 9200 9300 27017"
+
+# Добавляем правила для каждого IP из файла
+if [ -f "$ADMIN_IPS_FILE" ]; then
+    while read ip; do
+        # Пропускаем пустые строки и комментарии
+        [[ -z "$ip" || "$ip" =~ ^# ]] && continue
+        
+        echo "Добавляем доступ для IP: $ip"
+        for port in $PROTECTED_PORTS; do
+            sudo iptables -I DOCKER-USER -p tcp --dport $port -s $ip -j ACCEPT
+        done
+    done < "$ADMIN_IPS_FILE"
 else
-  echo "Файл admin_ip.txt не найден. Продолжаем без него." >&2
+    echo "Файл $ADMIN_IPS_FILE не найден!"
+    exit 1
 fi
 
-# Блокируем весь остальной трафик в цепочке DOCKER-USER.
-iptables -A DOCKER-USER -j DROP
+# Блокируем доступ к защищаемым портам для всех остальных
+for port in $PROTECTED_PORTS; do
+    sudo iptables -A DOCKER-USER -p tcp --dport $port -j DROP
+done
 
-echo "Правила настроены."
+echo "Настройка завершена!"

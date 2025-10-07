@@ -14,10 +14,11 @@ from fastapi import APIRouter, Request, Body
 fieldsvisions_router = APIRouter(prefix="/fields_visions", tags=["Сервис области видимости"])
 
 class Visions:
-    def __init__(self, vision_name: str = '', vision_id: int = 0, user_id: int = 0):
+    def __init__(self, vision_name: str = '', vision_id: int = 0, user_id: int = 0, art_id: int = 0):
         self.vision_name = vision_name
         self.vision_id = vision_id
         self.user_id = user_id
+        self.art_id = art_id
 
         self.Roots = RootsModel(user_uuid=self.user_id).get_token_by_uuid()
         self.roots = RootsModel(user_uuid=self.user_id).token_processing_for_vision(self.Roots)
@@ -104,6 +105,12 @@ class Visions:
     
     def remove_depart_in_vision(self, dep_id):
         return UservisionsRootModel(vision_id=self.vision_id).remove_depart_in_vision(dep_id, self.roots)
+
+    def set_art_to_vision(self):
+        return FieldvisionModel(id=self.vision_id, art_id=self.art_id).set_art_to_vision()
+    
+    def delete_art_from_vision(self):
+        return FieldvisionModel(id=self.vision_id, art_id=self.art_id).delete_art_from_vision()
 
 def get_uuid_from_request(request):
     session_id = ""

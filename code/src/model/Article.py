@@ -1624,6 +1624,7 @@ class Article:
         
         # магазин мерча
         if art['section_id'] == 56:
+            size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
             print(art)
             result = {}
             result['id'] = art['id']
@@ -1635,7 +1636,13 @@ class Article:
             #photo = art['indirect_data'].pop('preview_file_url')
             #result['price'] = price
             result['indirect_data'] = art['indirect_data']
+            sizes_left = dict()
+            for size in size_list:
+                if size in art['indirect_data'].keys() and art['indirect_data'][size] is not None:
+                    sizes_left[size] = art['indirect_data'][size]
+                    art['indirect_data'].pop(size)
             
+            result['indirect_data']['sizes_left'] = sizes_left
             result['indirect_data']['images'] = art['images']
 
             return result

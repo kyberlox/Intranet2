@@ -179,6 +179,9 @@ class User:
             return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
         else:
             LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
+
+    def find_by_email(self, email):
+        return self.UserModel.find_by_email(email)
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"

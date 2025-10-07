@@ -1624,30 +1624,29 @@ class Article:
         
         # магазин мерча
         if art['section_id'] == 56:
-            size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
-            print(art)
-            result = {}
-            result['id'] = art['id']
-            result['active'] = art['active']
-            result['name'] = art['name']
-            result['content_text'] = art['content_text']
-            result['section_id'] = art['section_id']
-
-            if art['indirect_data'] is None:
-                result['indirect_data'] = dict()
-            else:
+            if art['active'] == True:
+                size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
+                print(art)
+                result = {}
+                result['id'] = art['id']
+                result['active'] = art['active']
+                result['name'] = art['name']
+                result['content_text'] = art['content_text']
+                result['section_id'] = art['section_id']
+                #price = art['indirect_data'].pop('price')
+                #photo = art['indirect_data'].pop('preview_file_url')
+                #result['price'] = price
                 result['indirect_data'] = art['indirect_data']
-            
-            sizes_left = dict()
-            for size in size_list:
-                if size in result['indirect_data'].keys() and result['indirect_data'][size] is not None:
-                    sizes_left[size] = result['indirect_data'][size]
-                    result['indirect_data'].pop(size)
-            
-            result['indirect_data']['sizes_left'] = sizes_left
-            result['indirect_data']['images'] = art['images']
+                sizes_left = dict()
+                for size in size_list:
+                    if size in art['indirect_data'].keys() and art['indirect_data'][size] is not None:
+                        sizes_left[size] = art['indirect_data'][size]
+                        art['indirect_data'].pop(size)
+                
+                result['indirect_data']['sizes_left'] = sizes_left
+                result['indirect_data']['images'] = art['images']
 
-            return result
+                return result
         
         
         return art
@@ -1662,6 +1661,7 @@ class Article:
         for file in files:
             if file["is_preview"]:
                 url = file["file_url"]
+                
                 #внедряю компрессию
                 if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
                     preview_link = url.split("/")
@@ -1669,6 +1669,7 @@ class Article:
                     url = '/'.join(preview_link)
                 #Для баготворительных проектов компрессия не требуется
                 # и для гида по предприятиям 
+                
                 elif self.section_id in ["55", "41", "32"]:
                     return f"{DOMAIN}{url}"
                 else:
@@ -1807,30 +1808,30 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
-                
-                images = []
-                self.id = re['id']
-                files = File(art_id = self.id).get_files_by_art_id()
-                for file in files:
-                    if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                        url = file["file_url"]
-                        file["file_url"] = f"{DOMAIN}{url}"
-                        images.append(file)
+                if re['active'] == True:
+                    images = []
+                    self.id = re['id']
+                    files = File(art_id = self.id).get_files_by_art_id()
+                    for file in files:
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            file["file_url"] = f"{DOMAIN}{url}"
+                            images.append(file)
 
-                # отсюда достать все файлы
-                art_info = {}
-                art_info['id'] = re['id']
-                art_info['section_id'] = re['section_id']
-                art_info['name'] = re['name']
+                    # отсюда достать все файлы
+                    art_info = {}
+                    art_info['id'] = re['id']
+                    art_info['section_id'] = re['section_id']
+                    art_info['name'] = re['name']
 
-                if re['indirect_data'] is None:
-                    art_info['indirect_data'] = dict()
-                else:
-                    art_info['indirect_data'] = re['indirect_data']
-                
-                art_info['indirect_data']['images'] = images
+                    if re['indirect_data'] is None:
+                        art_info['indirect_data'] = dict()
+                    else:
+                        art_info['indirect_data'] = re['indirect_data']
+                    
+                    art_info['indirect_data']['images'] = images
 
-                result.append(art_info)
+                    result.append(art_info)
             return result
         
         # конкурсы ЭМК без компрессии

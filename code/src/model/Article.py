@@ -1798,7 +1798,7 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
-                print(re)
+                
                 images = []
                 self.id = re['id']
                 files = File(art_id = self.id).get_files_by_art_id()
@@ -1814,6 +1814,8 @@ class Article:
                 art_info['section_id'] = re['section_id']
                 art_info['name'] = re['name']
                 art_info['indirect_data'] = re['indirect_data']
+
+                print(art_info)
                 if art_info['indirect_data'] == None:
                     art_info['indirect_data'] = dict()
                 art_info['indirect_data']['images'] = images

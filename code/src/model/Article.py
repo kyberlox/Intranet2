@@ -1640,9 +1640,9 @@ class Article:
             
             sizes_left = dict()
             for size in size_list:
-                if size in art['indirect_data'].keys() and art['indirect_data'][size] is not None:
-                    sizes_left[size] = art['indirect_data'][size]
-                    art['indirect_data'].pop(size)
+                if size in result['indirect_data'].keys() and result['indirect_data'][size] is not None:
+                    sizes_left[size] = result['indirect_data'][size]
+                    result['indirect_data'].pop(size)
             
             result['indirect_data']['sizes_left'] = sizes_left
             result['indirect_data']['images'] = art['images']

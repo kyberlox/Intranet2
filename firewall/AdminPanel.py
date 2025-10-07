@@ -15,9 +15,10 @@ def check_and_add(username, password, ip_adress):
 def add_ip(ip_adress):
     #собираю с список ip адреса
     with open("admin_ip.txt") as adm_ip_file:
-        adm_ip = adm_ip_file.readlines()
+        for ip in adm_ip_file:
+            adm_ip = ip.strip()
     print(ip_adress, adm_ip)
-    if f'{ip_adress}\n' in adm_ip:
+    if ip_adress in adm_ip:
         return False
     else:
         #записываю в конец

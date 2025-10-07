@@ -6,14 +6,21 @@ db_gen = get_db()
 database = next(db_gen)
 
 class FieldvisionModel:
-    def __init__(self, vision_name: str = '', id: int = 0):
+    def __init__(self, vision_name: str = '', id: int = 0, art_id: int = 0):
         # from .App import db
         # database = db
         self.vision_name = vision_name
         self.id = id
+        self.art_id = art_id
 
         from ..models.Fieldvision import Fieldvision
         self.Fieldvision = Fieldvision
+
+        from ..models.ArtVis import ArtVis
+        self.ArtVis = ArtVis
+
+        from ..models.Article import Article
+        self.Article = Article
 
     def add_field_vision(self):
         from .App import func
@@ -53,4 +60,40 @@ class FieldvisionModel:
          
         return res
     
-    
+    def set_art_to_vision(self):
+        try:
+            existing_vision = database.query(self.Fieldvision).filter(self.Fieldvision.id == self.id).first()
+            if not existing_vision:
+                return LogsMaker().info_message(f"Области видимости с id = {self.id} не сщуествует")
+            
+            existing_art = database.query(self.Article).filter(self.Article.id == self.art_id).first()
+            if not existing_art:
+                return LogsMaker().info_message(f"Статью с id = {self.id} невозможно добавить в ОВ с id = {self.id}, статьи не существует")
+
+            max_id = database.query(func.max(self.ArtVis.id)).scalar() or 0
+            new_id = max_id + 1
+            new_node = self.ArtVis
+            new_node.id = new_id,
+            new_node.vision_id = self.id,
+            new_node.vision_id = self.art_id
+            database.add(new_node)
+            database.commit()
+            return LogsMaker().info_message(f"Статья с id = {self.id} успешно добавлена в ОВ с id = {self.id}") 
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при добавлении статьи с id = {self.id} в ОВ с id = {self.id}, {e}")
+
+    def delete_art_from_vision(self):
+        try:
+            existing_vision = database.query(self.Fieldvision).filter(self.Fieldvision.id == self.id).first()
+            if not existing_vision:
+                return LogsMaker().info_message(f"Области видимости с id = {self.id} не сщуествует")
+            
+            existing_art = database.query(self.Article).filter(self.Article.id == self.art_id).first()
+            if not existing_art:
+                return LogsMaker().info_message(f"Статью с id = {self.id} невозможно удалить с ОВ с id = {self.id}, статьи не существует")
+
+            database.query(self.ArtVis).filter(self.ArtVis.art_id == self.art_id, self.ArtVis.vision_id == self.id).delete()
+            database.commit()
+            return LogsMaker().info_message(f"Статья с id = {self.id} успешно удалена из ОВ с id = {self.id}") 
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при удалении статьи с id = {self.id} из ОВ с id = {self.id}, {e}")

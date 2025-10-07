@@ -23,4 +23,4 @@ class Article(Base):
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="article")
     views = relationship("Views", back_populates="article")
-    # artvis = relationship("ArtVis", back_populates="article")
+    artvis = relationship("ArtVis", back_populates="article")

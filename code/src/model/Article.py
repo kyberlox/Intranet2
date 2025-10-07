@@ -1797,7 +1797,7 @@ class Article:
             result = []
             res = ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
-                print(re)
+                size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
                 # отсюда достать все файлы
                 art_info = {}
                 art_info['id'] = re['id']

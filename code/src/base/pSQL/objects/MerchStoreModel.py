@@ -1,5 +1,7 @@
 from sqlalchemy.orm.attributes import flag_modified
 
+import datetime
+
 #from ..models.User import User
 #from .ActiveUsersModel import ActiveUsersModel
 from .App import get_db
@@ -87,7 +89,7 @@ class MerchStoreModel:
             flag_modified(merch_info, 'indirect_data')
             money_left = user.user_points - total_price
             user.user_points = money_left
-            database.commit()
+            # database.commit()
             # добавляем сохранение
             merch_info = merch_info.name + ", " + "Куплено " + str(total_count) + "  штук(а)"
             add_history = PeerHistory(
@@ -95,7 +97,8 @@ class MerchStoreModel:
                         merch_info=merch_info,
                         merch_coast=total_price,
                         info_type='merch',
-                        date_time=datetime.now()
+                        date_time=datetime.datetime.now()
+                        # date_time=datetime.now()
                     )
             database.add(add_history)
             database.commit()

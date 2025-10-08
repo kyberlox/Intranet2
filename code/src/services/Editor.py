@@ -893,8 +893,8 @@ async def render(art_id : int ):
 #рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
 async def sec_render(sec_id: int, request: Request):
-    # user_uuid = get_uuid_from_request(request)
-    user_uuid = 2366
+    user_uuid = get_uuid_from_request(request)
+    # user_uuid = 2366
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     print(editor_roots)

@@ -79,7 +79,7 @@ class MerchStoreModel:
 
         total_price = total_count * merch_info.indirect_data['price']
         user = database.query(Roots).filter(Roots.user_uuid == self.user_id).scalar()
-        if total_price > user.user_points:
+        if total_price > user.user_points or user.user_points is None:
             return LogsMaker().warning_message(f"Недостаточно средств у пользователя с id = {self.user_id}")
         
         try:

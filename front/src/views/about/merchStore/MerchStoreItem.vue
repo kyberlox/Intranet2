@@ -47,7 +47,7 @@
                 эмк-коинов
             </div>
 
-            <div v-if="currentSize"
+            <div v-if="currentSize && false"
                  class="merch-store-item__info__count">
                 <span class="merch-store-item__info__count-text">
                     {{
@@ -70,7 +70,7 @@
 
     <AcceptBuyModal v-if="acceptBuyModalOpen"
                     @closeModal="acceptBuyModalOpen = false"
-                    @acceptBuy="acceptBuy" />
+                    @acceptBuy="(quantity: number) => acceptBuy(quantity)" />
 </div>
 </template>
 
@@ -83,6 +83,7 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import Api from '@/utils/Api';
 import type { IMerchItem } from '@/interfaces/entities/IMerch';
+import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 
 export default defineComponent({
     components: {
@@ -99,7 +100,7 @@ export default defineComponent({
     setup(props) {
         const activeImage = ref();
         const modalIsOpen = ref(false);
-        const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
+        const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>('no_size');
         const acceptBuyModalOpen = ref(false);
 
         const toastInstance = useToast();
@@ -116,9 +117,18 @@ export default defineComponent({
             currentSize.value = size;
         }
 
-        const acceptBuy = () => {
+        const acceptBuy = async (quantity: number) => {
+            if (!currentSize.value) return
+            const sizeName = currentSize.value;
             toast.showSuccess('merchBuySuccess');
-            acceptBuyModalOpen.value = false
+
+            await Api.put('store/create_purchase', { [sizeName]: quantity!, 'art_id': Number(currentItem.value?.id)! })
+                .then((data) => {
+                    handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+                })
+                .catch((error) => {
+                    handleApiError(error, toast)
+                })
         }
 
         const checkSizes = (item: IMerchItem) =>
@@ -127,15 +137,6 @@ export default defineComponent({
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => currentItem.value = data)
-                .finally(() => {
-                    // if (currentItem?.value && 'indirect_data' in currentItem?.value && 'sizes_left' in currentItem.value && 'no_size' in currentItem.value.indirect_data?.sizes_left && currentItem.value?.indirect_data?.sizes_left?.no_size) {
-                    //     currentSize.value = 'no_size'
-                    // }
-                    // else if (!currentItem.value?.indirect_data || !currentItem.value?.indirect_data.sizes_left) {
-                    //     currentSize.value = 'no_size'
-                    // }
-
-                })
         })
 
 

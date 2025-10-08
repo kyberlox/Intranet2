@@ -121,12 +121,14 @@ class ArticleModel:
     def find_by_section_id(self):
         
         data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
-        new_data = []
+        
         try:
+            new_data = []
             for art in data:
                 art.__dict__["indirect_data"] = json.loads(art.indirect_data)
                 new_data.append(art.__dict__)
         except:
+            new_data = []
             for art in data:
                 if art is not None:
                     art.__dict__["indirect_data"] = art.indirect_data

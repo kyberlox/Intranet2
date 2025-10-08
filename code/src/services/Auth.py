@@ -201,50 +201,50 @@ class AuthService:
     '''
 
     #ЗАГЛУШКА
-    def check_ad_credentials(self, username, password):
-        #хватаю из json пользователей по логину для демки и возваращаю GUID
-        user_data_file = open("./src/base/test_AD_users.json", "r")
-        user_json = json.load(user_data_file)
-        user_data_file.close()
-        
-        for user_data in user_json:
-            if username == user_data["login"]:
-                log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
-                # ret_str = "#"*len(log_str)
-                LogsMaker().ready_status_message(f"{log_str}")
-                return user_data
-        
-        return None
-    
-
-    def check_admin_credentials(self, username, password):
-        #хватаю из json пользователей по логину для демки и возваращаю GUID
-        user_data_file = open("./src/base/admin_users.json", "r")
-        user_json = json.load(user_data_file)
-        user_data_file.close()
-        
-        for user_data in user_json:
-            if username == user_data["login"] and password == ["password"]:
-                log_str = f"!!!!!!!!!!!! ADMIN {username} подключился к серверу!!!!!!!!!!!!"
-                # ret_str = "#"*len(log_str)
-                LogsMaker().ready_status_message(f"{log_str}")
-                return user_data
-        
-        return None
-    
-
-    # #ЗАГЛУШКА2
     # def check_ad_credentials(self, username, password):
-    #     #хватаю uuid пользователя по логину
-    #     user_uuid = User().find_by_email(username)
-    #     if user_uuid:
-    #         log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
-    #         # ret_str = "#"*len(log_str)
-    #         LogsMaker().ready_status_message(f"{log_str}")
-    #         user_data = {"login": username, "GUID": user_uuid}
-    #         return user_data
+    #     #хватаю из json пользователей по логину для демки и возваращаю GUID
+    #     user_data_file = open("./src/base/test_AD_users.json", "r")
+    #     user_json = json.load(user_data_file)
+    #     user_data_file.close()
+        
+    #     for user_data in user_json:
+    #         if username == user_data["login"]:
+    #             log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+    #             # ret_str = "#"*len(log_str)
+    #             LogsMaker().ready_status_message(f"{log_str}")
+    #             return user_data
         
     #     return None
+    
+
+    # def check_admin_credentials(self, username, password):
+    #     #хватаю из json пользователей по логину для демки и возваращаю GUID
+    #     user_data_file = open("./src/base/admin_users.json", "r")
+    #     user_json = json.load(user_data_file)
+    #     user_data_file.close()
+        
+    #     for user_data in user_json:
+    #         if username == user_data["login"] and password == ["password"]:
+    #             log_str = f"!!!!!!!!!!!! ADMIN {username} подключился к серверу!!!!!!!!!!!!"
+    #             # ret_str = "#"*len(log_str)
+    #             LogsMaker().ready_status_message(f"{log_str}")
+    #             return user_data
+        
+    #     return None
+    
+
+    #ЗАГЛУШКА2
+    def check_ad_credentials(self, username, password):
+        #хватаю uuid пользователя по логину
+        user_uuid = User().find_by_email(username)
+        if user_uuid:
+            log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+            # ret_str = "#"*len(log_str)
+            LogsMaker().ready_status_message(f"{log_str}")
+            user_data = {"login": username, "GUID": user_uuid}
+            return user_data
+        
+        return None
     
 
 
@@ -333,15 +333,17 @@ async def authentication(response : Response, data = Body()):
         return LogsMaker().warning_message(message="Login or Password has missing")
     
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
-    # check_email = try_mail(login, password)
-    # if check_email == False:
-    #     # return await LogsMaker().warning_message(message="Invalid credentials")
-    #     LogsMaker().info_message(f"login = {login}, password = {password} Пользователя у которого не получилось зайти")
-    #     return LogsMaker().warning_message(message="Invalid credentials")
+    check_email = try_mail(login, password)
+    if check_email == False:
+        print('check_email облажался')
+        # return await LogsMaker().warning_message(message="Invalid credentials")
+        LogsMaker().info_message(f"login = {login}, password = {password} Пользователя у которого не получилось зайти")
+        return LogsMaker().warning_message(message="Invalid credentials")
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
 
     session = await AuthService().authenticate(login, password)
     if not session :
+        print('session облажался')
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")
     elif "err" in session.keys():

@@ -6,7 +6,7 @@
 </template>
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import { useUserData } from "@/stores/userData";
 export default defineComponent({
     setup() {

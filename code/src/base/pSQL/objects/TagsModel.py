@@ -2,7 +2,7 @@ import json
 
 from ..models.Tags import Tags
 from ..models.Article import Article
-from .App import get_db
+from .App import get_db, flag_modified
 
 
 
@@ -13,7 +13,7 @@ db_gen = get_db()
 database = next(db_gen)
 
 class TagsModel:
-    def __init__(self, id: int = 0, tag_name: str = ''):
+    def __init__(self, id: int = 0, tag_name: str = '', art_id: int = 0):
         # database = db
         self.id = id
         self.tag_name = tag_name
@@ -78,3 +78,22 @@ class TagsModel:
         if tags:
             return tags
         return []
+
+    def set_tag_to_art_id(self):
+        try:
+            existing_tag = database.query(self.Tags).filter(self.Tags.id == self.id).first()
+            existing_art = database.query(self.Article).filter(self.Article.id == self.art_id).first()
+            if not existing_tag:
+                return LogsMaker().info_message(f"Тэга с id = {self.id} не существует")
+            
+            if not existing_art:
+                return LogsMaker().info_message(f"Статьи с id = {self.art_id} не существует")
+            
+            if existing_art.indirect_data is not None and "tags" in existing_art.indirect_data:
+                existing_art.indirect_data["tags"].append(self.id)
+                flag_modified(existing_art, 'indirect_data')
+                database.commit()
+                return LogsMaker().info_message(f"Тэг с id = {self.id} успешно привязан к статье с id = {self.art_id}")
+            return LogsMaker().info_message(f"Тэг с id = {self.id} не был привязан к статье с id = {self.art_id}, поле indirect_data не валдино")
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при привязке тэга с id = {self.id} к статье с id = {self.art_id}, {e}")

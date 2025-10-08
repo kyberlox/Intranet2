@@ -335,7 +335,6 @@ async def authentication(response : Response, data = Body()):
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     check_email = try_mail(login, password)
     if check_email == False:
-        print('check_email облажался')
         # return await LogsMaker().warning_message(message="Invalid credentials")
         LogsMaker().info_message(f"login = {login}, password = {password} Пользователя у которого не получилось зайти")
         return LogsMaker().warning_message(message="Invalid credentials")
@@ -343,7 +342,6 @@ async def authentication(response : Response, data = Body()):
 
     session = await AuthService().authenticate(login, password)
     if not session :
-        print('session облажался')
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")
     elif "err" in session.keys():

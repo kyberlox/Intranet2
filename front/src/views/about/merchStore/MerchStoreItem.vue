@@ -64,6 +64,7 @@
         </div>
     </div>
     <ZoomModal v-if="modalIsOpen == true"
+               :whiteBackground="true"
                :image="[activeImage]"
                @close="modalIsOpen = false" />
 

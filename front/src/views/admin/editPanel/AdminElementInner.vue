@@ -15,7 +15,12 @@
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuid'"
                              @userPicked="handleUserPick" />
 
-        <Component :is="inputComponentChecker(item)"
+        <AdminEditReportage v-if="item.field == 'reports'"
+                            :item="(item.value as IReportage[])"
+                            @pick="handleReportChange" />
+
+        <Component v-else
+                   :is="inputComponentChecker(item)"
                    :item="item"
                    :type="item.data_type == 'int' ? 'number' : 'text'"
                    @pick="(value: string) => handleEmitValueChange(item, value)" />
@@ -23,9 +28,6 @@
         <img v-if="item.field == 'photo_file_url'"
              :src="(item.value as string)" />
 
-        <AdminEditReportage v-if="item.field == 'reports'"
-                            :item="(item.value as IReportage[])"
-                            @pick="handleReportChange" />
       </div>
 
       <div class="admin-element-inner__field mt10">

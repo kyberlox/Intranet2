@@ -319,9 +319,9 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     background_tasks.add_task(User().fetch_users_data)
     background_tasks.add_task(UsDep().get_usr_dep)
     background_tasks.add_task(Section().load)
+    background_tasks.add_task(Tag().add_b24_tag)
     background_tasks.add_task(Article().uplod)
     background_tasks.add_task(Article().upload_likes)
-    background_tasks.add_task(Tag().add_b24_tag)
     background_tasks.add_task(Roots().create_primary_admins)
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 

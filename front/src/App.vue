@@ -22,7 +22,8 @@
     <AuthPage />
 </div>
 <Toast :position="'bottom-right'" />
-<YandexMetrika v-if="userId" />
+<YandexMetrika v-if="userId"
+               :uid="userId" />
 </template>
 
 <script lang="ts">

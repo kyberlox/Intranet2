@@ -18,6 +18,10 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                     useUserData().setUserInfo(res);
                     localStorage.setItem('user', res);
                 })
+                Api.get('roots/get_root_token_by_uuid')
+                .then((res)=>{
+                    useUserData().setUserRoots(res);
+                })
             break;
         case 'factoryGuid':
             if (!factoryGuidData.getAllFactories.length)

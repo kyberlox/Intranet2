@@ -1,27 +1,28 @@
 <template>
-    <div class="modal__overlay modal__overlay--zoom"
-         @click="close()">
-        <div class="modal__overlay__close-button">
-            <CloseIcon />
-        </div>
-        <div class="modal__wrapper modal__wrapper--zoom">
-            <div class="modal__body modal__body--zoom">
-                <FullWidthSlider v-if="image"
-                                 :images="image"
-                                 :activeIndex="activeIndex"
-                                 :type="'postInner'" />
-                <div v-if="video"
-                     class="modal__video">
-                    <iframe class="modal__video__frame"
-                            :src="String(repairVideoUrl(video))"
-                            title="video"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                    </iframe>
-                </div>
+<div class="modal__overlay modal__overlay--zoom"
+     @click="close()">
+    <div class="modal__overlay__close-button">
+        <CloseIcon />
+    </div>
+    <div class="modal__wrapper modal__wrapper--zoom">
+        <div class="modal__body modal__body--zoom">
+            <FullWidthSlider v-if="image"
+                             :class="{ 'full-width-slider--white-background': whiteBackground }"
+                             :images="image"
+                             :activeIndex="activeIndex"
+                             :type="'postInner'" />
+            <div v-if="video"
+                 class="modal__video">
+                <iframe class="modal__video__frame"
+                        :src="String(repairVideoUrl(video))"
+                        title="video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
             </div>
         </div>
     </div>
+</div>
 </template>
 <script lang="ts">
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
@@ -47,6 +48,9 @@ export default defineComponent({
         activeIndex: {
             type: Number || String,
         },
+        whiteBackground: {
+            type: Boolean
+        }
     },
     components: {
         FullWidthSlider,

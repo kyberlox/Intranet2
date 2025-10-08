@@ -58,7 +58,7 @@
 <script lang="ts">
 import Api from '@/utils/Api';
 import { computed, defineComponent, onMounted, ref } from 'vue';
-import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
+import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
 import VisibilityAreaEditorTree from './components/VisibilityAreaEditorTree.vue';
 import VisibilityRightSidebar from './components/VisibilityRightSidebar.vue';
 import VisibilityAreaControls from './components/VisibilityAreaControls.vue';

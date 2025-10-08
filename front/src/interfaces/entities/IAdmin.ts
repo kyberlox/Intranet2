@@ -31,3 +31,8 @@ export interface INewFileData {
     videos_embed?: IBXFileType[],
     videos_native?: IBXFileType[]
 }
+
+export interface IRoots{
+    PeerAdmin:boolean,
+    EditorAdmin:boolean,
+    VisionAdmin:boolean}

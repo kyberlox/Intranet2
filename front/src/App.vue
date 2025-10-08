@@ -22,6 +22,7 @@
     <AuthPage />
 </div>
 <Toast :position="'bottom-right'" />
+<YandexMetrika />
 </template>
 
 <script lang="ts">
@@ -33,7 +34,7 @@ import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/RightSidebar.vue";
 import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "./views/user/AuthPage.vue";
-
+import YandexMetrika from "./components/tools/common/YandexMetrika.vue";
 import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./composables/usePrefetchSection";
 
@@ -46,6 +47,7 @@ export default defineComponent({
         AuthPage,
         Breadcrumbs,
         Toast,
+        YandexMetrika
     },
     setup() {
         const route = useRoute();

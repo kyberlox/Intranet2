@@ -4,6 +4,12 @@
     max-height: 100vh;
     height: 100% !important;
 
+    &--white-background {
+        &>.swiper>.swiper-wrapper>.swiper-slide>.full-width-slider__slide__img {
+            background: #f5f5f5;
+        }
+    }
+
     &__navigation-container {
         position: absolute;
         width: 100%;

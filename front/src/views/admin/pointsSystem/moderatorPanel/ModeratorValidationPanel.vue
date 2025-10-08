@@ -16,7 +16,7 @@
 import { computed, defineComponent, ref, watch } from 'vue';
 import Api from '@/utils/Api';
 import { usePointsData } from '@/stores/PointsData';
-import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
+import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
 import { dateConvert } from '@/utils/dateConvert';
 import ModeratorSidebarSlot from './ModeratorSidebarSlot.vue';
 import PointsHistoryActionTable from '../PointsHistoryActionTable.vue';

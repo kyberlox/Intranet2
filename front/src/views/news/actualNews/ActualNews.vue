@@ -46,7 +46,7 @@ export default defineComponent({
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
-                await useNewsFilterWatch(currentTag, currentYear, allNews);
+                await useNewsFilterWatch(currentTag, currentYear, allNews, sectionTips['АктуальныеНовости']);
 
             visibleNews.value = newVisibleNews.value;
             emptyTag.value = newEmptyTag.value;

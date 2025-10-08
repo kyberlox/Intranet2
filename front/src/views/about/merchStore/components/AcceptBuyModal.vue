@@ -2,11 +2,17 @@
 <SlotModal @close="$emit('closeModal')">
     <div class="accept-buy-modal__wrapper">
         <div class="accept-buy-modal__content">
-            <p class="accept-buy-modal__title">Укажите кол-во</p>
+            <p class="accept-buy-modal__title">Укажите кол-во:</p>
+
+            <button class="accept-buy-modal__quantity-input accept-buy-modal__quantity-input--operation"
+                    @click="quantity--">-</button>
             <input class="accept-buy-modal__quantity-input"
                    type="number"
-                   value="1"
+                   v-model="quantity"
                    min="0" />
+            <button class="accept-buy-modal__quantity-input accept-buy-modal__quantity-input--operation"
+                    @click="quantity++">+</button>
+
         </div>
         <button @click="accept"
                 class="accept-buy-modal__button">Подтвердить</button>
@@ -15,15 +21,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 export default defineComponent({
     components: {
         SlotModal
     },
     setup(props, { emit }) {
+        const quantity = ref(1);
+        watch((quantity), () => {
+            if (quantity.value < 0) {
+                quantity.value = 0
+            }
+        })
+
         return {
-            accept: () => emit('acceptBuy')
+            quantity,
+            accept: () => emit('acceptBuy', quantity.value)
         }
     }
 })
@@ -42,19 +56,32 @@ export default defineComponent({
         flex-direction: column;
         align-items: center;
         gap: 20px;
+        margin: auto;
+        max-width: 100%;
     }
 
     &__quantity-input {
-        width: 16ch;
-        padding: 12px 16px;
+        width: 8ch;
+        padding: 12px 0;
         border: 1px solid #dee2e6;
         border-radius: 4px;
         font-size: 14px;
         line-height: 1.5;
         color: #303030;
         background: #ffffff;
-        outline: none;
+        /* outline: none; */
         transition: all 0.2s ease;
+        text-align: center;
+
+        &--operation {
+            width: 33px;
+            padding: 6px 0;
+            border-color: var(--emk-brand-color);
+
+            &:hover {
+                border-color: #ef7f1ba3;
+            }
+        }
     }
 
     &__content {
@@ -62,7 +89,12 @@ export default defineComponent({
         flex-direction: row;
         gap: 1rem;
         align-items: baseline;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+
+        @include md {
+            flex-direction: column;
+            align-items: center;
+        }
     }
 
     &__title {
@@ -103,7 +135,7 @@ export default defineComponent({
         &__wrapper {
             max-width: 300px;
             padding: 1rem;
-            margin: 0 10px;
+
         }
 
         &__title {

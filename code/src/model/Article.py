@@ -1904,7 +1904,7 @@ class Article:
             else:
                 print(count, len(active_articles))
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
-                print(count, len(active_articles))
+                print(count, len(active_articles), len(result))
             return sorted_active_articles
     
     def all_serch_by_date(self ):

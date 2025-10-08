@@ -121,14 +121,13 @@ export default defineComponent({
             if (!currentSize.value) return
             const sizeName = currentSize.value;
             toast.showSuccess('merchBuySuccess');
-
-            await Api.put('store/create_purchase', { [sizeName]: quantity!, 'art_id': Number(currentItem.value?.id)! })
-                .then((data) => {
-                    handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
-                })
-                .catch((error) => {
-                    handleApiError(error, toast)
-                })
+            // await Api.put('store/create_purchase', { [sizeName]: quantity!, 'art_id': Number(currentItem.value?.id)! })
+            //     .then((data) => {
+            //         handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+            //     })
+            //     .catch((error) => {
+            //         handleApiError(error, toast)
+            //     })
         }
 
         const checkSizes = (item: IMerchItem) =>

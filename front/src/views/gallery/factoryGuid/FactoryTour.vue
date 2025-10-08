@@ -28,8 +28,7 @@ export default defineComponent({
         const folder = ref('');
         const swf = ref();
         const xml = ref();
-        const basePath = `/src/assets/factoryTour/${currentTour.value}`;
-
+        const basePath = `/src/assets/factoryTour/`;
         onBeforeMount(() => {
             folder.value = "3d-01";
             swf.value = `${basePath}${folder.value}/tour.swf`;

@@ -1,27 +1,27 @@
 <template>
-    <RouterLink class="flexGallery__card"
-                :to="uniqueRoutesHandle(routeTo, slide)">
-        <div class="flexGallery__card__img-wrapper"
-             :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
-            <div class="flexGallery__card__img"
-                 v-lazy-load="slide.preview_file_url ?? slide.photo_file_url">
-            </div>
+<RouterLink class="flexGallery__card"
+            :to="uniqueRoutesHandle(routeTo, slide)">
+    <div class="flexGallery__card__img-wrapper"
+         :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
+        <div class="flexGallery__card__img"
+             v-lazy-load="slide.preview_file_url ?? slide.photo_file_url">
         </div>
-        <div v-if="slide.name"
-             class="flexGallery__card__title flexGallery__card__title--text-date">
-            <span> {{ checkCardDate(slide) }}</span>
-            <span>{{ slide.name }}</span>
-        </div>
-        <div class="flexGallery__card__buttons"
-             v-if="modifiers.includes('buttons')">
-            <RouterLink v-if="slide.indirect_data?.reports?.length"
-                        :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
-                        class="primary-button primary-button--rounder">Репортажи</RouterLink>
-            <RouterLink v-if="slide.indirect_data?.tours?.length"
+    </div>
+    <div v-if="slide.name"
+         class="flexGallery__card__title flexGallery__card__title--text-date">
+        <span> {{ checkCardDate(slide) }}</span>
+        <span>{{ slide.name }}</span>
+    </div>
+    <div class="flexGallery__card__buttons"
+         v-if="modifiers.includes('buttons')">
+        <RouterLink v-if="slide.indirect_data?.reports?.length"
+                    :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryReports')"
+                    class="primary-button primary-button--rounder">Репортажи</RouterLink>
+        <!-- <RouterLink v-if="slide.indirect_data?.tours?.length"
                         :to="uniqueRoutesHandle(routeTo, slide, null, 'factoryTours')"
-                        class="primary-button primary-button--rounder">3D-Туры</RouterLink>
-        </div>
-    </RouterLink>
+                        class="primary-button primary-button--rounder">3D-Туры</RouterLink> -->
+    </div>
+</RouterLink>
 </template>
 
 <script lang="ts">

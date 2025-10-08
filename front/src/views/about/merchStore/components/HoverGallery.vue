@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import type { IBXFileType } from '@/interfaces/IEntities';
-import { defineComponent, ref, computed, type PropType, watchEffect } from 'vue'
+import { defineComponent, ref, computed, type PropType } from 'vue'
 
 export default defineComponent({
     name: 'HoverImageGallery',
@@ -78,8 +78,6 @@ export default defineComponent({
         const resetToFirstImage = () => {
             currentImageIndex.value = 0;
         }
-
-        watchEffect(() => console.log(currentImage.value))
 
         return {
             currentImage,

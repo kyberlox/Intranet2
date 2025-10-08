@@ -1971,7 +1971,13 @@ class Article:
 
             
             self.id = news_id
-            image_URL = self.get_preview()
+            # image_URL = self.get_preview()
+            files = File(art_id = int(self.id)).get_files_by_art_id()
+            for file in files:
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    image_URL = DOMAIN + url
+
             second_page = {
                 'id': section_id, 
                 'type': 'swiper', 

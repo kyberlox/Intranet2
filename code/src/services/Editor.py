@@ -882,8 +882,16 @@ async def get_edit_sections():
 
 # вывод списка редактируемых секций
 @editor_router.get("/get_sections_list")
-async def get_sections_list():
-    return Editor().get_sections_list()
+async def get_sections_list(request: Request):
+    user_uuid = get_uuid_from_request(request)
+    # user_uuid = 2366
+    editor_roots = get_editor_roots(user_uuid)
+    # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
+    print(editor_roots)
+    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
+        return Editor().get_sections_list()
+    return LogsMaker().warning_message(f"Недостаточно прав")
+    
 
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")

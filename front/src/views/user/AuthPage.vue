@@ -57,7 +57,7 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const loginInput = ref();
-        const isLoading = ref(true);
+        const isLoading = ref(false);
         const tryLogin = () => {
             isLoading.value = true;
             if (!userName.value || !passWord.value) {

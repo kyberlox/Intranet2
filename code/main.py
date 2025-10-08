@@ -418,9 +418,25 @@ def total_update():
     status += 1
     LogsMaker().ready_status_message("Успешно!")
 
+    from src.model.Tag import Tag
+    LogsMaker().info_message("Обновление информации о тэгах сайта")
+    if Tag().add_b24_tag()["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
+
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
+
+    from src.services.Roots import Roots
+    LogsMaker().info_message("Обновление информации об администратарах сайта")
+    if Roots().create_primary_admins()["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:

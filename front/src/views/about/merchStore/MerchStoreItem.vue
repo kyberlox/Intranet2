@@ -120,7 +120,7 @@ export default defineComponent({
         const acceptBuy = async (quantity: number) => {
             if (!currentSize.value) return
             const sizeName = currentSize.value;
-            toast.showSuccess('merchBuySuccess');
+            toast.showWarning('merchBuyWarning');
             // await Api.put('store/create_purchase', { [sizeName]: quantity!, 'art_id': Number(currentItem.value?.id)! })
             //     .then((data) => {
             //         handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')

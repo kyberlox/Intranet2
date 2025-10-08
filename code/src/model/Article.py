@@ -1787,7 +1787,6 @@ class Article:
                             res['documentation'].append(file)
 
                     active_articles.append(res)
-            
             return sorted(active_articles, key=lambda x: x['id'], reverse=True)
 
         elif self.section_id == "34":
@@ -1859,6 +1858,7 @@ class Article:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
             result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            count = 0
             current_datetime = datetime.datetime.now()
             for res in result:
                 if res['active']:
@@ -1893,7 +1893,7 @@ class Article:
                         #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
                         #         res['reactions'] = has_user_liked
 
-
+                    count += 1
                     active_articles.append(res)
 
             if self.section_id == "111":
@@ -1902,7 +1902,9 @@ class Article:
             elif self.section_id == "18":
                 sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
+                print(count, len(active_articles))
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+                print(count, len(active_articles))
             return sorted_active_articles
     
     def all_serch_by_date(self ):

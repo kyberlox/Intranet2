@@ -97,3 +97,5 @@ class FieldvisionModel:
             return LogsMaker().info_message(f"Статья с id = {self.id} успешно удалена из ОВ с id = {self.id}") 
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении статьи с id = {self.id} из ОВ с id = {self.id}, {e}")
+    
+    

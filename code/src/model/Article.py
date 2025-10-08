@@ -2464,7 +2464,8 @@ class Article:
         else:
             return result
 
-
+    def set_tag_to_art_id(self, tag_id):
+        return Tag(id=tag_id, art_id=self.id).set_tag_to_art_id()
 
 #Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}")
@@ -2582,6 +2583,9 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
     art.section_id = section_id
     return art.search_articles_by_tags(tag_id, session_id=session_id)
 
+@article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}")
+def set_tag_to_art_id(art_id: int, tag_id: int):
+    return Article(id=art_id).set_tag_to_art_id(tag_id)
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
 # def search_articles_by_title(title): # data = Body()

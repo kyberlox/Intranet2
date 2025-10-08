@@ -201,20 +201,20 @@ class AuthService:
     '''
 
     #ЗАГЛУШКА
-    def check_ad_credentials(self, username, password):
-        #хватаю из json пользователей по логину для демки и возваращаю GUID
-        user_data_file = open("./src/base/test_AD_users.json", "r")
-        user_json = json.load(user_data_file)
-        user_data_file.close()
+    # def check_ad_credentials(self, username, password):
+    #     #хватаю из json пользователей по логину для демки и возваращаю GUID
+    #     user_data_file = open("./src/base/test_AD_users.json", "r")
+    #     user_json = json.load(user_data_file)
+    #     user_data_file.close()
         
-        for user_data in user_json:
-            if username == user_data["login"]:
-                log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
-                # ret_str = "#"*len(log_str)
-                LogsMaker().ready_status_message(f"{log_str}")
-                return user_data
+    #     for user_data in user_json:
+    #         if username == user_data["login"]:
+    #             log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+    #             # ret_str = "#"*len(log_str)
+    #             LogsMaker().ready_status_message(f"{log_str}")
+    #             return user_data
         
-        return None
+    #     return None
     
 
     # def check_admin_credentials(self, username, password):

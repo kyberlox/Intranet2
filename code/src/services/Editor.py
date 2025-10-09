@@ -745,16 +745,18 @@ class Editor:
     def get_sections_list(self ):
         all_sections = Section().get_all()
 
-        # pattern_data_file = open("./src/base/patterns.json", "r")
-        # pattern_data = json.load(pattern_data_file)
-        # pattern_data_file.close()
+        pattern_data_file = open("./src/base/patterns.json", "r")
+        pattern_data = json.load(pattern_data_file)
+        pattern_data_file.close()
 
-        # valid_sec_id =  list(pattern_data.keys())
-        valid_sec_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175, "7", "71"]
+        valid_sec_id =  list(pattern_data.keys())
+        print(valid_sec_id)
+
+        valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, "7", "71"]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_sec_id:
-                edited_sections.append(sec)
+                edited_sections.append(int(sec))
         return edited_sections
 
     def get_user_info(self, user_id):

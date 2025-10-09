@@ -23,12 +23,12 @@ export const chooseImgPlug = (card: IHomeViewSoloBlock | null = null): string =>
             return winterPlug
         }
         else if (currentMonth in [3, 4, 5]) {
-            return autumnPlug
+            return springPlug
         }
         else if (currentMonth in [6, 7, 8]) {
             return summerPlug
         }
         else
-            return springPlug
+            return autumnPlug
     }
 }

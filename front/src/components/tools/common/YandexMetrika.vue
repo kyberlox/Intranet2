@@ -6,9 +6,15 @@
 </template>
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
+import { useUserData } from "@/stores/userData";
 export default defineComponent({
-    setup() {
+    props: {
+        uid: {
+            type: Number
+        }
+    },
+    setup(props) {
         (function (m, e, t, r, i, k, a) {
             m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
             m[i].l = 1 * new Date();
@@ -21,9 +27,14 @@ export default defineComponent({
             clickmap: true,
             trackLinks: true,
             accurateTrackBounce: true,
-            webvisor: true
+            webvisor: true,
+            userParams: {
+                vip_status: false,
+                child: 1,
+                child_age: 13,
+                UserID: props.uid
+            }
         });
-
 
         return {
 

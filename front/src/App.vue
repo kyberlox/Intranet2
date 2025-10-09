@@ -22,7 +22,8 @@
     <AuthPage />
 </div>
 <Toast :position="'bottom-right'" />
-<YandexMetrika />
+<YandexMetrika v-if="userId"
+               :uid="userId" />
 </template>
 
 <script lang="ts">
@@ -77,6 +78,7 @@ export default defineComponent({
 
         return {
             isLogin,
+            userId: computed(() => useUserData().getMyId)
         }
     }
 })

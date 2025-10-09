@@ -1,37 +1,44 @@
 <template>
-    <div class="blogs-page mt20">
-        <h2 class="page__title">Блоги</h2>
-        <div class="mb-sm-5 blogs-section">
-            <div class="blogs__list">
-                <div v-if="authors"
-                     class="blogs__items">
-                    <BlogAvatar v-for="item in authors"
-                                :key="item.authorId"
-                                :from="'blogs'"
-                                :author="item" />
-                </div>
-                <h2 v-if="factoryAuthors"
-                    class="page__title mt20">Блоги от предприятий</h2>
-                <div v-if="factoryAuthors"
-                     class="blogs__items">
-                    <BlogAvatar v-for="item in factoryAuthors"
-                                :key="item.authorId"
-                                :from="'blogs'"
-                                :author="item" />
-                </div>
+<div v-if="!authors.length"
+     class="contest__page__loader__wrapper">
+    <Loader class="contest__page__loader" />
+</div>
+<div v-if="authors.length"
+     class="blogs-page mt20">
+    <h2 class="page__title">Блоги</h2>
+    <div class="mb-sm-5 blogs-section">
+        <div class="blogs__list">
+            <div v-if="authors"
+                 class="blogs__items">
+                <BlogAvatar v-for="item in authors"
+                            :key="item.authorId"
+                            :from="'blogs'"
+                            :author="item" />
+            </div>
+            <h2 v-if="factoryAuthors"
+                class="page__title mt20">Блоги от предприятий</h2>
+            <div v-if="factoryAuthors"
+                 class="blogs__items">
+                <BlogAvatar v-for="item in factoryAuthors"
+                            :key="item.authorId"
+                            :from="'blogs'"
+                            :author="item" />
             </div>
         </div>
     </div>
+</div>
 </template>
 <script lang="ts">
 import BlogAvatar from "./components/BlogAvatar.vue";
 import { defineComponent, ref, type Ref, computed, watch } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import type { IBlogAuthors } from "@/interfaces/IEntities";
+import Loader from "@/components/layout/Loader.vue";
 
 export default defineComponent({
     components: {
         BlogAvatar,
+        Loader
     },
     setup() {
         const authors: Ref<IBlogAuthors[]> = ref([]);

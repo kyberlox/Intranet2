@@ -1787,7 +1787,6 @@ class Article:
                             res['documentation'].append(file)
 
                     active_articles.append(res)
-            
             return sorted(active_articles, key=lambda x: x['id'], reverse=True)
 
         elif self.section_id == "34":
@@ -1893,7 +1892,6 @@ class Article:
                         #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
                         #         res['reactions'] = has_user_liked
 
-
                     active_articles.append(res)
 
             if self.section_id == "111":
@@ -1903,6 +1901,7 @@ class Article:
                 sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
+                print(len(active_articles), len(result))
             return sorted_active_articles
     
     def all_serch_by_date(self ):

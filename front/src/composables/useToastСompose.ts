@@ -5,6 +5,7 @@ interface messageGroup { [key: string]: string }
 interface messages {
     success: messageGroup
     error: messageGroup
+    warn: messageGroup
 }
 
 const messages: messages = {
@@ -19,7 +20,9 @@ const messages: messages = {
         adminUpdateElementSuccess: 'Элемент успешно обновлен',
         pointsSendSuccess: 'Баллы успешно отправлены',
         merchBuySuccess: 'Ваш запрос успешно отправлен! Скоро с вами свяжутся для уточнения',
-
+    },
+    warn:{
+        merchBuyWarning: 'Покупка станет доступна после полноценного запуска',
     }
 }
 
@@ -37,9 +40,14 @@ export const useToastCompose = (toastInstance: ToastServiceMethods) => {
         showToast('error', name)
     }
 
+    const showWarning = (name: keyof messageGroup) => {
+        showToast('warn', name)
+    }
+
     return {
         showToast,
         showSuccess,
         showError,
+        showWarning
     };
 }

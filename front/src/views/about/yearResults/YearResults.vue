@@ -1,5 +1,11 @@
 <template>
-    <div class="staff__filter__link d-flex gap-3 mt20">
+<div class="contest__page__loader__wrapper"
+     v-if="isLoading">
+    <Loader class="contest__page__loader" />
+</div>
+<div v-else>
+    <div v-if="actualYears.length"
+         class="staff__filter__link d-flex gap-3 mt20">
         <RouterLink :to="{ name: 'year-results-id', params: { id: year } }"
                     v-for="(year, index) in actualYears"
                     :key="index">
@@ -18,6 +24,7 @@
         </h2>
         <WorkerCard :workers="workerWithDiploma" />
     </div>
+</div>
 </template>
 <script lang="ts">
 import { onMounted, ref, watch, type Ref } from "vue";
@@ -25,6 +32,7 @@ import { defineComponent } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import WorkerCard from "./WorkerCard.vue";
+import Loader from "@/components/layout/Loader.vue";
 import type { IWorkerOfTheYear } from "@/interfaces/IEntities";
 
 export default defineComponent({
@@ -35,11 +43,13 @@ export default defineComponent({
         },
     },
     components: {
-        WorkerCard
+        WorkerCard,
+        Loader
     },
     setup(props) {
         const dateYear = new Date().getFullYear();
         const currentYear = ref(props.id ? props.id : dateYear - 1);
+        const isLoading = ref(false);
 
         const allTimeAwards: Ref<IWorkerOfTheYear[]> = ref([]);
         const chosenYearAwards: Ref<IWorkerOfTheYear[]> = ref([]);
@@ -48,6 +58,7 @@ export default defineComponent({
         const actualYears: Ref<string[]> = ref([]);
 
         onMounted(() => {
+            isLoading.value = true;
             Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`)
                 .then(res => {
                     allTimeAwards.value.length = 0;
@@ -62,6 +73,7 @@ export default defineComponent({
                 })
                 .finally(() => {
                     initWorkers();
+                    isLoading.value = false;
                 })
         })
 
@@ -96,7 +108,8 @@ export default defineComponent({
             chosenYearAwards,
             workerWithDiploma,
             workerOfTheYear,
-            actualYears
+            actualYears,
+            isLoading
         };
     },
 });

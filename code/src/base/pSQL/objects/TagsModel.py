@@ -97,3 +97,20 @@ class TagsModel:
             return LogsMaker().info_message(f"Тэг с id = {self.id} не был привязан к статье с id = {self.art_id}, поле indirect_data не валдино")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при привязке тэга с id = {self.id} к статье с id = {self.art_id}, {e}")
+    
+    def remove_tag_from_art_id(self):
+        try:
+            existing_tag_in_art = database.query(self.Article).filter(
+                self.Article.id == self.art_id,
+                self.Article.indirect_data["tags"].contains([self.id])
+            ).first()
+
+            if not existing_tag_in_art:
+                return LogsMaker().info_message(f"К статье с id = {self.art_id} не привязан тэг с id = {self.id}")
+            
+            existing_tag_in_art.indirect_data['tags'].remove(self.id)
+            flag_modified(existing_tag_in_art, 'indirect_data')
+            database.commit()
+            return LogsMaker().info_message(f"Тэг с id = {self.id} успешно отвязан от статьи с id = {self.art_id}")
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при отвязке тэга с id = {self.id} от статьи с id = {self.art_id}, {e}")

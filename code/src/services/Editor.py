@@ -750,7 +750,6 @@ class Editor:
         pattern_data_file.close()
 
         valid_sec_id =  list(pattern_data.keys())
-
         valid_sec_id = [int(item) for item in valid_sec_id]
 
         #valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 7, 71]

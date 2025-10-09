@@ -70,7 +70,7 @@ class AuthService:
         if user_uuid is not None and "GUID" in user_uuid:
             user_uuid = user_uuid['GUID']
         else:
-            return LogsMaker.error_message("Auth error! Invalid login or password!")
+            return LogsMaker().error_message("Auth error! Invalid login or password!")
         
         
 

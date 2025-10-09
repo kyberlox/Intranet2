@@ -36,5 +36,11 @@
     "xxl" : "Размер xxl",
     "no_size" : "Безразмерный",
     "price" : "Цена",
-    "sectionHref" : "Cсылка на конкурс"
+    "sectionHref" : "Cсылка на конкурс",
+    "author" : "Автор",
+    "age_group" : "",
+    "nomination" : "",
+    "created_by" : "",
+    "representative_id" : "",
+    "representative_text" : ""
 }

@@ -1549,13 +1549,33 @@
         ]
       },
       {
-        "name": "Название конкурса",
+        "name": "Название работы",
         "field": "name",
         "data_type": "str"
       },
       {
-        "name": "Cсылка на конкурс",
-        "field": "sectionHref",
+        "name": "Автор работы",
+        "field": "author",
+        "data_type": "str"
+      },
+      {
+        "name": "Возростная группа",
+        "field": "age_group",
+        "data_type": "str"
+      },
+      {
+        "name": "Номинация",
+        "field": "nomination",
+        "data_type": "str"
+      },
+      {
+        "name": "ID пользователя",
+        "field": "representative_id",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Отправитель",
+        "field": "representative_text",
         "data_type": "str"
       }
     ],

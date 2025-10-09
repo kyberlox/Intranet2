@@ -778,6 +778,13 @@ class Editor:
                 "last_name",
                 "work_position",
                 "photo_file_url"
+            ],
+            "71" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department"
             ]
         }
 
@@ -821,6 +828,12 @@ class Editor:
 
         if self.section_id == 14:
             art["name"] = result["fio"]
+        
+        if self.section_id == 71:
+            result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
+            result.pop("fio")
+            result.pop("department")
+            result.pop('position')
 
         #вписываю в неё эти значения
         for key in result.keys():

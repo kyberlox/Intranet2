@@ -383,7 +383,7 @@ def try_b24(login, password):
         title_text = title_match.group(1) if title_match else ""
         
         # Если в title есть "Авторизация" - неудачная авторизация
-         if "Авторизация" in title_text:
+        if "Авторизация" in title_text:
             return False
         
         # Если авторизация успешна - извлекаем данные

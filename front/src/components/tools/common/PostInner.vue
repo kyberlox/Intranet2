@@ -38,7 +38,7 @@
                     <div v-for="tag in currentPost.indirect_data.tags"
                          :key="tag.id"
                          class="tag__wrapper ">
-                        <div class="tasg__tag section__item__link btn-air"
+                        <div class="tags__tag tags__tag--inner section__item__link btn-air"
                              @click="$emit('pickTag', tag.id)">
                             #{{ tag.tag_name }}
                         </div>

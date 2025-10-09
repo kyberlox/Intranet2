@@ -6,7 +6,7 @@
 <div v-else>
     <div v-if="actualYears.length"
          class="staff__filter__link d-flex gap-3 mt20">
-        <RouterLink :to="{ name: 'year-results-id', params: { id: year } }"
+        <RouterLink :to="{ name: 'year-results', params: { id: year } }"
                     v-for="(year, index) in actualYears"
                     :key="index">
             {{ year }}

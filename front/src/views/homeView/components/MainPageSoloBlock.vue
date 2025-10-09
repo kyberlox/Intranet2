@@ -11,15 +11,25 @@
                           :style="{ backgroundImage: `url(${chooseImgPlug()})` }"
                           class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
             </swiper-slide>
+
             <swiper-slide v-else
                           v-for="(slide, index) in card.images"
                           :key="'postImg' + index"
                           class="homeview__grid__card__image__swiper-slide">
-                <RouterLink v-if="slide.image"
+                <!-- Для афишы -->
+                <a v-if="card.id == 7"
+                   class="homeview__grid__card__link
+                                homeview__grid__card__bg-image"
+                   :href="slide.href"
+                   target="_blank"
+                   v-lazy-load="slide.image"></a>
+
+                <RouterLink v-else-if="slide.image"
                             class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
                             :to="{ name: card.id == 7 ? 'home' : card.href ?? slide.href }"
                             v-lazy-load="slide.image" />
+
                 <RouterLink v-else
                             :to="{ name: card.href ?? slide.href }"
                             class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug"

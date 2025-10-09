@@ -39,15 +39,10 @@ const router = createRouter({
       }
     },
     {
-      path: '/about/year-results',
-      name: 'year-results',
-      component: () => import('@/views/about/yearResults/YearResults.vue'),
-    },
-    {
-      path: '/about/year-results/:id',
-      name: 'year-results-id',
-      component: () => import('@/views/about/yearResults/YearResults.vue'),
-      props: (route) => ({ id: route.params.id }),
+    path: '/about/year-results/:id?', 
+    name: 'year-results',
+    component: () => import('@/views/about/yearResults/YearResults.vue'),
+    props: (route) => ({ id: route.params.id || null }),
     },
     {
       path: '/about/blogs',
@@ -92,12 +87,18 @@ const router = createRouter({
       component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
+      path: '/about/videoreportsByTag/:tagId',
+      name: 'videoReportsByTag',
+      props: (route) => ({ tagId: route.params.tagId}),
+      component: () => import('@/views/news/videoReports/VideoReports.vue'),
+    },
+    {
       path: '/about/videoreports/:id',
       name: 'videoReport',
       component: () => import('@/views/PostPreview.vue'),
-      props: (route) => ({ id: route.params.id, pageTitle: 'Видео-репортажи' }),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Видеорепортажи' }),
       meta: {
-        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Видео-репортажи', route: 'videoReports' }]
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Видеорепортажи', route: 'videoReports' }]
       }
     },
     {
@@ -251,7 +252,7 @@ const router = createRouter({
       path: '/services/selectionTep',
       name: 'selectionTep',
       beforeEnter: (to, from, next) => {
-        window.open('https://emk.websto.pro/static/select.html', '_blank')
+        window.open('https://tepconf.emk.ru', '_blank')
         next(false)
       },
       redirect: '',
@@ -260,7 +261,7 @@ const router = createRouter({
       path: '/services/selectionReg',
       name: 'selectionReg',
       beforeEnter: (to, from, next) => {
-        window.open('https://portal.emk.ru/intranet/tools/regconf.php', '_blank')
+        window.open('https://regconf.emk.ru', '_blank')
         next(false)
       },
       redirect: '',
@@ -310,6 +311,12 @@ const router = createRouter({
     {
       path: '/news/actual',
       name: 'actualNews',
+      component: () => import('@/views/news/actualNews/ActualNews.vue')
+    },
+    {
+      path: '/news/actual/tag/:tagId',
+      name: 'actualNewsByTag',
+      props: (route) => ({ tagId: route.params.tagId}),
       component: () => import('@/views/news/actualNews/ActualNews.vue')
     },
     {

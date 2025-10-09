@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import Api from '@/utils/Api';
-import { defineComponent, ref, onMounted, type Ref } from 'vue';
+import { defineComponent, ref, onMounted, type Ref, watch } from 'vue';
 
 interface ITag {
     id: number | '',
@@ -37,6 +37,11 @@ interface ITag {
 }
 
 export default defineComponent({
+    props: {
+        tagId: {
+            type: String,
+        },
+    },
     setup(props, { emit }) {
         const tags: Ref<ITag[]> = ref([]);
         const tagsVisible = ref(false);
@@ -52,6 +57,13 @@ export default defineComponent({
             emit('pickTag', tag.id);
             tagsVisible.value = false;
         }
+
+        watch(([props, tags]), () => {
+            if (props.tagId && tags.value.length) {
+                setActiveTag(tags.value.find((e) => e.id == props.tagId) as ITag)
+            }
+        }, { deep: true, immediate: true })
+
 
         return {
             tags,

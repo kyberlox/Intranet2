@@ -20,7 +20,6 @@
                         {{ item.title }}
                     </RouterLink>
                 </MainPageRowBlocks>
-
             </div>
         </div>
     </div>

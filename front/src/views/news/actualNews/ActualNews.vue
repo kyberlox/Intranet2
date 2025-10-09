@@ -4,7 +4,8 @@
     <DateFilter :params="filterYears"
                 :buttonText="currentYear ?? 'Год'"
                 @pickFilter="(year: string) => currentYear = year" />
-    <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
+    <TagsFilter @pickTag="(tag: string) => currentTag = tag"
+                :tagId="tagId" />
 </div>
 <div class="row">
     <SampleGallery v-if="!emptyTag"
@@ -24,7 +25,6 @@ import type { INews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
-import { useLoadingStore } from '@/stores/loadingStore';
 import DateFilter from '@/components/tools/common/DateFilter.vue';
 import TagsFilter from '@/components/tools/common/TagsFilter.vue';
 import { useNewsFilterWatch } from '@/composables/useNewsFilterWatch';
@@ -35,10 +35,18 @@ export default defineComponent({
         DateFilter,
         TagsFilter
     },
-    setup() {
+    props: {
+        id: {
+            type: Number
+        },
+        tagId: {
+            type: String
+        }
+    },
+    setup(props) {
         const viewsData = useViewsDataStore();
         const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData('actualNewsData') as INews[]);
-        const visibleNews: Ref<INews[]> = ref(allNews.value);
+        const visibleNews: Ref<INews[]> = ref([]);
         const currentTag: Ref<string> = ref('');
         const currentYear: Ref<string> = ref('');
         const filterYears: Ref<string[]> = ref([]);
@@ -55,27 +63,25 @@ export default defineComponent({
 
         onMounted(async () => {
             if (allNews.value.length) return;
-            useLoadingStore().setLoadingStatus(true);
             await Api.get(`article/find_by/${sectionTips['АктуальныеНовости']}`)
                 .then((res) => {
                     viewsData.setData(res, 'actualNewsData');
-                    visibleNews.value = res;
+                    if (!props.tagId) visibleNews.value = res;
                 })
                 .finally(() => {
                     filterYears.value = extractYears(visibleNews.value);
-                    useLoadingStore().setLoadingStatus(false);
                 })
         })
 
         return {
             allNews,
             visibleNews,
-            extractYears,
-            showEventsByYear,
             currentYear,
             currentTag,
             filterYears,
-            emptyTag
+            emptyTag,
+            extractYears,
+            showEventsByYear,
         };
     },
 });

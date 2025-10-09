@@ -4,7 +4,8 @@
     <DateFilter :params="filterYears"
                 :buttonText="currentYear ?? 'Год'"
                 @pickFilter="(year: string) => currentYear = year" />
-    <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
+    <TagsFilter @pickTag="(tag: string) => currentTag = tag"
+                :tagId="tagId" />
 </div>
 <div class="row">
     <GridGallery v-if="!emptyTag"
@@ -22,7 +23,6 @@ import { defineComponent, onMounted, computed, type ComputedRef, ref, type Ref, 
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
-import { useLoadingStore } from "@/stores/loadingStore";
 import type { INews } from "@/interfaces/IEntities";
 import DateFilter from '@/components/tools/common/DateFilter.vue';
 import TagsFilter from '@/components/tools/common/TagsFilter.vue';
@@ -35,10 +35,13 @@ export default defineComponent({
         DateFilter,
         TagsFilter
     },
-    setup() {
+    props: {
+        tagId: String
+    },
+    setup(props) {
         const viewsData = useViewsDataStore();
         const videoReports: ComputedRef<INews[]> = computed(() => viewsData.getData('videoReportsData') as INews[]);
-        const visibleReports: Ref<INews[]> = ref(videoReports.value);
+        const visibleReports: Ref<INews[]> = ref([]);
         const currentTag: Ref<string> = ref('');
         const currentYear: Ref<string> = ref('');
         const filterYears: Ref<string[]> = ref([]);
@@ -55,15 +58,15 @@ export default defineComponent({
 
         onMounted(() => {
             if (videoReports.value.length) return;
-            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Видеорепортажи']}`)
                 .then(res => {
                     viewsData.setData(res, 'videoReportsData');
-                    visibleReports.value = res;
+                    if (!props.tagId) {
+                        visibleReports.value = res;
+                    }
                 })
                 .finally(() => {
                     filterYears.value = extractYears(visibleReports.value);
-                    useLoadingStore().setLoadingStatus(false)
                 });
         });
 

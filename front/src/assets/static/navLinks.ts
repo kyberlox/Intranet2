@@ -117,6 +117,11 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: "Референсы и опыт поставок",
                 href: "experience",
             },
+            {
+                id: 2.7,
+                name: 'Информационное письмо',
+                href: 'https://intranet.emk.ru/api/files/Информационное_письмо_НПО_ЭМК.docx',
+            }
         ],
     },
     {
@@ -241,8 +246,8 @@ export const workLinks: WorkLink[] = [
 
 export const supportLinks: SupportLink[] = [
     {
-        title: "1277",
-        href: "tel:#1277",
+        title: "5182",
+        href: "tel:#5182",
         description: "Тех. поддержка сайта",
         icon: PhoneIcon,
     },

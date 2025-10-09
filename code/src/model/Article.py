@@ -1961,10 +1961,10 @@ class Article:
                     date_value.append(values["id"])
                     date_value.append(values["name"])
                     date_value.append(values["preview_text"])
-                    date_value.append(values["date_creation"])
+                    date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
             
             news_id = sorted_data[0][0]
 
@@ -2064,7 +2064,7 @@ class Article:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
-                        date_value.append(values["date_creation"])
+                        date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
                         date_list.append(date_value)
                     else:
                         continue
@@ -2120,7 +2120,7 @@ class Article:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
-                        date_value.append(values["date_creation"])
+                        date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
                         data_list.append(date_value)
                     else:
                         continue
@@ -2181,7 +2181,7 @@ class Article:
                         date_value.append(values["id"])
                         date_value.append(values["name"])
                         date_value.append(values["preview_text"])
-                        date_value.append(values["date_creation"])
+                        date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
                         date_list.append(date_value)#  получили список с необходимыми данными
                     else:
                         continue 
@@ -2288,7 +2288,7 @@ class Article:
                     date_value.append(values["id"])
                     date_value.append(values["name"])
                     date_value.append(values["preview_text"])
-                    date_value.append(values["date_creation"])
+                    date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)

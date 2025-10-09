@@ -756,7 +756,7 @@ class Editor:
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_sec_id:
-                edited_sections.append(int(sec))
+                edited_sections.append(sec)
         return edited_sections
 
     def get_user_info(self, user_id):

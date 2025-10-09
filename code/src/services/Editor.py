@@ -774,6 +774,13 @@ class Editor:
                 "id",
                 "photo_file_url"
             ],
+            "32" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "photo_file_url"
+            ],
             "172" : [
                 "name",
                 "second_name",

@@ -1,5 +1,5 @@
 from src.services.LogsMaker import LogsMaker
-from .App import get_db
+from .App import get_db, func
 LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 
 db_gen = get_db()
@@ -72,15 +72,15 @@ class FieldvisionModel:
 
             max_id = database.query(func.max(self.ArtVis.id)).scalar() or 0
             new_id = max_id + 1
-            new_node = self.ArtVis
+            new_node = self.ArtVis()
             new_node.id = new_id,
             new_node.vision_id = self.id,
-            new_node.vision_id = self.art_id
+            new_node.art_id = self.art_id
             database.add(new_node)
             database.commit()
             return LogsMaker().info_message(f"Статья с id = {self.id} успешно добавлена в ОВ с id = {self.id}") 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка при добавлении статьи с id = {self.id} в ОВ с id = {self.id}, {e}")
+            return LogsMaker().error_message(f"Ошибка при добавлении статьи с id = {self.art_id} в ОВ с id = {self.id}, {e}")
 
     def delete_art_from_vision(self):
         try:
@@ -98,4 +98,16 @@ class FieldvisionModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении статьи с id = {self.id} из ОВ с id = {self.id}, {e}")
     
+    def get_all_vis_in_art(self):
+        result = []
+        art_info = database.query(self.ArtVis.vision_id, self.Fieldvision.vision_name).join(self.Fieldvision, self.Fieldvision.id == self.ArtVis.vision_id).filter(self.ArtVis.art_id == self.art_id).all()
+        if art_info:
+            for art in art_info:
+                vis_info = {
+                    "id": art[0],
+                    "name": art[1]
+                }
+                result.append(vis_info)
+        return result
     
+    # def check_user_root(self):

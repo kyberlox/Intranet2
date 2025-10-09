@@ -486,7 +486,6 @@ class Editor:
                     val = art["indirect_data"][k]
                 
                 data_type = get_type(val)
-
                 # экземпляр поля
                 fl = {
                     "name" : self.fields[k],
@@ -494,6 +493,7 @@ class Editor:
                     "field" : k,
                     "data_type" : data_type
                 }
+
 
                 # если значения варьируются
                 if k in self.variable.keys():
@@ -774,6 +774,13 @@ class Editor:
                 "id",
                 "photo_file_url"
             ],
+            "32" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "photo_file_url"
+            ],
             "172" : [
                 "name",
                 "second_name",
@@ -789,7 +796,7 @@ class Editor:
                 "department"
             ]
         }
-
+        print(self.fields)
         user_info = User(id=user_id).search_by_id()
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
@@ -829,6 +836,9 @@ class Editor:
         art = Article(id = self.art_id).find_by_id()
 
         if self.section_id == 14:
+            art["name"] = result["fio"]
+        
+        if self.section_id == 32:
             art["name"] = result["fio"]
         
         if self.section_id == 71:

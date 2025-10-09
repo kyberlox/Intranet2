@@ -315,7 +315,8 @@ def try_mail(login, password):
         status = server.noop()[0]
         server.quit()
         if status == 250:
-            return True
+            user_info = User().find_by_email(login)
+            return user_info
     except smtplib.SMTPAuthenticationError as e:
         return False
     except smtplib.SMTPException as e:

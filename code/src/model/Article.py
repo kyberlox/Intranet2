@@ -1901,7 +1901,7 @@ class Article:
                 sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
-                print(len(active_articles), len(result))
+            
             return sorted_active_articles
     
     def all_serch_by_date(self ):
@@ -2476,6 +2476,8 @@ class Article:
     
     def remove_tag_from_art_id(self, tag_id):
         return Tag(id=tag_id, art_id=self.id).remove_tag_from_art_id()
+    
+    
 
 #Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}")

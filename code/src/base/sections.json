@@ -195,6 +195,13 @@
     "reportHref": "factoryReports"
   },
   {
+    "id" : 411,
+    "name" : "3D - туры",
+    "parent_id" : 4,
+    "tourHref": "factoryTour",
+    "reportHref": "factoryReports"
+  },
+  {
     "id" : 42,
     "name" : "Официальные события",
     "parent_id" : 4,

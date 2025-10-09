@@ -114,6 +114,7 @@ USER_STORAGE_PATH = "./files_db/user_photo"
 os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 
 # Монтируем статику
+app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 

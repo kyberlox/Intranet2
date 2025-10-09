@@ -1460,5 +1460,128 @@
       "documentation": [],
       "videos_embed": []
     }
+  },
+  "7" : {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      },
+       {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название конкурса",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Cсылка на конкурс",
+        "field": "sectionHref",
+        "data_type": "str"
+      }
+    ],
+    "files": {
+      "images": []
+    }
+  },
+  "71" : {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      },
+       {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название работы",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Автор работы",
+        "field": "author",
+        "data_type": "str"
+      },
+      {
+        "name": "Возрастная группа",
+        "field": "age_group",
+        "data_type": "str"
+      },
+      {
+        "name": "Номинация",
+        "field": "nomination",
+        "data_type": "str"
+      },
+      {
+        "name": "ID пользователя",
+        "field": "representative_id",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Отправитель",
+        "field": "representative_text",
+        "data_type": "str"
+      }
+    ],
+    "files": {
+      "images": []
+    }
   }
+
 }

@@ -129,7 +129,7 @@ class Editor:
         return pattern_data
 
 
-
+    '''
     def get_fast_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
@@ -443,6 +443,7 @@ class Editor:
         pattern_data = json.load(pattern_data_file)
         pattern_data_file.close()
         return pattern_data
+    '''
 
     def section_rendering(self ):
         result = Article(section_id = self.section_id).all_serch_by_date()
@@ -743,10 +744,18 @@ class Editor:
 
     def get_sections_list(self ):
         all_sections = Section().get_all()
-        valid_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175]
+
+        pattern_data_file = open("./src/base/patterns.json", "r")
+        pattern_data = json.load(pattern_data_file)
+        pattern_data_file.close()
+
+        valid_sec_id =  list(pattern_data.keys())
+        valid_sec_id = [int(item) for item in valid_sec_id]
+
+        #valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 7, 71]
         edited_sections = []
         for sec in all_sections:
-            if sec["id"] in valid_id:
+            if sec["id"] in valid_sec_id:
                 edited_sections.append(sec)
         return edited_sections
 
@@ -765,12 +774,26 @@ class Editor:
                 "id",
                 "photo_file_url"
             ],
+            "32" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "photo_file_url"
+            ],
             "172" : [
                 "name",
                 "second_name",
                 "last_name",
                 "work_position",
                 "photo_file_url"
+            ],
+            "71" : [
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department"
             ]
         }
 
@@ -814,6 +837,12 @@ class Editor:
 
         if self.section_id == 14:
             art["name"] = result["fio"]
+        
+        if self.section_id == 71:
+            result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
+            result.pop("fio")
+            result.pop("department")
+            result.pop('position')
 
         #вписываю в неё эти значения
         for key in result.keys():
@@ -859,6 +888,8 @@ def get_editor_roots(user_uuid):
     editor_roots = roots_model.token_processing_for_editor(all_roots)
     return editor_roots
 
+
+
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 def get_user_info(section_id : int, art_id : int, user_id: int):
     return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
@@ -875,10 +906,12 @@ def get_pattern_by_sec_id(data = Body()):
     data.pop("section_id")
     return Editor(section_id = section_id).get_pattern(data)
 
+'''
 #автосборка паттернов
 @editor_router.get("/edit_sections")
 async def get_edit_sections():
     return Editor().get_sections()
+'''
 
 # вывод списка редактируемых секций
 @editor_router.get("/get_sections_list")

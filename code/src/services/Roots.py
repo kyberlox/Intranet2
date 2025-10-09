@@ -100,7 +100,7 @@ def create_editor_admin(user_uuid: int, request: Request):
     user_id = get_uuid_from_request(request)
     editor_roots = get_editor_roots(user_id)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
-        return Roots(user_uuid=user_uuid).create_editor_moder(sec_id)
+        return Roots(user_uuid=user_uuid).create_editor_admin()
     return LogsMaker().warning_message(f"Недостаточно прав")
     
 

@@ -340,6 +340,8 @@ async def authentication(response : Response, data = Body()):
         # return LogsMaker().warning_message(message="Invalid credentials")
         if login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
             pass
+        elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
+            pass
         else:
             return LogsMaker().warning_message(message="Invalid credentials")
     else:

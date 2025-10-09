@@ -21,8 +21,6 @@ COPY ./requirements.txt /data/app/requirements.txt
 
 RUN pip install --upgrade pip
 
-RUN pip install --upgrade setuptools wheel
-
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 #COPY ./ /data/app

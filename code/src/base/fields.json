@@ -38,9 +38,9 @@
     "price" : "Цена",
     "sectionHref" : "Cсылка на конкурс",
     "author" : "Автор",
-    "age_group" : "",
-    "nomination" : "",
-    "created_by" : "",
-    "representative_id" : "",
-    "representative_text" : ""
+    "age_group" : "Возрастная группа",
+    "nomination" : "Тема",
+    "created_by" : "ID редактора",
+    "representative_id" : "ID представителя",
+    "representative_text" : "ФИО представителя"
 }

@@ -749,8 +749,8 @@ class Editor:
         pattern_data = json.load(pattern_data_file)
         pattern_data_file.close()
 
-        valid_sec_id =  list(pattern_data.keys())
-        #valid_sec_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175, "7"]
+        #valid_sec_id =  list(pattern_data.keys())
+        valid_sec_id = [13, 14, 15, 16, 18, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 110, 111, 172, 175, "7", "71"]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_sec_id:

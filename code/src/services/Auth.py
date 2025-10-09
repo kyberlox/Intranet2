@@ -334,7 +334,6 @@ def try_mail(login, password):
         return False
 
 import requests
-from bs4 import BeautifulSoup
 import re
 
 def extract_auth_data(html_content):
@@ -379,15 +378,12 @@ def try_b24(login, password):
         response = requests.post(auth_url, data=form_data, headers=headers)
         response.raise_for_status()
         
-        # Парсим HTML ответ
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Проверяем заголовок страницы
-        title_tag = soup.find('title')
-        title_text = title_tag.text.strip() if title_tag else ""
+        # Проверяем заголовок страницы с помощью регулярного выражения
+        title_match = re.search(r'<title>\s*(.*?)\s*</title>', response.text, re.IGNORECASE)
+        title_text = title_match.group(1) if title_match else ""
         
         # Если в title есть "Авторизация" - неудачная авторизация
-        if title_text == "Авторизация":
+         if "Авторизация" in title_text:
             return False
         
         # Если авторизация успешна - извлекаем данные

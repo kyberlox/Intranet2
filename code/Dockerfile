@@ -1,4 +1,4 @@
-FROM python:3.13-bookworm
+FROM python:3.14-bookworm
 
 WORKDIR /data/app
 COPY ./requirements.txt /data/app/requirements.txt
@@ -20,6 +20,8 @@ COPY ./requirements.txt /data/app/requirements.txt
 #     && pip install --no-cache-dir pyvips
 
 RUN pip install --upgrade pip
+
+RUN pip install --upgrade setuptools wheel
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 

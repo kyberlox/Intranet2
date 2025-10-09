@@ -753,7 +753,7 @@ class Editor:
 
         valid_sec_id = [int(item) for item in valid_sec_id]
 
-        valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 7, 71]
+        #valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 7, 71]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_sec_id:

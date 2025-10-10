@@ -1983,12 +1983,10 @@ class Article:
             result = [] 
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if values.get("active_main_page") == False:
-                    print(values["id"], "active_main_page")
+                if "active_main_page" in values['indirect_data'].keys() and in values['indirect_data']['active_main_page'] == False:
                     continue
 
-                if values.get("active") == False:
-                    print(values["id"], "active")
+                if values["active"] == False:
                     continue
                 
                     # flag = False
@@ -2001,7 +1999,6 @@ class Article:
                     #     if time_diff.days <= 10:
                     #         flag = True
                     # if flag == True:
-                print("мимо условий", values)
                 self.id = values["id"]
                 files = File(art_id = int(self.id)).get_files_by_art_id()
                 image_URL = ""

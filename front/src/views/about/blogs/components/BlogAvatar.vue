@@ -12,9 +12,7 @@
                  class="blogs__item__img img-fluid  rounded-circle"></div>
         </div>
         <div class="blogs__item-text text-center">
-            <h3 class="blogs__item-title">
-                {{ author?.authorTitle }}
-            </h3>
+            <div class="blogs__item-title" v-html="formatTitle()"></div>
         </div>
     </RouterLink>
     <a v-if="needLink && author?.link"
@@ -45,9 +43,18 @@ export default defineComponent({
             default: false
         },
     },
-    setup() {
+    setup(props) {
+           const formatTitle = () => {
+            console.log(props);
+
+            if(props.author?.authorTitle){
+                return `${props.author?.authorTitle.split(';')[0]}<div class="blogs__item-title--small">${props.author?.authorTitle.split(';')[1]}</div>`
+            }
+            else return props.author?.title
+        }
         return {
             makeSlashToBr,
+            formatTitle
         };
     },
 });

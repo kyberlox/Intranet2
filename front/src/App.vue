@@ -16,6 +16,7 @@
                 </div>
             </div>
         </div>
+        <PageScrollArrow/>
     </main>
 </div>
 <div v-else>
@@ -38,6 +39,7 @@ import AuthPage from "./views/user/AuthPage.vue";
 import YandexMetrika from "./components/tools/common/YandexMetrika.vue";
 import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./composables/usePrefetchSection";
+import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -48,6 +50,7 @@ export default defineComponent({
         AuthPage,
         Breadcrumbs,
         Toast,
+        PageScrollArrow,
         YandexMetrika
     },
     setup() {

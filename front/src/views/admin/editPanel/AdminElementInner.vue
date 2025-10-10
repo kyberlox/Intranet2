@@ -11,11 +11,9 @@
            class="admin-element-inner__field"
            :key="index">
 
-
-        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuid'"
-                             @userPicked="handleUserPick" />
-        <AdminEditUsersSearch v-if="item.data_type == 'search_by_uuids'"
-                              @userPicked="handleUserPick" />
+        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
+            :type="item.data_type"
+        @userPicked="handleUserPick" @usersPicked="handleUsersPick" />
 
         <AdminEditReportage v-if="item.field == 'reports'"
                             :item="(item.value as IReportage[])"
@@ -268,7 +266,18 @@ export default defineComponent({
             reloadElementData(false)
           }
         })
+    }
 
+    const users = ref<string[]>([]);
+    const handleUsersPick = (uuid: string) => {
+        users.value.push(uuid)
+        const usersBody = {art_id: props.elementId, users_id: users.value}
+        Api.post(`editor/get_users_info`, usersBody)
+        .then((data) => {
+          if (data) {
+            reloadElementData(false)
+          }
+        })
     }
 
     return {
@@ -284,6 +293,7 @@ export default defineComponent({
       isMobileScreen,
       newId,
       inputKey,
+      handleUsersPick,
       handleUserPick,
       inputComponentChecker,
       applyNewData,

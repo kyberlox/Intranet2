@@ -1,24 +1,19 @@
 <template>
 <AdminEditUserSearch />
-<div class="admin-element__reportage-group__add-button__wrapper ">
-    <div @click="addNewReportRow"
-         class="admin-element__reportage-group__add-button primary-button">
-        <PlusIcon />
-    </div>
-    <div @click="RemoveReportRow"
-         class="admin-element__reportage-group__add-button primary-button">
-        <MinusIcon />
-    </div>
-</div>
+
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import AdminEditUserSearch from "./AdminEditUserSearch.vue";
+import MinusIcon from '@/assets/icons/admin/MinusIcon.svg?component';
+import PlusIcon from '@/assets/icons/admin/PlusIcon.svg?component';
 
 export default defineComponent({
     components: {
-        AdminEditUserSearch
+        AdminEditUserSearch,
+        PlusIcon,
+        MinusIcon
     },
     setup() {
         const users = ref<string[]>([]);

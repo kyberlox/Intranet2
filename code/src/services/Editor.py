@@ -767,6 +767,7 @@ class Editor:
         # записываю
         #если есть в стаье, но нет в user_id_list
         # выписываю
+        pass
     
     def get_user_info(self, user_id):
         result = {}

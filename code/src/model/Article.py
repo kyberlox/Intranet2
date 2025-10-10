@@ -326,10 +326,10 @@ class Article:
                 photo = user["photo_file_url"]
 
                 #ФИО
-                fio = usr['last_name'] + " " + usr['name'] + " " + usr['second_name']
+                fio = user['last_name'] + " " + user['name'] + " " + user['second_name']
 
                 #взять должность
-                position = user_data['text']
+                position = user_data['work_position']
 
                 author = fio  + "\n " + position
                 #photo = photo.replace("user_files", "compress_image/user")

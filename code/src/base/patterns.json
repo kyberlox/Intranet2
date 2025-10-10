@@ -529,20 +529,14 @@
         ]
       },
       {
-        "name": "ID пользователя",
-        "field": "uuid",
+        "name": "ID пользователей",
+        "field": "uuids",
         "data_type": "search_by_uuid"
       },
       {
-        "name": "Должность",
-        "field": "position",
+        "name": "Список пользователей",
+        "field": "users",
         "data_type": "str"
-      },
-      {
-        "name": "Фотография (URL)",
-        "field": "photo_file_url",
-        "data_type": "str",
-        "disabled": true
       },
       {
         "name": "Название статьи",

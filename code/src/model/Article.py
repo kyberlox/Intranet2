@@ -324,16 +324,19 @@ class Article:
                 #отдельно вытащить превьюшки людей
                 user = User(id=uuid).search_by_id_all()
                 photo = user["photo_file_url"]
+                #photo = photo.replace("user_files", "compress_image/user")
 
                 #ФИО
                 fio = user['last_name'] + " " + user['name'] + " " + user['second_name']
 
                 #взять должность
-                position = user['work_position']
+                if "work_position" in user:
+                    position = user['work_position']
+                else:
+                    position = ""
                 
                 author = fio  + "\n " + position
-                #photo = photo.replace("user_files", "compress_image/user")
-                
+
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
                 company = 10834#"АО «НПО «Регулятор»"

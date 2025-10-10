@@ -1983,7 +1983,7 @@ class Article:
             result = [] 
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if ("active_main_page" in values.keys() and values["active_main_page"] == False) or values["active"] == False:
+                if values.get("active_main_page") == False or values.get("active") == False:
                     continue
                 else:
                     # flag = False

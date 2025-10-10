@@ -75,7 +75,6 @@ class AuthService:
         user_uuid = try_mail(login = username, password = password)
         if user_uuid == False:
             b24_ans = try_b24(login = username, password = password)
-            print(b24_ans)
             if b24_ans['status'] == 'success':
                 user_id = b24_ans['data']['USER_ID']
                 print(user_id)
@@ -123,7 +122,6 @@ class AuthService:
             self.redis.save_session(session_id, session_data)
         else:
             session_id = ses_find[8:]
-        print(session_id)
         return {
             "session_id": session_id,
             "user": session_data

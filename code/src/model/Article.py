@@ -325,7 +325,13 @@ class Article:
                 user = User(id=uuid).search_by_id_all()
                 photo = user["photo_file_url"]
 
-                author = fio + 
+                #ФИО
+                fio = usr['last_name'] + " " + usr['name'] + " " + usr['second_name']
+
+                #взять должность
+                position = user_data['text']
+
+                author = fio  + "\n " + position
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
@@ -372,6 +378,7 @@ class Article:
             indirect_data = {
                 "TITLE" : data["TITLE"],
                 "author_uuid" : uuid,
+                "author" : author,
                 "company" : company, 
                 "link" : link,
                 "youtube_link" : YouTube,

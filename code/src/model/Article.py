@@ -571,10 +571,12 @@ class Article:
                 for user_data in users_data:
                     #нати данные пользователя
                     usr_id = user_data['id']
+                    usr = User(id = usr_id).search_by_id_all()
+
                     #ФИО
-                    fio = ""
+                    fio = usr['last_name'] + " " + usr['name'] + " " + usr['second_name']
                     #фото
-                    photo_file_url = ""
+                    photo_file_url = usr["photo_file_url"]
                     #взять должность
                     position = user_data['text']
                     usr = {

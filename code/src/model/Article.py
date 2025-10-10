@@ -336,7 +336,7 @@ class Article:
                 else:
                     position = ""
                 
-                author = fio  + "\n " + position
+                author = fio  + ";" + position
 
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
@@ -1139,7 +1139,7 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        self.upload_uniquely()
+        #self.upload_uniquely()
         self.upload_with_parameter()
         # self.upload_many_to_many()
         # self.upload_services()
@@ -1160,7 +1160,7 @@ class Article:
             #14 : "123", # Доска почёта ✔️
             #16 : "122", # Видеоитервью ✔️
             
-            32 : "132", # Новости организационного развития ✔️
+            #32 : "132", # Новости организационного развития ✔️
             #53 : "62", # Афиша ✔️
             #54 : "55", # Предложения партнеров ✔️
             #55 : "56", # Благотворительные проекты ✔️

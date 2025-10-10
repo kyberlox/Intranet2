@@ -531,7 +531,7 @@ class Editor:
                         got_field["data_type"] = need_field["data_type"]
                     
                     #отдельно проверить валидность вариантов выбора значения
-                    if need_field["values"] != got_field["values"]:
+                    if "values" in got_field and need_field["values"] != got_field["values"]:
                         got_field["values"] = need_field["values"]
                     
                     #вписываем

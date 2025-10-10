@@ -580,7 +580,7 @@ class Article:
                     usr = {
                         "id" : usr_id,
                         "fio" : fio,
-                        "photo_file_url" : photo_file_url
+                        "photo_file_url" : photo_file_url,
                         "position" : position
                     }
                     indirect_data["users"].append(usr)

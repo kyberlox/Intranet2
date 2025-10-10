@@ -848,13 +848,7 @@ class Editor:
             result.pop("department")
             result.pop('position')
 
-        if self.section_id == 32:
-            art["prewiew_text"] = f"<div class="col-sm-6">{{user id=2148;text=Директор по экономике и финансам}}</div>
-<div class="col-sm-6">{{user id=339;text=Финансовый директор}}</div>
-<div class="col-sm-6">{{user id=341;text=Руководитель Центральной бухгалтерии}}</div>
-<div class="col-sm-6">{{user id=603;text=Руководитель Бухгалтерии производственных предприятий}}</div>
-<div class="col-sm-6">{{user id=606;text=Директор по экономике}}</div>
-<div class="col-sm-6">{{user id=717;text=Руководитель Отдела кадров}}</div>"
+        
 
         #вписываю в неё эти значения
         for key in result.keys():

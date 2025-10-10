@@ -980,7 +980,7 @@ def get_editor_roots(user_uuid):
 def set_user_info(section_id : int, art_id : int, user_id: int):
     return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
 
-@editor_router.post("/get_users_info/{section_id}/{art_id}/{user_id}")
+@editor_router.post("/get_users_info")
 def set_user_info(data = Body()):
     if "art_id" in data:
         art_id = data["art_id"]

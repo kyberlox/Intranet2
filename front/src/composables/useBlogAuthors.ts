@@ -10,8 +10,6 @@ export const getBlogAuthorsToStore = () => {
     Api.get(`article/find_by/${sectionTips['Блоги']}`)
         .then(res => {
             res.map((e: IBlog) => {
-                console.log(e.indirect_data?.author);
-                
                 if (e.indirect_data?.TITLE) {
                     const newAuthor: IBlogAuthors = {
                         title: e.indirect_data.TITLE,
@@ -27,7 +25,6 @@ export const getBlogAuthorsToStore = () => {
                     }
                 }
             })
-
             blogsData.setAllBlogs(res);
             blogsData.setAuthors(uniqAuthors);
         })

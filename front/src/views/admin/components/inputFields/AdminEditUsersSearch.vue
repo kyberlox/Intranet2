@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import AdminEditUserSearch from "./AdminEditUserSearch.vue";
 
 export default defineComponent({
@@ -21,19 +21,19 @@ export default defineComponent({
         AdminEditUserSearch
     },
     setup() {
-        const users: Ref<{}[]> = ref([]);
-        const addNewReportRow = ''
-        const RemoveReportRow = ''
+        const users = ref<string[]>([]);
+
         const addNewReportRow = () => {
-            formattedReportages.value.push({ name: 'Название', value: '' }, { name: 'Ссылка', value: '' })
+            users.value.push()
         }
 
         const RemoveReportRow = () => {
-            formattedReportages.value.splice(-2, 2);
+            users.value.splice(-2, 2);
         }
 
         return {
-
+addNewReportRow,
+RemoveReportRow,
         }
     }
 })

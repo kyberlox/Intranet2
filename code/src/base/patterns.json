@@ -529,6 +529,22 @@
         ]
       },
       {
+        "name": "ID пользователя",
+        "field": "uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Должность",
+        "field": "position",
+        "data_type": "str"
+      },
+      {
+        "name": "Фотография (URL)",
+        "field": "photo_file_url",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
         "name": "Название статьи",
         "field": "name",
         "data_type": "str"

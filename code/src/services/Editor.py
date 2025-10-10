@@ -759,6 +759,15 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
+    def get_users_info(self, user_id_list):
+        #иду по списку user_id
+        #проверяю есть ли такой в списке статьи
+        #если уже есть нет 
+        # хватаю ФИО, должность и фотку
+        # записываю
+        #если есть в стаье, но нет в user_id_list
+        # выписываю
+    
     def get_user_info(self, user_id):
         result = {}
         fields_to_return = {
@@ -772,13 +781,6 @@ class Editor:
             ], 
             "15" : [
                 "id",
-                "photo_file_url"
-            ],
-            "32" : [
-                "name",
-                "second_name",
-                "last_name",
-                "work_position",
                 "photo_file_url"
             ],
             "172" : [
@@ -819,6 +821,7 @@ class Editor:
                     result[field] = user_info[field]
         
         result['user_id'] = user_id
+
         if "name" in result.keys():
             result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
             result.pop('name')
@@ -832,6 +835,7 @@ class Editor:
                     res_dep = res_dep + ", " + result["department"][dep_i]
             result["department"] = res_dep
 
+        
         #получаю статью
         art = Article(id = self.art_id).find_by_id()
 
@@ -843,6 +847,14 @@ class Editor:
             result.pop("fio")
             result.pop("department")
             result.pop('position')
+
+        if self.section_id == 32:
+            art["prewiew_text"] = f"<div class="col-sm-6">{{user id=2148;text=Директор по экономике и финансам}}</div>
+<div class="col-sm-6">{{user id=339;text=Финансовый директор}}</div>
+<div class="col-sm-6">{{user id=341;text=Руководитель Центральной бухгалтерии}}</div>
+<div class="col-sm-6">{{user id=603;text=Руководитель Бухгалтерии производственных предприятий}}</div>
+<div class="col-sm-6">{{user id=606;text=Директор по экономике}}</div>
+<div class="col-sm-6">{{user id=717;text=Руководитель Отдела кадров}}</div>"
 
         #вписываю в неё эти значения
         for key in result.keys():

@@ -49,6 +49,12 @@ def dict_to_indirect_data(data, property_value_dict):
             res[property_value_dict[key]] = take_value(data[key])
     return res
 
+def extract_user_data(html_string):
+    pattern = r'<div[^>]*>\{\{user id=(\d+);text=([^}]+)\}\}</div>'
+    matches = re.findall(pattern, html_string)
+    result = [{'id': int(match[0]), 'text': match[1]} for match in matches]
+    return result
+
 
 
 class Article:
@@ -460,6 +466,8 @@ class Article:
             
             indirect_data["author"] = author
 
+        
+        
         #Благотворительные проекты
         elif self.section_id == 55:
             property_dict = {
@@ -557,7 +565,26 @@ class Article:
         #Новости организационного развития
         elif self.section_id == 32:
 
-            indirect_data = dict()
+            indirect_data = {"users" : []}
+            if preview is not None and preview != "":
+                users_data = extract_user_data(preview)
+                for user_data in users_data:
+                    #нати данные пользователя
+                    usr_id = user_data['id']
+                    #ФИО
+                    fio = ""
+                    #фото
+                    photo_file_url = ""
+                    #взять должность
+                    position = user_data['text']
+                    usr = {
+                        "id" : usr_id,
+                        "fio" : fio,
+                        "photo_file_url" : photo_file_url
+                        "position" : position
+                    }
+                    indirect_data["users"].append(usr)
+
 
         #Корпоративная газета ЭМК
         elif self.section_id == 34:

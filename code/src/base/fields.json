@@ -42,5 +42,6 @@
     "nomination" : "Тема",
     "created_by" : "ID редактора",
     "representative_id" : "ID представителя",
-    "representative_text" : "ФИО представителя"
+    "representative_text" : "ФИО представителя",
+    "uuids" : "ID пользователей"
 }

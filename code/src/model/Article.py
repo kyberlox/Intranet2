@@ -2160,6 +2160,7 @@ class Article:
                     
                     news['id'] = row[0]
                     news['title'] = row[1]
+                    news['date'] = row[3]
                     news['image'] = image_url
                     
                     if user_id is not None:
@@ -2219,6 +2220,7 @@ class Article:
                     news['id'] = row[0]
                     news['title'] = row[1]
                     news['description'] = row[2]
+                    news['date'] = row[3]
                     news['image'] = image_url                    
                     # сюда реакции
                     if user_id is not None:
@@ -2276,6 +2278,7 @@ class Article:
                     news['id'] = row[0]
                     news['title'] = row[1]
                     news['description'] = row[2]
+                    news['date'] = row[3]
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:

@@ -1984,9 +1984,11 @@ class Article:
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values.get("active_main_page") == False:
+                    print(values["id"], "active_main_page")
                     continue
 
                 if values.get("active") == False:
+                    print(values["id"], "active")
                     continue
                 
                     # flag = False

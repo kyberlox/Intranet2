@@ -1,11 +1,10 @@
 <template>
 <div class="homeview__grid__card__group-buttons"
-     :class="{ 'homeview__grid__card__group--blog': type == 'blog' }">
-    <div v-if="needReadMoreBtn"
-         class="homeview__grid__card__group-buttons__more-button">
-        {{
-            type == "video" ? "Смотреть" : "Читать далее"
-        }}</div>
+     :class="[{ 'homeview__grid__card__group--blog': type == 'blog' }, { 'homeview__grid__card__group-buttons--between': type == 'interview' }]">
+    <div v-if="date"
+         class="news__detail__date">
+        {{ dateConvert(date, 'toStringType') }}
+    </div>
     <div v-if="newTypeReaction"
          class="homeview__grid__card__group-buttons__reaction-buttons">
         <div v-if="!modifiers.includes('noViews')"
@@ -30,6 +29,7 @@ import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
 import { defineComponent, ref, type Ref, type PropType, onMounted } from "vue";
 import Api from "@/utils/Api";
 import type { IReaction } from "@/interfaces/IEntities";
+import { dateConvert } from "@/utils/dateConvert";
 
 export default defineComponent({
     components: {
@@ -56,6 +56,9 @@ export default defineComponent({
         modifiers: {
             type: Array<string>,
             default: () => []
+        },
+        date: {
+            type: String
         }
     },
     setup(props) {
@@ -74,6 +77,7 @@ export default defineComponent({
 
         return {
             newTypeReaction,
+            dateConvert,
             setLike,
         }
     }

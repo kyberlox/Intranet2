@@ -27,15 +27,6 @@
             height: 100%;
             user-select: none;
         }
-
-        &--boxPhoto {
-            aspect-ratio: 4/4;
-            max-height: 600px;
-
-            img {
-                object-fit: contain;
-            }
-        }
     }
 
     &-navigation {

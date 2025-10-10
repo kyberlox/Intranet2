@@ -63,13 +63,14 @@
         &__edit-methods {
             display: flex;
             flex-direction: row;
-            align-items: baseline;
             justify-content: center;
             gap: 16px;
+            align-items: flex-end;
 
             &__input-wrapper {
                 display: flex;
                 justify-content: space-between;
+                align-items: baseline;
                 gap: 10px;
             }
 

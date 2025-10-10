@@ -8,7 +8,7 @@
         <swiper v-bind="sliderConfig"
                 @swiper="swiperOn">
             <swiper-slide v-if="!card.images.length"
-                          :style="{ backgroundImage: `url(${chooseImgPlug()})` }"
+                          :style="{ backgroundImage: `url(${card.href !== 'corpNews' ? chooseImgPlug() : orgBanner})` }"
                           class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
             </swiper-slide>
 
@@ -52,6 +52,7 @@ import { RouterLink } from "vue-router";
 import { useSwiperconf } from "@/composables/useSwiperConf";
 import { chooseImgPlug } from "@/utils/chooseImgPlug";
 import { type ImageWithHref } from "@/interfaces/IMainPage";
+import orgBanner from '@/assets/imgs/plugs/bannerOrg.jpg';
 
 export interface IHomeViewSoloBlock {
     id?: number,
@@ -75,6 +76,7 @@ export default defineComponent({
     },
     setup() {
         return {
+            orgBanner,
             swiperOn: useSwiperconf('main').swiperOn,
             slideNext: useSwiperconf('main').slideNext,
             slidePrev: useSwiperconf('main').slidePrev,
@@ -83,7 +85,7 @@ export default defineComponent({
             isEnd: useSwiperconf('main').isEnd,
             isBeginning: useSwiperconf('main').isBeginning,
             repairVideoUrl,
-            chooseImgPlug
+            chooseImgPlug,
         };
     },
 })

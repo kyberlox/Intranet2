@@ -237,7 +237,7 @@ export const workLinks: WorkLink[] = [
     },
     {
         title: "Битрикс24",
-        href: "https://portal.emk.ru/",
+        href: "https://portal.emk.ru/company/personal/user/k/tasks/",
         description: "Задачи",
         linkTitle: "К задачам",
         icon: BitrixIcon,

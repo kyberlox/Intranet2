@@ -7,6 +7,10 @@
         gap: 10px;
         align-items: center;
 
+        &--corpnews {
+            justify-content: flex-end;
+        }
+
         &__phone-care {
             font-weight: 500;
             font-size: 0.9rem;
@@ -54,7 +58,7 @@
         }
 
         &__discr {
-            font-size: 0.8rem;
+            font-size: 16px;
             line-height: 170%;
             color: #282828;
             text-align: justify;
@@ -140,6 +144,7 @@
                 flex-direction: row;
                 align-items: center;
                 gap: 4px;
+                width: 100%;
             }
         }
     }

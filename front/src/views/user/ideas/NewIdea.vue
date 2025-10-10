@@ -70,11 +70,18 @@
 
 <script lang="ts">
 import Api from '@/utils/Api';
-import { ref, type Ref, defineComponent } from 'vue';
+import { ref, type Ref, defineComponent, computed } from 'vue';
 import { useBase64 } from '@vueuse/core'
 import { shallowRef } from 'vue'
 import { type IPostIdea } from '@/interfaces/IPostFetch';
 import { Field, Form as VForm, ErrorMessage, type GenericObject } from 'vee-validate';
+import { useUserData } from '@/stores/userData';
+import { useToast } from 'primevue/usetoast';
+
+import { useToastCompose } from '@/composables/useToastСompose';
+
+import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+
 
 export default defineComponent({
     name: 'NewIdea',
@@ -91,7 +98,9 @@ export default defineComponent({
         const messageFileName = ref("");
         const fileInput = ref();
         const formRef = ref();
-
+        const userUid = computed(() => useUserData().getMyId);
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
         const { base64: fileBase64 } = useBase64(messageFile);
 
         const handleMessageFileLoad = (e: Event) => {
@@ -119,22 +128,16 @@ export default defineComponent({
 
             Api.post('/idea/new/', formData)
                 .then((data) => {
-                    if (!data || Boolean(data.data) == false) {
-                        emit('showToast', 'error', 'Что-то пошло не так, попробуйте обновить страницу и повторить или сообщите в поддержку сайта (5182/5185)');
-                    }
-                    else {
-                        clearForm();
-                        emit('showToast', 'success', 'Идея успешно отправлена! Спасибо!');
-                    }
+                    handleApiResponse(data, toast, 'trySupportError', 'adminDeleteSuccess')
+                    emit('showToast', 'success', 'Идея успешно отправлена! Спасибо!');
                 })
                 .catch((error) => {
-                    if (error.response?.status === 401) {
-                        emit('showToast', 'error', 'Необходимо заново авторизоваться, пожалуйста, обновите страницу и попробуйте еще раз');
-                    }
-                    else
-                        emit('showToast', 'error', 'Ошибка сервера, пожалуйста, сообщите в поддержку сайта (5182/5185)');
+                    handleApiError(error, toast)
                 })
-                .finally(() => buttonsIsDisabled.value = false)
+                .finally(() => {
+                    buttonsIsDisabled.value = false;
+                    clearForm()
+                })
         };
 
         const clearForm = () => {
@@ -157,6 +160,7 @@ export default defineComponent({
             fileInput,
             buttonsIsDisabled,
             formRef,
+            userUid,
             handleMessageFileLoad,
             sendIdea,
             isRequired,

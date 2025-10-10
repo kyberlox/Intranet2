@@ -10,11 +10,14 @@ export const getBlogAuthorsToStore = () => {
     Api.get(`article/find_by/${sectionTips['Блоги']}`)
         .then(res => {
             res.map((e: IBlog) => {
+                console.log(e.indirect_data?.author);
+                
                 if (e.indirect_data?.TITLE) {
                     const newAuthor: IBlogAuthors = {
                         title: e.indirect_data.TITLE,
                         authorId: e.indirect_data.author_uuid ?? e.indirect_data.company,
                         authorAvatar: e.indirect_data.photo_file_url ?? e.preview_file_url,
+                        authorTitle: e.indirect_data.author,
                         link: e.indirect_data.link ?? null,
                         // !!! Сечас в preview_file_url приходят заводы, а в photo_file_url - фото людей, у земской приходит и preview, в нем QR !!!
                         telegramQr: e.preview_file_url && e.indirect_data.photo_file_url ? e.preview_file_url : ''

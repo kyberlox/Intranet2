@@ -5,7 +5,7 @@ import springPlug from "@/assets/imgs/plugs/spring.jpg";
 
 import ideaPlug from "@/assets/imgs/plugs/bannerIdea.jpg";
 import orgPlug from "@/assets/imgs/plugs/bannerOrg.jpg";
-import { type IHomeViewSoloBlock } from "@/views/homeView/components/MainPageSoloBlock.vue";
+import { type IHomeViewSoloBlock } from "@/views/homeView/components/HomeViewSwiperBlock.vue";
 
 export const chooseImgPlug = (card: IHomeViewSoloBlock | null = null): string => {
     // заглушка для баннера есть идея

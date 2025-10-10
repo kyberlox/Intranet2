@@ -10,10 +10,13 @@
         <div class="homeview__grid__card__image"
              v-lazy-load="card.image"></div>
         <div v-if="card.title"
-             class="homeview__grid__card__title homeview__grid__card__title--gallery">{{ card.title }}</div>
+             class="homeview__grid__card__title homeview__grid__card__title--gallery">
+            {{ card.title }}
+        </div>
         <Reactions v-if="card.reactions"
                    :reactions="card.reactions"
                    :id="card.id"
+                   :date="card.date"
                    :type="'interview'" />
     </RouterLink>
 </div>

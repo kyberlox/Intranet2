@@ -2,14 +2,15 @@
 <div class="news-inner__page__wrapper mt20">
     <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
          class="row row-gap-50">
-        <div class="col-12 col-lg-6 mb-2 pos-rel">
+        <div v-if="currentPost.section_id !== 32 && sectionId !== '32'"
+             class="col-12 col-lg-6 mb-2 pos-rel">
             <SwiperBlank :videosNative="currentPost?.videos_native"
                          :videosEmbed="currentPost?.videos_embed"
                          :images="currentPost?.images ? currentPost.images : previewImages"
                          :sectionId="currentPost?.section_id"
                          :type="'postInner'" />
         </div>
-        <div class="col-12 col-lg-6">
+        <div :class="{ 'col-12 col-lg-6': currentPost.section_id !== 32 && sectionId !== '32' }">
             <div class="news__detail__content">
                 <div v-if="currentPost.name"
                      class="news__detail__top">
@@ -21,16 +22,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="news__detail">
-                    <span v-if="currentPost.date_publiction"
-                          class="news__detail__date">
-                        {{ currentPost.date_publiction.replace('T', ' ') }}
-                    </span>
+                <div class="news__detail"
+                     :class="{ 'news__detail--corpnews': currentPost.section_id == 32 }">
                     <div v-if="currentPost.reactions"
                          class="news__detail__like-wrapper">
                         <Reactions :id="Number(currentPost.id)"
                                    :reactions="currentPost.reactions"
-                                   :type="'postPreview'" />
+                                   :type="'postPreview'"
+                                   :date="currentPost.date_publiction" />
                     </div>
                 </div>
                 <div v-if="currentPost.indirect_data && 'tags' in currentPost.indirect_data"
@@ -68,6 +67,28 @@
                 </div>
             </div>
         </div>
+        <!-- для новостей орг развития//подвал с фото -->
+        <div v-if="(currentPost.section_id == 32) || (sectionId == '32')"
+             class="row mb-5">
+            <div :to="{ name: 'user', params: { id: user.id } }"
+                 v-for="user in (previewElement ? currentPost.users : currentPost.indirect_data?.users)"
+                 :key="user.id"
+                 class="">
+                <RouterLink :to="{ name: 'userPage', params: { id: user.id } }"
+                            class="mb-5 person-wrap">
+                    <figure class="">
+                        <img class="img-fluid img-thumbnail rounded-circle"
+                             :src=user.photo_file_url
+                             data-banner="/upload/resize_cache/main/3e5/gtm4c2ulm9kav603bkxxbqac80k6wo7e/360_206_2/Сальвассер.jpg.png">
+                    </figure>
+                    <div class="person-info">
+                        <p class="person-fio">{{ user.fio }}</p>
+                        <p class="person-staff">{{ user.position }}</p>
+                    </div>
+                </RouterLink>
+            </div>
+        </div>
+        <!--  -->
     </div>
 </div>
 </template>
@@ -89,13 +110,29 @@ export interface IPostInner extends IBaseEntity {
         // Афиша 
         date_from?: string,
         date_to?: string,
-        tags: {
+        reports?: IReportage[],
+        department?: string,
+        tags?: {
             id: string,
             tag_name: string,
-        }[]
+        }[],
+        // орг развитие
+        users?: {
+            id: number,
+            fio: string,
+            position: string,
+            photo_file_url: string
+        }[],
     },
-    reports?: IReportage[]
     department?: string,
+    reports?: IReportage[],
+    // орг развитие
+    users?: {
+        id: number,
+        fio: string,
+        position: string,
+        photo_file_url: string
+    }[],
 }
 
 export default defineComponent({
@@ -108,6 +145,9 @@ export default defineComponent({
     props: {
         id: {
             type: String || undefined,
+        },
+        sectionId: {
+            type: String
         },
         type: {
             type: String,
@@ -122,6 +162,9 @@ export default defineComponent({
     },
     setup(props) {
         const currentPost = ref<IPostInner>();
+        console.log(props);
+
+
         watch((props), () => {
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
                 if (props.previewElement == null) {
@@ -155,3 +198,41 @@ export default defineComponent({
     },
 })
 </script>
+
+<style lang="scss">
+.person-wrap {
+    display: flex;
+}
+
+.person-info {
+    width: 70%;
+    margin-left: 24px;
+    margin-top: 36px;
+}
+
+.person-fio {
+    font-size: 20px;
+}
+
+.person-wrap figure {
+    width: 30%;
+    max-width: 200px;
+}
+
+figure {
+    margin: 0 0 1rem;
+}
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.img-thumbnail {
+    padding: .25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    max-width: 100%;
+    height: auto;
+}
+</style>

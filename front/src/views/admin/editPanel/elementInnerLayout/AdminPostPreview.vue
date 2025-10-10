@@ -1,35 +1,36 @@
 <template>
-    <div v-if="newFileData && sectionId"
-         class="admin-element-inner__preview"
-         :class="[{ 'admin-element-inner__preview--full-width': previewFullWidth || isMobileScreen },
-        { 'admin-element-inner__preview--overflow': sectionId == '15' }]">
-        <div v-if="!noPreview">
-            <Transition name="layout-change"
-                        mode="out-in">
-                <LayoutTop v-if="previewFullWidth && !isMobileScreen"
-                           class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
-                           @click="$emit('changePreviewWidth')" />
-                <LayoutLeft v-else-if="!isMobileScreen"
-                            class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
-                            @click="$emit('changePreviewWidth')" />
-            </Transition>
-        </div>
-
-        <section class="admin-element-inner__preview-section">
-            <PostInner v-if="PreviewTypes['news'].includes(sectionId)"
-                       class="admin-element-inner__preview-content mt30"
-                       :previewElement="newData"
-                       :previewImages="previewImages"
-                       :type="'adminPreview'" />
-            <Interview v-else-if="PreviewTypes['interview'].includes(sectionId)"
-                       class="admin-element-inner__preview-content"
-                       :interviewInner="(newData as Record<string, any>)" />
-            <CertainBlog v-else-if="PreviewTypes['blogs'].includes(sectionId)"
-                         class="admin-element-inner__preview-content"
-                         :previewPost="newData"
-                         :authorId="String(blogStore.getAuthorByBlogId(String(newId)))" />
-        </section>
+<div v-if="newFileData && sectionId"
+     class="admin-element-inner__preview"
+     :class="[{ 'admin-element-inner__preview--full-width': previewFullWidth || isMobileScreen },
+    { 'admin-element-inner__preview--overflow': sectionId == '15' }]">
+    <div v-if="!noPreview">
+        <Transition name="layout-change"
+                    mode="out-in">
+            <LayoutTop v-if="previewFullWidth && !isMobileScreen"
+                       class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
+                       @click="$emit('changePreviewWidth')" />
+            <LayoutLeft v-else-if="!isMobileScreen"
+                        class="admin-element-inner__layout-toggle admin-element-inner__layout-toggle--zoom"
+                        @click="$emit('changePreviewWidth')" />
+        </Transition>
     </div>
+
+    <section class="admin-element-inner__preview-section">
+        <PostInner v-if="PreviewTypes['news'].includes(sectionId)"
+                   class="admin-element-inner__preview-content mt30"
+                   :previewElement="newData"
+                   :sectionId="sectionId"
+                   :previewImages="previewImages"
+                   :type="'adminPreview'" />
+        <Interview v-else-if="PreviewTypes['interview'].includes(sectionId)"
+                   class="admin-element-inner__preview-content"
+                   :interviewInner="(newData as Record<string, any>)" />
+        <CertainBlog v-else-if="PreviewTypes['blogs'].includes(sectionId)"
+                     class="admin-element-inner__preview-content"
+                     :previewPost="newData"
+                     :authorId="String(blogStore.getAuthorByBlogId(String(newId)))" />
+    </section>
+</div>
 </template>
 
 <script lang="ts">

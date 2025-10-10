@@ -22,8 +22,8 @@
 }
 
 .primary-button--disabled {
-    background: #d1d0d09a;
-    cursor: not-allowed;
+    background: #d1d0d09a !important;
+    cursor: not-allowed !important;
 
     &:hover {
         color: black;

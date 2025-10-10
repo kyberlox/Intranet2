@@ -1986,25 +1986,25 @@ class Article:
                 if ("active_main_page" in values.keys() and values["active_main_page"] == False) or values["active"] == False:
                     continue
                 else:
-                    flag = False
-                    if values["date_publiction"] is not None:
-                        time_diff = current_datetime - values["date_publiction"]
-                        if time_diff.days <= 10:
-                            flag = True
-                    else:
-                        time_diff = current_datetime - values["date_creation"]
-                        if time_diff.days <= 10:
-                            flag = True
-                    if flag == True:
-                        self.id = values["id"]
-                        files = File(art_id = int(self.id)).get_files_by_art_id()
-                        image_URL = ""
-                        for file in files:
-                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                                url = file["file_url"]
-                                image_URL = DOMAIN + url
-                        node = {"id": self.id, "image": image_URL}
-                        result.append(node)
+                    # flag = False
+                    # if values["date_publiction"] is not None:
+                    #     time_diff = current_datetime - values["date_publiction"]
+                    #     if time_diff.days <= 10:
+                    #         flag = True
+                    # else:
+                    #     time_diff = current_datetime - values["date_creation"]
+                    #     if time_diff.days <= 10:
+                    #         flag = True
+                    # if flag == True:
+                    self.id = values["id"]
+                    files = File(art_id = int(self.id)).get_files_by_art_id()
+                    image_URL = ""
+                    for file in files:
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            image_URL = DOMAIN + url
+                    node = {"id": self.id, "image": image_URL}
+                    result.append(node)
 
             #         date_value = [] # список для хранения необходимых данных
             #         date_value.append(values["id"])

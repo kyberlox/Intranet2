@@ -331,8 +331,8 @@ class Article:
                 fio = user['last_name'] + " " + user['name'] + " " + user['second_name']
 
                 #взять должность
-                if "work_position" in user:
-                    position = user['work_position']
+                if "work_position" in user["indirect_data"]:
+                    position = user["indirect_data"]['work_position']
                 else:
                     position = ""
                 

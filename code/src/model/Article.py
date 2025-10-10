@@ -329,8 +329,8 @@ class Article:
                 fio = user['last_name'] + " " + user['name'] + " " + user['second_name']
 
                 #взять должность
-                position = user_data['work_position']
-
+                position = user['work_position']
+                
                 author = fio  + "\n " + position
                 #photo = photo.replace("user_files", "compress_image/user")
             company = None

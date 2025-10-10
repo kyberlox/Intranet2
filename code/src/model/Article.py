@@ -1139,7 +1139,7 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        #self.upload_uniquely()
+        self.upload_uniquely()
         self.upload_with_parameter()
         # self.upload_many_to_many()
         # self.upload_services()

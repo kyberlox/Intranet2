@@ -1983,9 +1983,12 @@ class Article:
             result = [] 
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if values.get("active_main_page") == False or values.get("active") == False:
+                if values.get("active_main_page") == False:
                     continue
-                else:
+
+                if values.get("active") == False:
+                    continue
+                
                     # flag = False
                     # if values["date_publiction"] is not None:
                     #     time_diff = current_datetime - values["date_publiction"]
@@ -1996,15 +1999,15 @@ class Article:
                     #     if time_diff.days <= 10:
                     #         flag = True
                     # if flag == True:
-                    self.id = values["id"]
-                    files = File(art_id = int(self.id)).get_files_by_art_id()
-                    image_URL = ""
-                    for file in files:
-                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                            url = file["file_url"]
-                            image_URL = DOMAIN + url
-                    node = {"id": self.id, "image": image_URL}
-                    result.append(node)
+                self.id = values["id"]
+                files = File(art_id = int(self.id)).get_files_by_art_id()
+                image_URL = ""
+                for file in files:
+                    if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                        url = file["file_url"]
+                        image_URL = DOMAIN + url
+                node = {"id": self.id, "image": image_URL}
+                result.append(node)
 
             #         date_value = [] # список для хранения необходимых данных
             #         date_value.append(values["id"])

@@ -44,5 +44,6 @@
     "representative_id" : "ID представителя",
     "representative_text" : "ФИО представителя",
     "uuids" : "ID пользователей",
-    "users" : "Пользователи"
+    "users" : "Пользователи",
+    "active_main_page" : "Отображать на главной странице"
 }

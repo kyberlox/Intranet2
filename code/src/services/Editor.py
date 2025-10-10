@@ -918,7 +918,6 @@ class Editor:
         if self.section_id == 15:
             result["author"] = result["fio"] + "\n " + result['position'] 
             result.pop("fio")
-            result.pop("department")
             result.pop('position')
         
         if self.section_id == 71:

@@ -530,6 +530,11 @@ class Editor:
                     if need_field["data_type"] != got_field["data_type"]:
                         got_field["data_type"] = need_field["data_type"]
                     
+                    #отдельно проверить валидность вариантов выбора значения
+                    if "values" in need_field:
+                        if "values" not in got_field or need_field["values"] != got_field["values"]:
+                            got_field["values"] = need_field["values"]
+                    
                     #вписываем
                     result_fields.append(got_field)
                     has_added = True
@@ -759,6 +764,79 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
+    def get_users_info(self, user_id_list):
+        #иду по списку user_id
+        for user_id in user_id_list:
+            user_info = User(id=user_id).search_by_id()
+
+            art = Article(id = self.art_id).find_by_id()
+
+            if art['indirect_data'] is None:
+                art['indirect_data'] = {"users" : []}
+
+            users = art['indirect_data']['users']
+
+            if users != []:
+                #проверяю есть ли такой в списке статьи
+                had_find = False
+                
+                for user in users:
+                    if int(user["id"]) == int(user_id):
+                        had_find = True
+
+                    #если есть в стаье, но нет в user_id_list
+                    elif int(user["id"]) not in user_id_list:
+                        # выписываю
+                        art['indirect_data']['users'].remove(user)
+
+
+
+                #если ещё нет
+                if not had_find:
+
+                    # хватаю ФИО
+                    if "last_name" in user_info:
+                        last_name = user_info['last_name']
+                    else:
+                        last_name = ""
+                    if "name" in user_info:
+                        name = user_info['name']
+                    else:
+                        name = ""
+                    if "second_name" in user_info:
+                        second_name = user_info['second_name']
+                    else:
+                        second_name = ""
+
+                    fio = last_name + " " + user_info['name'] + " " + user_info['second_name']
+
+                    #фото
+                    if "photo_file_url" in user_info:
+                        photo_file_url = user_info["photo_file_url"]
+                    else:
+                        photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                    
+                    #взять должность
+                    if "work_position" in user_info:
+                        position = user_info["work_position"]
+                    else:
+                        position = ""
+                    
+                    usr = {
+                        "id" : user_id,
+                        "fio" : fio,
+                        "photo_file_url" : photo_file_url,
+                        "position" : position
+                    }
+
+                    # записываю
+                    art['indirect_data']['users'].append(usr)
+
+        #сохранил
+        Article(id = self.art_id).update(art)
+
+        return art['indirect_data']['users']
+    
     def get_user_info(self, user_id):
         result = {}
         fields_to_return = {
@@ -772,9 +850,6 @@ class Editor:
             ], 
             "15" : [
                 "id",
-                "photo_file_url"
-            ],
-            "32" : [
                 "name",
                 "second_name",
                 "last_name",
@@ -819,6 +894,7 @@ class Editor:
                     result[field] = user_info[field]
         
         result['user_id'] = user_id
+
         if "name" in result.keys():
             result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
             result.pop('name')
@@ -832,17 +908,26 @@ class Editor:
                     res_dep = res_dep + ", " + result["department"][dep_i]
             result["department"] = res_dep
 
+        
         #получаю статью
         art = Article(id = self.art_id).find_by_id()
 
         if self.section_id == 14:
             art["name"] = result["fio"]
         
+        if self.section_id == 15:
+            result["author"] = result["fio"] + "\n " + result['position'] 
+            result.pop("fio")
+            result.pop("department")
+            result.pop('position')
+        
         if self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
             result.pop("fio")
             result.pop("department")
             result.pop('position')
+
+        
 
         #вписываю в неё эти значения
         for key in result.keys():
@@ -854,6 +939,7 @@ class Editor:
         Article(id = self.art_id).update(art)
 
         return result
+
 
 def get_uuid_from_request(request):
     from .Auth import AuthService
@@ -891,8 +977,21 @@ def get_editor_roots(user_uuid):
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-def get_user_info(section_id : int, art_id : int, user_id: int):
+def set_user_info(section_id : int, art_id : int, user_id: int):
     return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
+
+@editor_router.post("/get_users_info/{section_id}/{art_id}/{user_id}")
+def set_user_info(data = Body()):
+    if "art_id" in data:
+        art_id = data["art_id"]
+    else:
+        return "\'art_id\' is not found"
+    if "users_id" in data:
+        users_id = data["users_id"]
+    else:
+        return "\'users_id\' is not found"
+
+    return Editor(art_id = art_id).get_users_info(user_id_list = users_id)
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")

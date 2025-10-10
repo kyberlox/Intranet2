@@ -362,17 +362,13 @@ def total_users_update():
     time_start = time.time()
     status = False
 
-    print("Обновление информации о разделах сайта")
-    Section().load()
-    status += 1
-    print("Успешно!")
-
-    print("Обновление информации о статьях сайта")
+    from src.model.Article import Article
+    LogsMaker().info_message("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:
         status += 1
-        print("Успешно!")
+        LogsMaker().ready_status_message("Успешно!")
     else:
-        print("Ошибка!")
+        LogsMaker().error_message("Ошибка!")
     
     time_end = time.time()
     total_time_sec = time_end - time_start

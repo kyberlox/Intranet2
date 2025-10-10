@@ -189,6 +189,11 @@
         "data_type": "search_by_uuid"
       },
       {
+        "name": "Автор блога",
+        "field": "author",
+        "data_type": "str"
+      },
+      {
         "name": "Аннотация",
         "field": "preview_text",
         "data_type": "str"

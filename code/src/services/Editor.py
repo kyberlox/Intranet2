@@ -530,6 +530,10 @@ class Editor:
                     if need_field["data_type"] != got_field["data_type"]:
                         got_field["data_type"] = need_field["data_type"]
                     
+                    #отдельно проверить валидность вариантов выбора значения
+                    if need_field["values"] != got_field["values"]:
+                        got_field["values"] = need_field["values"]
+                    
                     #вписываем
                     result_fields.append(got_field)
                     has_added = True
@@ -845,6 +849,10 @@ class Editor:
             ], 
             "15" : [
                 "id",
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
                 "photo_file_url"
             ],
             "172" : [
@@ -905,6 +913,12 @@ class Editor:
 
         if self.section_id == 14:
             art["name"] = result["fio"]
+        
+        if self.section_id == 15:
+            result["author"] = result["fio"] + "\n " + result['position'] 
+            result.pop("fio")
+            result.pop("department")
+            result.pop('position')
         
         if self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]

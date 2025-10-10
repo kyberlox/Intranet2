@@ -75,6 +75,7 @@ class AuthService:
         user_uuid = try_mail(login = username, password = password)
         if user_uuid == False:
             b24_ans = try_b24(login = username, password = password)
+            print(b24_ans)
             if b24_ans['status'] == 'success':
                 user_id = b24_ans['data']['USER_ID']
                 print(user_id)

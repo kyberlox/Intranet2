@@ -317,12 +317,6 @@ server_mail_host = "smtp.emk.ru:587"
 
 def try_mail(login, password):
     try:
-        server = smtplib.SMTP(server_mail_host)
-        server.starttls()
-        server.login(login, password)
-
-        status = server.noop()[0]
-        server.quit()
         if login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
             user_info = User().find_by_email(login)
             print(user_info)
@@ -330,9 +324,18 @@ def try_mail(login, password):
         elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
             puser_info = User().find_by_email(login)
             return user_info
-        elif status == 250:
-            user_info = User().find_by_email(login)
-            return user_info
+        else:
+
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(login, password)
+
+            status = server.noop()[0]
+            server.quit()
+            
+            if status == 250:
+                user_info = User().find_by_email(login)
+                return user_info
         
     except smtplib.SMTPAuthenticationError as e:
         return False

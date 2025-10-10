@@ -1979,41 +1979,60 @@ class Article:
 
         # Орг развитие
         elif section_id == 32:
-            date_list = [] # список для сортировки по дате
+            current_datetime = datetime.datetime.now()
+            result = [] 
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                need_sequre = False
-                if "active_main_page" in values.keys() and values["active_main_page"] == False:
-                    need_sequre = True
-                if values["active"] == False or need_sequre:
-                        pass
+                if ("active_main_page" in values.keys() and values["active_main_page"] == False) or values["active"] == False:
+                    continue
                 else:
-                    date_value = [] # список для хранения необходимых данных
-                    date_value.append(values["id"])
-                    date_value.append(values["name"])
-                    date_value.append(values["preview_text"])
-                    date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
-                    date_list.append(date_value) # получили список с необходимыми данными
-            # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+                    flag = False
+                    if values["date_publiction"] is not None:
+                        time_diff = current_datetime - values["date_publiction"]
+                        if time_diff <= 10:
+                            flag = True
+                    else:
+                        time_diff = current_datetime - values["date_creation"]
+                        if time_diff <= 10:
+                            flag = True
+                    if flag == True:
+                        self.id = values["id"]
+                        files = File(art_id = int(self.id)).get_files_by_art_id()
+                        image_URL = ""
+                        for file in files:
+                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                url = file["file_url"]
+                                image_URL = DOMAIN + url
+                        node = {"id": self.id, "image": image_URL}
+                        result.append(node)
+
+            #         date_value = [] # список для хранения необходимых данных
+            #         date_value.append(values["id"])
+            #         date_value.append(values["name"])
+            #         date_value.append(values["preview_text"])
+            #         date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
+            #         date_list.append(date_value) # получили список с необходимыми данными
+            # # сортируем по дате
+            # sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
             
-            news_id = sorted_data[0][0]
+            # for news in sorted_data
+            # news_id = sorted_data[0][0]
 
             
-            self.id = news_id
-            # image_URL = self.get_preview()
-            files = File(art_id = int(self.id)).get_files_by_art_id()
-            for file in files:
-                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                    url = file["file_url"]
-                    image_URL = DOMAIN + url
+            # self.id = news_id
+            # # image_URL = self.get_preview()
+            # files = File(art_id = int(self.id)).get_files_by_art_id()
+            # for file in files:
+            #     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+            #         url = file["file_url"]
+            #         image_URL = DOMAIN + url
 
             second_page = {
                 'id': section_id, 
                 'type': 'swiper', 
                 'title': 'Организационное развитие', 
                 "href": "corpNews", 
-                'images': [{'id': news_id, 'image': image_URL}]
+                'images': result
                 }
             return second_page
         

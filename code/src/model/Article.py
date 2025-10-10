@@ -333,6 +333,7 @@ class Article:
                 
                 author = fio  + "\n " + position
                 #photo = photo.replace("user_files", "compress_image/user")
+                
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
                 company = 10834#"АО «НПО «Регулятор»"

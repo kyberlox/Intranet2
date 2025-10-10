@@ -891,7 +891,12 @@ class Editor:
                 elif field == "id":
                     result["author_uuid"] = user_id
                 else:
-                    result[field] = user_info[field]
+                    if field in user_info:
+                        result[field] = user_info[field]
+                    elif field in user_info['indirect_data']:
+                        result[field] = user_info['indirect_data'][field]
+                    else:
+                        result[field] = ""
         
         result['user_id'] = user_id
 
@@ -916,9 +921,8 @@ class Editor:
             art["name"] = result["fio"]
         
         if self.section_id == 15:
-            result["author"] = result["fio"] + "\n " + result['position'] 
+            result["author"] = result["fio"] + "; " + result['position'] 
             result.pop("fio")
-            result.pop("department")
             result.pop('position')
         
         if self.section_id == 71:
@@ -980,7 +984,7 @@ def get_editor_roots(user_uuid):
 def set_user_info(section_id : int, art_id : int, user_id: int):
     return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
 
-@editor_router.post("/get_users_info/{section_id}/{art_id}/{user_id}")
+@editor_router.post("/get_users_info")
 def set_user_info(data = Body()):
     if "art_id" in data:
         art_id = data["art_id"]

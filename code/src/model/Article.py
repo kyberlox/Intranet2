@@ -2001,6 +2001,7 @@ class Article:
                     #     if time_diff.days <= 10:
                     #         flag = True
                     # if flag == True:
+                print("мимо условий")
                 self.id = values["id"]
                 files = File(art_id = int(self.id)).get_files_by_art_id()
                 image_URL = ""

@@ -399,7 +399,7 @@ def try_b24(login, password):
             return False
         
         # Если авторизация успешна - извлекаем данные
-        auth_data = self.extract_auth_data(response.text)
+        auth_data = extract_auth_data(response.text)
         
         if auth_data["USER_ID"] and auth_data["bitrix_sessid"]:
             return {

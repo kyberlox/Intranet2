@@ -565,7 +565,7 @@ class Article:
         #Новости организационного развития
         elif self.section_id == 32:
 
-            indirect_data = {"users" : []}
+            indirect_data = {"users" : [], "active_main_page" : False}
             if preview is not None and preview != "":
                 users_data = extract_user_data(preview)
                 for user_data in users_data:
@@ -586,8 +586,6 @@ class Article:
                         "position" : position
                     }
                     indirect_data["users"].append(usr)
-            indirect_data["active_main_page"] = False
-
 
         #Корпоративная газета ЭМК
         elif self.section_id == 34:

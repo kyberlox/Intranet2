@@ -533,7 +533,7 @@ class Editor:
                     #отдельно проверить валидность вариантов выбора значения
                     if "values" in need_field:
                         if "values" not in values or need_field["values"] != values["values"]:
-                        got_field["values"] = need_field["values"]
+                            got_field["values"] = need_field["values"]
                     
                     #вписываем
                     result_fields.append(got_field)

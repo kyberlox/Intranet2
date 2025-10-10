@@ -761,13 +761,76 @@ class Editor:
 
     def get_users_info(self, user_id_list):
         #иду по списку user_id
-        #проверяю есть ли такой в списке статьи
-        #если уже есть нет 
-        # хватаю ФИО, должность и фотку
-        # записываю
-        #если есть в стаье, но нет в user_id_list
-        # выписываю
-        pass
+        for user_id in user_id_list:
+            user_info = User(id=user_id).search_by_id()
+
+            art = Article(id = self.art_id).find_by_id()
+
+            if art['indirect_data'] is None:
+                art['indirect_data'] = {"users" : []}
+
+            users = art['indirect_data']['users']
+
+            if users != []:
+                #проверяю есть ли такой в списке статьи
+                had_find = False
+                
+                for user in users:
+                    if int(user["id"]) == int(user_id):
+                        had_find = True
+
+                    #если есть в стаье, но нет в user_id_list
+                    elif int(user["id"]) not in user_id_list:
+                        # выписываю
+                        art['indirect_data']['users'].remove(user)
+
+
+
+                #если ещё нет
+                if not had_find:
+
+                    # хватаю ФИО
+                    if "last_name" in user_info:
+                        last_name = user_info['last_name']
+                    else:
+                        last_name = ""
+                    if "name" in user_info:
+                        name = user_info['name']
+                    else:
+                        name = ""
+                    if "second_name" in user_info:
+                        second_name = user_info['second_name']
+                    else:
+                        second_name = ""
+
+                    fio = last_name + " " + user_info['name'] + " " + user_info['second_name']
+
+                    #фото
+                    if "photo_file_url" in user_info:
+                        photo_file_url = user_info["photo_file_url"]
+                    else:
+                        photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                    
+                    #взять должность
+                    if "work_position" in user_info:
+                        position = user_info["work_position"]
+                    else:
+                        position = ""
+                    
+                    usr = {
+                        "id" : user_id,
+                        "fio" : fio,
+                        "photo_file_url" : photo_file_url,
+                        "position" : position
+                    }
+
+                    # записываю
+                    art['indirect_data']['users'].append(usr)
+
+        #сохранил
+        Article(id = self.art_id).update(art)
+
+        return art['indirect_data']['users']
     
     def get_user_info(self, user_id):
         result = {}
@@ -862,6 +925,7 @@ class Editor:
 
         return result
 
+
 def get_uuid_from_request(request):
     from .Auth import AuthService
     session_id = ""
@@ -898,8 +962,21 @@ def get_editor_roots(user_uuid):
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-def get_user_info(section_id : int, art_id : int, user_id: int):
+def set_user_info(section_id : int, art_id : int, user_id: int):
     return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
+
+@editor_router.post("/get_users_info/{section_id}/{art_id}/{user_id}")
+def set_user_info(data = Body()):
+    if "art_id" in data:
+        art_id = data["art_id"]
+    else:
+        return "\'art_id\' is not found"
+    if "users_id" in data:
+        users_id = data["users_id"]
+    else:
+        return "\'users_id\' is not found"
+
+    return Editor(art_id = art_id).get_users_info(user_id_list = users_id)
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")

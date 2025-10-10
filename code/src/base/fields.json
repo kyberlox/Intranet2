@@ -43,5 +43,6 @@
     "created_by" : "ID редактора",
     "representative_id" : "ID представителя",
     "representative_text" : "ФИО представителя",
-    "uuids" : "ID пользователей"
+    "uuids" : "ID пользователей",
+    "users" : "Пользователи"
 }

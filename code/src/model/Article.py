@@ -1989,11 +1989,11 @@ class Article:
                     flag = False
                     if values["date_publiction"] is not None:
                         time_diff = current_datetime - values["date_publiction"]
-                        if time_diff <= 10:
+                        if time_diff.days <= 10:
                             flag = True
                     else:
                         time_diff = current_datetime - values["date_creation"]
-                        if time_diff <= 10:
+                        if time_diff.days <= 10:
                             flag = True
                     if flag == True:
                         self.id = values["id"]

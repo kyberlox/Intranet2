@@ -891,7 +891,7 @@ class Editor:
                 elif field == "id":
                     result["author_uuid"] = user_id
                 else:
-                    result[field] = user_info[field]
+                    result[field] = ""
         
         result['user_id'] = user_id
 

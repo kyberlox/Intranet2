@@ -325,6 +325,7 @@ def try_mail(login, password):
         server.quit()
         if login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
             user_info = User().find_by_email(login)
+            print(user_info)
             return user_info
         elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
             puser_info = User().find_by_email(login)

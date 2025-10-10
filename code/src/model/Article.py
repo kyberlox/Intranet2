@@ -1983,9 +1983,9 @@ class Article:
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 need_sequre = False
-                if "active_main_page" in values.keys() and values["active_main_page"] is False:
+                if "active_main_page" in values.keys() and values["active_main_page"] == False:
                     need_sequre = True
-                if values["active"] is False or need_sequre:
+                if values["active"] == False or need_sequre:
                         pass
                 else:
                     date_value = [] # список для хранения необходимых данных

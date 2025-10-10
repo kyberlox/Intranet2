@@ -315,6 +315,7 @@ class Article:
             #собираем из двух статей одну
             uuid = None
             photo = None
+            author = None
             if "PROPERTY_444" in data:
                 if type(data['PROPERTY_444']) == type(list()):
                     uuid = int(data['PROPERTY_444'][0])

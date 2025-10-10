@@ -220,7 +220,7 @@ class Article:
             else:
                 photo = user["photo_file_url"]
                 photo_replace = photo.replace("user_files", "compress_image/user")
-            indirect_data = json.dumps({
+            indirect_data = {
                 "uuid" : uuid,
                 "year" : year,
                 "position" : position,
@@ -229,7 +229,7 @@ class Article:
                 "photo_file_url" : photo_replace,
                 "award" : award,
                 "location" : ""
-            })
+            }
 
         #Наши люди
         elif self.section_id == 13:
@@ -1143,7 +1143,7 @@ class Article:
         '''однозначно'''
         sec_inf = {
             # 13 : "149", # Наши люди ✔️
-            14 : "123", # Доска почёта ✔️
+            # 14 : "123", # Доска почёта ✔️
             # 16 : "122", # Видеоитервью ✔️
             
             32 : "132", # Новости организационного развития ✔️

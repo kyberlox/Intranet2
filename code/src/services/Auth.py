@@ -323,15 +323,16 @@ def try_mail(login, password):
 
         status = server.noop()[0]
         server.quit()
-        if status == 250:
-            user_info = User().find_by_email(login)
-            return user_info
-        elif login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
+        if login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
             user_info = User().find_by_email(login)
             return user_info
         elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
             puser_info = User().find_by_email(login)
             return user_info
+        elif status == 250:
+            user_info = User().find_by_email(login)
+            return user_info
+        
     except smtplib.SMTPAuthenticationError as e:
         return False
     except smtplib.SMTPException as e:

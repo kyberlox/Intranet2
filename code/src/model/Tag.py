@@ -41,6 +41,12 @@ class Tag:
         self.TagsModel.id = self.id
         self.TagsModel.art_id = self.art_id
         return self.TagsModel.set_tag_to_art_id()
+    
+    def remove_tag_from_art_id(self):
+        self.TagsModel.id = self.id
+        self.TagsModel.art_id = self.art_id
+        return self.TagsModel.remove_tag_from_art_id()
+
 
 @tag_router.put("/upload_b24_tags")
 def upload_b24_tags():

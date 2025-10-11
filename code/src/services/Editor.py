@@ -486,7 +486,6 @@ class Editor:
                     val = art["indirect_data"][k]
                 
                 data_type = get_type(val)
-
                 # экземпляр поля
                 fl = {
                     "name" : self.fields[k],
@@ -494,6 +493,7 @@ class Editor:
                     "field" : k,
                     "data_type" : data_type
                 }
+
 
                 # если значения варьируются
                 if k in self.variable.keys():
@@ -578,8 +578,6 @@ class Editor:
         # вывести
         return {"fields" : result_fields, "files" : files}
 
-
-
     def pre_add(self, ):
         #Получаю поля паттерна       
         fields = self.pattern["fields"]
@@ -660,8 +658,6 @@ class Editor:
         #вставить данные в статью
         return Article(id = self.art_id).update(art)
     
-
-
     def delete_art(self ):
         return Article(id = self.art_id).delete()
         
@@ -871,7 +867,7 @@ class Editor:
                 "department"
             ]
         }
-
+        print(self.fields)
         user_info = User(id=user_id).search_by_id()
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]

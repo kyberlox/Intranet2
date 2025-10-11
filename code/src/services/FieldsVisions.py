@@ -112,6 +112,12 @@ class Visions:
     def delete_art_from_vision(self):
         return FieldvisionModel(id=self.vision_id, art_id=self.art_id).delete_art_from_vision()
 
+    def get_all_vis_in_art(self):
+        return FieldvisionModel(art_id=self.art_id).get_all_vis_in_art()
+        
+    def check_user_root(self):
+        return FieldvisionModel(art_id=self.art_id).check_user_root(self.user_id)
+
 def get_uuid_from_request(request):
     session_id = ""
     token = request.cookies.get("Authorization")
@@ -198,3 +204,20 @@ def get_users_in_vision(request: Request, vision_id: int):
 def remove_depart_in_vision(request: Request, vision_id: int, dep_id: int):
     uuid = get_uuid_from_request(request)
     return Visions(vision_id=vision_id, user_id=uuid).remove_depart_in_vision(dep_id)
+
+@fieldsvisions_router.put("/set_art_to_vision/{art_id}/{vis_id}")
+def set_art_to_vision(art_id: int, vis_id: int):
+    return Visions(vision_id=vis_id, art_id=art_id).set_art_to_vision()
+
+@fieldsvisions_router.delete("/delete_art_from_vision/{art_id}/{vis_id}")
+def delete_art_from_vision(art_id: int, vis_id: int):
+    return Visions(vision_id=vis_id, art_id=art_id).delete_art_from_vision()
+
+@fieldsvisions_router.get("/get_all_vis_in_art/{art_id}")
+def get_all_vis_in_art(art_id: int):
+    return Visions(art_id=art_id).get_all_vis_in_art()
+
+@fieldsvisions_router.get("/check_user_root/{art_id}")
+def check_user_root(request: Request, art_id: int):
+    uuid = get_uuid_from_request(request)
+    return Visions(art_id=art_id, user_id=uuid).check_user_root()

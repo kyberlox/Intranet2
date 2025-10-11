@@ -1,12 +1,12 @@
 <template>
-<div class="contest__page__loader__wrapper"
-     v-if="isLoading">
+<div v-if="isLoading"
+     class="contest__page__loader__wrapper">
     <Loader class="contest__page__loader" />
 </div>
 <div v-else>
     <div v-if="actualYears.length"
          class="staff__filter__link d-flex gap-3 mt20">
-        <RouterLink :to="{ name: 'year-results-id', params: { id: year } }"
+        <RouterLink :to="{ name: 'year-results', params: { id: year } }"
                     v-for="(year, index) in actualYears"
                     :key="index">
             {{ year }}
@@ -86,6 +86,8 @@ export default defineComponent({
             workerOfTheYear.value.length = 0;
 
             allTimeAwards.value.map(item => {
+                console.log(item.indirect_data?.award == 'Почетная грамота');
+
                 if (item.indirect_data && item.indirect_data.year == String(currentYear.value)) {
                     if (item.indirect_data.award == 'Почетная грамота') {
                         workerWithDiploma.value.push(item);
@@ -95,6 +97,8 @@ export default defineComponent({
                     }
                 }
             })
+            console.log(workerWithDiploma,
+                workerOfTheYear)
         }
 
         watch(() => props.id, () => {

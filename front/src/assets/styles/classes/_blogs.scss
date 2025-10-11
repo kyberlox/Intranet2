@@ -72,22 +72,26 @@
             flex-direction: column;
             justify-content: flex-start;
             flex-grow: 1;
-            align-items: center
+            align-items: center;
         }
 
         &-title {
             font-weight: 500;
-            font-size: 1.15rem;
+            font-size: 18px;
             line-height: 135%;
             margin: 0;
             padding: 0;
 
-            &>P {
+            &--small {
+                font-size: 16px;
+            }
+
+            & > P {
                 margin: 0;
                 padding: 0;
             }
 
-            &>a {
+            & > a {
                 color: rgba(0, 0, 0, 0.87);
                 position: relative;
                 z-index: 5;

@@ -29,9 +29,6 @@ export default defineComponent({
             accurateTrackBounce: true,
             webvisor: true,
             userParams: {
-                vip_status: false,
-                child: 1,
-                child_age: 13,
                 UserID: props.uid
             }
         });

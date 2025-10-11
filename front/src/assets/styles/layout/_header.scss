@@ -147,6 +147,7 @@
         border: 0;
         cursor: pointer;
 
+        &>a:hover,
         &:hover {
             color: var(--emk-brand-color);
         }

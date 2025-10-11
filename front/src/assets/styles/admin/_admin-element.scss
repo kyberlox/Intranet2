@@ -36,7 +36,9 @@
             align-items: baseline;
         }
     }
-
+&__add-user__button__group{
+    justify-content: left;
+}
     &__reportage-list {
         display: contents;
 
@@ -105,7 +107,7 @@
                 align-content: center;
                 border-top: 1px solid gainsboro;
                 padding-top: 40px;
-                transform: translateY(0);
+                // transform: translateY(0);
 
                 &>.admin-element-inner__field {
                     max-width: 70% !important;

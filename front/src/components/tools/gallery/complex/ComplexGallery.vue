@@ -1,21 +1,21 @@
 <template>
-    <div class="flexGallery"
-         v-if="slides?.length">
-        <div v-for="(slide, index) in slides"
-             class="flexGallery__wrapper"
-             :class="{ 'hidden': routeTo == 'factoryReports' && !slide.indirect_data?.reports?.length && !slide.indirect_data?.tours?.length }"
-             :key="'complGal' + index">
-            <ComplexGalleryCardBasic :slide="slide"
-                                     :modifiers="modifiers"
-                                     :routeTo="routeTo" />
-        </div>
-        <ZoomModal :video="modalVideo"
-                   :image="modalImg"
-                   :activeIndex="activeIndex"
-                   v-if="modalIsOpen == true"
-                   @close="modalIsOpen = false" />
+<div class="flexGallery"
+     v-if="slides?.length">
+    <div v-for="(slide, index) in slides"
+         class="flexGallery__wrapper"
+         :class="{ 'hidden': routeTo == 'factoryReports' && !slide.indirect_data?.reports?.length && !slide.indirect_data?.tours?.length }"
+         :key="'complGal' + index">
+        <ComplexGalleryCardBasic :slide="slide"
+                                 :modifiers="modifiers"
+                                 :routeTo="routeTo" />
     </div>
-    <ComplexGallerySkeleton v-else />
+    <ZoomModal :video="modalVideo"
+               :image="modalImg"
+               :activeIndex="activeIndex"
+               v-if="modalIsOpen == true"
+               @close="modalIsOpen = false" />
+</div>
+<ComplexGallerySkeleton v-else />
 </template>
 
 

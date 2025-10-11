@@ -11,9 +11,9 @@
            class="admin-element-inner__field"
            :key="index">
 
-
-        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuid'"
-                             @userPicked="handleUserPick" />
+        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
+            :type="item.data_type"
+        @userPicked="handleUserPick" @usersPicked="handleUsersPick" />
 
         <AdminEditReportage v-if="item.field == 'reports'"
                             :item="(item.value as IReportage[])"
@@ -93,6 +93,7 @@ import { useWindowSize } from '@vueuse/core'
 import AdminPostPreview from '@/views/admin/editPanel/elementInnerLayout/AdminPostPreview.vue';
 import AdminUploadingSection from '@/views/admin/editPanel/elementInnerLayout/AdminUploadingSection.vue';
 import AdminEditUserSearch from '@/views/admin/components/inputFields/AdminEditUserSearch.vue';
+import AdminEditUsersSearch from '../components/inputFields/AdminEditUsersSearch.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
@@ -110,7 +111,8 @@ export default defineComponent({
     AdminEditInput,
     AdminEditUserSearch,
     FileUploader,
-    AdminUploadingSection
+    AdminUploadingSection,
+    AdminEditUsersSearch
   },
   props: {
     id: {
@@ -264,7 +266,18 @@ export default defineComponent({
             reloadElementData(false)
           }
         })
+    }
 
+    const users = ref<string[]>([]);
+    const handleUsersPick = (uuid: string) => {
+        users.value.push(uuid)
+        const usersBody = {art_id: props.elementId, users_id: users.value}
+        Api.post(`editor/get_users_info`, usersBody)
+        .then((data) => {
+          if (data) {
+            reloadElementData(false)
+          }
+        })
     }
 
     return {
@@ -280,6 +293,7 @@ export default defineComponent({
       isMobileScreen,
       newId,
       inputKey,
+      handleUsersPick,
       handleUserPick,
       inputComponentChecker,
       applyNewData,

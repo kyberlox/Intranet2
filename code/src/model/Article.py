@@ -49,6 +49,12 @@ def dict_to_indirect_data(data, property_value_dict):
             res[property_value_dict[key]] = take_value(data[key])
     return res
 
+def extract_user_data(html_string):
+    pattern = r'<div[^>]*>\{\{user id=(\d+);text=([^}]+)\}\}</div>'
+    matches = re.findall(pattern, html_string)
+    result = [{'id': int(match[0]), 'text': match[1]} for match in matches]
+    return result
+
 
 
 class Article:
@@ -214,7 +220,7 @@ class Article:
             else:
                 photo = user["photo_file_url"]
                 photo_replace = photo.replace("user_files", "compress_image/user")
-            indirect_data = json.dumps({
+            indirect_data = {
                 "uuid" : uuid,
                 "year" : year,
                 "position" : position,
@@ -223,7 +229,7 @@ class Article:
                 "photo_file_url" : photo_replace,
                 "award" : award,
                 "location" : ""
-            })
+            }
 
         #Наши люди
         elif self.section_id == 13:
@@ -309,6 +315,7 @@ class Article:
             #собираем из двух статей одну
             uuid = None
             photo = None
+            author = None
             if "PROPERTY_444" in data:
                 if type(data['PROPERTY_444']) == type(list()):
                     uuid = int(data['PROPERTY_444'][0])
@@ -319,6 +326,18 @@ class Article:
                 user = User(id=uuid).search_by_id_all()
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
+
+                #ФИО
+                fio = user['last_name'] + " " + user['name'] + " " + user['second_name']
+
+                #взять должность
+                if "work_position" in user["indirect_data"]:
+                    position = user["indirect_data"]['work_position']
+                else:
+                    position = ""
+                
+                author = fio  + ";" + position
+
             company = None
             if "PROPERTY_1022" in data and take_value(data["PROPERTY_1022"]) == "6180":
                 company = 10834#"АО «НПО «Регулятор»"
@@ -364,6 +383,7 @@ class Article:
             indirect_data = {
                 "TITLE" : data["TITLE"],
                 "author_uuid" : uuid,
+                "author" : author,
                 "company" : company, 
                 "link" : link,
                 "youtube_link" : YouTube,
@@ -460,6 +480,8 @@ class Article:
             
             indirect_data["author"] = author
 
+        
+        
         #Благотворительные проекты
         elif self.section_id == 55:
             property_dict = {
@@ -557,7 +579,27 @@ class Article:
         #Новости организационного развития
         elif self.section_id == 32:
 
-            indirect_data = dict()
+            indirect_data = {"users" : [], "active_main_page" : False}
+            if preview is not None and preview != "":
+                users_data = extract_user_data(preview)
+                for user_data in users_data:
+                    #нати данные пользователя
+                    usr_id = user_data['id']
+                    usr = User(id = usr_id).search_by_id_all()
+
+                    #ФИО
+                    fio = usr['last_name'] + " " + usr['name'] + " " + usr['second_name']
+                    #фото
+                    photo_file_url = usr["photo_file_url"]
+                    #взять должность
+                    position = user_data['text']
+                    usr = {
+                        "id" : usr_id,
+                        "fio" : fio,
+                        "photo_file_url" : photo_file_url,
+                        "position" : position
+                    }
+                    indirect_data["users"].append(usr)
 
         #Корпоративная газета ЭМК
         elif self.section_id == 34:
@@ -1097,16 +1139,16 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        self.upload_uniquely()
+        #self.upload_uniquely()
         self.upload_with_parameter()
-        self.upload_many_to_many()
-        self.upload_services()
+        # self.upload_many_to_many()
+        # self.upload_services()
 
         # Дамп данных в эластик
-        self.dump_articles_data_es()
+        # self.dump_articles_data_es()
 
-        self.upload_likes()
-        self.upload_views()
+        # self.upload_likes()
+        # self.upload_views()
 
         return {'status' : True}
 
@@ -1114,19 +1156,19 @@ class Article:
     def upload_uniquely(self ):
         '''однозначно'''
         sec_inf = {
-            13 : "149", # Наши люди ✔️
-            14 : "123", # Доска почёта ✔️
-            16 : "122", # Видеоитервью ✔️
+            #13 : "149", # Наши люди ✔️
+            #14 : "123", # Доска почёта ✔️
+            #16 : "122", # Видеоитервью ✔️
             
-            32 : "132", # Новости организационного развития ✔️
-            53 : "62", # Афиша ✔️
-            54 : "55", # Предложения партнеров ✔️
-            55 : "56", # Благотворительные проекты ✔️
+            #32 : "132", # Новости организационного развития ✔️
+            #53 : "62", # Афиша ✔️
+            #54 : "55", # Предложения партнеров ✔️
+            #55 : "56", # Благотворительные проекты ✔️
 
-            25 : "100", #Референсы и опыт поставок ✔️
-            175 : "60", # Учебный центр (Литература) ✔️
-            7 : "66", #Конкурсы (Главная) ✔️
-            71 : "128", #Конкурсы (Непосредственно)
+            #25 : "100", #Референсы и опыт поставок ✔️
+            #175 : "60", # Учебный центр (Литература) ✔️
+            #7 : "66", #Конкурсы (Главная) ✔️
+            #71 : "128", #Конкурсы (Непосредственно)
         }
         
         
@@ -1154,9 +1196,9 @@ class Article:
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
             15 : ["75", "77"], #Блоги ✔️
-            18 : ["81", "82"], #Памятка ✔️
-            41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
-            172 : ["61", "83"] #Учебный центр (Проведённые тренинги) ✔️
+            # 18 : ["81", "82"], #Памятка ✔️
+            # 41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
+            # 172 : ["61", "83"] #Учебный центр (Проведённые тренинги) ✔️
         }
 
         
@@ -1951,39 +1993,63 @@ class Article:
 
         # Орг развитие
         elif section_id == 32:
-            date_list = [] # список для сортировки по дате
+            current_datetime = datetime.datetime.now()
+            result = [] 
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if values["active"] is False:
-                        pass
-                else:
-                    date_value = [] # список для хранения необходимых данных
-                    date_value.append(values["id"])
-                    date_value.append(values["name"])
-                    date_value.append(values["preview_text"])
-                    date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
-                    date_list.append(date_value) # получили список с необходимыми данными
-            # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+                if "active_main_page" in values['indirect_data'].keys() and values['indirect_data']['active_main_page'] == False:
+                    continue
+
+                if values["active"] == False:
+                    continue
+                
+                    # flag = False
+                    # if values["date_publiction"] is not None:
+                    #     time_diff = current_datetime - values["date_publiction"]
+                    #     if time_diff.days <= 10:
+                    #         flag = True
+                    # else:
+                    #     time_diff = current_datetime - values["date_creation"]
+                    #     if time_diff.days <= 10:
+                    #         flag = True
+                    # if flag == True:
+                self.id = values["id"]
+                files = File(art_id = int(self.id)).get_files_by_art_id()
+                image_URL = ""
+                for file in files:
+                    if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                        url = file["file_url"]
+                        image_URL = DOMAIN + url
+                node = {"id": self.id, "image": image_URL}
+                result.append(node)
+
+            #         date_value = [] # список для хранения необходимых данных
+            #         date_value.append(values["id"])
+            #         date_value.append(values["name"])
+            #         date_value.append(values["preview_text"])
+            #         date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
+            #         date_list.append(date_value) # получили список с необходимыми данными
+            # # сортируем по дате
+            # sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
             
-            news_id = sorted_data[0][0]
+            # for news in sorted_data
+            # news_id = sorted_data[0][0]
 
             
-            self.id = news_id
-            # image_URL = self.get_preview()
-            image_URL = ""
-            files = File(art_id = int(self.id)).get_files_by_art_id()
-            for file in files:
-                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                    url = file["file_url"]
-                    image_URL = DOMAIN + url
+            # self.id = news_id
+            # # image_URL = self.get_preview()
+            # files = File(art_id = int(self.id)).get_files_by_art_id()
+            # for file in files:
+            #     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+            #         url = file["file_url"]
+            #         image_URL = DOMAIN + url
 
             second_page = {
                 'id': section_id, 
                 'type': 'swiper', 
                 'title': 'Организационное развитие', 
                 "href": "corpNews", 
-                'images': [{'id': news_id, 'image': image_URL}]
+                'images': result
                 }
             return second_page
         
@@ -2100,6 +2166,7 @@ class Article:
                     
                     news['id'] = row[0]
                     news['title'] = row[1]
+                    news['date'] = row[3]
                     news['image'] = image_url
                     
                     if user_id is not None:
@@ -2159,6 +2226,7 @@ class Article:
                     news['id'] = row[0]
                     news['title'] = row[1]
                     news['description'] = row[2]
+                    news['date'] = row[3]
                     news['image'] = image_url                    
                     # сюда реакции
                     if user_id is not None:
@@ -2216,6 +2284,7 @@ class Article:
                     news['id'] = row[0]
                     news['title'] = row[1]
                     news['description'] = row[2]
+                    news['date'] = row[3]
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:
@@ -2319,6 +2388,7 @@ class Article:
                     news['id'] = row[0]
                     news['title'] = row[1]
                     news['description'] = row[2]
+                    news['date'] = row[3]
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:

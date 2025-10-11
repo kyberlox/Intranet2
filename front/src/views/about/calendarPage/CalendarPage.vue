@@ -77,6 +77,10 @@
         </div>
     </div>
 </div>
+<div v-else
+     class="contest__page__loader__wrapper">
+    <Loader class="contest__page__loader" />
+</div>
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref, watch, nextTick, type ComputedRef, type Ref } from 'vue';
@@ -84,11 +88,13 @@ import { monthesInit } from '@/assets/static/monthes';
 import type { ICalendar } from '@/interfaces/IEntities';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
 import { getMonth, formatDateNoTime } from '@/utils/dateConvert';
+import Loader from '@/components/layout/Loader.vue';
 import { useViewsDataStore } from '@/stores/viewsData';
 
 export default defineComponent({
     components: {
-        DatePicker
+        DatePicker,
+        Loader
     },
     props: {
         targetId: {

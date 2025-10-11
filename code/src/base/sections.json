@@ -32,7 +32,7 @@
     "id" : 14,
     "name" : "Доска почёта",
     "parent_id" : 1,
-    "sectionHref": "year-results-id"
+    "sectionHref": "year-results"
   },
   {
     "id" : 15,

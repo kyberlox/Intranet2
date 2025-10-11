@@ -16,7 +16,7 @@
                 <div class="personal__user__about">
                 </div>
                 <div class="personal__user__mess">
-                    <a :href='"https://portal.emk.ru/company/personal/user/" + user.id'
+                    <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"'
                        target="_blank"
                        class="personal__user__mess__link">Профиль в Bitrix24</a>
                     <button v-if="user.id !== myId && featureFlags.pointsSystem"

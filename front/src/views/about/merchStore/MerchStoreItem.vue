@@ -7,11 +7,11 @@
                 <div v-for="(card, index) in currentItem?.indirect_data?.images"
                      :key="index"
                      class="merch-store-item__images__flex-gallery__card__wrapper">
-                    <div class="merch-store-item__images__flex-gallery__card">
-                        <img v-if="(typeof card !== 'string' && card.file_url)"
-                             class="pos-rel"
-                             :src="(card.file_url)"
-                             @click="setZoomImg(card.file_url)" />
+                    <div v-if="(typeof card !== 'string' && card.file_url)"
+                         @click="setZoomImg(card.file_url)"
+                         class="merch-store-item__images__flex-gallery__card">
+                        <img class="pos-rel"
+                             :src="(card.file_url)" />
                         <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
                     </div>
                 </div>

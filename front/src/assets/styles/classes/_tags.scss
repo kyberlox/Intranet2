@@ -27,6 +27,10 @@
         cursor: pointer;
         transition: 0.1s ease-in-out;
 
+        &--inner {
+            font-size: 11px;
+        }
+
         &:hover {
             background: var(--emk-brand-color);
             color: white;

@@ -7,6 +7,7 @@ export interface IBlogData extends IBaseIndirectData {
     photo_file_url: string,
     link: string,
     youtube_link: string,
+    author: string
 }
 
 export interface IBlogArticleData extends IBaseIndirectData {
@@ -19,6 +20,7 @@ export interface IBlogAuthors {
     authorAvatar?: string,
     link?: string,
     telegramQr?: string
+    authorTitle?: string
 }
 
 export interface IBlog extends IBaseEntity {

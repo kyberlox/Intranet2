@@ -1,5 +1,5 @@
 <template>
-<header class="header  d-print-none">
+<header class="header sticky-top d-print-none">
     <nav class="navbar navbar-light bg-light navbar-expand-lg">
         <div class="w-100">
             <div class="container-fluid">
@@ -38,13 +38,20 @@
                                     </div>
                                     <ul class="dropdown-menu"
                                         @mouseleave="handleDropdown('close', point.id)">
-                                        <li v-for="subpoint in point.subPoints"
-                                            :key="'subpoint' + point.name + subpoint.id"
-                                            class="dropdown__item"
-                                            :class="{ 'dropdown__item--active': currentRoute == subpoint.href }"
-                                            @click="handleDropDownItemClick(subpoint)">
-                                            {{ subpoint.name }}
-                                        </li>
+                                        <div v-for="subpoint in point.subPoints"
+                                             :key="'subpoint' + point.name + subpoint.id">
+                                            <li v-if="subpoint.name == 'Информационное письмо'"
+                                                class="dropdown__item">
+                                                <a :href=subpoint.href
+                                                   download>{{ subpoint.name }}</a>
+                                            </li>
+                                            <li v-else
+                                                class="dropdown__item"
+                                                :class="{ 'dropdown__item--active': currentRoute == subpoint.href }"
+                                                @click="handleDropDownItemClick(subpoint)">
+                                                {{ subpoint.name }}
+                                            </li>
+                                        </div>
                                     </ul>
                                 </li>
                                 <SearchIcon class="navbar-nav__search-icon"

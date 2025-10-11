@@ -189,6 +189,11 @@
         "data_type": "search_by_uuid"
       },
       {
+        "name": "Автор блога",
+        "field": "author",
+        "data_type": "str"
+      },
+      {
         "name": "Аннотация",
         "field": "preview_text",
         "data_type": "str"
@@ -527,6 +532,26 @@
           true,
           false
         ]
+      },
+      {
+        "name": "Отображать на главной странице",
+        "field": "active_main_page",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "ID пользователей",
+        "field": "uuids",
+        "data_type": "search_by_uuids"
+      },
+      {
+        "name": "Список пользователей",
+        "field": "users",
+        "data_type": "str"
       },
       {
         "name": "Название статьи",

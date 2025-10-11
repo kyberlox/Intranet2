@@ -1,18 +1,23 @@
 <template>
-<div class="pano__wrapper mt20"
-     id="wrapper">
-    <div class="pano"
-         id="pano"></div>
+<div v-if="tourFrame" class="pano__wrapper mt20">
+         <iframe :src="tourFrame" width="100%" height="100%" frameborder="0"></iframe>
+</div>
+<div v-else>
+    <Loader/>
 </div>
 </template>
 
 <script lang="ts">
-import { loadScript, unloadScript } from "vue-plugin-load-script";
-import { ref, onBeforeMount, onUnmounted, computed, watchEffect } from 'vue';
+import { loadScript} from "vue-plugin-load-script";
+import { ref, computed, watch } from 'vue';
 import { defineComponent } from 'vue';
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";
+import Loader from "@/components/layout/Loader.vue";
 
 export default defineComponent({
+    components:{
+        Loader
+    },
     props: {
         id: {
             type: String
@@ -22,37 +27,20 @@ export default defineComponent({
         }
     },
     setup(props) {
+         loadScript('/src/utils/tour.js')
         const factoryGuid = useFactoryGuidDataStore();
         const currentTour = computed(() => factoryGuid.getFactoryTour(Number(props.factoryId), String(props.id)))
+        const tourFrame = ref();
 
-        const folder = ref('');
-        const swf = ref();
-        const xml = ref();
-
-        watchEffect(() => {
-            if (currentTour.value) {
-                const basePath = `https://intranet.emk.ru/tours/${currentTour.value?.["3D_files_path"]}`;
-                swf.value = `${basePath}/tour.swf`;
-                xml.value = `${basePath}/pano.xml`;
-                loadScript('/src/utils/tour.js').then(() => {
-                    window.embedpano({
-                        swf: swf.value,
-                        xml: xml.value,
-                        target: "pano",
-                        html5: "auto",
-                        mobilescale: 1.0,
-                        passQueryParameters: true,
-                    });
-                })
+        watch((currentTour), ()=>{
+            if(currentTour.value){
+         tourFrame.value = `https://intranet.emk.ru/api/files/tours/${currentTour.value?.["3D_files_path"]}/index.html`;
             }
-        })
+        }, {immediate: true, deep: true})
 
-        onUnmounted(() => {
-            if (window.removepano) {
-                window.removepano("pano");
-            }
-            unloadScript('/src/utils/tour.js');
-        })
+        return{
+            tourFrame
+        }
     }
 });
 </script>

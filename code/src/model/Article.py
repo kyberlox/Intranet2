@@ -2477,6 +2477,9 @@ class Article:
     def remove_tag_from_art_id(self, tag_id):
         return Tag(id=tag_id, art_id=self.id).remove_tag_from_art_id()
     
+    def check_user_root(self, user_id):
+        from ..services.Fieldsvisions import Visions
+        return Visions(art_id=self.id, user_id=user_id).check_user_root()
     
 
 #Получить данные инфоблока из Б24

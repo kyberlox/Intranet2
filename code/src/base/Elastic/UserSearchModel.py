@@ -54,7 +54,7 @@ class UserSearchModel:
                         },
                         "myngram": {
                             "type": "edge_ngram",
-                            "min_gram": 2,
+                            "min_gram": 4,
                             "max_gram": 7
                         }
                     }
@@ -398,7 +398,7 @@ class UserSearchModel:
                                 "multi_match": {
                                     "query": key_word,
                                     "fields": ["user_fio.fuzzy"],
-                                    "fuzziness": "AUTO",
+                                    "fuzziness": "1",
                                     "boost": 2
                                 }
                             },
@@ -417,7 +417,7 @@ class UserSearchModel:
                                                 "indirect_data.uf_usr_department_main.fuzzy",
                                                 "indirect_data.uf_usr_1586854037086.fuzzy"
                                             ],
-                                            "fuzziness": "AUTO",
+                                            "fuzziness": "1",
                                             "boost": 1
                                         }
                                     },

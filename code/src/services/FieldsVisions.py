@@ -114,6 +114,9 @@ class Visions:
 
     def get_all_vis_in_art(self):
         return FieldvisionModel(art_id=self.art_id).get_all_vis_in_art()
+        
+    def check_user_root(self):
+        return FieldvisionModel(art_id=self.art_id).check_user_root(self.user_id)
 
 def get_uuid_from_request(request):
     session_id = ""
@@ -213,3 +216,8 @@ def delete_art_from_vision(art_id: int, vis_id: int):
 @fieldsvisions_router.get("/get_all_vis_in_art/{art_id}")
 def get_all_vis_in_art(art_id: int):
     return Visions(art_id=art_id).get_all_vis_in_art()
+
+@fieldsvisions_router.get("/check_user_root/{art_id}")
+def check_user_root(request: Request, art_id: int):
+    uuid = get_uuid_from_request(request)
+    return Visions(art_id=art_id, user_id=uuid).check_user_root()

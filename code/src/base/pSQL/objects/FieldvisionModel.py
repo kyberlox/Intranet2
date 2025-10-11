@@ -1,5 +1,5 @@
 from src.services.LogsMaker import LogsMaker
-from .App import get_db, func
+from .App import get_db, func, select
 LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 
 db_gen = get_db()
@@ -21,6 +21,8 @@ class FieldvisionModel:
 
         from ..models.Article import Article
         self.Article = Article
+
+
 
     def add_field_vision(self):
         from .App import func
@@ -110,4 +112,17 @@ class FieldvisionModel:
                 result.append(vis_info)
         return result
     
-    # def check_user_root(self):
+    def check_user_root(self, user_id):
+        from ..models.Roots import Roots
+        self.Roots = Roots
+
+        # flag = False
+        user_roots = database.query(self.Roots.root_token['VisionRoots']).filter(self.Roots.user_uuid == user_id).scalar()
+
+        art_vis = database.scalars(select(self.ArtVis.vision_id).where(self.ArtVis.art_id == self.art_id)).all()
+        if user_roots is not None and art_vis is not None:
+            for user_root in user_roots:
+                if user_root in art_vis:
+                    return True
+        return False
+ 

@@ -573,8 +573,6 @@ class Editor:
         # вывести
         return {"fields" : result_fields, "files" : files}
 
-
-
     def pre_add(self, ):
         #Получаю поля паттерна       
         fields = self.pattern["fields"]
@@ -655,8 +653,6 @@ class Editor:
         #вставить данные в статью
         return Article(id = self.art_id).update(art)
     
-
-
     def delete_art(self ):
         return Article(id = self.art_id).delete()
         

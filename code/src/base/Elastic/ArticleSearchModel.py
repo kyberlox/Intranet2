@@ -198,7 +198,7 @@ class ArticleSearchModel:
                     data_row["section_id"] = article_data["section_id"]
                     if article_data["section_id"] == 15:
                         data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
-                        data_row["company"] = article_data["indirect_data"]["company"]
+                        data_row["company"] = article_data["indirect_data"]["company"] if "company" in article_data["indirect_data"].keys() else None
                     data_row["title"] = article_data["name"]
                     data_row["preview_text"] = article_data["preview_text"]
                     data_row["content_text"] = article_data["content_text"]

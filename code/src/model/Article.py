@@ -1943,7 +1943,7 @@ class Article:
                 sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
-                print(len(active_articles), len(result))
+            
             return sorted_active_articles
     
     def all_serch_by_date(self ):
@@ -2087,6 +2087,7 @@ class Article:
                     art_img = {
                         "id": self.id,
                         "image": preview_pict,
+                        "name": art["name"],
                         "href":  art["indirect_data"]["sectionHref"]
                     }
                     images.append(art_img)
@@ -2542,6 +2543,14 @@ class Article:
 
     def set_tag_to_art_id(self, tag_id):
         return Tag(id=tag_id, art_id=self.id).set_tag_to_art_id()
+    
+    def remove_tag_from_art_id(self, tag_id):
+        return Tag(id=tag_id, art_id=self.id).remove_tag_from_art_id()
+    
+    def check_user_root(self, user_id):
+        from ..services.Fieldsvisions import Visions
+        return Visions(art_id=self.id, user_id=user_id).check_user_root()
+    
 
 #Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}")
@@ -2662,6 +2671,10 @@ def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request):
 @article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}")
 def set_tag_to_art_id(art_id: int, tag_id: int):
     return Article(id=art_id).set_tag_to_art_id(tag_id)
+
+@article_router.delete("/remove_tag_from_art_id/{tag_id}/{art_id}")
+def remove_tag_from_art_id(art_id: int, tag_id: int):
+    return Article(id=art_id).remove_tag_from_art_id(tag_id)
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
 # def search_articles_by_title(title): # data = Body()

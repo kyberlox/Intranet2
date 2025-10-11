@@ -134,7 +134,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         "/openapi.json",
         "/api/auth_router",
         "/api/total_update",
-        "/api/files/",
+        "/api/files",
+        "/api/tours"
         "/api/compress_image",
         "/api/user_files",
         "test", "dump", "get_file", "get_all_files",
@@ -266,8 +267,18 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
 #     else:
 #         return f'нет такого upload_id = {upload_id}'
 
+@app.get("/get_info_message")
+def get_info_message():
+    file_path = "./files_db/Информационное_письмо_НПО_ЭМК.docx"
 
+    if not os.path.exists(file_path):
+        return LogsMaker().error_message("Файл отсутствует")
 
+    return FileResponse(
+        path=file_path,
+        filename="Информационное_письмо_НПО_ЭМК.docx",  # Имя файла для пользователя
+        media_type='application/octet-stream'
+    )
 
 @app.get("/get_test_elastic/{word}")
 def get_test_elastic(word: str):

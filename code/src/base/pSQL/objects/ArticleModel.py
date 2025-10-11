@@ -6,7 +6,7 @@ import json
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from .App import get_db
+from .App import get_db, update
 db_gen = get_db()
 database = next(db_gen)
 
@@ -54,14 +54,21 @@ class ArticleModel:
         else:
             return True
 
+    # def update(self, article_data):
+    #     #удалить статью
+    #     database.query(self.article).filter(self.article.id==int(self.id)).delete()
+    #     #залить заново
+    #     self.add_article(article_data)
+    #     database.commit()  
+    #     return True
+    
     def update(self, article_data):
-        #удалить статью
-        database.query(self.article).filter(self.article.id==int(self.id)).delete()
-        #залить заново
-        self.add_article(article_data)
-        print(article_data)
-        database.commit()  
-        return True
+        try:
+            database.execute(update(self.article).where(self.article.id==int(self.id)).values(**article_data))
+            database.commit() 
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при обновлении статьи с id = {int(self.id)}, {e}")
 
     '''def update(self, article_data):
         db_art = db.query(Article).get(self.id).__dict__

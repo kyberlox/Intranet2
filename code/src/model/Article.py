@@ -1918,7 +1918,7 @@ class Article:
                     else:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
-
+                        print("PREVIEW: ", res["preview_file_url"])
                         if self.section_id == 32 and res["preview_file_url"] is None:
                             res["preview_file_url"] = values['indirect_data']['users'][0]['photo_file_url']
 

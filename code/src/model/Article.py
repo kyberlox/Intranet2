@@ -1997,7 +1997,7 @@ class Article:
             result = [] 
             articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
-                if "active_main_page" in values['indirect_data'].keys() and values['indirect_data']['active_main_page'] == False:
+                if values['indirect_data'] is not None and "active_main_page" in values['indirect_data'].keys() and values['indirect_data']['active_main_page'] == False:
                     continue
 
                 if values["active"] == False:

@@ -970,7 +970,8 @@ class Editor:
             art["name"] = result["fio"]
         
         if self.section_id == 15:
-            result["author"] = result["fio"] + "; " + result['position'] 
+            result["author"] = result["fio"] + "; " + result['position']
+            result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
         

@@ -1919,8 +1919,9 @@ class Article:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
                         print("PREVIEW: ", res["preview_file_url"])
-                        if self.section_id == 32 and res["preview_file_url"] is None:
-                            res["preview_file_url"] = values['indirect_data']['users'][0]['photo_file_url']
+                        if res["preview_file_url"] is None:
+                            if self.section_id == 32:
+                                res["preview_file_url"] = values['indirect_data']['users'][0]['photo_file_url']
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков

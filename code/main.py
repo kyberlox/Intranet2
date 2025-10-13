@@ -129,8 +129,8 @@ open_links = [
     "/api/auth_router",
     "/api/total_update",
     "/api/files",
-    "/api/tours"
-    "/api/compress_image", "compress_image"
+    "/api/tours",
+    "/api/compress_image", "compress_image",
     "/api/user_files",
     "test", "dump", "get_file", "get_all_files",
     "/api/total_background_task_update",

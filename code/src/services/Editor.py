@@ -1073,7 +1073,7 @@ async def get_sections_list(request: Request):
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     print(editor_roots)
-    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
+    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys()):
         return Editor().get_sections_list()
     return LogsMaker().warning_message(f"Недостаточно прав")
     

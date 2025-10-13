@@ -1918,6 +1918,10 @@ class Article:
                     else:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
+
+                        if self.section_id = 32 and res["preview_file_url"] is None:
+                            res["preview_file_url"] = values['indirect_data']['users'][0]['photo_file_url']
+
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -2022,9 +2026,7 @@ class Article:
                         url = file["file_url"]
                         image_URL = DOMAIN + url
                 if files == [] and values['indirect_data']['users'] != []:
-                    print(values['indirect_data'])
                     image_URL = values['indirect_data']['users'][0]['photo_file_url']
-                    #image_URL = f"/api/user_files/{photo_URL}"
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
 

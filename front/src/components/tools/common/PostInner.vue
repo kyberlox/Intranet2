@@ -107,7 +107,7 @@ export interface IPostInner extends IBaseEntity {
         // Благотв
         organizer?: string,
         phone_number?: string
-        // Афиша 
+        // Афиша
         date_from?: string,
         date_to?: string,
         reports?: IReportage[],
@@ -133,6 +133,9 @@ export interface IPostInner extends IBaseEntity {
         position: string,
         photo_file_url: string
     }[],
+    // Блоги
+    TITLE?: string,
+    author?: string
 }
 
 export default defineComponent({

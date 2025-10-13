@@ -462,7 +462,7 @@ class Editor:
         art = Article(id = self.art_id).find_by_id()
 
         if self.section_id is None:
-            if section_id in art:
+            if "section_id" in art:
                 self.section_id = art["section_id"]
             else:
                 return LogsMaker.warning_message("Неверный id статьи")

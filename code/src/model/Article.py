@@ -1923,7 +1923,7 @@ class Article:
                         if res["preview_file_url"] is None:
                             print("ЩА БУДЕТ")
                             if int(self.section_id) == 32:
-                                res["preview_file_url"] = values['indirect_data']['users'][0]['photo_file_url']
+                                res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков

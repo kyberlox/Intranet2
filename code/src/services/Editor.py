@@ -53,7 +53,7 @@ class Editor:
             if "section_id" in art:
                 self.section_id = art["section_id"]
             else:
-                return LogsMaker.warning_message("Неверный id статьи")
+                LogsMaker.warning_message("Неверный id статьи")
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]

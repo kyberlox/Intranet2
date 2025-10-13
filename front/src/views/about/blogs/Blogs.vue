@@ -55,6 +55,8 @@ export default defineComponent({
                     authors.value.push(e);
                 }
             })
+            console.log(allAuthors.value);
+
         }, { immediate: true, deep: true })
 
         return {

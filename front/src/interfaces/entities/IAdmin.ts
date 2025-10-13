@@ -1,3 +1,4 @@
+import type { IUserList } from "@/views/admin/components/inputFields/AdminUsersList.vue";
 import type { IBXFileType } from "./IBase";
 
 export interface IReportage {
@@ -15,7 +16,7 @@ export interface IAdminListItem {
     data_type?: string;
     field?: string;
     values?: string[] | { name: string, id?: string | number, value?: string }[];
-    value?: number | string | IReportage[];
+    value?: number | string | IReportage[] | IUserList[];
 }
 
 export interface IFileToUpload {

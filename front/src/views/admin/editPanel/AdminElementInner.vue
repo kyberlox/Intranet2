@@ -12,10 +12,15 @@
            :key="index">
 
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
-            :type="item.data_type"
-        @userPicked="handleUserPick" @usersPicked="handleUsersPick" />
+                             :type="item.data_type"
+                             @userPicked="handleUserPick"
+                             @usersPicked="handleUsersPick" />
 
-        <AdminEditReportage v-if="item.field == 'reports'"
+        <AdminUsersList v-if="item.field == 'users'"
+                        :users="(item.value as IUserList[])"
+                        @removeUser="(id: number) => handleUsersPick(String(id), 'remove')" />
+
+        <AdminEditReportage v-else-if="item.field == 'reports'"
                             :item="(item.value as IReportage[])"
                             @pick="handleReportChange" />
 
@@ -93,12 +98,14 @@ import { useWindowSize } from '@vueuse/core'
 import AdminPostPreview from '@/views/admin/editPanel/elementInnerLayout/AdminPostPreview.vue';
 import AdminUploadingSection from '@/views/admin/editPanel/elementInnerLayout/AdminUploadingSection.vue';
 import AdminEditUserSearch from '@/views/admin/components/inputFields/AdminEditUserSearch.vue';
-import AdminEditUsersSearch from '../components/inputFields/AdminEditUsersSearch.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
+import type { IUserList } from '../components/inputFields/AdminUsersList.vue';
+import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
+import type { IUsersLoad } from '@/interfaces/IPostFetch';
 
-type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string }>;
+type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string } | IUserList>;
 
 export default defineComponent({
   components: {
@@ -112,7 +119,7 @@ export default defineComponent({
     AdminEditUserSearch,
     FileUploader,
     AdminUploadingSection,
-    AdminEditUsersSearch
+    AdminUsersList,
   },
   props: {
     id: {
@@ -177,7 +184,7 @@ export default defineComponent({
             if (!('section_id' in newData.value)) {
               newData.value.section_id = data.fields.find((e: IAdminListItem) => e.field == 'section_id').value;
             }
-
+            usersList.value = data.users
             newData.value.section_id = Number(props.id);
             // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;
@@ -187,29 +194,46 @@ export default defineComponent({
       else reloadElementData(false);
     })
 
+    const usersList = ref<{
+      id: number;
+      fio: string;
+      position: string;
+      photo_file_url: string;
+    }[]>([]);
+
     const reloadElementData = (onlyFiles: boolean = false) => {
       Api.get(`/editor/rendering/${newId.value}`)
         .then((data) => {
-          if (!onlyFiles) {
-            isCreateNew.value = false;
-            newElementSkeleton.value = data.fields;
+          if (data.status) {
+            router.push({ name: 'admin' })
           }
-          newId.value = data.fields.find((e: IAdminListItem) => e.field == 'id').value;
-          newFileData.value = data.files;
-          // для превьюх
-          if (data.files?.images && data.files?.images[0]?.file_url) {
-            newData.value.preview_file_url = data.files?.images[0]?.file_url
-          }
-          // для привязки по uid к статьям
-          const targetDepartment = data.fields.find((e: { field: string }) => e.field == 'department')
+          else {
+            if (!onlyFiles) {
+              isCreateNew.value = false;
+              newElementSkeleton.value = data.fields;
+            }
+            newId.value = data.fields.find((e: IAdminListItem) => e.field == 'id').value;
+            newFileData.value = data.files;
+            // для превьюх
+            if (data.files?.images && data.files?.images[0]?.file_url) {
+              newData.value.preview_file_url = data.files?.images[0]?.file_url
+            }
+            // для привязки по uid к статьям подразделений
+            const targetDepartment = data.fields.find((e: { field: string }) => e.field == 'department')
 
-          if (targetDepartment) {
-            newData.value.department = targetDepartment.value
+            if (targetDepartment) {
+              newData.value.department = targetDepartment.value
+            }
+
+            newData.value.users = data.fields.find((e: { field: string }) => e.field == 'users').value
+            if (!newData.value.users) return
+            usersList.value = newData.value.users
+            // newData.value.images = data.files.images;
+            newData.value.videos_native = data.files.videos_native;
+            newData.value.documentation = data.files.documentation;
           }
-          // newData.value.images = data.files.images;
-          newData.value.videos_native = data.files.videos_native;
-          newData.value.documentation = data.files.documentation;
-        })
+        }
+        )
     }
 
     const applyNewData = async () => {
@@ -269,10 +293,22 @@ export default defineComponent({
     }
 
     const users = ref<string[]>([]);
-    const handleUsersPick = (uuid: string) => {
-        users.value.push(uuid)
-        const usersBody = {art_id: props.elementId, users_id: users.value}
-        Api.post(`editor/get_users_info`, usersBody)
+    const handleUsersPick = (uuid: string, type: ('add' | 'remove') = 'add') => {
+      if (type == 'add') {
+        if (!users.value.includes(uuid))
+          users.value.push(uuid)
+      }
+      else {
+        users.value.length = 0
+        usersList.value.map((e) => {
+          if (Number(e.id) !== Number(uuid)) {
+            users.value.push(String(e.id))
+          }
+        })
+      }
+
+      const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
+      Api.post(`editor/get_users_info`, usersBody)
         .then((data) => {
           if (data) {
             reloadElementData(false)

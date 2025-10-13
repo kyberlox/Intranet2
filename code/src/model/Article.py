@@ -1918,11 +1918,11 @@ class Article:
                     else:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
+
                         print("PREVIEW: ", res["preview_file_url"])
                         if res["preview_file_url"] is None:
                             print("ЩА БУДЕТ")
-                            if self.section_id == 32:
-                                
+                            if int(self.section_id) == 32:
                                 res["preview_file_url"] = values['indirect_data']['users'][0]['photo_file_url']
 
                         # сюда лайки и просмотры

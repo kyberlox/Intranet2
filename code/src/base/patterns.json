@@ -559,11 +559,6 @@
         "data_type": "str"
       },
       {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
-      {
         "name": "Содержимое",
         "field": "content_text",
         "data_type": "str"

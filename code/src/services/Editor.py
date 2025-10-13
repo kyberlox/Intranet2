@@ -455,7 +455,7 @@ class Editor:
     
     def rendering(self ):
         if self.art_id is None:
-            return LogsMaker.warning_message("Укажите id статьи")
+            return LogsMaker().warning_message("Укажите id статьи")
         
         
         # вытащить основные поля из psql
@@ -465,7 +465,7 @@ class Editor:
             if "section_id" in art:
                 self.section_id = art["section_id"]
             else:
-                return LogsMaker.error_message("Неверный id статьи")
+                return LogsMaker().warning_message("Неверный id статьи")
 
 
 

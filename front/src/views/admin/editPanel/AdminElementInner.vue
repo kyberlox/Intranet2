@@ -231,6 +231,9 @@ export default defineComponent({
             // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;
             newData.value.documentation = data.files.documentation;
+            // Для блогов
+            newData.value.TITLE = data.fields.find((e: { field: string }) => e.field == 'TITLE').value;
+            newData.value.author = data.fields.find((e: { field: string }) => e.field == 'author').value;
           }
         }
         )

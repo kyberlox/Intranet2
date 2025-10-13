@@ -121,46 +121,6 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                                                         "_name": "true_search"
                                                                     }
                                                                 }
-                                                            },
-                                                            {"term": {
-                                                                "uf_phone_inner": {"value": key_word, "boost": 10}}},
-                                                            {
-                                                                "nested": {
-                                                                    "path": "indirect_data",
-                                                                    "query": {
-                                                                        "bool": {
-                                                                            "should": [
-                                                                                {"match": {
-                                                                                    "indirect_data.work_position": {
-                                                                                        "query": key_word,
-                                                                                        "boost": 5}}},
-                                                                                {"match": {
-                                                                                    "indirect_data.uf_usr_1705744824758": {
-                                                                                        "query": key_word,
-                                                                                        "boost": 5}}},
-                                                                                {"match": {
-                                                                                    "indirect_data.uf_usr_1707225966581": {
-                                                                                        "query": key_word,
-                                                                                        "boost": 5}}},
-                                                                                {"match": {
-                                                                                    "indirect_data.uf_usr_1696592324977": {
-                                                                                        "query": key_word,
-                                                                                        "boost": 5}}},
-                                                                                {"match": {
-                                                                                    "indirect_data.uf_usr_1586853958167": {
-                                                                                        "query": key_word,
-                                                                                        "boost": 5}}},
-                                                                                {"match": {
-                                                                                    "indirect_data.uf_usr_department_main": {
-                                                                                        "query": key_word,
-                                                                                        "boost": 5}}},
-                                                                                {"match": {
-                                                                                    "indirect_data.uf_usr_1586854037086": {
-                                                                                        "query": key_word, "boost": 5}}}
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                }
                                                             }
                                                         ],
                                                         "_name": "true_search"
@@ -170,30 +130,8 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                                     "multi_match": {
                                                         "query": key_word,
                                                         "fields": ["user_fio.fuzzy"],
-                                                        "fuzziness": "AUTO",
+                                                        "fuzziness": "1",
                                                         "boost": 2
-                                                    }
-                                                },
-                                                {
-                                                    "nested": {
-                                                        "path": "indirect_data",
-                                                        "query": {
-                                                            "multi_match": {
-                                                                "query": key_word,
-                                                                "fields": [
-                                                                    "indirect_data.work_position.fuzzy",
-                                                                    "indirect_data.uf_usr_1705744824758.fuzzy",
-                                                                    "indirect_data.uf_usr_1707225966581.fuzzy",
-                                                                    "indirect_data.uf_usr_1696592324977.fuzzy",
-                                                                    "indirect_data.uf_usr_1586853958167.fuzzy",
-                                                                    "indirect_data.uf_usr_department_main.fuzzy",
-                                                                    "indirect_data.uf_usr_1586854037086.fuzzy"
-                                                                ],
-                                                                "fuzziness": "AUTO",
-                                                                "boost": 1
-                                                            }
-                                                        },
-                                                        "score_mode": "max"
                                                     }
                                                 }
                                             ]

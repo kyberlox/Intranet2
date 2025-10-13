@@ -460,7 +460,7 @@ class Editor:
         # вытащить основные поля из psql
         art = Article(id = self.art_id).find_by_id()
         print(art)
-        if art == None:
+        if art is None:
             return LogsMaker.warning_message("Неверный id статьи")
         if self.section_id is None:
             if 

@@ -130,7 +130,7 @@ open_links = [
     "/api/total_update",
     "/api/files",
     "/api/tours"
-    "/api/compress_image",
+    "/api/compress_image", "compress_image"
     "/api/user_files",
     "test", "dump", "get_file", "get_all_files",
     "/api/total_background_task_update",
@@ -200,67 +200,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     return await call_next(request)
 
-@app.middleware("https")
-async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
-    # Внедряю свою отладку
-    log = LogsMaker()
-
-    
-
-    for open_link in open_links:
-        if open_link in request.url.path:
-            return await call_next(request)
-
-            # try:
-            #     #return call_next(request)
-            #     print('тут')
-            #     return await call_next(request)
-            # except:
-            #     return JSONResponse(
-            #         status_code = status.HTTP_401_UNAUTHORIZED,
-            #         content = log.warning_message(message="Error when trying to follow the link without authorization")
-            #     )
-
-
-
-    # Проверяем авторизацию для всех остальных /api эндпоинтов
-    if request.url.path.startswith("/api"):
-        token = request.cookies.get("Authorization")
-        if token is None:
-            token = request.headers.get("Authorization")
-            if token is None:
-                return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = log.warning_message(message="Authorization cookies or headers missing")
-                )
-                # raise HTTPException(
-                #     status_code=status.HTTP_401_UNAUTHORIZED,
-                #     detail="Authorization cookies missing",
-                # )
-
-        try:
-            session = AuthService().validate_session(token)
-            if not session:
-                return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = log.warning_message(message="Invalid token")
-                )
-                # raise HTTPException(
-                #     status_code=status.HTTP_401_UNAUTHORIZED,
-                #     detail="Invalid token",
-                # )
-
-        except IndexError:
-            return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = log.warning_message(message="Invalid authorization cookies or headers format")
-                )
-            # raise HTTPException(
-            #     status_code=status.HTTP_401_UNAUTHORIZED,
-            #     detail="Invalid authorization cookies format",
-            # )
-
-    return await call_next(request)
 
 
 # Прогресс процесса через вебсокет

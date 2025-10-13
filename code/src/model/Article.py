@@ -2017,6 +2017,7 @@ class Article:
                 
                 files = File(art_id = int(self.id)).get_files_by_art_id()
                 image_URL = ""
+                print(f"Files {files}")
                 for file in files:
                     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                         url = file["file_url"]

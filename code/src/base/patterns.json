@@ -597,10 +597,7 @@
         "data_type": "str",
         "disabled": true
       }
-    ],
-    "files": {
-      "images": []
-    }
+    ]
   },
   "34": {
     "fields": [

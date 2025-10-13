@@ -2017,15 +2017,14 @@ class Article:
                 
                 files = File(art_id = int(self.id)).get_files_by_art_id()
                 image_URL = ""
-                print(f"Files {files}")
                 for file in files:
                     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                         url = file["file_url"]
                         image_URL = DOMAIN + url
-                    elif values['indirect_data']['users'] != []:
-                        print(values['indirect_data'])
-                        photo_URL = values['indirect_data']['users'][0]['photo_file_url']
-                        image_URL = f"{DOMAIN}/api/user_files/{photo_URL}"
+                if files == [] and values['indirect_data']['users'] != []:
+                    print(values['indirect_data'])
+                    photo_URL = values['indirect_data']['users'][0]['photo_file_url']
+                    image_URL = f"{DOMAIN}/api/user_files/{photo_URL}"
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
 

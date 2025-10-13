@@ -2021,10 +2021,11 @@ class Article:
                     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                         url = file["file_url"]
                         image_URL = DOMAIN + url
+                    elif values['indirect_data']['users'] != []:
+                        photo_URL = values['indirect_data']['users'][0]['photo_file_url']
+                        image_URL = f"{DOMAIN}/api/user_files/{photo_URL}"
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
-                if self.id == 342082:
-                    print(result)
 
             #         date_value = [] # список для хранения необходимых данных
             #         date_value.append(values["id"])

@@ -465,7 +465,7 @@ class Editor:
             if "section_id" in art:
                 self.section_id = art["section_id"]
             else:
-                return LogsMaker.warning_message("Неверный id статьи")
+                return LogsMaker.error_message("Неверный id статьи")
 
 
 

@@ -362,34 +362,7 @@ class UserSearchModel:
                             {
                                 "bool": {
                                     "should": [
-                                        {"match": {"user_fio": {"query": key_word, "boost": 10}}},
-                                        {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
-                                        {
-                                            "nested": {
-                                                "path": "indirect_data",
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {"match":
-                                                                {"indirect_data.work_position": {"query": key_word,
-                                                                                                "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1705744824758": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1707225966581": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1696592324977": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1586853958167": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_department_main": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1586854037086": {
-                                                                "query": key_word, "boost": 5}}}
-                                                        ]
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        {"match": {"user_fio": {"query": key_word, "boost": 10}}}
                                     ],
                                     "_name": "true_search"
                                 }
@@ -400,28 +373,6 @@ class UserSearchModel:
                                     "fields": ["user_fio.fuzzy"],
                                     "fuzziness": "1",
                                     "boost": 2
-                                }
-                            },
-                            {
-                                "nested": {
-                                    "path": "indirect_data",
-                                    "query": {
-                                        "multi_match": {
-                                            "query": key_word,
-                                            "fields": [
-                                                "indirect_data.work_position.fuzzy",
-                                                "indirect_data.uf_usr_1705744824758.fuzzy",
-                                                "indirect_data.uf_usr_1707225966581.fuzzy",
-                                                "indirect_data.uf_usr_1696592324977.fuzzy",
-                                                "indirect_data.uf_usr_1586853958167.fuzzy",
-                                                "indirect_data.uf_usr_department_main.fuzzy",
-                                                "indirect_data.uf_usr_1586854037086.fuzzy"
-                                            ],
-                                            "fuzziness": "1",
-                                            "boost": 1
-                                        }
-                                    },
-                                    "score_mode": "max"
                                 }
                             }
                         ]
@@ -441,7 +392,7 @@ class UserSearchModel:
             user_info['sectionHref'] = "userPage"
             user_info['id'] = int(res_info["_id"])
             user_info['image'] = res_info["_source"]["photo_file_id"]
-            user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
+            # user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
             users.append(user_info)
 
         sec_user = {}
@@ -451,6 +402,109 @@ class UserSearchModel:
         sec_user['content'] = users
         result.append(sec_user)
         return result  # result  res['hits']['hits']
+
+    # поиск не только по фамилии, но и по телефону, должности и подразделению
+    # def elasticsearch_users(self, key_word, size_res=1000):
+    #     result = []
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         body={
+    #             "query": {
+    #                 "bool": {
+    #                     "should": [
+    #                         {
+    #                             "bool": {
+    #                                 "should": [
+    #                                     {"match": {"user_fio": {"query": key_word, "boost": 10}}},
+    #                                     {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
+    #                                     {
+    #                                         "nested": {
+    #                                             "path": "indirect_data",
+    #                                             "query": {
+    #                                                 "bool": {
+    #                                                     "should": [
+    #                                                         {"match":
+    #                                                             {"indirect_data.work_position": {"query": key_word,
+    #                                                                                             "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1705744824758": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1707225966581": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1696592324977": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1586853958167": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_department_main": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1586854037086": {
+    #                                                             "query": key_word, "boost": 5}}}
+    #                                                     ]
+    #                                                 }
+    #                                             }
+    #                                         }
+    #                                     }
+    #                                 ],
+    #                                 "_name": "true_search"
+    #                             }
+    #                         },
+    #                         {
+    #                             "multi_match": {
+    #                                 "query": key_word,
+    #                                 "fields": ["user_fio.fuzzy"],
+    #                                 "fuzziness": "1",
+    #                                 "boost": 2
+    #                             }
+    #                         },
+    #                         {
+    #                             "nested": {
+    #                                 "path": "indirect_data",
+    #                                 "query": {
+    #                                     "multi_match": {
+    #                                         "query": key_word,
+    #                                         "fields": [
+    #                                             "indirect_data.work_position.fuzzy",
+    #                                             "indirect_data.uf_usr_1705744824758.fuzzy",
+    #                                             "indirect_data.uf_usr_1707225966581.fuzzy",
+    #                                             "indirect_data.uf_usr_1696592324977.fuzzy",
+    #                                             "indirect_data.uf_usr_1586853958167.fuzzy",
+    #                                             "indirect_data.uf_usr_department_main.fuzzy",
+    #                                             "indirect_data.uf_usr_1586854037086.fuzzy"
+    #                                         ],
+    #                                         "fuzziness": "1",
+    #                                         "boost": 1
+    #                                     }
+    #                                 },
+    #                                 "score_mode": "max"
+    #                             }
+    #                         }
+    #                     ]
+    #                 }
+    #             },
+    #             "size": size_res
+    #         }
+    #     )
+    #     users = []
+    #     true_search_flag = False
+
+    #     for res_info in res['hits']['hits']:
+    #         if "matched_queries" in res_info.keys():
+    #             true_search_flag = True
+    #         user_info = {}
+    #         user_info['name'] = res_info["_source"]["user_fio"]
+    #         user_info['sectionHref'] = "userPage"
+    #         user_info['id'] = int(res_info["_id"])
+    #         user_info['image'] = res_info["_source"]["photo_file_id"]
+    #         user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
+    #         users.append(user_info)
+
+    #     sec_user = {}
+    #     sec_user['section'] = 'Пользователи'
+    #     if true_search_flag is False:
+    #         sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
+    #     sec_user['content'] = users
+    #     result.append(sec_user)
+    #     return result  # result  res['hits']['hits']
+
 
     def update_user_el_index(self, user_data):
         important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data", "photo_file_id"]

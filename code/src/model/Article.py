@@ -2014,6 +2014,7 @@ class Article:
                     #         flag = True
                     # if flag == True:
                 self.id = values["id"]
+                
                 files = File(art_id = int(self.id)).get_files_by_art_id()
                 image_URL = ""
                 for file in files:
@@ -2022,6 +2023,8 @@ class Article:
                         image_URL = DOMAIN + url
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
+                if self.id == 342082:
+                    print(result)
 
             #         date_value = [] # список для хранения необходимых данных
             #         date_value.append(values["id"])

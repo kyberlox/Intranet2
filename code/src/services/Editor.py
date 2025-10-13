@@ -761,14 +761,14 @@ class Editor:
         return edited_sections
 
     def get_users_info(self, user_id_list):
-        #иду по списку user_id
+        art = Article(id = self.art_id).find_by_id()
+        
         if user_id_list == []:
             art['indirect_data']['users'] = []
         else:
+            #иду по списку user_id
             for user_id in user_id_list:
                 user_info = User(id=user_id).search_by_id()
-
-                art = Article(id = self.art_id).find_by_id()
 
                 
 

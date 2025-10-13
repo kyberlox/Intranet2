@@ -462,8 +462,8 @@ class Editor:
         print(art)
         if art is None:
             return LogsMaker.warning_message("Неверный id статьи")
+            
         if self.section_id is None:
-            if 
             self.section_id = art["section_id"]
 
         art_keys = []

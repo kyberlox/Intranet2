@@ -830,6 +830,44 @@ class Editor:
 
                     # записываю
                     art['indirect_data']['users'].append(usr)
+            else:
+                # хватаю ФИО
+                if "last_name" in user_info:
+                    last_name = user_info['last_name']
+                else:
+                    last_name = ""
+                if "name" in user_info:
+                    name = user_info['name']
+                else:
+                    name = ""
+                if "second_name" in user_info:
+                    second_name = user_info['second_name']
+                else:
+                    second_name = ""
+
+                fio = last_name + " " + user_info['name'] + " " + user_info['second_name']
+
+                #фото
+                if "photo_file_url" in user_info:
+                    photo_file_url = user_info["photo_file_url"]
+                else:
+                    photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                
+                #взять должность
+                if "work_position" in user_info:
+                    position = user_info["work_position"]
+                else:
+                    position = ""
+                
+                usr = {
+                    "id" : user_id,
+                    "fio" : fio,
+                    "photo_file_url" : photo_file_url,
+                    "position" : position
+                }
+
+                # записываю
+                art['indirect_data']['users'].append(usr)
 
         #сохранил
         Article(id = self.art_id).update(art)

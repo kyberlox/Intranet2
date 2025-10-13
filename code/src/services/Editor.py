@@ -767,7 +767,7 @@ class Editor:
 
             art = Article(id = self.art_id).find_by_id()
 
-            #print(art['indirect_data'])
+            
 
             if art['indirect_data'] is None:
                 art['indirect_data'] = {"users" : []}
@@ -788,7 +788,10 @@ class Editor:
                     #если есть в стаье, но нет в user_id_list
                     elif int(user["id"]) not in user_id_list:
                         # выписываю
+                        print(art['indirect_data'])
                         art['indirect_data']['users'].remove(user)
+                        print(art['indirect_data'])
+
 
 
 

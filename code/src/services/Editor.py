@@ -676,7 +676,7 @@ class Editor:
         for key in data.keys():
             #если это редактируемый параметр
             if key not in self.notEditble:
-                #если это один из основных параметров
+                #если это один из основных параметрова
                 if key in self.fundamental:
                     #фиксирую
                     art[key] = data[key]
@@ -767,7 +767,7 @@ class Editor:
 
             art = Article(id = self.art_id).find_by_id()
 
-            print(art['indirect_data'])
+            #print(art['indirect_data'])
 
             if art['indirect_data'] is None:
                 art['indirect_data'] = {"users" : []}
@@ -871,7 +871,7 @@ class Editor:
                 # записываю
                 art['indirect_data']['users'] = [usr]
 
-        print(art['indirect_data'])
+        #print(art['indirect_data'])
 
         #сохранил
         Article(id = self.art_id).update(art)

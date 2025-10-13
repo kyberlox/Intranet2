@@ -50,7 +50,10 @@ class Editor:
         self.art_id = art_id
         if self.art_id is not None and section_id is None:
             art = ArticleModel(id = self.art_id).find_by_id()
-            self.section_id = art["section_id"]
+            if "section_id" in art:
+                self.section_id = art["section_id"]
+            else:
+                return LogsMaker.warning_message("Неверный id статьи")
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
@@ -459,16 +462,10 @@ class Editor:
         
         # вытащить основные поля из psql
         art = Article(id = self.art_id).find_by_id()
-        print(art)
-
-        if art is None:
-            return LogsMaker.warning_message("Неверный id статьи")
 
         if self.section_id is None:
-            if "section_id" in art:
-                self.section_id = art["section_id"]
-            else:
-                return LogsMaker.warning_message("Неверный id статьи")
+            self.section_id = art["section_id"]
+
 
 
         art_keys = []

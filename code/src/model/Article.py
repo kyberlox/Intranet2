@@ -2022,6 +2022,7 @@ class Article:
                         url = file["file_url"]
                         image_URL = DOMAIN + url
                     elif values['indirect_data']['users'] != []:
+                        print(values['indirect_data'])
                         photo_URL = values['indirect_data']['users'][0]['photo_file_url']
                         image_URL = f"{DOMAIN}/api/user_files/{photo_URL}"
                 node = {"id": self.id, "image": image_URL}

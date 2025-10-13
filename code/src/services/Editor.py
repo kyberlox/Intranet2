@@ -769,6 +769,9 @@ class Editor:
 
             if art['indirect_data'] is None:
                 art['indirect_data'] = {"users" : []}
+            
+            if 'users' not in art['indirect_data']:
+                art['indirect_data']['users'] = []
 
             users = art['indirect_data']['users']
 

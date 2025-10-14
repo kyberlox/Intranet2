@@ -13,7 +13,6 @@
 </template>
 
 <script lang="ts">
-import { loadScript } from "vue-plugin-load-script";
 import { ref, computed, watch } from 'vue';
 import { defineComponent } from 'vue';
 import { useFactoryGuidDataStore } from "@/stores/factoryGuid";

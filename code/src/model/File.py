@@ -386,7 +386,9 @@ class File:
                 self.art_id = art_id
                 art_files = self.get_files_by_art_id()
 
-                files["art_id"] = art_files
+                
+
+                files[art_id] = art_files
         
         return files
 

@@ -170,4 +170,14 @@
         min-height: 490px;
         padding: 8px;
     }
+
+    &__about-event {
+        &__wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &__button {}
+    }
 }

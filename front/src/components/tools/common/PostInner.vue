@@ -65,6 +65,14 @@
                         </a>
                     </div>
                 </div>
+                <!-- Для афишы кнопка перехода на календарь битрикса -->
+                <div class="news__about-event__wrapper"
+                     v-if="currentPost.indirect_data?.bx_event?.ID && currentPost.section_id == 53">
+                    <a :href="`https://portal.emk.ru/calendar/?EVENT_ID=${currentPost.indirect_data.bx_event.ID}`"
+                       class="primary-button news__about-event__button">
+                        Подробнее
+                    </a>
+                </div>
             </div>
         </div>
         <!-- для новостей орг развития//подвал с фото -->
@@ -88,7 +96,6 @@
                 </RouterLink>
             </div>
         </div>
-        <!--  -->
     </div>
 </div>
 </template>
@@ -123,6 +130,10 @@ export interface IPostInner extends IBaseEntity {
             position: string,
             photo_file_url: string
         }[],
+        // афиша
+        bx_event?: {
+            [key: string]: string
+        }
     },
     department?: string,
     reports?: IReportage[],
@@ -165,9 +176,6 @@ export default defineComponent({
     },
     setup(props) {
         const currentPost = ref<IPostInner>();
-        console.log(props);
-
-
         watch((props), () => {
             if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
                 if (props.previewElement == null) {

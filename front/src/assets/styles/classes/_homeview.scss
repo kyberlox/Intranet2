@@ -6,7 +6,7 @@
         display: grid;
         // grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-template-columns: repeat(5, 1fr);
-        gap: 30px;
+        gap: 20px;
         min-width: 100%;
         // align-items: flex-end;
 
@@ -145,6 +145,11 @@
                 aspect-ratio: 16/9;
                 width: 100%;
 
+                &>.swiper {
+                    border-radius: 15px;
+                    border: 1px solid rgb(240, 240, 240);
+                }
+
                 &:hover {
                     transform: scale(1.03);
                 }
@@ -206,7 +211,7 @@
                 &--plug {
                     background-size: cover !important;
                     background-repeat: no-repeat !important;
-                    border: 1px solid rgba(128, 128, 128, 0.333);
+                    // border: 1px solid rgba(128, 128, 128, 0.333);
                 }
 
                 &--needpos {

@@ -196,6 +196,12 @@
                 background-color: #f5f5f5;
                 cursor: not-allowed;
             }
+
+            &__loader {
+                display: flex;
+                justify-content: center;
+                justify-items: center;
+            }
         }
 
         &__select {

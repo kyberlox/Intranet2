@@ -1,52 +1,52 @@
 <template>
-    <transition name="modal"
-                appear>
-        <div v-if="visibleModal"
-             class="modal__overlay modal__overlay--zoom">
-            <div class="modal__overlay__close-button"
-                 @click.stop.prevent="closeModal()"
-                 type="button">
-                <CloseIcon />
-            </div>
-            <transition name="modal-content"
-                        appear>
-                <div class="modal__wrapper  modal__wrapper--zoom">
-                    <div class="modal__body  modal__body--zoom">
-                        <div class="search-block__wrapper mt20">
-                            <div class="search-block"
-                                 @click.stop.prevent>
-                                <div class="search-wrapper">
-                                    <div class="search-input">
-                                        <SearchIcon class="search-input__icon" />
-                                        <input :autofocus="true"
-                                               placeholder="Поиск..."
-                                               v-model="searchTargetText" />
-                                    </div>
-                                    <transition name="search-results"
-                                                appear>
-                                        <SearchResult :searchTargetText="searchTargetText"
-                                                      :searchResult="searchResult"
-                                                      @closeModal="closeModal()" />
-                                    </transition>
+<transition name="modal"
+            appear>
+    <div v-if="visibleModal"
+         class="modal__overlay modal__overlay--zoom">
+        <div class="modal__overlay__close-button"
+             @click.stop.prevent="closeModal()"
+             type="button">
+            <CloseIcon />
+        </div>
+        <transition name="modal-content"
+                    appear>
+            <div class="modal__wrapper  modal__wrapper--zoom">
+                <div class="modal__body  modal__body--zoom">
+                    <div class="search-block__wrapper mt20">
+                        <div class="search-block"
+                             @click.stop.prevent>
+                            <div class="search-wrapper">
+                                <div class="search-input">
+                                    <SearchIcon class="search-input__icon" />
+                                    <input :autofocus="true"
+                                           placeholder="Поиск..."
+                                           v-model="searchTargetText" />
                                 </div>
-                                <div class="search-footer">
-                                    <div class="search-footer-block"
-                                         v-for="(point, index) in searchTypes"
-                                         :key="'radio' + index"
-                                         @click="selectedSearchType = point.value">
-                                        <span class="search-footer-block__title"
-                                              :class="{ 'search-footer-block__title--active': selectedSearchType == point.value }">
-                                            {{ point.title }}
-                                        </span>
-                                    </div>
+                                <transition name="search-results"
+                                            appear>
+                                    <SearchResult :searchTargetText="searchTargetText"
+                                                  :searchResult="searchResult"
+                                                  @closeModal="closeModal()" />
+                                </transition>
+                            </div>
+                            <div class="search-footer">
+                                <div class="search-footer-block"
+                                     v-for="(point, index) in searchTypes"
+                                     :key="'radio' + index"
+                                     @click="selectedSearchType = point.value">
+                                    <span class="search-footer-block__title"
+                                          :class="{ 'search-footer-block__title--active': selectedSearchType == point.value }">
+                                        {{ point.title }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </transition>
-        </div>
-    </transition>
+            </div>
+        </transition>
+    </div>
+</transition>
 </template>
 
 <script lang="ts">
@@ -92,8 +92,10 @@ export default defineComponent({
         const searchResult: Ref<searchResults[]> = ref([])
 
         watchDebounced((searchTargetText), (newVal) => {
-            if (!newVal) return;
-            getSearchResult();
+            if (!newVal) {
+                searchResult.value.length = 0;
+            } else
+                getSearchResult();
         }, { debounce: 500, maxWait: 1500 });
 
         watch((selectedSearchType), (newVal) => {

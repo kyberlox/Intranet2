@@ -13,7 +13,10 @@
         aspect-ratio: 16/9;
         background: #b1b1b137;
         border-radius: 4px;
-        border: 1px solid rgba(128, 128, 128, 0.333);
+
+        &:not(.homeview__grid__card__bg-image--plug) {
+            border: 1px solid rgba(128, 128, 128, 0.333);
+        }
 
         iframe {
             height: 100%;

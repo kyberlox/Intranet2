@@ -7,7 +7,7 @@ export const useUserData = defineStore('userData', {
         myId: 0,
         authKey: '',
         user: {} as IUser,
-        roots: {PeerAdmin: false, EditorAdmin: false, VisionAdmin: false} as IRoots,
+        roots: {PeerAdmin: false, EditorAdmin: false, VisionAdmin: false, EditorModer: false} as IRoots,
         isLogin: false
     }),
 
@@ -35,9 +35,7 @@ export const useUserData = defineStore('userData', {
             this.user = userData;
         },
         setUserRoots(data: IRoots){
-            this.roots.EditorAdmin = data.EditorAdmin
-            this.roots.VisionAdmin = data.VisionAdmin
-            this.roots.PeerAdmin = data.PeerAdmin
+            this.roots = data
         },
         logOut() {
             this.authKey = '';

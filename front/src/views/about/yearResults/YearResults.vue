@@ -86,8 +86,6 @@ export default defineComponent({
             workerOfTheYear.value.length = 0;
 
             allTimeAwards.value.map(item => {
-                console.log(item.indirect_data?.award == 'Почетная грамота');
-
                 if (item.indirect_data && item.indirect_data.year == String(currentYear.value)) {
                     if (item.indirect_data.award == 'Почетная грамота') {
                         workerWithDiploma.value.push(item);
@@ -97,8 +95,6 @@ export default defineComponent({
                     }
                 }
             })
-            console.log(workerWithDiploma,
-                workerOfTheYear)
         }
 
         watch(() => props.id, () => {

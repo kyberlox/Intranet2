@@ -1,5 +1,6 @@
 from ..base.mongodb import FileModel
 from ..base.B24 import B24
+from .Section import Section
 
 from fastapi import FastAPI, UploadFile
 from fastapi import File as webFile
@@ -377,10 +378,17 @@ class File:
 
     def get_files_by_section_id(self, section_id):
         #беру список atr_id
-        #иду по списку
-        #закидываю с словарь
-        #вывод
-        pass
+        arts_id = Section(id = section_id).find_by_id()['arts_id']
+
+        files = dict()
+        if arts_id != []:
+            for art_id in arts_id:
+                self.art_id = art_id
+                art_files = self.get_files_by_art_id()
+
+                files["art_id"] = art_files
+        
+        return files
 
     def need_update_link(self):
         pass

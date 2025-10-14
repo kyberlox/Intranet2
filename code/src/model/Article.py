@@ -1943,7 +1943,7 @@ class Article:
 
                     active_articles.append(res)
 
-            if self.section_id == "111":
+            if self.section_id == "111" or self.section_id == "14":
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             #отдельная сортировка Памятки новому сторуднику
             elif self.section_id == "18":

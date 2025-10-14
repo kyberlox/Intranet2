@@ -49,22 +49,25 @@ menu = {
 def get_menu():
     return menu
 
-c1_data_file = open("./src/base/1c.json", "r")
-c1 = json.load(c1_data_file)
-c1_data_file.close()
-
 @C_app.get("/menu_plus")
 def get_menu_plus():
+    c1_data_file = open("./src/base/1c.json", "r")
+    c1 = json.load(c1_data_file)
+    c1_data_file.close()
     for C in list(c1.keys()):
         for c in c1[C]:
             img = c["img"]
-            print(c)
+            #print(c)
             if img is not None:
                 c["img"] = f"{DOMAIN}/api/files{img}"
+    
     return c1
 
 @C_app.get("/search_by_name/{name}")
 def get_search_by_name(name : str):
+    c1_data_file = open("./src/base/1c.json", "r")
+    c1 = json.load(c1_data_file)
+    c1_data_file.close()
     return c1[name]
 
 application = [

@@ -55,10 +55,11 @@ c1_data_file.close()
 
 @C_app.get("/menu_plus")
 def get_menu_plus():
-    # for c in c1:
-    #     img = c["img"]
-    #     if img is not None:
-    #         c["img"] = f"{DOMAIN}/api/files/{img}"
+    for C in list(c1.keys):
+        for c in c1[C]:
+            img = c["img"]
+            if img is not None:
+                c["img"] = f"{DOMAIN}/api/files/{img}"
     return c1
 
 @C_app.get("/search_by_name/{name}")

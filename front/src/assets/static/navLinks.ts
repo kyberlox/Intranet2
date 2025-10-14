@@ -119,7 +119,7 @@ export const mainMenuPoints: MainMenuPoints = [
             },
             {
                 id: 2.7,
-                name: 'Информационное письмо',
+                name: 'Информационное письмо о компании ЭМК',
                 href: 'https://intranet.emk.ru/api/files/Информационное_письмо_НПО_ЭМК.docx',
             }
         ],

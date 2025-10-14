@@ -218,29 +218,28 @@ export default defineComponent({
               newData.value.preview_file_url = data.files?.images[0]?.file_url
             }
             // для привязки по uid к статьям подразделений
-            if(data.section_id == 14){
-            const targetDepartment = data.fields.find((e: { field: string }) => e.field == 'department').value
+            if (data.section_id == 14) {
+              const targetDepartment = data.fields.find((e: { field: string }) => e.field == 'department').value
 
-            if (targetDepartment) {
-              newData.value.department = targetDepartment
-            }
+              if (targetDepartment) {
+                newData.value.department = targetDepartment
+              }
 
-            newData.value.users = data.fields.find((e: { field: string }) => e.field == 'users').value
-            if (!newData.value.users) return
-            usersList.value = newData.value.users
+              newData.value.users = data.fields.find((e: { field: string }) => e.field == 'users').value
+              if (!newData.value.users) return
+              usersList.value = newData.value.users
             }
             // Для блогов
-            if(data.section_id == 15){
-            newData.value.TITLE = data.fields.find((e: { field: string }) => e.field == 'TITLE').value;
-            newData.value.author = data.fields.find((e: { field: string }) => e.field == 'author').value;
+            if (data.section_id == 15) {
+              newData.value.TITLE = data.fields.find((e: { field: string }) => e.field == 'TITLE').value;
+              newData.value.author = data.fields.find((e: { field: string }) => e.field == 'author').value;
             }
             newFileData.value = data.files;
             // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;
             newData.value.documentation = data.files.documentation;
           }
-        }
-        )
+        })
     }
 
     const applyNewData = async () => {

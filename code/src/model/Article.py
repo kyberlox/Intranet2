@@ -1919,9 +1919,8 @@ class Article:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
 
-                        print("PREVIEW: ", res["preview_file_url"])
+                        
                         if res["preview_file_url"] is None:
-                            print("ЩА БУДЕТ")
                             if int(self.section_id) == 32:
                                 res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
 

@@ -920,7 +920,6 @@ class Editor:
                 "department"
             ]
         }
-        print(self.fields)
         user_info = User(id=user_id).search_by_id()
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
@@ -1073,7 +1072,7 @@ async def get_sections_list(request: Request):
     # user_uuid = 261
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
-    print(editor_roots)
+    
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return Editor().get_sections_list()
     elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
@@ -1096,7 +1095,7 @@ async def sec_render(sec_id: int, request: Request):
     # user_uuid = 2366
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
-    print(editor_roots)
+    
     if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
         return Editor(section_id = sec_id).section_rendering()
     return LogsMaker().warning_message(f"Недостаточно прав")

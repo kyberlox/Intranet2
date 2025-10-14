@@ -150,7 +150,8 @@ class FileModel:
     def find_all_by_b24_id(self):
         return files_collection.find({"b24_id": self.art_id})
 
-
+    def update_data(self, new_data):
+        files_collection.update({"_id": self.id}, {'$set': new_data})
 
     # блок для аватарок
     def add_user_photo(self, file_data):

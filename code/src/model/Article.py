@@ -1140,7 +1140,7 @@ class Article:
         '''
 
         #self.upload_uniquely()
-        self.upload_with_parameter()
+        # self.upload_with_parameter()
         # self.upload_many_to_many()
         # self.upload_services()
 
@@ -1948,6 +1948,8 @@ class Article:
             #отдельная сортировка Памятки новому сторуднику
             elif self.section_id == "18":
                 sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
+            elif self.section_id == "31" or self.section_id == "33":
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             
@@ -1992,7 +1994,7 @@ class Article:
             birthday = {
                 'id': section_id,
                 'type': 'swiper',
-                'title': 'С днем рождения!',
+                'title': 'С Днём Рождения!',
                 'images': images_for_bday,
                 'href': 'birthdays',
             } # словарь-заглушка для будущей секции "С днем рождения!"
@@ -2149,7 +2151,7 @@ class Article:
 
                      # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -2266,7 +2268,7 @@ class Article:
                     else:
                         continue 
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
 
             second_page = {
                 'id': section_id,

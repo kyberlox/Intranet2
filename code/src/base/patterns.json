@@ -602,6 +602,75 @@
       "images": []
     }
   },
+  "33" : {
+    "fields": [
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название статьи",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Аннотация",
+        "field": "preview_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Содержимое",
+        "field": "content_text",
+        "data_type": "str"
+      },
+      {
+        "name": "Тип форматирования",
+        "field": "content_type",
+        "data_type": "str",
+        "values": [
+          "HTML",
+          "Markdown",
+          null
+        ],
+        "disabled": true
+      },
+      {
+        "name": "Дата публикации",
+        "field": "date_publiction",
+        "data_type": "str"
+      },
+
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Дата создания",
+        "field": "date_creation",
+        "data_type": "str",
+        "disabled": true
+      }
+    ],
+    "files": {
+      "images": [],
+      "videos_native": [],
+      "videos_embed": []
+    }
+  },
   "34": {
     "fields": [
       {
@@ -959,6 +1028,13 @@
         "name": "Название статьи",
         "field": "name",
         "data_type": "str"
+      },
+      {
+        "name" : "Событие из Битрикс24",
+        "field" : "bx_event",
+        "data_type" : "str",
+        "value" : false,
+        "values" : []
       },
       {
         "name": "Содержимое",

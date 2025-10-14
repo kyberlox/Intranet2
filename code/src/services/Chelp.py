@@ -59,8 +59,8 @@ def get_menu_plus():
         for c in c1[C]:
             img = c["img"]
             print(c)
-            # if img is not None:
-            #     c["img"] = f"{DOMAIN}/api/files{img}"
+            if img is not None:
+                c["img"] = f"{DOMAIN}/api/files{img}"
     return c1
 
 @C_app.get("/search_by_name/{name}")

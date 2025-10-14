@@ -55,7 +55,7 @@ c1_data_file.close()
 
 @C_app.get("/menu_plus")
 def get_menu_plus():
-    for C in list(c1.keys):
+    for C in list(c1.keys()):
         for c in c1[C]:
             img = c["img"]
             if img is not None:

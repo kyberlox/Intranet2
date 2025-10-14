@@ -44,7 +44,8 @@ class Section:
             art_id = art['id']
             arts_id.append(art_id)
         res = SectionModel(id = self.id).search_by_id()
-        res["arts_id"] = arts_id
+
+        #res["arts_id"] = arts_id
         return res
 
     def find_by_parent_id(self):

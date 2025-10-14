@@ -421,6 +421,7 @@ class File:
             return file_info
 
     def dowload_user_photo(self, url):
+        # в будущем name исправить на айди фото ( photo_file_id )
         name = url.split("/")[-1]
         form = name.split(".")[-1]
         img_path = f"{USER_STORAGE_PATH}/{name}"

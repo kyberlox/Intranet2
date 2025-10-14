@@ -61,6 +61,83 @@ with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
 
 def search_everywhere(key_word):  # , size_res: Optional[int] = 40
     result = []
+    words = key_word.strip().split()
+    
+    # Формируем запрос для пользователей в зависимости от количества слов
+    if len(words) >= 2:
+        user_query = {
+            "bool": {
+                "should": [
+                    {
+                        "match_phrase": {
+                            "user_fio": {
+                                "query": key_word,
+                                "slop": 1,
+                                "boost": 30
+                            }
+                        }
+                    },
+                    {
+                        "bool": {
+                            "must": [
+                                {
+                                    "match": {
+                                        "user_fio": {
+                                            "query": words[0],  # Первое слово (Игорь)
+                                            "boost": 5
+                                        }
+                                    }
+                                },
+                                {
+                                    "match_phrase_prefix": {
+                                        "user_fio": {
+                                            "query": " ".join(words[1:]),  # Остальные слова (Гази)
+                                            "boost": 10
+                                        }
+                                    }
+                                }
+                            ],
+                            "boost": 25
+                        }
+                    },
+                    {
+                        "match": {
+                            "user_fio": {
+                                "query": key_word,
+                                "operator": "and",
+                                "boost": 15
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    else:
+        # Одно слово - обычный поиск
+        user_query = {
+            "bool": {
+                "should": [
+                    {
+                        "match_phrase_prefix": {
+                            "user_fio": {
+                                "query": key_word,
+                                "boost": 20
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "user_fio": {
+                                "query": key_word,
+                                "operator": "and",
+                                "boost": 10
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    
     res = elastic_client.search(
         index=["articles", "user"],
         body={
@@ -70,7 +147,7 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                         {
                             "bool": {
                                 "must": [
-                                    {"terms": {"_index": ["articles"]}},
+                                    {"term": {"_index": {"value": "articles"}}},
                                     {
                                         "bool": {
                                             "should": [
@@ -79,8 +156,7 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                                     "bool": {
                                                         "should": [
                                                             {"match": {"title": {"query": key_word, "boost": 10}}},
-                                                            {"match": {
-                                                                "preview_text": {"query": key_word, "boost": 8}}},
+                                                            {"match": {"preview_text": {"query": key_word, "boost": 8}}},
                                                             {"match": {"content_text": {"query": key_word, "boost": 6}}}
                                                         ],
                                                         "_name": "true_search"
@@ -98,45 +174,14 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                             ]
                                         }
                                     }
-
                                 ]
                             }
                         },
                         {
                             "bool": {
                                 "must": [
-                                    {"term": {"_index": "user"}},
-                                    {
-                                        "bool": {
-                                            "should": [
-                                                {
-                                                    "bool": {
-                                                        "should": [
-
-                                                            {
-                                                                "match": {
-                                                                    "user_fio": {
-                                                                        "query": key_word,
-                                                                        "boost": 10,
-                                                                        "_name": "true_search"
-                                                                    }
-                                                                }
-                                                            }
-                                                        ],
-                                                        "_name": "true_search"
-                                                    }
-                                                },
-                                                {
-                                                    "multi_match": {
-                                                        "query": key_word,
-                                                        "fields": ["user_fio.fuzzy"],
-                                                        "fuzziness": "1",
-                                                        "boost": 2
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
+                                    {"term": {"_index": {"value": "user"}}},
+                                    user_query  # Используем твою улучшенную конфигурацию
                                 ]
                             }
                         }
@@ -153,7 +198,6 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                 "should": [
                                     {"match": {"title": key_word}},
                                     {"match": {"title": {"query": key_word, "fuzziness": "AUTO"}}}
-
                                 ]
                             }
                         }
@@ -164,7 +208,6 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                 "should": [
                                     {"match": {"preview_text": key_word}},
                                     {"match": {"preview_text": {"query": key_word, "fuzziness": "AUTO"}}}
-
                                 ]
                             }
                         }
@@ -175,7 +218,16 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                                 "should": [
                                     {"match": {"content_text": key_word}},
                                     {"match": {"content_text": {"query": key_word, "fuzziness": "AUTO"}}}
-
+                                ]
+                            }
+                        }
+                    },
+                    "user_fio": {
+                        "highlight_query": {
+                            "bool": {
+                                "should": [
+                                    {"match": {"user_fio": key_word}},
+                                    {"match": {"user_fio": {"query": key_word, "fuzziness": "AUTO"}}}
                                 ]
                             }
                         }

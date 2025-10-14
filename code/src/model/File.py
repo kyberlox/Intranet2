@@ -320,6 +320,7 @@ class File:
 
             return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
+
     def get_file(self):
         file_data = FileModel(id=self.id).find_by_id()
         
@@ -375,7 +376,6 @@ class File:
                 self.id = ObjectId(file_data['id'])
                 FileModel(id = self.id).remove()
 
-
     def get_files_by_section_id(self, section_id):
         #беру список atr_id
         arts_id = Section(id = section_id).find_by_id()['arts_id']
@@ -398,6 +398,21 @@ class File:
     def get_link_as_file(self):
         pass
 
+    def update_data(self, data : dict):
+        #получить данные
+        file_data = FileModel(id=self.id).find_by_id()
+        #file_data["id"] = str(file_data["_id"])
+        file_data.pop("_id")
+        
+        #заменить данные
+        for key in data.keys():
+            if key != "id":
+                file_data[key] = data[key]
+
+        #сохранить изменения
+        result = FileModel(id=self.id).update_data(file_data)
+        
+        return result
 
 
     def get_users_photo(self):
@@ -719,6 +734,13 @@ async def delete_file(file_id: str):
         raise HTTPException(500, detail=str(e))
     """
     pass
+
+@file_router.put("/{file_id}")
+async def put_file(file_id : str, data = Body()):
+    new_file_data = FileModel(id = ObjectId(file_id)).update_data(data)
+
+    return new_file_data
+
 
 
 

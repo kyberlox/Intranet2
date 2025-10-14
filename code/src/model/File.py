@@ -375,6 +375,12 @@ class File:
                 FileModel(id = self.id).remove()
 
 
+    def get_files_by_section_id(self, section_id):
+        #беру список atr_id
+        #иду по списку
+        #закидываю с словарь
+        #вывод
+
     def need_update_link(self):
         pass
 
@@ -558,7 +564,6 @@ class File:
         except Exception as e:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
-
 
     def editor_chenge_file(self, file : webFile):
         #найти файл

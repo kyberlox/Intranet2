@@ -1,4 +1,5 @@
 from ..base.pSQL.objects.SectionModel import SectionModel
+from ..base.pPSQL.objects.ArticleModel import ArticleModel
 from ..services.LogsMaker import LogsMaker
 
 from datetime import datetime
@@ -37,7 +38,14 @@ class Section:
         return section_data
 
     def find_by_id(self):
-        return SectionModel(id = self.id).search_by_id()
+        arts_info = ArticleModel(section_id = self.id).find_by_section_id()
+        arts_id = []
+        for art in arts_info:
+            atr_id = art['id']
+            arts_id.append(art_id)
+        res = SectionModel(id = self.id).search_by_id()
+        res["arts_id"] = arts_id
+        return res
 
     def find_by_parent_id(self):
         return SectionModel(parent_id = self.parent_id).search_by_parent_id()

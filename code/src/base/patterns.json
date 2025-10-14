@@ -1030,6 +1030,13 @@
         "data_type": "str"
       },
       {
+        "name" : "Событие из Битрикс24",
+        "field" : "bx_event",
+        "data_type" : "str",
+        "value" : false,
+        "values" : []
+      },
+      {
         "name": "Содержимое",
         "field": "content_text",
         "data_type": "str"

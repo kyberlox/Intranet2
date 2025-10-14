@@ -25,6 +25,7 @@ from src.base.Elastic import StructureSearchModel, ArticleSearchModel, UserSearc
 from src.base.B24 import B24, b24_router
 
 from src.services.VCard import vcard_app
+from src.services.Chelp import C_app
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
 from src.services.Idea import idea_router
@@ -80,6 +81,8 @@ app.include_router(ai_router, prefix="/api")
 app.include_router(peer_router, prefix="/api")
 app.include_router(roots_router, prefix="/api")
 app.include_router(store_router, prefix="/api")
+
+app.include_router(C_app, prefix="/api")
 
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")

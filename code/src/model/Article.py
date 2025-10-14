@@ -1918,6 +1918,13 @@ class Article:
                     else:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
+
+                        print("PREVIEW: ", res["preview_file_url"])
+                        if res["preview_file_url"] is None:
+                            print("ЩА БУДЕТ")
+                            if int(self.section_id) == 32:
+                                res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
+
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                             user_id = self.get_user_by_session_id(session_id=session_id)
@@ -2016,12 +2023,15 @@ class Article:
                     #         flag = True
                     # if flag == True:
                 self.id = values["id"]
+                
                 files = File(art_id = int(self.id)).get_files_by_art_id()
                 image_URL = ""
                 for file in files:
                     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                         url = file["file_url"]
                         image_URL = DOMAIN + url
+                if files == [] and values['indirect_data']['users'] != []:
+                    image_URL = values['indirect_data']['users'][0]['photo_file_url']
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
 

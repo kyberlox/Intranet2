@@ -10,20 +10,22 @@
         <input ref="fileInput"
                type="file"
                class="file-uploader__input"
-               @change="(e) => handleFormFileSelect(e)"
-               multiple />
+               @change="handleFormFileSelect"
+               :multiple="quantity === 'many'" />
 
-        <div v-if="!uploadedFiles.length"
+        <div v-if="!existFiles?.length && !uploadedFiles.length"
              class="file-uploader__placeholder">
             <p class="file-uploader__text">
-                Перетащите файл сюда или нажмите для выбора
+                {{ quantity === 'many' ? 'Перетащите файлы сюда или нажмите для выбора'
+                    : 'Перетащите файл сюда или нажмите для выбора' }}
             </p>
         </div>
 
         <div class="file-uploader__preview-list"
              :class="{ 'file-uploader__preview-list--video': uploadType == 'videos_native' }">
+            <!-- Существующие файлы -->
             <div v-for="(item, index) in existFiles"
-                 :key="index"
+                 :key="'exist-' + index"
                  class="file-uploader__preview-item">
                 <video v-if="uploadType == 'videos_native' && item.file_url"
                        class="file-uploader__preview-video"
@@ -50,8 +52,34 @@
                     <RemoveIcon />
                 </button>
             </div>
+
+            <!-- Новые  файлы -->
+            <div v-for="(file, index) in uploadedFiles"
+                 :key="'uploading-' + index"
+                 class="file-uploader__preview-item">
+                <div v-if="uploadType === 'images'"
+                     class="file-uploader__preview-img">
+                    <img :src="file.url"
+                         :alt="file.name" />
+                </div>
+                <div v-else-if="uploadType === 'videos_native'"
+                     class="file-uploader__preview-video">
+                    <video :src="file.url"
+                           controls></video>
+                </div>
+                <div v-else
+                     class="file-uploader__preview-doc">
+                    <span>{{ file.name }}</span>
+                    <DocIcon />
+                </div>
+                <div class="file-uploader__uploading-overlay"
+                     v-if="isUploading">
+                    <Loader />
+                </div>
+            </div>
+
             <div class="file-uploader__preview-item"
-                 v-if="isUploading">
+                 v-if="isUploading && !uploadedFiles.length">
                 <Loader />
             </div>
         </div>
@@ -76,7 +104,11 @@ export default defineComponent({
             default: 'images'
         },
         existFiles: {
-            type: Array<IBXFileType>
+            type: Array as PropType<IBXFileType[]>
+        },
+        quantity: {
+            type: String as PropType<('one' | 'many')>,
+            default: () => 'many'
         }
     },
     components: {
@@ -90,35 +122,52 @@ export default defineComponent({
         const uploadedFiles = ref<IFileToUpload[]>([]);
         const isDragOver = ref(false);
         const isUploading = ref(false);
-        const uploadProgress = ref(0);
         const error = ref('');
         const useFile = useFileUtil(props.uploadType);
 
         const handleDrop = (event: DragEvent) => {
             event.preventDefault();
             isDragOver.value = false;
-            if (event.dataTransfer?.files) {
-                const processResult = useFile.processFiles(event.dataTransfer.files);
 
-                if (typeof processResult == 'string') {
-                    error.value = processResult;
-                }
-                else {
-                    uploadedFiles.value.push(processResult as IFileToUpload);
-                    isUploading.value = true;
-                    emit('upload', processResult, props.uploadType);
-                    startWatchForUpload();
-                }
+            if (event.dataTransfer?.files) {
+                processFiles(event.dataTransfer.files);
             }
         };
 
-        const handleDragOver = (event: DragEvent) => {
-            event.preventDefault();
-            isDragOver.value = true;
+        const handleFormFileSelect = (e: Event) => {
+            const input = e.target as HTMLInputElement;
+            if (input.files) {
+                processFiles(input.files);
+            }
         };
 
-        const handleDragLeave = () => {
-            isDragOver.value = false;
+        const processFiles = (files: FileList) => {
+            isUploading.value = true;
+
+            const processResult = useFile.processFiles(files);
+
+            if (typeof processResult === 'string') {
+                error.value = processResult;
+                isUploading.value = false;
+                return;
+            }
+
+            if (props.quantity === 'one') {
+                const target = [(processResult as IFileToUpload[])[0]]
+                uploadedFiles.value = target;
+                emit('upload', target, props.uploadType);
+            } else {
+                uploadedFiles.value = processResult as IFileToUpload[];
+                (processResult as IFileToUpload[]).forEach(file => {
+                    emit('upload', file, props.uploadType);
+                });
+            }
+
+            startWatchForUpload();
+
+            if (fileInput.value) {
+                fileInput.value.value = '';
+            }
         };
 
         const triggerFileInput = () => {
@@ -127,37 +176,36 @@ export default defineComponent({
 
         const removeItem = (id: string) => {
             Api.delete(`editor/delete_file/${id}`)
-                .then(() => emit('reloadData'))
+                .then(() => {
+                    emit('reloadData');
+                });
         };
-
-        const handleFormFileSelect = (e: Event) => {
-            isUploading.value = true
-            emit('upload', (useFile.handleFileSelect(e)))
-            startWatchForUpload();
-        }
 
         const startWatchForUpload = () => {
             const existFilesState = props.existFiles?.length;
 
-            watch((props), (newVal) => {
-                if (newVal.existFiles?.length !== existFilesState) {
-                    isUploading.value = false
+            watch(() => props.existFiles, (newFiles) => {
+                if (newFiles?.length !== existFilesState) {
+                    isUploading.value = false;
+                    uploadedFiles.value = [];
                 }
-            }, { once: true })
-        }
+            }, { once: true });
+        };
 
         return {
             fileInput,
             uploadedFiles,
             isDragOver,
             isUploading,
-            uploadProgress,
             error,
-            useFile,
-            startWatchForUpload,
             handleDrop,
-            handleDragOver,
-            handleDragLeave,
+            handleDragOver: (event: DragEvent) => {
+                event.preventDefault();
+                isDragOver.value = true;
+            },
+            handleDragLeave: () => {
+                isDragOver.value = false;
+            },
             handleFormFileSelect,
             triggerFileInput,
             removeItem,
@@ -166,3 +214,21 @@ export default defineComponent({
     }
 });
 </script>
+
+<style scoped>
+.file-uploader__uploading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-uploader__preview-item {
+    position: relative;
+}
+</style>

@@ -50,7 +50,8 @@ class Editor:
         self.art_id = art_id
         if self.art_id is not None and section_id is None:
             art = ArticleModel(id = self.art_id).find_by_id()
-            self.section_id = art["section_id"]
+            if "section_id" in art:
+                self.section_id = art["section_id"]
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
         self.notEditble = ["id", "section_id", "date_creation", "content_type"]
@@ -454,13 +455,19 @@ class Editor:
     
     def rendering(self ):
         if self.art_id is None:
-            return LogsMaker.warning_message("Укажите id статьи")
+            return LogsMaker().warning_message("Укажите id статьи")
         
         
         # вытащить основные поля из psql
         art = Article(id = self.art_id).find_by_id()
+
         if self.section_id is None:
-            self.section_id = art["section_id"]
+            if "section_id" in art:
+                self.section_id = art["section_id"]
+            else:
+                return LogsMaker().warning_message("Неверный id статьи")
+
+
 
         art_keys = []
         for k in art.keys():
@@ -676,7 +683,7 @@ class Editor:
         for key in data.keys():
             #если это редактируемый параметр
             if key not in self.notEditble:
-                #если это один из основных параметров
+                #если это один из основных параметрова
                 if key in self.fundamental:
                     #фиксирую
                     art[key] = data[key]
@@ -761,35 +768,79 @@ class Editor:
         return edited_sections
 
     def get_users_info(self, user_id_list):
-        #иду по списку user_id
-        for user_id in user_id_list:
-            user_info = User(id=user_id).search_by_id()
+        art = Article(id = self.art_id).find_by_id()
+        
+        if user_id_list == []:
+            art['indirect_data']['users'] = []
+        else:
+            #иду по списку user_id
+            for user_id in user_id_list:
+                user_info = User(id=user_id).search_by_id()
 
-            art = Article(id = self.art_id).find_by_id()
-
-            if art['indirect_data'] is None:
-                art['indirect_data'] = {"users" : []}
-
-            users = art['indirect_data']['users']
-
-            if users != []:
-                #проверяю есть ли такой в списке статьи
-                had_find = False
                 
-                for user in users:
-                    if int(user["id"]) == int(user_id):
-                        had_find = True
 
-                    #если есть в стаье, но нет в user_id_list
-                    elif int(user["id"]) not in user_id_list:
-                        # выписываю
-                        art['indirect_data']['users'].remove(user)
+                if art['indirect_data'] is None:
+                    art['indirect_data'] = {"users" : []}
+                
+                if 'users' not in art['indirect_data']:
+                    art['indirect_data']['users'] = []
 
+                users = art['indirect_data']['users']
 
+                if users != []:
+                    #проверяю есть ли такой в списке статьи
+                    had_find = False
+                    
+                    for user in users:
+                        if int(user["id"]) == int(user_id):
+                            had_find = True
 
-                #если ещё нет
-                if not had_find:
+                        #если есть в стаье, но нет в user_id_list
+                        elif int(user["id"]) not in user_id_list:
+                            # выписываю
+                            art['indirect_data']['users'].remove(user)
 
+                    #если ещё нет
+                    if not had_find:
+
+                        # хватаю ФИО
+                        if "last_name" in user_info:
+                            last_name = user_info['last_name']
+                        else:
+                            last_name = ""
+                        if "name" in user_info:
+                            name = user_info['name']
+                        else:
+                            name = ""
+                        if "second_name" in user_info:
+                            second_name = user_info['second_name']
+                        else:
+                            second_name = ""
+
+                        fio = last_name + " " + user_info['name'] + " " + user_info['second_name']
+
+                        #фото
+                        if "photo_file_url" in user_info:
+                            photo_file_url = user_info["photo_file_url"]
+                        else:
+                            photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                        
+                        #взять должность
+                        if "work_position" in user_info:
+                            position = user_info["work_position"]
+                        else:
+                            position = ""
+                        
+                        usr = {
+                            "id" : user_id,
+                            "fio" : fio,
+                            "photo_file_url" : photo_file_url,
+                            "position" : position
+                        }
+
+                        # записываю
+                        art['indirect_data']['users'].append(usr)
+                else:
                     # хватаю ФИО
                     if "last_name" in user_info:
                         last_name = user_info['last_name']
@@ -826,7 +877,9 @@ class Editor:
                     }
 
                     # записываю
-                    art['indirect_data']['users'].append(usr)
+                    art['indirect_data']['users'] = [usr]
+
+        #print(art['indirect_data'])
 
         #сохранил
         Article(id = self.art_id).update(art)
@@ -917,7 +970,8 @@ class Editor:
             art["name"] = result["fio"]
         
         if self.section_id == 15:
-            result["author"] = result["fio"] + "; " + result['position'] 
+            result["author"] = result["fio"] + "; " + result['position']
+            result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
         

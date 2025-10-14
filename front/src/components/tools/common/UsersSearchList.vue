@@ -14,6 +14,11 @@
         <div class="visibility-editor__user-fio">
             {{ user.name }}
         </div>
+        <div v-if="needDeleteButton"
+             class="visibility-editor__user__remove-btn"
+             @click="$emit('removeUser', user.id)">
+            <Cancel />
+        </div>
     </li>
 </div>
 </template>
@@ -21,14 +26,22 @@
 <script lang="ts">
 import type { IUserSearch } from '@/interfaces/IEntities';
 import { defineComponent, type PropType } from 'vue';
+import Cancel from '@/assets/icons/common/Cancel.svg?component';
 
 export default defineComponent({
     props: {
         usersList: {
             type: Array as PropType<IUserSearch[]>
+        },
+        needDeleteButton: {
+            type: Boolean,
+            default: () => false
         }
     },
-    emits: ['pickUser'],
+    components: {
+        Cancel
+    },
+    emits: ['pickUser', 'removeUser'],
     setup(_, { emit }) {
         return {
             pickUser: (user: IUserSearch) => emit('pickUser', user)

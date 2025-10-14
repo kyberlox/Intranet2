@@ -23,8 +23,9 @@
                                    :type="'blog'" />
                     </div>
                     <div class="blog__short__desc"
-                         v-if="article?.preview_text">
-                        {{ article.preview_text }}
+                         v-if="article?.preview_text"
+                         v-html="parseMarkdown(article.preview_text)">
+
                     </div>
                 </div>
             </div>
@@ -39,6 +40,7 @@ import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import { dateConvert } from "@/utils/dateConvert";
+import { parseMarkdown } from "@/utils/parseMarkdown";
 
 export default defineComponent({
     components: { Reactions, BlogAvatar },
@@ -62,8 +64,9 @@ export default defineComponent({
             blogName: targetAuthor.value?.title,
             currentArticles,
             targetBlog,
+            targetAuthor,
             dateConvert,
-            targetAuthor
+            parseMarkdown,
         };
     }
 }

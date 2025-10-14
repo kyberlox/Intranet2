@@ -154,6 +154,19 @@
     }
 
     &__user {
+        &__remove-btn {
+            flex-grow: 1;
+            text-align: right;
+
+            &>svg {
+                width: 25px;
+
+                &:hover {
+                    color: red;
+                }
+            }
+        }
+
         &-avatar {
             width: 56px;
             height: 56px;

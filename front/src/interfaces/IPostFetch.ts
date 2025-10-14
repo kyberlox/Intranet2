@@ -17,6 +17,7 @@ export interface IValidatePoints {
 }
 
 export interface IUsersLoad {
-    art_id: string | undefined
+    art_id: string | null
     users_id: string[]
 }
+

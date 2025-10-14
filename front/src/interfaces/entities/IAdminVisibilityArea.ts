@@ -20,13 +20,13 @@ export interface IDepartment {
 }
 
 export interface IUserSearch {
-    department: string;
-    depart: number;
-    depart_id: number;
+    department?: string;
+    depart?: number;
+    depart_id?: number;
     name: string;
     id: number;
     user_position: string;
-    dep_id: number;
+    dep_id?: number;
     image?: string;
 }
 

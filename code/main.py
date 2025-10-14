@@ -120,28 +120,30 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 
 
 
+# Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
+open_links = [
+    "/docs",
+    "/api/users_update",
+    "/api/users/update_user_info",
+    "/openapi.json",
+    "/api/auth_router",
+    "/api/total_update",
+    "/api/files",
+    "/api/tours",
+    "/api/compress_image", "compress_image",
+    "/api/user_files",
+    "test", "dump", "get_file", "get_all_files",
+    "/api/total_background_task_update",
+    "/ws/progress"
+]
+
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
     # Внедряю свою отладку
     log = LogsMaker()
 
-    # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
-    open_links = [
-        "/docs",
-        "/api/users_update",
-        "/api/users/update_user_info",
-        "/openapi.json",
-        "/api/auth_router",
-        "/api/total_update",
-        "/api/files",
-        "/api/tours"
-        "/api/compress_image",
-        "/api/user_files",
-        "test", "dump", "get_file", "get_all_files",
-        "/api/total_background_task_update",
-        "/ws/progress"
-    ]
+    
 
     for open_link in open_links:
         if open_link in request.url.path:
@@ -197,6 +199,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             # )
 
     return await call_next(request)
+
 
 
 # Прогресс процесса через вебсокет

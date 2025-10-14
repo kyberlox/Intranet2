@@ -1,5 +1,6 @@
 from ..base.mongodb import FileModel
 from ..base.B24 import B24
+from .Section import Section
 
 from fastapi import FastAPI, UploadFile
 from fastapi import File as webFile
@@ -375,6 +376,22 @@ class File:
                 FileModel(id = self.id).remove()
 
 
+    def get_files_by_section_id(self, section_id):
+        #беру список atr_id
+        arts_id = Section(id = section_id).find_by_id()['arts_id']
+
+        files = dict()
+        if arts_id != []:
+            for art_id in arts_id:
+                self.art_id = art_id
+                art_files = self.get_files_by_art_id()
+
+                
+
+                files[art_id] = art_files
+        
+        return files
+
     def need_update_link(self):
         pass
 
@@ -560,7 +577,6 @@ class File:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
 
-
     def editor_chenge_file(self, file : webFile):
         #найти файл
         #заменить id и отправить предыдущую версию в архив
@@ -637,7 +653,6 @@ async def get_file_info(file_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @file_router.get("/info/article_id/{article_id}")
 async def get_file_article(article_id: int):
     try:
@@ -645,6 +660,18 @@ async def get_file_article(article_id: int):
 
         if not file_data:
             raise HTTPException(status_code=404, detail="File not found")
+
+        return file_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@file_router.get("/info/section_id/{section_id}")
+async def get_file_article(section_id: int):
+    try:
+        file_data = File().get_files_by_section_id(section_id = section_id)
+
+        if not file_data:
+            raise HTTPException(status_code=404, detail="Files not found")
 
         return file_data
     except Exception as e:

@@ -53,8 +53,12 @@
                                 </span>
                             </div>
                             <div class="personal__user__property__items__uf_usr_1705744824758"
-                                 v-if="user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length">
+                                 v-if="user.indirect_data.uf_department || (user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length)">
                                 <h3>Отдел</h3>
+                                <span v-for="(item, index) in user.indirect_data.uf_department"
+                                      :key="'dep' + index">
+                                    {{ item }}
+                                </span>
                                 <span v-for="(item, index) in user.indirect_data.uf_usr_1705744824758"
                                       :key="'dep' + index">
                                     {{ item }}

@@ -36,9 +36,11 @@
             align-items: baseline;
         }
     }
-&__add-user__button__group{
-    justify-content: left;
-}
+
+    &__add-user__button__group {
+        justify-content: left;
+    }
+
     &__reportage-list {
         display: contents;
 
@@ -55,6 +57,15 @@
 
             &:empty {
                 display: none;
+            }
+
+            &>.visibility-editor__area-users {
+                &>.visibility-editor__area-user:hover {
+                    transform: none;
+                    border-color: #e9ecef;
+                    background: white;
+                    box-shadow: none;
+                }
             }
         }
 

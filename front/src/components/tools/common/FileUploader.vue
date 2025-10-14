@@ -226,9 +226,11 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
+    max-height: 150px;
 }
 
 .file-uploader__preview-item {
     position: relative;
+    max-height: 150px;
 }
 </style>

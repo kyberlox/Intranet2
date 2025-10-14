@@ -137,13 +137,18 @@
 
             &__image {
                 margin-top: 10px;
-                transition: var(--default-transition);
+                transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 border-radius: 15px;
                 background-position: center;
                 background-size: cover;
                 background-repeat: no-repeat;
                 aspect-ratio: 16/9;
                 width: 100%;
+                transform: translate3d(0, 0, 0);
+                backface-visibility: hidden;
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+                will-change: transform;
 
                 &>.swiper {
                     border-radius: 15px;
@@ -151,8 +156,9 @@
                 }
 
                 &:hover {
-                    transform: scale(1.03);
+                    transform: scale(1.03) translate3d(0, 0, 0);
                 }
+
 
                 &__swiper-slide {
                     border: none !important;

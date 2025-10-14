@@ -210,7 +210,7 @@ class Article:
                     pre_award = data['PROPERTY_1113'][0]
                 else:
                     pre_award = list(data['PROPERTY_1113'].values())[0]
-                award = "Почетная грамота" if int(pre_award) == 888 else "Сотрудник года"
+                award = "Почетная грамота" if int(pre_award) == 889 else "Сотрудник года"
             else:
                 award = "Сотрудник года"
 
@@ -1139,7 +1139,7 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        #self.upload_uniquely()
+        self.upload_uniquely()
         # self.upload_with_parameter()
         # self.upload_many_to_many()
         # self.upload_services()
@@ -1157,7 +1157,7 @@ class Article:
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди ✔️
-            #14 : "123", # Доска почёта ✔️
+            14 : "123", # Доска почёта ✔️
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️

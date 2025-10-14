@@ -1016,12 +1016,17 @@ async def get_edit_sections():
 @editor_router.get("/get_sections_list")
 async def get_sections_list(request: Request):
     user_uuid = get_uuid_from_request(request)
-    # user_uuid = 2366
+    # user_uuid = 261
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     print(editor_roots)
-    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
+    if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return Editor().get_sections_list()
+    elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
+        
+        sections = Editor().get_sections_list()
+        result = [section for section in sections if section['id'] in editor_roots["EditorModer"]]
+        return result
     return LogsMaker().warning_message(f"Недостаточно прав")
     
 

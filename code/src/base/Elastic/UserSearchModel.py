@@ -63,6 +63,36 @@ class UserSearchModel:
             },
             "mappings": {
                 "properties": {
+                    # "last_name": {
+                    #     "type": "text",
+                    #     "analyzer": "GOD_PLEASE_FUZZY_V2",
+                    #     "fields": {
+                    #         "fuzzy": {
+                    #             "type": "text",
+                    #             "analyzer": "GOD_PLEASE"
+                    #         }
+                    #     }
+                    # },
+                    # "name": {
+                    #     "type": "text",
+                    #     "analyzer": "GOD_PLEASE_FUZZY_V2",
+                    #     "fields": {
+                    #         "fuzzy": {
+                    #             "type": "text",
+                    #             "analyzer": "GOD_PLEASE"
+                    #         }
+                    #     }
+                    # },
+                    # "second_name": {
+                    #     "type": "text",
+                    #     "analyzer": "GOD_PLEASE_FUZZY_V2",
+                    #     "fields": {
+                    #         "fuzzy": {
+                    #             "type": "text",
+                    #             "analyzer": "GOD_PLEASE"
+                    #         }
+                    #     }
+                    # },
                     "user_fio": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE_FUZZY_V2",
@@ -249,7 +279,7 @@ class UserSearchModel:
 
             important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday',
                               'uf_phone_inner', "indirect_data", "photo_file_id"]
-
+            # 'last_name', 'name', 'second_name', 
             data = user.__dict__
             if data['id'] == 1:
                 pass
@@ -260,6 +290,7 @@ class UserSearchModel:
                     else:
                         fio = f'{data['last_name']} {data['name']} {data['second_name']}'
                     data_row = {"user_fio": fio}
+                    # data_row = dict()
                     for param in important_list:
                         if param in data.keys():
                             if param == "photo_file_id" and data['photo_file_id'] is not None:
@@ -353,26 +384,54 @@ class UserSearchModel:
 
     def elasticsearch_users(self, key_word, size_res=1000):
         result = []
-        res = elastic_client.search(
-            index=self.index,
-            body={
+
+        words = key_word.strip().split()
+    
+        if len(words) >= 2:
+            # Если несколько слов - используем более строгий поиск
+            body = {
                 "query": {
                     "bool": {
                         "should": [
                             {
-                                "bool": {
-                                    "should": [
-                                        {"match": {"user_fio": {"query": key_word, "boost": 10}}}
-                                    ],
-                                    "_name": "true_search"
+                                "match_phrase": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "slop": 1,
+                                        "boost": 30
+                                    }
                                 }
                             },
                             {
-                                "multi_match": {
-                                    "query": key_word,
-                                    "fields": ["user_fio.fuzzy"],
-                                    "fuzziness": "1",
-                                    "boost": 2
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "match": {
+                                                "user_fio": {
+                                                    "query": words[0],  # Первое слово (Игорь)
+                                                    "boost": 5
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "match_phrase_prefix": {
+                                                "user_fio": {
+                                                    "query": " ".join(words[1:]),  # Остальные слова (Гази)
+                                                    "boost": 10
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "boost": 25
+                                }
+                            },
+                            {
+                                "match": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "operator": "and",
+                                        "boost": 15
+                                    }
                                 }
                             }
                         ]
@@ -380,7 +439,68 @@ class UserSearchModel:
                 },
                 "size": size_res
             }
-        )
+        else:
+            # Одно слово - обычный поиск
+            body = {
+                "query": {
+                    "bool": {
+                        "should": [
+                            {
+                                "match_phrase_prefix": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "boost": 20
+                                    }
+                                }
+                            },
+                            {
+                                "match": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "operator": "and",
+                                        "boost": 10
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "size": size_res
+            }
+        res = elastic_client.search(index=self.index, body=body)
+        # res = elastic_client.search(
+        #     index=self.index,
+        #     body={
+        #         "query": {
+        #             "bool": {
+        #                 "should": [
+        #                     {
+        #                         "bool": {
+        #                             "should": [ 
+        #                                 {"match": {"user_fio": {"query": key_word, "boost": 10}}}
+        #                                 # {"match": {"last_name": {"query": key_word, "boost": 10}}},
+        #                                 # {"match": {"name": {"query": key_word, "boost": 10}}},
+        #                                 # {"match": {"second_name": {"query": key_word, "boost": 10}}}
+        #                             ],
+        #                             "_name": "true_search"
+        #                         }
+        #                     },
+        #                     {
+        #                         "multi_match": {
+        #                             "query": key_word,
+        #                             # "fields": ["last_name.fuzzy", "name.fuzzy", "second_name.fuzzy"],
+        #                             # "fields": ["last_name", "name", "second_name"],
+        #                             "fields": ["user_fio"],
+        #                             # "fuzziness": "1",
+        #                             "boost": 2
+        #                         }
+        #                     }
+        #                 ]
+        #             }
+        #         },
+        #         "size": size_res
+        #     }
+        # )
         users = []
         true_search_flag = False
 
@@ -388,7 +508,12 @@ class UserSearchModel:
             if "matched_queries" in res_info.keys():
                 true_search_flag = True
             user_info = {}
-            user_info['name'] = res_info["_source"]["user_fio"]
+            # if res_info["_source"]['second_name'] is None:
+            #     fio = f'{res_info["_source"]['last_name']} {res_info["_source"]['name']}'
+            # else:
+            #     fio = f'{res_info["_source"]['last_name']} {res_info["_source"]['name']} {res_info["_source"]['second_name']}'
+            # user_info['name'] = fio
+            user_info['name'] = res_info["_source"]['user_fio']
             user_info['sectionHref'] = "userPage"
             user_info['id'] = int(res_info["_id"])
             user_info['image'] = res_info["_source"]["photo_file_id"]

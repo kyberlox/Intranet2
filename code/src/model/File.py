@@ -650,7 +650,6 @@ async def get_file_info(file_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @file_router.get("/info/article_id/{article_id}")
 async def get_file_article(article_id: int):
     try:
@@ -658,6 +657,18 @@ async def get_file_article(article_id: int):
 
         if not file_data:
             raise HTTPException(status_code=404, detail="File not found")
+
+        return file_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@file_router.get("/info/section_id/{section_id}")
+async def get_file_article(section_id: int):
+    try:
+        file_data = File().get_files_by_section_id(section_id = section_id)
+
+        if not file_data:
+            raise HTTPException(status_code=404, detail="Files not found")
 
         return file_data
     except Exception as e:

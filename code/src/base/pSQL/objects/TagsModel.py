@@ -17,6 +17,7 @@ class TagsModel:
         # database = db
         self.id = id
         self.tag_name = tag_name
+        self.art_id = art_id
         
         self.Tags = Tags
         self.Article = Article
@@ -118,3 +119,10 @@ class TagsModel:
             return LogsMaker().info_message(f"Тэг с id = {self.id} успешно отвязан от статьи с id = {self.art_id}")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при отвязке тэга с id = {self.id} от статьи с id = {self.art_id}, {e}")
+    
+    def get_art_tags(self):
+        article = database.query(self.Article.indirect_data["tags"]).filter(self.Article.id == self.art_id).first()
+        if article:
+            # print(article)
+            return article[0]
+        return None

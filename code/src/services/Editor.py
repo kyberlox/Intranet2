@@ -9,6 +9,7 @@ from ..model.Article import Article
 from ..model.Section import Section
 from ..model.File import File as storeFile
 from ..model.User import User
+from ..model.Tag import Tag
 
 from bson.objectid import ObjectId
 
@@ -529,6 +530,8 @@ class Editor:
         for need_field in self.get_pattern()["fields"]:
             has_added = False
             for got_field in got_fields:
+
+                
             
                 #если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
@@ -536,6 +539,19 @@ class Editor:
                     #отдельно проверить валидность типа
                     if need_field["data_type"] != got_field["data_type"]:
                         got_field["data_type"] = need_field["data_type"]
+
+                    if got_field["field"] = "all_tags":
+                        #получаешь список ВСЕХ доступных тэгов
+                        tags_list = Tag().get_all_tags()
+                        #записываешь в need_field["values"] и в got_field["values"]
+                        need_field["values"] = tags_list
+                        got_field["values"] = tags_list
+                    
+                    if got_field["field"] = "tags":
+                        got_field["values"] = Tag(art_id=self.art_id).get_art_tags()
+                        got_field.pop("value")
+             
+                        
                     
                     #отдельно проверить валидность вариантов выбора значения
                     if "values" in need_field:
@@ -611,6 +627,7 @@ class Editor:
                 Article().set_new(art)
                 LogsMaker().ready_status_message(f"Создал {self.art_id}")
         
+            
         #Вношу изменеения
         self.pattern["fields"] = fields
         
@@ -646,6 +663,12 @@ class Editor:
                 usr_dt = User(uuid).search_by_id()
                 photo = usr_dt["personal_photo"]
                 indirect_data["photo_file_url"] = photo
+            
+            if key == "tags":
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                pass
 
         art["indirect_data"] = indirect_data
 
@@ -691,6 +714,11 @@ class Editor:
                 #если это часть indirect_data
                 else:
                     if "indirect_data" in art and art["indirect_data"] is not None: 
+                        if key == "tags":
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            pass
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы 

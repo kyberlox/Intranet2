@@ -4,12 +4,12 @@
     <div v-for="(image, index) in slide.images"
          :key="index"
          class="contentGallery__img-wrapper">
-        <div class="contentGallery__video-wrapper"
-             v-if="image.preview_file_url?.includes('mp4')">
+        <div v-if="contest && image.indirect_data?.videos_native?.length && image.indirect_data?.videos_native[0].file_url"
+             class="contentGallery__video-wrapper">
             <iframe width="100%"
                     class="contentGallery__card__video"
                     :title="'Видеоконтент'"
-                    :src="String(repairVideoUrl(image.preview_file_url))"
+                    :src="String(repairVideoUrl(image.indirect_data?.videos_native[0].file_url))"
                     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     autoplay="false"
                     allowfullscreen>
@@ -82,7 +82,8 @@ interface IImageItem extends IBXFileType {
     indirect_data?: {
         nomination?: string,
         representative_text?: string,
-        category?: string
+        category?: string,
+        videos_native?: IBXFileType[]
     }
 }
 
@@ -102,6 +103,10 @@ export default defineComponent({
         },
         modifiers: {
             type: Array<string>
+        },
+        contest: {
+            type: Boolean,
+            default: () => false
         }
     },
     components: {

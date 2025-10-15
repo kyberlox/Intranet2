@@ -40,17 +40,21 @@ class TagsModel:
 
 
     def remove_tag(self):
-        existing_tag = database.query(self.Tags).filter(self.Tags.id == self.id).first()
-        if existing_tag:
-            database.query(self.Tags).filter(self.Tags.id == self.id).delete()
-            database.commit()
-            database.close()
-            
-            return {"msg": "удален"}
-        
-
-        
-        return {"msg": "отсутствует такой тэг"}
+        try:
+            existing_tag = database.query(self.Tags).filter(self.Tags.id == self.id).first()
+            if existing_tag:
+                articles = database.query(self.Article).filter(self.Article.indirect_data["tags"].contains([self.id])).all()
+                for art in articles:
+                    art.indirect_data["tags"].remove(self.id)
+                    flag_modified(art, "indirect_data")
+                    database.commit()
+                database.query(self.Tags).filter(self.Tags.id == self.id).delete()
+                database.commit()
+                return LogsMaker().info_message(f"Тэг с id = {self.id} удален из статей")
+            return LogsMaker().info_message(f"Тэг с id = {self.id} не существует")
+        except Exception as e:
+            database.rollback()
+            return LogsMaker().error_message(f"Произошла ошибка при удалении тэга с id = {self.id} из статей, {e}")
     
     def create_b24_tag(self):
         with open('./src/base/current_tags.json', mode='r', encoding='UTF-8') as f:

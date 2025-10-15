@@ -455,6 +455,7 @@ async def authentication(response : Response, data = Body()):
     '''
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     session = await AuthService().authenticate(login, password)
+    print(session)
     if not session :
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")

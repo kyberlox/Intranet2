@@ -56,7 +56,10 @@ def get_menu_plus():
     c1_data_file.close()
     for C in list(c1.keys()):
         for c in c1[C]:
-            img = c["img"]
+            if "img" in c:
+              img = c["img"]
+            else:
+              img = None
             #print(c)
             if img is not None:
                 c["img"] = f"{DOMAIN}/api/files{img}"

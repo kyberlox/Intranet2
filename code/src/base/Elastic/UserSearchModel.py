@@ -632,8 +632,10 @@ class UserSearchModel:
 
 
     def update_user_el_index(self, user_data):
+        from src.model.File import File
         important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data", "photo_file_id"]
-        data = user_data.__dict__
+        # data = user_data.__dict__
+        data = user_data
         result = None
         if data['id'] == 1:
             pass

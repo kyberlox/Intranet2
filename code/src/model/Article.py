@@ -210,7 +210,7 @@ class Article:
                     pre_award = data['PROPERTY_1113'][0]
                 else:
                     pre_award = list(data['PROPERTY_1113'].values())[0]
-                award = "Почетная грамота" if int(pre_award) == 888 else "Сотрудник года"
+                award = "Почетная грамота" if int(pre_award) == 889 else "Сотрудник года"
             else:
                 award = "Сотрудник года"
 
@@ -1139,7 +1139,7 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        #self.upload_uniquely()
+        self.upload_uniquely()
         # self.upload_with_parameter()
         # self.upload_many_to_many()
         # self.upload_services()
@@ -1157,7 +1157,7 @@ class Article:
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди ✔️
-            #14 : "123", # Доска почёта ✔️
+            14 : "123", # Доска почёта ✔️
             #16 : "122", # Видеоитервью ✔️
             
             #32 : "132", # Новости организационного развития ✔️
@@ -1919,9 +1919,8 @@ class Article:
                         self.id = res["id"]
                         res["preview_file_url"] = self.get_preview()
 
-                        print("PREVIEW: ", res["preview_file_url"])
+                        
                         if res["preview_file_url"] is None:
-                            print("ЩА БУДЕТ")
                             if int(self.section_id) == 32:
                                 res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
 
@@ -1943,7 +1942,7 @@ class Article:
 
                     active_articles.append(res)
 
-            if self.section_id == "111":
+            if self.section_id == "111" or self.section_id == "14":
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             #отдельная сортировка Памятки новому сторуднику
             elif self.section_id == "18":

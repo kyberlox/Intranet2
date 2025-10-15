@@ -473,7 +473,7 @@ async def authentication(response : Response, data = Body()):
         #return JSONResponse(content=session, headers=response.headers)
         return session
     else:
-        return LogsMaker().error_message(message=session)
+        return session
         
 @auth_router.get("/check")
 async def check_token(request : Request):

@@ -394,7 +394,10 @@ def try_b24(login, password):
         
         # Если в title есть "Авторизация" - неудачная авторизация
         if "Авторизация" in title_text:
-            return False
+            return {
+                "status": "failed",
+                "message": "Неверный логин или пароль"
+            }
         
         # Если авторизация успешна - извлекаем данные
         auth_data = extract_auth_data(response.text)

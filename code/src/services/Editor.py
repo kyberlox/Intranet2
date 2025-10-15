@@ -540,14 +540,14 @@ class Editor:
                     if need_field["data_type"] != got_field["data_type"]:
                         got_field["data_type"] = need_field["data_type"]
 
-                    if got_field["field"] = "all_tags":
+                    if got_field["field"] == "all_tags":
                         #получаешь список ВСЕХ доступных тэгов
                         tags_list = Tag().get_all_tags()
                         #записываешь в need_field["values"] и в got_field["values"]
                         need_field["values"] = tags_list
                         got_field["values"] = tags_list
                     
-                    if got_field["field"] = "tags":
+                    if got_field["field"] == "tags":
                         got_field["values"] = Tag(art_id=self.art_id).get_art_tags()
                         got_field.pop("value")
              

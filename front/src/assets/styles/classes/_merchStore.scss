@@ -215,6 +215,10 @@
                 transition: color 0.4s ease;
                 z-index: 1;
 
+                @include sm {
+                    text-align: center;
+                }
+
                 &::before {
                     content: '';
                     position: absolute;
@@ -250,6 +254,10 @@
             &__wrapper {
                 min-width: 50%;
                 max-width: 50%;
+
+                @include sm {
+                    min-width: 100%;
+                }
 
                 >.swiper {
                     >.swiper-wrapper {

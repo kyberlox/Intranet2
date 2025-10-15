@@ -85,6 +85,7 @@
 .navbar {
     &-collapse {
         height: 100%;
+        width: 100%;
     }
 
     &-nav {
@@ -110,12 +111,21 @@
     }
 }
 
-.nav-link {
-    &--main-points {
-        &::after {
-            color: var(--emk-brand-color);
-            vertical-align: 0.23em;
-            margin-left: 7px;
+.nav {
+    &-menu {
+        @include sm {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+    }
+
+    &-link {
+        &--main-points {
+            &::after {
+                color: var(--emk-brand-color);
+                vertical-align: 0.23em;
+                margin-left: 7px;
+            }
         }
     }
 }
@@ -147,6 +157,10 @@
         background-color: transparent;
         border: 0;
         cursor: pointer;
+
+        @include sm {
+            white-space: break-spaces;
+        }
 
         &>a:hover,
         &:hover {

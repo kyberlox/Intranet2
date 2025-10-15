@@ -168,11 +168,10 @@ const router = createRouter({
     {
       path: '/about/trainingcenter/memo1c',
       name: 'memo1c',
-      beforeEnter: (to, from, next) => {
-        window.open('http://1c-help.websto.pro/', '_blank')
-        next(false)
-      },
-      redirect: '',
+      component: () => import('@/views/about/trainingCenter/memo1c/MemoOneC.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Учебный центр', route: 'trainingcenter' }]
+      }
     },
     {
       path: '/about/fornewworker',

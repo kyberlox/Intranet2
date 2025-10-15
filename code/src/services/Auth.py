@@ -459,7 +459,7 @@ async def authentication(response : Response, data = Body()):
     if not session :
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")
-    elif "err" in session.keys():
+    elif "err" in session.keys() or "error" in session.keys():
         # return await LogsMaker().warning_message(message=session["err"])
         return LogsMaker().warning_message(message=session["err"])
     access_token = session["session_id"]

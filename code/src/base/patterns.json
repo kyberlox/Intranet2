@@ -1655,8 +1655,8 @@
         "data_type": "str"
       },
       {
-        "name": "Возрастная группа",
-        "field": "age_group",
+        "name": "Категория",
+        "field": "category",
         "data_type": "str"
       },
       {
@@ -1676,7 +1676,8 @@
       }
     ],
     "files": {
-      "images": []
+      "images": [],
+      "videos_native": []
     }
   }
 

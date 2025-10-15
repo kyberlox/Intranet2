@@ -462,14 +462,18 @@ async def authentication(response : Response, data = Body()):
     elif "err" in session.keys() or "error" in session.keys():
         # return await LogsMaker().warning_message(message=session["err"])
         return LogsMaker().warning_message(message=session)
-    access_token = session["session_id"]
+    
+    if "session_id" in session:
+        access_token = session["session_id"]
 
-    #response.headers["Authorization"] = access_token
+        #response.headers["Authorization"] = access_token
 
-    response.set_cookie(key="Authorization", value=access_token)
+        response.set_cookie(key="Authorization", value=access_token)
 
-    #return JSONResponse(content=session, headers=response.headers)
-    return session
+        #return JSONResponse(content=session, headers=response.headers)
+        return session
+    else:
+        return return LogsMaker().error_message(message=session)
         
 @auth_router.get("/check")
 async def check_token(request : Request):

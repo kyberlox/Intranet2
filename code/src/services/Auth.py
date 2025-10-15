@@ -394,7 +394,10 @@ def try_b24(login, password):
         
         # Если в title есть "Авторизация" - неудачная авторизация
         if "Авторизация" in title_text:
-            return False
+            return {
+                "status": "failed",
+                "message": "Неверный логин или пароль"
+            }
         
         # Если авторизация успешна - извлекаем данные
         auth_data = extract_auth_data(response.text)
@@ -452,20 +455,25 @@ async def authentication(response : Response, data = Body()):
     '''
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     session = await AuthService().authenticate(login, password)
+    print(session)
     if not session :
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")
-    elif "err" in session.keys():
+    elif "err" in session.keys() or "error" in session.keys():
         # return await LogsMaker().warning_message(message=session["err"])
-        return LogsMaker().warning_message(message=session["err"])
-    access_token = session["session_id"]
+        return LogsMaker().warning_message(message=session)
+    
+    if "session_id" in session:
+        access_token = session["session_id"]
 
-    #response.headers["Authorization"] = access_token
+        #response.headers["Authorization"] = access_token
 
-    response.set_cookie(key="Authorization", value=access_token)
+        response.set_cookie(key="Authorization", value=access_token)
 
-    #return JSONResponse(content=session, headers=response.headers)
-    return session
+        #return JSONResponse(content=session, headers=response.headers)
+        return session
+    else:
+        return session
         
 @auth_router.get("/check")
 async def check_token(request : Request):

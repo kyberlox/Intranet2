@@ -1,6 +1,6 @@
 <template>
 <SlotModal>
-    <div class="adminPointEditModal">
+    <div class="points-admin-panel__add-entity">
         <div v-if="currentEntity == 'activity'">
             <AdminEditInput @pick="(value: string) => newActivity.name = value"
                             :item="{ name: 'Название' }"
@@ -128,14 +128,3 @@ export default defineComponent({
     }
 })
 </script>
-
-
-<style>
-.adminPointEditModal {
-    padding: 20px;
-    /* width: 500px; */
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-</style>

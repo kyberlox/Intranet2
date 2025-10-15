@@ -159,12 +159,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style>
-.hover-gallery__image {
-    max-width: 100%;
-    object-fit: contain;
-    background: whitesmoke;
-    border-radius: 20px;
-}
-</style>

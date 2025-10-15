@@ -180,4 +180,37 @@
 
         &__button {}
     }
+
+    &__person {
+        &-wrap {
+            display: flex;
+
+            & figure {
+                width: 30%;
+                max-width: 200px;
+            }
+
+        }
+
+        &-info {
+            width: 70%;
+            margin-left: 24px;
+            margin-top: 36px;
+        }
+
+        &-fio {
+            font-size: 20px;
+        }
+
+        &__img {
+            padding: .25rem;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+            max-width: 100%;
+            height: auto;
+            border-radius: 50% !important;
+
+        }
+    }
 }

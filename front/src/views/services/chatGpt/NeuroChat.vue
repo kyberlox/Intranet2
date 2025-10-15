@@ -307,30 +307,3 @@ export default defineComponent({
     }
 })
 </script>
-
-<style scoped>
-.neuroChat__file-list {
-    margin-top: 8px;
-}
-
-.neuroChat__file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 8px;
-    background: #f5f5f5;
-    border-radius: 4px;
-    margin-bottom: 4px;
-}
-
-.neuroChat__remove-file {
-    cursor: pointer;
-    color: #ff4444;
-    font-weight: bold;
-    margin-left: 8px;
-}
-
-.neuroChat__remove-file:hover {
-    color: #cc0000;
-}
-</style>

@@ -23,7 +23,7 @@
         <tfoot></tfoot>
     </table>
 </div>
-<div class="user-points__table__slug"
+<div class="point-info__table__slug"
      v-else>
     У вас пока нет начисленных баллов
 </div>
@@ -47,8 +47,3 @@ export default defineComponent({
     }
 })
 </script>
-<style>
-.user-points__table__slug {
-    padding: 20px;
-}
-</style>

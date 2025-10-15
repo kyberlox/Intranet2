@@ -7,6 +7,14 @@
         background: #fafafa;
     }
 
+    &__add-entity {
+        padding: 20px;
+        /* width: 500px; */
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
     &__navigation {
         padding: 8px 14px;
         border-radius: 10px;

@@ -83,15 +83,15 @@
                  :key="user.id"
                  class="">
                 <RouterLink :to="{ name: 'userPage', params: { id: user.id } }"
-                            class="mb-5 person-wrap">
-                    <figure class="">
-                        <img class="img-fluid img-thumbnail rounded-circle"
+                            class="mb-5 news__person-wrap">
+                    <figure>
+                        <img class="img-fluid img-thumbnail news__person__img"
                              :src=user.photo_file_url
                              data-banner="/upload/resize_cache/main/3e5/gtm4c2ulm9kav603bkxxbqac80k6wo7e/360_206_2/Сальвассер.jpg.png">
                     </figure>
-                    <div class="person-info">
-                        <p class="person-fio">{{ user.fio }}</p>
-                        <p class="person-staff">{{ user.position }}</p>
+                    <div class="news__person-info">
+                        <p class="news__person-fio">{{ user.fio }}</p>
+                        <p class="news__person-staff">{{ user.position }}</p>
                     </div>
                 </RouterLink>
             </div>
@@ -209,41 +209,3 @@ export default defineComponent({
     },
 })
 </script>
-
-<style lang="scss">
-.person-wrap {
-    display: flex;
-}
-
-.person-info {
-    width: 70%;
-    margin-left: 24px;
-    margin-top: 36px;
-}
-
-.person-fio {
-    font-size: 20px;
-}
-
-.person-wrap figure {
-    width: 30%;
-    max-width: 200px;
-}
-
-figure {
-    margin: 0 0 1rem;
-}
-
-.rounded-circle {
-    border-radius: 50% !important;
-}
-
-.img-thumbnail {
-    padding: .25rem;
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
-    max-width: 100%;
-    height: auto;
-}
-</style>

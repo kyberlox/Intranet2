@@ -9,6 +9,10 @@
     overflow-x: auto;
     display: block;
 
+    &__slug {
+        padding: 20px;
+    }
+
     thead {
         background-color: #f8f9fa;
 

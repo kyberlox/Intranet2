@@ -59,3 +59,8 @@ def get_tags():
 @tag_router.put("/add_tag/{tag_name}")
 def add_tag(tag_name: str):
     return Tag(tag_name=tag_name).add_tag()
+
+@tag_router.delete("/delete_tag/{tag_id}")
+def delete_tag(tag_id: int):
+    return Tag(id=tag_id).delete_tag()
+

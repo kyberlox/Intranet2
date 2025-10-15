@@ -39,6 +39,7 @@
     "sectionHref" : "Cсылка на конкурс",
     "author" : "Автор",
     "age_group" : "Возрастная группа",
+    "category" : "Категория",
     "nomination" : "Тема",
     "created_by" : "ID редактора",
     "representative_id" : "ID представителя",

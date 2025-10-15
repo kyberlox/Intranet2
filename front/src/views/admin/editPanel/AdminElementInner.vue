@@ -229,11 +229,13 @@ export default defineComponent({
               if (!newData.value.users) return
               usersList.value = newData.value.users
             }
+            console.log(data)
             // Для блогов
             if (data.section_id == 15) {
               newData.value.TITLE = data.fields.find((e: { field: string }) => e.field == 'TITLE').value;
               newData.value.author = data.fields.find((e: { field: string }) => e.field == 'author').value;
             }
+
             newFileData.value = data.files;
             // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;

@@ -2,7 +2,7 @@ import type { IBaseIndirectData, IBaseEntity } from "./IBase"
 
 export interface IContestIndirectData extends IBaseIndirectData {
             author: string,
-            age_group: null | string,
+            caregory: null | string,
             created_by: string,
             nomination: string,
             representative_id: number,

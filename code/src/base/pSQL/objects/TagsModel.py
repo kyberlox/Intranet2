@@ -17,6 +17,7 @@ class TagsModel:
         # database = db
         self.id = id
         self.tag_name = tag_name
+        self.art_id = art_id
         
         self.Tags = Tags
         self.Article = Article
@@ -80,7 +81,12 @@ class TagsModel:
     def all_tags(self):
         tags = database.query(self.Tags).all()
         if tags:
+            # for tag in tags:
+            #     tag = tag.__dict__
+            #     tag['name'] = tag['tag_name']
+            #     tag.pop('tag_name')
             return tags
+            
         return []
 
     def set_tag_to_art_id(self):
@@ -118,3 +124,10 @@ class TagsModel:
             return LogsMaker().info_message(f"Тэг с id = {self.id} успешно отвязан от статьи с id = {self.art_id}")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при отвязке тэга с id = {self.id} от статьи с id = {self.art_id}, {e}")
+    
+    def get_art_tags(self):
+        article = database.query(self.Article.indirect_data["tags"]).filter(self.Article.id == self.art_id).first()
+        if article:
+            # print(article)
+            return article[0]
+        return None

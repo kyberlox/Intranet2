@@ -175,7 +175,7 @@ class User:
 
     def update_user_elastic(self):
         user_data = self.search_by_id()
-        result = UserSearchModel().update_user_el_index(user_data)
+        result = self.UserSearchModel.update_user_el_index(user_data)
         if result:
             return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
         else:

@@ -46,6 +46,10 @@ class Tag:
         self.TagsModel.id = self.id
         self.TagsModel.art_id = self.art_id
         return self.TagsModel.remove_tag_from_art_id()
+    
+    def get_art_tags(self):
+        self.TagsModel.art_id = self.art_id
+        return self.TagsModel.get_art_tags()
 
 
 @tag_router.put("/upload_b24_tags")
@@ -64,3 +68,6 @@ def add_tag(tag_name: str):
 def delete_tag(tag_id: int):
     return Tag(id=tag_id).delete_tag()
 
+@tag_router.get("/get_art_tags/{art_id}")
+def get_art_tags(art_id: int):
+    return Tag(art_id=art_id).get_art_tags()

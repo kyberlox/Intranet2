@@ -9,6 +9,7 @@ from ..model.Article import Article
 from ..model.Section import Section
 from ..model.File import File as storeFile
 from ..model.User import User
+from ..model.Tag import Tag
 
 from bson.objectid import ObjectId
 
@@ -529,13 +530,15 @@ class Editor:
         for need_field in self.get_pattern()["fields"]:
             has_added = False
             for got_field in got_fields:
+
+                
             
                 #если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
 
                     #отдельно проверить валидность типа
                     if need_field["data_type"] != got_field["data_type"]:
-                        got_field["data_type"] = need_field["data_type"]
+                        got_field["data_type"] = need_field["data_type"]    
                     
                     #отдельно проверить валидность вариантов выбора значения
                     if "values" in need_field:
@@ -550,6 +553,16 @@ class Editor:
 
             #если среди заполненных нет - вписать из шаблона
             if not has_added:
+                if need_field["field"] == "all_tags":
+                    #получаешь список ВСЕХ доступных тэгов
+                    tags_list = Tag().get_all_tags()
+                    #записываешь в need_field["values"] и в need_field["values"]
+                    need_field["values"] = tags_list
+                    
+                if need_field["field"] == "tags":
+                    need_field["values"] = Tag(art_id=self.art_id).get_art_tags()
+                    # need_field.pop("value")
+                
                 result_fields.append(need_field)
 
 
@@ -611,6 +624,7 @@ class Editor:
                 Article().set_new(art)
                 LogsMaker().ready_status_message(f"Создал {self.art_id}")
         
+            
         #Вношу изменеения
         self.pattern["fields"] = fields
         
@@ -646,6 +660,15 @@ class Editor:
                 usr_dt = User(uuid).search_by_id()
                 photo = usr_dt["personal_photo"]
                 indirect_data["photo_file_url"] = photo
+            
+            if key == "tags":
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
+                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                #вытащить список выбранных тегов
+                tags_id = key["tags"]
+                #заменить старое значение новым
+                indirect_data["tags"] = tags_id
 
         art["indirect_data"] = indirect_data
 
@@ -691,6 +714,13 @@ class Editor:
                 #если это часть indirect_data
                 else:
                     if "indirect_data" in art and art["indirect_data"] is not None: 
+                        if key == "tags":
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
+                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            tags_id = key["tags"]
+                            #заменить старое значение новым
+                            art["indirect_data"]["tags"] = tags_id
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы 

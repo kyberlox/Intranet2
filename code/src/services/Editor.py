@@ -538,20 +538,7 @@ class Editor:
 
                     #отдельно проверить валидность типа
                     if need_field["data_type"] != got_field["data_type"]:
-                        got_field["data_type"] = need_field["data_type"]
-
-                    if got_field["field"] == "all_tags":
-                        #получаешь список ВСЕХ доступных тэгов
-                        tags_list = Tag().get_all_tags()
-                        #записываешь в need_field["values"] и в got_field["values"]
-                        need_field["values"] = tags_list
-                        got_field["values"] = tags_list
-                    
-                    if got_field["field"] == "tags":
-                        got_field["values"] = Tag(art_id=self.art_id).get_art_tags()
-                        got_field.pop("value")
-             
-                        
+                        got_field["data_type"] = need_field["data_type"]    
                     
                     #отдельно проверить валидность вариантов выбора значения
                     if "values" in need_field:
@@ -566,6 +553,16 @@ class Editor:
 
             #если среди заполненных нет - вписать из шаблона
             if not has_added:
+                if need_field["field"] == "all_tags":
+                    #получаешь список ВСЕХ доступных тэгов
+                    tags_list = Tag().get_all_tags()
+                    #записываешь в need_field["values"] и в need_field["values"]
+                    need_field["values"] = tags_list
+                    
+                if need_field["field"] == "tags":
+                    need_field["values"] = Tag(art_id=self.art_id).get_art_tags()
+                    need_field.pop("value")
+                
                 result_fields.append(need_field)
 
 
@@ -668,6 +665,8 @@ class Editor:
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                #вытащить список выбранных тегов
+                #заменить старое значение новым
                 pass
 
         art["indirect_data"] = indirect_data

@@ -81,10 +81,10 @@ class TagsModel:
     def all_tags(self):
         tags = database.query(self.Tags).all()
         if tags:
-            for tag in tags:
-                tag = tag.__dict__
-                tag['name'] = tag['tag_name']
-                tag.pop('tag_name')
+            # for tag in tags:
+            #     tag = tag.__dict__
+            #     tag['name'] = tag['tag_name']
+            #     tag.pop('tag_name')
             return tags
             
         return []

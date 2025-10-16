@@ -561,7 +561,7 @@ class Editor:
                     
                 if need_field["field"] == "tags":
                     need_field["values"] = Tag(art_id=self.art_id).get_art_tags()
-                    need_field.pop("value")
+                    # need_field.pop("value")
                 
                 result_fields.append(need_field)
 

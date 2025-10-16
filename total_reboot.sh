@@ -22,7 +22,7 @@ sudo rm -rf ./elasticsearch/data*
 
 
 #качаем с гита и запускаемся
-git pull origin main
+git pull origin dev
 
 docker-compose up -d --build
 

@@ -34,7 +34,7 @@
                 </div>
                 <div v-if="currentPost.indirect_data && 'tags' in currentPost.indirect_data"
                      class="tags">
-                    <div v-for="tag in currentPost.indirect_data.tags"
+                    <div v-for="(tag) in (currentPost.indirect_data.tags as ITag[])"
                          :key="tag.id"
                          class="tag__wrapper ">
                         <div class="tags__tag tags__tag--inner section__item__link btn-air"
@@ -108,6 +108,7 @@ import type { IBaseEntity, IReportage } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import Reactions from "./Reactions.vue";
 import { parseMarkdown } from "@/utils/parseMarkdown";
+import type { ITag } from "@/interfaces/entities/ITag";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {
@@ -119,10 +120,7 @@ export interface IPostInner extends IBaseEntity {
         date_to?: string,
         reports?: IReportage[],
         department?: string,
-        tags?: {
-            id: string,
-            tag_name: string,
-        }[],
+        tags?: ITag[] | number[],
         // орг развитие
         users?: {
             id: number,

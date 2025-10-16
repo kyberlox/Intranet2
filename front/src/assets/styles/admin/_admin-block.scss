@@ -42,6 +42,8 @@
 
         &__toolbar {
             display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
             justify-content: space-between;
             align-items: center;
             padding: 20px 24px;
@@ -104,6 +106,16 @@
                 &:hover {
                     background: var(--emk-brand-color-clear);
                     transform: translateY(-1px);
+                }
+
+                &--blue {
+                    background: #0064ffde;
+                    color: white;
+
+                    &:hover {
+                        background: #0064ffab;
+                        transform: translateY(-1px);
+                    }
                 }
             }
 

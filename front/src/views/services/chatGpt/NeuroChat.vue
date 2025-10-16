@@ -116,7 +116,7 @@ export default defineComponent({
     setup() {
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
-        const filesToUpload = ref<IUploadFile[]>([]); // Изменено на массив файлов
+        const filesToUpload = ref<IUploadFile[]>([]);
         const chatHistory = ref();
         const firstMessage = ref();
         const analyzeMessage = ref(false);
@@ -190,6 +190,7 @@ export default defineComponent({
                     style: 'vivid'
                 }
             }
+            userInput.value = ''
         }
 
         const sendMsg = async () => {
@@ -202,34 +203,31 @@ export default defineComponent({
                         formData.append(`files`, fileObj.file);
                     });
 
-                    formData.append('message', userInput.value);
-
-                    await Api.postVendor('https://gpt.emk.ru/analyze-images', formData)
+                    const newUserMsg = analyzeImageChatData.value[analyzeImageChatData.value.length - 1].content;
+                    formData.append('data', JSON.stringify({ prompt: newUserMsg }));
+                    chatDataToSend.value.push({
+                        role: 'user',
+                        content: newUserMsg,
+                    })
+                    formData.getAll('files').forEach((e) => {
+                        chatDataToSend.value.push({
+                            role: 'user',
+                            content: (e as File).name
+                        })
+                    })
+                    filesToUpload.value = [];
+                    await Api.postVendor('https://gpt.emk.ru/analyze-files', formData)
                         .then((data) => {
-                            // Обработка ответа с несколькими изображениями
-                            if (Array.isArray(data.image_urls)) {
-                                data.image_urls.forEach((url: string) => {
-                                    chatDataToSend.value.push({
-                                        role: 'assistant',
-                                        content: url,
-                                        type: 'img'
-                                    });
-                                });
-                            } else {
-                                chatDataToSend.value.push({
-                                    role: 'assistant',
-                                    content: data.image_url,
-                                    type: 'img'
-                                });
-                            }
+                            chatDataToSend.value.push({
+                                role: 'assistant',
+                                content: data.analysis
+                            })
                         })
                         .catch((error) => {
                             handleApiError(error, toast)
                         })
                         .finally(() => {
                             isLoading.value = false;
-                            userInput.value = '';
-                            filesToUpload.value = [];
                         })
                 }
                 else {
@@ -242,7 +240,6 @@ export default defineComponent({
                         })
                         .finally(() => {
                             isLoading.value = false;
-                            userInput.value = '';
                         })
                 }
             }
@@ -250,7 +247,7 @@ export default defineComponent({
                 chatDataToSend.value.length = 0;
                 chatDataToSend.value.push({
                     role: 'user',
-                    content: userInput.value,
+                    content: createImageChatData.value.prompt,
                 })
                 await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
                     .then((data) => {
@@ -265,7 +262,6 @@ export default defineComponent({
                     })
                     .finally(() => {
                         isLoading.value = false;
-                        userInput.value = '';
                     })
             }
         }

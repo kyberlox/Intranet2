@@ -30,11 +30,7 @@
 <script lang="ts">
 import Api from '@/utils/Api';
 import { defineComponent, ref, onMounted, type Ref, watch } from 'vue';
-
-interface ITag {
-    id: number | '',
-    tag_name?: string
-}
+import type { ITag } from '@/interfaces/entities/ITag';
 
 export default defineComponent({
     props: {

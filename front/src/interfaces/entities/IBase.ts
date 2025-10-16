@@ -30,7 +30,7 @@ export interface IBaseEntity {
     content_text?: string,
     date_publiction?: string,
     reactions?: IReaction,
-    tags?: string[],
+    tags?: number[],
 
     reportages?: boolean,
     tours?: boolean,

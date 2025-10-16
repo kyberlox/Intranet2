@@ -6,16 +6,26 @@
     <div class="admin-block-inner__content">
       <div class="admin-block-inner__toolbar">
         <div class="admin-block-inner__toolbar-left">
-          <RouterLink :to="{ name: 'adminElementInnerAdd', params: { id: sectionId } }"
-                      class="admin-block-inner__btn admin-block-inner__btn--primary">
-            <svg width="16"
-                 height="16"
-                 viewBox="0 0 24 24"
-                 fill="currentColor">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-            Добавить элемент
-          </RouterLink>
+          <div>
+            <RouterLink :to="{ name: 'adminElementInnerAdd', params: { id: sectionId } }"
+                        class="admin-block-inner__btn admin-block-inner__btn--primary">
+              <svg width="16"
+                   height="16"
+                   viewBox="0 0 24 24"
+                   fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+              Добавить элемент
+            </RouterLink>
+          </div>
+
+          <div v-if="id == '31' || id == '33'"
+               class="admin-block-inner__toolbar-left">
+            <button @click="showTagsModal = true"
+                    class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">
+              # Список тэгов
+            </button>
+          </div>
         </div>
         <div class="admin-block-inner__toolbar-right">
           <div class="admin-block-inner__search">
@@ -100,11 +110,13 @@
       </div>
     </div>
   </div>
+  <AdminTagsModal v-if="showTagsModal"
+                  @close="showTagsModal = false" />
 </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Api from '@/utils/Api';
 import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
@@ -118,6 +130,7 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiResponse } from '@/utils/ApiResponseCheck';
 import { handleApiError } from '@/utils/ApiResponseCheck';
+import AdminTagsModal from './AdminTagsModal.vue';
 
 interface SectionItem {
   id: number;
@@ -136,6 +149,7 @@ export default defineComponent({
   components: {
     AdminSidebar,
     Loader,
+    AdminTagsModal,
     SearchIcon,
     EditIcon,
     RemoveIcon,
@@ -154,6 +168,7 @@ export default defineComponent({
 
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
+    const showTagsModal = ref(false);
 
     const filteredItems = computed(() => {
       if (!searchQuery.value) return items.value;
@@ -199,6 +214,7 @@ export default defineComponent({
       filteredItems,
       isLoading,
       sectionId,
+      showTagsModal,
       getStatusText,
       removeItem,
       useDateFormat

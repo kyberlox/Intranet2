@@ -30,6 +30,7 @@ export default defineComponent({
         const value = ref<string>();
 
         watch((props), () => {
+            if (!props.item?.value) return
             value.value = String(props.item?.value)
         }, { immediate: true, deep: true })
 

@@ -24,6 +24,11 @@
                             :item="(item.value as IReportage[])"
                             @pick="handleReportChange" />
 
+        <AdminEditTags v-if="item.field == 'all_tags'"
+                       :currentTags="(newElementSkeleton.find((e) => e.field == 'tags')?.value as number[])"
+                       :allTags="(item.values as ITag[])"
+                       @tagsChanged="(e: number[]) => newData.tags = e" />
+
         <Component v-else
                    :is="inputComponentChecker(item)"
                    :item="item"
@@ -98,14 +103,16 @@ import { useWindowSize } from '@vueuse/core'
 import AdminPostPreview from '@/views/admin/editPanel/elementInnerLayout/AdminPostPreview.vue';
 import AdminUploadingSection from '@/views/admin/editPanel/elementInnerLayout/AdminUploadingSection.vue';
 import AdminEditUserSearch from '@/views/admin/components/inputFields/AdminEditUserSearch.vue';
+import AdminEditTags from '../components/inputFields/AdminEditTags.vue';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IReportage, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
 import type { IUserList } from '../components/inputFields/AdminUsersList.vue';
 import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
 import type { IUsersLoad } from '@/interfaces/IPostFetch';
+import type { ITag } from '@/interfaces/entities/ITag';
 
-type AdminElementValue = string | IBXFileType | number | string[] | boolean | undefined | Array<{ link: string; name: string } | IUserList>;
+type AdminElementValue = string | IBXFileType | number | string[] | number[] | boolean | undefined | Array<{ link: string; name: string } | IUserList>;
 
 export default defineComponent({
   components: {
@@ -120,6 +127,7 @@ export default defineComponent({
     FileUploader,
     AdminUploadingSection,
     AdminUsersList,
+    AdminEditTags,
   },
   props: {
     id: {

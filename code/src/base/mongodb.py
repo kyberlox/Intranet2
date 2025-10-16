@@ -154,19 +154,4 @@ class FileModel:
         files_collection.update_one({"_id": self.id}, {'$set': new_data})
 
     # блок для аватарок
-    def add_user_photo(self, file_data):
-        file_id = user_photo_collection.insert_one(file_data).inserted_id
-        return file_id
-
-    def go_user_photo_archive(self):
-        return user_photo_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
-
-    def remove_user_photo(self):
-        # return user_photo_collection.delete_one(self.id)
-        return user_photo_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
-
-    def find_user_photo_by_id(self):
-        return user_photo_collection.find_one({"_id": self.id})
     
-    def find_user_photo_by_uuid(self, uuid):
-        return user_photo_collection.find_one({"uuid": uuid})

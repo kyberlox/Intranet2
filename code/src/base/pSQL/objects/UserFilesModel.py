@@ -34,14 +34,39 @@ class UserFilesModel():
 
     #Пока они mongo - переделай в psql
     def go_user_photo_archive(self):
-        return user_photo_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
+        try:
+            existing_photo = database.query(UserFiles).filter(UserFiles.id == self.id).first()
+            if existing_photo:
+                existing_photo.is_archive = False 
+                database.commit()
+                return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно изъято из архива")
+            return LogsMaker().info_message(f"Фото пользователя с id = {self.id} не найдено")
+        except Exception as e:
+            database.rollback()
+            return LogsMaker().error_message(f"Ошибка при изъятии из архива фотки пользователя с id = {self.id}")
+            
+        # return user_photo_collection.update_one({"_id": self.id}, { "$set": { "is_archive" : False } })
 
     def remove_user_photo(self):
         # return user_photo_collection.delete_one(self.id)
-        return user_photo_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
+        try:
+            existing_photo = database.query(UserFiles).filter(UserFiles.id == self.id).first()
+            if existing_photo:
+                existing_photo.is_archive = True 
+                database.commit()
+                return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно отправлено в архив")
+            return LogsMaker().info_message(f"Фото пользователя с id = {self.id} не найдено")
+        except Exception as e:
+            database.rollback()
+            return LogsMaker().error_message(f"Ошибка при отправлении в архив фотки пользователя с id = {self.id}")
+        # return user_photo_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
 
     def find_user_photo_by_id(self):
-        return user_photo_collection.find_one({"_id": self.id})
+        user_photo_inf = database.query(UserFiles).filter(UserFiles.id == self.id).first()
+        return user_photo_inf
+        # return user_photo_collection.find_one({"_id": self.id})
     
     def find_user_photo_by_uuid(self, uuid):
-        return user_photo_collection.find_one({"uuid": uuid})
+        user_photo_inf = database.query(UserFiles).filter(UserFiles.user_id == uuid).first()
+        return user_photo_inf
+        # return user_photo_collection.find_one({"uuid": uuid})

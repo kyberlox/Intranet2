@@ -2,16 +2,21 @@
 <div class="literature__training__page mt20">
     <div class="page__title">Учебные пособия и литература ЭМК</div>
     <div class="conducted-training-table__navigation-header">
-        <!-- фильтр по авторам -->
-        <TagDateNavBar @pickFilter="(e) => pickFilter(e, 'автор')"
-                       :modifiers="'noTag'"
-                       :buttonText="'Автор'"
-                       :params="authors" />
-        <!-- фильтр по разделам -->
-        <TagDateNavBar @pickFilter="(e) => pickFilter(e, 'раздел')"
-                       :buttonText="'Раздел'"
-                       :modifiers="'noTag'"
-                       :params="sections" />
+        <div v-for="(name, index) in ['Автор', 'Раздел']"
+             :key="index + 'filter'"
+             class="dropdown-wrapper tagDateNavBar__dropdown-wrapper tagDateNavBar__dropdown-wrapper--long">
+            <button @click="showThis ? showThis = '' : showThis = name"
+                    class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+                {{ name }}
+            </button>
+            <transition name="fade">
+                <TagDateNavBar v-if="showThis == name"
+                               :modifiers="'noTag'"
+                               :buttonText="name"
+                               :params="name == 'Автор' ? authors : sections"
+                               @pickFilter="(e) => pickFilter(e, name)" />
+            </transition>
+        </div>
     </div>
     <TrainingTable :page="'literature'"
                    :tableElements="renderedLiterature" />
@@ -34,9 +39,10 @@ export default defineComponent({
     setup() {
         const literature = ref();
         const renderedLiterature = ref();
-
+        const showparams = ref(false);
         const authors: Ref<string[]> = ref([]);
         const sections: Ref<string[]> = ref([]);
+        const showThis = ref<string>();
 
         const setFilterData = (data: ItableItem[]) => {
             data.map((e) => {
@@ -62,20 +68,23 @@ export default defineComponent({
 
         const pickFilter = (param: string, type: string) => {
             renderedLiterature.value = literature.value;
-            if (type == 'автор') {
+            if (type == 'Автор') {
                 renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.author == param });
             }
-            else if (type == 'раздел') {
+            else if (type == 'Раздел') {
                 renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.subsection == param });
             }
+            showThis.value = '';
         }
 
         return {
             literature,
             authors,
             sections,
+            showparams,
+            renderedLiterature,
+            showThis,
             pickFilter,
-            renderedLiterature
         };
     },
 });

@@ -152,6 +152,13 @@
         text-align: center;
         margin-top: 10px;
 
+        &__loader {
+
+            width: 20px !important;
+            height: 20px !important;
+
+        }
+
         &>.primary-button {
             margin: auto;
             font-size: medium;

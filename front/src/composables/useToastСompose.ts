@@ -19,6 +19,7 @@ const messages: messages = {
         adminAddElementSuccess: 'Элемент успешно добавлен',
         adminUpdateElementSuccess: 'Элемент успешно обновлен',
         pointsSendSuccess: 'Баллы успешно отправлены',
+        ideaSendSuccess: 'Идея успешно отправлена! Спасибо!',
         merchBuySuccess: 'Ваш запрос успешно отправлен! Скоро с вами свяжутся для уточнения',
     },
     warn:{

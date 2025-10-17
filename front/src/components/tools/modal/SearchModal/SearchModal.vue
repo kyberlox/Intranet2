@@ -17,7 +17,10 @@
                              @click.stop.prevent>
                             <div class="search-wrapper">
                                 <div class="search-input">
-                                    <SearchIcon class="search-input__icon" />
+                                    <Loader v-if="isLoading"
+                                            class="search-input__icon__loader" />
+                                    <SearchIcon v-else
+                                                class="search-input__icon" />
                                     <input :autofocus="true"
                                            placeholder="Поиск..."
                                            v-model="searchTargetText" />
@@ -56,6 +59,7 @@ import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
 import Api from "@/utils/Api";
 import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component';
 import SearchResult from "./SearchResult.vue";
+import Loader from "@/components/layout/Loader.vue";
 
 interface searchResults {
     section?: string,
@@ -85,11 +89,13 @@ export default defineComponent({
         CloseIcon,
         SearchIcon,
         SearchResult,
+        Loader
     },
     setup(props, { emit }) {
         const searchTargetText = ref();
         const selectedSearchType = ref('full_search');
-        const searchResult: Ref<searchResults[]> = ref([])
+        const searchResult: Ref<searchResults[]> = ref([]);
+        const isLoading = ref<boolean>(false);
 
         watchDebounced((searchTargetText), (newVal) => {
             if (!newVal) {
@@ -104,11 +110,13 @@ export default defineComponent({
         }, { deep: true });
 
         const getSearchResult = () => {
+            isLoading.value = true;
             searchResult.value.length = 0;
             Api.get(`/${selectedSearchType.value}/${searchTargetText.value}`)
                 .then((data) => {
                     searchResult.value = data
                 })
+                .finally(() => isLoading.value = false)
         }
 
         const searchTypes = [
@@ -118,11 +126,12 @@ export default defineComponent({
         ];
 
         return {
-            closeModal: () => emit('closeSearchModal'),
             searchResult,
+            isLoading,
             searchTargetText,
             searchTypes,
-            selectedSearchType
+            selectedSearchType,
+            closeModal: () => emit('closeSearchModal'),
         }
     }
 })

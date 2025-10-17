@@ -49,6 +49,11 @@
 
         &__icon {
             width: 35px;
+
+            &__loader {
+                width: 35px;
+                height: auto;
+            }
         }
 
         &:focus-within {

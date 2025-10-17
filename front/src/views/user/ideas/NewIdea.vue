@@ -1,7 +1,8 @@
 <template>
 <div class="mt20">
     <h1 class="page__title">Обратная связь: Есть идея!</h1>
-    <div class="idea-new">
+    <div class="idea-new"
+         v-if="userUid">
         <div class="idea-new__form-container">
             <div v-html="greetings"></div>
             <VForm class="idea-new__form"
@@ -59,7 +60,9 @@
                         'primary-button': true
                     }"
                             :disabled="buttonsIsDisabled">
-                        Отправить
+                        <Loader v-if="buttonsIsDisabled"
+                                class="idea-new__submit-group__loader" />
+                        <span v-else>Отправить</span>
                     </button>
                 </div>
             </VForm>
@@ -81,6 +84,7 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 
 import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+import Loader from '@/components/layout/Loader.vue';
 
 
 export default defineComponent({
@@ -88,7 +92,8 @@ export default defineComponent({
     components: {
         Field,
         VForm,
-        ErrorMessage
+        ErrorMessage,
+        Loader
     },
     emits: ['showToast'],
     setup(props, { emit }) {
@@ -119,7 +124,7 @@ export default defineComponent({
             const formData: IPostIdea = {};
             formData.NAME = values.themeField;
             formData.DETAIL_TEXT = values.textField;
-            formData.CREATED_BY = '2366';
+            formData.CREATED_BY = String(userUid.value);
             formData.base_name = messageFileName.value;
 
             if (fileBase64.value) {
@@ -128,8 +133,7 @@ export default defineComponent({
 
             Api.post('/idea/new/', formData)
                 .then((data) => {
-                    handleApiResponse(data, toast, 'trySupportError', 'adminDeleteSuccess')
-                    emit('showToast', 'success', 'Идея успешно отправлена! Спасибо!');
+                    handleApiResponse(data, toast, 'trySupportError', 'ideaSendSuccess')
                 })
                 .catch((error) => {
                     handleApiError(error, toast)

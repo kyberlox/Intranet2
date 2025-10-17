@@ -27,7 +27,7 @@
                     {{ textContent.content }}
                 </div>
                 <div>
-                    <a href="https://portal.emk.ru/intranet/editor/feedback/pdfgen.php?ELEMENT_ID=54557"
+                    <a :href="`https://portal.emk.ru/intranet/editor/feedback/pdfgen.php?ELEMENT_ID=${textContent?.id}`"
                        target="_blank"
                        class="primary-button">Сохранить PDF</a>
                 </div>
@@ -53,6 +53,7 @@ interface IUserForModal {
 }
 
 interface IModalTextContent {
+    id: string
     number: string
     name: string
     content: string

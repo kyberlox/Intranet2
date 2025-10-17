@@ -1720,7 +1720,8 @@ class Article:
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
-                    preview_link[-2] = "compress_image"
+                    # preview_link[-2] = "compress_image"
+                    preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
                 
                 return f"{DOMAIN}{url}"
@@ -1740,7 +1741,8 @@ class Article:
                     return f"{DOMAIN}{url}"
                 else:
                     preview_link = url.split("/")
-                    preview_link[-2] = "compress_image"
+                    # preview_link[-2] = "compress_image"
+                    preview_link[-2] = "compress_image/yowai_mo"
                     url = '/'.join(preview_link)
                 return f"{DOMAIN}{url}"
         

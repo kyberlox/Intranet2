@@ -4,7 +4,7 @@
         class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
     Год публикации
 </button>
-<DateFilter v-if="allEvents"
+<DateFilter v-if="allEvents && showFilter"
             :buttonText="buttonText"
             :params="extractYears(allEvents)"
             @pickFilter="(year: string) => filterYear(year)" />
@@ -41,7 +41,7 @@ export default defineComponent({
             useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                 .then(res => {
-                    useViewsDataStore().setData(res, 'corpEventsData')
+                    useViewsDataStore().setData(res, 'corpEventsData');
                     visibleEvents.value = res;
                 })
                 .finally(() => {

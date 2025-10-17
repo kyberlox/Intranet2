@@ -1618,6 +1618,10 @@ class Article:
             #файлы делятся по категориям
             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
+                if art['section_id'] in [42, 51, 52]:
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image/yowai_mo"
+                    url = '/'.join(preview_link)
                 file["file_url"] = f"{DOMAIN}{url}"
                 art['images'].append(file)
             elif "video" in file["content_type"]:

@@ -228,7 +228,7 @@ class Article:
                 #внедряю компрессию
                 "photo_file_url" : photo_replace,
                 "award" : award,
-                "location" : ""
+                "location" : "Центральный офис"
             }
 
         #Наши люди

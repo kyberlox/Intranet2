@@ -54,7 +54,7 @@ export default defineComponent({
         WorkerCard,
         Loader
     },
-    setup(props) {
+    setup() {
         const dateYear = new Date().getFullYear();
         const currentYear = ref(dateYear - 1);
         const isLoading = ref(false);
@@ -108,7 +108,15 @@ export default defineComponent({
             actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
         }
 
-        watch(([activeLocation, currentYear]), () => {
+        watch((activeLocation), () => {
+            initWorkers();
+            currentYear.value = dateYear - 1;
+        }, {
+            immediate: true,
+            deep: true
+        })
+
+        watch((currentYear), () => {
             initWorkers();
         }, {
             immediate: true,

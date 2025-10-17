@@ -29,6 +29,7 @@ class User(Base):
     likes = relationship("Likes", back_populates="user")
 
     usdep = relationship("UsDep", back_populates="user")
+    userFiles = relationship("userFiles", back_populates="user")
 
     rootsusers = relationship("Roots", back_populates="user")
     peerhistory = relationship("PeerHistory", back_populates="user")

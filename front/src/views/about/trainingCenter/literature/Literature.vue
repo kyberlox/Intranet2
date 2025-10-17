@@ -5,17 +5,16 @@
         <div v-for="(name, index) in ['Автор', 'Раздел']"
              :key="index + 'filter'"
              class="dropdown-wrapper tagDateNavBar__dropdown-wrapper tagDateNavBar__dropdown-wrapper--long">
-            <button @click="showThis ? showThis = '' : showThis = name"
+            <button @click="handleButtonClick(name)"
                     class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
                 {{ name }}
             </button>
-            <transition name="fade">
-                <TagDateNavBar v-if="showThis == name"
-                               :modifiers="'noTag'"
-                               :buttonText="name"
-                               :params="name == 'Автор' ? authors : sections"
-                               @pickFilter="(e) => pickFilter(e, name)" />
-            </transition>
+            <DateFilter v-if="showThis == name"
+                        :modifiers="'noTag'"
+                        :buttonText="name"
+                        :params="name == 'Автор' ? authors : sections"
+                        :needButton="false"
+                        @pickFilter="(e) => pickFilter(e, name)" />
         </div>
     </div>
     <TrainingTable :page="'literature'"
@@ -28,13 +27,13 @@ import Api from "@/utils/Api";
 import TrainingTable from "../components/TrainingTable.vue";
 import { defineComponent, onMounted, ref, type Ref } from "vue";
 import { sectionTips } from "@/assets/static/sectionTips";
-import TagDateNavBar from "@/components/tools/common/DateFilter.vue";
+import DateFilter from "@/components/tools/common/DateFilter.vue";
 import type { ItableItem } from "@/interfaces/IEntities";
 
 export default defineComponent({
     components: {
         TrainingTable,
-        TagDateNavBar
+        DateFilter
     },
     setup() {
         const literature = ref();
@@ -68,13 +67,26 @@ export default defineComponent({
 
         const pickFilter = (param: string, type: string) => {
             renderedLiterature.value = literature.value;
-            if (type == 'Автор') {
-                renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.author == param });
-            }
-            else if (type == 'Раздел') {
-                renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.subsection == param });
-            }
             showThis.value = '';
+            if (param == '') {
+                return
+            } else
+                if (type == 'Автор') {
+                    renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.author == param });
+                }
+                else if (type == 'Раздел') {
+                    renderedLiterature.value = renderedLiterature.value.filter((e: ItableItem) => { if (e.indirect_data) return e.indirect_data.subsection == param });
+                }
+        }
+
+        const handleButtonClick = (name: string) => {
+            switch (showThis.value) {
+                case name:
+                    showThis.value = ''
+                    break;
+                default:
+                    showThis.value = name;
+            }
         }
 
         return {
@@ -85,6 +97,7 @@ export default defineComponent({
             renderedLiterature,
             showThis,
             pickFilter,
+            handleButtonClick
         };
     },
 });

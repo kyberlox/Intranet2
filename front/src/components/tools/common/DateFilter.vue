@@ -1,16 +1,14 @@
 <template>
 <div class="tagDateNavBar__dropdown">
     <div class="dropdown-wrapper tagDateNavBar__dropdown-wrapper">
-        <!-- <button @click="showparams = !showparams"
-                class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
-            {{ (buttonText && buttonText?.length > 0) ? buttonText : 'Год публикации' }}
-        </button> -->
         <ul class="dropdown__menu tagDateNavBar__dropdown__menu">
             <li class="dropdown__item-wrapper tagDateNavBar__dropdown__item-wrapper"
                 v-for="(param, index) in params"
                 :key="index"
                 @click="pickFilter(param)">
-                <div class="dropdown__item tagDateNavBar__dropdown__item">{{ param }}</div>
+                <div class="dropdown__item tagDateNavBar__dropdown__item">
+                    {{ param }}
+                </div>
             </li>
             <li class="dropdown__item-wrapper tagDateNavBar__dropdown__item-wrapper"
                 @click="pickFilter('')">
@@ -29,7 +27,11 @@ export default defineComponent({
     props: {
         modifiers: String,
         params: Array<string>,
-        buttonText: String
+        buttonText: String,
+        needButton: {
+            type: Boolean,
+            default: () => true
+        }
     },
     emits: ['pickFilter'],
     setup(props, { emit }) {

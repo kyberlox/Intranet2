@@ -1,15 +1,19 @@
 <template>
-    <h1 class="page__title mt20">Корпоративная жизнь</h1>
-    <DateFilter v-if="allEvents"
-                :buttonText="buttonText"
-                :params="extractYears(allEvents)"
-                @pickFilter="(year: string) => filterYear(year)" />
-    <ComplexGallery v-if="visibleEvents"
-                    :key="galleryKey"
-                    class="mt10"
-                    :page=page
-                    :slides="visibleEvents"
-                    :routeTo="'corpLifeItem'" />
+<h1 class="page__title mt20">Корпоративная жизнь</h1>
+<button @click="showFilter = !showFilter"
+        class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+    Год публикации
+</button>
+<DateFilter v-if="allEvents && showFilter"
+            :buttonText="buttonText"
+            :params="extractYears(allEvents)"
+            @pickFilter="(year: string) => filterYear(year)" />
+<ComplexGallery v-if="visibleEvents"
+                :key="galleryKey"
+                class="mt10"
+                :page=page
+                :slides="visibleEvents"
+                :routeTo="'corpLifeItem'" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
@@ -33,6 +37,7 @@ export default defineComponent({
         const visibleEvents: Ref<IBaseEntity[]> = ref(allEvents.value);
         const buttonText: Ref<string> = ref('Год публикации');
         const galleryKey = ref(0);
+        const showFilter = ref(false);
 
         onMounted(() => {
             if (allEvents.value.length) return;
@@ -57,6 +62,7 @@ export default defineComponent({
                 visibleEvents.value = showEventsByYear(allEvents.value, year);
             }
             galleryKey.value++;
+            showFilter.value = false;
         }
 
         return {
@@ -65,6 +71,7 @@ export default defineComponent({
             visibleEvents,
             buttonText,
             galleryKey,
+            showFilter,
             showEventsByYear,
             filterYear,
             extractYears

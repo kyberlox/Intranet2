@@ -1,9 +1,16 @@
 <template>
 <div class="page__title mt20">Актуальные новости</div>
 <div class="tags__page__filter">
-    <DateFilter :params="filterYears"
-                :buttonText="currentYear ?? 'Год'"
-                @pickFilter="(year: string) => currentYear = year" />
+    <div>
+        <button @click="showFilter = !showFilter"
+                class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+            Год публикации
+        </button>
+        <DateFilter v-if="showFilter"
+                    :params="filterYears"
+                    :buttonText="currentYear ?? 'Год'"
+                    @pickFilter="(year: string) => currentYear = year" />
+    </div>
     <TagsFilter @pickTag="(tag: string) => currentTag = tag"
                 :tagId="tagId" />
 </div>
@@ -51,6 +58,7 @@ export default defineComponent({
         const currentYear: Ref<string> = ref('');
         const filterYears: Ref<string[]> = ref([]);
         const emptyTag: Ref<boolean> = ref(false);
+        const showFilter = ref(false);
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
@@ -59,6 +67,7 @@ export default defineComponent({
             visibleNews.value = newVisibleNews.value;
             emptyTag.value = newEmptyTag.value;
             filterYears.value = newFilterYears.value;
+            showFilter.value = false;
         })
 
         onMounted(async () => {
@@ -80,6 +89,7 @@ export default defineComponent({
             currentTag,
             filterYears,
             emptyTag,
+            showFilter,
             extractYears,
             showEventsByYear,
         };

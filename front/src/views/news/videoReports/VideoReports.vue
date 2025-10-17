@@ -1,9 +1,16 @@
 <template>
 <h1 class="page__title mt20">Видеорепортажи</h1>
 <div class="tags__page__filter">
-    <DateFilter :params="filterYears"
-                :buttonText="currentYear ?? 'Год'"
-                @pickFilter="(year: string) => currentYear = year" />
+    <div>
+        <button @click="showFilter = !showFilter"
+                class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+            Год публикации
+        </button>
+        <DateFilter v-if="showFilter"
+                    :params="filterYears"
+                    :buttonText="currentYear ?? 'Год'"
+                    @pickFilter="(year: string) => currentYear = year" />
+    </div>
     <TagsFilter @pickTag="(tag: string) => currentTag = tag"
                 :tagId="tagId" />
 </div>
@@ -46,6 +53,7 @@ export default defineComponent({
         const currentYear: Ref<string> = ref('');
         const filterYears: Ref<string[]> = ref([]);
         const emptyTag: Ref<boolean> = ref(false);
+        const showFilter = ref(false);
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
@@ -54,6 +62,7 @@ export default defineComponent({
             visibleReports.value = newVisibleNews.value;
             emptyTag.value = newEmptyTag.value;
             filterYears.value = newFilterYears.value;
+            showFilter.value = false;
         })
 
         onMounted(() => {
@@ -76,7 +85,8 @@ export default defineComponent({
             currentYear,
             filterYears,
             visibleReports,
-            emptyTag
+            emptyTag,
+            showFilter
         };
     },
 });

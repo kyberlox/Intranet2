@@ -1,15 +1,19 @@
 <template>
-    <div class="page__title mt20">Официальные события</div>
-    <DateFilter v-if="allSlides"
-                :buttonText="buttonText"
-                :params="extractYears(allSlides)"
-                @pickFilter="(year: string) => filterYear(year)" />
-    <ComplexGallery v-if="visibleEvents"
-                    :key="offEventKey"
-                    class="mt20"
-                    :page=page
-                    :slides="visibleEvents"
-                    :routeTo="'officialEvent'" />
+<div class="page__title mt20">Официальные события</div>
+<button @click="showFilter = !showFilter"
+        class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+    Год публикации
+</button>
+<DateFilter v-if="allSlides && showFilter"
+            :buttonText="buttonText"
+            :params="extractYears(allSlides)"
+            @pickFilter="(year: string) => filterYear(year)" />
+<ComplexGallery v-if="visibleEvents"
+                :key="offEventKey"
+                class="mt20"
+                :page=page
+                :slides="visibleEvents"
+                :routeTo="'officialEvent'" />
 </template>
 <script lang="ts">
 import DateFilter from '@/components/tools/common/DateFilter.vue';
@@ -33,7 +37,7 @@ export default defineComponent({
         const allSlides = computed((): IBaseEntity[] => useViewsDataStore().getData('officialEventsData') as IBaseEntity[]);
         const visibleEvents: Ref<IBaseEntity[]> = ref(allSlides.value);
         const buttonText: Ref<string> = ref('Год публикации');
-
+        const showFilter = ref(false);
         onMounted(() => {
             if (allSlides.value.length) return;
             useLoadingStore().setLoadingStatus(true);
@@ -57,15 +61,17 @@ export default defineComponent({
                 visibleEvents.value = showEventsByYear(allSlides.value, year);
             }
             offEventKey.value++;
+            showFilter.value = false;
         }
         return {
             allSlides,
             page: 'officialEvents',
-            filterYear,
-            extractYears,
             visibleEvents,
             buttonText,
             offEventKey,
+            showFilter,
+            filterYear,
+            extractYears,
             showEventsByYear
         };
     },

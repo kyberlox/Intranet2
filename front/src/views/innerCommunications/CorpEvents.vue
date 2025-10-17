@@ -1,5 +1,9 @@
 <template>
 <h1 class="page__title mt20">Корпоративные события</h1>
+<button @click="showFilter = !showFilter"
+        class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+    Год публикации
+</button>
 <DateFilter v-if="allEvents"
             :buttonText="buttonText"
             :params="extractYears(allEvents)"
@@ -31,7 +35,7 @@ export default defineComponent({
         const allEvents: ComputedRef<INews[]> = computed(() => useViewsDataStore().getData('corpEventsData') as INews[]);
         const visibleEvents = ref<INews[]>(allEvents.value);
         const buttonText: Ref<string> = ref('Год публикации');
-
+        const showFilter = ref(false);
         onMounted(() => {
             if (allEvents.value.length) return;
             useLoadingStore().setLoadingStatus(true);
@@ -54,12 +58,14 @@ export default defineComponent({
                 buttonText.value = year;
                 visibleEvents.value = showEventsByYear(allEvents.value, year);
             }
+            showFilter.value = false;
         }
 
         return {
             visibleEvents,
             allEvents,
             buttonText,
+            showFilter,
             extractYears,
             showEventsByYear,
             filterYear

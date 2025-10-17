@@ -151,11 +151,17 @@ setup_docker_iptables() {
     
     ensure_docker_user_chain
     
-    # Разрешаем для конкретного IP
+    # Удаляем стандартное правило RETURN если оно мешает (временно)
+    iptables -D DOCKER-USER -j RETURN 2>/dev/null || true
+    
+    # Сначала разрешаем для конкретного IP
     iptables -I DOCKER-USER -p tcp -s "$IP" --dport "$PORT" -j ACCEPT
     
-    # Запрещаем для всех остальных
-    iptables -A DOCKER-USER -p tcp --dport "$PORT" -j DROP
+    # Затем запрещаем для всех остальных
+    iptables -I DOCKER-USER -p tcp --dport "$PORT" -j DROP
+    
+    # Возвращаем правило RETURN в конец
+    iptables -A DOCKER-USER -j RETURN
     
     log "Правила iptables для Docker применены: порт $PORT открыт только для $IP"
 }

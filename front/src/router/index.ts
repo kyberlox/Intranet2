@@ -39,10 +39,9 @@ const router = createRouter({
       }
     },
     {
-    path: '/about/year-results/:id?', 
+    path: '/about/year-results', 
     name: 'year-results',
     component: () => import('@/views/about/yearResults/YearResults.vue'),
-    props: (route) => ({ id: route.params.id || null }),
     },
     {
       path: '/about/blogs',

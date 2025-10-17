@@ -113,7 +113,6 @@ export default defineComponent({
         Reactions
     },
     setup(props, { emit }) {
-        console.log(props);
 
         return {
             callModal: (slides: IBXFileType[], index: number) => emit('callModal', index),

@@ -67,12 +67,16 @@
                             <div v-if="user.personal_birthday"
                                  class="personal__user__property__items__birthday">
                                 <h3>День рождения</h3>
-                                <span>{{ formatBirthday(user.personal_birthday) }}</span>
+                                <span>
+                                    {{ formatBirthday(user.personal_birthday) }}
+                                </span>
                             </div>
                             <div v-if="user.personal_city"
                                  class="personal__user__property__items__workplace">
                                 <h3>Местоположение</h3>
-                                <span>{{ user.personal_city }}</span>
+                                <span>
+                                    {{ user.personal_city }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -109,7 +113,7 @@
             </div>
         </div>
     </div>
-    <ZoomModal :image="[user.indirect_data.personal_photo ?? 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg']"
+    <ZoomModal :image="[user.photo_file_url ?? 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg']"
                v-if="modalIsOpen == true"
                @close="modalIsOpen = false" />
     <SendPoints v-if="isPointsModalOpen"

@@ -57,12 +57,12 @@
     }
 
     &__filter__link {
-        &>a {
-            color: #666;
-        }
+        color: #666;
+        cursor: pointer;
 
-        & .router-link-active {
+        &--active {
             color: black;
         }
+
     }
 }

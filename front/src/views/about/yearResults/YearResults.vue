@@ -4,13 +4,27 @@
     <Loader class="contest__page__loader" />
 </div>
 <div v-else>
+    <div v-if="workersLocations"
+         class="tags">
+        <div v-for="(location, index) in workersLocations"
+             :key="'location' + index"
+             class="tag__wrapper ">
+            <div class="tags__tag tags__tag--nohover tags__tag--inner section__item__link btn-air"
+                 :class="{ 'tags__tag--active': activeLocation == location }"
+                 @click="activeLocation = location">
+                {{ location }}
+            </div>
+        </div>
+    </div>
     <div v-if="actualYears.length"
          class="staff__filter__link d-flex gap-3 mt20">
-        <RouterLink :to="{ name: 'year-results', params: { id: year } }"
-                    v-for="(year, index) in actualYears"
-                    :key="index">
+        <div v-for="(year, index) in actualYears"
+             :key="index"
+             :class="{ 'staff__filter__link--active': currentYear == Number(year) }"
+             @click="currentYear = Number(year)">
             {{ year }}
-        </RouterLink>
+
+        </div>
     </div>
     <div class="row mb-5 mt20">
         <h2 class="page__title">Сотрудник года ЭМК
@@ -36,20 +50,16 @@ import Loader from "@/components/layout/Loader.vue";
 import type { IWorkerOfTheYear } from "@/interfaces/IEntities";
 
 export default defineComponent({
-    props: {
-        id: {
-            type: String,
-            default: null,
-        },
-    },
     components: {
         WorkerCard,
         Loader
     },
     setup(props) {
         const dateYear = new Date().getFullYear();
-        const currentYear = ref(props.id ? props.id : dateYear - 1);
+        const currentYear = ref(dateYear - 1);
         const isLoading = ref(false);
+        const workersLocations = ref<string[]>([]);
+        const activeLocation = ref<string>('Центральный офис');
 
         const allTimeAwards: Ref<IWorkerOfTheYear[]> = ref([]);
         const chosenYearAwards: Ref<IWorkerOfTheYear[]> = ref([]);
@@ -65,11 +75,10 @@ export default defineComponent({
                     actualYears.value.length = 0;
                     allTimeAwards.value = res;
                     res.map((item: IWorkerOfTheYear) => {
-                        if (item.indirect_data && (actualYears.value.length == 0 || (actualYears.value.indexOf(item.indirect_data.year) < 0))) {
-                            actualYears.value.push(item.indirect_data.year)
+                        if (item.indirect_data?.location && !workersLocations.value.includes(item.indirect_data?.location)) {
+                            workersLocations.value.push(item.indirect_data.location)
                         }
                     })
-                    actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
                 })
                 .finally(() => {
                     initWorkers();
@@ -78,15 +87,16 @@ export default defineComponent({
         })
 
         const initWorkers = () => {
-            if (props.id) {
-                currentYear.value = props.id;
-            }
             chosenYearAwards.value.length = 0;
             workerWithDiploma.value.length = 0;
             workerOfTheYear.value.length = 0;
+            actualYears.value.length = 0;
 
             allTimeAwards.value.map(item => {
-                if (item.indirect_data && item.indirect_data.year == String(currentYear.value)) {
+                if (item.indirect_data?.location == activeLocation.value && item.indirect_data && (actualYears.value.length == 0 || (actualYears.value.indexOf(item.indirect_data.year) < 0))) {
+                    actualYears.value.push(item.indirect_data.year)
+                }
+                if (item.indirect_data && item.indirect_data.year == String(currentYear.value) && item.indirect_data.location == activeLocation.value) {
                     if (item.indirect_data.award == 'Почетная грамота') {
                         workerWithDiploma.value.push(item);
                     }
@@ -95,12 +105,14 @@ export default defineComponent({
                     }
                 }
             })
+            actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
         }
 
-        watch(() => props.id, () => {
+        watch(([activeLocation, currentYear]), () => {
             initWorkers();
         }, {
-            immediate: true
+            immediate: true,
+            deep: true
         })
 
         return {
@@ -109,7 +121,9 @@ export default defineComponent({
             workerWithDiploma,
             workerOfTheYear,
             actualYears,
-            isLoading
+            isLoading,
+            activeLocation,
+            workersLocations
         };
     },
 });

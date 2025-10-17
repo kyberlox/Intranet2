@@ -16,7 +16,7 @@
                 </div>
             </div>
         </div>
-        <PageScrollArrow/>
+        <PageScrollArrow />
     </main>
 </div>
 <div v-else>
@@ -61,6 +61,8 @@ export default defineComponent({
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (isLogin.value) {
+                prefetchSection('score');
+                prefetchSection('calendar');
                 const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
                 const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
 
@@ -75,8 +77,6 @@ export default defineComponent({
         onMounted(() => {
             userData.initKeyFromStorage();
             prefetchSection('user');
-            prefetchSection('score');
-            prefetchSection('calendar');
         })
 
         return {

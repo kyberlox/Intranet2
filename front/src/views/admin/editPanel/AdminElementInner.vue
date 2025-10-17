@@ -237,7 +237,6 @@ export default defineComponent({
               if (!newData.value.users) return
               usersList.value = newData.value.users
             }
-            console.log(data)
             // Для блогов
             if (data.section_id == 15) {
               newData.value.TITLE = data.fields.find((e: { field: string }) => e.field == 'TITLE').value;

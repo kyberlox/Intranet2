@@ -98,7 +98,8 @@ export default defineComponent({
     },
     props: {
         targetId: {
-            type: String
+            type: String,
+            default: () => '10'
         },
     },
     setup(props) {
@@ -136,9 +137,7 @@ export default defineComponent({
 
         watch((props), () => {
             visibleMonthes.value = monthesInit;
-            if (props.targetId) {
-                scrollToNode(props.targetId, eventNodes, 'data-event-id')
-            }
+            scrollToNode(props.targetId, props.targetId.length <= 2 ? monthNodes : eventNodes, props.targetId.length <= 2 ? 'data-month-num' : 'data-event-id')
         }, { immediate: true, deep: true })
 
         const getEventFromMonth = (monthNum: string) => {

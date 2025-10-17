@@ -26,7 +26,9 @@
             <button class="btn btn-primary portal__auth__form__auth__submit"
                     name="Login"
                     @click="tryLogin">
-                Войти
+                <span v-if="!isLoading"> Войти</span>
+                <Loader v-else-if="isLoading"
+                        class="pos-rel" />
             </button>
             <div class="portal__auth__form__error">{{ error ? error : '' }}</div>
         </div>
@@ -41,10 +43,13 @@ import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { prefetchSection } from '@/composables/usePrefetchSection';
+import Loader from '@/components/layout/Loader.vue';
 
 export default defineComponent({
     name: 'AuthPage',
-    components: {},
+    components: {
+        Loader
+    },
     setup() {
         const userName = ref('');
         const passWord = ref('');
@@ -52,7 +57,10 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const loginInput = ref();
+        const isLoading = ref(false);
         const tryLogin = () => {
+            error.value = '';
+            isLoading.value = true;
             if (!userName.value || !passWord.value) {
                 return error.value = 'Проверьте логин и пароль'
             }
@@ -68,8 +76,8 @@ export default defineComponent({
                                 prefetchSection('user');
                             }
                         }
-                        else if (resp.warn) {
-                            if (String(resp.warn).includes('login') || String(resp.warn).includes('password')) {
+                        else if (resp.status == 'warning' || resp.status == 'error') {
+                            if (String(resp.message).includes('credentials') || String(resp.message).includes('Invalid')) {
                                 error.value = 'Ошибка авторизации. Проверьте логин и пароль'
                             }
                             else error.value = 'Что-то пошло не так. Повторите попытку или сообщите в поддержку сайта (5182/5185)'
@@ -78,7 +86,9 @@ export default defineComponent({
                     .catch((error) => {
                         handleApiError(error, toast)
                     })
+                    .finally(() => isLoading.value = false)
         }
+
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -96,6 +106,7 @@ export default defineComponent({
             passWord,
             error,
             loginInput,
+            isLoading,
             tryLogin,
             handleKeyDown
         };

@@ -11,5 +11,6 @@ class Fieldvision(Base):
     __tablename__ = 'fieldvision'
     id = Column(Integer, primary_key=True)
     vision_name = Column(Text, nullable=True)
-
-    # uservisionsroot = relationship("UservisionsRoot", back_populates="fieldvision")
+    
+    uservisionsroot = relationship("UservisionsRoot", back_populates="fieldvision")
+    artvis = relationship("ArtVis", back_populates="fieldvision")

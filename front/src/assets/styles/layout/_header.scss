@@ -3,7 +3,7 @@
 .header {
     background: linear-gradient(180deg, #ececec 38.13%, #fcfcfc 66.26%, #fbfbfb 76.34%, #e8e8e8 100%);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    z-index: 40;
+    z-index: 15;
 
     &__logo {
         width: 90px;
@@ -85,6 +85,7 @@
 .navbar {
     &-collapse {
         height: 100%;
+        width: 100%;
     }
 
     &-nav {
@@ -110,18 +111,28 @@
     }
 }
 
-.nav-link {
-    &--main-points {
-        &::after {
-            color: var(--emk-brand-color);
-            vertical-align: 0.23em;
-            margin-left: 7px;
+.nav {
+    &-menu {
+        @include sm {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+    }
+
+    &-link {
+        &--main-points {
+            &::after {
+                color: var(--emk-brand-color);
+                vertical-align: 0.23em;
+                margin-left: 7px;
+            }
         }
     }
 }
 
 .dropdown {
     cursor: pointer;
+    z-index: 16;
 
     &--opened {
         >.dropdown-menu {
@@ -147,6 +158,11 @@
         border: 0;
         cursor: pointer;
 
+        @include sm {
+            white-space: break-spaces;
+        }
+
+        &>a:hover,
         &:hover {
             color: var(--emk-brand-color);
         }

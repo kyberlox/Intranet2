@@ -2,7 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.sql.expression import select
 
 from ..models.Department import Department
-from .App import engine
+from .App import engine, get_db
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -11,7 +11,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Подразделений")
 
-
+db_gen = get_db()
+database = next(db_gen)
 
 class DepartmentModel:
 
@@ -21,8 +22,8 @@ class DepartmentModel:
         from ..models.Department import Department
         self.department = Department
 
-        from .App import db
-        self.db = db
+        # from .App import db
+        # database = db
 
     def upsert_dep(self, dep_data):
         """
@@ -48,15 +49,15 @@ class DepartmentModel:
 
         # проверить по id есть ли такой департамент
         try:  
-            q = self.db.query(Department).filter(Department.id == dep_data["id"])
-            dep_exist = self.db.query(q.exists()).scalar() # ПРОВЕРЕНО 
+            q = database.query(Department).filter(Department.id == dep_data["id"])
+            dep_exist = database.query(q.exists()).scalar() # ПРОВЕРЕНО 
 
             DB_columns_dep = ['id', 'name', 'sort', 'user_head_id', 'father_id']
 
             # если такой id существует - проверить необходимость обновленияs
             if dep_exist:
 
-                dep = self.db.execute(select(Department).where(self.department.id == dep_data["id"])).scalar()
+                dep = database.execute(select(Department).where(self.department.id == dep_data["id"])).scalar()
                                 
                 for column in DB_columns_dep:
 
@@ -116,7 +117,7 @@ class DepartmentModel:
         """
         Ищет департамент по id
         """
-        res = self.db.query(Department).get(self.id) #self.db.execute(select(self.department).where(self.department.id == self.id)).scalar()
+        res = database.query(Department).get(self.id) #database.execute(select(self.department).where(self.department.id == self.id)).scalar()
 
         if res is not None:
             # res = res.__dict__
@@ -128,7 +129,7 @@ class DepartmentModel:
             #return LogsMaker().warning_message('Нет такого департамента')
             return []
 
-        # dep = self.db.query(self.department).get(self.id)
+        # dep = database.query(self.department).get(self.id)
         # result = dict()
         # DB_columns = ['id', 'name', 'sort', 'user_head_id', 'father_id']
         # if dep is not None:
@@ -140,9 +141,9 @@ class DepartmentModel:
     
     def find_deps_by_father_id(self, father_id):
         result = []
-        #null_depart = self.db.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
-        #res = self.db.query(self.department).filter(self.department.father_id == father_id).all()
-        res = self.db.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
+        #null_depart = database.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
+        #res = database.query(self.department).filter(self.department.father_id == father_id).all()
+        res = database.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
         if res is not None:
             return res
         else:
@@ -151,4 +152,4 @@ class DepartmentModel:
             return []
 
     def all(self):
-        return self.db.query(Department).all()
+        return database.query(Department).all()

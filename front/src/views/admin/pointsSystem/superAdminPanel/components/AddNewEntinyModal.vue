@@ -1,6 +1,6 @@
 <template>
 <SlotModal>
-    <div class="adminPointEditModal">
+    <div class="points-admin-panel__add-entity">
         <div v-if="currentEntity == 'activity'">
             <AdminEditInput @pick="(value: string) => newActivity.name = value"
                             :item="{ name: 'Название' }"
@@ -92,7 +92,7 @@ export default defineComponent({
 
         watchDebounced((searchQuery), () => {
             if (!searchQuery.value) return;
-            Api.get(`users/search/full_search_users/${searchQuery.value}`)
+            Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/10`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)
@@ -128,14 +128,3 @@ export default defineComponent({
     }
 })
 </script>
-
-
-<style>
-.adminPointEditModal {
-    padding: 20px;
-    /* width: 500px; */
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-</style>

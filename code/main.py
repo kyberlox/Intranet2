@@ -25,13 +25,14 @@ from src.base.Elastic import StructureSearchModel, ArticleSearchModel, UserSearc
 from src.base.B24 import B24, b24_router
 
 from src.services.VCard import vcard_app
+from src.services.Chelp import C_app
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
 from src.services.Idea import idea_router
 from src.services.Editor import editor_router
 from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
-from src.services.Roots import roots_router
+from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
 
@@ -81,6 +82,8 @@ app.include_router(peer_router, prefix="/api")
 app.include_router(roots_router, prefix="/api")
 app.include_router(store_router, prefix="/api")
 
+app.include_router(C_app, prefix="/api")
+
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
@@ -114,10 +117,28 @@ USER_STORAGE_PATH = "./files_db/user_photo"
 os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 
 # Монтируем статику
+app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 
 
+
+# Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
+open_links = [
+    "/docs",
+    "/api/users_update",
+    "/api/users/update_user_info",
+    "/openapi.json",
+    "/api/auth_router",
+    "/api/total_update",
+    "/api/files",
+    "/api/tours",
+    "/api/compress_image", "compress_image",
+    "/api/user_files",
+    "test", "dump", "get_file", "get_all_files",
+    "/api/total_background_task_update",
+    "/ws/progress"
+]
 
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
@@ -125,21 +146,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Внедряю свою отладку
     log = LogsMaker()
 
-    # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
-    open_links = [
-        "/docs",
-        "/api/users_update",
-        "/api/users/update_user_info",
-        "/openapi.json",
-        "/api/auth_router",
-        "/api/total_update",
-        "/api/files/",
-        "/api/compress_image",
-        "/api/user_files",
-        "test", "dump", "get_file", "get_all_files",
-        "/api/total_background_task_update",
-        "/ws/progress"
-    ]
+    
 
     for open_link in open_links:
         if open_link in request.url.path:
@@ -195,6 +202,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             # )
 
     return await call_next(request)
+
 
 
 # Прогресс процесса через вебсокет
@@ -265,8 +273,18 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
 #     else:
 #         return f'нет такого upload_id = {upload_id}'
 
+@app.get("/get_info_message")
+def get_info_message():
+    file_path = "./files_db/Информационное_письмо_НПО_ЭМК.docx"
 
+    if not os.path.exists(file_path):
+        return LogsMaker().error_message("Файл отсутствует")
 
+    return FileResponse(
+        path=file_path,
+        filename="Информационное_письмо_НПО_ЭМК.docx",  # Имя файла для пользователя
+        media_type='application/octet-stream'
+    )
 
 @app.get("/get_test_elastic/{word}")
 def get_test_elastic(word: str):
@@ -319,9 +337,10 @@ def total_background_task_update(background_tasks: BackgroundTasks):
     background_tasks.add_task(User().fetch_users_data)
     background_tasks.add_task(UsDep().get_usr_dep)
     background_tasks.add_task(Section().load)
+    background_tasks.add_task(Tag().add_b24_tag)
     background_tasks.add_task(Article().uplod)
     background_tasks.add_task(Article().upload_likes)
-    background_tasks.add_task(Tag().add_b24_tag)
+    background_tasks.add_task(Roots().create_primary_admins)
     return {"status" : "started", "message" : "Загрузка запущена в фоновом режиме!"}
 
 
@@ -360,17 +379,13 @@ def total_users_update():
     time_start = time.time()
     status = False
 
-    # print("Обновление информации о разделах сайта")
-    # Section().load()
-    # status += 1
-    # print("Успешно!")
-
-    print("Обновление информации о статьях сайта")
+    from src.model.Article import Article
+    LogsMaker().info_message("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:
         status += 1
-        print("Успешно!")
+        LogsMaker().ready_status_message("Успешно!")
     else:
-        print("Ошибка!")
+        LogsMaker().error_message("Ошибка!")
     
     time_end = time.time()
     total_time_sec = time_end - time_start
@@ -386,36 +401,56 @@ def total_update():
 
     
 
-    # LogsMaker().info_message("Обновление информации о подразделениях")
-    # if Department().fetch_departments_data()["status"]:
-    #     status += 1
-    #     LogsMaker().ready_status_message("Успешно!")
-    # else:
-    #     LogsMaker().error_message("Ошибка!")
+    from src.model.Department import Department
+    LogsMaker().info_message("Обновление информации о подразделениях")
+    if Department().fetch_departments_data()["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
 
-    # LogsMaker().info_message("Обновление информации о пользователях")
-    # from src.model.User import User
-    # dowload_status = User().fetch_users_data()["status"]
-    # if dowload_status:
-    #     status += 1
-    #     LogsMaker().ready_status_message("Успешно!")
-    # else:
-    #     LogsMaker().error_message("Ошибка!")
+    LogsMaker().info_message("Обновление информации о пользователях")
+    from src.model.User import User
+    dowload_status = User().fetch_users_data()["status"]
+    if dowload_status:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
 
-    # LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
-    # if UsDep().get_usr_dep()["status"]:
-    #     status += 1
-    #     LogsMaker().ready_status_message("Успешно!")
-    # else:
-    #     LogsMaker().error_message("Ошибка!")
+    from src.model.UsDep import UsDep
+    LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
+    if UsDep().get_usr_dep()["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
 
-    # LogsMaker().info_message("Обновление информации о разделах сайта")
-    # Section().load()
-    # status += 1
-    # LogsMaker().ready_status_message("Успешно!")
+    from src.model.Section import Section
+    LogsMaker().info_message("Обновление информации о разделах сайта")
+    Section().load()
+    status += 1
+    LogsMaker().ready_status_message("Успешно!")
 
+    from src.model.Tag import Tag
+    LogsMaker().info_message("Обновление информации о тэгах сайта")
+    if Tag().add_b24_tag()["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
+
+    from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
     if Article().uplod()["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
+
+    from src.services.Roots import Roots
+    LogsMaker().info_message("Обновление информации об администратарах сайта")
+    if Roots().create_primary_admins()["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:

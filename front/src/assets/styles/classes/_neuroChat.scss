@@ -451,14 +451,26 @@
         }
 
         svg {
-            width: 20px;
-            height: 20px;
             color: #6c757d;
         }
     }
 
 
     &__file {
+        &-list {
+            margin-top: 8px;
+        }
+
+        &-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
         &-upload {
             position: relative;
             display: inline-block;
@@ -480,6 +492,17 @@
         width: 100%;
         align-items: center;
         gap: 5px;
+    }
+
+    &__remove-file {
+        cursor: pointer;
+        color: #ff4444;
+        font-weight: bold;
+        margin-left: 8px;
+
+        &:hover {
+            color: #cc0000;
+        }
     }
 
 }

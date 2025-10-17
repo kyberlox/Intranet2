@@ -6,7 +6,9 @@ import json
 
 from sqlalchemy.exc import SQLAlchemyError
 
-
+from .App import get_db, update
+db_gen = get_db()
+database = next(db_gen)
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Cтатей")
@@ -20,28 +22,25 @@ class ArticleModel:
         from ..models.Article import Article
         self.article = Article
 
-        from .App import db
-        self.db = db
+        # from .App import db
+        # database = db
     
     def get_current_id(self ):
-        current_id = self.db.query(func.max(self.article.id)).scalar()
+        current_id = database.query(func.max(self.article.id)).scalar()
         current_id = int(current_id) + 1
         self.id = current_id
-        self.db.close()
         return current_id
 
     def add_article(self, article_data):
         article = self.article(**article_data)
-        self.db.add(article)
-        self.db.commit()
-        self.db.close()
+        database.add(article)
+        database.commit()
 
         return article_data
 
     def need_add(self):
-        db_art = self.db.query(self.article).filter(self.article.section_id == self.section_id).all()
+        db_art = database.query(self.article).filter(self.article.section_id == self.section_id).all()
         # если в таблице есть раздел
-        self.db.close()
         if db_art != []:
             need = True
             for art in db_art:
@@ -55,15 +54,21 @@ class ArticleModel:
         else:
             return True
 
+    # def update(self, article_data):
+    #     #удалить статью
+    #     database.query(self.article).filter(self.article.id==int(self.id)).delete()
+    #     #залить заново
+    #     self.add_article(article_data)
+    #     database.commit()  
+    #     return True
+    
     def update(self, article_data):
-        #удалить статью
-        self.db.query(self.article).filter(self.article.id==int(self.id)).delete()
-        #залить заново
-        self.add_article(article_data)
-        print(article_data)
-        self.db.commit()
-        self.db.close()    
-        return True
+        try:
+            database.execute(update(self.article).where(self.article.id==int(self.id)).values(**article_data))
+            database.commit() 
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при обновлении статьи с id = {int(self.id)}, {e}")
 
     '''def update(self, article_data):
         db_art = db.query(Article).get(self.id).__dict__
@@ -83,42 +88,37 @@ class ArticleModel:
                     return False'''
 
     def remove(self ):
-        #self.db.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
+        #database.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
         #return db.query(Article).filter(Article.id == self.id).delete()
-        #return self.db.execute(delete(Article).where(Article.id == self.id))
+        #return database.execute(delete(Article).where(Article.id == self.id))
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
         
-        art = self.db.query(self.article).get(self.id)
+        art = database.query(self.article).get(self.id)
         if art is not None:
-            self.db.query(self.article).filter(self.article.id==int(self.id)).delete()
-            self.db.commit()
-            self.db.close()
+            database.query(self.article).filter(self.article.id==int(self.id)).delete()
+            database.commit()
             return True
         else:
-            self.db.close()
             return False
 
     def remove_b24_likes(self):
-        art = self.db.query(self.article).filter(self.article.id == self.id).first()
+        art = database.query(self.article).filter(self.article.id == self.id).first()
         art.indirect_data.pop("likes_from_b24")
         flag_modified(art, 'indirect_data')
-        self.db.commit()
-        self.db.close()
+        database.commit()
         return True
 
     def find_by_id(self):
-        art = self.db.query(self.article).get(self.id)
+        art = database.query(self.article).get(self.id)
         try:
             art.__dict__["indirect_data"] = json.loads(art.indirect_data)
         except:
             if art is not None:
                 art.__dict__["indirect_data"] = art.indirect_data
             else:
-                self.db.close()
                 return dict()
         
         res = art.__dict__
-        self.db.close()
 
         if '_sa_instance_state' in res.keys():
             res.pop("_sa_instance_state")
@@ -127,13 +127,15 @@ class ArticleModel:
 
     def find_by_section_id(self):
         
-        data = self.db.query(self.article).filter(self.article.section_id == self.section_id).all()
-        new_data = []
+        data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
+        
         try:
+            new_data = []
             for art in data:
                 art.__dict__["indirect_data"] = json.loads(art.indirect_data)
                 new_data.append(art.__dict__)
         except:
+            new_data = []
             for art in data:
                 if art is not None:
                     art.__dict__["indirect_data"] = art.indirect_data
@@ -142,7 +144,7 @@ class ArticleModel:
         return new_data
     
     def all(self):
-        data = self.db.query(self.article).all()
+        data = database.query(self.article).all()
         new_data = []
         try:
             for art in data:
@@ -153,5 +155,4 @@ class ArticleModel:
                 art.__dict__["indirect_data"] = art.indirect_data
                 new_data.append(art.__dict__)
 
-        self.db.close()
         return new_data

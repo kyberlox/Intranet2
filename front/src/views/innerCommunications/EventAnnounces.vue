@@ -1,8 +1,8 @@
 <template>
 <div class="page__title mt20">Афиша</div>
 <PostSlug v-if="!isLoading && !afisha.length"
-          :title="'Пока афиша пустая'"
-          :text="'Но вы держитесь'" />
+          :title="'Следите за обновлениями'"
+          :text="'Ближайших мироприятий нет'" />
 <ComplexGallery v-else
                 class="mt20"
                 :page=page

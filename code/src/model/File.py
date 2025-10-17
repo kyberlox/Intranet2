@@ -1,5 +1,6 @@
 from ..base.mongodb import FileModel
 from ..base.B24 import B24
+from .Section import Section
 
 from fastapi import FastAPI, UploadFile
 from fastapi import File as webFile
@@ -319,6 +320,7 @@ class File:
 
             return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
+
     def get_file(self):
         file_data = FileModel(id=self.id).find_by_id()
         
@@ -374,6 +376,21 @@ class File:
                 self.id = ObjectId(file_data['id'])
                 FileModel(id = self.id).remove()
 
+    def get_files_by_section_id(self, section_id):
+        #беру список atr_id
+        arts_id = Section(id = section_id).find_by_id()['arts_id']
+
+        files = dict()
+        if arts_id != []:
+            for art_id in arts_id:
+                self.art_id = art_id
+                art_files = self.get_files_by_art_id()
+
+                
+
+                files[art_id] = art_files
+        
+        return files
 
     def need_update_link(self):
         pass
@@ -381,6 +398,21 @@ class File:
     def get_link_as_file(self):
         pass
 
+    def update_data(self, data : dict):
+        #получить данные
+        file_data = FileModel(id=self.id).find_by_id()
+        #file_data["id"] = str(file_data["_id"])
+        file_data.pop("_id")
+        
+        #заменить данные
+        for key in data.keys():
+            if key != "id":
+                file_data[key] = data[key]
+
+        #сохранить изменения
+        result = FileModel(id=self.id).update_data(file_data)
+        
+        return result
 
 
     def get_users_photo(self):
@@ -404,6 +436,7 @@ class File:
             return file_info
 
     def dowload_user_photo(self, url):
+        # в будущем name исправить на айди фото ( photo_file_id )
         name = url.split("/")[-1]
         form = name.split(".")[-1]
         img_path = f"{USER_STORAGE_PATH}/{name}"
@@ -559,7 +592,6 @@ class File:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
 
-
     def editor_chenge_file(self, file : webFile):
         #найти файл
         #заменить id и отправить предыдущую версию в архив
@@ -636,7 +668,6 @@ async def get_file_info(file_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @file_router.get("/info/article_id/{article_id}")
 async def get_file_article(article_id: int):
     try:
@@ -644,6 +675,18 @@ async def get_file_article(article_id: int):
 
         if not file_data:
             raise HTTPException(status_code=404, detail="File not found")
+
+        return file_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@file_router.get("/info/section_id/{section_id}")
+async def get_file_article(section_id: int):
+    try:
+        file_data = File().get_files_by_section_id(section_id = section_id)
+
+        if not file_data:
+            raise HTTPException(status_code=404, detail="Files not found")
 
         return file_data
     except Exception as e:
@@ -691,6 +734,13 @@ async def delete_file(file_id: str):
         raise HTTPException(500, detail=str(e))
     """
     pass
+
+@file_router.put("/{file_id}")
+async def put_file(file_id : str, data = Body()):
+    new_file_data = FileModel(id = ObjectId(file_id)).update_data(data)
+
+    return new_file_data
+
 
 
 

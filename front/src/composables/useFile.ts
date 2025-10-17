@@ -20,7 +20,7 @@ export const useFileUtil = (uploadType: 'images' | 'documentation' | 'videos_nat
         }
     };
 
-    const processFiles = (files: FileList | File[]): string | IFileToUpload => {
+    const processFiles = (files: FileList | File[]): string | IFileToUpload[] | IFileToUpload => {
 
         const fileArray = Array.from(files);
         const fileResult: IFileToUpload[] = [];
@@ -39,7 +39,7 @@ export const useFileUtil = (uploadType: 'images' | 'documentation' | 'videos_nat
             }
         });
 
-        return fileResult[0]
+        return fileResult
     };
 
     return {

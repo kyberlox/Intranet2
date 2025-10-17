@@ -16,10 +16,10 @@
                 <div class="personal__user__about">
                 </div>
                 <div class="personal__user__mess">
-                    <a :href='"https://portal.emk.ru/company/personal/user/" + user.id'
+                    <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"'
                        target="_blank"
                        class="personal__user__mess__link">Профиль в Bitrix24</a>
-                    <button v-if="user.id !== myId"
+                    <button v-if="user.id !== myId && featureFlags.pointsSystem"
                             class="personal__user__mess__link"
                             @click="isPointsModalOpen = true">Отправить баллы</button>
                 </div>
@@ -53,8 +53,12 @@
                                 </span>
                             </div>
                             <div class="personal__user__property__items__uf_usr_1705744824758"
-                                 v-if="user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length">
+                                 v-if="user.indirect_data.uf_department || (user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length)">
                                 <h3>Отдел</h3>
+                                <span v-for="(item, index) in user.indirect_data.uf_department"
+                                      :key="'dep' + index">
+                                    {{ item }}
+                                </span>
                                 <span v-for="(item, index) in user.indirect_data.uf_usr_1705744824758"
                                       :key="'dep' + index">
                                     {{ item }}
@@ -126,6 +130,7 @@ import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 export default defineComponent({
     props: {
@@ -189,6 +194,7 @@ export default defineComponent({
             user,
             modalIsOpen,
             isPointsModalOpen,
+            featureFlags,
             myId: computed(() => userData.getMyId),
             sendPoints,
             formatBirthday,

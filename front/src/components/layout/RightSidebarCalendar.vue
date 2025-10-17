@@ -1,18 +1,18 @@
 <template>
-    <div class="calendar__wrapper">
-        <DatePicker inline
-                    v-model="date"
-                    @markerClick="(item: ICalendarMarker) => dateClicked(item)"
-                    :markers="markers"
-                    calendarType="monthAndYear">
-        </DatePicker>
-        <div class="calendar__button__wrapper">
-            <div @click="handleRouteToCurrentMonth"
-                 class="primary-button">
-                Все события
-            </div>
+<div class="calendar__wrapper">
+    <DatePicker inline
+                v-model="date"
+                @markerClick="(item: ICalendarMarker) => dateClicked(item)"
+                :markers="markers"
+                calendarType="monthAndYear">
+    </DatePicker>
+    <div class="calendar__button__wrapper">
+        <div @click="handleRouteToCurrentMonth"
+             class="primary-button">
+            Все события
         </div>
     </div>
+</div>
 </template>
 <script lang="ts">
 import { defineComponent, ref, type Ref, computed, type ComputedRef, watch } from 'vue';
@@ -123,8 +123,8 @@ export default defineComponent({
 
         const handleRouteToCurrentMonth = () => {
             router.push({ name: 'calendar' });
-            setTimeout(() =>
-                router.push({ name: 'calendarMonth' }), 30)
+            // setTimeout(() =>
+            //     router.push({ name: 'calendarMonth' }), 30)
         }
 
         return {

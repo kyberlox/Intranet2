@@ -32,3 +32,5 @@ class User(Base):
 
     rootsusers = relationship("Roots", back_populates="user")
     peerhistory = relationship("PeerHistory", back_populates="user")
+
+    uservisionsroot = relationship("UservisionsRoot", back_populates="user")

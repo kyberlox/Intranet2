@@ -18,6 +18,10 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                     useUserData().setUserInfo(res);
                     localStorage.setItem('user', res);
                 })
+                Api.get('roots/get_root_token_by_uuid')
+                .then((res)=>{
+                    useUserData().setUserRoots(res);
+                })
             break;
         case 'factoryGuid':
             if (!factoryGuidData.getAllFactories.length)
@@ -30,16 +34,14 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             if (!useblogDataStore().getAllAuthors.length)
                 getBlogAuthorsToStore();
             break;
-        case 'calendar':
-            console.log(useViewsDataStore().getData('calendarData').length);
-            
-            if (!useViewsDataStore().getData('calendarData').length) {
+        case 'calendar':            
+
                 const currentYear = new Date().getFullYear();
                 Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
                     .then((data) => {
                         useViewsDataStore().setData(data.result, 'calendarData');
                     });
-            }
+         
             break;
         case 'score':
             const scoreRoutes = [{

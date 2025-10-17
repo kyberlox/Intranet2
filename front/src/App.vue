@@ -16,12 +16,15 @@
                 </div>
             </div>
         </div>
+        <PageScrollArrow/>
     </main>
 </div>
 <div v-else>
     <AuthPage />
 </div>
 <Toast :position="'bottom-right'" />
+<YandexMetrika v-if="userId"
+               :uid="userId" />
 </template>
 
 <script lang="ts">
@@ -33,9 +36,10 @@ import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/RightSidebar.vue";
 import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "./views/user/AuthPage.vue";
-
+import YandexMetrika from "./components/tools/common/YandexMetrika.vue";
 import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./composables/usePrefetchSection";
+import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -46,6 +50,8 @@ export default defineComponent({
         AuthPage,
         Breadcrumbs,
         Toast,
+        PageScrollArrow,
+        YandexMetrika
     },
     setup() {
         const route = useRoute();
@@ -75,6 +81,7 @@ export default defineComponent({
 
         return {
             isLogin,
+            userId: computed(() => useUserData().getMyId)
         }
     }
 })

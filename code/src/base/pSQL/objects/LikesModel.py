@@ -4,7 +4,9 @@ from sqlalchemy.sql.expression import func
 from typing import List, Optional, Dict
 
 from datetime import datetime, timedelta
-
+from .App import get_db
+db_gen = get_db()
+database = next(db_gen)
 
 
 
@@ -20,8 +22,8 @@ class LikesModel:
         self.art_id = art_id
         self.user_uuid = user_uuid
 
-        from .App import db
-        self.session = db
+        # from .App import db
+        # database = db
 
         from ..models.Likes import Likes
         self.Likes = Likes
@@ -47,7 +49,7 @@ class LikesModel:
         
         
         # Проверяем, есть ли уже активный лайк
-        existing_like = self.session.query(self.Likes).filter(
+        existing_like = database.query(self.Likes).filter(
             self.Likes.user_id == self.user_id,
             self.Likes.article_id == self.art_id
         ).first()
@@ -62,8 +64,8 @@ class LikesModel:
                 is_active=True,
                 created_at=datetime.utcnow()
             )
-            self.session.add(new_like)
-            self.session.commit()
+            database.add(new_like)
+            database.commit()
             self.reactions["likes"]["count"] += 1
             self.reactions["likes"]["likedByMe"] = True
 
@@ -74,7 +76,7 @@ class LikesModel:
                 self.reactions["likes"]["count"] += 1
 
             existing_like.is_active = not existing_like.is_active
-            self.session.commit()
+            database.commit()
 
             self.reactions["likes"]["likedByMe"] = existing_like.is_active
 
@@ -106,11 +108,11 @@ class LikesModel:
             
             reactions = {}
             # Проверяем, есть ли уже активный лайк
-            existing_like = self.session.query(self.Likes).filter(
+            existing_like = database.query(self.Likes).filter(
                 self.Likes.user_id == self.user_id,
                 self.Likes.article_id == self.art_id
             ).first()
-            self.session.close()
+             
 
             if existing_like:
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
@@ -125,11 +127,11 @@ class LikesModel:
         """
         Возвращает количество активных лайков для статьи.
         """
-        res = self.session.query(self.Likes).filter(
+        res = database.query(self.Likes).filter(
             self.Likes.article_id == self.art_id,
             self.Likes.is_active == True
         ).count()
-        self.session.close()
+         
         return res
 
     def get_user_likes(self ) -> List[int]:
@@ -142,12 +144,12 @@ class LikesModel:
         Returns:
             Список article_id, которые пользователь лайкнул
         """
-        likes = self.session.query(self.Likes.article_id).filter(
+        likes = database.query(self.Likes.article_id).filter(
             self.Likes.user_id == self.user_id,
             self.Likes.is_active == True
         ).all()
         
-        self.session.close()
+         
 
         return [like.article_id for like in likes]
 
@@ -161,12 +163,12 @@ class LikesModel:
         Returns:
             Список user_id пользователей, которые лайкнули статью
         """
-        likers = self.session.query(self.Likes.user_id).filter(
+        likers = database.query(self.Likes.user_id).filter(
             self.Likes.article_id == self.art_id,
             self.Likes.is_active == True
         ).all()
         
-        self.session.close()
+         
 
         return [liker.user_id for liker in likers]
 
@@ -176,7 +178,7 @@ class LikesModel:
         Возвращает True, если лайк успешно добавлен, False если лайк уже существует.
         """
         # Проверяем, есть ли уже активный лайк
-        existing_like = self.session.query(self.Likes).filter(
+        existing_like = database.query(self.Likes).filter(
             self.Likes.user_id == self.user_id,
             self.Likes.article_id == self.art_id,
             self.Likes.is_active == True
@@ -186,7 +188,7 @@ class LikesModel:
             return False  # Лайк уже существует
 
         # Если лайк был, но is_active=False, обновляем его
-        # inactive_like = self.session.query(Likes).filter(
+        # inactive_like = database.query(Likes).filter(
         #     Likes.user_id == self.user_id,
         #     Likes.article_id == self.art_id,
         #     Likes.is_active == False
@@ -203,16 +205,16 @@ class LikesModel:
             is_active=True,
             created_at=created_at
         )
-        self.session.add(new_like)
+        database.add(new_like)
 
-        self.session.commit()
-        self.session.close()
+        database.commit()
+         
         return True
 
     # def has_liked_by_uuid(self): 
-    #     user = self.session.query(User).filter(User.uuid == self.user_uuid).subquery()
+    #     user = database.query(User).filter(User.uuid == self.user_uuid).subquery()
     #     stmt = select(Likes.article_id).where(Likes.user_id == user.с.id)
-    #     result = self.session.execute(stmt).fetchall()
+    #     result = database.execute(stmt).fetchall()
     #     return [re for re in result]
 
     @classmethod
@@ -225,7 +227,7 @@ class LikesModel:
             limit: Количество возвращаемых статей
 
         Returns:
-            Список словарей с данными статей:               @self.session
+            Список словарей с данными статей:               @database
             [{'article_id': int, 'likes_count': int}, ...]
         """
         from .App import db

@@ -58,7 +58,7 @@
 <script lang="ts">
 import Api from '@/utils/Api';
 import { computed, defineComponent, onMounted, ref } from 'vue';
-import AdminSidebar from '@/views/admin/components/elementsListLayout/AdminSidebar.vue';
+import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
 import VisibilityAreaEditorTree from './components/VisibilityAreaEditorTree.vue';
 import VisibilityRightSidebar from './components/VisibilityRightSidebar.vue';
 import VisibilityAreaControls from './components/VisibilityAreaControls.vue';
@@ -407,7 +407,7 @@ export default defineComponent({
         }
 
         const getUserByName = (word: string) => {
-            Api.get(`users/search/full_search_users/${word}`)
+            Api.get(`users/search/full_search_users_for_editor/${word}/10`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)

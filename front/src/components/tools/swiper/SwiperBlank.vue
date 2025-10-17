@@ -5,7 +5,6 @@
 
     <!-- для img -->
     <swiper-slide v-for="(image, index) in images"
-                  :class="{ 'swiper-slide--boxPhoto': sectionId == 32 }"
                   :key="'postImg' + index">
         <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : (image as string)"
              alt="изображение слайдера"

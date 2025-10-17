@@ -7,6 +7,7 @@ export interface ImageWithHref {
   href?: string;
   reactions?: IReaction;
   blockTitle?: string;
+  date?: string
 }
 
 export interface BlockImage {
@@ -17,6 +18,7 @@ export interface BlockImage {
   href?: string;
   reactions?: IReaction;
   blockTitle?: string;
+  date?: string
 }
 
 export interface SingleBlock {

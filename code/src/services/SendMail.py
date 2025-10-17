@@ -36,10 +36,10 @@ class SendEmail:
             <body>
                 <p>Здравствуйте!</p>
                 <p>Ваше письмо доставлено до получателя.</p>
+                <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>
                 <p>
                     <img src="cid:company_logo" alt="Логотип компании" width="200">
                 </p>
-                <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>
             </body>
         </html>
         """
@@ -88,8 +88,8 @@ class SendEmail:
             """
             
             msg.attach(MIMEText(content, "html"))
-            # file_id = self.file_url.split('.') /intranet/Intranet2/code/files_db
-            # image = file_id[0]
+            file_id = self.file_url.split('/') #/intranet/Intranet2/code/files_db
+            self.file_url = file_id[-1]
             file_path = os.path.join(STORAGE_PATH, self.file_url)
             with open(file_path, "rb") as img_file: 
                 logo = MIMEImage(img_file.read())

@@ -1,13 +1,13 @@
 <template>
-    <h1 class="page__title mt20">Новости организационного развития</h1>
-    <div class="row">
-        <div class="news__list">
-            <SampleGallery :gallery="news"
-                           :needDate="true"
-                           :type="'postPreview'"
-                           :routeTo="'corpNewsArticle'" />
-        </div>
+<h1 class="page__title mt20">Новости организационного развития</h1>
+<div class="row">
+    <div class="news__list">
+        <SampleGallery :gallery="news"
+                       :needDate="true"
+                       :type="'interview'"
+                       :routeTo="'corpNewsArticle'" />
     </div>
+</div>
 </template>
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";

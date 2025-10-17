@@ -2,14 +2,15 @@
 <div class="news-inner__page__wrapper mt20">
     <div v-if="currentPost && (type == 'default' || type == 'adminPreview')"
          class="row row-gap-50">
-        <div class="col-12 col-lg-6 mb-2 pos-rel">
+        <div v-if="currentPost.section_id !== 32 && sectionId !== '32'"
+             class="col-12 col-lg-6 mb-2 pos-rel">
             <SwiperBlank :videosNative="currentPost?.videos_native"
                          :videosEmbed="currentPost?.videos_embed"
                          :images="currentPost?.images ? currentPost.images : previewImages"
                          :sectionId="currentPost?.section_id"
                          :type="'postInner'" />
         </div>
-        <div class="col-12 col-lg-6">
+        <div :class="{ 'col-12 col-lg-6': currentPost.section_id !== 32 && sectionId !== '32' }">
             <div class="news__detail__content">
                 <div v-if="currentPost.name"
                      class="news__detail__top">
@@ -21,24 +22,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="news__detail">
-                    <span v-if="currentPost.date_publiction"
-                          class="news__detail__date">
-                        {{ currentPost.date_publiction.replace('T', ' ') }}
-                    </span>
+                <div class="news__detail"
+                     :class="{ 'news__detail--corpnews': currentPost.section_id == 32 }">
                     <div v-if="currentPost.reactions"
                          class="news__detail__like-wrapper">
                         <Reactions :id="Number(currentPost.id)"
                                    :reactions="currentPost.reactions"
-                                   :type="'postPreview'" />
+                                   :type="'postPreview'"
+                                   :date="currentPost.date_publiction" />
                     </div>
                 </div>
                 <div v-if="currentPost.indirect_data && 'tags' in currentPost.indirect_data"
                      class="tags">
-                    <div v-for="tag in currentPost.indirect_data.tags"
+                    <div v-for="(tag) in (currentPost.indirect_data.tags as ITag[])"
                          :key="tag.id"
                          class="tag__wrapper ">
-                        <div class="tasg__tag section__item__link btn-air"
+                        <div class="tags__tag tags__tag--inner section__item__link btn-air"
                              @click="$emit('pickTag', tag.id)">
                             #{{ tag.tag_name }}
                         </div>
@@ -66,6 +65,35 @@
                         </a>
                     </div>
                 </div>
+                <!-- Для афишы кнопка перехода на календарь битрикса -->
+                <div class="news__about-event__wrapper"
+                     v-if="currentPost.indirect_data?.bx_event?.ID && currentPost.section_id == 53">
+                    <a :href="`https://portal.emk.ru/calendar/?EVENT_ID=${currentPost.indirect_data.bx_event.ID}`"
+                       class="primary-button news__about-event__button">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- для новостей орг развития//подвал с фото -->
+        <div v-if="(currentPost.section_id == 32) || (sectionId == '32')"
+             class="row mb-5">
+            <div :to="{ name: 'user', params: { id: user.id } }"
+                 v-for="user in (previewElement ? currentPost.users : currentPost.indirect_data?.users)"
+                 :key="user.id"
+                 class="">
+                <RouterLink :to="{ name: 'userPage', params: { id: user.id } }"
+                            class="mb-5 news__person-wrap">
+                    <figure>
+                        <img class="img-fluid img-thumbnail news__person__img"
+                             :src=user.photo_file_url
+                             data-banner="/upload/resize_cache/main/3e5/gtm4c2ulm9kav603bkxxbqac80k6wo7e/360_206_2/Сальвассер.jpg.png">
+                    </figure>
+                    <div class="news__person-info">
+                        <p class="news__person-fio">{{ user.fio }}</p>
+                        <p class="news__person-staff">{{ user.position }}</p>
+                    </div>
+                </RouterLink>
             </div>
         </div>
     </div>
@@ -80,21 +108,43 @@ import type { IBaseEntity, IReportage } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import Reactions from "./Reactions.vue";
 import { parseMarkdown } from "@/utils/parseMarkdown";
+import type { ITag } from "@/interfaces/entities/ITag";
 
 export interface IPostInner extends IBaseEntity {
     indirect_data?: {
         // Благотв
         organizer?: string,
         phone_number?: string
-        // Афиша 
+        // Афиша
         date_from?: string,
         date_to?: string,
-        tags: {
-            id: string,
-            tag_name: string,
-        }[]
+        reports?: IReportage[],
+        department?: string,
+        tags?: ITag[] | number[],
+        // орг развитие
+        users?: {
+            id: number,
+            fio: string,
+            position: string,
+            photo_file_url: string
+        }[],
+        // афиша
+        bx_event?: {
+            [key: string]: string
+        }
     },
-    reports?: IReportage[]
+    department?: string,
+    reports?: IReportage[],
+    // орг развитие
+    users?: {
+        id: number,
+        fio: string,
+        position: string,
+        photo_file_url: string
+    }[],
+    // Блоги
+    TITLE?: string,
+    author?: string
 }
 
 export default defineComponent({
@@ -107,6 +157,9 @@ export default defineComponent({
     props: {
         id: {
             type: String || undefined,
+        },
+        sectionId: {
+            type: String
         },
         type: {
             type: String,

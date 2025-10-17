@@ -125,6 +125,14 @@
 
                 width: 165px;
                 margin: 25px 0;
+
+                >.loader {
+                    margin: auto;
+                    width: 25px !important;
+                    height: 25px !important;
+                    border: 2px solid #d3d3d3 !important;
+                    border-top: 2px solid var(--emk-brand-color) !important;
+                }
             }
         }
 

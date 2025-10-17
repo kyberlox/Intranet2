@@ -1,11 +1,10 @@
 import { type Ref, ref } from "vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/static/sectionTips";
 import { extractYears } from "@/utils/extractYearsFromPosts";
 
 import type { INews } from "@/interfaces/IEntities";
 
-export const useNewsFilterWatch = async (currentTag: Ref<string>, currentYear: Ref<string>, allNews: Ref<INews[]>) => {
+export const useNewsFilterWatch = async (currentTag: Ref<string>, currentYear: Ref<string>, allNews: Ref<INews[]>, id: string) => {
 
     const newVisibleNews: Ref<INews[]> = ref([]);
     const newFilterYears: Ref<string[]> = ref([]);
@@ -13,7 +12,7 @@ export const useNewsFilterWatch = async (currentTag: Ref<string>, currentYear: R
 
     if ((currentTag.value && currentYear.value) || (currentTag.value && !currentYear.value)) {
         const newData: Ref<INews[]> = ref([]);
-        await Api.get(`article/get_articles_by_tag_id/${sectionTips['АктуальныеНовости']}/${currentTag.value}`)
+        await Api.get(`article/get_articles_by_tag_id/${id}/${currentTag.value}`)
             .then((data: INews[]) => {
                 newData.value = data.filter((e) => {
                     return e.date_creation?.includes(currentYear.value)

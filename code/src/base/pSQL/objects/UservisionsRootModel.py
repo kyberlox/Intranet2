@@ -1,8 +1,9 @@
 from ..models.Fieldvision import Fieldvision
-from .App import db, flag_modified, select, exists, JSONB, func
+from .App import flag_modified, select, exists, JSONB, func, get_db # db,
 
 
-
+db_gen = get_db()
+database = next(db_gen)
 
 
 #!!!!!!!!!!!!!!! 
@@ -11,7 +12,7 @@ from src.services.LogsMaker import LogsMaker
 
 class UservisionsRootModel:
     def __init__(self, id: int = 0, vision_id: int = 0, user_id: int = 0):
-        self.session = db
+        # database = db
         self.id = id
         self.vision_id = vision_id
         self.user_id = user_id
@@ -26,22 +27,22 @@ class UservisionsRootModel:
     def upload_user_to_vision(self, roots):
         try:
             if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
-                existing_user = self.session.query(self.Roots).filter(self.Roots.user_uuid == self.user_id).first()
+                existing_user = database.query(self.Roots).filter(self.Roots.user_uuid == self.user_id).first()
                 if existing_user:
                     if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token['VisionRoots']:
                         return LogsMaker().warning_message(f"Пользователь с id = {self.user_id} уже существует в ОВ id = {self.vision_id}")
                     elif "VisionRoots" in existing_user.root_token.keys():
                         existing_user.root_token["VisionRoots"].append(self.vision_id)
                         flag_modified(existing_user, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
                     else:
                         existing_user.root_token["VisionRoots"] = [self.vision_id]
                         flag_modified(existing_user, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
                 else:
-                    max_id = self.session.query(func.max(self.Roots.id)).scalar() or 0
+                    max_id = database.query(func.max(self.Roots.id)).scalar() or 0
                     new_id = max_id + 1
                     new_user_vis = self.Roots(
                         id=new_id,
@@ -49,16 +50,15 @@ class UservisionsRootModel:
                         root_token={"VisionRoots": [self.vision_id]}
                     )
                     
-                    self.session.add(new_user_vis)
-                    self.session.commit()
+                    database.add(new_user_vis)
+                    database.commit()
                     return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} завершено успешно")
             else:
                 return LogsMaker().warning_message(f"У Вас недостаточно прав")
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"ошибка при добавлении пользователя в ОВ: {e}")
-        finally:
-            self.session.close()
+
     
     def upload_users_to_vision(self, user_data, roots):
         try:
@@ -67,30 +67,28 @@ class UservisionsRootModel:
                 self.upload_user_to_vision(roots)
             return LogsMaker().info_message(f"Пользователи добавлены в ОВ id = {self.vision_id} звершено успешно")
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"ошибка при добавлении пользователей в ОВ: {e}")
-        finally:
-            self.session.close()
+
     
     def remove_user_from_vision(self, roots):
 
         try:
             if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
-                existing_user = self.session.query(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).filter(self.Roots.user_uuid == self.user_id).first()
+                existing_user = database.query(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).filter(self.Roots.user_uuid == self.user_id).first()
                 if existing_user:
                     if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token["VisionRoots"]:
                         existing_user.root_token["VisionRoots"].remove(self.vision_id)
                         flag_modified(existing_user, 'root_token')
-                        self.session.commit()
+                        database.commit()
                         return LogsMaker().info_message(f"Удаление пользователя с id = {self.user_id} из ОВ id = {self.vision_id} завершено успешно")
                 return LogsMaker().info_message(f"Пользователь с id = {self.user_id} либо не существует, либо отсуствует в ОВ id = {self.vision_id}")
             else:
                 return LogsMaker().warning_message(f"У Вас недостаточно прав")
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"ошибка при удалении пользователя с id = {self.user_id} из ОВ {self.vision_id}: {e}")
-        finally:
-            self.session.close()
+
 
     def remove_users_from_vision(self, user_data, roots):
         try:
@@ -99,23 +97,22 @@ class UservisionsRootModel:
                 self.remove_user_from_vision(roots)
             return LogsMaker().info_message(f"Удаление пользователей из ОВ id = {self.vision_id} завершено успешно") 
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"ошибка при удалении пользователей из ОВ {self.vision_id}: {e}")
-        finally:
-            self.session.close()
+
 
     def find_users_in_vision(self):
         from .UserModel import UserModel
         try:
             result = []
-            existing_vision = self.session.query(self.Fieldvision).filter(self.Fieldvision.id == self.vision_id).first()
+            existing_vision = database.query(self.Fieldvision).filter(self.Fieldvision.id == self.vision_id).first()
             if existing_vision:
-                # users_in_vis = self.session.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
+                # users_in_vis = database.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
                 query = select(self.Roots.user_uuid).where(
                         self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
                 )
 
-                users_in_vis = self.session.scalars(query).all()
+                users_in_vis = database.scalars(query).all()
                 for user in users_in_vis:
                     general_info = {}
                     user_info = UserModel(Id=user).find_by_id()
@@ -134,10 +131,9 @@ class UservisionsRootModel:
                 return result
             return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
         except Exception as e:
-            self.session.rollback()
+            database.rollback()
             return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
-        finally:
-            self.session.close()
+
 
     def remove_depart_in_vision(self, dep_id, roots):
         users = self.find_users_in_vision()

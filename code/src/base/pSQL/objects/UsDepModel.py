@@ -1,14 +1,15 @@
 from sqlalchemy.sql.expression import select
 
 from ..models.UsDep import UsDep
-from .App import db
+from .App import get_db
 
 
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Пользователь-Подразделение")
 
-
+db_gen = get_db()
+database = next(db_gen)
 
 class UsDepModel():
     def __init__(self, id=0, user_id=0, dep_id=0):
@@ -19,7 +20,7 @@ class UsDepModel():
 
         # Base.metadata.create_all(bind=engine)
         # SessionLocal = sessionmaker(autoflush=True, bind=engine)
-        self.session = db
+        # database = db
     
     def put_uf_depart(self, usr_dep):
         from .UserModel import UserModel
@@ -37,14 +38,14 @@ class UsDepModel():
                     existing_note = self.find_note()
                     if not existing_note:
                         new_usdep = UsDep(user_id=usr_dep['id'], dep_id=int(dep))
-                        self.session.add(new_usdep)
-                        self.session.commit()
-            self.session.close()
+                        database.add(new_usdep)
+                        database.commit()
+
         return True
 
     def find_note(self):
-        result =  self.session.query(UsDep).filter(UsDep.user_id == self.user_id, UsDep.dep_id == self.dep_id).first()
-        self.session.close()
+        result =  database.query(UsDep).filter(UsDep.user_id == self.user_id, UsDep.dep_id == self.dep_id).first()
+
         return result
         
 
@@ -52,9 +53,7 @@ class UsDepModel():
         """
         Выдает данные по департаментам пользователя
         """
-        res = self.session.execute(select(self.us_dep).where(self.us_dep.user_id == self.id)).scalars().all()
-        print(res)
-        self.session.close()
+        res = database.execute(select(self.us_dep).where(self.us_dep.user_id == self.id)).scalars().all()
         if res != []:
             return [res]
         else:
@@ -64,7 +63,7 @@ class UsDepModel():
         """
         Выдает id пользователей по id департамента
         """
-        users = self.session.execute(select(self.us_dep).where(self.us_dep.dep_id == self.id)).scalars().all()
+        users = database.execute(select(self.us_dep).where(self.us_dep.dep_id == self.id)).scalars().all()
         if users != []:
             res = []
             for usr in users:

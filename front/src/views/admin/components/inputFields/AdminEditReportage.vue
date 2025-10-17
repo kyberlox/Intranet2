@@ -1,25 +1,25 @@
 <template>
-    <p class="admin-element-inner__field-title fs-l">Репортажи</p>
-    <div class="admin-element__reportage-group__wrapper mt20">
-        <transition-group tag="div"
-                          name="slide-down"
-                          class="admin-element__reportage-list">
-            <AdminEditInput v-for="(reportage, index) in formattedReportages"
-                            :key="index + 'reportage'"
-                            :item="reportage"
-                            @pick="(newVal: string) => changeReport(index, newVal)" />
-        </transition-group>
+<p class="admin-element-inner__field-title fs-l">Репортажи</p>
+<div class="admin-element__reportage-group__wrapper mt20">
+    <transition-group tag="div"
+                      name="slide-down"
+                      class="admin-element__reportage-list">
+        <AdminEditInput v-for="(reportage, index) in formattedReportages"
+                        :key="index + 'reportage'"
+                        :item="reportage"
+                        @pick="(newVal: string) => changeReport(index, newVal)" />
+    </transition-group>
+</div>
+<div class="admin-element__reportage-group__add-button__wrapper ">
+    <div @click="addNewReportRow"
+         class="admin-element__reportage-group__add-button primary-button">
+        <PlusIcon />
     </div>
-    <div class="admin-element__reportage-group__add-button__wrapper ">
-        <div @click="addNewReportRow"
-             class="admin-element__reportage-group__add-button primary-button">
-            <PlusIcon />
-        </div>
-        <div @click="RemoveReportRow"
-             class="admin-element__reportage-group__add-button primary-button">
-            <MinusIcon />
-        </div>
+    <div @click="RemoveReportRow"
+         class="admin-element__reportage-group__add-button primary-button">
+        <MinusIcon />
     </div>
+</div>
 </template>
 
 <script lang="ts">

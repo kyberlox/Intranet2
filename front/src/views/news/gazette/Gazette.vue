@@ -1,22 +1,22 @@
 <template>
-    <div class="page__title mt20">Корпоративная газета ЭМК</div>
-    <div class="row gazettes-list">
-        <div class="col-sm-3"
-             @click="openModal(gazette)"
-             v-for="gazette in gazettes"
-             :key="gazette.id">
-            <figure>
-                <div class="gazette-image img-fluid img-thumbnail"
-                     :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
-            </figure>
-            <div>{{ gazette.name }}</div>
-        </div>
+<div class="page__title mt20">Корпоративная газета ЭМК</div>
+<div class="row gazettes-list">
+    <div class="col-sm-3"
+         @click="openModal(gazette)"
+         v-for="gazette in gazettes"
+         :key="gazette.id">
+        <figure>
+            <div class="gazette-image img-fluid img-thumbnail"
+                 :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
+        </figure>
+        <div>{{ gazette.name }}</div>
     </div>
-    <Transition name="modal">
-        <PdfViewerModal v-if="modalActive"
-                        :activeGazete="activeGazete"
-                        @closeModal="modalActive = false" />
-    </Transition>
+</div>
+<Transition name="modal">
+    <PdfViewerModal v-if="modalActive"
+                    :activeGazete="activeGazete"
+                    @closeModal="modalActive = false" />
+</Transition>
 </template>
 
 

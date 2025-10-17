@@ -54,7 +54,7 @@ class UserSearchModel:
                         },
                         "myngram": {
                             "type": "edge_ngram",
-                            "min_gram": 2,
+                            "min_gram": 4,
                             "max_gram": 7
                         }
                     }
@@ -63,6 +63,36 @@ class UserSearchModel:
             },
             "mappings": {
                 "properties": {
+                    # "last_name": {
+                    #     "type": "text",
+                    #     "analyzer": "GOD_PLEASE_FUZZY_V2",
+                    #     "fields": {
+                    #         "fuzzy": {
+                    #             "type": "text",
+                    #             "analyzer": "GOD_PLEASE"
+                    #         }
+                    #     }
+                    # },
+                    # "name": {
+                    #     "type": "text",
+                    #     "analyzer": "GOD_PLEASE_FUZZY_V2",
+                    #     "fields": {
+                    #         "fuzzy": {
+                    #             "type": "text",
+                    #             "analyzer": "GOD_PLEASE"
+                    #         }
+                    #     }
+                    # },
+                    # "second_name": {
+                    #     "type": "text",
+                    #     "analyzer": "GOD_PLEASE_FUZZY_V2",
+                    #     "fields": {
+                    #         "fuzzy": {
+                    #             "type": "text",
+                    #             "analyzer": "GOD_PLEASE"
+                    #         }
+                    #     }
+                    # },
                     "user_fio": {
                         "type": "text",
                         "analyzer": "GOD_PLEASE_FUZZY_V2",
@@ -249,7 +279,7 @@ class UserSearchModel:
 
             important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday',
                               'uf_phone_inner', "indirect_data", "photo_file_id"]
-
+            # 'last_name', 'name', 'second_name', 
             data = user.__dict__
             if data['id'] == 1:
                 pass
@@ -260,6 +290,7 @@ class UserSearchModel:
                     else:
                         fio = f'{data['last_name']} {data['name']} {data['second_name']}'
                     data_row = {"user_fio": fio}
+                    # data_row = dict()
                     for param in important_list:
                         if param in data.keys():
                             if param == "photo_file_id" and data['photo_file_id'] is not None:
@@ -353,75 +384,54 @@ class UserSearchModel:
 
     def elasticsearch_users(self, key_word, size_res=1000):
         result = []
-        res = elastic_client.search(
-            index=self.index,
-            body={
+
+        words = key_word.strip().split()
+    
+        if len(words) >= 2:
+            # Если несколько слов - используем более строгий поиск
+            body = {
                 "query": {
                     "bool": {
                         "should": [
                             {
+                                "match_phrase": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "slop": 1,
+                                        "boost": 30
+                                    }
+                                }
+                            },
+                            {
                                 "bool": {
-                                    "should": [
-                                        {"match": {"user_fio": {"query": key_word, "boost": 10}}},
-                                        {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
+                                    "must": [
                                         {
-                                            "nested": {
-                                                "path": "indirect_data",
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {"match":
-                                                                {"indirect_data.work_position": {"query": key_word,
-                                                                                                "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1705744824758": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1707225966581": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1696592324977": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1586853958167": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_department_main": {
-                                                                "query": key_word, "boost": 5}}},
-                                                            {"match": {"indirect_data.uf_usr_1586854037086": {
-                                                                "query": key_word, "boost": 5}}}
-                                                        ]
-                                                    }
+                                            "match": {
+                                                "user_fio": {
+                                                    "query": words[0],  # Первое слово (Игорь)
+                                                    "boost": 5
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "match_phrase_prefix": {
+                                                "user_fio": {
+                                                    "query": " ".join(words[1:]),  # Остальные слова (Гази)
+                                                    "boost": 10
                                                 }
                                             }
                                         }
                                     ],
-                                    "_name": "true_search"
+                                    "boost": 25
                                 }
                             },
                             {
-                                "multi_match": {
-                                    "query": key_word,
-                                    "fields": ["user_fio.fuzzy"],
-                                    "fuzziness": "AUTO",
-                                    "boost": 2
-                                }
-                            },
-                            {
-                                "nested": {
-                                    "path": "indirect_data",
-                                    "query": {
-                                        "multi_match": {
-                                            "query": key_word,
-                                            "fields": [
-                                                "indirect_data.work_position.fuzzy",
-                                                "indirect_data.uf_usr_1705744824758.fuzzy",
-                                                "indirect_data.uf_usr_1707225966581.fuzzy",
-                                                "indirect_data.uf_usr_1696592324977.fuzzy",
-                                                "indirect_data.uf_usr_1586853958167.fuzzy",
-                                                "indirect_data.uf_usr_department_main.fuzzy",
-                                                "indirect_data.uf_usr_1586854037086.fuzzy"
-                                            ],
-                                            "fuzziness": "AUTO",
-                                            "boost": 1
-                                        }
-                                    },
-                                    "score_mode": "max"
+                                "match": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "operator": "and",
+                                        "boost": 15
+                                    }
                                 }
                             }
                         ]
@@ -429,7 +439,68 @@ class UserSearchModel:
                 },
                 "size": size_res
             }
-        )
+        else:
+            # Одно слово - обычный поиск
+            body = {
+                "query": {
+                    "bool": {
+                        "should": [
+                            {
+                                "match_phrase_prefix": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "boost": 20
+                                    }
+                                }
+                            },
+                            {
+                                "match": {
+                                    "user_fio": {
+                                        "query": key_word,
+                                        "operator": "and",
+                                        "boost": 10
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "size": size_res
+            }
+        res = elastic_client.search(index=self.index, body=body)
+        # res = elastic_client.search(
+        #     index=self.index,
+        #     body={
+        #         "query": {
+        #             "bool": {
+        #                 "should": [
+        #                     {
+        #                         "bool": {
+        #                             "should": [ 
+        #                                 {"match": {"user_fio": {"query": key_word, "boost": 10}}}
+        #                                 # {"match": {"last_name": {"query": key_word, "boost": 10}}},
+        #                                 # {"match": {"name": {"query": key_word, "boost": 10}}},
+        #                                 # {"match": {"second_name": {"query": key_word, "boost": 10}}}
+        #                             ],
+        #                             "_name": "true_search"
+        #                         }
+        #                     },
+        #                     {
+        #                         "multi_match": {
+        #                             "query": key_word,
+        #                             # "fields": ["last_name.fuzzy", "name.fuzzy", "second_name.fuzzy"],
+        #                             # "fields": ["last_name", "name", "second_name"],
+        #                             "fields": ["user_fio"],
+        #                             # "fuzziness": "1",
+        #                             "boost": 2
+        #                         }
+        #                     }
+        #                 ]
+        #             }
+        #         },
+        #         "size": size_res
+        #     }
+        # )
         users = []
         true_search_flag = False
 
@@ -437,11 +508,16 @@ class UserSearchModel:
             if "matched_queries" in res_info.keys():
                 true_search_flag = True
             user_info = {}
-            user_info['name'] = res_info["_source"]["user_fio"]
+            # if res_info["_source"]['second_name'] is None:
+            #     fio = f'{res_info["_source"]['last_name']} {res_info["_source"]['name']}'
+            # else:
+            #     fio = f'{res_info["_source"]['last_name']} {res_info["_source"]['name']} {res_info["_source"]['second_name']}'
+            # user_info['name'] = fio
+            user_info['name'] = res_info["_source"]['user_fio']
             user_info['sectionHref'] = "userPage"
             user_info['id'] = int(res_info["_id"])
             user_info['image'] = res_info["_source"]["photo_file_id"]
-            user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
+            # user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
             users.append(user_info)
 
         sec_user = {}
@@ -452,9 +528,114 @@ class UserSearchModel:
         result.append(sec_user)
         return result  # result  res['hits']['hits']
 
+    # поиск не только по фамилии, но и по телефону, должности и подразделению
+    # def elasticsearch_users(self, key_word, size_res=1000):
+    #     result = []
+    #     res = elastic_client.search(
+    #         index=self.index,
+    #         body={
+    #             "query": {
+    #                 "bool": {
+    #                     "should": [
+    #                         {
+    #                             "bool": {
+    #                                 "should": [
+    #                                     {"match": {"user_fio": {"query": key_word, "boost": 10}}},
+    #                                     {"term": {"uf_phone_inner": {"value": key_word, "boost": 10}}},
+    #                                     {
+    #                                         "nested": {
+    #                                             "path": "indirect_data",
+    #                                             "query": {
+    #                                                 "bool": {
+    #                                                     "should": [
+    #                                                         {"match":
+    #                                                             {"indirect_data.work_position": {"query": key_word,
+    #                                                                                             "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1705744824758": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1707225966581": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1696592324977": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1586853958167": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_department_main": {
+    #                                                             "query": key_word, "boost": 5}}},
+    #                                                         {"match": {"indirect_data.uf_usr_1586854037086": {
+    #                                                             "query": key_word, "boost": 5}}}
+    #                                                     ]
+    #                                                 }
+    #                                             }
+    #                                         }
+    #                                     }
+    #                                 ],
+    #                                 "_name": "true_search"
+    #                             }
+    #                         },
+    #                         {
+    #                             "multi_match": {
+    #                                 "query": key_word,
+    #                                 "fields": ["user_fio.fuzzy"],
+    #                                 "fuzziness": "1",
+    #                                 "boost": 2
+    #                             }
+    #                         },
+    #                         {
+    #                             "nested": {
+    #                                 "path": "indirect_data",
+    #                                 "query": {
+    #                                     "multi_match": {
+    #                                         "query": key_word,
+    #                                         "fields": [
+    #                                             "indirect_data.work_position.fuzzy",
+    #                                             "indirect_data.uf_usr_1705744824758.fuzzy",
+    #                                             "indirect_data.uf_usr_1707225966581.fuzzy",
+    #                                             "indirect_data.uf_usr_1696592324977.fuzzy",
+    #                                             "indirect_data.uf_usr_1586853958167.fuzzy",
+    #                                             "indirect_data.uf_usr_department_main.fuzzy",
+    #                                             "indirect_data.uf_usr_1586854037086.fuzzy"
+    #                                         ],
+    #                                         "fuzziness": "1",
+    #                                         "boost": 1
+    #                                     }
+    #                                 },
+    #                                 "score_mode": "max"
+    #                             }
+    #                         }
+    #                     ]
+    #                 }
+    #             },
+    #             "size": size_res
+    #         }
+    #     )
+    #     users = []
+    #     true_search_flag = False
+
+    #     for res_info in res['hits']['hits']:
+    #         if "matched_queries" in res_info.keys():
+    #             true_search_flag = True
+    #         user_info = {}
+    #         user_info['name'] = res_info["_source"]["user_fio"]
+    #         user_info['sectionHref'] = "userPage"
+    #         user_info['id'] = int(res_info["_id"])
+    #         user_info['image'] = res_info["_source"]["photo_file_id"]
+    #         user_info['dep_id'] = res_info["_source"]["indirect_data"]["uf_department"][0]
+    #         users.append(user_info)
+
+    #     sec_user = {}
+    #     sec_user['section'] = 'Пользователи'
+    #     if true_search_flag is False:
+    #         sec_user['msg'] = 'Точных совпадений не нашлось, возможно вы имели ввиду:'
+    #     sec_user['content'] = users
+    #     result.append(sec_user)
+    #     return result  # result  res['hits']['hits']
+
+
     def update_user_el_index(self, user_data):
+        from src.model.File import File
         important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data", "photo_file_id"]
-        data = user_data.__dict__
+        # data = user_data.__dict__
+        data = user_data
         result = None
         if data['id'] == 1:
             pass

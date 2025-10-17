@@ -57,23 +57,36 @@ class AuthService:
         self.session_ttl = timedelta(minutes=240)
 
     async def authenticate(self, username: str, password: str) -> Optional[Dict[str, Any]]:
+
+        LogsMaker().info_message(f"login = {username}, password = {password}")
+
         """Аутентификация пользователя"""
         # Проверка подключения к Redis
         if not self.redis.check_connection():
             return LogsMaker().fatal_message("Cannot connect to Redis")
 
         # Проверяем учетные данные в AD
-        user_uuid = self.check_ad_credentials(username, password)
-        if user_uuid is not None and "GUID" in user_uuid:
-            user_uuid = user_uuid['GUID']
-        else:
-            return LogsMaker.error_message("Auth error! Invalid login or password!")
+        # user_uuid = self.check_ad_credentials(username, password)
+        # if user_uuid is not None and "GUID" in user_uuid:
+        #     user_uuid = user_uuid['GUID']
+        # else:
+        #     return LogsMaker().error_message("Auth error! Invalid login or password!")
+
+        user_uuid = try_mail(login = username, password = password)
+        if user_uuid == False:
+            b24_ans = try_b24(login = username, password = password)
+            if b24_ans['status'] == 'success':
+                user_id = b24_ans['data']['USER_ID']
+                print(user_id)
+                user_uuid = self.get_user_uuid(user_id = user_id)
+            else:
+                return LogsMaker().error_message("Auth error! Invalid login or password!")
         
         
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = self.get_user_data(user_uuid)
-        # print(user_data, user_uuid)
+        
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! есть пользователи без UUID
         #if user_data is None:
             #получаю ID по GUID или по почте
@@ -109,7 +122,6 @@ class AuthService:
             self.redis.save_session(session_id, session_data)
         else:
             session_id = ses_find[8:]
-
         return {
             "session_id": session_id,
             "user": session_data
@@ -198,21 +210,53 @@ class AuthService:
     '''
 
     #ЗАГЛУШКА
-    def check_ad_credentials(self, username, password):
-        #хватаю из json пользователей по логину для демки и возваращаю GUID
-        user_data_file = open("./src/base/test_AD_users.json", "r")
-        user_json = json.load(user_data_file)
-        user_data_file.close()
+    # def check_ad_credentials(self, username, password):
+    #     #хватаю из json пользователей по логину для демки и возваращаю GUID
+    #     user_data_file = open("./src/base/test_AD_users.json", "r")
+    #     user_json = json.load(user_data_file)
+    #     user_data_file.close()
         
-        for user_data in user_json:
-            if username == user_data["login"]:
-                log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
-                ret_str = "#"*len(log_str)
-                LogsMaker().info_message(f"{ret_str}\n{log_str}\n{ret_str}")
-                return user_data
+    #     for user_data in user_json:
+    #         if username == user_data["login"]:
+    #             log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+    #             # ret_str = "#"*len(log_str)
+    #             LogsMaker().ready_status_message(f"{log_str}")
+    #             return user_data
+        
+    #     return None
+    
+
+    # def check_admin_credentials(self, username, password):
+    #     #хватаю из json пользователей по логину для демки и возваращаю GUID
+    #     user_data_file = open("./src/base/admin_users.json", "r")
+    #     user_json = json.load(user_data_file)
+    #     user_data_file.close()
+        
+    #     for user_data in user_json:
+    #         if username == user_data["login"] and password == ["password"]:
+    #             log_str = f"!!!!!!!!!!!! ADMIN {username} подключился к серверу!!!!!!!!!!!!"
+    #             # ret_str = "#"*len(log_str)
+    #             LogsMaker().ready_status_message(f"{log_str}")
+    #             return user_data
+        
+    #     return None
+
+    #ЗАГЛУШКА2
+    def check_ad_credentials(self, username, password):
+        #хватаю uuid пользователя по логину
+        user_uuid = User().find_by_email(username)
+        if user_uuid:
+            log_str = f"!!!!!!!!!!!! {username} подключился к серверу!!!!!!!!!!!!"
+            # ret_str = "#"*len(log_str)
+            LogsMaker().ready_status_message(f"{log_str}")
+            user_data = {"login": username, "GUID": user_uuid}
+            return user_data
         
         return None
     
+    
+    def get_user_uuid(self, user_id):
+        return User(id = user_id).search_by_id()["uuid"]
 
     def get_user_data(self, user_uuid: str):
         # Хватаем данные из pSQL
@@ -267,6 +311,121 @@ class AuthService:
         return session
 
 
+import smtplib
+
+server_mail_host = "smtp.emk.ru:587"
+
+def try_mail(login, password):
+    try:
+        if login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
+            user_info = User().find_by_email(login)
+            return user_info
+        elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
+            puser_info = User().find_by_email(login)
+            return user_info
+        else:
+
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(login, password)
+
+            status = server.noop()[0]
+            server.quit()
+            
+            if status == 250:
+                user_info = User().find_by_email(login)
+                return user_info
+        
+    except smtplib.SMTPAuthenticationError as e:
+        return False
+    except smtplib.SMTPException as e:
+        return False
+    except Exception as e:
+        return False
+
+import requests
+import re
+
+def extract_auth_data(html_content):
+    """
+    Извлекает USER_ID и bitrix_sessid из HTML
+    """
+    # Ищем USER_ID
+    user_id_match = re.search(r'"USER_ID":"(\d+)"', html_content)
+    # Ищем bitrix_sessid
+    sessid_match = re.search(r'"bitrix_sessid":"([a-f0-9]+)"', html_content)
+    
+    user_id = user_id_match.group(1) if user_id_match else None
+    bitrix_sessid = sessid_match.group(1) if sessid_match else None
+    
+    return {
+        "USER_ID": user_id,
+        "bitrix_sessid": bitrix_sessid
+    }
+
+def try_b24(login, password):
+    # URL для авторизации
+    auth_url = "https://portal.emk.ru/?login=yes"
+    
+    # Данные формы
+    form_data = {
+        "AUTH_FORM": "Y",
+        "TYPE": "AUTH",
+        "backurl": "/",
+        "Login": "Войти",
+        "USER_LOGIN": login,
+        "USER_PASSWORD": password
+    }
+    
+    # Заголовки
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+
+    try:
+        # Отправляем POST запрос
+        response = requests.post(auth_url, data=form_data, headers=headers)
+        response.raise_for_status()
+        
+        # Проверяем заголовок страницы с помощью регулярного выражения
+        title_match = re.search(r'<title>\s*(.*?)\s*</title>', response.text, re.IGNORECASE)
+        title_text = title_match.group(1) if title_match else ""
+        
+        # Если в title есть "Авторизация" - неудачная авторизация
+        if "Авторизация" in title_text:
+            return {
+                "status": "failed",
+                "message": "Неверный логин или пароль"
+            }
+        
+        # Если авторизация успешна - извлекаем данные
+        auth_data = extract_auth_data(response.text)
+        
+        if auth_data["USER_ID"] and auth_data["bitrix_sessid"]:
+            return {
+                "status": "success",
+                "data": auth_data
+            }
+        else:
+            return {
+                "status": "failed",
+                "message": "Авторизация прошла, но не удалось извлечь данные пользователя"
+            }
+            
+    except requests.RequestException as e:
+        return {
+            "status": "error",
+            "message": f"Ошибка сети: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": f"Ошибка: {str(e)}"
+        }
+
+
+
 
 
 @auth_router.post("/auth")
@@ -275,21 +434,46 @@ async def authentication(response : Response, data = Body()):
         login = data["login"]
         password = data["password"]
     else:
-        return await LogsMaker().warning_message(message="Login or Password has missing")
+        # return await LogsMaker().warning_message(message="Login or Password has missing")
+        return LogsMaker().warning_message(message="Login or Password has missing")
     
+    # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
+    '''
+    check_email = try_mail(login, password)
+    if check_email == False:
+        # return await LogsMaker().warning_message(message="Invalid credentials")
+        LogsMaker().info_message(f"login = {login}, password = {password} Пользователя у которого не получилось зайти")
+        # return LogsMaker().warning_message(message="Invalid credentials")
+        
+        if login == "rodnin.u.v@techno-sf.com" and password == "rodnin2025":
+            pass
+        elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
+            pass
+        else:
+            #авторизация через Битрикс24
+            return LogsMaker().warning_message(message="Invalid credentials")
+    '''
+    # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     session = await AuthService().authenticate(login, password)
+    print(session)
     if not session :
-        return await LogsMaker().warning_message(message="Invalid credentials")
-    elif "err" in session.keys():
-        return await LogsMaker().warning_message(message=session["err"])
-    access_token = session["session_id"]
+        # return await LogsMaker().warning_message(message="Invalid credentials")
+        return LogsMaker().warning_message(message="Invalid credentials")
+    elif "err" in session.keys() or "error" in session.keys():
+        # return await LogsMaker().warning_message(message=session["err"])
+        return LogsMaker().warning_message(message=session)
+    
+    if "session_id" in session:
+        access_token = session["session_id"]
 
-    #response.headers["Authorization"] = access_token
+        #response.headers["Authorization"] = access_token
 
-    response.set_cookie(key="Authorization", value=access_token)
+        response.set_cookie(key="Authorization", value=access_token)
 
-    #return JSONResponse(content=session, headers=response.headers)
-    return session
+        #return JSONResponse(content=session, headers=response.headers)
+        return session
+    else:
+        return session
         
 @auth_router.get("/check")
 async def check_token(request : Request):

@@ -163,8 +163,8 @@
     }
 }
 
-.idea-new__input:focus+.idea-new__label,
-.idea-new__input:not(:placeholder-shown)+.idea-new__label {
+.idea-new__input:focus+.idea-new__input__label,
+.idea-new__input:not(:placeholder-shown)+.idea-new__input__label {
     top: -0.5rem;
     left: 0.75rem;
     font-size: 0.75rem;

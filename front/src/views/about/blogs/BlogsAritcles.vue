@@ -16,15 +16,16 @@
                         {{ article.name }}
                     </RouterLink>
                     <div class="news-like news-like--blog">
-                        <span class="blog-date">{{ article.date_creation?.replace('T', ' ') }} //</span>
                         <Reactions v-if="article.reactions"
                                    :id="article.id"
                                    :reactions="article.reactions"
+                                   :date="article.date_creation"
                                    :type="'blog'" />
                     </div>
                     <div class="blog__short__desc"
-                         v-if="article?.preview_text">
-                        {{ article.preview_text }}
+                         v-if="article?.preview_text"
+                         v-html="parseMarkdown(article.preview_text)">
+
                     </div>
                 </div>
             </div>
@@ -38,6 +39,8 @@ import BlogAvatar from "./components/BlogAvatar.vue";
 import Reactions from "@/components/tools/common/Reactions.vue";
 import { defineComponent, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
+import { dateConvert } from "@/utils/dateConvert";
+import { parseMarkdown } from "@/utils/parseMarkdown";
 
 export default defineComponent({
     components: { Reactions, BlogAvatar },
@@ -61,7 +64,9 @@ export default defineComponent({
             blogName: targetAuthor.value?.title,
             currentArticles,
             targetBlog,
-            targetAuthor
+            targetAuthor,
+            dateConvert,
+            parseMarkdown,
         };
     }
 }

@@ -1,28 +1,28 @@
 <template>
-    <VueDatePicker v-model="dateInput"
-                   locale="ru"
-                   cancelText="Назад"
-                   selectText="Ок"
-                   :enable-time-picker="false"
-                   disable-year-select
-                   :six-weeks="true"
-                   auto-apply
-                   placeholder="Выберите дату"
-                   :format="format"
-                   :markers="markers"
-                   @cleared="$emit('clearValue')"
-                   @update:model-value="handleDate">
-        <template #marker="{ marker }">
-            <div class="calendar__custom-marker__wrapper"
-                 @click="$emit('markerClick', marker)">
-                <span class="calendar__custom-marker"
-                      :class="{ 'calendar__custom-marker--line': marker.type == 'line' }"
-                      :style="{ backgroundColor: marker.color }">
-                    <span>{{ marker.tooltip.name }}</span>
-                </span>
-            </div>
-        </template>
-    </VueDatePicker>
+<VueDatePicker v-model="dateInput"
+               locale="ru"
+               cancelText="Назад"
+               selectText="Ок"
+               :enable-time-picker="false"
+               disable-year-select
+               :six-weeks="true"
+               auto-apply
+               placeholder="Выберите дату"
+               :format="format"
+               :markers="markers"
+               @cleared="$emit('clearValue')"
+               @update:model-value="handleDate">
+    <template #marker="{ marker }">
+        <div class="calendar__custom-marker__wrapper"
+             @click="$emit('markerClick', marker)">
+            <span class="calendar__custom-marker"
+                  :class="{ 'calendar__custom-marker--line': marker.type == 'line' }"
+                  :style="{ backgroundColor: marker.color }">
+                <span>{{ marker.tooltip.name }}</span>
+            </span>
+        </div>
+    </template>
+</VueDatePicker>
 </template>
 
 <script lang="ts">
@@ -81,7 +81,8 @@ export default defineComponent({
                 return `${month > 9 ? month : "0" + month}.${year}`;
             }
             else if (props.calendarType == 'month') {
-                return `${month > 9 ? month : "0" + month}`
+                const formatMonth = date.toLocaleString('ru', { 'month': 'long' })
+                return formatMonth.charAt(0).toUpperCase() + formatMonth.slice(1);
             }
             else if (props.calendarType == 'full') {
                 return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
@@ -104,11 +105,11 @@ export default defineComponent({
 
         return {
             dateInput,
-            openDatePicker,
             imageInModal,
             searchValue,
-            pickDate,
             date,
+            pickDate,
+            openDatePicker,
             format,
             handleDate
         };

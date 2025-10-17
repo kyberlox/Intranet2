@@ -6,7 +6,7 @@
         display: grid;
         // grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-template-columns: repeat(5, 1fr);
-        gap: 30px;
+        gap: 20px;
         min-width: 100%;
         // align-items: flex-end;
 
@@ -75,7 +75,7 @@
                 }
 
                 &--afisha {
-                    align-self: self-start !important;
+                    align-self: self-start;
                 }
 
                 &+.homeview__grid__card--section:is(:last-child) {
@@ -94,9 +94,9 @@
                             grid-template-columns: repeat(4, 1fr);
                         }
 
-                        // @include lg {
-                        //     grid-template-columns: repeat(4, 1fr);
-                        // }
+                        @include lg {
+                            grid-template-columns: repeat(2, 1fr);
+                        }
 
                         @include md {
                             grid-template-columns: repeat(3, 1fr);
@@ -145,8 +145,18 @@
                 aspect-ratio: 16/9;
                 width: 100%;
 
+                &>.swiper {
+                    border-radius: 15px;
+                    border: 1px solid rgb(240, 240, 240);
+                }
+
+
                 &:hover {
                     transform: scale(1.03);
+
+                    &>.swiper {
+                        transform: scale(1.03)
+                    }
                 }
 
                 &__swiper-slide {
@@ -206,7 +216,7 @@
                 &--plug {
                     background-size: cover !important;
                     background-repeat: no-repeat !important;
-                    border: 1px solid rgba(128, 128, 128, 0.333);
+                    // border: 1px solid rgba(128, 128, 128, 0.333);
                 }
 
                 &--needpos {
@@ -306,8 +316,15 @@
             &__group-buttons {
                 display: flex;
                 flex-direction: row;
-                justify-content: space-between;
+                // justify-content: space-between;
+                align-items: flex-start;
                 margin-top: auto;
+                gap: 15px;
+                width: 100%;
+
+                &--between {
+                    justify-content: space-between;
+                }
 
                 &__more-button {
                     font-weight: 600;

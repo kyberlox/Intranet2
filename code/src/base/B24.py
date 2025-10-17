@@ -60,6 +60,7 @@ class B24:
 
     def get_picture_link(self, inf_id, art_id, picture_type, property):
         link = f"https://portal.emk.ru/company/lists/{inf_id}/file/0/{art_id}/{picture_type}/{property}/"
+        # link = f"https://portal.emk.ru/user.search{inf_id}/file/0/{art_id}/{picture_type}/{property}/"
 
         return link
 

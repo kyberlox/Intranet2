@@ -20,6 +20,7 @@
                     class="mt20"
                     :slide="{ images: slides.images.filter((e) => e.indirect_data!.nomination == activeNav) }"
                     :modifiers="['likes', 'noViews']"
+                    :contest="true"
                     @callModal="callModal" />
     <div v-else-if="!isLoading">
         <h5>Сейчас нет актуальных конкурсов</h5>

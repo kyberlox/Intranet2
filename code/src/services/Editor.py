@@ -4,7 +4,7 @@ from typing import Annotated, List
 
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.ArticleModel import ArticleModel
-from ..base.mongodb import FileModel
+#from ..base.mongodb import FileModel
 from ..model.Article import Article
 from ..model.Section import Section
 from ..model.File import File as storeFile

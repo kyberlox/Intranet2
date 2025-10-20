@@ -1,4 +1,7 @@
-from ..base.mongodb import FileModel
+#from ..base.mongodb import FileModel
+from ..base.pSQL.objects.UserFilesModel import UserFilesModel
+from ..base.pSQL.objects.FilesDBModel import FilesDBModel
+
 from ..base.B24 import B24
 from .Section import Section
 
@@ -59,7 +62,9 @@ class File:
         try:
             b24 = B24()
             #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
-            filename = "___"
+            filename = ""
+            if art_id is None:
+                return {'err' : "Con not add file without art_id"}
             try:
                 if need_all_method:
                     file_data = b24.get_all_files(self.b24_id)
@@ -71,11 +76,12 @@ class File:
                     elif "NAME" in file_data:
                         filename = file_data["NAME"]
 
+
                     filename_parts = filename.split('.')
                     file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
                     # Генерируем уникальное имя файла
-                    unique_name = str(ObjectId()) + file_ext
+                    unique_name = FilesDBModel(article_id=art_id).generate_name(filename)
                     file_path = os.path.join(STORAGE_PATH, unique_name)
 
                     # Сохраняем файл
@@ -96,36 +102,36 @@ class File:
                     file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
                     # Генерируем уникальное имя файла
-                    unique_name = str(ObjectId()) + file_ext
+                    unique_name = FilesDBModel(article_id=art_id).generate_name(filename)
                     file_path = os.path.join(STORAGE_PATH, unique_name)
 
                     # Сохраняем файл
                     content_type = self.download_by_URL(file_data["DOWNLOAD_URL"], file_path)
                 
-                result = {
-                    "original_name": filename,
-                    "stored_name": unique_name,
-                    "content_type": content_type,
-                    "article_id": art_id,
-                    "b24_id": self.b24_id,
-                    "is_archive": False,
-                    "is_preview": is_preview,
-                    "file_url": f"/api/files/{unique_name}"  # Прямой URL
-                }
+                # result = {
+                #     "original_name": filename,
+                #     "name": unique_name,
+                #     "content_type": content_type,
+                #     "article_id": art_id,
+                #     "b24_id": self.b24_id,
+                #     "is_archive": False,
+                #     "is_preview": is_preview,
+                #     "file_url": f"/api/files/{unique_name}"  # Прямой URL
+                # }
 
                 #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
 
-                #записать в mongodb
-                inserted_id = FileModel().add(result)
+                #записать в pSQL
+                inserted_id = FilesDBModel(article_id=art_id, name=unique_name, original_name = filename, b24_url=self.b24_id, active=True, is_preview = is_preview, content_type = content_type, file_url = f"/api/files/{unique_name}").add()
 
                 return {
                     "id": str(inserted_id),
                     "original_name": filename,
-                    "stored_name": unique_name,
+                    "name": unique_name,
                     "content_type": content_type,
                     "article_id": art_id,
                     "b24_id": self.b24_id,
-                    "is_archive": False,
+                    "active": False,
                     "is_preview" : is_preview,
                     "file_url": f"/api/files/{unique_name}"
                 }
@@ -142,21 +148,29 @@ class File:
 
     def add_link(self, link, art_id):
         filename = link.split("/")[-2]
-        data = {
-            "original_name": link,
-            "stored_name": filename,
-            "content_type": "link",
-            "article_id": art_id,
-            "b24_id": self.b24_id,
-            "is_archive": False,
-            "is_preview": False,
-            "file_url": link  # Прямой URL
-        }
+        # data = {
+        #     "original_name": link,
+        #     "stored_name": filename,
+        #     "content_type": "link",
+        #     "article_id": art_id,
+        #     "b24_id": self.b24_id,
+        #     "is_archive": False,
+        #     "is_preview": False,
+        #     "file_url": link  # Прямой URL
+        # }
             
         #записать в mongodb
-        inserted_id = FileModel().add(data)
-
-        new_url = data["file_url"]
+        inserted_id = FilesDBModel(
+            article_id=art_id,
+            name=filename,
+            original_name = link,
+            b24_url=self.b24_id,
+            active=True,
+            is_preview = is_preview,
+            is_preview = False,
+            content_type = "link",
+            file_url = link
+        ).add(data)
 
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
         return link
@@ -164,11 +178,11 @@ class File:
 
     def need_update_url_file(self,  art_id, filename):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
-        result = FileModel(art_id=art_id).find_all_by_art_id()
+        result = FilesDBModel(art_id=art_id).find_all_by_art_id()
         DB_files_name = []
 
         if result is None: # если в бд нет такой статьи
-            return True 
+            return True
         else:
             # цикл для сбора данных с БД
             for res in result: # выдергиваем все original_name из монго по art_id 
@@ -194,7 +208,7 @@ class File:
         #тут надо проверить, нет ли такого файла уже в БД?
         if self.need_update_url_file(art_id, filename):
             # Генерируем уникальное имя файла
-            unique_name = str(ObjectId()) + file_ext
+            unique_name = FilesDBModel(article_id=art_id).generate_name(filename)
             file_path = os.path.join(STORAGE_PATH, unique_name)
 
             #скачать файл по ссылке
@@ -204,21 +218,31 @@ class File:
             
             content_type = response.headers.get('Content-Type', 'unknown')
 
-            result = {
-                        "original_name": filename,
-                        "stored_name": unique_name,
-                        "content_type": content_type,
-                        "article_id": art_id,
-                        "b24_id": self.b24_id,
-                        "is_archive": False,
-                        "is_preview": is_preview,
-                        "file_url": f"/api/files/{unique_name}"  # Прямой URL
-                    }
+            # result = {
+            #             "original_name": filename,
+            #             "stored_name": unique_name,
+            #             "content_type": content_type,
+            #             "article_id": art_id,
+            #             "b24_id": self.b24_id,
+            #             "is_archive": False,
+            #             "is_preview": is_preview,
+            #             "file_url": f"/api/files/{unique_name}"  # Прямой URL
+            #         }
             
-            #записать в mongodb
-            inserted_id = FileModel().add(result)
+            #записать в psql
+            inserted_id = FilesDBModel(
+                article_id=art_id,
+                name=unique_name,
+                original_name = filename,
+                b24_url=self.b24_id,
+                active=True,
+                is_preview = is_preview,
+                is_preview = False,
+                content_type = content_type,
+                file_url = f"/api/files/{unique_name}"
+            ).add(data)
 
-            new_url = result["file_url"]
+            new_url = f"/api/files/{unique_name}"
             
             return f"{DOMAIN}{new_url}"
             
@@ -228,7 +252,7 @@ class File:
             for fl in files:
                 if fl["original_name"] == filename:
                     #перезаписываем
-                    unique_name = fl["stored_name"]
+                    unique_name = fl["name"]
                     file_path = os.path.join(STORAGE_PATH, unique_name)
                     response = requests.get(f"{DOMAIN}{url}")
                     with open(file_path, 'wb') as file:
@@ -258,21 +282,31 @@ class File:
             
             content_type = response.headers.get('Content-Type', 'unknown')
 
-            result = {
-                        "original_name": filename,
-                        "stored_name": unique_name,
-                        "content_type": content_type,
-                        "article_id": art_id,
-                        "b24_id": self.b24_id,
-                        "is_archive": False,
-                        "is_preview": is_preview,
-                        "file_url": f"/api/files/{unique_name}"  # Прямой URL
-                    }
+            # result = {
+            #             "original_name": filename,
+            #             "stored_name": unique_name,
+            #             "content_type": content_type,
+            #             "article_id": art_id,
+            #             "b24_id": self.b24_id,
+            #             "is_archive": False,
+            #             "is_preview": is_preview,
+            #             "file_url": f"/api/files/{unique_name}"  # Прямой URL
+            #         }
             
-            #записать в mongodb
-            inserted_id = FileModel().add(result)
+            #записать в psql
+            inserted_id = FilesDBModel(
+                article_id=art_id,
+                name=unique_name,
+                original_name = filename,
+                b24_url=self.b24_id,
+                active=True,
+                is_preview = is_preview,
+                is_preview = False,
+                content_type = content_type,
+                file_url = f"/api/files/{unique_name}"
+            ).add(data)
 
-            new_url = result["file_url"]
+            new_url = f"/api/files/{unique_name}"
             
             return f"{DOMAIN}{new_url}"
             
@@ -292,44 +326,44 @@ class File:
                     
                     return f"{DOMAIN}{new_url}"
 
-    def need_update_file(self,  art_id, files_id):
-        # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
-        result = FileModel(art_id=art_id).find_all_by_art_id()
-        DB_files_id = []
-        DB_files_path = {}
+    # def need_update_file(self,  art_id, files_id):
+    #     # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
+    #     result = FilesDBModel(art_id=art_id).find_all_by_art_id()
+    #     DB_files_id = []
+    #     DB_files_path = {}
 
-        if result is None: # если в бд нет такого файла
-            return files_id 
-        else:
-            # цикл для сбора данных с БД
-            for res in result: # выдергиваем все b24_id из монго по art_id 
-                fl = res["b24_id"]
-                DB_files_id.append(fl)
-                DB_files_path[fl] = f'{STORAGE_PATH}/{res["stored_name"]}'
+    #     if result is None: # если в бд нет такого файла
+    #         return files_id 
+    #     else:
+    #         # цикл для сбора данных с БД
+    #         for res in result: # выдергиваем все b24_id из монго по art_id 
+    #             fl = res["b24_id"]
+    #             DB_files_id.append(fl)
+    #             DB_files_path[fl] = f'{STORAGE_PATH}/{res["stored_name"]}'
 
-            # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
-            for fl in DB_files_id:
-                if fl not in files_id:
-                    FileModel(b24_id = fl).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
-                    #os.remove(DB_files_path[fl])
-                    # print('лишний файл в БД', file, art_id)
-                else:
-                    files_id.remove(fl) # удаляем из входящего списка все файлы которые уже есть в DB_files_id
+    #         # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
+    #         for fl in DB_files_id:
+    #             if fl not in files_id:
+    #                 FileModel(b24_id = fl).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
+    #                 #os.remove(DB_files_path[fl])
+    #                 # print('лишний файл в БД', file, art_id)
+    #             else:
+    #                 files_id.remove(fl) # удаляем из входящего списка все файлы которые уже есть в DB_files_id
 
-            # print('2)', files_id, 'файлы, которые нужно добавить', art_id)
+    #         # print('2)', files_id, 'файлы, которые нужно добавить', art_id)
 
-            return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
+    #         return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
 
     def get_file(self):
-        file_data = FileModel(id=self.id).find_by_id()
+        file_data = FilesDBModel(id=self.id).find_by_id()
         
-        if file_data["is_archive"]:
-            raise HTTPException(status_code=404, detail="File not found")
-        else:
-            file_data["id"] = str(file_data["_id"])
-            file_data.pop("_id")
+        if file_data is not None:
             return file_data
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+        
+            
 
     def get_files_by_art_id(self):
         file_data = FileModel(art_id=int(self.art_id)).find_all_by_art_id()

@@ -15,7 +15,9 @@ class UserFiles(Base):
     stored_name = Column(Text, nullable=True)
     b24_url = Column(Text, nullable=True)
     active = Column(Boolean, nullable=True)
+    is_preview = Column(Boolean, nullable=True)
     content_type = Column(Text, nullable=True)
+    file_url = Column(Text, nullable=True)
 
     article_id = Column(Integer, ForeignKey('article.id'), nullable=False)
 

@@ -26,6 +26,13 @@
                      style="text-align: justify">
                     {{ textContent.content }}
                 </div>
+                <div class="mb-3 modal__text__content__detail modal__text__content__detail--link">
+                    <a v-if="textContent?.files"
+                       :href="textContent.files.file_url"
+                       style="text-align: justify">
+                        {{ textContent.files.original_name }}
+                    </a>
+                </div>
                 <div>
                     <a :href="`https://portal.emk.ru/intranet/editor/feedback/pdfgen.php?ELEMENT_ID=${textContent?.id}`"
                        target="_blank"
@@ -39,6 +46,7 @@
 
 
 <script lang="ts">
+import type { IBXFileType } from '@/interfaces/IEntities';
 import { defineComponent, type PropType } from 'vue';
 
 interface IUserForModal {
@@ -50,6 +58,7 @@ interface IUserForModal {
         work_position?: string
         uf_usr_1696592324977?: string[]
     }
+
 }
 
 interface IModalTextContent {
@@ -57,6 +66,7 @@ interface IModalTextContent {
     number: string
     name: string
     content: string
+    files: IBXFileType
 }
 
 export default defineComponent({

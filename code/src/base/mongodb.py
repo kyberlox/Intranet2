@@ -104,54 +104,7 @@ class FileModel:
         return {"status": True}
 
     # блок для файлов
-    def add(self, file_data):
-        file_id = files_collection.insert_one(file_data).inserted_id
-        return file_id
-
-    def go_archive(self):
-        return files_collection.update_one({"b24_id": self.b24_id}, { "$set": { "is_archive" : False } })
-
-    def remove(self):
-        #удалить сам файл
-        file_data = files_collection.find_one({"_id": self.id})
-        if file_data is not None:
-            
-            unique_name = file_data['stored_name']
-            file_path = os.path.join(STORAGE_PATH, unique_name)
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            else:  
-                print("File not found.")
-            
-            #удалить запись
-            result = files_collection.delete_one({"_id": self.id})  
-            print(result.deleted_count)
-            return result.deleted_count
-        else:
-            return "File not found."
-
-        #return files_collection.update_one({"_id": self.id}, {"$set": {"is_archive" : True}})
-
-    def find_by_id(self):
-        return files_collection.find_one({"_id": self.id})
-
-    def need_update(self):
-        return files_collection.find_one({"_id": self.id})
-
-    def find_by_art_id(self):
-        return files_collection.find_one({"article_id": self.art_id})
-
-    def find_by_b24_id(self):
-        return files_collection.find_one({"b24_id": self.id})
-
-    def find_all_by_art_id(self):
-        return files_collection.find({"article_id": self.art_id})
-
-    def find_all_by_b24_id(self):
-        return files_collection.find({"b24_id": self.art_id})
-
-    def update_data(self, new_data):
-        files_collection.update_one({"_id": self.id}, {'$set': new_data})
+    
 
     # блок для аватарок
     

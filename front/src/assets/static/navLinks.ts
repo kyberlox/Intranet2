@@ -67,17 +67,17 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "safetytechnics",
             },
             {
-                id: 1.12,
+                id: 1.11,
                 name: "Календарь событий",
                 href: "calendar",
             },
             {
-                id: 1.13,
+                id: 1.12,
                 name: "Магазин мерча",
                 href: "merchStore",
             },
             {
-                id: 1.14,
+                id: 1.13,
                 name: 'Новые сотрудники',
                 href: 'newWorkers'
             }
@@ -111,6 +111,11 @@ export const mainMenuPoints: MainMenuPoints = [
                 id: 2.5,
                 name: "Разрешительная документация и сертификаты",
                 href: "cert",
+            },
+            {
+                id: 2.51,
+                name: "Разрешительная документация и сертификаты (диск U)",
+                href: "udocs",
             },
             {
                 id: 2.6,

@@ -284,6 +284,15 @@ const router = createRouter({
       redirect: '',
     },
     {
+      path: '/services/udocs',
+      name: 'udocs',
+      beforeEnter: (to, from, next) => {
+        window.open("U:/Разрешительные%20документы", '_blank')
+        next(false)
+      },
+      redirect: '',
+    },
+    {
       path: '/services/experience',
       name: 'experience',
       component: () => import('@/views/services/experience/Experience.vue')

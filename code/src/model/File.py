@@ -366,35 +366,35 @@ class File:
             
 
     def get_files_by_art_id(self):
-        file_data = FileModel(art_id=int(self.art_id)).find_all_by_art_id()
+        file_data = FilesDBModel(art_id=int(self.art_id)).find_all_by_art_id()
         file_list = []
         
         if not file_data:
             raise HTTPException(status_code=404, detail="Files not found")
         else:
-            for file in file_data:
-                if not file["is_archive"]:
+            for fl in file_data:
+                if fl["active"]:
                     file_info = {}
-                    file_info["id"] = str(file["_id"])
-                    file_info["original_name"] = file["original_name"]
-                    file_info["stored_name"] = file["stored_name"]
-                    file_info["content_type"] = file["content_type"]
+                    file_info["id"] = str(fl["id"])
+                    file_info["original_name"] = fl["original_name"]
+                    file_info["name"] = fl["name"]
+                    file_info["content_type"] = fl["content_type"]
 
                     #файлы делятся по категориям
-                    if "image" in file["content_type"]:
+                    if "image" in fl["content_type"]:
                         file_info["type"] = "image"
-                    elif "video" in file["content_type"]:
+                    elif "video" in fl["content_type"]:
                         file_info["type"] = "video"
-                    elif "link" in file["content_type"]:
+                    elif "link" in fl["content_type"]:
                         file_info["type"] = "video_embed"
                     else:
                         file_info["type"] = "documentation"
 
-                    file_info["article_id"] = file["article_id"]
-                    file_info["b24_id"] = file["b24_id"]
-                    file_info["file_url"] = file["file_url"]
-                    file_info["is_archive"] = file["is_archive"]
-                    file_info["is_preview"] = file["is_preview"]
+                    file_info["article_id"] = fl["article_id"]
+                    file_info["b24_id"] = fl["b24_id"]
+                    file_info["file_url"] = fl["file_url"]
+                    file_info["active"] = fl["active"]
+                    file_info["is_preview"] = fl["is_preview"]
 
                     file_list.append(file_info)
 
@@ -407,8 +407,8 @@ class File:
         if files_data is not None and files_data != []:
             for file_data in files_data:
                 #удалить по id файла
-                self.id = ObjectId(file_data['id'])
-                FileModel(id = self.id).remove()
+                self.id = file_data['id']
+                FilesDBModel(id = self.id).remove()
 
     def get_files_by_section_id(self, section_id):
         #беру список atr_id
@@ -420,33 +420,31 @@ class File:
                 self.art_id = art_id
                 art_files = self.get_files_by_art_id()
 
-                
-
                 files[art_id] = art_files
         
         return files
 
-    def need_update_link(self):
-        pass
+    # def need_update_link(self):
+    #     pass
 
-    def get_link_as_file(self):
-        pass
+    # def get_link_as_file(self):
+    #     pass
 
-    def update_data(self, data : dict):
-        #получить данные
-        file_data = FileModel(id=self.id).find_by_id()
-        #file_data["id"] = str(file_data["_id"])
-        file_data.pop("_id")
+    # def update_data(self, data : dict):
+    #     #получить данные
+    #     file_data = FilesDBModel(id=self.id).find_by_id()
+    #     #file_data["id"] = str(file_data["_id"])
+    #     file_data.pop("_id")
         
-        #заменить данные
-        for key in data.keys():
-            if key != "id":
-                file_data[key] = data[key]
+    #     #заменить данные
+    #     for key in data.keys():
+    #         if key != "id":
+    #             file_data[key] = data[key]
 
-        #сохранить изменения
-        result = FileModel(id=self.id).update_data(file_data)
+    #     #сохранить изменения
+    #     result = FilesDBModel(id=self.id).update_data(file_data)
         
-        return result
+    #     return result
 
 
     def get_users_photo(self):

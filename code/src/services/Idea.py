@@ -99,7 +99,20 @@ class Idea:
             #print(user_id)
             result = []
             for idea in self.ideas:
+
                 if str(idea['user_id']) == str(user_id):
+                
+                    if idea["document_id"]:
+                        file_id = idea.pop("document_id")
+                        try:
+                            file_info = B24().get_file(id=file_id, inf_id=121)
+                        except:
+                            file_info = B24().get_all_files(id=file_id)
+                        file_url = "https://portal.emk.ru" + file_info["SRC"]
+                        idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
+                    else:
+                        idea.pop("document_id")
+                        idea['files'] = dict()
                     result.append(idea)
             return result
         else:

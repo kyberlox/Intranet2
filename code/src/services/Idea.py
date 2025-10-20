@@ -41,7 +41,8 @@ class Idea:
                 "DETAIL_TEXT_TYPE" : "content_type",
                 "DATE_CREATE" : "date_create",
                 "PROPERTY_1049" : "number",
-                "PROPERTY_1117" : "status"
+                "PROPERTY_1117" : "status",
+                "PROPERTY_1027" : "document_id"
             }
 
             

@@ -22,4 +22,4 @@ class FilesDB(Base):
     article_id = Column(Integer, ForeignKey('article.id'), nullable=False)
 
     # Отношения файлоы и статей
-    article = relationship("Article", back_populates="FilesDB")
+    article = relationship("Article", back_populates="filesdb")

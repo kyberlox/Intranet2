@@ -110,7 +110,7 @@ class User:
                         
                         #обновить данные в pSQL
                         self.UserModel.uuid = uuid
-                        print(file_data)
+                        print(file_data, type(file_data))
                         self.UserModel.set_user_photo(file_data["id"])
                     else:
                         continue

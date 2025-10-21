@@ -493,7 +493,7 @@ class File:
             ) #вернет False, если пытаться скачать актуальную фотку ещё раз
             if w_photo is not False:
                 #скачать файл
-                result = self.dowload_user_photo(b24_url, w_photo['name'])
+                result = self.dowload_user_photo(url=b24_url, name=w_photo['name'])
             print(w_photo)
             return w_photo
         except Exception as e:

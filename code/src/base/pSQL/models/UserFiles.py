@@ -18,4 +18,4 @@ class UserFiles(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     # Отношения втарок и пользователей
-    user = relationship("User", back_populates="userFiles")
+    users = relationship("User", back_populates="userFiles")

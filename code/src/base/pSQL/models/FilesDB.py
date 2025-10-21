@@ -1,10 +1,7 @@
 from sqlalchemy import Column, Integer, Text, ForeignKey, Boolean
-from sqlalchemy.orm import  relationship
+from sqlalchemy.orm import relationship
 
 from .App import Base
-from .Article import Article
-
-
 
 class FilesDB(Base):
     __tablename__ = 'filesdb'
@@ -18,8 +15,7 @@ class FilesDB(Base):
     is_preview = Column(Boolean, nullable=True)
     content_type = Column(Text, nullable=True)
     file_url = Column(Text, nullable=True)
-
     article_id = Column(Integer, ForeignKey('article.id'), nullable=False)
 
-    # Отношения файлоы и статей
-    article = relationship("Article", back_populates="filesdb")
+    # Отношение к статье
+    article = relationship("Article", back_populates="artfiles")  # Исправлено на artfiles

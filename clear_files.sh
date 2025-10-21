@@ -17,4 +17,4 @@ sudo rm -rf ./mongodb/data/*
 
 sudo rm -rf ./pSQL/data/*
 
-sudo rm -rf ./elasticsearch/data*
+sudo rm -rf ./elasticsearch/data/*

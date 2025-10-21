@@ -488,7 +488,7 @@ class File:
             #собрать данные
             name = url.split("/")[-1]
             #создать запись
-            w_photo = UserFilesModel().(
+            w_photo = UserFilesModel().add_user_photo(
                 user_id=None,
                 name=name,
                 b24_url=b24_url,

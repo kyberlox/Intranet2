@@ -3,7 +3,7 @@ from sqlalchemy.orm import  relationship
 from sqlalchemy.dialects.postgresql import JSONB
 
 from .App import Base
-
+from .UserFiles import UserFiles
 
 
 class User(Base):

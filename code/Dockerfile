@@ -1,4 +1,4 @@
-FROM python:3.14-bookworm
+FROM python:3.14-trixie
 
 WORKDIR /data/app
 RUN mkdir files_db vcard_db

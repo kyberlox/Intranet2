@@ -7,6 +7,8 @@ LogsMaker().ready_status_message("Успешная инициализация т
 db_gen = get_db()
 database = next(db_gen)
 
+USER_STORAGE_PATH = "./files_db/user_photo"
+
 class UserFilesModel():
     def __init__(self, id=None, user_id=None, name=None, b24_url=None, active=True):
         self.id = id
@@ -14,6 +16,7 @@ class UserFilesModel():
         self.name = name
         self.b24_url = b24_url
         self.active = active
+        self.URL = f"/api/user_files/{self.name}"
 
     def add_user_photo(self ):
         if self.user_id is None:
@@ -22,6 +25,7 @@ class UserFilesModel():
         if self.name is None:
             return {'err' : 'No name'}
         self.name = self.generate_name(self.name)
+        self.URL = f"/api/user_files/{self.name}"
 
         from .UserModel import UserModel
         existing_user = UserModel(Id=self.user_id).find_by_id()
@@ -30,15 +34,19 @@ class UserFilesModel():
             user_photo_exists = database.query(UserFiles).filter(UserFiles.user_id == self.user_id, UserFiles.active == True).first()
             #если уже есть - заменить
             if user_photo_exists:
-                #текущую актуальную - в архив
-                self.id = user_photo_exists.id
-                self.go_user_photo_archive()
+                #проверить, вдруг это тоже самое
+                if user_photo_exists.b24_url == self.b24_url:
+                    return False
+                else: #если другая
+                    #текущую актуальную - в архив
+                    self.id = user_photo_exists.id
+                    self.go_user_photo_archive()
             #если нет - просто создать
-            new_usfile = UserFiles(name = self.name, b24_url=self.b24_url, active=self.active, user_id=int(self.user_id))
+            new_usfile = UserFiles(name = self.name, b24_url=self.b24_url, active=self.active, user_id=int(self.user_id), URL=self.URL)
             database.add(new_usfile)
             database.commit()
         
-        return new_usfile.id
+        return new_usfile.__dict__
 
     #Пока они mongo - переделай в psql
     def go_user_photo_archive(self):
@@ -60,16 +68,20 @@ class UserFilesModel():
         try:
             existing_photo = database.query(UserFiles).filter(UserFiles.id == self.id).first()
             if existing_photo:
-                eunique_name = file_data['name']
-                file_path = os.path.join(STORAGE_PATH, unique_name)
+                unique_name = file_data['name']
+                file_path = os.path.join(USER_STORAGE_PATH, unique_name)
                 if os.path.exists(file_path):
                     os.remove(file_path)
                 else:  
                     LogsMaker().warning_message("File not found.")
+
+                #удалить запись
                 result = database.delete(existing_photo)
                 database.commit()
                 return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно отправлено в архив")
+
             return LogsMaker().info_message(f"Фото пользователя с id = {self.id} не найдено")
+            
         except Exception as e:
             database.rollback()
             return LogsMaker().error_message(f"Ошибка при отправлении в архив фотки пользователя с id = {self.id}")
@@ -86,7 +98,7 @@ class UserFilesModel():
         # return user_photo_collection.find_one({"uuid": uuid})
     
     def generate_name(self, file_name):
-        #name формируется по принципу {user_id}_{порядковый номер файля для статьи}.{формат файла}
+        #name формируется по принципу {user_id}_{порядковый номер файля для пользователя}.{формат файла}
         file_format = file_name.split(".")[-1]
         
         #проверим есть к чему крепить файл

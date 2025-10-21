@@ -13,6 +13,7 @@ class UserFiles(Base):
     name = Column(Text, nullable=True)
     b24_url = Column(Text, nullable=True)
     active = Column(Boolean, nullable=True)
+    URL = Column(Text, nullable=True)
     
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 

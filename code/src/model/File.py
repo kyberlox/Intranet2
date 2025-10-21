@@ -122,7 +122,15 @@ class File:
                 #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
 
                 #записать в pSQL
-                inserted_id = FilesDBModel(article_id=art_id, name=unique_name, original_name = filename, b24_url=self.b24_id, active=True, is_preview = is_preview, content_type = content_type, file_url = f"/api/files/{unique_name}").add()
+                inserted_id = FilesDBModel(
+                    article_id=art_id,
+                    name=unique_name,
+                    original_name = filename,
+                    b24_url=self.b24_id,
+                    active=True,
+                    is_preview = is_preview,
+                    content_type = content_type,
+                    file_url = f"/api/files/{unique_name}").add()
 
                 return {
                     "id": str(inserted_id),
@@ -449,28 +457,23 @@ class File:
 
     def get_users_photo(self):
         #переделать с учетом is_archive
-        file_data = FileModel(id=self.id).find_user_photo_by_id()
+        file_data = UserFilesModel(id=self.id).find_user_photo_by_id()
         
-        
-        if not file_data or file_data["is_archive"]:
+        if not file_data or not file_data["active"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
-            file_info = {}
-            file_info["id"] = str(file_data["_id"])
+            file_info = dict()
+            file_info["id"] = file_data["id"]
             file_info["name"] = file_data["name"]
-            file_info["format"] = file_data["format"]
-            file_info["uuid"] = file_data["uuid"]
+            file_info["uuid"] = file_data["user_id"]
             file_info["URL"] = file_data["URL"]
             file_info["b24_url"] = file_data["b24_url"]
-            file_info["is_archive"] = file_data["is_archive"]
-                
+            file_info["active"] = file_data["active"]
 
             return file_info
 
-    def dowload_user_photo(self, url):
+    def dowload_user_photo(self, url, name):
         # в будущем name исправить на айди фото ( photo_file_id )
-        name = url.split("/")[-1]
-        form = name.split(".")[-1]
         img_path = f"{USER_STORAGE_PATH}/{name}"
 
         with requests.get(url, stream=True) as r:
@@ -482,38 +485,30 @@ class File:
     def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
         try:
-
-            name, form = self.dowload_user_photo(b24_url)
-
-            #определить ссылку
-            url = f"/api/user_files/{name}"
-
             #собрать данные
-            file_data = {
-                "name" : name,
-                "format" : form,
-                "uuid" : uuid,
-                "URL" : url,
-                "b24_url" : b24_url,
-                "is_archive" : False
-            }
-            # print(file_data, uuid)
+            name = url.split("/")[-1]
+            #создать запись
+            w_photo = UserFilesModel().(
+                user_id=None,
+                name=name,
+                b24_url=b24_url,
+                active=True
+            ) #вернет False, если пытаться скачать актуальную фотку ещё раз
+            if w_photo is not False:
+                #скачать файл
+                name, form = self.dowload_user_photo(b24_url, w_photo['name'])
 
-            new_id = FileModel().add_user_photo(file_data)
-
-            file_data["id"] = new_id
-
-            return file_data
+            return w_photo
         except Exception as e:
                     return LogsMaker().error_message(e)
     
     def delete_user_img(self):
-        file_data = FileModel(id = self.id).find_user_photo_by_id()
+        file_data = UserFilesModel(id = self.id).find_user_photo_by_id()
         if not file_data:
             raise HTTPException(404, detail="File not found")
         
         try:
-            FileModel(id = self.id).remove_user_photo()
+            UserFilesModel(id = self.id).remove_user_photo()
             return {"status": "to_archive"}
         except Exception as e:
             # raise HTTPException(500, detail=str(e))
@@ -523,10 +518,12 @@ class File:
 
     # Блок создания индексов
     def index_files(self):
-        return FileModel().create_index_files()
+        pass
+        #return FileModel().create_index_files()
 
     def index_user_photo(self):
-        return FileModel().create_index_user_photo()
+        pass
+        #return FileModel().create_index_user_photo()
 
 
 
@@ -534,10 +531,11 @@ class File:
         #!!!!!!!внедрить проверки
         
         # Генерируем уникальное имя файла
-        filename = file.filename
-        filename_parts = filename.split('.')
-        file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
-        unique_name = str(ObjectId()) + file_ext
+        # filename = file.filename
+        # filename_parts = filename.split('.')
+        # file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
+        # unique_name = str(ObjectId()) + file_ext
+        unique_name = FilesDBModel(article_id=self.art_id).generate_name(file.filename)
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Инициализируем upload_id и прогресс
@@ -588,20 +586,30 @@ class File:
             if upload_id in UPLOAD_PROGRESS:
                 del UPLOAD_PROGRESS[upload_id]
 
-            file_info = {
-                "original_name": filename,
-                "stored_name": unique_name,
-                "content_type": str(file.content_type),
-                "article_id": int(self.art_id),
-                "b24_id": None,
-                "is_archive": False,
-                "is_preview" : False,
-                "file_url": f"/api/files/{unique_name}"
-            }
+            # file_info = {
+            #     "original_name": filename,
+            #     "stored_name": unique_name,
+            #     "content_type": str(file.content_type),
+            #     "article_id": int(self.art_id),
+            #     "b24_id": None,
+            #     "is_archive": False,
+            #     "is_preview" : False,
+            #     "file_url": f"/api/files/{unique_name}"
+            # }
 
-            inserted_id = FileModel().add(file_info)
+            #записать в pSQL
+            inserted_id = FilesDBModel(
+                article_id=int(self.art_id),
+                name=unique_name,
+                original_name = file.filename,
+                b24_url=None,
+                active=True,
+                is_preview = False,
+                content_type = str(file.content_type),
+                file_url = f"/api/files/{unique_name}"
+            ).add()
 
-            file_info.pop("_id")
+            file_info = FilesDBModel(id = inserted_id).find_by_id()
             return file_info
         
         except Exception as e:
@@ -613,13 +621,13 @@ class File:
             raise e
     
     def editor_del_file(self ):
-        file_data = FileModel(id = self.id).find_by_id()
+        file_data = FilesDBModel(id = self.id).find_by_id()
         if not file_data:
             raise HTTPException(404, detail="File not found")
         
         try:
-            FileModel(id = self.id).remove()
-            return {"status": "to_archive"}
+            FilesDBModel(id = self.id).remove()
+            return {"status": "deleted"}
         except Exception as e:
             # raise HTTPException(500, detail=str(e))
             return LogsMaker().error_message(e)
@@ -645,15 +653,15 @@ class File:
 # async def create_mongo_indexes():
 #     return FileModel().create_indexes()
 
-@file_router.post("/upload")
-async def upload_file(file: UploadFile):
+@file_router.post("/upload/{art_id}")
+async def upload_file(file: UploadFile, art_id : int):
     try:
         # Получаем расширение файла
         filename_parts = file.filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
         # Генерируем уникальное имя файла
-        unique_name = str(ObjectId()) + file_ext
+        unique_name = FilesDBModel(article_id=art_id).generate_name(file.filename)
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Сохраняем файл на диск
@@ -662,20 +670,34 @@ async def upload_file(file: UploadFile):
             f.write(content)
 
         # Сохраняем метаданные
-        file_data = {
-            "original_name": file.filename,
-            "stored_name": unique_name,
-            "content_type": file.content_type,
-            "file_url": f"/api/files/{unique_name}"  # Прямой URL
-        }
+        # file_data = {
+        #     "original_name": file.filename,
+        #     "name": unique_name,
+        #     "content_type": file.content_type,
+        #     "file_url": f"/api/files/{unique_name}"  # Прямой URL
+        # }
 
-        inserted_id = FileModel().add(file_data)
+        # inserted_id = FilesDBModel().add(file_data)
 
-        return {
-            "id": str(inserted_id),
-            "file_url": file_data["file_url"],
-            "original_name": file.filename
-        }
+        # return {
+        #     "id": str(inserted_id),
+        #     "file_url": file_data["file_url"],
+        #     "original_name": file.filename
+        # }
+        #записать в pSQL
+        inserted_id = FilesDBModel(
+            article_id=int(art_id),
+            name=unique_name,
+            original_name = file.filename,
+            b24_url=None,
+            active=True,
+            is_preview = False,
+            content_type = str(file.content_type),
+            file_url = f"/api/files/{unique_name}"
+        ).add()
+
+        file_info = FilesDBModel(id = inserted_id).find_by_id()
+        return file_info
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -683,20 +705,13 @@ async def upload_file(file: UploadFile):
 @file_router.get("/info/{file_id}")
 async def get_file_info(file_id: str):
     try:
-        if not ObjectId.is_valid(file_id):
-            raise HTTPException(status_code=400, detail="Invalid file ID")
 
-        file_data = FileModel(id = ObjectId(file_id)).find_by_id()
+        file_data = FilesDBModel(id = file_id).find_by_id()
 
         if not file_data:
             raise HTTPException(status_code=404, detail="File not found")
 
-        return {
-            "id": str(file_data["_id"]),
-            "url": file_data["file_url"],
-            "original_name": file_data["original_name"],
-            "content_type": file_data["content_type"]
-        }
+        return file_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -724,33 +739,33 @@ async def get_file_article(section_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@file_router.get("/info/b24_id/{b24_id}")
-async def get_file_by_b24(b24_id: str):
-    try:
-        file_data = FileModel(id = b24_id).find_by_b24_id()
+# @file_router.get("/info/b24_id/{b24_id}")
+# async def get_file_by_b24(b24_id: str):
+#     try:
+#         file_data = FilesDBModel(id = b24_id).find_by_b24_id()
 
-        if not file_data:
-            raise HTTPException(status_code=404, detail="File not found")
+#         if not file_data:
+#             raise HTTPException(status_code=404, detail="File not found")
 
-        return {
-            "id": str(file_data["_id"]),
-            "url": file_data["file_url"],
-            "original_name": file_data["original_name"],
-            "content_type": file_data["content_type"]
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#         return {
+#             "id": file_data["id"],
+#             "url": file_data["file_url"],
+#             "original_name": file_data["original_name"],
+#             "content_type": file_data["content_type"]
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 @file_router.delete("/{file_id}")
 async def delete_file(file_id: str):
     #изменить статус
-    file_data = FileModel(id = ObjectId(file_id)).find_by_id()
+    file_data = FilesDBModel(id = file_id).find_by_id()
     if not file_data:
         raise HTTPException(404, detail="File not found")
     
     try:
-        FileModel(id = ObjectId(file_id)).remove()
-        return {"status": "to_archive"}
+        FilesDBModel(id = file_id).remove()
+        return {"status": "deleted"}
     except Exception as e:
         raise HTTPException(500, detail=str(e))
     """
@@ -769,7 +784,7 @@ async def delete_file(file_id: str):
 
 @file_router.put("/{file_id}")
 async def put_file(file_id : str, data = Body()):
-    new_file_data = FileModel(id = ObjectId(file_id)).update_data(data)
+    new_file_data = FilesDBModel(id = file_id).update_data(data)
 
     return new_file_data
 
@@ -778,11 +793,11 @@ async def put_file(file_id : str, data = Body()):
 
 @file_router.post("/get_user_photo/{uuid}")
 async def get_user_photo(uuid : str):
-    return FileModel().find_user_photo_by_uuid(uuid)
+    return FilesDBModel().find_user_photo_by_uuid(uuid)
 
 @file_router.get("/get_user_photo/{file_id}")
 async def get_user_photo(file_id: str):
-    return FileModel(id = ObjectId(file_id)).find_user_photo_by_id(uuid)
+    return FilesDBModel(id = file_id).find_user_photo_by_id(uuid)
 
 @file_router.post("/add_user_photo/{b24_url}/{uuid}")
 async def add_user_photo(b24_url : str, uuid : str):

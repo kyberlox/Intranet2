@@ -109,7 +109,7 @@ class User:
                         file_data = File().add_user_img(b24_url, uuid)
                         #обновить данные в pSQL
                         self.UserModel.uuid = uuid
-                        self.UserModel.set_user_photo(file_data.id)
+                        self.UserModel.set_user_photo(file_data.["id"])
                     else:
                         continue
                         

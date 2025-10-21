@@ -477,7 +477,7 @@ class File:
             with open(img_path, "wb") as f:
                 f.write(r.content)
         
-        return (name, form)
+        return True
 
     def add_user_img(self, b24_url : str, uuid : str):
         #скачать файл
@@ -493,8 +493,8 @@ class File:
             ) #вернет False, если пытаться скачать актуальную фотку ещё раз
             if w_photo is not False:
                 #скачать файл
-                name, form = self.dowload_user_photo(b24_url, w_photo['name'])
-
+                result = self.dowload_user_photo(b24_url, w_photo['name'])
+            print(w_photo)
             return w_photo
         except Exception as e:
                     return LogsMaker().error_message(e)

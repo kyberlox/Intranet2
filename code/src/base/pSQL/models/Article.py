@@ -24,4 +24,4 @@ class Article(Base):
     likes = relationship("Likes", back_populates="article")
     views = relationship("Views", back_populates="article")
     artvis = relationship("ArtVis", back_populates="article")
-    filesdb = relationship("FilesDB", back_populates="article")
+    artfiles = relationship("FilesDB", back_populates="article")

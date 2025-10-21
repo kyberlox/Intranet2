@@ -2,7 +2,7 @@
 
 ## Процесс установки и запуска проекта на сервере
 ```
-git pull origin main
+git pull
 nano .env
 docker-compose up -d --build
 chmod -R 777 ./

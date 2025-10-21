@@ -96,7 +96,7 @@ app.include_router(C_app, prefix="/api")
 #     #"http://intranet.emk.org.ru"
 # ]
 
-origins = [DOMAIN]
+origins = ['*']
 
 app.add_middleware(
     CORSMiddleware,

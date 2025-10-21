@@ -175,7 +175,6 @@ class File:
             b24_url=self.b24_id,
             active=True,
             is_preview = is_preview,
-            is_preview = False,
             content_type = "link",
             file_url = link
         ).add(data)

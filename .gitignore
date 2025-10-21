@@ -6,6 +6,7 @@
 /redis_data
 /code/files_db
 /code/logs
+/nginx
 
 **/__pycache__/
 .env

@@ -22,6 +22,8 @@ from .RootsModel import RootsModel
 
 from .MerchStoreModel import MerchStoreModel
 
+from .FilesDBModel import FilesDBModel
+from .UserFilesModel import UserFilesModel
 
 
 ## Control imports
@@ -42,5 +44,7 @@ __all__ = [
     'PeerUserModel',
     'RootsModel',
     'MerchStoreModel',
-    'SectionModel'
+    'SectionModel',
+    'FilesDBModel',
+    'UserFilesModel'
     ]

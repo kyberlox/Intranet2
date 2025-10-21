@@ -6,7 +6,7 @@ from .Article import Article
 
 
 
-class UserFiles(Base):
+class FilesDB(Base):
     __tablename__ = 'userFiles'
 
     id = Column(Integer, primary_key=True)

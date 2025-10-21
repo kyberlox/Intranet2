@@ -107,6 +107,7 @@ class User:
                             File(id = old_file_id).delete_user_img()
                         #если есть несоответствие - скачать новую
                         file_data = File().add_user_img(b24_url, uuid)
+                        print(file_data)
                         #обновить данные в pSQL
                         self.UserModel.uuid = uuid
                         self.UserModel.set_user_photo(file_data["id"])

@@ -426,6 +426,7 @@ def total_update():
     else:
         LogsMaker().error_message("Ошибка!")
 
+    '''
     from src.model.Section import Section
     LogsMaker().info_message("Обновление информации о разделах сайта")
     Section().load()
@@ -460,7 +461,8 @@ def total_update():
     # Лайки и просмотры
     # Тэги
     # Система эфективности
-
+    '''
+    
     time_end = time.time()
     total_time_sec = time_end - time_start
 

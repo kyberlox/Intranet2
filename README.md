@@ -10,3 +10,7 @@ docker-compose restart elasticsearch
 docker-compose logs -f elasticsearch
 bash reset.sh
 ```
+Далее нужно убедиться в актуальности содержимого
+```
+/nginx/default.conf
+```

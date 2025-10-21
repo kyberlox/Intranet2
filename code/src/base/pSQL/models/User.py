@@ -36,4 +36,4 @@ class User(Base):
 
     uservisionsroot = relationship("UservisionsRoot", back_populates="user")
 
-    userFiles = relationship("UserFiles", back_populates="user")
+    userfiles = relationship("UserFiles", back_populates="user")

@@ -7,7 +7,7 @@ from .Article import Article
 
 
 class FilesDB(Base):
-    __tablename__ = 'FilesDB'
+    __tablename__ = 'filesdb'
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=True)
@@ -22,4 +22,4 @@ class FilesDB(Base):
     article_id = Column(Integer, ForeignKey('article.id'), nullable=False)
 
     # Отношения файлоы и статей
-    article = relationship("artfiles", back_populates="FilesDB")
+    article = relationship("Article", back_populates="FilesDB")

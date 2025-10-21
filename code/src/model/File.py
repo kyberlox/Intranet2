@@ -244,7 +244,6 @@ class File:
                 b24_url=self.b24_id,
                 active=True,
                 is_preview = is_preview,
-                is_preview = False,
                 content_type = content_type,
                 file_url = f"/api/files/{unique_name}"
             ).add(data)

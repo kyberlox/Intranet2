@@ -492,8 +492,8 @@ class File:
                 active=True
             ) #вернет False, если пытаться скачать актуальную фотку ещё раз
 
-            print(w_photo)
-            
+            print(w_photo, type(w_photo))
+
             if w_photo is not False:
                 #скачать файл
                 print(b24_url, w_photo['name'])

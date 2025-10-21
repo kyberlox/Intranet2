@@ -400,7 +400,7 @@ def total_update():
     status = 0
 
     
-    '''
+    
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
     if Department().fetch_departments_data()["status"]:
@@ -408,7 +408,7 @@ def total_update():
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-    '''
+    
     LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User
     dowload_status = User().fetch_users_data()["status"]

@@ -7,7 +7,7 @@ from .Article import Article
 
 
 class FilesDB(Base):
-    __tablename__ = 'userFiles'
+    __tablename__ = 'FilesDB'
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=True)

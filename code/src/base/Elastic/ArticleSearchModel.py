@@ -135,7 +135,7 @@ class ArticleSearchModel:
         
         self.create_index()
 
-        article_SQL_data = self.ArticleModel.all()
+        article_SQL_data = asyncio.run(self.ArticleModel.all())
 
         article_data_ES = []
         article_action = {}

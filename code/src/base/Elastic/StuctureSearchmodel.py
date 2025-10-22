@@ -1,6 +1,7 @@
 from .App import elastic_client, helpers
 from .App import DOMAIN
 
+import asyncio
 
 
 def get_info_by_obj(obj, parent_path_depart):
@@ -25,10 +26,10 @@ def get_info_by_obj(obj, parent_path_depart):
     
     usdep_modelo = UsDepModel()
     usdep_modelo.id =obj.id
-    users = usdep_modelo.find_user_by_dep_id()  # берём id всех пользователей департамента
+    users = asyncio.run(usdep_modelo.find_user_by_dep_id())  # берём id всех пользователей департамента
     if isinstance(users, list):
         for usr_id in users:
-            user = UserModel(Id=usr_id).find_by_id()
+            user = asyncio.run(UserModel(Id=usr_id).find_by_id())
             if user:
                 user_data = {}
                 if user['active'] is True:

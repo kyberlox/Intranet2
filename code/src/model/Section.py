@@ -6,6 +6,8 @@ from datetime import datetime
 
 import json
 
+import asyncio
+
 from fastapi import APIRouter
 
 section_router = APIRouter(prefix="/section", tags=["Разделы"])
@@ -37,8 +39,8 @@ class Section:
 
         return section_data
 
-    def find_by_id(self):
-        arts_info = ArticleModel(section_id = self.id).find_by_section_id()
+    async def find_by_id(self):
+        arts_info = await ArticleModel(section_id = self.id).find_by_section_id()
         arts_id = []
         for art in arts_info:
             art_id = art['id']
@@ -64,8 +66,8 @@ def get_all_sections():
 
 #получить раздел по id
 @section_router.get("/{ID}")
-def get_section(ID):
-    return Section(id = ID).find_by_id()
+async def get_section(ID):
+    return await Section(id = ID).find_by_id()
 
 #получить подразделы раздела
 @section_router.get("/subsection/{ID}")

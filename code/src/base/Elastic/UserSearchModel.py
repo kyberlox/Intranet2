@@ -1,7 +1,7 @@
 from .App import elastic_client, DOMAIN, helpers
 
 from fastapi import HTTPException
-
+import asyncio 
 from src.services.LogsMaker import LogsMaker
 
 

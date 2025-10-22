@@ -6,7 +6,11 @@ import json
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from .App import get_db, update
+from .App import get_db, update, select, delete
+
+from .App import AsyncSessionLocal
+import asyncio
+
 db_gen = get_db()
 database = next(db_gen)
 
@@ -25,21 +29,30 @@ class ArticleModel:
         # from .App import db
         # database = db
     
-    def get_current_id(self ):
-        current_id = database.query(func.max(self.article.id)).scalar()
-        current_id = int(current_id) + 1
+    async def get_current_id(self ):
+        async with AsyncSessionLocal() as session:
+            stmt = select(func.max(self.article.id))
+            result = await session.execute(stmt)
+            current_max_id = result.scalar()
+        # current_id = database.query(func.max(self.article.id)).scalar()
+        current_id = int(current_max_id) + 1
         self.id = current_id
         return current_id
 
-    def add_article(self, article_data):
-        article = self.article(**article_data)
-        database.add(article)
-        database.commit()
+    async def add_article(self, article_data):
+        async with AsyncSessionLocal() as session:
+            article = self.article(**article_data)
+            session.add(article)
+            await session.commit()
 
         return article_data
 
-    def need_add(self):
-        db_art = database.query(self.article).filter(self.article.section_id == self.section_id).all()
+    async def need_add(self):
+        async with AsyncSessionLocal() as session:
+            stmt = select(self.article).where(self.article.section_id == self.section_id)
+            result = await session.execute(stmt)
+            db_art = result.all()
+        # db_art = database.query(self.article).filter(self.article.section_id == self.section_id).all()
         # если в таблице есть раздел
         if db_art != []:
             need = True
@@ -62,10 +75,11 @@ class ArticleModel:
     #     database.commit()  
     #     return True
     
-    def update(self, article_data):
+    async def update(self, article_data):
         try:
-            database.execute(update(self.article).where(self.article.id==int(self.id)).values(**article_data))
-            database.commit() 
+            async with AsyncSessionLocal() as session:
+                await session.execute(update(self.article).where(self.article.id==int(self.id)).values(**article_data))
+                await database.commit() 
             return True
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при обновлении статьи с id = {int(self.id)}, {e}")
@@ -87,29 +101,39 @@ class ArticleModel:
                 else:
                     return False'''
 
-    def remove(self ):
+    async def remove(self ):
         #database.execute(delete(UsDep).where(UsDep.user_id == us_dep_key).where(UsDep.dep_id == i))
         #return db.query(Article).filter(Article.id == self.id).delete()
         #return database.execute(delete(Article).where(Article.id == self.id))
         #test = db.query(Article).filter(Article.id==int(self.id)).first()
-        
-        art = database.query(self.article).get(self.id)
-        if art is not None:
-            database.query(self.article).filter(self.article.id==int(self.id)).delete()
-            database.commit()
-            return True
-        else:
-            return False
+        async with AsyncSessionLocal() as session:
+            stmt = select(self.article).where(self.article.id==int(self.id))
+            art = await session.execute(stmt)
+            # art = database.query(self.article).get(self.id)
+            if art is not None:
+                stmt = delete(self.article).where(self.article.id==int(self.id))
+                result = await session.execute(stmt)
+                # database.query(self.article).filter(self.article.id==int(self.id)).delete()
+                await session.commit()
+                return True
+            else:
+                return False
 
-    def remove_b24_likes(self):
-        art = database.query(self.article).filter(self.article.id == self.id).first()
-        art.indirect_data.pop("likes_from_b24")
-        flag_modified(art, 'indirect_data')
-        database.commit()
+    async def remove_b24_likes(self):
+        async with AsyncSessionLocal() as session:
+            stmt = select(self.article).where(self.article.id==int(self.id))
+            result = await session.execute(stmt)
+            art = result.first()
+            # art = database.query(self.article).filter(self.article.id == self.id).first()
+            art.indirect_data.pop("likes_from_b24")
+            flag_modified(art, 'indirect_data')
+            await session.commit()
         return True
 
-    def find_by_id(self):
-        art = database.query(self.article).get(self.id)
+    async def find_by_id(self):
+        async with AsyncSessionLocal() as session:
+            art = await session.get(self.article, self.id)
+        # art = database.query(self.article).get(self.id)
         try:
             art.__dict__["indirect_data"] = json.loads(art.indirect_data)
         except:
@@ -125,8 +149,9 @@ class ArticleModel:
 
         return res
 
-    def find_by_section_id(self):
-        
+    async def find_by_section_id(self):
+        async with AsyncSessionLocal() as session:
+            stmt 
         data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
         
         try:
@@ -143,8 +168,10 @@ class ArticleModel:
 
         return new_data
     
-    def all(self):
-        data = database.query(self.article).all()
+    async def all(self):
+        async with AsyncSessionLocal() as session:
+            data = await session.execute(select(self.article)).scalars().all()
+        # data = database.query(self.article).all()
         new_data = []
         try:
             for art in data:

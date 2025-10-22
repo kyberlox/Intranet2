@@ -71,7 +71,7 @@ class Article:
     def get_inf(self):
         return B24().getInfoBlock(self.section_id)
 
-    def make_valid_article(self, data):
+    async def make_valid_article(self, data):
         '''
         ! Добавить статью и стандартизировать данные
         '''
@@ -214,7 +214,7 @@ class Article:
             else:
                 award = "Сотрудник года"
 
-            user = User(id=uuid).search_by_id_all()
+            user = await User(id=uuid).search_by_id_all()
             if "photo_file_url" not in user or user["photo_file_url"] == None:
                 photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
             else:
@@ -323,7 +323,7 @@ class Article:
                     uuid = int(list(data['PROPERTY_444'].values())[0])
                     
                 #отдельно вытащить превьюшки людей
-                user = User(id=uuid).search_by_id_all()
+                user = await User(id=uuid).search_by_id_all()
                 photo = user["photo_file_url"]
                 #photo = photo.replace("user_files", "compress_image/user")
 
@@ -531,7 +531,7 @@ class Article:
             participants = []
             if "participants" in indirect_data:
                 for user_uuid in indirect_data["participants"]:
-                    user = User(id=user_uuid).search_by_id_all()
+                    user = await User(id=user_uuid).search_by_id_all()
                     if user is not None:
                         last_name = user['last_name']
                         name = user['name']
@@ -585,7 +585,7 @@ class Article:
                 for user_data in users_data:
                     #нати данные пользователя
                     usr_id = user_data['id']
-                    usr = User(id = usr_id).search_by_id_all()
+                    usr = await User(id = usr_id).search_by_id_all()
 
                     #ФИО
                     fio = usr['last_name'] + " " + usr['name'] + " " + usr['second_name']
@@ -1116,13 +1116,13 @@ class Article:
             return files_data
     '''
 
-    def add(self, article_data):
-        return ArticleModel().add_article(self.make_valid_article(article_data))
+    async def add(self, article_data):
+        return await ArticleModel().add_article(self.make_valid_article(article_data))
     
-    def set_new(self, article_data):
-        return ArticleModel().add_article(article_data)
+    async def set_new(self, article_data):
+        return await ArticleModel().add_article(article_data)
 
-    def uplod(self):
+    async def uplod(self):
         '''
         ! Не повредить имеющиеся записи и структуру
         ! Выгрузка файлов из инфоблоков
@@ -1139,21 +1139,21 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        self.upload_uniquely()
-        # self.upload_with_parameter()
-        # self.upload_many_to_many()
-        # self.upload_services()
+        await self.upload_uniquely()
+        # await self.upload_with_parameter()
+        # await self.upload_many_to_many()
+        # await self.upload_services()
 
         # Дамп данных в эластик
         # self.dump_articles_data_es()
 
-        # self.upload_likes()
-        # self.upload_views()
+        # await self.upload_likes()
+        # await self.upload_views()
 
         return {'status' : True}
 
 
-    def upload_uniquely(self ):
+    async def upload_uniquely(self ):
         '''однозначно'''
         sec_inf = {
             #13 : "149", # Наши люди ✔️
@@ -1184,14 +1184,14 @@ class Article:
                 for inf in infs:
                     artDB = ArticleModel(id = inf["ID"], section_id = i)
                     self.section_id = i
-                    if artDB.need_add():
+                    if await artDB.need_add():
                         self.logg.info_message(f'Добавил статью, {inf["ID"]}')
-                        self.add(inf)
-                    elif artDB.update(self.make_valid_article(inf)):
+                        await self.add(inf)
+                    elif await artDB.update(self.make_valid_article(inf)):
                         #проверить апдейт файлов
                         pass
 
-    def upload_with_parameter(self  ):
+    async def upload_with_parameter(self  ):
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
@@ -1234,9 +1234,9 @@ class Article:
             data["section_id"] = 172
             self.section_id = 172
             artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-            if artDB.need_add():
-                self.add(data)
-            elif artDB.update(self.make_valid_article(data)):
+            if await artDB.need_add():
+                await self.add(data)
+            elif await artDB.update(self.make_valid_article(data)):
                 pass
         
         #Блоги
@@ -1270,9 +1270,9 @@ class Article:
 
                     #загрузить данные в таблицу
                     artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-                    if artDB.need_add():
-                        self.add(data)
-                    elif artDB.update(self.make_valid_article(data)):
+                    if await artDB.need_add():
+                        await self.add(data)
+                    elif await artDB.update(self.make_valid_article(data)):
                         pass
 
         #Памятка
@@ -1311,9 +1311,9 @@ class Article:
 
                     # загрузить данные в таблицу
                     artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-                    if artDB.need_add():
-                        self.add(data)
-                    elif artDB.update(self.make_valid_article(data)):
+                    if await artDB.need_add():
+                        await self.add(data)
+                    elif await artDB.update(self.make_valid_article(data)):
                         pass
 
         
@@ -1372,16 +1372,16 @@ class Article:
             # загрузить данные в таблицу
             print(data)
             artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-            if artDB.need_add():
-                self.add(data)
-            elif artDB.update(self.make_valid_article(data)):
+            if await artDB.need_add():
+                await self.add(data)
+            elif await artDB.update(self.make_valid_article(data)):
                 pass
 
-    def upload_many_to_many(self, ):
-        self.upload_current_news()
-        self.upload_corporate_events()
+    async def upload_many_to_many(self, ):
+        await self.upload_current_news()
+        await self.upload_corporate_events()
 
-    def upload_current_news(self, ):
+    async def upload_current_news(self, ):
 
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
@@ -1414,23 +1414,23 @@ class Article:
                     self.section_id = 51
 
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
-                    self.add(art)
-                elif artDB.update(self.make_valid_article(art)):
+                if await artDB.need_add():
+                    await self.add(art)
+                elif await artDB.update(self.make_valid_article(art)):
                     pass
             else:
                 # че делать с уже не актуальными новостями?
                 self.section_id = 6
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
-                    self.add(art)
+                if await artDB.need_add():
+                    await self.add(art)
                     self.logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
                     # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
-                elif artDB.update(self.make_valid_article(art)):
+                elif await artDB.update(self.make_valid_article(art)):
                     # сюда надо что-то дописать
                     pass
 
-    def upload_corporate_events(self, ):
+    async def upload_corporate_events(self, ):
         #несколько section_id - несколько IBLOCK_ID
         sec_inf = {
             42 : ["68", "69"], #Официальные события ✔️
@@ -1454,19 +1454,19 @@ class Article:
                     self.section_id = 52
 
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
-                    self.add(art)
-                elif artDB.update(self.make_valid_article(art)):
+                if await artDB.need_add():
+                    await self.add(art)
+                elif await artDB.update(self.make_valid_article(art)):
                     pass
 
             else:
                 self.section_id = 6
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
-                    self.add(art)
+                if await artDB.need_add():
+                    await self.add(art)
                     # че делапть с уже не актуальными новостями?
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
-                elif artDB.update(self.make_valid_article(art)):
+                elif await artDB.update(self.make_valid_article(art)):
                     pass
 
 
@@ -1488,20 +1488,20 @@ class Article:
                     self.section_id = 52
 
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
-                    self.add(art)
-                elif artDB.update(self.make_valid_article(art)):
+                if await artDB.need_add():
+                    await self.add(art)
+                elif await artDB.update(self.make_valid_article(art)):
                     pass
 
             else:
                 # че делать с уже не актуальными новостями?
                 self.section_id = 6
                 artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if artDB.need_add():
+                if await artDB.need_add():
                     art["active"] = False
-                    self.add(art)
+                    await self.add(art)
                     print("Запись в фотогалерею", art["NAME"], art["ID"], "уже не актуальна")
-                elif artDB.update(self.make_valid_article(art)):
+                elif await artDB.update(self.make_valid_article(art)):
                     pass
 
 
@@ -1511,12 +1511,12 @@ class Article:
         for art in art_inf:
             self.section_id = 111 # потом изменить
             artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-            if artDB.need_add():
-                self.add(art)
-            elif artDB.update(self.make_valid_article(art)):
+            if await artDB.need_add():
+                await self.add(art)
+            elif await artDB.update(self.make_valid_article(art)):
                 pass
 
-    def upload_services(self, ):
+    async def upload_services(self, ):
         #Корпоративная газета ✔️
 
         data = [
@@ -1552,9 +1552,9 @@ class Article:
         for art in data:
             self.section_id = 34 # потом изменить
             artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-            if artDB.need_add():
-                self.add(art)
-            elif artDB.update(self.make_valid_article(art)):
+            if await artDB.need_add():
+                await self.add(art)
+            elif await artDB.update(self.make_valid_article(art)):
                 pass
         
         #Конкурсы ЭМК 7 секция
@@ -1566,9 +1566,9 @@ class Article:
                 #art_id = inf["ID"]
                 self.section_id = 71
                 art_DB = ArticleModel(id=inf["ID"], section_id=self.section_id)
-                if art_DB.need_add():
-                    self.add(inf)
-                elif art_DB.update(self.make_valid_article(inf)):
+                if await art_DB.need_add():
+                    await self.add(inf)
+                elif await art_DB.update(self.make_valid_article(inf)):
                     pass
         
 
@@ -1606,8 +1606,8 @@ class Article:
 
         
 
-    def search_by_id(self, session_id=""):
-        art = ArticleModel(id = self.id).find_by_id()
+    async def search_by_id(self, session_id=""):
+        art = await ArticleModel(id = self.id).find_by_id()
         files = File(art_id = int(self.id)).get_files_by_art_id()
         art['images'] = []
         art['videos_native'] = []
@@ -1649,19 +1649,19 @@ class Article:
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 56,  7, 71, 34, 175] # список секций где нет лайков
 
         if art['section_id'] not in null_list:
-            user_id = self.get_user_by_session_id(session_id=session_id)
+            user_id = await self.get_user_by_session_id(session_id=session_id)
             if user_id is not None:
-                self.add_art_view()
-                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                await self.add_art_view()
+                has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
                 art['reactions'] = has_user_liked
 
         #обработаем конкурсы эмк где есть лайки, но нет просмотров
         elif art['section_id'] == 71:
             # вызов количества лайков
             del art['indirect_data']['likes_from_b24']
-            user_id = self.get_user_by_session_id(session_id=session_id)
+            user_id = await self.get_user_by_session_id(session_id=session_id)
             if user_id is not None:
-                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
                 art['reactions'] = has_user_liked
         
         # магазин мерча
@@ -1693,10 +1693,10 @@ class Article:
         
         return art
 
-    def delete(self):
+    async def delete(self):
         #удалить файлы статьи
         File(art_id = self.id).delete_by_art_id()
-        return ArticleModel(id = self.id).remove()
+        return await ArticleModel(id = self.id).remove()
 
     def get_preview(self):
         files = File(art_id = int(self.id)).get_files_by_art_id()
@@ -1742,13 +1742,13 @@ class Article:
         
         return None
 
-    def find_by_id(self):
-        art = ArticleModel(id = self.id).find_by_id()
+    async def find_by_id(self):
+        art = await ArticleModel(id = self.id).find_by_id()
         return art
 
-    def update(self, new_data):	
+    async def update(self, new_data):	
         #получаю статью
-        art = ArticleModel(id = self.id).find_by_id()
+        art = await ArticleModel(id = self.id).find_by_id()
         print(art)
 
         for key in art.keys():
@@ -1764,21 +1764,19 @@ class Article:
                         if subkey in new_data.keys():
                             art["indirect_data"][subkey] = new_data[subkey]
 
-        ArticleModel(id = self.id).update(art)
+        await ArticleModel(id = self.id).update(art)
 
         return True
 
-
-
-    def search_by_section_id(self, session_id=""):
+    async def search_by_section_id(self, session_id=""):
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 7, 31, 16, 33, 53, 51] #111
             page_view = []
 
-            user_id = self.get_user_by_session_id(session_id=session_id)
+            user_id = await self.get_user_by_session_id(session_id=session_id)
 
             for page in main_page: # проходимся по каждой секции
-                sec = self.main_page(page, user_id)
+                sec = await self.main_page(page, user_id)
                 page_view.append(sec) 
             # page_view[-3]['content'] = [page_view[-2], page_view[-1]]
             # del page_view[-2:]
@@ -1788,23 +1786,23 @@ class Article:
         elif self.section_id == "19":
             users_bday_info = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
-            users = User().get_birthday_celebrants(date_bday)
+            users = await User().get_birthday_celebrants(date_bday)
             return users
 
         elif self.section_id == "112":
-            return User().get_new_workers()
+            return await User().get_new_workers()
         
 
         
         elif self.section_id == "25" or self.section_id == "175":
             active_articles = []
-            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            result = await ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
                 if res['active']:
                     self.id = res["id"]
 
                     #взаимствую логику поиска файлов из метода поиска статей по их id
-                    art = ArticleModel(id = self.id).find_by_id()
+                    art = await ArticleModel(id = self.id).find_by_id()
                     files = File(art_id = int(self.id)).get_files_by_art_id()
                     res['images'] = []
                     res['videos_native'] = []
@@ -1832,7 +1830,7 @@ class Article:
             return sorted(active_articles, key=lambda x: x['id'], reverse=True)
 
         elif self.section_id == "34":
-            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            result = await ArticleModel(section_id = self.section_id).find_by_section_id()
             sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
             return sorted_active_articles
 
@@ -1847,7 +1845,7 @@ class Article:
         # магазин мерча
         elif self.section_id == "56":
             result = []
-            res = ArticleModel(section_id = self.section_id).find_by_section_id()
+            res = await ArticleModel(section_id = self.section_id).find_by_section_id()
             for re in res:
                 if re['active'] == True:
                     images = []
@@ -1878,7 +1876,7 @@ class Article:
         # конкурсы ЭМК без компрессии
         elif self.section_id == "71":
             active_articles = []
-            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            result = await ArticleModel(section_id = self.section_id).find_by_section_id()
             for res in result:
                 if res['active']:
                     self.id = res["id"]
@@ -1888,9 +1886,9 @@ class Article:
                         res['preview_file_url'] = f"{DOMAIN}{url}"
                     else:
                         res['preview_file_url'] = None
-                    user_id = self.get_user_by_session_id(session_id=session_id)
+                    user_id = await self.get_user_by_session_id(session_id=session_id)
                     if user_id is not None:
-                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
                         res['reactions'] = has_user_liked
                     active_articles.append(res)
             sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
@@ -1899,25 +1897,25 @@ class Article:
         else:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
             active_articles = []
-            result = ArticleModel(section_id = self.section_id).find_by_section_id()
+            result = await ArticleModel(section_id = self.section_id).find_by_section_id()
             current_datetime = datetime.datetime.now()
             for res in result:
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
                         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
                             self.id = res["id"]
-                            res["preview_file_url"] = self.get_preview()
+                            res["preview_file_url"] = await self.get_preview()
                             # сюда лайки и просмотры
                              # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                            user_id = self.get_user_by_session_id(session_id=session_id)
+                            user_id = await self.get_user_by_session_id(session_id=session_id)
                             if user_id is not None:
-                                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                                has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
                                 res['reactions'] = has_user_liked
                         else:
                             continue
                     else:
                         self.id = res["id"]
-                        res["preview_file_url"] = self.get_preview()
+                        res["preview_file_url"] = await self.get_preview()
 
                         
                         if res["preview_file_url"] is None:
@@ -1926,9 +1924,9 @@ class Article:
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                            user_id = self.get_user_by_session_id(session_id=session_id)
+                            user_id = await self.get_user_by_session_id(session_id=session_id)
                             if user_id is not None:
-                                has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                                has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
                                 res['reactions'] = has_user_liked
 
                         #обработаем конкурсы эмк где есть лайки, но нет просмотров
@@ -1954,17 +1952,17 @@ class Article:
             
             return sorted_active_articles
     
-    def all_serch_by_date(self ):
-        result = ArticleModel(section_id = self.section_id).find_by_section_id()
+    async def all_serch_by_date(self ):
+        result = await ArticleModel(section_id = self.section_id).find_by_section_id()
         sorted_active_articles = sorted(result, key=lambda x: x['id'], reverse=True)
         return sorted_active_articles
 
-    def main_page(self, section_id, user_id):
+    async def main_page(self, section_id, user_id):
         
         #Новые сотрудники
         if section_id == 112:
             img_new_workers = []     
-            users = User().get_new_workers()  
+            users = await User().get_new_workers()  
             for user in users:
                 user.pop('position')
                 user.pop('department')
@@ -1983,7 +1981,7 @@ class Article:
         elif section_id == 19:
             images_for_bday = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
-            users = User().get_birthday_celebrants(date_bday)
+            users = await User().get_birthday_celebrants(date_bday)
             for user in users:
                 user.pop('position')
                 user.pop('department')
@@ -2003,7 +2001,7 @@ class Article:
         elif section_id == 32:
             current_datetime = datetime.datetime.now()
             result = [] 
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values['indirect_data'] is not None and "active_main_page" in values['indirect_data'].keys() and values['indirect_data']['active_main_page'] == False:
                     continue
@@ -2083,12 +2081,12 @@ class Article:
         #конкурсы
         elif section_id == 7:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             images = []
             for art in articles_in_section:
                 if art["active"] is not False:
                     self.id = art["id"]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -2133,7 +2131,7 @@ class Article:
         elif section_id == 31:
             current_datetime = datetime.datetime.now()
             date_list = [] # список для сортировки по дате
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is False:
                         pass
@@ -2168,7 +2166,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -2181,7 +2179,7 @@ class Article:
                     news['image'] = image_url
                     
                     if user_id is not None:
-                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
 
                         news['reactions'] = has_user_liked
                     business_news.append(news)
@@ -2192,7 +2190,7 @@ class Article:
         elif section_id == 16:
             current_datetime = datetime.datetime.now()
             data_list = [] # список для сортировки по дате
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is not False:
                     date_value = [] # список для хранения необходимых данных
@@ -2227,7 +2225,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -2241,7 +2239,7 @@ class Article:
                     news['image'] = image_url                    
                     # сюда реакции
                     if user_id is not None:
-                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
 
                         news['reactions'] = has_user_liked
                     interview_news.append(news)
@@ -2252,7 +2250,7 @@ class Article:
         elif section_id == 33:
             current_datetime = datetime.datetime.now()
             date_list = [] # список для сортировки по дате
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is False:
                         pass
@@ -2285,7 +2283,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -2299,7 +2297,7 @@ class Article:
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:
-                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)\
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id)\
                         
                         news['reactions'] = has_user_liked
                     video_news.append(news)
@@ -2318,7 +2316,7 @@ class Article:
         # Афиша
         elif section_id == 53:
             date_list = [] # список для сортировки по дате
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is False:
                         pass
@@ -2342,7 +2340,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -2361,7 +2359,7 @@ class Article:
         # Корпоративные события
         elif section_id == 51:
             date_list = [] # список для сортировки по дате
-            articles_in_section = ArticleModel(section_id=section_id).find_by_section_id()
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id()
             for values in articles_in_section:
                 if values["active"] is False:
                         pass
@@ -2389,7 +2387,7 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = self.get_preview()
+                    preview_pict = await self.get_preview()
 
                     if preview_pict is None:
                         image_url = None
@@ -2403,7 +2401,7 @@ class Article:
                     news['image'] = image_url
                     # сюда реакции
                     if user_id is not None:
-                        has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
                         
                         news['reactions'] = has_user_liked
                     corpevents_news.append(news)
@@ -2412,32 +2410,32 @@ class Article:
             return corpevents
 
     # лайки
-    def get_all_likes(self):
-        return LikesModel(art_id=self.id).get_likes_count()
+    async def get_all_likes(self):
+        return await LikesModel(art_id=self.id).get_likes_count()
 
-    def add_like(self, session_id):
-        user_id = self.get_user_by_session_id(session_id=session_id)
+    async def add_like(self, session_id):
+        user_id = await self.get_user_by_session_id(session_id=session_id)
         if user_id is not None:
-            return LikesModel(user_id=user_id, art_id=self.id).add_or_remove_like()
+            return await LikesModel(user_id=user_id, art_id=self.id).add_or_remove_like()
         return {"err" : "Auth Err"}
     
-    def has_user_liked(self, session_id):
-        user_id = self.get_user_by_session_id(session_id=session_id)
+    async def has_user_liked(self, session_id):
+        user_id = await self.get_user_by_session_id(session_id=session_id)
         if user_id is not None:
-            return LikesModel(user_id=user_id, art_id=self.id).has_liked()
+            return await LikesModel(user_id=user_id, art_id=self.id).has_liked()
         return {"err" : "Auth Err"}
 
     # просмотры
-    def get_art_views(self):
-        return ViewsModel(art_id=self.id).get_art_viewes()
+    async def get_art_views(self):
+        return await ViewsModel(art_id=self.id).get_art_viewes()
 
-    def add_art_view(self):
-        return ViewsModel(art_id=self.id).add_art_view()
+    async def add_art_view(self):
+        return await ViewsModel(art_id=self.id).add_art_view()
 
     # дамп данных по лайкам из Б24
-    def upload_likes(self):
+    async def upload_likes(self):
         result = [] 
-        articles_info = ArticleModel().all()
+        articles_info = await ArticleModel().all()
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 34] # список секций где нет лайков
         for inf in articles_info:
             if inf['section_id'] not in null_list:
@@ -2445,16 +2443,16 @@ class Article:
                 if inf['section_id'] == 71:
                     if 'likes_from_b24' in inf['indirect_data'] and inf['indirect_data']['likes_from_b24'] is not None: 
                         for user_id in inf['indirect_data']['likes_from_b24']:
-                            user_exist = User(int(user_id)).search_by_id_all()
+                            user_exist = await User(int(user_id)).search_by_id_all()
                             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
                                 continue
                             else:
-                                has_usr_liked = LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
+                                has_usr_liked = await LikesModel(user_id=int(user_id), art_id=int(inf['id'])).has_liked()
                                 if has_usr_liked['likes']['likedByMe']:
                                     continue
                                 else:
-                                    LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
-                        ArticleModel(id=int(inf['id'])).remove_b24_likes()
+                                    await LikesModel(user_id=int(user_id), art_id=int(inf['id'])).add_or_remove_like()
+                        await ArticleModel(id=int(inf['id'])).remove_b24_likes()
                                 
                 # все остальное
                 else:
@@ -2462,27 +2460,27 @@ class Article:
                     if likes_info != "Not found" and 'VOTES' in likes_info.keys():
                         for vote in likes_info['VOTES']:
                             # проверяем есть ли такие юзеры в бд
-                            user_exist = User(vote['USER_ID']).search_by_id_all()
+                            user_exist = await User(vote['USER_ID']).search_by_id_all()
                             if isinstance(user_exist, types.CoroutineType) or user_exist is None:
                                 continue
                             else:
-                                LikesModel(user_id=vote['USER_ID'], art_id=inf['id']).add_like_from_b24(vote['CREATED_'])
+                                await LikesModel(user_id=vote['USER_ID'], art_id=inf['id']).add_like_from_b24(vote['CREATED_'])
 
                         #удаляем тех, кто убрал лайк
                         b24_likers = [i['USER_ID'] for i in likes_info['VOTES']]
-                        article_likers = LikesModel(art_id=inf['id']).get_article_likers()
+                        article_likers = await LikesModel(art_id=inf['id']).get_article_likers()
                         for usr in article_likers:
                             if usr not in b24_likers:
-                                LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
+                                await LikesModel(user_id=usr, art_id=inf['id']).add_or_remove_like()
                             else:
                                 pass
 
         return {"status": True}
     
     # дамп данных по просмотрам из Б24
-    def upload_views(self):
+    async def upload_views(self):
         result = [] 
-        articles_info = ArticleModel().all()
+        articles_info = await ArticleModel().all()
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 7, 71, 34] # список секций где нет лайков
         for inf in articles_info:
             if inf['section_id'] not in null_list:
@@ -2493,7 +2491,7 @@ class Article:
                     VM = ViewsModel()
                     VM.views_count=likes_info['VIEWS']
                     VM.art_id=inf['id']
-                    VM.add_view_b24()
+                    await VM.add_view_b24()
                     
                     print(likes_info["ID"], "добавил просмотры")#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -2513,7 +2511,7 @@ class Article:
     def get_recent_popular_articles(self, days, limit):
         return LikesModel().get_recent_popular_articles(days=days, limit=limit)
 
-    def get_user_by_session_id(self, session_id):
+    async def get_user_by_session_id(self, session_id):
         from src.services.Auth import AuthService
         user = dict(AuthService().get_user_by_seesion_id(session_id))
 
@@ -2524,7 +2522,7 @@ class Article:
             #получить и вывести его id
             usr = User()
             usr.uuid = user_uuid
-            user_inf = usr.user_inf_by_uuid()
+            user_inf = await usr.user_inf_by_uuid()
             if user_inf is not None and "ID" in user_inf.keys():
                 return user_inf["ID"]
         return None
@@ -2543,7 +2541,7 @@ class Article:
             
                 art['preview_file_url'] = preview_pict
                 if user_id is not None:
-                    has_user_liked = User(id=user_id).has_liked(art_id=self.id)
+                    has_user_liked = await User(id=user_id).has_liked(art_id=self.id)
 
                     art['reactions'] = has_user_liked
                 res.append(art)
@@ -2570,12 +2568,12 @@ def test(ID):
 
 #загрузить статьи из иноблоков Битрикса
 @article_router.put("")
-def upload_articles():
-    return Article().uplod()
+async def upload_articles():
+    return await Article().uplod()
 
 #найти статью по id
 @article_router.get("/find_by_ID/{ID}")
-def get_article(ID : int, request: Request):
+async def get_article(ID : int, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -2586,11 +2584,11 @@ def get_article(ID : int, request: Request):
         session_id = token
     art = Article()
     art.id = ID
-    return art.search_by_id(session_id=session_id)
+    return await art.search_by_id(session_id=session_id)
 
 #найти статьи раздела
 @article_router.get("/find_by/{section_id}")
-def get_articles(section_id, request: Request):
+async def get_articles(section_id, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -2605,10 +2603,10 @@ def get_articles(section_id, request: Request):
     else:
         art = Article()
         art.section_id = section_id
-        return art.search_by_section_id(session_id=session_id)
+        return await art.search_by_section_id(session_id=session_id)
 
 @article_router.put("/add_or_remove_like/{article_id}")
-def add_or_remove_like(article_id, request: Request):
+async def add_or_remove_like(article_id, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -2619,10 +2617,10 @@ def add_or_remove_like(article_id, request: Request):
         session_id = token
     art = Article()
     art.id = article_id
-    return art.add_like(session_id=session_id)
+    return await art.add_like(session_id=session_id)
 
 @article_router.get("/has_user_liked/{article_id}")
-def has_user_liked(article_id, request: Request):
+async def has_user_liked(article_id, request: Request):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -2633,7 +2631,7 @@ def has_user_liked(article_id, request: Request):
         session_id = token
     art = Article()
     art.id = article_id
-    return art.has_user_liked(session_id=session_id)
+    return await art.has_user_liked(session_id=session_id)
 
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")
@@ -2643,12 +2641,12 @@ def elastic_search(keyword: str):
 
 #выгрузка данных по лайкам в Б24
 @article_router.put("/put_b24_likes")
-def put_b24_likes():
-    return Article().upload_likes()
+async def put_b24_likes():
+    return await Article().upload_likes()
 
 @article_router.put("/put_b24_views")
-def put_b24_views():
-    return Article().upload_views()
+async def put_b24_views():
+    return await Article().upload_views()
 
 #лайки и просмотры для статистики
 @article_router.get("/get_article_likers/{ID}")

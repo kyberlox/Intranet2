@@ -5,7 +5,9 @@ from fastapi import APIRouter, Body, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-templates = Jinja2Templates(directory="./front_jinja")
+# templates = Jinja2Templates(directory="./front_jinja")
+
+import asyncio
 
 depart_router = APIRouter(prefix="/departments", tags=["Департамент"])
 
@@ -19,7 +21,7 @@ class Department:
         from ..base.pSQL.objects.DepartmentModel import DepartmentModel
         self.department = DepartmentModel()
 
-    def fetch_departments_data(self):
+    async def fetch_departments_data(self):
         from ..base.B24 import B24
         data = B24().getDeps()
         logg = LogsMaker()
@@ -27,26 +29,26 @@ class Department:
         #отправить записи
         for dep in logg.progress(data, "Загрузка данных подразделений "):
             #if dep['ID'] == '420':
-            self.department.upsert_dep(dep)
+            await self.department.upsert_dep(dep)
             
         # StructureSearchModel().create_index()
         return {"status" : True}
     
-    def search_dep_by_id(self):
+    async def search_dep_by_id(self):
         self.department.id = self.id
-        return self.department.find_dep_by_id()
+        return await self.department.find_dep_by_id()
 
 
 # Департаменты можно обновить
 @depart_router.put("")
-def get_department():
+async def get_department():
     depart = Department()
-    return depart.fetch_departments_data()
+    return await depart.fetch_departments_data()
 
 # Департамент можно выгрузить
 @depart_router.get("/find_by/{id}")
-def get_department(id):
-    return Department(id).search_dep_by_id()
+async def get_department(id):
+    return await Department(id).search_dep_by_id()
 
 #загрузить дату в ES
 @depart_router.put("/elastic_data")

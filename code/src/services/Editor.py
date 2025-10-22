@@ -50,7 +50,7 @@ class Editor:
         self.section_id = section_id
         self.art_id = art_id
         if self.art_id is not None and section_id is None:
-            art = ArticleModel(id = self.art_id).find_by_id()
+            art = asyncio.run(ArticleModel(id = self.art_id).find_by_id())
             if "section_id" in art:
                 self.section_id = art["section_id"]
 
@@ -608,7 +608,7 @@ class Editor:
             #если это ID статьи
             if field["field"] == "id":
                 #отдельно засылаю будущий уже инкрементированнный ID статьи
-                self.art_id = ArticleModel().get_current_id()
+                self.art_id = asyncio.run(ArticleModel().get_current_id())
                 field["value"] = self.art_id
 
                 #создать пустую неактивную статью с этим ID
@@ -697,7 +697,7 @@ class Editor:
 
         # получаю текущие значения
         # вытащить основные поля из psql
-        art = ArticleModel(id = self.art_id).find_by_id()
+        art = asyncio.run(ArticleModel(id = self.art_id).find_by_id())
         if "_sa_instance_state" in art:
             art.pop("_sa_instance_state")
 
@@ -725,7 +725,7 @@ class Editor:
 
         # перезаписать файлы 
         # сохранить
-        return ArticleModel(id = self.art_id).update(art)
+        return asyncio.run(ArticleModel(id = self.art_id).update(art))
 
     def get_files(self ):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()

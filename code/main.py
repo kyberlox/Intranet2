@@ -381,7 +381,7 @@ def total_users_update():
 
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
-    if Article().uplod()["status"]:
+    if asyncio.run(Article().uplod())["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
@@ -400,18 +400,18 @@ def total_update():
     status = 0
 
     
-    
-    # from src.model.Department import Department
-    # LogsMaker().info_message("Обновление информации о подразделениях")
-    # if Department().fetch_departments_data()["status"]:
-    #     status += 1
-    #     LogsMaker().ready_status_message("Успешно!")
-    # else:
-    #     LogsMaker().error_message("Ошибка!")
-    
+
+    from src.model.Department import Department
+    LogsMaker().info_message("Обновление информации о подразделениях")
+    if asyncio.run(Department().fetch_departments_data())["status"]:
+        status += 1
+        LogsMaker().ready_status_message("Успешно!")
+    else:
+        LogsMaker().error_message("Ошибка!")
+
     LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User
-    dowload_status = User().fetch_users_data()["status"]
+    dowload_status = asyncio.run(User().fetch_users_data())["status"]
     if dowload_status:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
@@ -420,7 +420,7 @@ def total_update():
 
     from src.model.UsDep import UsDep
     LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
-    if UsDep().get_usr_dep()["status"]:
+    if asyncio.run(UsDep().get_usr_dep())["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
@@ -443,7 +443,7 @@ def total_update():
 
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
-    if Article().uplod()["status"]:
+    if asyncio.run(Article().uplod())["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:

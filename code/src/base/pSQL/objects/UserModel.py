@@ -7,14 +7,14 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 
-
+import asyncio
 
 from .DepartmentModel import DepartmentModel
 
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-from .App import get_db
+from .App import get_db, AsyncSessionLocal
 db_gen = get_db()
 database = next(db_gen)
 
@@ -37,8 +37,9 @@ class UserModel:
         # from .App import db
         # database = db
     
-    def create_new_user_view(self ):
-        from .App import engine
+    async def create_new_user_view(self ):
+        # from .App import engine
+        from .App import async_engine
         try:
             # тут создать представление
             view = text(f"CREATE VIEW NewUsers AS\n"
@@ -56,19 +57,19 @@ class UserModel:
             f"ORDER BY (to_date(users.indirect_data ->> 'date_register'::text, 'YYYY-MM-DD'::text));"
             )
 
-            with engine.connect() as connection:
-                connection.execute(view)
-                connection.commit()
-                connection.close()
+            async with async_engine.connect() as connection:
+                await connection.execute(view)
+                await connection.commit()
             
             LogsMaker().info_message("Создано представление для получения новых сотрудников")
 
         except SQLAlchemyError as e:
-            database.rollback()
+            # database.rollback()
             LogsMaker().error_message(str(e))
 
-    def upsert_user(self, user_data : dict):
-        from .App import engine
+    async def upsert_user(self, user_data : dict):
+        # from .App import engine
+        from .App import async_engine
         """
         Добавляет или обновляет запись в таблице.
         user_data: словарь с данными пользователя
@@ -90,16 +91,19 @@ class UserModel:
         try:
             #usr = db.query(self.user).get(user_data['id'])
             #usr = db.query(User).filter(self.user.id == user_data['id']).first()
-
-            q = database.query(self.user).filter(self.user.id == user_data["id"])
-            usr = database.query(q.exists()).scalar()  # returns True or False
+            async with AsyncSessionLocal() as session:
+                stmt = select(self.user).where(self.user.id == user_data["id"])
+                result = await session.execute(stmt)
+                usr = result.scalar_one_or_none()  # True или False
 
             DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
 
             #если есть - проверить необходимость обновления
             if usr:
                 #user = db.query(self.user).filter(User.id == user_data["id"]).first()
-                user = database.query(self.user).get(user_data['id'])
+                async with AsyncSessionLocal() as session:
+                    # user = await session.query(self.user).get(user_data['id'])
+                    user = await session.get(self.user, user_data['id'])
 
                 #проверить есть ли изменения
                 need_update = False
@@ -139,9 +143,9 @@ class UserModel:
                 if need_update:
                     for cls in new_params:
                         sql = text(f"UPDATE {self.user.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
-                        with engine.connect() as connection:
-                            connection.execute(sql, user_data)
-                            connection.commit()
+                        async with async_engine.connect() as connection:
+                            await connection.execute(sql, user_data)
+                            await connection.commit()
                     
                     LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
 
@@ -161,13 +165,11 @@ class UserModel:
                 if need_update_indirect_data:
                     indirect_jsnb = json.dumps(user.indirect_data)
                     sql = text(f"UPDATE {self.user.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
-                    with engine.connect() as connection:
-                        connection.execute(sql, user_data)
-                        connection.commit()
+                    async with async_engine.connect() as connection:
+                        await connection.execute(sql, user_data)
+                        await connection.commit()
                 
                 LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
-
-
 
             #если нет - добавить
             else:
@@ -205,27 +207,31 @@ class UserModel:
                 sql = text(f"INSERT INTO {self.user.__tablename__} ({columns}) VALUES ({values})")
 
                 # Выполняем SQL-запрос
-                with engine.connect() as connection:
-                    connection.execute(sql, user_data)
-                    connection.commit()
+                async with async_engine.connect() as connection:
+                    await connection.execute(sql, user_data)
+                    await connection.commit()
                 user_id = user_data["id"]
                 LogsMaker().info_message(f"Создан пользователь с id = {user_id}")
 
             
             
         except SQLAlchemyError as e:
-            database.rollback()
+            # database.rollback()
             #print(f"An error occurred: {e}")
             LogsMaker().error_message(str(e))
 
 
-    def find_by_id_all(self):
+    async def find_by_id_all(self):
         from src.model.File import File
         from .App import DOMAIN
         """
         Ищет пользователя по id
         """
-        user = database.query(self.user).filter(self.user.id == self.id).first()
+        async with AsyncSessionLocal() as session:
+            stmt = select(self.user).where(self.user.id == self.id)
+            result = await session.execute(stmt)
+            user = result.scalars().first()
+            # user = await session.query(self.user).filter(self.user.id == self.id).first()
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
         
@@ -238,7 +244,7 @@ class UserModel:
             list_departs_id = []
             if len(indirect_data['uf_department']) != 0:
                 for dep in indirect_data['uf_department']:
-                    dedep = DepartmentModel(dep).find_dep_by_id()
+                    dedep = await DepartmentModel(dep).find_dep_by_id() # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                     if type(dedep) == type(dict()):
                         if 'name' in dedep:
                             list_departs.append(dedep['name'])
@@ -252,7 +258,7 @@ class UserModel:
 
             if "uf_usr_department_main" in indirect_data:
                 #print(indirect_data["uf_usr_department_main"])
-                dedep = DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                dedep = await DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id() # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                 #print(dedep)
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
@@ -264,7 +270,7 @@ class UserModel:
             #вывод ID фотографии пользователя
             result['photo_file_id'] = user.__dict__['photo_file_id']
             if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
-                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
+                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
 
                 #вывод URL фотографии пользователя
                 url = photo_inf['URL']
@@ -275,20 +281,24 @@ class UserModel:
                 result['photo_file_id'] = None
                 result['photo_file_url'] = None
                 result['photo_file_b24_url'] = None
-  
+
             return result
         else:
 
             LogsMaker().warning_message(f"Invalid user id = {self.id}")
             return None
 
-    def find_by_id(self):
+    async def find_by_id(self):
         from src.model.File import File
         from .App import DOMAIN
         """
         Ищет пользователя по id
         """
-        user = database.query(self.user).filter(self.user.id == self.id, self.user.active == True).first()
+        async with AsyncSessionLocal() as session:
+            # user = await session.query(self.user).filter(self.user.id == self.id, self.user.active == True).first()
+            stmt = select(self.user).where(self.user.id == self.id, self.user.active == True)
+            result = await session.execute(stmt)
+            user = result.scalars().first()
         result = dict()
         DB_columns = ['id', 'uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
         
@@ -301,7 +311,7 @@ class UserModel:
             list_departs_id = []
             if len(indirect_data['uf_department']) != 0:
                 for dep in indirect_data['uf_department']:
-                    dedep = DepartmentModel(dep).find_dep_by_id()
+                    dedep = await DepartmentModel(dep).find_dep_by_id() # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                     if type(dedep) == type(dict()):
                         if 'name' in dedep:
                             list_departs.append(dedep['name'])
@@ -315,7 +325,7 @@ class UserModel:
 
             if "uf_usr_department_main" in indirect_data:
                 #print(indirect_data["uf_usr_department_main"])
-                dedep = DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                dedep = await DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id() # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                 #print(dedep)
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
@@ -327,7 +337,7 @@ class UserModel:
             #вывод ID фотографии пользователя
             result['photo_file_id'] = user.__dict__['photo_file_id']
             if 'photo_file_id' in user.__dict__.keys() and user.__dict__['photo_file_id'] is not None:
-                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo()
+                photo_inf = File(id=user.__dict__['photo_file_id']).get_users_photo() # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
 
                 #вывод URL фотографии пользователя
                 url = photo_inf['URL']
@@ -414,9 +424,14 @@ class UserModel:
             '''
             return None
 
-    def find_by_uuid(self):
+    async def find_by_uuid(self):
         try:
-            user = database.query(self.user).filter(self.user.uuid == self.uuid).first()
+            async with AsyncSessionLocal() as session:
+                # user = database.query(self.user).filter(self.user.uuid == self.uuid).first()
+                stmt = select(self.user).where(self.user.uuid == self.uuid)
+                result = await session.execute(stmt)
+                user = result.scalars().first()
+            
 
             if user is not None:
                 return {
@@ -430,28 +445,42 @@ class UserModel:
             LogsMaker().error_message(str(e))
 
     #временно для авторизации
-    def find_by_email(self, email):
-        user_uuid = database.query(self.user.uuid).filter(self.user.email == email).scalar()
+    async def find_by_email(self, email):
+        async with AsyncSessionLocal() as session:
+            # user_uuid = database.query(self.user.uuid).filter(self.user.email == email).scalar()
+            stmt = select(self.user.uuid).where(self.user.email == email)
+            result = await session.execute(stmt)
+            user_uuid = result.scalar()
+        
         return user_uuid
     
-    def all(self):
-        result = database.query(self.user).all()
+    async def all(self):
+        async with AsyncSessionLocal() as session:
+            # result = await database.query(self.user).all()
+            stmt = select(self.user)
+            res = await session.execute(stmt)
+            result = res.all()
 
         return result
     
-    def set_user_photo(self, file_id):
-        from .App import engine
+    async def set_user_photo(self, file_id):
+        # from .App import engine
 
         #update(User).values({"photo_file_id": file_id, "photo_file_url" : file_url}).where(User.id == self.id)
-        with Session(engine) as session:
-            stmt = update(self.user).where(self.user.id == self.id).values(photo_file_id=str(file_id))
-            result = session.execute(stmt)
-            session.commit()
-            session.close()
+        # with Session(engine) as session:
+        #     stmt = update(self.user).where(self.user.id == self.id).values(photo_file_id=str(file_id))
+        #     result = session.execute(stmt)
+        #     session.commit()
+        #     session.close()
 
-            return result
+        #     return result
+        async with AsyncSessionLocal() as session:
+            stmt = update(self.user).where(self.user.id == self.id).values(photo_file_id=str(file_id))
+            result = await session.execute(stmt)
+            await session.commit()
+        return result
     
-    def find_all_celebrants(self, date):
+    async def find_all_celebrants(self, date):
         from src.model.File import File
         from .App import DOMAIN
         """
@@ -459,7 +488,11 @@ class UserModel:
         Важно! Не выводит пользователей, у кого департамент Аксиома и у кого нет фото
         """
         normal_list = []
-        users = database.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
+        # users = database.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
+        async with AsyncSessionLocal() as session:
+            stmt = select(self.user).where(func.to_char(self.user.personal_birthday, 'DD.MM') == date)
+            result = await session.execute(stmt)
+            users = result.all()
         for usr in users:
             user = usr.__dict__
             if 112 in user['indirect_data']['uf_department']:
@@ -473,7 +506,7 @@ class UserModel:
                     if len(indirect_data['uf_department']) != 0:
                         for dep in indirect_data['uf_department']:
                             if isinstance(dep, int):
-                                dep_str = DepartmentModel(dep).find_dep_by_id()
+                                dep_str = await DepartmentModel(dep).find_dep_by_id()  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                                 for de in dep_str:
                                     list_departs.append(de.__dict__['name'])
                     
@@ -481,7 +514,7 @@ class UserModel:
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
-                    user_image = File(id = ObjectId(user['photo_file_id'])).get_users_photo()
+                    user_image = File(id = ObjectId(user['photo_file_id'])).get_users_photo() # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                     user_info['id'] = user['id']
                     if user['second_name'] == '' or user['second_name'] is None:
                         user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
@@ -490,7 +523,7 @@ class UserModel:
                     user_info['position'] = indirect_data['work_position']
                     user_info['department'] = indirect_data['uf_department']
                     if "uf_usr_department_main" in indirect_data:
-                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                        dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
                         user_info['uf_usr_department_main'] = dedep[0].name
                     user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
                     
@@ -498,14 +531,17 @@ class UserModel:
 
         return normal_list
 
-    def new_workers(self):
+    async def new_workers(self):
         from src.model.File import File
         from .App import DOMAIN
         from .App import NewUser
         # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
-        result = database.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
+        # result = database.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
         # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id
-        
+        async with AsyncSessionLocal() as session:
+            stmt = select(NewUser)
+            res = await session.execute(stmt)
+            result = res.fetchall()
         users = []
         for res in result:
             
@@ -519,16 +555,16 @@ class UserModel:
                     list_departs = []
                     if len(indirect_data['uf_department']) != 0:
                         for dep in indirect_data['uf_department']:
-                            dep_str = DepartmentModel(dep).find_dep_by_id()
+                            dep_str = await DepartmentModel(dep).find_dep_by_id()
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])
                     if "uf_usr_department_main" in indirect_data:
-                        dedep = DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()
+                        dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id()  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                         indirect_data["uf_usr_department_main"] = dedep[0].name
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
                     user_info = {}
-                    user_image = File(user[7]).get_users_photo()
+                    user_image = File(user[7]).get_users_photo()  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                     
                     user_info['id'] = user[0]
                     if user[4] == '' or user[4] is None:

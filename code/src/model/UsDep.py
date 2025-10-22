@@ -6,12 +6,12 @@ from fastapi import APIRouter
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
-from jinja2 import Environment, FileSystemLoader
+# from jinja2 import Environment, FileSystemLoader
 import json
+import asyncio
+# usdep_router = APIRouter(prefix="/users_depart", tags=["Пользователь-Департамент"])
 
-usdep_router = APIRouter(prefix="/users_depart", tags=["Пользователь-Департамент"])
-
-env = Environment(loader=FileSystemLoader("./front_jinja")) #/intranet_test/Intranet2/code/main.py
+# env = Environment(loader=FileSystemLoader("./front_jinja")) #/intranet_test/Intranet2/code/main.py
 
 
 class UsDep:
@@ -23,7 +23,7 @@ class UsDep:
         from ..base.pSQL.objects import UsDepModel
         self.UserSQL = UsDepModel()
     
-    def get_usr_dep(self):
+    async def get_usr_dep(self):
         b24 = B24()
         data = b24.getUsers()
         logg = LogsMaker()
@@ -36,7 +36,7 @@ class UsDep:
             if usr['ID'] is not None:
                 result['id'] = int(usr['ID'])
                 result['depart'] = usr['UF_DEPARTMENT']
-                self.UserSQL.put_uf_depart(result)
+                await self.UserSQL.put_uf_depart(result)
         StructureSearchModel().dump()
         return {"status" : True}
         
@@ -47,8 +47,8 @@ class UsDep:
 
 #Таблицу пользователей и департаментов можно обновить
 @usdep_router.put("")
-def get_user():
-    return UsDep().get_usr_dep()
+async def get_user():
+    return await UsDep().get_usr_dep()
 
 #Пользователя и его департамент можно выгрузить
 @usdep_router.get("/find_by/{ID}")

@@ -3,7 +3,8 @@ from sqlalchemy.sql.expression import select
 from ..models.UsDep import UsDep
 from .App import get_db
 
-
+# from .App import AsyncSessionLocal, async_engine
+import asyncio
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Пользователь-Подразделение")
@@ -22,14 +23,14 @@ class UsDepModel():
         # SessionLocal = sessionmaker(autoflush=True, bind=engine)
         # database = db
     
-    def put_uf_depart(self, usr_dep):
+    async def put_uf_depart(self, usr_dep):
         from .UserModel import UserModel
         from .DepartmentModel import DepartmentModel
 
-        existing_user = UserModel(Id=usr_dep['id']).find_by_id()
+        existing_user = await UserModel(Id=usr_dep['id']).find_by_id()
         if existing_user and existing_user['active'] is True:
             for dep in usr_dep['depart']:
-                existing_depart = DepartmentModel(Id=int(dep)).find_dep_by_id()
+                existing_depart = await DepartmentModel(Id=int(dep)).find_dep_by_id()
                 #print(existing_user, existing_depart[0].__dict__)
                 #print(existing_depart[0].__dict__)
                 if existing_depart != []:

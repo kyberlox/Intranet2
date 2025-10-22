@@ -1,9 +1,9 @@
 # Определим базовые переменные пакета
 # from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func
-from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func, update
+from sqlalchemy import MetaData, Table, Column, Integer, Boolean, Text, Date, select, func, update, delete
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm.attributes import flag_modified
-from ..models.App import Base, engine
+from ..models.App import Base, engine, async_engine, AsyncSessionLocal
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import exists
 
@@ -38,3 +38,11 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+async def get_async_db():
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()

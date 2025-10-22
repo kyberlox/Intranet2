@@ -1,6 +1,7 @@
 from ..models.Fieldvision import Fieldvision
 from .App import flag_modified, select, exists, JSONB, func, get_db # db,
 
+import asyncio
 
 db_gen = get_db()
 database = next(db_gen)
@@ -115,7 +116,7 @@ class UservisionsRootModel:
                 users_in_vis = database.scalars(query).all()
                 for user in users_in_vis:
                     general_info = {}
-                    user_info = UserModel(Id=user).find_by_id()
+                    user_info = asyncio.run(UserModel(Id=user).find_by_id())
                     if user_info['active']:
                         general_info['id'] = user_info['id']
                         name = user_info['name'] if user_info['name'] else ''

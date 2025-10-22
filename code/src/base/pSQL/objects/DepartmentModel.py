@@ -4,9 +4,11 @@ from sqlalchemy.sql.expression import select
 from ..models.Department import Department
 from .App import engine, get_db
 
+from .App import AsyncSessionLocal, async_engine
+
 from sqlalchemy.exc import SQLAlchemyError
 
-
+import asyncio
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Подразделений")
@@ -25,7 +27,7 @@ class DepartmentModel:
         # from .App import db
         # database = db
 
-    def upsert_dep(self, dep_data):
+    async def upsert_dep(self, dep_data):
         """
         Добавляет или обновляет запись в таблице 'departments'.
         dep_data: словарь с данными департамента
@@ -49,15 +51,21 @@ class DepartmentModel:
 
         # проверить по id есть ли такой департамент
         try:  
-            q = database.query(Department).filter(Department.id == dep_data["id"])
-            dep_exist = database.query(q.exists()).scalar() # ПРОВЕРЕНО 
+            async with AsyncSessionLocal() as session:
+                stmt = select(self.department).where(self.department.id == dep_data["id"])
+                result = await session.execute(stmt)
+                dep_exist = result.scalar_one_or_none()  # True или False
+            # q = database.query(Department).filter(Department.id == dep_data["id"])
+            # dep_exist = database.query(q.exists()).scalar() # ПРОВЕРЕНО 
 
             DB_columns_dep = ['id', 'name', 'sort', 'user_head_id', 'father_id']
 
             # если такой id существует - проверить необходимость обновленияs
             if dep_exist:
 
-                dep = database.execute(select(Department).where(self.department.id == dep_data["id"])).scalar()
+                async with AsyncSessionLocal() as session:
+                    dep = await session.execute(select(self.departmen).where(self.department.id == dep_data["id"])).scalar()
+                # dep = database.execute(select(Department).where(self.department.id == dep_data["id"])).scalar()
                                 
                 for column in DB_columns_dep:
 
@@ -77,9 +85,9 @@ class DepartmentModel:
                             sql = text(f"UPDATE {Department.__tablename__} SET {column} = {dep_data.get(column)} WHERE id = {u_id}")
                             
 
-                        with engine.connect() as connection:
-                            connection.execute(sql, dep_data)
-                            connection.commit()
+                        with async_engine.connect() as connection:
+                            await connection.execute(sql, dep_data)
+                            await connection.commit()
                     
                     # если изменений нет - пропустит итерацию
                     else:
@@ -104,20 +112,22 @@ class DepartmentModel:
                 sql = text(f"INSERT INTO {Department.__tablename__} ({columns}) VALUES ({values})")
                 
                 # Выполняем SQL-запрос
-                with engine.connect() as connection:
-                    connection.execute(sql, dep_data)
-                    connection.commit()
+                with async_engine.connect() as connection:
+                    await connection.execute(sql, dep_data)
+                    await connection.commit()
                     
 
         except SQLAlchemyError as e:
             # print(f'An error: {e}')
             return LogsMaker().error_message(e)
 
-    def find_dep_by_id(self):
+    async def find_dep_by_id(self):
         """
         Ищет департамент по id
         """
-        res = database.query(Department).get(self.id) #database.execute(select(self.department).where(self.department.id == self.id)).scalar()
+        async with AsyncSessionLocal() as session:
+            res = await session.execute(select(self.department).where(self.department.id == self.id)).scalar()
+        # res = database.query(Department).get(self.id) #database.execute(select(self.department).where(self.department.id == self.id)).scalar()
 
         if res is not None:
             # res = res.__dict__
@@ -139,11 +149,13 @@ class DepartmentModel:
         # else:
         #     return {'err': 'Нет такого департамента'}
     
-    def find_deps_by_father_id(self, father_id):
+    async def find_deps_by_father_id(self, father_id):
         result = []
         #null_depart = database.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
         #res = database.query(self.department).filter(self.department.father_id == father_id).all()
-        res = database.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
+        async with AsyncSessionLocal() as session:
+            res = await session.execute(select(self.department).where(self.department.father_id == father_id)).scalars().all()
+        # res = database.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
         if res is not None:
             return res
         else:
@@ -151,5 +163,8 @@ class DepartmentModel:
             #return LogsMaker().warning_message('Нет такого департамента')
             return []
 
-    def all(self):
-        return database.query(Department).all()
+    async def all(self):
+        async with AsyncSessionLocal() as session:
+            res = await session.execute(select(self.department)).scalars().all()
+        # return database.query(Department).all()
+        return res

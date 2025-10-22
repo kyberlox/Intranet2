@@ -6,9 +6,9 @@ from ..services.SendMail import SendEmail
 from fastapi import APIRouter, Body
 from fastapi.templating import Jinja2Templates
 
+import asyncio
 
-
-templates = Jinja2Templates(directory="./front_jinja")
+# templates = Jinja2Templates(directory="./front_jinja")
 
 users_router = APIRouter(prefix="/users", tags=["Пользователь"])
 
@@ -24,7 +24,7 @@ class User:
         from ..base.Elastic.UserSearchModel import UserSearchModel
         self.UserSearchModel = UserSearchModel()
 
-    def fetch_users_data(self):
+    async def fetch_users_data(self):
         data = B24().getUsers()
         # кастомный прогрессбар
         logg = LogsMaker()
@@ -33,22 +33,22 @@ class User:
 
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
-            self.UserModel.upsert_user(usr_data)
+            await self.UserModel.upsert_user(usr_data)
             
-        status = self.set_users_photo()
-        self.UserModel.create_new_user_view()
+        status = await self.set_users_photo()
+        await self.UserModel.create_new_user_view()
         #дампим данные в эластик
         self.dump_users_data_es()
         
         return {"status" : True}
 
-    def search_by_id(self):
+    async def search_by_id(self):
         self.UserModel.id = self.id
-        return self.UserModel.find_by_id()
+        return await self.UserModel.find_by_id()
     
-    def search_by_id_all(self):
+    async def search_by_id_all(self):
         self.UserModel.id = self.id
-        return self.UserModel.find_by_id_all()
+        return await self.UserModel.find_by_id_all()
 
     def get_dep_usrs(self):
         users_data = sorted(B24().getUsers(), key=lambda d: int(d['ID']))
@@ -63,15 +63,15 @@ class User:
                 result.append(line)
         return result
 
-    def get_uf_depart(self):
-        return self.UserModel.find_uf_depart()
+    async def get_uf_depart(self):
+        return await self.UserModel.find_uf_depart()
 
-    def user_inf_by_uuid(self):
+    async def user_inf_by_uuid(self):
         self.UserModel.uuid = self.uuid
-        usr_inf = self.UserModel.find_by_uuid()
+        usr_inf = await self.UserModel.find_by_uuid()
         return usr_inf
 
-    def set_users_photo(self):
+    async def set_users_photo(self):
         data = B24().getUsers()
         # кастомный прогрессбар
         logg = LogsMaker()
@@ -95,7 +95,7 @@ class User:
                 uuid = usr_data['ID']
                 #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
                 self.UserModel.id = uuid
-                psql_user = self.UserModel.find_by_id_all() 
+                psql_user = await self.UserModel.find_by_id_all() 
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                     b24_url = usr_data['PERSONAL_PHOTO']
                     #проверим url первоисточника текущей аватарки
@@ -110,8 +110,7 @@ class User:
                         
                         #обновить данные в pSQL
                         self.UserModel.uuid = uuid
-                        print(file_data, type(file_data))
-                        self.UserModel.set_user_photo(file_data["id"])
+                        await self.UserModel.set_user_photo(file_data['id'])
                     else:
                         continue
                         
@@ -142,19 +141,19 @@ class User:
 
         return result
     
-    def has_liked(self, art_id):
+    async def has_liked(self, art_id):
         from ..base.pSQL.objects.LikesModel import LikesModel
-        return LikesModel(user_id=self.id, art_id=art_id).has_liked()
+        return await LikesModel(user_id=self.id, art_id=art_id).has_liked()
 
     # день рождения
-    def get_birthday_celebrants(self, date):
-        from ..base.pSQL.objects import UserModel
-        return UserModel().find_all_celebrants(date)
+    async def get_birthday_celebrants(self, date):
+        # from ..base.pSQL.objects import UserModel
+        return await self.UserModel.find_all_celebrants(date)
     
     # новые сотрудники
-    def get_new_workers(self):
-        from ..base.pSQL.objects import UserModel
-        return UserModel().new_workers()
+    async def get_new_workers(self):
+        # from ..base.pSQL.objects import UserModel
+        return await self.UserModel.new_workers()
 
     # дамп данных в эластик
     def dump_users_data_es(self):
@@ -166,25 +165,25 @@ class User:
         return LikesModel(user_id=self.id).get_user_likes()
 
     # Обновляет данные конкретного пользователя
-    def update_inf_from_b24(self ):
+    async def update_inf_from_b24(self):
         data = B24().getUsers()
         for usr_data in data:
             if int(usr_data["ID"]) == int(self.id):
-                self.UserModel.upsert_user(usr_data)
-                self.update_user_elastic()
+                await self.UserModel.upsert_user(usr_data)
+                await self.update_user_elastic()
                 return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
 
-    def update_user_elastic(self):
-        user_data = self.search_by_id()
+    async def update_user_elastic(self):
+        user_data = await self.search_by_id()
         result = self.UserSearchModel.update_user_el_index(user_data)
         if result:
             return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
         else:
             LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
 
-    def find_by_email(self, email):
-        return self.UserModel.find_by_email(email)
+    async def find_by_email(self, email):
+        return await self.UserModel.find_by_email(email)
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -219,18 +218,18 @@ class User:
 
 #Пользоваетелей можно обновить
 @users_router.put("/update")
-def update_user():
+async def update_user():
     usr = User()
-    return usr.fetch_users_data()
+    return await usr.fetch_users_data()
 
 @users_router.put("/update_user_info/{user_id}")
-def update_user_info(user_id : int):
-    return User(id = user_id).update_inf_from_b24()
+async def update_user_info(user_id : int):
+    return await User(id = user_id).update_inf_from_b24()
 
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")
-def find_by_user(id):
-    return User(id).search_by_id()
+async def find_by_user(id):
+    return await User(id).search_by_id()
 
 # @users_router.get("/test_update_photo")
 # def test_update_photo():
@@ -249,13 +248,13 @@ def elastic_search(keyword: str, size_res: int):
     return UserSearchModel().elasticsearch_users(key_word=keyword, size_res=size_res)
 
 @users_router.get("/test_update_photo")
-def test_update_photo():
-    return User().set_users_photo()
+async def test_update_photo():
+    return await User().set_users_photo()
 
 # запрос для получения списка пользователей у кого в эту дату ДР
 @users_router.get("/get_birthday_celebrants/{day_month}")
-def birthday_celebrants(day_month: str):
-    return User().get_birthday_celebrants(day_month)
+async def birthday_celebrants(day_month: str):
+    return await User().get_birthday_celebrants(day_month)
 
 @users_router.post("/test_send_mail")
 def send_test_mail(data=Body(...)):

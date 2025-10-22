@@ -1,5 +1,5 @@
 # from .App import db
-from .App import get_db
+from .App import get_db, async_engine, AsyncSessionLocal
 from .UserModel import UserModel
 from .DepartmentModel import DepartmentModel
 from .UsDepModel import UsDepModel
@@ -30,6 +30,8 @@ from .UserFilesModel import UserFilesModel
 __all__ = [
     # 'db',
     'get_db',
+    'async_engine',
+    'AsyncSessionLocal',
     'UserModel',
     'DepartmentModel',
     'UsDepModel',

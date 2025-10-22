@@ -4,7 +4,10 @@ from sqlalchemy.sql.expression import func
 from typing import List, Optional, Dict
 
 from datetime import datetime, timedelta
-from .App import get_db
+from .App import get_db, AsyncSessionLocal, select
+
+import asyncio
+
 db_gen = get_db()
 database = next(db_gen)
 
@@ -33,7 +36,7 @@ class LikesModel:
             "likes" : {'count': 0, 'likedByMe': False}
         }
 
-    def add_or_remove_like(self ) -> bool:
+    async def add_or_remove_like(self):
         """
         Ставит лайк статье если пользователь его еще не ставил
         Убрает лайк со статьи
@@ -41,77 +44,85 @@ class LikesModel:
         """
 
         from .ViewsModel import ViewsModel
-        views = ViewsModel(art_id=self.art_id).get_art_viewes()
+        views = await ViewsModel(art_id=self.art_id).get_art_viewes()
         self.reactions["views"] = views
 
-        likes_count = self.get_likes_count()
+        likes_count = await self.get_likes_count()
         self.reactions["likes"]["count"] = likes_count
         
-        
+        async with AsyncSessionLocal() as session:
         # Проверяем, есть ли уже активный лайк
-        existing_like = database.query(self.Likes).filter(
-            self.Likes.user_id == self.user_id,
-            self.Likes.article_id == self.art_id
-        ).first()
+            stmt = select(self.Likes).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id)
+            result = await session.execute(stmt)
+            existing_like = result.first()
+            # existing_like = database.query(self.Likes).filter(
+            #     self.Likes.user_id == self.user_id,
+            #     self.Likes.article_id == self.art_id
+            # ).first()
 
-        
+            
 
-        if not existing_like:
-            # создаем новый лайк если прежде никогда не стоял
-            new_like = self.Likes(
-                user_id=self.user_id,
-                article_id=self.art_id,
-                is_active=True,
-                created_at=datetime.utcnow()
-            )
-            database.add(new_like)
-            database.commit()
-            self.reactions["likes"]["count"] += 1
-            self.reactions["likes"]["likedByMe"] = True
-
-        else:
-            if existing_like.is_active:
-                self.reactions["likes"]["count"] -= 1
-            else:
+            if not existing_like:
+                # создаем новый лайк если прежде никогда не стоял
+                new_like = self.Likes(
+                    user_id=self.user_id,
+                    article_id=self.art_id,
+                    is_active=True,
+                    created_at=datetime.utcnow()
+                )
+                await session.add(new_like)
+                await session.commit()
                 self.reactions["likes"]["count"] += 1
+                self.reactions["likes"]["likedByMe"] = True
 
-            existing_like.is_active = not existing_like.is_active
-            database.commit()
+            else:
+                if existing_like.is_active:
+                    self.reactions["likes"]["count"] -= 1
+                else:
+                    self.reactions["likes"]["count"] += 1
 
-            self.reactions["likes"]["likedByMe"] = existing_like.is_active
+                existing_like.is_active = not existing_like.is_active
+                await session.commit()
+
+                self.reactions["likes"]["likedByMe"] = existing_like.is_active
 
         return self.reactions
 
-    def _get_VM(self):
+    async def _get_VM(self):
         try:
             VM = ViewsModel()
             VM.art_id = self.art_id
-            views = VM.get_art_viewes()
+            views = await VM.get_art_viewes()
             return views
         except Exception as e:
             return 0
             LogsMaker().error_message(str(e))
 
-    def has_liked(self ) -> bool:
+    async def has_liked(self ) -> bool:
         """
         Проверяет, поставил ли пользователь лайк статье.
         """
         try:
             from .ViewsModel import ViewsModel
-            views = ViewsModel(art_id=self.art_id).get_art_viewes()
+            views = await ViewsModel(art_id=self.art_id).get_art_viewes()
             self.reactions["views"] = views
 
-            likes_count = self.get_likes_count()
+            likes_count = await self.get_likes_count()
             self.reactions["likes"]["count"] = likes_count
             
-            likes_count = self.get_likes_count()
+            likes_count = await self.get_likes_count()
             
             reactions = {}
+            async with AsyncSessionLocal() as session:
             # Проверяем, есть ли уже активный лайк
-            existing_like = database.query(self.Likes).filter(
-                self.Likes.user_id == self.user_id,
-                self.Likes.article_id == self.art_id
-            ).first()
+                stmt = select(self.Likes).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id)
+                result = await session.execute(stmt)
+                existing_like = result.first()
+            # Проверяем, есть ли уже активный лайк
+            # existing_like = database.query(self.Likes).filter(
+            #     self.Likes.user_id == self.user_id,
+            #     self.Likes.article_id == self.art_id
+            # ).first()
              
 
             if existing_like:
@@ -123,18 +134,23 @@ class LikesModel:
             return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
 
 
-    def get_likes_count(self ) -> int:
+    async def get_likes_count(self ) -> int:
         """
         Возвращает количество активных лайков для статьи.
         """
-        res = database.query(self.Likes).filter(
-            self.Likes.article_id == self.art_id,
-            self.Likes.is_active == True
-        ).count()
+        async with AsyncSessionLocal() as session:
+            # Проверяем, есть ли уже активный лайк
+            stmt = select(self.Likes).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id)
+            result = await session.execute(stmt)
+            res = result.count()
+            # res = database.query(self.Likes).filter(
+            #     self.Likes.article_id == self.art_id,
+            #     self.Likes.is_active == True
+            # ).count()
          
         return res
 
-    def get_user_likes(self ) -> List[int]:
+    async def get_user_likes(self ) -> List[int]:
         """
         Возвращает список ID статей, которые лайкнул пользователь.
 
@@ -144,16 +160,21 @@ class LikesModel:
         Returns:
             Список article_id, которые пользователь лайкнул
         """
-        likes = database.query(self.Likes.article_id).filter(
-            self.Likes.user_id == self.user_id,
-            self.Likes.is_active == True
-        ).all()
+        async with AsyncSessionLocal() as session:
+            # Проверяем, есть ли уже активный лайк
+            stmt = select(self.Likes.article_id).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id)
+            result = await session.execute(stmt)
+            likes = result.all()
+        # likes = database.query(self.Likes.article_id).filter(
+        #     self.Likes.user_id == self.user_id,
+        #     self.Likes.is_active == True
+        # ).all()
         
          
 
         return [like.article_id for like in likes]
 
-    def get_article_likers(self ) -> List[int]:
+    async def get_article_likers(self ) -> List[int]:
         """
         Возвращает список ID пользователей, которые лайкнули статью.
 
@@ -163,51 +184,61 @@ class LikesModel:
         Returns:
             Список user_id пользователей, которые лайкнули статью
         """
-        likers = database.query(self.Likes.user_id).filter(
-            self.Likes.article_id == self.art_id,
-            self.Likes.is_active == True
-        ).all()
+        async with AsyncSessionLocal() as session:
+            # Проверяем, есть ли уже активный лайк
+            stmt = select(self.Likes.user_id).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id)
+            result = await session.execute(stmt)
+            likers = result.all()
+        # likers = database.query(self.Likes.user_id).filter(
+        #     self.Likes.article_id == self.art_id,
+        #     self.Likes.is_active == True
+        # ).all()
         
          
 
         return [liker.user_id for liker in likers]
 
-    def add_like_from_b24(self, created_at) -> bool:
+    async def add_like_from_b24(self, created_at) -> bool:
         """
         Пользователь поставил лайк статье.
         Возвращает True, если лайк успешно добавлен, False если лайк уже существует.
         """
         # Проверяем, есть ли уже активный лайк
-        existing_like = database.query(self.Likes).filter(
-            self.Likes.user_id == self.user_id,
-            self.Likes.article_id == self.art_id,
-            self.Likes.is_active == True
-        ).first()
-
-        if existing_like:
-            return False  # Лайк уже существует
-
-        # Если лайк был, но is_active=False, обновляем его
-        # inactive_like = database.query(Likes).filter(
-        #     Likes.user_id == self.user_id,
-        #     Likes.article_id == self.art_id,
-        #     Likes.is_active == False
+        async with AsyncSessionLocal() as session:
+            # Проверяем, есть ли уже активный лайк
+            stmt = select(self.Likes).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id, self.Likes.is_active == True)
+            result = await session.execute(stmt)
+            existing_like = result.first()
+        # existing_like = database.query(self.Likes).filter(
+        #     self.Likes.user_id == self.user_id,
+        #     self.Likes.article_id == self.art_id,
+        #     self.Likes.is_active == True
         # ).first()
 
-        # if inactive_like:
-        #     inactive_like.is_active = True
-        #     inactive_like.created_at = datetime.utcnow()
-        # else:
-            # Создаем новый лайк
-        new_like = self.Likes(
-            user_id=self.user_id,
-            article_id=self.art_id,
-            is_active=True,
-            created_at=created_at
-        )
-        database.add(new_like)
+            if existing_like:
+                return False  # Лайк уже существует
 
-        database.commit()
+            # Если лайк был, но is_active=False, обновляем его
+            # inactive_like = database.query(Likes).filter(
+            #     Likes.user_id == self.user_id,
+            #     Likes.article_id == self.art_id,
+            #     Likes.is_active == False
+            # ).first()
+
+            # if inactive_like:
+            #     inactive_like.is_active = True
+            #     inactive_like.created_at = datetime.utcnow()
+            # else:
+                # Создаем новый лайк
+            new_like = self.Likes(
+                user_id=self.user_id,
+                article_id=self.art_id,
+                is_active=True,
+                created_at=created_at
+            )
+            await session.add(new_like)
+
+            await session.commit()
          
         return True
 

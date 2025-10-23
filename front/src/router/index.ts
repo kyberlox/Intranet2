@@ -512,13 +512,13 @@ const router = createRouter({
     {
       path: '/admin/:id/new',
       name: 'adminElementInnerAdd',
-      component: () => import('@/views/admin/editPanel/AdminElementInner.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
     },
     {
       path: '/admin/:id/:elementId',
       name: 'adminElementInnerEdit',
-      component: () => import('@/views/admin/editPanel/AdminElementInner.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]

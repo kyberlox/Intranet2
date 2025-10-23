@@ -53,7 +53,7 @@
                 </button>
             </div>
 
-            <!-- Новые  файлы -->
+            <!-- Новые файлы -->
             <div v-for="(file, index) in uploadedFiles"
                  :key="'uploading-' + index"
                  class="file-uploader__preview-item">

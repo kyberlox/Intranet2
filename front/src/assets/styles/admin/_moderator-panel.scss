@@ -1,0 +1,88 @@
+.moderator-panel {
+    display: flex;
+    flex-direction: row;
+
+    &__content {
+        overflow-x: auto;
+        flex-grow: 1;
+    }
+
+    &__list {
+        scrollbar-width: thin;
+        background-color: #f8933c59;
+        padding: 3%;
+        border-radius: 46px;
+        border: 1px solid #c4c4c4;
+        max-height: 80vh;
+        overflow-y: auto;
+
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    &__table-item {
+        display: flex;
+        align-items: flex-end;
+        // justify-content: center;
+        overflow-x: auto;
+        min-height: fit-content;
+    }
+
+    &__table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: auto;
+        border-radius: 16px;
+        background-color: #fff;
+        position: relative;
+        transition: box-shadow 0.2s ease;
+
+        th,
+        td {
+            text-align: center;
+            color: #000;
+            border-bottom: 1px solid #ddd;
+            padding: 18px;
+        }
+    }
+
+    &__action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 40px;
+        height: 35px;
+
+        border-radius: 19px;
+        border: 1px solid #00000042;
+
+        color: #fff;
+        background-color: var(--emk-brand-color, #00cb20);
+
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+            filter: brightness(0.95);
+            transform: translateY(-1px);
+        }
+
+        &--cancel {
+            background-color: #eb1212;
+
+            &:hover {
+                background-color: #eb1212a0;
+            }
+        }
+
+        &--accept {
+            background-color: #00cb20;
+
+            &:hover {
+                background-color: #00cb1ea4;
+            }
+        }
+    }
+}

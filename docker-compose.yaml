@@ -1,0 +1,118 @@
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_async
+    depends_on:
+      - fastapi
+      #- frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NGINX_HOST=${DOMAIN}
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+      - ./app_logs/nginx:/var/log/nginx  # Логи nginx
+    networks:
+      - app-network
+  
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_async
+    environment:
+      POSTGRES_DB: "pdb"
+      POSTGRES_USER: ${user}
+      POSTGRES_PASSWORD: ${pswd}
+    volumes:
+      - ./pSQL/data:/var/lib/postgresql/data
+      #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./app_logs/postgres:/var/log/postgresql  # Логи PostgreSQL
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_async
+    volumes:
+      - ./mongodb/data:/data/db
+      - ./app_logs/mongodb:/var/log/mongodb  # Логи MongoDB
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${user}
+      - MONGO_INITDB_ROOT_PASSWORD=${pswd}
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  elasticsearch:
+    image: elasticsearch:9.1.0
+    container_name: elasticsearch_async
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${pswd}
+      - network.host=0.0.0.0
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+    volumes:
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      # Убираем монтирование elasticsearch.yml - используем переменные окружения
+      - ./app_logs/elasticsearch:/usr/share/elasticsearch/logs  # Добавляем логи Elasticsearch
+    ports:
+      - "127.0.0.1:9200:9200"  # Только localhost!
+      - "127.0.0.1:9300:9300"  # Только localhost!
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis_async
+    ports:
+      - "6379:6379"
+      #- "127.0.0.1:6379:6379"
+    volumes:
+      - ./redis_data:/data
+      - ./app_logs/redis:/var/log/redis  # Добавляем, если redis настроен писать логи в файл
+    environment:
+      - REDIS_PASSWORD=${pswd}  # пароль из .env
+    command: [ "redis-server", "--requirepass", "${pswd}" ]
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  fastapi:
+    build: ./code
+    container_name: fastapi_async
+    volumes:
+      - ./code:/data/app
+      - ./app_logs/fastapi:/data/app/logs  # Добавляем том для логов FastAPI
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - elasticsearch
+    networks:
+      - app-network
+  
+  frontend:
+    container_name: vue_async
+    build: ./front
+    volumes:
+      #- ./front/:/app/
+      - ./app_logs/frontend:/app/logs  # Логи фронтенда
+    ports:
+      - 5173:5173
+    networks:
+      - app-network
+
+
+
+networks:
+  app-network:
+    driver: bridge

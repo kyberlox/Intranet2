@@ -1,0 +1,38 @@
+.company {
+    &__mission {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        padding: 30px;
+        margin: 30px;
+        border: 5px solid #ee7e1c;
+        width: 100%;
+    }
+
+    &__values {
+        color: #ffffff;
+        background-color: #ee7e1c;
+        padding: 30px;
+        margin: 30px;
+        border: 5px solid #ee7e1c;
+        width: 100%;
+    }
+
+    &__num {
+        display: block;
+        font-size: 2.4rem;
+        font-weight: bold;
+        color: var(--emk-brand-color);
+        text-wrap: nowrap;
+    }
+
+    &__plus-desc {
+        display: block;
+    }
+
+    &__achievments {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
+}

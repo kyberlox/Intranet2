@@ -1,0 +1,27 @@
+/nginx/ssl
+/app_logs
+/pSQL/data
+/mongodb/data
+/elasticsearch/data
+/redis_data
+/code/files_db
+/code/logs
+
+**/__pycache__/
+.env
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+**.log
+
+/front/node_modules
+/front/dist
+/front/dist-ssr
+/front/coverage
+/front/cypress
+
+# dev.ignore
+*.sh

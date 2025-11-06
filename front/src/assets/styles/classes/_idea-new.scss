@@ -1,0 +1,181 @@
+@use '/src/assets/styles/mixins' as *;
+
+.idea-new {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+
+    &__title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        border-bottom: 3px solid var(--emk-brand-color);
+        padding-bottom: 1rem;
+    }
+
+    &__description {
+        background: linear-gradient(135deg, var(--emk-brand-color) 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        line-height: 1.6;
+
+        & p {
+            margin-bottom: 1rem;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    &__form {
+        width: 100%;
+        margin-top: 20px;
+
+        &-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+    }
+
+    &__field-group {
+        position: relative;
+    }
+
+    &__error {
+        &-wrapper {
+            min-height: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        &-message {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: block;
+            padding: 0.25rem 0.5rem;
+            background: #fdf2f2;
+            border-radius: 5px;
+            border-left: 3px solid #e74c3c;
+        }
+    }
+
+    &__file {
+        &-group {
+            margin-bottom: 2rem;
+        }
+
+        &-label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        &-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px dashed #bdc3c7;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+
+            &:hover {
+                border-color: var(--emk-brand-color);
+                background: #ffffff;
+            }
+
+            &:focus {
+                outline: none;
+                border-color: var(--emk-brand-color);
+                border-style: solid;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            }
+        }
+    }
+
+    &__input {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        outline: none;
+        font-family: inherit;
+
+        &:focus {
+            border-color: var(--emk-brand-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: translateY(-2px);
+        }
+
+        &-group {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        &__textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        &__label {
+            position: absolute;
+            top: 1rem;
+            left: 1.5rem;
+            font-size: 1rem;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: transparent;
+        }
+
+    }
+
+    &__submit-group {
+        text-align: center;
+        margin-top: 10px;
+
+        &__loader {
+
+            width: 20px !important;
+            height: 20px !important;
+
+        }
+
+        &>.primary-button {
+            margin: auto;
+            font-size: medium;
+
+            @include sm {
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+.idea-new__input:focus+.idea-new__input__label,
+.idea-new__input:not(:placeholder-shown)+.idea-new__input__label {
+    top: -0.5rem;
+    left: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--emk-brand-color);
+    background: white;
+    padding: 0 0.5rem;
+}

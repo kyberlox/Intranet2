@@ -1,0 +1,7 @@
+cluster.name: "elk"
+# network.host: 0.0.0.0
+
+http.cors.enabled: false
+http.cors.allow-origin: "*"
+# xpack.security.enabled: true # Для поддержки функционала, обеспечивающего безопасность кластера
+xpack.license.self_generated.type: basic # Типа лицензии "basic" для наших нужд хватит с головой

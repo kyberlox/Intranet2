@@ -1,0 +1,34 @@
+.ql-snow .ql-tooltip[data-mode='link']::before {
+    content: 'url:' !important;
+}
+
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+    content: 'Далее' !important;
+}
+
+:deep(.p-editor-toolbar) {
+    display: none;
+}
+
+:deep(.ql-formats button) {
+    margin-right: 5px;
+}
+
+.ql-editor {
+    font-size: medium !important;
+    border: 2px solid #e5e7eb;
+}
+
+:root {
+    --p-editor-toolbar-item-hover-color: black;
+    --p-editor-toolbar-item-color: black;
+    --p-editor-toolbar-item-hover-color: grey;
+    --p-editor-toolbar-item-active-color: orange;
+    --p-editor-toolbar-border-color: grey;
+    --p-editor-toolbar-border-color: grey;
+    --p-editor-content-background: rgb(249 249 249);
+}
+
+.ql-toolbar.ql-snow .ql-formats {
+    margin-inline-end: 0px !important;
+}

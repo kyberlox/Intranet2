@@ -1,0 +1,65 @@
+export interface IActivitiesList {
+    id: number,
+    need_valid: boolean,
+    name: string,
+    coast: number
+}
+
+export interface IActivityToSend {
+    activities: { value?: number, name: string, id: number }[],
+    likes_left: number
+}
+
+export interface IActivityStatistics{
+    id_activeusers: number,
+    uuid_from: number,
+    fio_from: string,
+    description: string,
+    date_time: string,
+    activity_name: string,
+    cost: number,
+    id_activites: number
+}
+
+export interface IPointsAdmin {
+    admin_id: number
+    admin_last_name: string
+    admin_name: string
+    admin_second_name: string
+}
+export interface IPointsModer {
+    moder_id: number
+    moder_last_name: string
+    moder_name: string
+    moder_second_name: string
+}
+
+export interface ICurator {
+    activity_id?: number,
+    activity_name?: string,
+    moder_id?: string
+    curator_id?: number 
+    curator_name?: string 
+    curator_last_name?: string
+    curator_second_name?: string 
+}
+
+export interface IActivityToConfirm {
+    coast: number
+    date_time: string
+    description: string
+    id: number
+    name: string
+    need_valid: boolean
+    uuid_from: number
+    uuid_to: number
+}
+
+export interface ICuratorActivityHistory{
+coast: number,
+description: string,
+date_time:string,
+id: number,
+uuid_to: number,
+user_to_fio:string,
+}

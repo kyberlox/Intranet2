@@ -1,0 +1,14 @@
+.contest {
+    &__page {
+        &__loader {
+            margin: auto;
+            width: 120px !important;
+            height: 120px !important;
+
+            &__wrapper {
+                display: flex;
+                min-height: 50vh;
+            }
+        }
+    }
+}

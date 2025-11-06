@@ -1,0 +1,271 @@
+[
+  {
+    "id" : 0,
+    "name" : "Главная страница",
+    "parent_id" : null,
+    "sectionHref": "home"
+  },
+  {
+    "id" : 1,
+    "name" : "О нас",
+    "parent_id" : 0
+  },
+  {
+    "id" : 11,
+    "name" : "Наша компания",
+    "parent_id" : 1,
+    "sectionHref": "personal"
+  },
+  {
+    "id" : 12,
+    "name" : "История компании",
+    "parent_id" : 1,
+    "sectionHref": "book-emk"
+  },
+  {
+    "id" : 13,
+    "name" : "Наши люди",
+    "parent_id" : 1,
+    "sectionHref": "ourPeopleInner"
+  },
+  {
+    "id" : 14,
+    "name" : "Доска почёта",
+    "parent_id" : 1,
+    "sectionHref": "year-results"
+  },
+  {
+    "id" : 15,
+    "name" : "Блоги",
+    "parent_id" : 1,
+    "sectionHref": "certainBlog"
+  },
+  {
+    "id" : 16,
+    "name" : "Видеоинтервью",
+    "parent_id" : 1,
+    "sectionHref": "videoInterview"
+  },
+  {
+    "id" : 17,
+    "name" : "Учебный центр",
+    "parent_id" : 1,
+    "sectionHref": "trainingcenter"
+  },
+
+  {
+    "id" : 171,
+    "name" : "Электронные курсы",
+    "parent_id" : 17,
+    "sectionHref": "Ecource"
+  },
+  {
+    "id" : 172,
+    "name" : "Проведённые тренинги",
+    "parent_id" : 17,
+    "sectionHref": "conductedTraining"
+  },
+  {
+    "id" : 173,
+    "name" : "Анонс учебных программ",
+    "parent_id" : 17,
+    "sectionHref": "trainingAnnounces"
+  },
+  {
+    "id" : 174,
+    "name" : "Экскурсии",
+    "parent_id" : 17,
+    "sectionHref": "excursions"
+  },
+  {
+    "id" : 175,
+    "name" : "Учебные пособия и литература ЭМК",
+    "parent_id" : 17,
+    "sectionHref": "literature"
+  },
+  {
+    "id" : 176,
+    "name" : "Инструкция по работе с 1С",
+    "parent_id" : 17,
+    "sectionHref": "memo1c"
+  },
+
+  {
+    "id" : 18,
+    "name" : "Памятка новому сотруднику",
+    "parent_id" : 1,
+    "sectionHref": "forNewWorker"
+  },
+  {
+    "id" : 19,
+    "name" : "Дни рождения",
+    "parent_id" : 1,
+    "sectionHref": "birthdays"
+  },
+  {
+    "id" : 110,
+    "name" : "Техника безопасности",
+    "parent_id" : 1,
+    "sectionHref": "safetytechnics"
+  },
+  {
+    "id" : 111,
+    "name" : "Открытые вакансии",
+    "parent_id" : 1,
+    "sectionHref": "vacancies"
+  },
+  {
+    "id" : 112,
+    "name" : "Новые сотрудники",
+    "parent_id" : 1,
+    "sectionHref": "newWorkers"
+  },
+  {
+    "id" : 2,
+    "name" : "Сервисы",
+    "parent_id" : 0
+  },
+  {
+    "id" : 21,
+    "name" : "Подбор оборудвания",
+    "parent_id" : 2
+  },
+  {
+    "id" : 22,
+    "name" : "Поздравительная открытка",
+    "parent_id" : 2,
+    "sectionHref": "postcard"
+  },
+  {
+    "id" : 23,
+    "name" : "ChatGPT",
+    "parent_id" : 2,
+    "sectionHref": "chatgpt"
+  },
+  {
+    "id" : 24,
+    "name" : "Разрешительная документация и сертиффикаты",
+    "parent_id" : 2
+  },
+  {
+    "id" : 25,
+    "name" : "Референсы и опыт поставок",
+    "parent_id" : 2,
+    "sectionHref": "experience"
+  },
+  {
+    "id" : 3,
+    "name" : "Новости",
+    "parent_id" : 0
+  },
+  {
+    "id" : 31,
+    "name" : "Актуальные новости",
+    "parent_id" : 3,
+    "sectionHref": "actualArticle"
+  },
+  {
+    "id" : 32,
+    "name" : "Новости организационного развития",
+    "parent_id" : 3,
+    "sectionHref": "corpNewsArticle"
+  },
+  {
+    "id" : 33,
+    "name" : "Видеорепортажи",
+    "parent_id" : 3,
+    "sectionHref": "videoReport"
+  },
+  {
+    "id" : 34,
+    "name" : "Корпоративная газета ЭМК",
+    "parent_id" : 3,
+    "sectionHref": "gazette"
+  },
+  {
+    "id" : 4,
+    "name" : "Галерея",
+    "parent_id" : 0
+  },
+  {
+    "id" : 41,
+    "name" : "Гид по предприятиям",
+    "parent_id" : 4,
+    "tourHref": "factoryTour",
+    "reportHref": "factoryReports"
+  },
+  {
+    "id" : 411,
+    "name" : "3D - туры",
+    "parent_id" : 4,
+    "tourHref": "factoryTour",
+    "reportHref": "factoryReports"
+  },
+  {
+    "id" : 42,
+    "name" : "Официальные события",
+    "parent_id" : 4,
+    "sectionHref": "officialEvent"
+  },
+  {
+    "id" : 5,
+    "name" : "Внутренние коммуникации",
+    "parent_id" : 0
+  },
+  {
+    "id" : 51,
+    "name" : "Корпоративные события",
+    "parent_id" : 5,
+    "sectionHref": "corpEvent"
+  },
+  {
+    "id" : 52,
+    "name" : "Корпоративная жизнь в фото",
+    "parent_id" : 5,
+    "sectionHref": "corpLifeItem"
+  },
+  {
+    "id" : 53,
+    "name" : "Афиша",
+    "parent_id" : 5,
+    "sectionHref": "eventAnnounce"
+  },
+  {
+    "id" : 54,
+    "name" : "Предложения партнёров",
+    "parent_id" : 5,
+    "sectionHref": "partnerPost"
+  },
+  {
+    "id" : 55,
+    "name" : "Благотворительные проекты",
+    "parent_id" : 5,
+    "sectionHref": "carePost"
+  },
+  {
+    "id" : 56,
+    "name" : "Магазин Мерча",
+    "parent_id" : 5,
+    "sectionHref": "merchStore"
+  },
+  {
+    "id" : 6,
+    "name" : "Уже НЕ актуальные новости",
+    "parent_id" : 0
+  },
+  {
+    "id" : 7,
+    "name" : "Конкурсы ЭМК (Слайдер)",
+    "parent_id" : 2
+  },
+  {
+    "id" : 71,
+    "name" : "Конкурсы ЭМК",
+    "parent_id" : 7
+  },
+  {
+    "id" : 8,
+    "name" : "Есть Идея",
+    "parent_id" : 2
+  }
+]

@@ -1,0 +1,39 @@
+@forward './animation';
+@forward './vars';
+@forward './classes';
+
+@forward './layout/_layout';
+@forward './common/_common';
+@forward './admin/admin';
+
+@use '/src/assets/styles/mixins' as *;
+
+
+.main {
+    &-content {
+        flex: 1;
+        min-width: 0;
+        flex-grow: 1;
+        // z-index: 15;
+    }
+
+    &-sidebar {
+        width: fit-content;
+        flex: 0 0 auto;
+        min-width: fit-content;
+        // z-index: 0;
+
+        @include md {
+            width: 100%;
+        }
+    }
+
+    &-layout {
+        display: flex;
+        flex-wrap: nowrap;
+
+        @include md {
+            flex-direction: column;
+        }
+    }
+}

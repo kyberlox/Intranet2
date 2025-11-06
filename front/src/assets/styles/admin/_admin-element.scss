@@ -1,0 +1,196 @@
+.admin-element {
+    &__reportage-group {
+        &__add-button {
+            margin: 5px;
+            display: flex !important;
+            max-width: fit-content;
+            align-items: center;
+            justify-content: center;
+
+            &__wrapper {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                align-items: center;
+                justify-content: center;
+            }
+
+            &>svg {
+                width: 20px;
+                height: 20px;
+                color: #666;
+            }
+
+            &:hover {
+                &>svg {
+                    color: black;
+                }
+            }
+        }
+
+        &__wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            align-items: baseline;
+        }
+    }
+
+    &__add-user__button__group {
+        justify-content: left;
+    }
+
+    &__reportage-list {
+        display: contents;
+
+        &>div>p {
+            font-size: 15px !important;
+        }
+    }
+
+    &__field-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    &__field-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        line-height: 1.4;
+        letter-spacing: 0.025em;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &__input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #374151;
+        background-color: #ffffff;
+        transition: all 0.2s ease-in-out;
+        outline: none;
+
+        &::placeholder {
+            color: #9ca3af;
+            opacity: 1;
+        }
+
+        &:hover {
+            border-color: #d1d5db;
+        }
+
+        &:focus {
+            border-color: var(--emk-brand-color, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background-color: #ffffff;
+        }
+
+        &:disabled {
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+
+            &::placeholder {
+                color: #d1d5db;
+            }
+        }
+    }
+
+    &__select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #374151;
+        background-color: #ffffff;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 12px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 40px;
+        transition: all 0.2s ease-in-out;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        &:hover {
+            border-color: #d1d5db;
+        }
+
+        &:focus {
+            border-color: var(--emk-brand-color, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background-color: #ffffff;
+        }
+
+        &:disabled {
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        }
+    }
+
+    &__reportage-group {
+        &__add-button {
+            margin: 5px;
+            display: flex !important;
+            max-width: fit-content;
+            align-items: center;
+            justify-content: center;
+
+            &__wrapper {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                align-items: center;
+                justify-content: center;
+            }
+
+            &>svg {
+                width: 20px;
+                height: 20px;
+                color: #666;
+            }
+
+            &:hover {
+                &>svg {
+                    color: black;
+                }
+            }
+        }
+
+        &__wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+    }
+
+    &__reportage-list {
+        display: contents;
+
+        &>div>p {
+            font-size: 15px !important;
+        }
+    }
+}

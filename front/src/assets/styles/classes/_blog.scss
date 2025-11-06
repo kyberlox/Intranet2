@@ -1,0 +1,62 @@
+@use '/src/assets/styles/mixins' as *;
+
+.blog {
+    &__articles-wrapper {
+        @include sm {
+            flex-direction: column;
+        }
+    }
+
+    &__avatar__wrapper {
+        @include sm {
+            width: 100%;
+        }
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 300;
+    }
+
+    &__short__desc {
+        margin-top: 20px;
+    }
+
+    &-date {
+        padding-right: 5px;
+    }
+
+    &-list {
+        &__item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .blog-date {
+                color: #5c6470;
+                font-size: 0.85rem;
+            }
+
+            &:empty {
+                display: none;
+            }
+
+            &-title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                text-decoration: underline;
+                cursor: pointer;
+
+                &:hover {
+                    color: var(--emk-brand-color);
+                }
+            }
+
+            &-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 35px;
+            }
+        }
+    }
+}

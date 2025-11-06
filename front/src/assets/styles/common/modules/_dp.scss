@@ -1,0 +1,54 @@
+@use '/src/assets/styles/mixins' as *;
+
+.dp {
+    &__input_icon {
+        color: var(--emk-brand-color-dark);
+    }
+
+    &__today {
+        border: 1px solid var(--emk-brand-color-dark) !important;
+    }
+
+    &__active_date {
+        background: var(--emk-brand-color) !important;
+    }
+
+    &__flex_display {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__inner_nav {
+        color: var(--emk-brand-color-dark);
+    }
+
+    &__tooltip_text {
+        display: flex;
+        flex-direction: column !important;
+        width: 250px !important;
+        word-break: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    &--year-mode-picker {
+        display: none;
+    }
+
+    &__icon {
+        color: var(--emk-brand-color);
+    }
+
+    &__wrapper {
+        display: flex;
+        flex-direction: row;
+        width: auto;
+    }
+}
+
+:root {
+    --p-datepicker-date-selected-background: orange;
+    --p-datepicker-date-selected-color: white;
+    --p-datepicker-date-border-radius: 5px;
+}

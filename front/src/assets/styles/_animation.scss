@@ -1,0 +1,169 @@
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.1s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+    transition: all 0.3s ease-out;
+    transform-origin: top;
+}
+
+.slide-down-enter-from {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.slide-down-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.slide-down-enter-to,
+.slide-down-leave-from {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+// Модалка для поиска в шапке
+.modal-content-enter-active,
+.modal-content-leave-active {
+    transition: all 0.1s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modal-content-enter-from,
+.modal-content-leave-to {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+}
+
+.result-item-enter-active,
+.result-item-leave-active {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.result-item-enter-from {
+    opacity: 0;
+    transform: translateY(20px) translateX(-15px);
+}
+
+.result-item-leave-to {
+    opacity: 0;
+    transform: translateY(-20px) translateX(15px);
+}
+
+.result-item-move {
+    transition: transform 0.3s ease;
+}
+
+
+// Для смены layout в админке
+.layout-change-enter-active,
+.layout-change-leave-active {
+    transition: all 0.2s ease;
+}
+
+.layout-change-enter-from,
+.layout-change-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes rotateUp {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotateDown {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

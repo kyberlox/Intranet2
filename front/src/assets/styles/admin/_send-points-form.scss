@@ -1,0 +1,53 @@
+.send-points-form {
+    &__wrapper {
+        padding: 20px;
+        max-width: 100%;
+        // width: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    &__buttons {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    &__button {
+        display: flex;
+
+        &>svg {
+            min-width: 30px;
+            max-width: 30px;
+        }
+
+        &--cancel {
+            &:hover {
+                background: red;
+            }
+        }
+
+        &--accept {
+            &:hover:not(.disabled) {
+                background: #4bad66;
+            }
+        }
+
+        &--disabled {
+            color: black !important;
+            background: rgba(128, 128, 128, 0.41) !important;
+        }
+    }
+
+    &__warning {
+        padding: 12px 15px;
+        background-color: rgb(89 88 86 / 10%);
+        border-left: 4px solid var(--emk-brand-color);
+        border-radius: 4px;
+        font-size: 14px;
+        transition: var(--transition);
+    }
+}

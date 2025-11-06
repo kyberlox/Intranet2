@@ -1,0 +1,37 @@
+.idea {
+    &__table {
+        &__wrapper {
+            padding: 0 10px;
+        }
+
+        &__tr {
+            transition: 0.2ms;
+            cursor: pointer;
+
+            &:hover {
+                >td {
+                    color: var(--emk-brand-color);
+                }
+            }
+        }
+    }
+
+    &__modal {
+        &>.modal__wrapper {
+            padding: 20px;
+
+            &>.modal__body {
+                &>.modal__text__content {
+                    padding: 0 !important;
+                    overflow-y: scroll;
+                    max-height: 794px;
+
+                    &>.row>.col>.modal__text {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+
+    }
+}

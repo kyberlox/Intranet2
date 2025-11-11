@@ -46,9 +46,9 @@ class User:
             await session.commit()
             
         status = await self.set_users_photo(session)
-        await self.UserModel.create_new_user_view() # сюда сессию не передаем, там используем async_engine
+        await self.UserModel.create_new_user_view() 
         #дампим данные в эластик
-        # self.dump_users_data_es()
+        await self.dump_users_data_es(session)
         
         return {"status" : True}
 
@@ -92,19 +92,6 @@ class User:
         logg = LogsMaker()
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
-            '''
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            cool_users = ['2366', '2375', '4133', '157', '174', '1375', '4370', '4375', '4367', '575', '4320', '2515', '682', '373', '466', '763', '2349', '806', '660', '911', '796', '367', '659', '579', '690', '828', '4399', '4393', '4411', '292', '3218', '2081', '618', '489', '533', '2745']
-            pochet = ['421', '682', '806', '376', '911', '552', '796', '810', '603', '148', '161', '832', '692', '590', '67', '533', '610', '345', '745', '372', 
-            '591', '712', '72', '1399', '684', '1801', '1176', '556', '609', '580', '798', '812', '680', '930', '598', '318', '343', '82', '1566', '1141', '2111', 
-            '1566', '120', '1442', '58', '85', '86', '2366', '2375', '1712', '704', '707', '1440', '1023', '604', '610', '355', '363', '361', '347', '1413', '743', 
-            '805', '1430', '1062', '1541', '2540', '1282', '589', '593', '534', '2547', '1384', '1087', '1323', '63', '1660', '975', '96', '2452', '2713', '2707', 
-            '1560', '681', '711', '340', '702', '612', '353', '605', '2484', '2497', '2857', '810', '794', '261', '552', '1568', '2521', '2508', '2527', '2536', 
-            '1567', '2510', '2545', '1080', '627', '1131', '592', '809', '570', '724', '514', '757', '153', '376', '2112', '1037', '1705', '710', '432', '597']
-            
-            cool_users += pochet
-            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            '''
             if "ID" in usr_data:
                 #if usr_data['ID'] in cool_users:
                 uuid = usr_data['ID']
@@ -122,10 +109,11 @@ class User:
                             await File(id = old_file_id).delete_user_img(session)
                         #если есть несоответствие - скачать новую
                         file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
-                        print(file_data, type(file_data), 6789)
-                        #обновить данные в pSQL
-                        self.UserModel.uuid = uuid
-                        await self.UserModel.set_user_photo(file_id=file_data.id, session=session)
+
+                        if file_data is not False:
+                            #обновить данные в pSQL
+                            self.UserModel.uuid = uuid
+                            await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
                     else:
                         continue
                         
@@ -171,8 +159,8 @@ class User:
         return await self.UserModel.new_workers(session)
 
     # дамп данных в эластик
-    def dump_users_data_es(self):
-        return self.UserSearchModel.dump()
+    async def dump_users_data_es(self, session):
+        return await self.UserSearchModel.dump(session)
 
     # для статистики
     def get_user_likes(self):
@@ -181,10 +169,37 @@ class User:
 
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
-        data = B24().getUsers()
+        data = await B24().getUsers()
         for usr_data in data:
             if int(usr_data["ID"]) == int(self.id):
-                await self.UserModel.upsert_user(usr_data=user_data, session=session)
+                await self.UserModel.upsert_user(user_data=usr_data, session=session)
+                
+                # загружаем фотку:
+                uuid = self.id
+                #есть ли у пользователя есть фото в битре? есть ли пользователь в БД? 
+                self.UserModel.id = int(uuid)
+                psql_user = await self.UserModel.find_by_id_all(session) 
+                if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
+                    
+                    b24_url = usr_data['PERSONAL_PHOTO']
+                    # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
+                    #проверим url первоисточника текущей аватарки
+                    if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
+                        #срабатывает это условие и уходит в else
+
+                        #cтарую фотку - в архив 
+                        # if psql_user['photo_file_b24_url'] is not None and psql_user['photo_file_b24_url'] != b24_url:
+                        #     old_file_id = psql_user['photo_file_id']
+                        #     print(3)
+                        #     await File(id = old_file_id).delete_user_img(session)
+                        #если есть несоответствие - скачать новую
+                        file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
+
+                        if file_data is not False:
+                            #обновить данные в pSQL
+                            self.UserModel.uuid = uuid
+                            await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
+
                 await self.update_user_elastic(session)
                 return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")

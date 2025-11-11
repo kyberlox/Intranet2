@@ -1,5 +1,5 @@
 from ..models.FilesDB import FilesDB
-from .App import select #get_db
+from .App import select, func #get_db
 
 import os
 
@@ -24,23 +24,25 @@ class FilesDBModel():
         self.content_type = content_type
         self.file_url = file_url
 
-        from ..models.FileModel import FileModel
-        self.FileModel = FileModel
+        # from ..models.FileModel import FileModel
+        # self.FileModel = FileModel
     
     async def add(self, session, file_data: dict = None):
         try:
             if self.article_id is None:
-                return {'err': 'No article_id'}
+                LogsMaker().warning_message(f"Ошибка в функции add FilesDBModel: No article_id")
+                return False
 
             if self.name is None:
-                return {'err': 'No name'}
+                LogsMaker().warning_message(f"Ошибка в функции add FilesDBModel: No name")
+                return False
 
             from .ArticleModel import ArticleModel
-            article_model = ArticleModel(Id=self.article_id)
+            article_model = ArticleModel(id=self.article_id)
             existing_art = await article_model.find_by_id(session)
             
             if existing_art:
-                new_artfile = self.FilesDB(
+                new_artfile = FilesDB(
                     article_id=int(self.article_id), 
                     name=self.name, 
                     original_name=self.original_name, 
@@ -51,11 +53,15 @@ class FilesDBModel():
                     file_url=self.file_url
                 )
                 session.add(new_artfile)
-                await session.commit()
                 
-                return new_artfile.id
+                await session.flush()
+                file_id = new_artfile.id
+
+                await session.commit()
+                return file_id
             else:
-                return {'err': 'Article not found'}
+                LogsMaker().warning_message(f"В функции add FilesDBModel: Article not found")
+                return False
                 
         except Exception as e:
             await session.rollback()
@@ -63,7 +69,7 @@ class FilesDBModel():
 
     async def go_archive(self, session):
         try:
-            stmt = select(self.FilesDB).where(self.FilesDB.id == self.id)
+            stmt = select(FilesDB).where(FilesDB.id == self.id)
             result = await session.execute(stmt)
             file_record = result.scalar_one_or_none()
             
@@ -79,11 +85,14 @@ class FilesDBModel():
             return LogsMaker().error_message(f"Ошибка в go_archive при архивировании файла {self.id}: {e}")
 
     async def find_by_id(self, session):
+        """
+        Ищет только активный файл статьи
+        """
         try:
             if self.id is not None:
-                stmt = select(self.FilesDB).where(
-                    self.FilesDB.id == self.id, 
-                    self.FilesDB.active == True
+                stmt = select(FilesDB).where(
+                    FilesDB.id == self.id, 
+                    FilesDB.active == True
                 )
                 result = await session.execute(stmt)
                 file_db = result.scalar_one_or_none()
@@ -95,12 +104,15 @@ class FilesDBModel():
                 return None
                 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в find_by_id при поиске файла {self.id}: {e}")
+            return LogsMaker().error_message(f"Ошибка в find_by_id FilesDBModel при поиске файла {self.id}: {e}")
 
     async def find_by_id_all(self, session):
+        """
+        Ищет файл статьи, включая не активные
+        """
         try:
             if self.id is not None:
-                stmt = select(self.FilesDB).where(self.FilesDB.id == self.id)
+                stmt = select(FilesDB).where(FilesDB.id == self.id)
                 result = await session.execute(stmt)
                 file_db = result.scalar_one_or_none()
                 
@@ -111,9 +123,12 @@ class FilesDBModel():
                 return None
                 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в find_by_id_all при поиске файла {self.id}: {e}")
+            return LogsMaker().error_message(f"Ошибка в find_by_id_all FilesDBModel при поиске файла {self.id}: {e}")
 
     async def remove(self, session):
+        """
+        Удаляет файл из папки files и удаляет запись о файле из БД
+        """
         try:
             file_data = await self.find_by_id_all(session)
             if file_data is not None:
@@ -123,31 +138,34 @@ class FilesDBModel():
                 if os.path.exists(file_path):
                     os.remove(file_path)
                 else:  
-                    LogsMaker().warning_message(f"Файл {file_path} не найден")
+                    LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {file_path} не найден")
                 
                 # Удаляем запись из базы
-                stmt = select(self.FilesDB).where(self.FilesDB.id == self.id)
+                stmt = select(FilesDB).where(FilesDB.id == self.id)
                 result = await session.execute(stmt)
                 file_record = result.scalar_one_or_none()
                 
                 if file_record:
                     await session.delete(file_record)
                     await session.commit()
-                    LogsMaker().ready_status_message(f"Файл {self.id} удален!")
+                    LogsMaker().ready_status_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален!")
+                    return True
+                else:
+                    LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален из папки files, но не найден в БД")
                     return True
             else:
                 return LogsMaker().warning_message(f"Файл {self.id} не найден")
                 
         except Exception as e:
             await session.rollback()
-            return LogsMaker().error_message(f"Ошибка в remove при удалении файла {self.id}: {e}")
+            return LogsMaker().error_message(f"Ошибка в remove FilesDBModel при удалении файла {self.id}: {e}")
 
     async def need_update(self, session):
         try:
             if self.article_id is not None and self.original_name is not None:
-                stmt = select(self.FilesDB).where(
-                    self.FilesDB.article_id == self.article_id,
-                    self.FilesDB.original_name == self.original_name
+                stmt = select(FilesDB).where(
+                    FilesDB.article_id == self.article_id,
+                    FilesDB.original_name == self.original_name
                 )
                 result = await session.execute(stmt)
                 file_db = result.scalar_one_or_none()
@@ -155,19 +173,22 @@ class FilesDBModel():
                 if file_db:
                     res = file_db.__dict__
                     return False if self.original_name == res['original_name'] else True
-                return None
+                return True
             else:
-                return None
+                return True
                 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в need_update для статьи {self.article_id}: {e}")
+            return LogsMaker().error_message(f"Ошибка в need_update FilesDBModel для статьи {self.article_id}: {e}")
 
     async def find_by_art_id(self, session):
+        """
+        По айди статьи находит первую фотку
+        """
         try:
             if self.article_id is not None:
-                stmt = select(self.FilesDB).where(
-                    self.FilesDB.article_id == self.article_id,
-                    self.FilesDB.active == True
+                stmt = select(FilesDB).where(
+                    FilesDB.article_id == self.article_id,
+                    FilesDB.active == True
                 )
                 result = await session.execute(stmt)
                 files_db = result.scalar_one_or_none()
@@ -179,14 +200,18 @@ class FilesDBModel():
                 return None
                 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в find_by_art_id при поиске файлов для статьи {self.article_id}: {e}")
+            return LogsMaker().error_message(f"Ошибка в find_by_art_id FilesDBModel при поиске файлов для статьи {self.article_id}: {e}")
 
     async def find_all_by_art_id(self, session):
+        """
+        По айди статьи находит все фотки
+        возвращает список словарей
+        """
         try:
             if self.article_id is not None:
-                stmt = select(self.FilesDB).where(
-                    self.FilesDB.article_id == self.article_id,
-                    self.FilesDB.active == True
+                stmt = select(FilesDB).where(
+                    FilesDB.article_id == self.article_id,
+                    FilesDB.active == True
                 )
                 result = await session.execute(stmt)
                 files_db = result.scalars().all()
@@ -201,29 +226,35 @@ class FilesDBModel():
                 return None
                 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в find_all_by_art_id при поиске файлов для статьи {self.article_id}: {e}")
+            return LogsMaker().error_message(f"Ошибка в find_all_by_art_id FilesDBModel при поиске файлов для статьи {self.article_id}: {e}")
 
     async def generate_name(self, session, file_name: str):
         try:
             # name формируется по принципу {article_id}_{порядковый номер файла для статьи}.{формат файла}
-            file_format = file_name.split(".")[-1]
+            if file_name.startswith(('http://', 'https://')):
+                file_format = 'link'
+            else:
+                file_format = file_name.split(".")[-1]
             
             # Проверим есть к чему крепить файл
             if self.article_id is not None:
-                stmt_exists = select(self.FilesDB).where(self.FilesDB.article_id == self.article_id)
+                stmt_exists = select(FilesDB).where(FilesDB.article_id == self.article_id)
                 result_exists = await session.execute(stmt_exists)
-                article_exists = result_exists.first()
+                article_exists = result_exists.scalar_one_or_none()
                 
                 # Если нет - будет первым
                 if not article_exists:
                     return f"{self.article_id}_1.{file_format}"
                 
                 # Если у статьи есть файлы - определим порядковый номер
-                stmt_max = select(func.max(self.FilesDB.name)).where(
-                    self.FilesDB.article_id == self.article_id
-                )
+                # stmt_max = select(func.max(FilesDB.name)).where(
+                #     FilesDB.article_id == self.article_id
+                # )
+                stmt_max = select(FilesDB.name).where(
+                    FilesDB.article_id == self.article_id
+                ).order_by(FilesDB.name.desc())
                 result_max = await session.execute(stmt_max)
-                max_num = result_max.scalar_one_or_none()
+                max_num = result_max.first()
 
                 # Извлекаем номер из имени файла
                 if max_num:
@@ -231,7 +262,6 @@ class FilesDBModel():
                     next_num = current_num + 1
                 else:
                     next_num = 1
-
                 return f"{self.article_id}_{next_num}.{file_format}"
             else:
                 return None

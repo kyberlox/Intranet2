@@ -280,7 +280,7 @@ class UserModel:
                 if need_update:
                     for key, value in updates.items():
                         setattr(user, key, value)
-                    await session.commit()
+                    # await session.commit()
                     LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
 
                 # Проверка дополнительных параметров в indirect_data
@@ -299,9 +299,9 @@ class UserModel:
                 # Если есть изменения в indirect_data - обновляем
                 if need_update_indirect_data:
                     user.indirect_data = current_indirect_data
-                    await session.commit()
+                    # await session.commit()
                     LogsMaker().info_message(f"Обновлены дополнительные данные пользователя с id = {user.id}")
-
+                return True
             # Если пользователя нет - создаем нового
             else:
                 # Подготавливаем данные для вставки
@@ -327,10 +327,10 @@ class UserModel:
                 # Создаем нового пользователя
                 new_user = self.user(**insert_data)
                 session.add(new_user)
-                await session.commit()
+                # await session.commit()
                 
                 LogsMaker().info_message(f"Создан пользователь с id = {user_data['id']}")
-
+                return True
         except Exception as e:
             await session.rollback()
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
@@ -373,7 +373,6 @@ class UserModel:
             if "uf_usr_department_main" in indirect_data:
                 #print(indirect_data["uf_usr_department_main"])
                 dedep = await DepartmentModel(Id=indirect_data["uf_usr_department_main"]).find_dep_by_id(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
-                #print(dedep)
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
             indirect_data['uf_department'] = list_departs
@@ -441,7 +440,6 @@ class UserModel:
             if "uf_usr_department_main" in indirect_data:
                 #print(indirect_data["uf_usr_department_main"])
                 dedep = await DepartmentModel(Id=int(indirect_data["uf_usr_department_main"])).find_dep_by_id(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
-                #print(dedep)
                 indirect_data["uf_usr_department_main"] = dedep[0].name
 
             indirect_data['uf_department'] = list_departs
@@ -613,7 +611,7 @@ class UserModel:
             if 112 in user['indirect_data']['uf_department']:
                 pass
             else:
-                if user['active']: #  and user['photo_file_id'] is not None
+                if user['active'] and user['photo_file_id'] is not None: #  
                 # if user['active']:
                     user_info = {}
                     indirect_data = user['indirect_data']
@@ -664,7 +662,7 @@ class UserModel:
             if 112 in user[6]['uf_department']:
                 pass
             else:
-                if user[1]: #  and user[7] is not None
+                if user[1] and user[7] is not None: #  
                     user_info = {}
                     indirect_data = user[6]
                     list_departs = []

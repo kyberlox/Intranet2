@@ -68,9 +68,17 @@ class UserFilesModel():
                     user_id=int(self.user_id), 
                     URL=self.URL
                 )
+                w_photo = {
+                    'id':new_id,
+                    'name':self.name, 
+                    'b24_url':self.b24_url, 
+                    'active':self.active, 
+                    'user_id':int(self.user_id), 
+                    'URL':self.URL
+                }
                 session.add(new_usfile)
                 await session.commit()
-                return new_usfile
+                return w_photo
             else: 
                 LogsMaker().info_message(f"Ошибка в функции add_user_photo UserFiles: User not found or inactive")
                 return False
@@ -96,6 +104,12 @@ class UserFilesModel():
             return LogsMaker().error_message(f"Ошибка в go_user_photo_archive при архивировании фото {self.id}: {e}")
 
     async def remove_user_photo(self, session, file_data: dict):
+        """
+        Удаляет файл из папки user_photo и в БД таблицы User меняет значение
+        колонки photo_file_id на None
+        """
+        from ..models.User import User
+        import os
         try:
             stmt = select(UserFiles).where(UserFiles.id == self.id)
             result = await session.execute(stmt)
@@ -112,6 +126,11 @@ class UserFilesModel():
 
                 # Удаляем запись из базы
                 await session.delete(existing_photo)
+                # Удаляем запись из базы User
+                stmt = select(User).where(User.photo_file_id == self.id)
+                result = await session.execute(stmt)
+                existing_user = result.scalar_one_or_none()
+                existing_user.photo_file_id = None
                 await session.commit()
                 return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно удалено")
 
@@ -128,8 +147,12 @@ class UserFilesModel():
                 UserFiles.active == True
             )
             result = await session.execute(stmt)
-            user_photo_inf = result.scalar_one_or_none()
-            return user_photo_inf
+            res = result.scalar_one_or_none()
+            if res:
+                user_photo_inf = res.__dict__
+
+                return user_photo_inf
+            return None
             
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в find_user_photo_by_id при поиске фото {self.id}: {e}")

@@ -55,6 +55,7 @@ class File:
         self.art_id = art_id
         self.b24_id = b24_id
 
+
     async def download_by_URL(self, url, path, session):
         # if "https://portal.emk.ru" in url:
         #     response = requests.get(url)
@@ -63,19 +64,36 @@ class File:
         # with open(path, 'wb') as file:
         #     file.write(response.content)
         # return response.headers.get('Content-Type', 'unknown')
+        if not url.startswith("https://portal.emk.ru"):
+            url = f"https://portal.emk.ru{url}"
 
-        pass
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    # Используем aiofiles для асинхронной записи файла
+                    async with aiofiles.open(path, 'wb') as f:
+                        await f.write(await response.read())
+                    return response.headers.get('Content-Type', 'unknown')
+                else:
+                    LogsMaker().error_message(f"Ошибка загрузки в upload_by_URL: статус {response.status}")
+                    return None
+
 
     async def upload_inf_art(self, session, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
         try:
-            b24 = B24()
+            # b24 = B24()
             #print(f"ID фала = {self.b24_id} | ID инфоблока = {inf_id} | ID статьи = {art_id}")
             filename = ""
             if art_id is None:
-                return {'err' : "Con not add file without art_id"}
+                return LogsMaker().warning_message(f"Ошибка в функции upload_inf_art File: No article_id")
+
             try:
-                if need_all_method:
-                    file_data = b24.get_all_files(self.b24_id)
+                if need_all_method is True:
+                    file_data = await B24().get_all_files(self.b24_id)
+                    print(file_data, 'need_all_method is True')
+                    # file_data = await asyncio.to_thread(b24.get_all_files, self.b24_id)
+                    # if hasattr(file_data, '_asyncio_future_blocking'):  
+                    #     file_data = await file_data 
                     
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
@@ -84,6 +102,12 @@ class File:
                     elif "NAME" in file_data:
                         filename = file_data["NAME"]
 
+                    #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
+                    need_update_file = await FilesDBModel(article_id=art_id, original_name=filename).need_update(session=session)
+                    
+                    if need_update_file is False:
+                        LogsMaker().info_message(f"Уже был такой файл с article_id = {art_id} и original_name = {filename}")
+                        return None
 
                     filename_parts = filename.split('.')
                     file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
@@ -93,11 +117,11 @@ class File:
                     file_path = os.path.join(STORAGE_PATH, unique_name)
 
                     # Сохраняем файл
-                    content_type = await self.download_by_URL(url=file_data["SRC"], path=file_path, session=session)
-
+                    content_type = await self.download_by_URL(url=file_data["DOWNLOAD_URL"], path=file_path, session=session)
+                    url_b24 = file_data["DOWNLOAD_URL"]
 
                 else:
-                    file_data = b24.get_file(self.b24_id, inf_id)
+                    file_data = await B24().get_file(self.b24_id, inf_id)
 
                     if "ORIGINAL_NAME" in file_data:
                         filename = file_data["ORIGINAL_NAME"]
@@ -105,40 +129,57 @@ class File:
                         filename = file_data["FILE_NAME"]
                     elif "NAME" in file_data:
                         filename = file_data["NAME"]
+                    
+                    #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
+                    need_update_file = await FilesDBModel(article_id=art_id, original_name=filename).need_update(session=session)
+                    
+                    if need_update_file is False:
+                        LogsMaker().info_message(f"Уже был такой файл с article_id = {art_id} и original_name = {filename}")
+                        return None
 
                     filename_parts = filename.split('.')
+
                     file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
 
                     # Генерируем уникальное имя файла
                     unique_name = await FilesDBModel(article_id=art_id).generate_name(file_name=filename, session=session)
+            
                     file_path = os.path.join(STORAGE_PATH, unique_name)
-
+                    # # Сохраняем файл
+                    # url_b24 = file_data["SRC"]
                     # Сохраняем файл
-                    content_type = await self.download_by_URL(url=file_data["SRC"], path=file_path, session=session)
+                    content_type = await self.download_by_URL(url=file_data["DOWNLOAD_URL"], path=file_path, session=session)
+                    
+                    url_b24 = file_data["DOWNLOAD_URL"]
                 
-                # result = {
-                #     "original_name": filename,
-                #     "name": unique_name,
-                #     "content_type": content_type,
-                #     "article_id": art_id,
-                #     "b24_id": self.b24_id,
-                #     "is_archive": False,
-                #     "is_preview": is_preview,
-                #     "file_url": f"/api/files/{unique_name}"  # Прямой URL
-                # }
 
-                #ТУТ НУЖНО ПРОВЕРИТЬ НЕОБХОДИМОСТЬ ДОБАВЛЕНИЯ ФАЙЛА
+                
 
                 #записать в pSQL
                 inserted_id = await FilesDBModel(
                     article_id=art_id,
                     name=unique_name,
                     original_name = filename,
-                    b24_url=self.b24_id,
+                    b24_url=url_b24,
                     active=True,
                     is_preview = is_preview,
                     content_type = content_type,
                     file_url = f"/api/files/{unique_name}").add(session=session)
+
+
+                result = {
+                    "id": str(inserted_id),
+                    "original_name": filename,
+                    "name": unique_name,
+                    "content_type": content_type,
+                    "article_id": art_id,
+                    "b24_id": url_b24,
+                    "active": False,
+                    "is_preview" : is_preview,
+                    "file_url": f"/api/files/{unique_name}"
+                }
+                print(result)
+                
 
                 return {
                     "id": str(inserted_id),
@@ -146,22 +187,23 @@ class File:
                     "name": unique_name,
                     "content_type": content_type,
                     "article_id": art_id,
-                    "b24_id": self.b24_id,
+                    "b24_id": url_b24,
                     "active": False,
                     "is_preview" : is_preview,
                     "file_url": f"/api/files/{unique_name}"
                 }
 
-            except:
-                LogsMaker().warning_message(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}")
+            except Exception as e:
+                LogsMaker().warning_message(f"Фатальная ошибка записи файла: {self.b24_id}, из статьи {art_id}, инфоблока {inf_id}, применение метода Матренина: {need_all_method}, ошибка: {e}")
 
             
         except requests.exceptions.RequestException as e:
             # print(f"Ошибка при скачивании файла: {e}")
-            return LogsMaker().error_message(e)
+            return LogsMaker().error_message(f"Ошибка при скачивании файла: {e}")
 
     async def add_link(self, link, art_id, session):
-        filename = link.split("/")[-2]
+        unique_name = await FilesDBModel(article_id=art_id).generate_name(file_name=link, session=session)
+        # filename = link.split("/")[-2]
         # data = {
         #     "original_name": link,
         #     "stored_name": filename,
@@ -176,19 +218,20 @@ class File:
         #записать в mongodb
         inserted_id = await FilesDBModel(
             article_id=art_id,
-            name=filename,
+            name=unique_name,
             original_name = link,
             b24_url=self.b24_id,
             active=True,
-            is_preview = is_preview,
+            is_preview = False,
             content_type = "link",
             file_url = link
-        ).add(file_data=data, session=session)
+        ).add(session=session)
 
         #!!!!!!!!!!!!!!!!!!временно исправим ссылку!!!!!!!!!!!!!!!!!
         return link
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+    #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def need_update_url_file(self,  art_id, filename, session):
         # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
 
@@ -215,24 +258,33 @@ class File:
 
         pass
 
+
     async def upload_by_URL(self, url, art_id, session, b24_id = None, is_preview = False):
         filename = url.split("/")[-1]
         
         filename_parts = filename.split('.')
         file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
-
+        need_update_file = await FilesDBModel(article_id=art_id, original_name=filename).need_update(session=session)
         #тут надо проверить, нет ли такого файла уже в БД?
-        if await self.need_update_url_file(art_id=art_id, filename=filename, session=session):
+        # if await self.need_update_url_file(art_id=art_id, filename=filename, session=session):
+        if need_update_file is True:
             # Генерируем уникальное имя файла
             unique_name = await FilesDBModel(article_id=art_id).generate_name(file_name=filename, session=session)
             file_path = os.path.join(STORAGE_PATH, unique_name)
 
             #скачать файл по ссылке
-            response = requests.get(f"https://portal.emk.ru{url}")
-            with open(file_path, 'wb') as file:
-                file.write(response.content)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        # Используем aiofiles для асинхронной записи файла
+                        async with aiofiles.open(file_path, 'wb') as f:
+                            await f.write(await response.read())
+                        content_type = await response.headers.get('Content-Type', 'unknown')
+                    else:
+                        LogsMaker().error_message(f"Ошибка загрузки в upload_by_URL: статус {response.status}")
+                        content_type = None
             
-            content_type = response.headers.get('Content-Type', 'unknown')
+            # content_type = response.headers.get('Content-Type', 'unknown')
 
             # result = {
             #             "original_name": filename,
@@ -255,7 +307,7 @@ class File:
                 is_preview = is_preview,
                 content_type = content_type,
                 file_url = f"/api/files/{unique_name}"
-            ).add(file_data=data, session=session)
+            ).add(session=session)
 
             new_url = f"/api/files/{unique_name}"
             
@@ -263,21 +315,38 @@ class File:
             
         else: #надо заменить
             self.art_id = art_id
-            files = self.get_files_by_art_id()
+            # files = self.get_files_by_art_id()
+            files = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(session=session)
             for fl in files:
                 if fl["original_name"] == filename:
                     #перезаписываем
                     unique_name = fl["name"]
                     file_path = os.path.join(STORAGE_PATH, unique_name)
-                    response = requests.get(f"{DOMAIN}{url}")
-                    with open(file_path, 'wb') as file:
-                        file.write(response.content)
+                    # response = requests.get(f"{DOMAIN}{url}")
+                    # with open(file_path, 'wb') as file:
+                    #     file.write(response.content)
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(url) as response:
+                            if response.status == 200:
+                                # Используем aiofiles для асинхронной записи файла
+                                async with aiofiles.open(file_path, 'wb') as f:
+                                    await f.write(await response.read())
+                                new_url = fl["file_url"]
                     
-                    new_url = fl["file_url"]
+                                return f"{DOMAIN}{new_url}"
+                            else:
+                                LogsMaker().error_message(f"Ошибка загрузки в upload_by_URL: статус {response.status}")
+                                return None
                     
-                    return f"{DOMAIN}{new_url}"
+                    # new_url = fl["file_url"]
+                    
+                    # return f"{DOMAIN}{new_url}"
 
+    #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def save_by_URL(self, url, art_id, session, b24_id = None, is_preview = False):
+        """
+        ЗАМЕНИЛИ ЭТУ ФУНКЦИЮ НА upload_by_URL
+        """
         filename = url.split("/")[-1]
         
         filename_parts = filename.split('.')
@@ -340,38 +409,55 @@ class File:
                     
                     return f"{DOMAIN}{new_url}"
 
+    #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def save_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         pass
-        
-    # def need_update_file(self,  art_id, files_id):
-    #     # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
-    #     result = FilesDBModel(art_id=art_id).find_all_by_art_id()
-    #     DB_files_id = []
-    #     DB_files_path = {}
-
-    #     if result is None: # если в бд нет такого файла
-    #         return files_id 
-    #     else:
-    #         # цикл для сбора данных с БД
-    #         for res in result: # выдергиваем все b24_id из монго по art_id 
-    #             fl = res["b24_id"]
-    #             DB_files_id.append(fl)
-    #             DB_files_path[fl] = f'{STORAGE_PATH}/{res["stored_name"]}'
-
-    #         # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
-    #         for fl in DB_files_id:
-    #             if fl not in files_id:
-    #                 FileModel(b24_id = fl).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
-    #                 #os.remove(DB_files_path[fl])
-    #                 # print('лишний файл в БД', file, art_id)
-    #             else:
-    #                 files_id.remove(fl) # удаляем из входящего списка все файлы которые уже есть в DB_files_id
-
-    #         # print('2)', files_id, 'файлы, которые нужно добавить', art_id)
-
-    #         return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
     
 
+    async def need_update_file(self,  art_id, files_id, session):
+        """
+        Принимает список айдишников файлов статьи
+        Смотрит какие надо обновить
+        Возвращает список айдишников файлов которые надо обновить/добавить
+        """
+        result = []
+        for file_id in files_id:
+            res = await FilesDBModel(id=int(file_id)).find_by_id_all(session=session)
+            if not res:
+                result.append(int(file_id))
+            else:
+                need_update_file = await FilesDBModel(article_id=art_id, original_name=res[original_name]).need_update(session=session)
+                if need_update_file is True:
+                    result.append(int(file_id))
+        return result
+        # # print('1)', files_id, 'файлы, которые нужно добавить', art_id)
+        # result = FilesDBModel(art_id=art_id).find_all_by_art_id()
+        # DB_files_id = []
+        # DB_files_path = {}
+
+        # if result is None: # если в бд нет такого файла
+        #     return files_id 
+        # else:
+        #     # цикл для сбора данных с БД
+        #     for res in result: # выдергиваем все b24_id из монго по art_id 
+        #         fl = res["b24_id"]
+        #         DB_files_id.append(fl)
+        #         DB_files_path[fl] = f'{STORAGE_PATH}/{res["stored_name"]}'
+
+        #     # цикл для проверки если в DB_files_id есть файлы, которых нет в files_id
+        #     for fl in DB_files_id:
+        #         if fl not in files_id:
+        #             FileModel(b24_id = fl).go_archive() #если лишний b24_id -> удалить запись в mongo и сам файл -> #не нужно добавлять
+        #             #os.remove(DB_files_path[fl])
+        #             # print('лишний файл в БД', file, art_id)
+        #         else:
+        #             files_id.remove(fl) # удаляем из входящего списка все файлы которые уже есть в DB_files_id
+
+        #     # print('2)', files_id, 'файлы, которые нужно добавить', art_id)
+
+            # return files_id # вернет пустой список если все файлы уже есть в БД, в обратном случае вернет только те файлы, которых в БД нет
+    
+    #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def get_file(self, session):
         file_data = await FilesDBModel(id=self.id).find_by_id(session=session)
         
@@ -379,47 +465,44 @@ class File:
             return file_data
         else:
             raise HTTPException(status_code=404, detail="File not found")
-        
-            
 
     async def get_files_by_art_id(self, session):
-        # file_data = FilesDBModel(article_id=int(self.art_id)).find_all_by_art_id()
-        # file_list = []
+        file_data = await FilesDBModel(article_id=int(self.art_id)).find_all_by_art_id(session=session)
+        file_list = []
         
-        # if not file_data:
-        #     raise HTTPException(status_code=404, detail="Files not found")
-        # else:
-        #     for fl in file_data:
-        #         if fl["active"]:
-        #             file_info = {}
-        #             file_info["id"] = str(fl["id"])
-        #             file_info["original_name"] = fl["original_name"]
-        #             file_info["name"] = fl["name"]
-        #             file_info["content_type"] = fl["content_type"]
+        if not file_data:
+            raise HTTPException(status_code=404, detail="Files not found")
+        else:
+            for fl in file_data:
+                if fl["active"]:
+                    file_info = {}
+                    file_info["id"] = str(fl["id"])
+                    file_info["original_name"] = fl["original_name"]
+                    file_info["name"] = fl["name"]
+                    file_info["content_type"] = fl["content_type"]
 
-        #             #файлы делятся по категориям
-        #             if "image" in fl["content_type"]:
-        #                 file_info["type"] = "image"
-        #             elif "video" in fl["content_type"]:
-        #                 file_info["type"] = "video"
-        #             elif "link" in fl["content_type"]:
-        #                 file_info["type"] = "video_embed"
-        #             else:
-        #                 file_info["type"] = "documentation"
+                    #файлы делятся по категориям
+                    if "image" in fl["content_type"]:
+                        file_info["type"] = "image"
+                    elif "video" in fl["content_type"]:
+                        file_info["type"] = "video"
+                    elif "link" in fl["content_type"]:
+                        file_info["type"] = "video_embed"
+                    else:
+                        file_info["type"] = "documentation"
 
-        #             file_info["article_id"] = fl["article_id"]
-        #             file_info["b24_id"] = fl["b24_id"]
-        #             file_info["file_url"] = fl["file_url"]
-        #             file_info["active"] = fl["active"]
-        #             file_info["is_preview"] = fl["is_preview"]
+                    file_info["article_id"] = fl["article_id"]
+                    file_info["b24_id"] = fl["b24_id"]
+                    file_info["file_url"] = fl["file_url"]
+                    file_info["active"] = fl["active"]
+                    file_info["is_preview"] = fl["is_preview"]
 
-        #             file_list.append(file_info)
+                    file_list.append(file_info)
 
-        #     return file_list
-        pass
+            return file_list
 
     async def delete_by_art_id(self, session):
-        files_data = await self.get_files_by_art_id(session=session)
+        files_data = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(session=session)
         if files_data is not None and files_data != []:
             for file_data in files_data:
                 #удалить по id файла
@@ -428,6 +511,7 @@ class File:
             return True
         return False
 
+    #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def get_files_by_section_id(self, section_id, session):
         #беру список atr_id
         res = await Section(id = section_id).find_by_id(session)
@@ -437,7 +521,7 @@ class File:
         if arts_id != []:
             for art_id in arts_id:
                 self.art_id = art_id
-                art_files = await self.get_files_by_art_id(session)
+                art_files = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(session=session)
 
                 files[art_id] = art_files
         
@@ -469,7 +553,7 @@ class File:
     async def get_users_photo(self, session):
         #переделать с учетом is_archive
         file_data = await UserFilesModel(id=self.id).find_user_photo_by_id(session)
-        
+
         if not file_data or not file_data["active"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
@@ -493,7 +577,7 @@ class File:
         
     #     return True
     
-    async def dowload_user_photo(self, url, name, session_db):
+    async def dowload_user_photo(self, url, name):
         # в будущем name исправить на айди фото ( photo_file_id )
         img_path = f"{USER_STORAGE_PATH}/{name}"
         
@@ -525,19 +609,21 @@ class File:
                 active=True
             ).add_user_photo(session=session) #вернет False, если пытаться скачать актуальную фотку ещё раз
 
-            print(w_photo, type(w_photo), 123)
-
-            if w_photo is not False:
+            if w_photo is not False: 
                 #скачать файл
-                print(b24_url, w_photo.name)
-                result = await self.dowload_user_photo(url=b24_url, name=w_photo.name, session=session)
-            
-            return w_photo
+                result = await self.dowload_user_photo(url=b24_url, name=w_photo['name'])
+                return w_photo
+            return False
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в функции add_user_img : {e} ")
     
     async def delete_user_img(self, session):
+        """
+        Ищет файл
+        Удаляет файл из папки user_photo и в БД таблицы User меняет значение
+        колонки photo_file_id на None
+        """
         file_data = await UserFilesModel(id = self.id).find_user_photo_by_id(session=session)
         if not file_data:
             raise HTTPException(404, detail="File not found")
@@ -547,7 +633,7 @@ class File:
             return {"status": "to_archive"}
         except Exception as e:
             # raise HTTPException(500, detail=str(e))
-            return LogsMaker().error_message(e)
+            return LogsMaker().error_message(f"Ошибка в функции delete_user_img : {e} ")
     
 
 

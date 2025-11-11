@@ -169,7 +169,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        # await self.search_files(data["IBLOCK_ID"], self.id, data, session)
+        await self.search_files(data["IBLOCK_ID"], self.id, data, session)
 
 
         
@@ -381,7 +381,7 @@ class Article:
                 for url in matches:
                     #качаю файл новым методом
                     if url != "https://portal.emk.ru/bitrix/tools/disk/uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1":
-                        new_url = File().upload_by_URL(url=url, art_id=self.id) # СЮДА АСИНХРОННОСТЬ
+                        new_url = await File().upload_by_URL(url=url, art_id=self.id, session=session) # СЮДА АСИНХРОННОСТЬ
                         print(url, "-->", new_url)
                         #заменяю url на новый
                         #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
@@ -613,8 +613,8 @@ class Article:
 
         #Корпоративная газета ЭМК
         elif self.section_id == 34:
-            img_url = File().save_by_URL(url=data["image"], art_id=self.id, is_preview=True)
-            file_url = File().save_by_URL(url=data["file"], art_id=self.id)
+            img_url = await File().upload_by_URL(url=data["image"], art_id=self.id, is_preview=True, session=session)
+            file_url = await File().upload_by_URL(url=data["file"], art_id=self.id, session=session)
             indirect_data = {
                 "year" : data["year"],
                 "photo_file_url" : img_url,
@@ -648,7 +648,7 @@ class Article:
                         inf_id = "98"
                         is_preview = False
                         
-                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
+                        file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview, need_all_method=True, inf_id=inf_id, session=session)
                         print(file_data)
 
                         if file_data is None:
@@ -685,7 +685,7 @@ class Article:
                         art_id = tr["ID"]
                         inf_id = "84"
                         is_preview = False
-                        file_data = File(b24_id=photo).upload_inf_art(art_id, is_preview, True, inf_id)
+                        file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview, need_all_method=True, inf_id=inf_id, session=session)
                         
                         if file_data is None:
                             photo_file_url = None
@@ -868,6 +868,8 @@ class Article:
         ]
         
         files_data = []
+        if int(art_id) == 16148:
+            print(data, '16148 id')
         #прохожу по всем проперти статьи
         for file_property in files_propertys:
             #если это файловый проперти
@@ -876,7 +878,7 @@ class Article:
                 if file_property in ["PROPERTY_664", "PROPERTY_1222", "PROPERTY_1203", "PROPERTY_670", "PROPERTY_409"]:
                     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  проверка есть ли в битре такая ссылка или нет
                     link = take_value(data[file_property])
-                    f_res = File(b24_id=f"link_{art_id}").add_link(link, art_id)
+                    f_res = await File(b24_id=f"link_{art_id}").add_link(link=link, art_id=art_id, session=session)
                     files_data.append(f_res)
 
                 #если это файл превью
@@ -901,18 +903,18 @@ class Article:
                     elif type(data[file_property]) == type(str()):
                         preview_images.append(data[file_property])
                     
-                    files_to_add = File().need_update_file(art_id, preview_images)
+                    files_to_add = await File().need_update_file(art_id=art_id, files_id=preview_images, session=session)
                     
                     if files_to_add != []:
                         for f_id in files_to_add:
                             
                             try:
                                 LogsMaker().info_message(f" Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - ДА")
-                                file_data = File(b24_id=f_id).upload_inf_art(art_id, True, True, inf_id)
+                                file_data = await File(b24_id=f_id).upload_inf_art(art_id=art_id, is_preview=True, need_all_method=True, inf_id=inf_id, session=session)
                                 files_data.append(file_data)
                             except:
                                 LogsMaker().info_message(f" Качаю файл превью {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - НЕТ")
-                                file_data = File(b24_id=f_id).upload_inf_art(art_id, True, False, inf_id)
+                                file_data = await File(b24_id=f_id).upload_inf_art(art_id=art_id, is_preview=True, need_all_method=False, inf_id=inf_id, session=session)
                                 files_data.append(file_data) 
                 
                 #остальные файлы
@@ -940,18 +942,18 @@ class Article:
                     elif type(data[file_property]) == type(str()):
                         files.append(data[file_property])
                     
-                    files_to_add = File().need_update_file(art_id, files)
+                    files_to_add = await File().need_update_file(art_id=art_id, files_id=files, session=session)
                     
                     if files_to_add != []:
                         for f_id in files_to_add:
                             msg = f" Качаю файл {f_id} статьи {art_id} инфоблока {inf_id}, использование метода Матренина - {need_all_method}"
                             LogsMaker().info_message(msg)
                             try:
-                                file_data = File(b24_id=f_id).upload_inf_art(art_id, False, need_all_method, inf_id)
+                                file_data = await File(b24_id=f_id).upload_inf_art(art_id=art_id, is_preview=False, need_all_method=need_all_method, inf_id=inf_id, session=session)
                                 files_data.append(file_data)
                             except:
                                 LogsMaker().warning_message(f" Не получилось по хорошему скачать файл {f_id} статьи {art_id} инфоблока {inf_id}, метода Матренина по умолчанию - {need_all_method}")
-                                file_data = File(b24_id=f_id).upload_inf_art(art_id, False, not need_all_method, inf_id)
+                                file_data = await File(b24_id=f_id).upload_inf_art(art_id=art_id, is_preview=False, need_all_method=not need_all_method, inf_id=inf_id, session=session)
                                 files_data.append(file_data)
                     
 
@@ -1152,10 +1154,10 @@ class Article:
         # await self.upload_uniquely(session)
         # await self.upload_with_parameter(session)
         await self.upload_many_to_many(session)
-        await self.upload_services(session)
+        # await self.upload_services(session)
 
         # Дамп данных в эластик
-        self.dump_articles_data_es(session=session)
+        await self.dump_articles_data_es(session=session)
 
         await self.upload_likes(session)
         await self.upload_views(session)
@@ -1396,7 +1398,7 @@ class Article:
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
-            51 : "50"  #Корпоративные события ✔️
+            # 51 : "50"  #Корпоративные события ✔️
         }
 
         # пройти по инфоблоку
@@ -1416,29 +1418,36 @@ class Article:
                     if "PROPERTY_5044" in art and list(art["PROPERTY_5044"].values())[0] == "1":
                         art["section_id"] = 33  # Видеорепортажи
                         self.section_id = 33
-                    else:
-                        art["section_id"] = 31 # Актуальные новости
-                        self.section_id = 31
-                elif pre_section_id == "663":
-                    art["section_id"] = 51  # Корпоративные события
-                    self.section_id = 51
+                        #ВРЕМЕННО
+                        artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                        if await artDB.need_add(session=session):
+                            await self.add(art, session)
+                        elif await artDB.update( await self.make_valid_article(art, session), session):
+                            pass
+                        #ВРЕМЕННО
+            #         else:
+            #             art["section_id"] = 31 # Актуальные новости
+            #             self.section_id = 31
+            #     elif pre_section_id == "663":
+            #         art["section_id"] = 51  # Корпоративные события
+            #         self.section_id = 51
 
-                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if await artDB.need_add(session=session):
-                    await self.add(art, session)
-                elif await artDB.update( await self.make_valid_article(art, session), session):
-                    pass
-            else:
-                # че делать с уже не актуальными новостями?
-                self.section_id = 6
-                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                if await artDB.need_add(session=session):
-                    await self.add(art, session)
-                    self.logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
-                    # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
-                elif await artDB.update(await self.make_valid_article(art, session), session):
-                    # сюда надо что-то дописать
-                    pass
+            #     artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+            #     if await artDB.need_add(session=session):
+            #         await self.add(art, session)
+            #     elif await artDB.update( await self.make_valid_article(art, session), session):
+            #         pass
+            # else:
+            #     # че делать с уже не актуальными новостями?
+            #     self.section_id = 6
+            #     artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+            #     if await artDB.need_add(session=session):
+            #         await self.add(art, session)
+            #         self.logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
+            #         # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
+            #     elif await artDB.update(await self.make_valid_article(art, session), session):
+            #         # сюда надо что-то дописать
+            #         pass
 
     async def upload_corporate_events(self, session):
         #несколько section_id - несколько IBLOCK_ID
@@ -1708,11 +1717,13 @@ class Article:
 
     async def delete(self, session):
         #удалить файлы статьи
-        File(art_id = self.id).delete_by_art_id()
-        return await ArticleModel(id = self.id).remove(session)
-
+        res = await File(art_id = self.id).delete_by_art_id(session=session)
+        if res is True:
+            return await ArticleModel(id = self.id).remove(session=session)
+        return LogsMaker().warning_message(f"Возникла ошибка при удалении файлов статьи с id = {self.id}")
+    
     async def get_preview(self, session):
-        files = File(art_id = int(self.id)).get_files_by_art_id()
+        files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
         for file in files:
             if file["is_preview"]:
                 url = file["file_url"]
@@ -1818,7 +1829,7 @@ class Article:
 
                     #взаимствую логику поиска файлов из метода поиска статей по их id
                     art = await ArticleModel(id = self.id).find_by_id(session)
-                    files = File(art_id = int(self.id)).get_files_by_art_id()
+                    files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
                     res['images'] = []
                     res['videos_native'] = []
                     res['videos_embed'] = []
@@ -1865,7 +1876,7 @@ class Article:
                 if re['active'] == True:
                     images = []
                     self.id = re['id']
-                    files = File(art_id = self.id).get_files_by_art_id()
+                    files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
                     for file in files:
                         if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                             url = file["file_url"]
@@ -1895,7 +1906,7 @@ class Article:
             for res in result:
                 if res['active']:
                     self.id = res["id"]
-                    files = File(art_id = int(self.id)).get_files_by_art_id()
+                    files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
                     if files:
                         url = files[0]["file_url"]
                         res['preview_file_url'] = f"{DOMAIN}{url}"
@@ -2036,7 +2047,7 @@ class Article:
                     # if flag == True:
                 self.id = values["id"]
                 
-                files = File(art_id = int(self.id)).get_files_by_art_id()
+                files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
                 image_URL = ""
                 for file in files:
                     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:

@@ -169,7 +169,7 @@ class User:
         for usr_data in data:
             if int(usr_data["ID"]) == int(self.id):
                 self.UserModel.upsert_user(usr_data)
-                self.update_user_elastic()
+                # self.update_user_elastic()
                 return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
 

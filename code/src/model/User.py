@@ -173,13 +173,13 @@ class User:
                 return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
 
-    def update_user_elastic(self):
-        user_data = self.search_by_id()
-        result = self.UserSearchModel.update_user_el_index(user_data)
-        if result:
-            return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
-        else:
-            LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
+    # def update_user_elastic(self):
+    #     user_data = self.search_by_id()
+    #     result = self.UserSearchModel.update_user_el_index(user_data)
+    #     if result:
+    #         return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
+    #     else:
+    #         LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
 
     def find_by_email(self, email):
         return self.UserModel.find_by_email(email)

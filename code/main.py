@@ -434,7 +434,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-    """
+    
     
     from src.model.UsDep import UsDep
     LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
@@ -460,8 +460,8 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-        
-    """
+    """   
+    
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
     res = await Article().uplod(session)
@@ -479,7 +479,6 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-    """
 
     #Права пользователей
     # Лайки и просмотры

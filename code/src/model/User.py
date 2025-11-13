@@ -223,7 +223,8 @@ def update_user():
 
 @users_router.put("/update_user_info/{user_id}")
 def update_user_info(user_id : int):
-    return User(id = user_id).update_inf_from_b24()
+    # return User(id = user_id).update_inf_from_b24()
+    return True
 
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")

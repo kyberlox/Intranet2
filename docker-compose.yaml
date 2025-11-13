@@ -72,8 +72,8 @@ services:
     image: redis:alpine
     container_name: redis_async
     ports:
-      - "6379:6379"
-      #- "127.0.0.1:6379:6379"
+      #- "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - ./redis_data:/data
       - ./app_logs/redis:/var/log/redis  # Добавляем, если redis настроен писать логи в файл
@@ -107,7 +107,7 @@ services:
       #- ./front/:/app/
       - ./app_logs/frontend:/app/logs  # Логи фронтенда
     ports:
-      - 5173:5173
+      - 127.0.0.1:5173:5173
     networks:
       - app-network
 

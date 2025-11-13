@@ -43,8 +43,8 @@ class User:
         #отправить записи
         for usr_data in logg.progress(data, "Обработка информации о пользователях "):
 
-            if int(usr_datap["ID"]) <= 100:
-                
+            if int(usr_data["ID"]) <= 100:
+
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
                 await session.commit()
             
@@ -96,7 +96,7 @@ class User:
         for usr_data in logg.progress(data, "Загрузка фотографий пользователей "):
             #найдем фото пользователя, если у пользователя есть аватарка
 
-            if "ID" in usr_data and int(usr_datap["ID"]) <= 100:
+            if "ID" in usr_data and int(usr_data["ID"]) <= 100:
 
                 #if usr_data['ID'] in cool_users:
                 uuid = usr_data['ID']

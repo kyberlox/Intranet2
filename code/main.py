@@ -359,6 +359,8 @@ def total_users_update():
     time_start = time.time()
     status = False
 
+    
+
     print("Обновление информации о подразделениях")
     if Department().fetch_departments_data()["status"]:
         print("Успешно!")
@@ -408,7 +410,14 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     time_start = time.time()
     status = 0
 
-    
+    # from src.base.pSQL.models.App import create_tables
+    # LogsMaker().info_message("Загрузка таблиц")
+    # res = await create_tables()
+    # if res["status"]:
+    #     status += 1
+    #     LogsMaker().ready_status_message("Успешно!")
+    # else:
+    #     LogsMaker().error_message("Ошибка!")
 
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
@@ -464,7 +473,8 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
 
     from src.services.Roots import Roots
     LogsMaker().info_message("Обновление информации об администратарах сайта")
-    if Roots().create_primary_admins()["status"]:
+    res = await Roots().create_primary_admins(session)
+    if res["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:

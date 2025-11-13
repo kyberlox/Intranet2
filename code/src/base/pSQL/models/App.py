@@ -88,9 +88,13 @@ async_engine = create_async_db_engine()
 Base = declarative_base()
 
 async def create_tables():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    return LogsMaker().ready_status_message("Таблицы успешно созданы!")
+    try:
+        async with async_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        return {"status": True}
+    except Exception as e:
+        LogsMaker().fatal_message(f"Ошибка при создании таблиц: {e}")
+        return None
 # # Асинхронная сессия
 # AsyncSessionLocal = async_sessionmaker(
 #     async_engine,

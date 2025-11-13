@@ -33,7 +33,7 @@ class UserFilesModel():
             from .UserModel import UserModel
             user_model = UserModel(Id=self.user_id)
             existing_user = await user_model.find_by_id(session)
-            
+            print(existing_user)
             if existing_user and existing_user['active'] is True:
                 # Проверка есть ли у пользователя аватарка
                 stmt_photo = select(UserFiles).where(

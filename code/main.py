@@ -411,7 +411,6 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()
-    return res
     
     """
     from src.model.Department import Department

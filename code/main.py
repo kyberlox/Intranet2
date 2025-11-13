@@ -407,12 +407,12 @@ def total_users_update():
 async def total_update(session: AsyncSession=Depends(get_async_db)):
     time_start = time.time()
     status = 0
-    
+
     """
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()
     return res
-    """
+    
     
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
@@ -423,6 +423,8 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     else:
         LogsMaker().error_message("Ошибка!")
     """
+
+    
     LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User
     dowload_status = await User().fetch_users_data(session)
@@ -432,6 +434,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     else:
         LogsMaker().error_message("Ошибка!")
 
+    """
     from src.model.UsDep import UsDep
     LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
     res = await UsDep().get_usr_dep(session)

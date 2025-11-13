@@ -410,15 +410,11 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     time_start = time.time()
     status = 0
 
-    # from src.base.pSQL.models.App import create_tables
-    # LogsMaker().info_message("Загрузка таблиц")
-    # res = await create_tables()
-    # if res["status"]:
-    #     status += 1
-    #     LogsMaker().ready_status_message("Успешно!")
-    # else:
-    #     LogsMaker().error_message("Ошибка!")
-
+    """
+    from src.base.pSQL.models.App import create_tables
+    res = await create_tables()
+    
+    
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
     res = await Department().fetch_departments_data(session)
@@ -427,7 +423,9 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
+    
 
+    
     LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User
     dowload_status = await User().fetch_users_data(session)
@@ -436,7 +434,8 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-
+    """
+    
     from src.model.UsDep import UsDep
     LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
     res = await UsDep().get_usr_dep(session)
@@ -461,7 +460,8 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-
+        
+    """
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
     res = await Article().uplod(session)
@@ -479,6 +479,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
+    """
 
     #Права пользователей
     # Лайки и просмотры

@@ -169,7 +169,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        # await self.search_files(data["IBLOCK_ID"], self.id, data, session)
+        await self.search_files(data["IBLOCK_ID"], self.id, data, session)
 
 
         
@@ -1150,9 +1150,10 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        # await self.upload_uniquely(session)
+        await self.upload_uniquely(session)
         await self.upload_with_parameter(session)
         await self.upload_many_to_many(session)
+        await self.upload_services(session) # загрузили все без проблем
         await self.upload_services(session) # загрузили все без проблем
 
         # Дамп данных в эластик

@@ -38,33 +38,39 @@ class FilesDBModel():
                 return False
 
             from .ArticleModel import ArticleModel
-            article_model = ArticleModel(id=self.article_id)
-            existing_art = await article_model.find_by_id(session)
-            
-            if existing_art:
-                new_artfile = FilesDB(
-                    article_id=int(self.article_id), 
-                    name=self.name, 
-                    original_name=self.original_name, 
-                    b24_url=self.b24_url, 
-                    active=self.active, 
-                    is_preview=self.is_preview, 
-                    content_type=self.content_type, 
-                    file_url=self.file_url
-                )
-                session.add(new_artfile)
-                
-                await session.flush()
-                file_id = new_artfile.id
+            article_model = ArticleModel(id=int(self.article_id))
+            existing_art = await article_model.find_by_id(session=session)
 
-                await session.commit()
-                return file_id
-            else:
-                LogsMaker().warning_message(f"В функции add FilesDBModel: Article not found")
-                return False
+            if not existing_art:
+                LogsMaker().warning_message(f"В функции add FilesDBModel: Article not found, создаем шаблон в БД")
+                from ..models.Article import Article
+                new_art = Article(id=int(self.article_id))
+                session.add(new_art)
+            # if existing_art:
+            new_artfile = FilesDB(
+                article_id=int(self.article_id), 
+                name=self.name, 
+                original_name=self.original_name, 
+                b24_url=self.b24_url, 
+                active=self.active, 
+                is_preview=self.is_preview, 
+                content_type=self.content_type, 
+                file_url=self.file_url
+            )
+            session.add(new_artfile)
+            
+            await session.flush()
+            file_id = new_artfile.id
+
+            await session.commit()
+            return file_id
+            # else:
+            #     from ..models.Article import Article
+            #     new_art = Article(id=int(self.article_id))
+            #     LogsMaker().warning_message(f"В функции add FilesDBModel: Article not found")
+            #     return False
                 
         except Exception as e:
-            await session.rollback()
             return LogsMaker().error_message(f"Ошибка в add при добавлении файла для статьи {self.article_id}: {e}")
 
     async def go_archive(self, session):
@@ -84,14 +90,14 @@ class FilesDBModel():
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в go_archive при архивировании файла {self.id}: {e}")
 
-    async def find_by_id(self, session):
+    async def find_file_by_id(self, session):
         """
         Ищет только активный файл статьи
         """
         try:
             if self.id is not None:
                 stmt = select(FilesDB).where(
-                    FilesDB.id == self.id, 
+                    FilesDB.id == int(self.id), 
                     FilesDB.active == True
                 )
                 result = await session.execute(stmt)
@@ -112,7 +118,7 @@ class FilesDBModel():
         """
         try:
             if self.id is not None:
-                stmt = select(FilesDB).where(FilesDB.id == self.id)
+                stmt = select(FilesDB).where(FilesDB.id == int(self.id))
                 result = await session.execute(stmt)
                 file_db = result.scalar_one_or_none()
                 
@@ -164,7 +170,7 @@ class FilesDBModel():
         try:
             if self.article_id is not None and self.original_name is not None:
                 stmt = select(FilesDB).where(
-                    FilesDB.article_id == self.article_id,
+                    FilesDB.article_id == int(self.article_id),
                     FilesDB.original_name == self.original_name
                 )
                 result = await session.execute(stmt)
@@ -187,7 +193,7 @@ class FilesDBModel():
         try:
             if self.article_id is not None:
                 stmt = select(FilesDB).where(
-                    FilesDB.article_id == self.article_id,
+                    FilesDB.article_id == int(self.article_id),
                     FilesDB.active == True
                 )
                 result = await session.execute(stmt)
@@ -238,30 +244,31 @@ class FilesDBModel():
             
             # Проверим есть к чему крепить файл
             if self.article_id is not None:
-                stmt_exists = select(FilesDB).where(FilesDB.article_id == self.article_id)
-                result_exists = await session.execute(stmt_exists)
-                article_exists = result_exists.scalar_one_or_none()
+                # stmt_exists = select(FilesDB).where(FilesDB.article_id == self.article_id)
+                # result_exists = await session.execute(stmt_exists)
+                # article_exists = result_exists.scalar_one_or_none()
                 
-                # Если нет - будет первым
-                if not article_exists:
-                    return f"{self.article_id}_1.{file_format}"
+                # # Если нет - будет первым
+                # if not article_exists:
+                #     return f"{self.article_id}_1.{file_format}"
                 
                 # Если у статьи есть файлы - определим порядковый номер
                 # stmt_max = select(func.max(FilesDB.name)).where(
                 #     FilesDB.article_id == self.article_id
                 # )
                 stmt_max = select(FilesDB.name).where(
-                    FilesDB.article_id == self.article_id
-                ).order_by(FilesDB.name.desc())
+                    FilesDB.article_id == int(self.article_id)
+                )
                 result_max = await session.execute(stmt_max)
-                max_num = result_max.first()
+                all_names = result_max.scalars().all()
+                if all_names == []:
+                    next_num = 1 
 
-                # Извлекаем номер из имени файла
-                if max_num:
-                    current_num = int(max_num.split('_')[-1].split('.')[0])
-                    next_num = current_num + 1
                 else:
-                    next_num = 1
+                    # Извлекаем номер из имени файла
+                    nums = lambda x :  [int(n.split('_')[-1].split('.')[0]) for n in x ]
+                    next_num = max(nums(all_names)) + 1
+
                 return f"{self.article_id}_{next_num}.{file_format}"
             else:
                 return None

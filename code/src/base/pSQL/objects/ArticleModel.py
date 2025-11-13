@@ -1,6 +1,8 @@
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm.attributes import flag_modified
 
+from psycopg2.errorcodes import UNIQUE_VIOLATION
+from psycopg2 import errors
 
 import json
 
@@ -42,10 +44,24 @@ class ArticleModel:
     async def add_article(self, article_data, session):
         # async with AsyncSessionLocal() as session:
         try:
-            article = self.article(**article_data)
-            session.add(article)
-            await session.commit()
-
+            # Сначала проверяем, существует ли статья
+            stmt = select(self.article).where(self.article.id == article_data['id'])
+            result = await session.execute(stmt)
+            existing_article = result.scalar_one_or_none()
+            
+            if existing_article:
+                # Обновляем существующую
+                for key, value in article_data.items():
+                    setattr(existing_article, key, value)
+                await session.commit()
+                LogsMaker().info_message(f"Статья {article_data['id']} обновлена")
+            else:
+                # Создаем новую
+                article = self.article(**article_data)
+                session.add(article)
+                await session.commit()
+                LogsMaker().info_message(f"Статья {article_data['id']} создана")
+            
             return article_data
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при добавлении статьи : {e}")

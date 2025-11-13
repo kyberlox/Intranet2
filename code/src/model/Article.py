@@ -381,8 +381,10 @@ class Article:
                 for url in matches:
                     #качаю файл новым методом
                     if url != "https://portal.emk.ru/bitrix/tools/disk/uf.php?attachedId=128481&auth%5Baplogin%5D=1&auth%5Bap%5D=j6122m0ystded5ag&action=show&ncc=1":
-                        new_url = await File().upload_by_URL(url=url, art_id=self.id, session=session) # СЮДА АСИНХРОННОСТЬ
-                        print(url, "-->", new_url)
+
+                        url_b24 = 'https://portal.emk.ru' + url
+                        new_url = await File().upload_by_URL(url=url_b24, art_id=self.id, session=session) # СЮДА АСИНХРОННОСТЬ
+                        # print(url_b24, "-->", new_url)
                         #заменяю url на новый
                         #content = re.sub(r'src="([^"]*)"', f'src="{new_url}"', content)
                         
@@ -526,7 +528,6 @@ class Article:
 
         #Учебный центр (Тренинги)
         elif self.section_id == 172:
-            
             if "PROPERTY_371" in data:
                 content = data["PROPERTY_371"][0]["TEXT"]
                 content_type = data["PROPERTY_371"][0]["TYPE"]
@@ -644,7 +645,7 @@ class Article:
                         print(photo)
                         #скачать и вытащить ссылку
                         files = [photo]
-                        art_id = rep["ID"]
+                        art_id = self.id
                         inf_id = "98"
                         is_preview = False
                         
@@ -661,7 +662,7 @@ class Article:
                             
                     
                     rp = {
-                        "id" : rep["ID"],
+                        "rep_id" : rep["ID"],
                         "name" : rep["NAME"],
                         "active" : act,
                         "date" : take_value(rep["PROPERTY_667"]),
@@ -682,7 +683,7 @@ class Article:
                     if "PROPERTY_498" in tr:
                         photo = take_value(tr["PROPERTY_498"])
                         #скачать и вытащить ссылку
-                        art_id = tr["ID"]
+                        art_id = self.id
                         inf_id = "84"
                         is_preview = False
                         file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview, need_all_method=True, inf_id=inf_id, session=session)
@@ -695,7 +696,7 @@ class Article:
                             photo_file_url = f"{DOMAIN}{url}"
                     
                     t = {
-                        "id" : tr["ID"],
+                        "tr_id" : tr["ID"],
                         "factory_id" : self.id,
                         "name" : tr["NAME"],
                         "active" : act,
@@ -772,6 +773,8 @@ class Article:
         return article_data
 
     async def search_files(self, inf_id, art_id, data, session):
+        if int(art_id) == 10855 or int(art_id) == 6182:
+            print(art_id, data, 'Тут походу их несколько')
         files_propertys = [
             "PREVIEW_PICTURE",
             "DETAIL_PICTURE",
@@ -868,8 +871,6 @@ class Article:
         ]
         
         files_data = []
-        if int(art_id) == 16148:
-            print(data, '16148 id')
         #прохожу по всем проперти статьи
         for file_property in files_propertys:
             #если это файловый проперти
@@ -1152,9 +1153,9 @@ class Article:
         '''
 
         # await self.upload_uniquely(session)
-        # await self.upload_with_parameter(session)
+        await self.upload_with_parameter(session)
         await self.upload_many_to_many(session)
-        # await self.upload_services(session)
+        # await self.upload_services(session) # загрузили все без проблем
 
         # Дамп данных в эластик
         await self.dump_articles_data_es(session=session)
@@ -1207,10 +1208,10 @@ class Article:
         '''с параметрами'''
         #один section_id - несколько IBLOCK_ID
         sec_inf = {
-            # 15 : ["75", "77"], #Блоги ✔️
-            # 18 : ["81", "82"], #Памятка ✔️
-            # 41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
-            # 172 : ["61", "83"] #Учебный центр (Проведённые тренинги) ✔️
+            15 : ["75", "77"], #Блоги ✔️
+            18 : ["81", "82"], #Памятка ✔️
+            41 : ["98", "78", "84"], #Гид по предприятиям ✔️ сделать сервис
+            172 : ["61", "83"] #Учебный центр (Проведённые тренинги) ✔️
         }
 
         
@@ -1230,7 +1231,7 @@ class Article:
             
             data["ID"] = title_data["ID"]
             data["TITLE"] = title_data["NAME"]
-            print(data["ID"])
+            # print(data["ID"], data)
             data["reviews"] = []
 
             # пройти по инфоблоку тренингов
@@ -1245,6 +1246,8 @@ class Article:
             #загрузить данные в таблицу
             data["section_id"] = 172
             self.section_id = 172
+            if int(data["ID"]) == 10855:
+                print(data, 'тут пустышки')
             artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
             if await artDB.need_add(session=session):
                 await self.add(data, session)
@@ -1279,9 +1282,10 @@ class Article:
                     data["section_id"] = 15 #Блоги
                     self.section_id = 15
                     data["TITLE"] = title_inf["NAME"]
-
+                    if int(data["ID"]) == 10855:
+                        print(data, 'тут пустышки')
                     #загрузить данные в таблицу
-                    artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+                    artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
                     if await artDB.need_add(session=session):
                         await self.add(data, session)
                     elif await artDB.update(await self.make_valid_article(data, session), session):
@@ -1320,9 +1324,10 @@ class Article:
                     data["section_id"] = 18  # Памятка
                     self.section_id = 18
                     data["TITLE"] = title_inf["NAME"]
-
+                    if int(data["ID"]) == 6180:
+                        print(data, 'тут начинается')
                     # загрузить данные в таблицу
-                    artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+                    artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
                     if await artDB.need_add(session=session):
                         await self.add(data, session)
                     elif await artDB.update(await self.make_valid_article(data, session), session):
@@ -1382,12 +1387,14 @@ class Article:
             data["section_id"] = 41 # Гид по предприятиям
             self.section_id = 41
             # загрузить данные в таблицу
-            print(data)
-            artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+            if int(data["ID"]) == 10855:
+                print(data, 'тут пустышки')
+            artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
             if await artDB.need_add(session=session):
                 await self.add(data, session)
             elif await artDB.update(await self.make_valid_article(data, session), session):
                 pass
+
 
     async def upload_many_to_many(self, session):
         await self.upload_current_news(session)
@@ -1398,7 +1405,7 @@ class Article:
         #несколько section_id - один IBLOCK_ID
         sec_inf = {
             31 : "50", #Актуальные новости ✔️
-            # 51 : "50"  #Корпоративные события ✔️
+            51 : "50"  #Корпоративные события ✔️
         }
 
         # пройти по инфоблоку
@@ -1418,36 +1425,36 @@ class Article:
                     if "PROPERTY_5044" in art and list(art["PROPERTY_5044"].values())[0] == "1":
                         art["section_id"] = 33  # Видеорепортажи
                         self.section_id = 33
-                        #ВРЕМЕННО
-                        artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-                        if await artDB.need_add(session=session):
-                            await self.add(art, session)
-                        elif await artDB.update( await self.make_valid_article(art, session), session):
-                            pass
-                        #ВРЕМЕННО
-            #         else:
-            #             art["section_id"] = 31 # Актуальные новости
-            #             self.section_id = 31
-            #     elif pre_section_id == "663":
-            #         art["section_id"] = 51  # Корпоративные события
-            #         self.section_id = 51
+                        
+                        # artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                        # if await artDB.need_add(session=session):
+                        #     await self.add(art, session)
+                        # elif await artDB.update( await self.make_valid_article(art, session), session):
+                        #     pass
+                        
+                    else:
+                        art["section_id"] = 31 # Актуальные новости
+                        self.section_id = 31
+                elif pre_section_id == "663":
+                    art["section_id"] = 51  # Корпоративные события
+                    self.section_id = 51
 
-            #     artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-            #     if await artDB.need_add(session=session):
-            #         await self.add(art, session)
-            #     elif await artDB.update( await self.make_valid_article(art, session), session):
-            #         pass
-            # else:
-            #     # че делать с уже не актуальными новостями?
-            #     self.section_id = 6
-            #     artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
-            #     if await artDB.need_add(session=session):
-            #         await self.add(art, session)
-            #         self.logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
-            #         # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
-            #     elif await artDB.update(await self.make_valid_article(art, session), session):
-            #         # сюда надо что-то дописать
-            #         pass
+                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                if await artDB.need_add(session=session):
+                    await self.add(art, session)
+                elif await artDB.update( await self.make_valid_article(art, session), session):
+                    pass
+            else:
+                # че делать с уже не актуальными новостями?
+                self.section_id = 6
+                artDB = ArticleModel(id=art["ID"], section_id=self.section_id)
+                if await artDB.need_add(session=session):
+                    await self.add(art, session)
+                    self.logg.warning_message(f'Статья - Name:{art["NAME"]}, id:{art["ID"]} уже не актуальна')
+                    # print("Статья", art["NAME"], art["ID"], "уже не актуальна")
+                elif await artDB.update(await self.make_valid_article(art, session), session):
+                    # сюда надо что-то дописать
+                    pass
 
     async def upload_corporate_events(self, session):
         #несколько section_id - несколько IBLOCK_ID
@@ -1625,34 +1632,34 @@ class Article:
 
     async def search_by_id(self, session, session_id=""):
         art = await ArticleModel(id = self.id).find_by_id(session)
-        # files = File(art_id = int(self.id)).get_files_by_art_id()
+        files = await File(art_id = int(self.id)).get_files_by_art_id(session)
         art['images'] = []
         art['videos_native'] = []
         art['videos_embed'] = []
         art['documentation'] = []
         
-        # for file in files:
-        #     #файлы делятся по категориям
-        #     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-        #         url = file["file_url"]
-        #         if art['section_id'] in [42, 51, 52]:
-        #             preview_link = url.split("/")
-        #             preview_link[-2] = "compress_image/yowai_mo"
-        #             url = '/'.join(preview_link)
-        #         file["file_url"] = f"{DOMAIN}{url}"
-        #         art['images'].append(file)
-        #     elif "video" in file["content_type"]:
-        #         url = file["file_url"]
-        #         file["file_url"] = f"{DOMAIN}{url}"
-        #         art['videos_native'].append(file)
-        #     elif "link" in file["content_type"]:
-        #         art['videos_embed'].append(file)
-        #     else:
-        #         url = file["file_url"]
-        #         file["file_url"] = f"{DOMAIN}{url}"
-        #         art['documentation'].append(file)
+        for file in files:
+            #файлы делятся по категориям
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                url = file["file_url"]
+                if art['section_id'] in [42, 51, 52]:
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image/yowai_mo"
+                    url = '/'.join(preview_link)
+                file["file_url"] = f"{DOMAIN}{url}"
+                art['images'].append(file)
+            elif "video" in file["content_type"]:
+                url = file["file_url"]
+                file["file_url"] = f"{DOMAIN}{url}"
+                art['videos_native'].append(file)
+            elif "link" in file["content_type"]:
+                art['videos_embed'].append(file)
+            else:
+                url = file["file_url"]
+                file["file_url"] = f"{DOMAIN}{url}"
+                art['documentation'].append(file)
         
-        # art["preview_file_url"] = self.get_preview()
+        art["preview_file_url"] = await self.get_preview(session)
         
         if art['section_id'] == 31 or art['section_id'] == 33:
             if 'tags' in art['indirect_data']:
@@ -1930,7 +1937,7 @@ class Article:
                     if int(self.section_id) in [31, 16, 33]:
                         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
                             self.id = res["id"]
-                            # res["preview_file_url"] = await self.get_preview()
+                            res["preview_file_url"] = await self.get_preview(session)
                             # сюда лайки и просмотры
                              # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                             user_id = await self.get_user_by_session_id(session_id=session_id, session=session)

@@ -1152,13 +1152,13 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        # await self.upload_uniquely(session)
+        await self.upload_uniquely(session)
         await self.upload_with_parameter(session)
         await self.upload_many_to_many(session)
-        # await self.upload_services(session) # загрузили все без проблем
+        await self.upload_services(session) # загрузили все без проблем
 
         # Дамп данных в эластик
-        await self.dump_articles_data_es(session=session)
+        #await self.dump_articles_data_es(session=session)
 
         await self.upload_likes(session)
         await self.upload_views(session)
@@ -1398,7 +1398,7 @@ class Article:
 
     async def upload_many_to_many(self, session):
         await self.upload_current_news(session)
-        # await self.upload_corporate_events()
+        await self.upload_corporate_events(session)
 
     async def upload_current_news(self, session):
 

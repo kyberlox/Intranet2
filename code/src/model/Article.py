@@ -1151,10 +1151,10 @@ class Article:
         '''
 
         await self.upload_uniquely(session)
-        await self.upload_with_parameter(session)
-        await self.upload_many_to_many(session)
-        await self.upload_services(session) # загрузили все без проблем
-        await self.upload_services(session) # загрузили все без проблем
+        # await self.upload_with_parameter(session)
+        # await self.upload_many_to_many(session)
+        # await self.upload_services(session) # загрузили все без проблем
+        # await self.upload_services(session) # загрузили все без проблем
 
         # Дамп данных в эластик
         # await self.dump_articles_data_es(session=session)
@@ -1168,17 +1168,17 @@ class Article:
     async def upload_uniquely(self, session):
         '''однозначно'''
         sec_inf = {
-            # 13 : "149", # Наши люди ✔️ DONE
-            # 14 : "123", # Доска почёта ✔️ DONE
-            # 16 : "122", # Видеоитервью ✔️ DONE
+            13 : "149", # Наши люди ✔️ DONE
+            14 : "123", # Доска почёта ✔️ DONE
+            16 : "122", # Видеоитервью ✔️ DONE
             
-            # 32 : "132", # Новости организационного развития ✔️  DONE
-            # 53 : "62", # Афиша ✔️ DONE
-            # 54 : "55", # Предложения партнеров ✔️ DONE
-            # 55 : "56", # Благотворительные проекты ✔️  DONE
+            32 : "132", # Новости организационного развития ✔️  DONE
+            53 : "62", # Афиша ✔️ DONE
+            54 : "55", # Предложения партнеров ✔️ DONE
+            55 : "56", # Благотворительные проекты ✔️  DONE
 
-            # 25 : "100", #Референсы и опыт поставок ✔️DONE
-            # 175 : "60", # Учебный центр (Литература) ✔️ DONE (но не скачались по вине битры 23038, 23041, 23044, 23134, 23137, 23141, 23149, 23151)
+            25 : "100", #Референсы и опыт поставок ✔️DONE
+            175 : "60", # Учебный центр (Литература) ✔️ DONE (но не скачались по вине битры 23038, 23041, 23044, 23134, 23137, 23141, 23149, 23151)
             7 : "66", #Конкурсы (Главная) ✔️
             71 : "128", #Конкурсы (Непосредственно)
         }

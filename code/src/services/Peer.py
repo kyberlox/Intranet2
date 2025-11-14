@@ -51,7 +51,8 @@ class Peer:
         return await self.ActiveUsersModel.statistics(session)
     
     async def actions(self, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         result = await self.ActiveUsersModel.actions(session=session, roots=roots)
@@ -70,13 +71,15 @@ class Peer:
         self.ActivitiesModel.coast = self.coast
         self.ActivitiesModel.need_valid = self.need_valid
         self.ActivitiesModel.active = self.active
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         return await self.ActivitiesModel.update_activity(roots=roots, session=session)
     
     async def remove_activity(self, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         self.ActivitiesModel.id = self.id
@@ -84,14 +87,16 @@ class Peer:
     """"""
     
     async def do_valid(self, action_id, uuid_to, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         self.PeerUserModel.uuid = self.user_uuid
         return await self.PeerUserModel.do_valid(session=session, action_id=action_id, uuid_to=uuid_to, roots=roots)
 
-    async def do_not_valid(self, action_id, session): 
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+    async def do_not_valid(self, action_id, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         self.PeerUserModel.uuid = self.user_uuid
@@ -105,7 +110,8 @@ class Peer:
         return await self.PeerUserModel.get_curators(session=session)
     
     async def add_curator(self, user_id, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         self.PeerUserModel.activities_id = self.activities_id
@@ -113,7 +119,8 @@ class Peer:
         return await self.PeerUserModel.add_curator(session=session, roots=roots)
     
     async def delete_curator(self, user_id, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         self.PeerUserModel.activities_id = self.activities_id
@@ -121,9 +128,10 @@ class Peer:
         result = await self.PeerUserModel.delete_curator(session=session, roots=roots)
         return result
 
-    async def new_activity(self, data, session): 
+    async def new_activity(self, data, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
         data["uuid"] = self.user_uuid
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         return await self.ActivitiesModel.new_activity(data=data, roots=roots, session=session)
@@ -152,53 +160,61 @@ class Peer:
         return await self.ActiveUsersModel.user_history(session=session)
     """"""
     async def send_points(self, data, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         return await self.PeerUserModel.send_points(data=data, roots=roots, session=session)
 
     async def get_admins_list(self, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         return await self.PeerUserModel.get_admins_list(session=session, roots=roots)
 
     async def add_peer_admin(self, uuid, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.add_peer_admin(roots=roots, session=session)
 
     async def delete_admin(self, uuid, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid) 
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.delete_admin(self.roots)
     
     async def get_moders_list(self, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         return await self.PeerUserModel.get_moders_list(roots=roots, session=session)
 
     async def add_peer_moder(self, uuid, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.add_peer_moder(roots=roots, session=session)
 
     async def delete_peer_moder(self, uuid, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.delete_peer_moder(roots=roots, session=session)
     
     async def get_curators_history(self, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         return await self.PeerUserModel.get_curators_history(roots=roots, session=session)
@@ -207,7 +223,8 @@ class Peer:
         return await self.PeerUserModel.return_points_to_user(session=session, note_id=note_id, user_uuid=user_uuid)
     
     async def remove_user_points(self, action_id, user_uuid, session):
-        root_init = self.RootsModel(user_uuid=self.user_uuid)
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = user_uuid

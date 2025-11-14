@@ -1062,12 +1062,12 @@ async def get_uuid_from_request(request, session):
             return user_inf["ID"]
     return None
 
-async def get_editor_roots(user_uuid):
+async def get_editor_roots(user_uuid, session):
     from ..base.pSQL.objects.RootsModel import RootsModel
     roots_model = RootsModel()
     roots_model.user_uuid = user_uuid
-    all_roots = await roots_model.get_token_by_uuid(self.session)
-    editor_roots = await roots_model.token_processing_for_editor(all_roots, self.session)
+    all_roots = await roots_model.get_token_by_uuid(session)
+    editor_roots = await roots_model.token_processing_for_editor(all_roots, session)
     return editor_roots
 
 
@@ -1113,7 +1113,7 @@ async def get_edit_sections():
 async def get_sections_list(request: Request , session: AsyncSession=Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
     # user_uuid = 261
-    editor_roots = await get_editor_roots(user_uuid)
+    editor_roots = await get_editor_roots(user_uuid, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
@@ -1136,7 +1136,7 @@ async def render(art_id : int, session: AsyncSession=Depends(get_async_db)):
 async def sec_render(request: Request, sec_id: int, session: AsyncSession=Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
     # user_uuid = 2366
-    editor_roots = await get_editor_roots(user_uuid)
+    editor_roots = await get_editor_roots(user_uuid, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     
     if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):

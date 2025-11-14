@@ -458,10 +458,10 @@ class Editor:
 
 
     async def section_rendering(self ):
-        result = asyncio.run(Article(section_id = self.section_id).all_serch_by_date(self.session))
+        result = await Article(section_id = self.section_id).all_serch_by_date(self.session)
         for art in result:
             self.id = art["id"]
-            art["preview_file_url"] = Article(id = int(self.id)).get_preview()
+            art["preview_file_url"] = await Article(id = int(self.id)).get_preview(self.session)
         return result
     
     async def rendering(self ):
@@ -470,7 +470,7 @@ class Editor:
         
         
         # вытащить основные поля из psql
-        art = asyncio.run(Article(id = self.art_id).find_by_id(self.session))
+        art = await Article(id = self.art_id).find_by_id(self.session)
 
         if self.section_id is None:
             if "section_id" in art:
@@ -565,12 +565,12 @@ class Editor:
             if not has_added:
                 if need_field["field"] == "all_tags":
                     #получаешь список ВСЕХ доступных тэгов
-                    tags_list = Tag().get_all_tags()
+                    tags_list = await Tag().get_all_tags(self.session)
                     #записываешь в need_field["values"] и в need_field["values"]
                     need_field["values"] = tags_list
                     
                 if need_field["field"] == "tags":
-                    need_field["values"] = Tag(art_id=self.art_id).get_art_tags()
+                    need_field["values"] = await Tag(art_id=self.art_id).get_art_tags(self.session)
                     # need_field.pop("value")
                 
                 result_fields.append(need_field)
@@ -579,7 +579,7 @@ class Editor:
 
         # вытащить файлы
         self.art_id = int(self.art_id)
-        files=self.get_files()
+        files=await self.get_files()
 
         '''
         need_del = []
@@ -618,7 +618,7 @@ class Editor:
             #если это ID статьи
             if field["field"] == "id":
                 #отдельно засылаю будущий уже инкрементированнный ID статьи
-                self.art_id = asyncio.run(ArticleModel().get_current_id(self.session))
+                self.art_id = await ArticleModel().get_current_id(self.session)
                 field["value"] = self.art_id
 
                 #создать пустую неактивную статью с этим ID
@@ -631,7 +631,7 @@ class Editor:
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
                 #добавить статью
-                asyncio.run(Article().set_new(art, self.session))
+                await Article().set_new(art, self.session)
                 LogsMaker().ready_status_message(f"Создал {self.art_id}")
         
             
@@ -645,7 +645,7 @@ class Editor:
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art = asyncio.run(Article(id=self.art_id).find_by_id(self.session))
+        art = await Article(id=self.art_id).find_by_id(self.session)
         if '_sa_instance_state' in art:
             art.pop('_sa_instance_state')
         indirect_data = dict()
@@ -667,7 +667,7 @@ class Editor:
             if key == "uuid" or key == "author_uuid":
                 uuid = int(data[key])
                 #поиск по uuid
-                usr_dt = asyncio.run(User(uuid).search_by_id(self.session))
+                usr_dt = await User(uuid).search_by_id(self.session)
                 photo = usr_dt["personal_photo"]
                 indirect_data["photo_file_url"] = photo
             
@@ -696,11 +696,11 @@ class Editor:
             art["content_type"] = None
 
         #вставить данные в статью
-        res = asyncio.run(Article(id = self.art_id).update(art, self.session))
+        res = await Article(id = self.art_id).update(art, self.session)
         return res
     
     async def delete_art(self ):
-        res = asyncio.run(Article(id = self.art_id).delete(self.session))
+        res = await Article(id = self.art_id).delete(self.session)
         return res
         
     async def update(self, data : dict):
@@ -709,7 +709,7 @@ class Editor:
 
         # получаю текущие значения
         # вытащить основные поля из psql
-        art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(self.session))
+        art = await ArticleModel(id = self.art_id).find_by_id(self.session)
         if "_sa_instance_state" in art:
             art.pop("_sa_instance_state")
 
@@ -737,11 +737,11 @@ class Editor:
 
         # перезаписать файлы 
         # сохранить
-        res = asyncio.run(ArticleModel(id = self.art_id).update(art, self.session))
+        res = await ArticleModel(id = self.art_id).update(art, self.session)
         return res
 
     async def get_files(self ):
-        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
+        file_data = await FileModel(art_id=self.art_id).find_all_by_art_id(self.session)
         file_list = []
         for file in file_data:
             file_info = {}
@@ -794,7 +794,7 @@ class Editor:
         return result
 
     async def get_sections_list(self ):
-        all_sections = asyncio.run(Section().get_all(self.session))
+        all_sections = await Section().get_all(self.session)
 
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
@@ -811,14 +811,14 @@ class Editor:
         return edited_sections
 
     async def get_users_info(self, user_id_list):
-        art = asyncio.run(Article(id = self.art_id).find_by_id(self.session))
+        art = await Article(id = self.art_id).find_by_id(self.session)
         
         if user_id_list == []:
             art['indirect_data']['users'] = []
         else:
             #иду по списку user_id
             for user_id in user_id_list:
-                user_info = asyncio.run(User(id=user_id).search_by_id(self.session))
+                user_info = await User(id=user_id).search_by_id(self.session)
 
                 
 
@@ -925,7 +925,7 @@ class Editor:
         #print(art['indirect_data'])
 
         #сохранил
-        asyncio.run(Article(id = self.art_id).update(art, self.session))
+        await Article(id = self.art_id).update(art, self.session)
 
         return art['indirect_data']['users']
     
@@ -963,7 +963,7 @@ class Editor:
                 "department"
             ]
         }
-        user_info = asyncio.run(User(id=user_id).search_by_id(self.session))
+        user_info = await User(id=user_id).search_by_id(self.session)
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
             for field in fields:
@@ -1006,7 +1006,7 @@ class Editor:
 
         
         #получаю статью
-        art = asyncio.run(Article(id = self.art_id).find_by_id())
+        art = await Article(id = self.art_id).find_by_id()
 
         if self.section_id == 14:
             art["name"] = result["fio"]
@@ -1032,7 +1032,7 @@ class Editor:
             art['indirect_data'][key] = result[key]
 
         #сохранил
-        asyncio.run(Article(id = self.art_id).update(art, self.session))
+        await Article(id = self.art_id).update(art, self.session)
 
         return result
 
@@ -1057,7 +1057,7 @@ async def get_uuid_from_request(request, session):
         #получить и вывести его id
         user = User()
         user.uuid = user_uuid
-        user_inf = asyncio.run(user.user_inf_by_uuid(session))
+        user_inf = await user.user_inf_by_uuid(session)
         if user_inf is not None and "ID" in user_inf.keys():
             return user_inf["ID"]
     return None
@@ -1066,15 +1066,15 @@ async def get_editor_roots(user_uuid):
     from ..base.pSQL.objects.RootsModel import RootsModel
     roots_model = RootsModel()
     roots_model.user_uuid = user_uuid
-    all_roots = roots_model.get_token_by_uuid()
-    editor_roots = roots_model.token_processing_for_editor(all_roots)
+    all_roots = await roots_model.get_token_by_uuid(self.session)
+    editor_roots = await roots_model.token_processing_for_editor(all_roots, self.session)
     return editor_roots
 
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 async def set_user_info(section_id : int, art_id : int, user_id: int, session: AsyncSession=Depends(get_async_db)):
-    return Editor(art_id = art_id, section_id = section_id, session=session).get_user_info(user_id)
+    return await Editor(art_id = art_id, section_id = section_id, session=session).get_user_info(user_id)
 
 @editor_router.post("/get_users_info")
 async def set_user_info(session: AsyncSession=Depends(get_async_db), data = Body()):
@@ -1087,7 +1087,7 @@ async def set_user_info(session: AsyncSession=Depends(get_async_db), data = Body
     else:
         return "\'users_id\' is not found"
 
-    return Editor(art_id = art_id, session=session).get_users_info(user_id_list = users_id)
+    return await Editor(art_id = art_id, session=session).get_users_info(user_id_list = users_id)
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")
@@ -1129,47 +1129,47 @@ async def get_sections_list(request: Request , session: AsyncSession=Depends(get
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id : int, session: AsyncSession=Depends(get_async_db)):
-    return Editor(art_id=art_id, session=session).rendering()
+    return await Editor(art_id=art_id, session=session).rendering()
 
 #рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
 async def sec_render(request: Request, sec_id: int, session: AsyncSession=Depends(get_async_db)):
-    user_uuid = get_uuid_from_request(request, session)
+    user_uuid = await get_uuid_from_request(request, session)
     # user_uuid = 2366
-    editor_roots = get_editor_roots(user_uuid)
+    editor_roots = await get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     
     if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
-        return Editor(section_id = sec_id, session=session).section_rendering()
+        return await Editor(section_id = sec_id, session=session).section_rendering()
     return LogsMaker().warning_message(f"Недостаточно прав")
 
 #изменить статью
 @editor_router.post("/update/{art_id}")
 async def updt(art_id : int, session: AsyncSession=Depends(get_async_db), data = Body()):
-    return Editor(art_id=art_id, session=session).update(data)
+    return await Editor(art_id=art_id, session=session).update(data)
 
 #добавить статью
 @editor_router.get("/add/{section_id}")
 async def get_form(section_id : int, session: AsyncSession=Depends(get_async_db)):
-    return Editor(section_id=section_id, session=session).pre_add()
+    return await Editor(section_id=section_id, session=session).pre_add()
 
 
 
 @editor_router.post("/add/{art_id}")
 async def set_new(art_id : int, session: AsyncSession=Depends(get_async_db), data = Body()):
     #section_id = data["section_id"]
-    return Editor(art_id=art_id, session=session).add(data)
+    return await Editor(art_id=art_id, session=session).add(data)
 
 
 
 @editor_router.delete("/del/{art_id}")
 async def del_art(art_id : int, session: AsyncSession=Depends(get_async_db)):
-    return Editor(art_id=int(art_id), session=session).delete_art()
+    return await Editor(art_id=int(art_id), session=session).delete_art()
 
 #посмотреть все файлы статьи
 @editor_router.get("/rendering/files/{art_id}")
 async def render(art_id : int):
-    return Editor(art_id=art_id).get_files()
+    return await Editor(art_id=art_id).get_files()
 
 
 ### тестирую работу с файлами

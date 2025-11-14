@@ -59,8 +59,9 @@ class Editor:
         if self.art_id is not None and section_id is None:
             # loop = 
             # loop.run_until_complete(no_stop())
-            art = asyncio.get_event_loop()
-            art.run_until_complete(ArticleModel(id = self.art_id).find_by_id(session=self.session))
+            self.art = art
+            # art = asyncio.get_event_loop()
+            # art.run_until_complete(ArticleModel(id = self.art_id).find_by_id(session=self.session))
             # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
             if "section_id" in art:
                 self.section_id = art["section_id"]
@@ -102,6 +103,17 @@ class Editor:
         else:
             self.pattern = None
         pattern_data_file.close()
+
+    @classmethod
+    async def create(cls, id=None, art_id=None, section_id=None, session=None):
+        instance = cls(id, art_id, section_id, session)
+        
+        if instance.art_id is not None and instance.section_id is None:
+            art = await ArticleModel(id=instance.art_id).find_by_id(session=instance.session)
+            if art and "section_id" in art:
+                instance.section_id = art["section_id"]
+        
+        return instance
 
     def get_pattern(self ):
         #и ошибка тут

@@ -83,7 +83,7 @@ class AuthService:
             b24_ans = try_b24(login = username, password = password)
             if b24_ans['status'] == 'success':
                 user_id = b24_ans['data']['USER_ID']
-                user_uuid = await self.get_user_uuid(user_id = user_id)
+                user_uuid = await self.get_user_uuid(sess=sess, user_id = user_id)
             else:
                 return LogsMaker().error_message("Auth error! Invalid login or password!")
         

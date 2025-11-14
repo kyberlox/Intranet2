@@ -457,14 +457,14 @@ class Editor:
 
 
 
-    def section_rendering(self ):
+    async def section_rendering(self ):
         result = asyncio.run(Article(section_id = self.section_id).all_serch_by_date(self.session))
         for art in result:
             self.id = art["id"]
             art["preview_file_url"] = Article(id = int(self.id)).get_preview()
         return result
     
-    def rendering(self ):
+    async def rendering(self ):
         if self.art_id is None:
             return LogsMaker().warning_message("Укажите id статьи")
         
@@ -608,7 +608,7 @@ class Editor:
         # вывести
         return {"fields" : result_fields, "files" : files}
 
-    def pre_add(self, ):
+    async def pre_add(self, ):
         #Получаю поля паттерна       
         fields = self.pattern["fields"]
 
@@ -640,7 +640,7 @@ class Editor:
         
         return self.pattern
 
-    def add(self, data : dict):
+    async def add(self, data : dict):
         #self.art_id = int(data["id"])
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
@@ -699,11 +699,11 @@ class Editor:
         res = asyncio.run(Article(id = self.art_id).update(art, self.session))
         return res
     
-    def delete_art(self ):
+    async def delete_art(self ):
         res = asyncio.run(Article(id = self.art_id).delete(self.session))
         return res
         
-    def update(self, data : dict):
+    async def update(self, data : dict):
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
 
@@ -740,7 +740,7 @@ class Editor:
         res = asyncio.run(ArticleModel(id = self.art_id).update(art, self.session))
         return res
 
-    def get_files(self ):
+    async def get_files(self ):
         file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
         file_list = []
         for file in file_data:
@@ -793,7 +793,7 @@ class Editor:
 
         return result
 
-    def get_sections_list(self ):
+    async def get_sections_list(self ):
         all_sections = asyncio.run(Section().get_all(self.session))
 
         pattern_data_file = open("./src/base/patterns.json", "r")
@@ -810,7 +810,7 @@ class Editor:
                 edited_sections.append(sec)
         return edited_sections
 
-    def get_users_info(self, user_id_list):
+    async def get_users_info(self, user_id_list):
         art = asyncio.run(Article(id = self.art_id).find_by_id(self.session))
         
         if user_id_list == []:
@@ -929,7 +929,7 @@ class Editor:
 
         return art['indirect_data']['users']
     
-    def get_user_info(self, user_id):
+    asyncdef get_user_info(self, user_id):
         result = {}
         fields_to_return = {
             "14" : [
@@ -1037,7 +1037,7 @@ class Editor:
         return result
 
 
-def get_uuid_from_request(request, session):
+async def get_uuid_from_request(request, session):
     from .Auth import AuthService
     session_id = ""
     token = request.cookies.get("Authorization")
@@ -1062,7 +1062,7 @@ def get_uuid_from_request(request, session):
             return user_inf["ID"]
     return None
 
-def get_editor_roots(user_uuid):
+asyncdef get_editor_roots(user_uuid):
     from ..base.pSQL.objects.RootsModel import RootsModel
     roots_model = RootsModel()
     roots_model.user_uuid = user_uuid
@@ -1073,11 +1073,11 @@ def get_editor_roots(user_uuid):
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-def set_user_info(section_id : int, art_id : int, user_id: int, session: AsyncSession=Depends(get_async_db)):
+async def set_user_info(section_id : int, art_id : int, user_id: int, session: AsyncSession=Depends(get_async_db)):
     return Editor(art_id = art_id, section_id = section_id, session=session).get_user_info(user_id)
 
 @editor_router.post("/get_users_info")
-def set_user_info(session: AsyncSession=Depends(get_async_db), data = Body()):
+async def set_user_info(session: AsyncSession=Depends(get_async_db), data = Body()):
     if "art_id" in data:
         art_id = data["art_id"]
     else:
@@ -1091,12 +1091,12 @@ def set_user_info(session: AsyncSession=Depends(get_async_db), data = Body()):
 
 #получить паттерн
 @editor_router.get("/pattern/{section_id}")
-def get_pattern_by_sec_id(section_id : int):
+async def get_pattern_by_sec_id(section_id : int):
     return Editor(section_id = section_id).get_pattern()
 
 #заменить/создать паттерн
 @editor_router.post("/pattern")
-def get_pattern_by_sec_id(data = Body()):
+async def get_pattern_by_sec_id(data = Body()):
     section_id = int(data["section_id"])
     data.pop("section_id")
     return Editor(section_id = section_id).get_pattern(data)
@@ -1180,7 +1180,7 @@ async def create_file(file: UploadFile, art_id : int): #нельзя асинх�
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')
-def del_file(file_id: str):
+async def del_file(file_id: str):
     return storeFile(id = file_id).editor_del_file()
 
 @editor_router.post("/upload_files/{art_id}")

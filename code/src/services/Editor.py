@@ -794,7 +794,7 @@ class Editor:
         return result
 
     async def get_sections_list(self ):
-        all_sections = await Section().get_all(self.session)
+        all_sections = await Section().get_all()
 
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)

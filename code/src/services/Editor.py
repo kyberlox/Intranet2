@@ -1067,7 +1067,7 @@ async def get_editor_roots(user_uuid, session):
     roots_model = RootsModel()
     roots_model.user_uuid = user_uuid
     all_roots = await roots_model.get_token_by_uuid(session)
-    editor_roots = await roots_model.token_processing_for_editor(all_roots, session)
+    editor_roots = await roots_model.token_processing_for_editor(all_roots)
     return editor_roots
 
 

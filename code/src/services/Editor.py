@@ -138,6 +138,7 @@ class Editor:
         return pattern_data
 
 
+
     '''
     def get_fast_format(self ):
         #собрать поля статьи
@@ -453,6 +454,8 @@ class Editor:
         pattern_data_file.close()
         return pattern_data
     '''
+
+
 
     def section_rendering(self ):
         result = asyncio.run(Article(section_id = self.section_id).all_serch_by_date(self.session))
@@ -791,7 +794,7 @@ class Editor:
         return result
 
     def get_sections_list(self ):
-        all_sections = Section().get_all()
+        all_sections = asyncio.run(Section().get_all(self.session))
 
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
@@ -1034,7 +1037,7 @@ class Editor:
         return result
 
 
-def get_uuid_from_request(request):
+def get_uuid_from_request(request, session):
     from .Auth import AuthService
     session_id = ""
     token = request.cookies.get("Authorization")
@@ -1054,7 +1057,7 @@ def get_uuid_from_request(request):
         #получить и вывести его id
         user = User()
         user.uuid = user_uuid
-        user_inf = asyncio.run(user.user_inf_by_uuid(self.session))
+        user_inf = asyncio.run(user.user_inf_by_uuid(session))
         if user_inf is not None and "ID" in user_inf.keys():
             return user_inf["ID"]
     return None
@@ -1107,17 +1110,17 @@ async def get_edit_sections():
 
 # вывод списка редактируемых секций
 @editor_router.get("/get_sections_list")
-async def get_sections_list(request: Request):
-    user_uuid = get_uuid_from_request(request)
+async def get_sections_list(request: Request , session: AsyncSession=Depends(get_async_db)):
+    user_uuid = get_uuid_from_request(request, session)
     # user_uuid = 261
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
-        return Editor().get_sections_list()
+        return Editor(session=session).get_sections_list()
     elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
         
-        sections = Editor().get_sections_list()
+        sections = Editor(session=session).get_sections_list()
         result = [section for section in sections if section['id'] in editor_roots["EditorModer"]]
         return result
     return LogsMaker().warning_message(f"Недостаточно прав")
@@ -1131,7 +1134,7 @@ async def render(art_id : int, session: AsyncSession=Depends(get_async_db)):
 #рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
 async def sec_render(request: Request, sec_id: int, session: AsyncSession=Depends(get_async_db)):
-    user_uuid = get_uuid_from_request(request)
+    user_uuid = get_uuid_from_request(request, session)
     # user_uuid = 2366
     editor_roots = get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}

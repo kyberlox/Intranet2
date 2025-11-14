@@ -59,7 +59,7 @@ class Editor:
         if self.art_id is not None and section_id is None:
             # loop = 
             # loop.run_until_complete(no_stop())
-            self.art = art
+            self.art_id = art_id
             # art = asyncio.get_event_loop()
             # art.run_until_complete(ArticleModel(id = self.art_id).find_by_id(session=self.session))
             # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))

@@ -268,7 +268,7 @@ async def get_uuid_from_request(request, session):
 """Ручки которые доступны любому пользователю"""
 @peer_router.get("/sum")
 async def sum(request: Request, session: AsyncSession=Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request)
+    uuid = await get_uuid_from_request(request, session)
 
     return await Peer(user_uuid=uuid).sum(session)
 

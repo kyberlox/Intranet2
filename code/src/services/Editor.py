@@ -1111,16 +1111,16 @@ async def get_edit_sections():
 # вывод списка редактируемых секций
 @editor_router.get("/get_sections_list")
 async def get_sections_list(request: Request , session: AsyncSession=Depends(get_async_db)):
-    user_uuid = get_uuid_from_request(request, session)
+    user_uuid = await get_uuid_from_request(request, session)
     # user_uuid = 261
-    editor_roots = get_editor_roots(user_uuid)
+    editor_roots = await get_editor_roots(user_uuid)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
-        return Editor(session=session).get_sections_list()
+        return await Editor(session=session).get_sections_list()
     elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
         
-        sections = Editor(session=session).get_sections_list()
+        sections = await Editor(session=session).get_sections_list()
         result = [section for section in sections if section['id'] in editor_roots["EditorModer"]]
         return result
     return LogsMaker().warning_message(f"Недостаточно прав")

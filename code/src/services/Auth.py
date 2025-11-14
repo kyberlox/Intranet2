@@ -260,7 +260,8 @@ class AuthService:
     
     
     async def get_user_uuid(self, user_id, sess):
-        return await User(id = user_id).search_by_id(session=sess)["uuid"]
+        res = await User(id = user_id).search_by_id(session=sess)
+        return res["uuid"]
 
     async def get_user_data(self, user_uuid: str, session):
         # Хватаем данные из pSQL

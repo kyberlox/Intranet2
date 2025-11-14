@@ -929,7 +929,7 @@ class Editor:
 
         return art['indirect_data']['users']
     
-    asyncdef get_user_info(self, user_id):
+    async def get_user_info(self, user_id):
         result = {}
         fields_to_return = {
             "14" : [
@@ -1062,7 +1062,7 @@ async def get_uuid_from_request(request, session):
             return user_inf["ID"]
     return None
 
-asyncdef get_editor_roots(user_uuid):
+async def get_editor_roots(user_uuid):
     from ..base.pSQL.objects.RootsModel import RootsModel
     roots_model = RootsModel()
     roots_model.user_uuid = user_uuid

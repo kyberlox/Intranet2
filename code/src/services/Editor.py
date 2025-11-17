@@ -545,8 +545,8 @@ class Editor:
 
         #заполнить поля по шаблону
         result_fields = []
-        curr_patterns = await self.get_pattern()["fields"]
-        for need_field in curr_patterns:
+        curr_patterns = await self.get_pattern()
+        for need_field in curr_patterns["fields"]:
             has_added = False
             for got_field in got_fields:
 

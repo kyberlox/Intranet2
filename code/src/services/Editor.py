@@ -757,7 +757,7 @@ class Editor:
     async def get_files(self ):
         await self.validate()
         #file_data = await FileModel(art_id=self.art_id).find_all_by_art_id(self.session)
-        file_data = await FilesDBModel(art_id=self.art_id).find_all_by_art_id(self.session)
+        file_data = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(self.session)
         file_list = []
         for file in file_data:
             file_info = {}

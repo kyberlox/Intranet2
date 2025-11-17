@@ -1143,7 +1143,8 @@ async def get_sections_list(request: Request , session: AsyncSession=Depends(get
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id : int, session: AsyncSession=Depends(get_async_db)):
-    return await Editor(art_id=art_id, session=session).rendering()
+    edt = await Editor(art_id=art_id, session=session)
+    return await edt.rendering()
 
 #рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")

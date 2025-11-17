@@ -1194,14 +1194,14 @@ async def render(art_id : int):
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-async def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
+async def create_file(file: UploadFile, art_id : int, session: AsyncSession=Depends(get_async_db)): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = await storeFile(art_id = int(art_id)).editor_add_file(file=file)
+    f_inf = await File(art_id = int(art_id)).editor_add_file(session=session file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')
-async def del_file(file_id: str):
-    return storeFile(id = file_id).editor_del_file()
+async def del_file(file_id: str, session: AsyncSession=Depends(get_async_db)):
+    return storeFile(id = file_id).editor_del_file(session = session)
 
 @editor_router.post("/upload_files/{art_id}")
 async def create_upload_files(art_id, files: List[UploadFile] ):

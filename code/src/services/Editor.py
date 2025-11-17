@@ -761,7 +761,7 @@ class Editor:
         file_list = []
         for file in file_data:
             file_info = {}
-            file_info["id"] = str(file["_id"])
+            file_info["id"] = str(file["id"])
             file_info["original_name"] = file["original_name"]
             file_info["stored_name"] = file["stored_name"]
             file_info["content_type"] = file["content_type"]

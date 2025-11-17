@@ -52,7 +52,6 @@ export default defineComponent({
 
         const moderate = (type: 'accept' | 'cancel', rowId: number, uuidTo: number) => {
             Api.post(`/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}/${rowId}${type == 'accept' ? '/' + uuidTo : ''}`)
-                .then((data) => console.log(data))
                 .finally(() => tableInit())
         }
 

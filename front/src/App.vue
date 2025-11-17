@@ -60,8 +60,6 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            console.log(route.name);
-
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');

@@ -69,8 +69,11 @@
                             </a>
                             <span class="calendar-year__event-btn calendar-year__event-btn--no-border"
                                   v-else></span>
-                        </div>
 
+                            <!-- <div class="calendar-year__event-btn calendar-year__event-btn--no-border">
+                                Данные участников
+                            </div> -->
+                        </div>
                     </div>
                 </div>
             </div>

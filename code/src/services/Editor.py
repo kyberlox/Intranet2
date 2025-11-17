@@ -51,25 +51,12 @@ def get_type(value):
 
 class Editor:
     
-    async def __init__(self, id=None, art_id=None, section_id=None, session=None):
+    def __init__(self, id=None, art_id=None, section_id=None, session=None):
         self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
         self.session = session
         self.section_id = section_id
         self.art_id = art_id
-        if self.art_id is not None and section_id is None:
-            # loop = 
-            # loop.run_until_complete(no_stop())
-            art = await ArticleModel(id = self.art_id).find_by_id(session=self.session)
-            # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
-            if "section_id" in art:
-                self.section_id = art["section_id"]
-
-        self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
-        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
-        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172, 56] :
-                self.notEditble.append("preview_text")
-        if self.section_id in [41, 42, 111, 52] :
-                self.notEditble.append("content_text")
+        
 
         self.variable = {
             "active" : [True, False],
@@ -80,19 +67,31 @@ class Editor:
         fields_data_file = open("./src/base/fields.json", "r")
         self.fields = json.load(fields_data_file)
         fields_data_file.close()
+
+        self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
+        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        self.pattern = None
+        
+        
+    
+    async def validate(self):
+        if self.art_id is not None and section_id is None:
+            
+            art = await ArticleModel(id = self.art_id).find_by_id(session=self.session))
+            # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
+            
+            if "section_id" in art:
+                self.section_id = art["section_id"]
+        
+        
+        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172, 56] :
+                self.notEditble.append("preview_text")
+        if self.section_id in [41, 42, 111, 52] :
+                self.notEditble.append("content_text")
         
         #список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
-
-        #ошибка тут
-        # if self.section_id is not None:
-        #     for sec_pattern in pattern_data:
-        #         LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}, self.section_id = {self.section_id}')
-        #         if self.section_id in sec_pattern["section_id"].keys():
-        #             self.pattern = sec_pattern
-        # else:
-        #     self.pattern = None
 
         if self.section_id is not None:
             for sec_pattern, value in pattern_data.items():
@@ -102,18 +101,10 @@ class Editor:
             self.pattern = None
         pattern_data_file.close()
 
-    # @classmethod
-    # async def create(cls, id=None, art_id=None, section_id=None, session=None):
-    #     instance = cls(id, art_id, section_id, session)
-        
-    #     if instance.art_id is not None and instance.section_id is None:
-    #         art = await ArticleModel(id=instance.art_id).find_by_id(session=instance.session)
-    #         if art and "section_id" in art:
-    #             instance.section_id = art["section_id"]
-        
-    #     return instance
 
-    def get_pattern(self ):
+
+    async def get_pattern(self ):
+        await self.validate()
         #и ошибка тут
         #список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
@@ -134,8 +125,9 @@ class Editor:
 
         return self.pattern
 
-    def set_pattern(self, new_pattern):
-        
+    async def set_pattern(self, new_pattern):
+        await self.validate()
+
         #получить текущие паттерны
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
@@ -472,6 +464,7 @@ class Editor:
 
 
     async def section_rendering(self ):
+        await self.validate()
         result = await Article(section_id = self.section_id).all_serch_by_date(self.session)
         for art in result:
             self.id = art["id"]
@@ -479,6 +472,7 @@ class Editor:
         return result
     
     async def rendering(self ):
+        await self.validate()
         if self.art_id is None:
             return LogsMaker().warning_message("Укажите id статьи")
         
@@ -623,6 +617,7 @@ class Editor:
         return {"fields" : result_fields, "files" : files}
 
     async def pre_add(self, ):
+        await self.validate()
         #Получаю поля паттерна       
         fields = self.pattern["fields"]
 
@@ -655,6 +650,7 @@ class Editor:
         return self.pattern
 
     async def add(self, data : dict):
+        await self.validate()
         #self.art_id = int(data["id"])
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
@@ -714,10 +710,12 @@ class Editor:
         return res
     
     async def delete_art(self ):
+        await self.validate()
         res = await Article(id = self.art_id).delete(self.session)
         return res
         
     async def update(self, data : dict):
+        await self.validate()
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
 
@@ -755,6 +753,7 @@ class Editor:
         return res
 
     async def get_files(self ):
+        await self.validate()
         file_data = await FileModel(art_id=self.art_id).find_all_by_art_id(self.session)
         file_list = []
         for file in file_data:
@@ -808,6 +807,7 @@ class Editor:
         return result
 
     async def get_sections_list(self ):
+        await self.validate()
         all_sections = await Section().get_all()
 
         pattern_data_file = open("./src/base/patterns.json", "r")
@@ -825,6 +825,7 @@ class Editor:
         return edited_sections
 
     async def get_users_info(self, user_id_list):
+        await self.validate()
         art = await Article(id = self.art_id).find_by_id(self.session)
         
         if user_id_list == []:
@@ -944,6 +945,7 @@ class Editor:
         return art['indirect_data']['users']
     
     async def get_user_info(self, user_id):
+        await self.validate()
         result = {}
         fields_to_return = {
             "14" : [
@@ -1143,8 +1145,7 @@ async def get_sections_list(request: Request , session: AsyncSession=Depends(get
 #рендеринг статьи
 @editor_router.get("/rendering/{art_id}")
 async def render(art_id : int, session: AsyncSession=Depends(get_async_db)):
-    edt = await Editor(art_id=art_id, session=session)
-    return await edt.rendering()
+    return await Editor(art_id=art_id, session=session).rendering()
 
 #рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")

@@ -77,7 +77,7 @@ class Editor:
     async def validate(self):
         if self.art_id is not None and section_id is None:
             
-            art = await ArticleModel(id = self.art_id).find_by_id(session=self.session))
+            art = await ArticleModel(id = self.art_id).find_by_id(session=self.session)
             # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
             
             if "section_id" in art:

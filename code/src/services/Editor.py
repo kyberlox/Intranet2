@@ -777,7 +777,7 @@ class Editor:
                 file_info["type"] = "documentation"
 
             file_info["article_id"] = file["article_id"]
-            file_info["b24_id"] = file["b24_id"]
+            file_info["b24_url"] = file["b24_url"]
             url = file["file_url"]
             
             file_info["file_url"] = f"{DOMAIN}{url}"

@@ -782,7 +782,7 @@ class Editor:
             
             file_info["file_url"] = f"{DOMAIN}{url}"
             
-            file_info["is_archive"] = file["is_archive"]
+            file_info["active"] = file["active"]
             file_info["is_preview"] = file["is_preview"]
 
             file_list.append(file_info)

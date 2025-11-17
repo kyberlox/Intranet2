@@ -608,7 +608,8 @@ class Editor:
 
         need_del = []
         for f in files.keys():
-            if files[f] == [] and self.get_pattern()["files"].get(f) is None:
+            curr_pattern = await self.get_pattern()
+            if files[f] == [] and curr_pattern["files"].get(f) is None:
                 need_del.append(f)
         for f in need_del:
             files.pop(f)

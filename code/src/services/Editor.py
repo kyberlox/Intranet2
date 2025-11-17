@@ -1196,7 +1196,7 @@ async def render(art_id : int):
 @editor_router.post("/upload_file/{art_id}")
 async def create_file(file: UploadFile, art_id : int, session: AsyncSession=Depends(get_async_db)): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = await File(art_id = int(art_id)).editor_add_file(session=session file=file)
+    f_inf = await File(art_id = int(art_id)).editor_add_file(session=session, file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')

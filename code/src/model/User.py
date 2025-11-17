@@ -164,22 +164,22 @@ class User:
         return LikesModel(user_id=self.id).get_user_likes()
 
     # Обновляет данные конкретного пользователя
-    def update_inf_from_b24(self ):
-        data = B24().getUsers()
-        for usr_data in data:
-            if int(usr_data["ID"]) == int(self.id):
-                self.UserModel.upsert_user(usr_data)
-                self.update_user_elastic()
-                return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
-        return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
+    # def update_inf_from_b24(self ):
+    #     data = B24().getUsers()
+    #     for usr_data in data:
+    #         if int(usr_data["ID"]) == int(self.id):
+    #             self.UserModel.upsert_user(usr_data)
+    #             # self.update_user_elastic()
+    #             return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
+    #     return LogsMaker().warning_message(f"Не удалось найтии пользователя с ID = {self.id}")
 
-    def update_user_elastic(self):
-        user_data = self.search_by_id()
-        result = self.UserSearchModel.update_user_el_index(user_data)
-        if result:
-            return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
-        else:
-            LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
+    # def update_user_elastic(self):
+    #     user_data = self.search_by_id()
+    #     result = self.UserSearchModel.update_user_el_index(user_data)
+    #     if result:
+    #         return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id} в ElasticSearch") 
+    #     else:
+    #         LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}")
 
     def find_by_email(self, email):
         return self.UserModel.find_by_email(email)
@@ -223,7 +223,8 @@ def update_user():
 
 @users_router.put("/update_user_info/{user_id}")
 def update_user_info(user_id : int):
-    return User(id = user_id).update_inf_from_b24()
+    # return User(id = user_id).update_inf_from_b24()
+    return True
 
 #Пользователя можно выгрузить
 @users_router.get("/find_by/{id}")

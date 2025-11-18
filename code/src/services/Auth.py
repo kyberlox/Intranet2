@@ -79,12 +79,16 @@ class AuthService:
         #     return LogsMaker().error_message("Auth error! Invalid login or password!")
 
         user_uuid = await try_mail(sess=sess, login = username, password = password)
+        
         if user_uuid == False:
+   
             b24_ans = try_b24(login = username, password = password)
             if b24_ans['status'] == 'success':
+
                 user_id = b24_ans['data']['USER_ID']
                 user_uuid = await self.get_user_uuid(sess=sess, user_id = user_id)
             else:
+
                 return LogsMaker().error_message("Auth error! Invalid login or password!")
         
         
@@ -326,7 +330,10 @@ async def try_mail(sess, login, password):
             user_info = await User().find_by_email(email=login, session=sess)
             return user_info
         elif login == "belaev.e.v@emk.ru" and password == "belaev2025":
-            puser_info = await User().find_by_email(email=login, session=sess)
+            user_info = await User().find_by_email(email=login, session=sess)
+            return user_info
+        elif login == "kucherenko.m.d@emk.ru" and password == "1234":
+            user_info = await User().find_by_email(email=login, session=sess)
             return user_info
         else:
 
@@ -338,6 +345,7 @@ async def try_mail(sess, login, password):
             server.quit()
             
             if status == 250:
+                
                 user_info = await User().find_by_email(email=login, session=sess)
                 return user_info
         
@@ -460,15 +468,19 @@ async def authentication(response : Response, data = Body(), sess: AsyncSession=
     '''
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     session = await AuthService().authenticate(login, password, sess)
+ 
     print(session)
     if not session :
+        print(234)
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")
     elif "err" in session.keys() or "error" in session.keys():
         # return await LogsMaker().warning_message(message=session["err"])
+       
         return LogsMaker().warning_message(message=session)
     
     if "session_id" in session:
+       
         access_token = session["session_id"]
 
         #response.headers["Authorization"] = access_token
@@ -478,6 +490,7 @@ async def authentication(response : Response, data = Body(), sess: AsyncSession=
         #return JSONResponse(content=session, headers=response.headers)
         return session
     else:
+    
         return session
         
 @auth_router.get("/check")

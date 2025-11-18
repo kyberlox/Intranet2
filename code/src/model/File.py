@@ -46,11 +46,11 @@ UPLOAD_PROGRESS: Dict[int, float] = {}
 class File:
     def __init__(self, id=None, art_id =None, b24_id=None):
 
-        if id is not None:
-            if type(id) == type(ObjectId("a"*24)):
-                id = id
-            elif type(id) == type(str()) and id != '':
-                id = ObjectId(id)
+        # if id is not None:
+        #     if type(id) == type(ObjectId("a"*24)):
+        #         id = id
+        #     elif type(id) == type(str()) and id != '':
+        #         id = ObjectId(id)
         self.id = id
         self.art_id = art_id
         self.b24_id = b24_id
@@ -488,7 +488,8 @@ class File:
         file_list = []
         
         if not file_data:
-            raise HTTPException(status_code=404, detail="Files not found")
+            # raise HTTPException(status_code=404, detail="Files not found")
+            return None
         else:
             for fl in file_data:
                 if fl["active"]:
@@ -519,14 +520,16 @@ class File:
             return file_list
 
     async def delete_by_art_id(self, session):
-        files_data = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(session=session)
-        if files_data is not None and files_data != []:
-            for file_data in files_data:
-                #удалить по id файла
-                self.id = file_data['id']
-                await FilesDBModel(id = self.id).remove(session=session)
+        try:
+            files_data = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(session=session)
+            if files_data is not None and files_data != []:
+                for file_data in files_data:
+                    #удалить по id файла
+                    self.id = file_data['id']
+                    await FilesDBModel(id = self.id).remove(session=session)
             return True
-        return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при удалении файлов статьи с id = {self.art_id} delete_by_art_id File: {e}')
 
     #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def get_files_by_section_id(self, section_id, session):

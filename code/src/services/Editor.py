@@ -745,7 +745,8 @@ class Editor:
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
                             #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            tags_id = key["tags"]
+                            
+                            tags_id = data["tags"]
                             #заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
                         art["indirect_data"][key] = data[key]
@@ -1196,12 +1197,12 @@ async def render(art_id : int):
 @editor_router.post("/upload_file/{art_id}")
 async def create_file(file: UploadFile, art_id : int, session: AsyncSession=Depends(get_async_db)): #нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = await File(art_id = int(art_id)).editor_add_file(session=session, file=file)
+    f_inf = await storeFile(art_id = int(art_id)).editor_add_file(session=session, file=file)
     return f_inf
 
 @editor_router.delete('/delete_file/{file_id}')
 async def del_file(file_id: str, session: AsyncSession=Depends(get_async_db)):
-    return storeFile(id = file_id).editor_del_file(session = session)
+    return await storeFile(id = file_id).editor_del_file(session = session)
 
 @editor_router.post("/upload_files/{art_id}")
 async def create_upload_files(art_id, files: List[UploadFile] ):
@@ -1210,7 +1211,7 @@ async def create_upload_files(art_id, files: List[UploadFile] ):
         file_infos = []
         for file in files:
             # Здесь можно сохранить файл или обработать его содержимое
-            f_inf = storeFile(art_id).editor_add_file(file=file)
+            f_inf = await storeFile(art_id).editor_add_file(file=file)
             file_infos.append(f_inf)
         
         return JSONResponse(file_infos)

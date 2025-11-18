@@ -131,8 +131,8 @@ class TagsModel:
             )
             result = await session.execute(stmt)
             articles = result.scalars().all()
-            
-            return articles if articles else []
+            res = articles if articles else []
+            return res
             
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка поиска статей по тегу: {str(e)}")

@@ -1151,13 +1151,12 @@ class Article:
         '''
 
         await self.upload_uniquely(session)
-        # await self.upload_with_parameter(session)
-        # await self.upload_many_to_many(session)
-        # await self.upload_services(session) # загрузили все без проблем
-        # await self.upload_services(session) # загрузили все без проблем
+        await self.upload_with_parameter(session)
+        await self.upload_many_to_many(session)
+        await self.upload_services(session) # загрузили все без проблем
 
         # Дамп данных в эластик
-        # await self.dump_articles_data_es(session=session)
+        await self.dump_articles_data_es(session=session)
 
         await self.upload_likes(session)
         await self.upload_views(session)
@@ -1636,29 +1635,31 @@ class Article:
         art['videos_native'] = []
         art['videos_embed'] = []
         art['documentation'] = []
-        
-        for file in files:
-            #файлы делятся по категориям
-            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                url = file["file_url"]
-                if art['section_id'] in [42, 51, 52]:
-                    preview_link = url.split("/")
-                    preview_link[-2] = "compress_image/yowai_mo"
-                    url = '/'.join(preview_link)
-                file["file_url"] = f"{DOMAIN}{url}"
-                art['images'].append(file)
-            elif "video" in file["content_type"]:
-                url = file["file_url"]
-                file["file_url"] = f"{DOMAIN}{url}"
-                art['videos_native'].append(file)
-            elif "link" in file["content_type"]:
-                art['videos_embed'].append(file)
-            else:
-                url = file["file_url"]
-                file["file_url"] = f"{DOMAIN}{url}"
-                art['documentation'].append(file)
-        
-        art["preview_file_url"] = await self.get_preview(session)
+        if files:
+            for file in files:
+                #файлы делятся по категориям
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    if art['section_id'] in [42, 51, 52]:
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['images'].append(file)
+                elif "video" in file["content_type"]:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['videos_native'].append(file)
+                elif "link" in file["content_type"]:
+                    art['videos_embed'].append(file)
+                else:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['documentation'].append(file)
+
+        prev = await self.get_preview(session)
+        art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+        # art["preview_file_url"] = await self.get_preview(session) 
         
         if art['section_id'] == 31 or art['section_id'] == 33:
             if 'tags' in art['indirect_data']:
@@ -1723,54 +1724,57 @@ class Article:
 
     async def delete(self, session):
         #удалить файлы статьи
-        res = await File(art_id = self.id).delete_by_art_id(session=session)
-        if res is True:
-            return await ArticleModel(id = self.id).remove(session=session)
-        return LogsMaker().warning_message(f"Возникла ошибка при удалении файлов статьи с id = {self.id}")
+        try:
+            res = await File(art_id = self.id).delete_by_art_id(session=session)
+            if res is True:
+                return await ArticleModel(id = self.id).remove(session=session)
+        except Exception as e:
+            return LogsMaker().error_message(f"Возникла ошибка при удалении статьи с id = {self.id}: {e}")
     
     async def get_preview(self, session):
         files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
-        for file in files:
-            if file["is_preview"]:
-                url = file["file_url"]
-                
-                #внедряю компрессию
-                if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
-                    preview_link = url.split("/")
-                    preview_link[-2] = "compress_image/yowai_mo"
-                    url = '/'.join(preview_link)
-                #Для баготворительных проектов компрессия не требуется
-                # и для гида по предприятиям 
-                
-                elif self.section_id in ["55", "41", "32"]:
+        if files:
+            for file in files:
+                if file["is_preview"]:
+                    url = file["file_url"]
+                    
+                    #внедряю компрессию
+                    if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    #Для баготворительных проектов компрессия не требуется
+                    # и для гида по предприятиям 
+                    
+                    elif self.section_id in ["55", "41", "32"]:
+                        return f"{DOMAIN}{url}"
+                    else:
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image"
+                        # preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    
                     return f"{DOMAIN}{url}"
-                else:
-                    preview_link = url.split("/")
-                    preview_link[-2] = "compress_image"
-                    # preview_link[-2] = "compress_image/yowai_mo"
-                    url = '/'.join(preview_link)
-                
-                return f"{DOMAIN}{url}"
 
-        #находим любую картинку, если она есть
-        for file in files:
-            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                url = file["file_url"]
-                #внедряю компрессию
-                if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
-                    preview_link = url.split("/")
-                    preview_link[-2] = "compress_image/yowai_mo"
-                    url = '/'.join(preview_link)
-                #Для баготворительных проектов компрессия не требуется
-                # и для гида по предприятиям 
-                elif self.section_id in ["55", "41", "32"]:
+            #находим любую картинку, если она есть
+            for file in files:
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    #внедряю компрессию
+                    if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    #Для баготворительных проектов компрессия не требуется
+                    # и для гида по предприятиям 
+                    elif self.section_id in ["55", "41", "32"]:
+                        return f"{DOMAIN}{url}"
+                    else:
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image"
+                        # preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
                     return f"{DOMAIN}{url}"
-                else:
-                    preview_link = url.split("/")
-                    preview_link[-2] = "compress_image"
-                    # preview_link[-2] = "compress_image/yowai_mo"
-                    url = '/'.join(preview_link)
-                return f"{DOMAIN}{url}"
         
         return None
 
@@ -1781,7 +1785,6 @@ class Article:
     async def update(self, new_data, session):	
         #получаю статью
         art = await ArticleModel(id = self.id).find_by_id(session=session)
-        print(art)
 
         for key in art.keys():
             if key in new_data.keys():
@@ -1841,22 +1844,22 @@ class Article:
                     res['videos_embed'] = []
                     res['documentation'] = []
                     
-                    for file in files:
-
+                    if files:
+                        for file in files:
                         
-                        url = file["file_url"]
-                        file["file_url"] = f"{DOMAIN}{url}"
+                            url = file["file_url"]
+                            file["file_url"] = f"{DOMAIN}{url}"
 
-                        #файлы делятся по категориям
-                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                            res['images'].append(file)
-                        elif "video" in file["content_type"]:
-                            res['videos_native'].append(file)
-                        elif "link" in file["content_type"]:
-                            res['videos_embed'].append(file)
-                        else:
-                            
-                            res['documentation'].append(file)
+                            #файлы делятся по категориям
+                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                res['images'].append(file)
+                            elif "video" in file["content_type"]:
+                                res['videos_native'].append(file)
+                            elif "link" in file["content_type"]:
+                                res['videos_embed'].append(file)
+                            else:
+                                
+                                res['documentation'].append(file)
 
                     active_articles.append(res)
             return sorted(active_articles, key=lambda x: x['id'], reverse=True)
@@ -1883,11 +1886,12 @@ class Article:
                     images = []
                     self.id = re['id']
                     files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
-                    for file in files:
-                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                            url = file["file_url"]
-                            file["file_url"] = f"{DOMAIN}{url}"
-                            images.append(file)
+                    if files:
+                        for file in files:
+                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                url = file["file_url"]
+                                file["file_url"] = f"{DOMAIN}{url}"
+                                images.append(file)
 
                     # отсюда достать все файлы
                     art_info = {}
@@ -1917,7 +1921,7 @@ class Article:
                         url = files[0]["file_url"]
                         res['preview_file_url'] = f"{DOMAIN}{url}"
                     else:
-                        res['preview_file_url'] = None
+                        res['preview_file_url'] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
                     if user_id is not None:
                         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
@@ -1936,7 +1940,10 @@ class Article:
                     if int(self.section_id) in [31, 16, 33]:
                         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
                             self.id = res["id"]
-                            res["preview_file_url"] = await self.get_preview(session)
+                            
+                            # res["preview_file_url"] = await self.get_preview(session)
+                            prev = await self.get_preview(session)
+                            res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                             # сюда лайки и просмотры
                              # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                             user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
@@ -1947,12 +1954,15 @@ class Article:
                             continue
                     else:
                         self.id = res["id"]
-                        # res["preview_file_url"] = await self.get_preview()
+                        prev = await self.get_preview(session)
+                        res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
                         
-                        # if res["preview_file_url"] is None:
-                        #     if int(self.section_id) == 32:
-                        #         res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
+                        if res["preview_file_url"] is None:
+                            if int(self.section_id) == 32:
+                                res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
+                            else:
+                                res["preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list: # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
@@ -2041,16 +2051,6 @@ class Article:
                 if values["active"] == False:
                     continue
                 
-                    # flag = False
-                    # if values["date_publiction"] is not None:
-                    #     time_diff = current_datetime - values["date_publiction"]
-                    #     if time_diff.days <= 10:
-                    #         flag = True
-                    # else:
-                    #     time_diff = current_datetime - values["date_creation"]
-                    #     if time_diff.days <= 10:
-                    #         flag = True
-                    # if flag == True:
                 self.id = values["id"]
                 
                 files = await File(art_id = int(self.id)).get_files_by_art_id(session=session)
@@ -2118,11 +2118,13 @@ class Article:
             for art in articles_in_section:
                 if art["active"] is not False:
                     self.id = art["id"]
-                    # preview_pict = await self.get_preview(session)
-                    preview_pict = None
+                    
+                    preview_pict = await self.get_preview(session)
+                    # preview_pict = None
 
                     if preview_pict is None:
-                        image_url = None
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         image_url = preview_pict
 
@@ -2199,10 +2201,11 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    # preview_pict = await self.get_preview(session)
-                    preview_pict = None
+                    preview_pict = await self.get_preview(session)
+                    # preview_pict = None
                     if preview_pict is None:
-                        image_url = None
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         image_url = preview_pict
                     
@@ -2258,10 +2261,11 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    # preview_pict = await self.get_preview(session=session)
-                    preview_pict = None
+                    preview_pict = await self.get_preview(session=session)
+                    # preview_pict = None
                     if preview_pict is None:
-                        image_url = None
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         image_url = preview_pict
                     
@@ -2316,10 +2320,11 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    # preview_pict = await self.get_preview(session=session)
-                    preview_pict = None
+                    preview_pict = await self.get_preview(session=session)
+                    # preview_pict = None
                     if preview_pict is None:
-                        image_url = None
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         image_url = preview_pict
                     
@@ -2373,10 +2378,11 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    # preview_pict = await self.get_preview(session=session)
-                    preview_pict = None
+                    preview_pict = await self.get_preview(session=session)
+                    # preview_pict = None
                     if preview_pict is None:
-                        image_url = None
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         image_url = preview_pict
                     
@@ -2420,10 +2426,11 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    # preview_pict = await self.get_preview(session=session)
-                    preview_pict = None
+                    preview_pict = await self.get_preview(session=session)
+                    # preview_pict = None
                     if preview_pict is None:
-                        image_url = None
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     else:
                         image_url = preview_pict
                     
@@ -2571,9 +2578,9 @@ class Article:
                 self.id = art.id
                 art = art.__dict__
                 
-                preview_pict = self.get_preview(session=session)
+                prev = await self.get_preview(session)
+                art['preview_file_url']  = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
             
-                art['preview_file_url'] = preview_pict
                 if user_id is not None:
                     has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
 

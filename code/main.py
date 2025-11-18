@@ -327,8 +327,8 @@ async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
     from src.base.Elastic.UserSearchModel import UserSearchModel
     from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
     from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
-    await UserSearchModel().dump(session)
-    await StructureSearchModel().dump(session)
+    # await UserSearchModel().dump(session)
+    # await StructureSearchModel().dump(session)
     await ArticleSearchModel().dump(session)
     return {"status": True}
 
@@ -413,7 +413,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     """
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()
-    
+    """
     
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
@@ -460,7 +460,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-    """   
+      
     
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
@@ -491,11 +491,12 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
 
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
-# @app.get("/elastic_dump")
-# def elastic_dump():
-#     # res = UserSearchModel().dump()
-#     res = StructureSearchModel().dump()
-#     return res
+@app.get("/elastic_dump")
+async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
+    await UserSearchModel().dump(session)
+    await StructureSearchModel().dump(session)
+    await ArticleSearchModel().dump(session)
+    return res
 '''
 ! Особенные запросы
 '''

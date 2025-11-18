@@ -159,50 +159,51 @@ class ArticleSearchModel:
                     preview_photo = None
                     # обработка превью
                     files = await File(art_id = int(art_id)).get_files_by_art_id(session=session)
-                    for file in files:
-                        if file["is_preview"]:
-                            url = file["file_url"]
-                            
-                            #внедряю компрессию
-                            if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image/yowai_mo"
-                                url = '/'.join(preview_link)
+                    if files:
+                        for file in files:
+                            if file["is_preview"]:
+                                url = file["file_url"]
+                                
+                                #внедряю компрессию
+                                if article_data["section_id"] == 18: #отдельный алгоритм для памятки новому сотруднику
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
 
-                                preview_photo = f"{DOMAIN}{url}"
-                            #Для баготворительных проектов компрессия не требуется
-                            # и для гида по предприятиям 
-                            
-                            elif self.section_id in ["55", "41", "32"]:
-                                preview_photo = f"{DOMAIN}{url}"
-                            else:
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image"
-                                # preview_link[-2] = "compress_image/yowai_mo"
-                                url = '/'.join(preview_link)
-                                preview_photo = f"{DOMAIN}{url}"
+                                    preview_photo = f"{DOMAIN}{url}"
+                                #Для баготворительных проектов компрессия не требуется
+                                # и для гида по предприятиям 
+                                
+                                elif article_data["section_id"] in [55, 41, 32]:
+                                    preview_photo = f"{DOMAIN}{url}"
+                                else:
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image"
+                                    # preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
 
-                    #находим любую картинку, если она есть
-                    for file in files:
-                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-                            url = file["file_url"]
-                            #внедряю компрессию
-                            if self.section_id == "18": #отдельный алгоритм для памятки новому сотруднику
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image/yowai_mo"
-                                url = '/'.join(preview_link)
-                                preview_photo = f"{DOMAIN}{url}"
-                            #Для баготворительных проектов компрессия не требуется
-                            # и для гида по предприятиям 
-                            elif self.section_id in ["55", "41", "32"]:
-                                preview_photo = f"{DOMAIN}{url}"
-                            else:
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image"
-                                # preview_link[-2] = "compress_image/yowai_mo"
-                                url = '/'.join(preview_link)
-                                preview_photo = f"{DOMAIN}{url}"
-
+                        #находим любую картинку, если она есть
+                        for file in files:
+                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                url = file["file_url"]
+                                #внедряю компрессию
+                                if article_data["section_id"] == 18: #отдельный алгоритм для памятки новому сотруднику
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
+                                #Для баготворительных проектов компрессия не требуется
+                                # и для гида по предприятиям 
+                                elif article_data["section_id"] in [55, 41, 32]:
+                                    preview_photo = f"{DOMAIN}{url}"
+                                else:
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image"
+                                    # preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
+                        data_row["preview_photo"] = preview_photo
                     data_row["section_id"] = article_data["section_id"]
                     if article_data["section_id"] == 15:
                         data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
@@ -211,7 +212,7 @@ class ArticleSearchModel:
                     data_row["preview_text"] = article_data["preview_text"]
                     data_row["content_text"] = article_data["content_text"]
                     data_row["content_type"] = article_data["content_type"]
-                    data_row["preview_photo"] = preview_photo
+                    
 
                     article_action = {
                         "_index": self.index,

@@ -1,5 +1,5 @@
 from ..models.FilesDB import FilesDB
-from .App import select, func #get_db
+from .App import select, func, delete #get_db
 
 import os
 
@@ -147,7 +147,7 @@ class FilesDBModel():
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {file_path} не найден")
                 
                 # Удаляем запись из базы
-                stmt = select(FilesDB).where(FilesDB.id == self.id)
+                stmt = select(FilesDB).where(FilesDB.id == int(self.id))
                 result = await session.execute(stmt)
                 file_record = result.scalar_one_or_none()
                 

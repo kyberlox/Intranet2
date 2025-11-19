@@ -645,11 +645,17 @@ class Editor:
                 #добавить статью
                 await Article().set_new(art, self.session)
                 LogsMaker().ready_status_message(f"Создал {self.art_id}")
-        
+            
+            elif field["field"] == "all_tags":
+                #получаешь список ВСЕХ доступных тэгов
+                tags_list = await Tag().get_all_tags(self.session)
+                #записываешь в need_field["values"] и в need_field["values"]
+                field["values"] = tags_list
+
             
         #Вношу изменеения
         self.pattern["fields"] = fields
-        
+
         return self.pattern
 
     async def add(self, data : dict):
@@ -735,8 +741,12 @@ class Editor:
             if key not in self.notEditble:
                 #если это один из основных параметрова
                 if key in self.fundamental:
-                    #фиксирую
-                    art[key] = data[key]
+                    if key == 'date_publiction':
+                        art[key] = make_date_valid(data[key])
+                    else:
+                        #фиксирую
+                        art[key] = data[key]
+                    
 
                 #если это часть indirect_data
                 else:
@@ -1179,6 +1189,9 @@ async def get_form(section_id : int, session: AsyncSession=Depends(get_async_db)
 @editor_router.post("/add/{art_id}")
 async def set_new(art_id : int, session: AsyncSession=Depends(get_async_db), data = Body()):
     #section_id = data["section_id"]
+    from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+    await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
+    print(data)
     return await Editor(art_id=art_id, session=session).add(data)
 
 

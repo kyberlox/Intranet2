@@ -228,10 +228,10 @@ class ArticleSearchModel:
 
         return {"status": True}
 
-    def elasticsearch_article(self, key_word):
+    async def elasticsearch_article(self, key_word):
         from src.model.Section import Section
 
-        sections = Section().get_all()
+        sections = await Section().get_all()
         result = []
         res = elastic_client.search(
             index=self.index,
@@ -320,7 +320,7 @@ class ArticleSearchModel:
                 art_info['authorId'] = res_info["_source"]["authorId"]
             elif "company" in res_info["_source"].keys() and res_info["_source"]["company"] is not None:
                 art_info['authorId'] = res_info["_source"]['company']
-            art_info['image'] = res_info["_source"]["preview_photo"]
+            art_info['image'] = res_info["_source"]["preview_photo"] if "preview_photo" in res_info["_source"].keys() else None
             art_info['coincident'] = res_info['highlight']
             articles.append(art_info)
 
@@ -334,72 +334,84 @@ class ArticleSearchModel:
 
         return result  # res['hits']['hits'] result
 
-    def update_art_el_index(self, article_data):
-        art_id = article_data['id']
-        LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
-        data_row = {}
-        if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
+    async def update_art_el_index(self, article_data, session):
+        try:
+            from src.model.File import File
+            art_id = article_data['id']
+            LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
+            data_row = {}
+            if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
 
-            if isinstance(article_data['indirect_data'], str):
-                article_data['indirect_data'] = json.loads(article_data['indirect_data'])
+                preview_photo = None
+                # обработка превью
+                files = await File(art_id=article_data['id']).get_files_by_art_id(session)
+                if files:
+                    for file in files:
+                        if file["is_preview"]:
+                            url = file["file_url"]
+                            # внедряю компрессию
+                            if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image/yowai_mo"
+                                url = '/'.join(preview_link)
+                            else:
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image"
+                                url = '/'.join(preview_link)
 
-            preview_photo = None
-            # обработка превью
-            files = File(art_id=article_data['id']).get_files_by_art_id()
-            
-            for file in files:
-                if file["is_preview"]:
-                    url = file["file_url"]
-                    # внедряю компрессию
-                    if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image/yowai_mo"
-                        url = '/'.join(preview_link)
-                    else:
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image"
-                        url = '/'.join(preview_link)
+                            preview_photo = f"{DOMAIN}{url}"
 
-                    preview_photo = f"{DOMAIN}{url}"
+                    # находим любую картинку, если она есть
+                    for file in files:
+                        
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
+                            "original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            LogsMaker().info_message(f"Найден файл URL={url}")
+                            # внедряю компрессию
+                            if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image/yowai_mo"
+                                url = '/'.join(preview_link)
+                            else:
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image"
+                                url = '/'.join(preview_link)
 
-            # находим любую картинку, если она есть
-            for file in files:
-                
-                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
-                    "original_name"] or "png" in file["original_name"]:
-                    url = file["file_url"]
-                    LogsMaker().info_message(f"Найден файл URL={url}")
-                    # внедряю компрессию
-                    if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image/yowai_mo"
-                        url = '/'.join(preview_link)
-                    else:
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image"
-                        url = '/'.join(preview_link)
+                            preview_photo = f"{DOMAIN}{url}"
 
-                    preview_photo = f"{DOMAIN}{url}"
+                data_row["section_id"] = article_data["section_id"]
+                if "indirect_data" in article_data.keys() and article_data["indirect_data"] is not None: 
+                    if isinstance(article_data['indirect_data'], str):
+                        article_data['indirect_data'] = json.loads(article_data['indirect_data'])
 
-            data_row["section_id"] = article_data["section_id"]
-            if article_data["section_id"] == 15:
-                data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
-                data_row["company"] = article_data["indirect_data"]["company"]
-            data_row["title"] = article_data["name"]
-            data_row["preview_text"] = article_data["preview_text"]
-            data_row["content_text"] = article_data["content_text"]
-            data_row["content_type"] = article_data["content_type"]
-            data_row["preview_photo"] = preview_photo
+                    if article_data["section_id"] == 15:
+                        data_row["authorId"] = article_data["indirect_data"]["author_uuid"] if "author_uuid" in article_data["indirect_data"].keys() else None
+                        data_row["company"] = article_data["indirect_data"]["company"] if "company" in article_data["indirect_data"].keys() else None
+                data_row["title"] = article_data["name"]
+                data_row["preview_text"] = article_data["preview_text"]
+                data_row["content_text"] = article_data["content_text"]
+                data_row["content_type"] = article_data["content_type"] if "content_type" in article_data.keys() else None
+                data_row["preview_photo"] = preview_photo
 
-            doc = {
-                    "doc": data_row
-                }
-
-            result = elastic_client.update(index=self.index, id=art_id, body=doc)
-            if result:
-                return True
-            else:
-                return False
+                doc = {
+                        "doc": data_row
+                    }
+                # try:
+                #     result = elastic_client.update(index=self.index, id=art_id, body=doc)
+                #     print(1)
+                # except:
+                print(2)
+                result = elastic_client.index(index=self.index, id=art_id, body=data_row)
+                print(2)
+                if result:
+                    print(1)
+                    return True
+                else:
+                    print(2)
+                    return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при загрузке новой статьи в эластик update_art_el_index: {e}')
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)

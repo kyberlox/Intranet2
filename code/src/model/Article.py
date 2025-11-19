@@ -169,7 +169,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        await self.search_files(data["IBLOCK_ID"], self.id, data, session)
+        # await self.search_files(data["IBLOCK_ID"], self.id, data, session)
 
 
         
@@ -2601,6 +2601,8 @@ class Article:
         from ..services.Fieldsvisions import Visions
         return await Visions(art_id=self.id, user_id=user_id).check_user_root(session=session)
     
+    async def update_art_el_index(self, data):
+        return await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
 
 #Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}")
@@ -2677,7 +2679,7 @@ async def has_user_liked(article_id, request: Request, session: AsyncSession=Dep
 # поиск по статьям еластик
 @article_router.get("/search/full_search_art/{keyword}")
 async def elastic_search(keyword: str):
-    return ArticleSearchModel().elasticsearch_article(key_word=keyword)
+    return await ArticleSearchModel().elasticsearch_article(key_word=keyword)
 
 
 #выгрузка данных по лайкам в Б24

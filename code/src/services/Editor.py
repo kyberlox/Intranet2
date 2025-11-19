@@ -36,9 +36,9 @@ editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 def make_date_valid(date):
     if date is not None:
         try:
-            return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+            return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
         except:
-            return datetime.datetime.strptime(date, '%Y-%m-%d')
+            return datetime.datetime.strptime(date, '%d.%m.%Y')
     else:
         return None
 

@@ -707,6 +707,8 @@ class Editor:
         if "date_publiction" in art and art["date_publiction"] is not None:
             art["date_publiction"] = make_date_valid(art["date_publiction"])
 
+            print(art["date_publiction"], make_date_valid(art["date_publiction"]))
+
         #отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):
             art["active"] = True if (art["active"] == 'true' or art["active"] == 'True') else False

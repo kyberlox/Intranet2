@@ -104,6 +104,8 @@ import Api from '@/utils/Api';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
+import donwload from 'downloadjs';
+import type { AxiosResponse } from 'axios';
 
 export default defineComponent({
     components: {
@@ -131,11 +133,7 @@ export default defineComponent({
         };
 
         const checkButtonStatus = (event: ICalendar) => {
-            if (event.DATE_FROM && event.ID) {
-                return 'Подробнее'
-            }
-            else
-                return false
+            return event.DATE_FROM && event.ID ? 'Подробнее' : false
         }
 
         const scrollToNode = async (target: string, nodes: Ref<HTMLElement[]>, attrTitle: string) => {
@@ -175,7 +173,11 @@ export default defineComponent({
         const handleExcelDownload = (event: ICalendar) => {
             const reqBody = event.ATTENDEE_LIST.filter((e) => e.status == 'Y');
             Api.post('article/make_event_users_excel', reqBody)
-                .then((data) => handleApiError(data, toast))
+                .then((data) => {
+                    handleApiError(data, toast);
+                    donwload(data, event.NAME)
+                })
+                .catch((e) => handleApiError(e, toast));
         }
 
         return {

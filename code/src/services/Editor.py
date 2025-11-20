@@ -36,9 +36,11 @@ editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 def make_date_valid(date):
     if date is not None:
         try:
-            return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+            #return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
         except:
-            return datetime.datetime.strptime(date, '%d.%m.%Y')
+            #return datetime.datetime.strptime(date, '%d.%m.%Y')
+            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     else:
         return None
 
@@ -703,6 +705,7 @@ class Editor:
 
         #отдельно проверяю дату публикации
         if "date_publiction" in art and art["date_publiction"] is not None:
+            print(art["date_publiction"])
             art["date_publiction"] = make_date_valid(art["date_publiction"])
 
         #отдельно перевожу стоку в булевое значение для active

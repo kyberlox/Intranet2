@@ -26,8 +26,7 @@
             <swiper-slide v-else
                           v-for="(slide, index) in card.images"
                           :key="'postImg' + index"
-                          class="homeview__grid__card__image__swiper-slide"
-                          @click="console.log(card.images)">
+                          class="homeview__grid__card__image__swiper-slide">
                 <!-- Для слайдера конкурсы эмк(вверху страницы) -->
                 <a v-if="card.id == 7"
                    class="homeview__grid__card__link

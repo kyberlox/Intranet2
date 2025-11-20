@@ -21,8 +21,12 @@ from dotenv import load_dotenv
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from ..base.pSQL.objects.App import get_async_db
+
+from openpyxl import Workbook
+import io
+from fastapi.responses import StreamingResponse
+from urllib.parse import quote
 
 load_dotenv()
 
@@ -2353,6 +2357,7 @@ class Article:
 
         # Афиша
         elif section_id == 53:
+            multiple_flag = False
             date_list = [] # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
@@ -2361,6 +2366,10 @@ class Article:
                 else:
                     date_value = [] # список для хранения необходимых данных
                     date_value.append(values["id"])
+                    if "multiple_preview" in values['indirect_data'].keys() and values['indirect_data']['multiple_preview'] is not None:
+                        date_value.append(values['indirect_data']['multiple_preview'])
+                    else:
+                        date_value.append(None)
                     date_list.append(date_value) # получили список с необходимыми данными
             # сортируем по дате
             sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
@@ -2378,7 +2387,22 @@ class Article:
                 if i < 5:
                     news = {}
                     self.id = row[0]
-                    preview_pict = await self.get_preview(session=session)
+                    if row[1] == True:
+                        files = await File(art_id = int(self.id)).get_files_by_art_id(session)
+                        if files:
+                            preview_pict = []
+                            for file in files:
+                                #файлы делятся по категориям
+                                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                    url = file["file_url"]
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image"
+                                    url = '/'.join(preview_link)
+                                    preview_pict.append(f"{DOMAIN}{url}") 
+                        else:
+                            preview_pict = None
+                    else:
+                        preview_pict = await self.get_preview(session=session)
                     # preview_pict = None
                     if preview_pict is None:
                         # image_url = None
@@ -2604,6 +2628,56 @@ class Article:
     async def update_art_el_index(self, data):
         return await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
 
+    async def get_token_by_uuid(self, session, user_id):
+        from src.services.Roots import Roots
+        roots_token = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
+        return roots_token
+
+    async def make_event_users_excel(self, session, data):
+        try:
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Список участников"
+
+            # Запись данных
+            ws['A1'] = 'ФИО'
+            ws['B1'] = 'EMAIL'
+            ws['C1'] = 'Телефон'
+            ws['D1'] = 'Внутр. номер'
+            ws['E1'] = 'Должность'
+            ws['F1'] = 'Дирекция/Завод'
+            ws['G1'] = 'Подразделение'
+            ws['H1'] = 'Местоположение'
+
+            for i, user in enumerate(data, start=2):  
+                user_inf = await User(id=user['id']).search_by_id_all(session)
+
+                indirect_data = user_inf.get("indirect_data", {})
+                
+                if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: ws[
+                    f'A{i}'] = f'{user_inf["name"]} {user_inf["last_name"]} {user_inf["second_name"]}'
+
+                if "email" in user_inf: ws[f'B{i}'] = f'{user_inf["email"]}'
+                if "personal_mobile" in user_inf: ws[f'C{i}'] = f'{user_inf["personal_mobile"]}'
+                if "uf_phone_inner" in user_inf: ws[f'D{i}'] = f'{user_inf["uf_phone_inner"]}'
+                if "work_position" in indirect_data:
+                    ws[f'E{i}'] = f'{indirect_data["work_position"]}'
+                if "uf_department" in indirect_data and "uf_usr_1696592324977" in indirect_data:
+                    ws[f'F{i}'] = ", ".join(indirect_data["uf_usr_1696592324977"]) + "/" + ", ".join(
+                        indirect_data["uf_department"])
+                if "uf_usr_1705744824758" in indirect_data:
+                    ws[f'G{i}'] = " ".join(indirect_data["uf_usr_1705744824758"])
+                if "personal_city" in user_inf: ws[f'H{i}'] = f'{user_inf["personal_city"]}'
+
+            excel_buffer = io.BytesIO()
+            wb.save(excel_buffer)
+            excel_buffer.seek(0)
+
+            # Сохранение
+            return excel_buffer
+        except Exception as e:
+            return LogsMaker().error_message(f'Произошла ошибка при создании файла excel make_event_users_excel: {e}')
+
 #Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}")
 async def test(ID):
@@ -2727,6 +2801,27 @@ async def set_tag_to_art_id(art_id: int, tag_id: int, session: AsyncSession=Depe
 @article_router.delete("/remove_tag_from_art_id/{tag_id}/{art_id}")
 async def remove_tag_from_art_id(art_id: int, tag_id: int, session: AsyncSession=Depends(get_async_db)):
     return await Article(id=art_id).remove_tag_from_art_id(tag_id=tag_id, session=session)
+
+@article_router.post("/make_event_users_excel", summary = "Скачать Excel со всеми участниками мероприятия")
+async def make_users_excel_list(request: Request, data: list = Body(), session: AsyncSession=Depends(get_async_db)):
+    session_id = ""
+    token = request.cookies.get("Authorization")
+    if token is None:
+        token = request.headers.get("Authorization")
+        if token is not None:
+            session_id = token
+    else:
+        session_id = token
+
+    art_class = Article()
+    user_id = await art_class.get_user_by_session_id(session_id=session_id, session=session)
+    roots_token = await art_class.get_token_by_uuid(session=session, user_id=user_id)
+
+    if ("EditorAdmin" in roots_token.keys() and roots_token["EditorAdmin"] is True) or ("EditorModer" in roots_token.keys() and 53 in roots_token["EditorModer"]):
+        excel_buffer = await art_class.make_event_users_excel(session=session, data=data)
+        return StreamingResponse(excel_buffer, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers = {"Content-Disposition": "attachment; filename=participants.xlsx"})
+    
+    return LogsMaker().warning_message(f"Недостаточно прав для добавления куратора") 
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
 # async def search_articles_by_title(title): # data = Body()

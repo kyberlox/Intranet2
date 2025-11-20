@@ -5,6 +5,27 @@ from src.services.LogsMaker import LogsMaker
 
 import asyncio
 
+def html_to_text_simple(html_string):
+    """
+    Простая конвертация HTML в текст с помощью регулярных выражений
+    """
+    import re
+
+    if not html_string:
+        return None
+    
+    # Удаляем HTML теги
+    text = re.sub(r'<[^>]+>', '', html_string)
+    
+    # Заменяем HTML entities
+    text = text.replace('&nbsp;', ' ').replace('&amp;', '&')
+    
+    # Убираем лишние пробелы
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    return text
+
+
 class ArticleSearchModel:
 
     def __init__(self):
@@ -334,12 +355,15 @@ class ArticleSearchModel:
 
         return result  # res['hits']['hits'] result
 
-    async def update_art_el_index(self, article_data, session):
+    async def update_art_el_index(self, article_data, session, section_id=None):
         try:
             from src.model.File import File
             art_id = article_data['id']
             LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
+            if 'section_id' not in article_data.keys() and section_id is not None:
+                article_data['section_id'] = section_id
             data_row = {}
+            # print(article_data)
             if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
 
                 preview_photo = None
@@ -379,7 +403,7 @@ class ArticleSearchModel:
                                 url = '/'.join(preview_link)
 
                             preview_photo = f"{DOMAIN}{url}"
-
+                
                 data_row["section_id"] = article_data["section_id"]
                 if "indirect_data" in article_data.keys() and article_data["indirect_data"] is not None: 
                     if isinstance(article_data['indirect_data'], str):
@@ -389,8 +413,8 @@ class ArticleSearchModel:
                         data_row["authorId"] = article_data["indirect_data"]["author_uuid"] if "author_uuid" in article_data["indirect_data"].keys() else None
                         data_row["company"] = article_data["indirect_data"]["company"] if "company" in article_data["indirect_data"].keys() else None
                 data_row["title"] = article_data["name"]
-                data_row["preview_text"] = article_data["preview_text"]
-                data_row["content_text"] = article_data["content_text"]
+                data_row["preview_text"] = html_to_text_simple(article_data["preview_text"]) if article_data["preview_text"] else None
+                data_row["content_text"] = html_to_text_simple(article_data["content_text"]) if article_data["content_text"] else None
                 data_row["content_type"] = article_data["content_type"] if "content_type" in article_data.keys() else None
                 data_row["preview_photo"] = preview_photo
 
@@ -401,11 +425,8 @@ class ArticleSearchModel:
                 #     result = elastic_client.update(index=self.index, id=art_id, body=doc)
                 #     print(1)
                 # except:
-                print(2)
                 result = elastic_client.index(index=self.index, id=art_id, body=data_row)
-                print(2)
                 if result:
-                    print(1)
                     return True
                 else:
                     print(2)
@@ -416,4 +437,37 @@ class ArticleSearchModel:
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+    
+    async def delete_art_from_el_index(self, art_id: int):
+        """
+        Удаляет документ из индекса Elasticsearch по ID с проверкой существования
+        """
+        try:
+            # Сначала проверяем существование документа
+            exists = elastic_client.exists(
+                index=self.index,
+                id=art_id
+            )
+            
+            if not exists:
+                LogsMaker().warning_message(f"Статья {art_id} не найдена в Elasticsearch")
+                return False
+            
+            # Удаляем документ
+            result = elastic_client.delete(
+                index=self.index,
+                id=art_id,
+                refresh=True  # немедленное обновление индекса
+            )
+            
+            if result.get('result') == 'deleted':
+                LogsMaker().info_message(f"Статья {art_id} успешно удалена из Elasticsearch")
+                return True
+            else:
+                LogsMaker().warning_message(f"Неизвестный результат удаления: {result.get('result')}")
+                return False
+                
+        except Exception as e:
+            LogsMaker().error_message(f'Ошибка при удалении статьи {art_id} из Elasticsearch: {e}')
+            return False
 

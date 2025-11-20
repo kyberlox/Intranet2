@@ -1108,7 +1108,18 @@
         "field": "date_creation",
         "data_type": "str",
         "disabled": true
+      },
+      {
+        "name": "Несколько превью",
+        "field": "multiple_preview",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
       }
+      
     ],
     "files": {
       "images": []

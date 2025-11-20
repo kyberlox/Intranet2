@@ -724,6 +724,7 @@ class Editor:
         return res
         
     async def update(self, data : dict):
+        from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
         await self.validate()
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
@@ -746,6 +747,16 @@ class Editor:
                     else:
                         #фиксирую
                         art[key] = data[key]
+
+                        # отправляю данные в elastic
+                        if key == 'active':
+                            if data['active'] is True:
+                                art_data = data.copy()
+                                await ArticleSearchModel().update_art_el_index(article_data=art_data, session=self.session, section_id=art['section_id'])
+            
+                            else:
+                                await ArticleSearchModel().delete_art_from_el_index(art_id=self.art_id)
+                        
                     
 
                 #если это часть indirect_data
@@ -1177,6 +1188,8 @@ async def sec_render(request: Request, sec_id: int, session: AsyncSession=Depend
 #изменить статью
 @editor_router.post("/update/{art_id}")
 async def updt(art_id : int, session: AsyncSession=Depends(get_async_db), data = Body()):
+    # from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+    # await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
     return await Editor(art_id=art_id, session=session).update(data)
 
 #добавить статью
@@ -1191,13 +1204,15 @@ async def set_new(art_id : int, session: AsyncSession=Depends(get_async_db), dat
     #section_id = data["section_id"]
     from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
     await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
-    print(data)
+
     return await Editor(art_id=art_id, session=session).add(data)
 
 
 
 @editor_router.delete("/del/{art_id}")
 async def del_art(art_id : int, session: AsyncSession=Depends(get_async_db)):
+    from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+    await ArticleSearchModel().delete_art_from_el_index(art_id=art_id)
     return await Editor(art_id=int(art_id), session=session).delete_art()
 
 #посмотреть все файлы статьи

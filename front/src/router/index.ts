@@ -564,6 +564,14 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
+    {
+      path: '/admin/roots',
+      name: 'roots',
+      component: () => import('@/views/admin/rootsPanel/RootsPanel.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

@@ -23,5 +23,11 @@ export const staticAdminSections: IAdminSections[] = [
             { name: 'История начислений баллов', id: 'curatorHistory' },
             // { name: 'Файловый менеджер', id: 'fileManager' },
         ]
+    },
+    {
+        id: 4,
+        title: 'Управление правами', nav:[
+            { name: 'разделы', id: 'roots' }
+        ]
     }
 ]

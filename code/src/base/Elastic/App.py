@@ -306,7 +306,7 @@ with open('./src/base/sections.json', 'r', encoding='utf-8') as f:
 #     result.append(sec_art)
 #     return result  # result  res['hits']['hits']
 
->>>>>>> 546017b8cc6d6efe7b25a43f63f862ece8960d44
+
 def search_everywhere(key_word):  # , size_res: Optional[int] = 40
     result = []
     words = key_word.strip().split()
@@ -462,7 +462,6 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
             {"section": "Пользователи", "content": [], "msg": "Ошибка поиска"},
             {"section": "Контент", "content": [], "msg": "Ошибка поиска"}
         ]
->>>>>>> 546017b8cc6d6efe7b25a43f63f862ece8960d44
 
     users = []
     articles = []
@@ -536,4 +535,3 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
     result.append(sec_user)
     result.append(sec_art)
     return result
->>>>>>> 546017b8cc6d6efe7b25a43f63f862ece8960d44

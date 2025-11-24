@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
+    "@types/downloadjs": "^1.4.6",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.13.9",
     "@vitejs/plugin-vue": "^5.2.1",

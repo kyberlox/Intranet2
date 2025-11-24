@@ -91,6 +91,7 @@
 </div>
 </template>
 <script lang="ts">
+import download from 'downloadjs';
 import { computed, defineComponent, ref, watch, nextTick, type ComputedRef, type Ref } from 'vue';
 import { monthesInit } from '@/assets/static/monthes';
 import type { ICalendar } from '@/interfaces/IEntities';
@@ -104,8 +105,6 @@ import Api from '@/utils/Api';
 import { handleApiError } from '@/utils/ApiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
-import donwload from 'downloadjs';
-import type { AxiosResponse } from 'axios';
 
 export default defineComponent({
     components: {
@@ -175,7 +174,7 @@ export default defineComponent({
             Api.post('article/make_event_users_excel', reqBody)
                 .then((data) => {
                     handleApiError(data, toast);
-                    donwload(data, event.NAME)
+                    download(data, event.NAME)
                 })
                 .catch((e) => handleApiError(e, toast));
         }

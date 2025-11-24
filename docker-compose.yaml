@@ -29,23 +29,11 @@ services:
       #- ./pSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./app_logs/postgres:/var/log/postgresql  # Логи PostgreSQL
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - app-network
 
-  # mongodb:
-  #   image: mongo:latest
-  #   container_name: mongodb_async
-  #   volumes:
-  #     - ./mongodb/data:/data/db
-  #     - ./app_logs/mongodb:/var/log/mongodb  # Логи MongoDB
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=${user}
-  #     - MONGO_INITDB_ROOT_PASSWORD=${pswd}
-  #   ports:
-  #     - "27017:27017"
-  #   networks:
-  #     - app-network
+
 
   elasticsearch:
     image: elasticsearch:9.1.0

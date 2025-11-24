@@ -23,14 +23,21 @@ class User(Base):
     personal_gender = Column(String, nullable=True)
     personal_birthday = Column(DateTime, nullable=True)
     indirect_data = Column(JSONB, nullable=True)
-    photo_file_id = Column(Text, nullable=True)
+
+    photo_file_id = Column(Integer, nullable=True)
 
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
 
     usdep = relationship("UsDep", back_populates="user")
 
+    #userFiles = relationship("userFiles", back_populates="user")
+
+
     rootsusers = relationship("Roots", back_populates="user")
     peerhistory = relationship("PeerHistory", back_populates="user")
 
     uservisionsroot = relationship("UservisionsRoot", back_populates="user")
+
+
+    userfiles = relationship("UserFiles", back_populates="user")

@@ -1,12 +1,12 @@
 from ..models.Section import Section
-from .App import get_db
+
+from .App import select
 
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Разделов")
 
-db_gen = get_db()
-database = next(db_gen)
+
 
 class SectionModel:
 
@@ -17,10 +17,11 @@ class SectionModel:
         # database = db
         self.Section = Section
 
-    def upload(self, section_data):
-        for section in section_data:
-            sec = database.query(Section).filter(self.Section.id == section["id"]).first()
 
+    async def upload(self, section_data, session):
+        for section in section_data:
+            res = await session.execute(select(self.Section).where(self.Section.id == int(section["id"])))
+            sec = res.scalar_one_or_none()
             if sec is not None:
                 #надо ли обновить?
                 if sec.name != section["name"]:
@@ -34,15 +35,16 @@ class SectionModel:
                     sec = self.Section(id=section["id"], name=section["name"], parent_id=section["parent_id"], sectionHref=section["sectionHref"])
                 else:
                     sec = self.Section(id=section["id"], name=section["name"], parent_id=section["parent_id"])
-            database.add(sec)
-            database.commit()
+
+            session.add(sec)
+        await session.commit()
 
         return section_data
 
-    def search_by_id(self):
-        result = database.query(Section).filter(self.Section.id == self.id).first()
-        return result
+    async def search_by_id(self, session):
+        result = await session.query(Section).filter(self.Section.id == self.id)
+        return result.first()
 
-    def search_by_parent_id(self):
-        result = database.query(Section).filter(self.Section.parent_id == self.parent_id).all()
-        return result
+    async def search_by_parent_id(self, session):
+        result = await session.query(Section).filter(self.Section.parent_id == self.parent_id)
+        return result.all()

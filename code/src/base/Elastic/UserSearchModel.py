@@ -2,6 +2,7 @@ from .App import elastic_client, DOMAIN, helpers
 
 from fastapi import HTTPException
 
+import asyncio
 from src.services.LogsMaker import LogsMaker
 
 
@@ -263,7 +264,8 @@ class UserSearchModel:
         #         detail=f"Index operation failed: {str(e)}"
         #     )
 
-    def dump(self):
+
+    async def dump(self, session):
         from src.model.File import File
         try:
             self.delete_index()
@@ -273,7 +275,8 @@ class UserSearchModel:
         
         
         
-        users_data = self.UserModel.all()
+
+        users_data = await self.UserModel.all(session=session)
         users_data_ES = []
         for user in users_data:
 
@@ -294,7 +297,9 @@ class UserSearchModel:
                     for param in important_list:
                         if param in data.keys():
                             if param == "photo_file_id" and data['photo_file_id'] is not None:
-                                file_inf = File(data['photo_file_id']).get_users_photo()
+
+                                file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
+
                                 data_row[param] = f"{DOMAIN}{file_inf['URL']}"
                             else:
                                 data_row[param] = data[param]
@@ -302,7 +307,7 @@ class UserSearchModel:
                             continue
 
                     user_id = int(data['id'])
-                    
+
                     elastic_client.index(index=self.index, id=user_id, body=data_row)
 
         #             usr_data = data_row
@@ -422,7 +427,8 @@ class UserSearchModel:
                                             }
                                         }
                                     ],
-                                    "boost": 25
+                                    "boost": 25,
+                                    "_name": "true_search"
                                 }
                             },
                             {
@@ -430,7 +436,8 @@ class UserSearchModel:
                                     "user_fio": {
                                         "query": key_word,
                                         "operator": "and",
-                                        "boost": 15
+                                        "boost": 15,
+                                        "fuzziness": 1
                                     }
                                 }
                             }
@@ -446,11 +453,20 @@ class UserSearchModel:
                     "bool": {
                         "should": [
                             {
-                                "match_phrase_prefix": {
-                                    "user_fio": {
-                                        "query": key_word,
-                                        "boost": 20
-                                    }
+
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "match_phrase_prefix": {
+                                                "user_fio": {
+                                                    "query": key_word,
+                                                    "boost": 20
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "_name": "true_search" 
+
                                 }
                             },
                             {
@@ -458,7 +474,9 @@ class UserSearchModel:
                                     "user_fio": {
                                         "query": key_word,
                                         "operator": "and",
-                                        "boost": 10
+
+                                        "boost": 10,
+                                        "fuzziness": 1
                                     }
                                 }
                             }
@@ -631,42 +649,78 @@ class UserSearchModel:
     #     return result  # result  res['hits']['hits']
 
 
-    def update_user_el_index(self, user_data):
-        from src.model.File import File
-        important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data", "photo_file_id"]
-        # data = user_data.__dict__
-        data = user_data
-        result = None
-        if data['id'] == 1:
-            pass
-        else:
-            if data['active']:
-                if data['second_name'] is None:
-                    fio = f'{data['last_name']} {data['name']}'
-                else:
-                    fio = f'{data['last_name']} {data['name']} {data['second_name']}'
-                data_row = {"user_fio": fio}
-                for param in important_list:
-                    if param in data.keys():
-                        if param == "photo_file_id" and data['photo_file_id'] is not None:
-                            file_inf = File(data['photo_file_id']).get_users_photo()
-                            data_row[param] = f"{DOMAIN}{file_inf['URL']}"
-                        else:
-                            data_row[param] = data[param]
+    async def update_user_el_index(self, user_data, session):
+        try:
+            from src.model.File import File
+            important_list = ['email', 'personal_mobile', 'personal_city', 'personal_gender', 'personal_birthday', 'uf_phone_inner', "indirect_data", "photo_file_id"]
+            # data = user_data.__dict__
+            data = user_data
+            result = None
+            if data['id'] == 1:
+                pass
+            else:
+                if data['active']:
+                    if data['second_name'] is None:
+                        fio = f'{data['last_name']} {data['name']}'
                     else:
-                        continue
+                        fio = f'{data['last_name']} {data['name']} {data['second_name']}'
+                    data_row = {"user_fio": fio}
+                    for param in important_list:
+                        if param in data.keys():
+                            if param == "photo_file_id" and data['photo_file_id'] is not None:
+                                file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
+                                data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                            else:
+                                data_row[param] = data[param]
+                        else:
+                            continue
 
-                user_id = int(data['id'])
-                doc = {
-                    "doc": data_row
-                }
-                result = elastic_client.update(index=self.index, id=user_id, body=doc)
-        if result:
-            return True
-        else:
-            return False
+                    user_id = int(data['id'])
+                    result = elastic_client.index(index=self.index, id=user_id, body=data_row)
+            if result:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при загрузке новой статьи в эластик update_user_el_index: {e}')
+
     
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+
+    
+    async def delete_user_from_el_index(self, user_id: int):
+        """
+        Удаляет документ из индекса Elasticsearch по ID с проверкой существования
+        """
+        try:
+            # Сначала проверяем существование документа
+            exists = elastic_client.exists(
+                index=self.index,
+                id=user_id
+            )
+            
+            if not exists:
+                LogsMaker().warning_message(f"Пользователь с id {user_id} не найден в Elasticsearch")
+                return False
+            
+            # Удаляем документ
+            result = elastic_client.delete(
+                index=self.index,
+                id=user_id,
+                refresh=True  # немедленное обновление индекса
+            )
+            
+            if result.get('result') == 'deleted':
+                LogsMaker().info_message(f"Пользователь с id {user_id} успешно удалена из Elasticsearch")
+                return True
+            else:
+                LogsMaker().warning_message(f"Неизвестный результат удаления пользователя из эластика: {result.get('result')}")
+                return False
+                
+        except Exception as e:
+            LogsMaker().error_message(f'Ошибка при удалении пользователя с id {user_id} из Elasticsearch: {e}')
+            return False
+
 

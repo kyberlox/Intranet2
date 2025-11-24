@@ -2,122 +2,101 @@ from sqlalchemy import text
 from sqlalchemy.sql.expression import select
 
 from ..models.Department import Department
-from .App import engine, get_db
+
+# from .App import engine, get_db
+
+from .App import AsyncSessionLocal, async_engine
 
 from sqlalchemy.exc import SQLAlchemyError
 
-
+import asyncio
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Подразделений")
 
-db_gen = get_db()
-database = next(db_gen)
+
+# db_gen = get_db()
+# database = next(db_gen)
 
 class DepartmentModel:
 
-    def __init__(self, Id=None): #убрать None в будущем
+    def __init__(self, Id: int = None): #убрать None в будущем
         self.id = Id
 
         from ..models.Department import Department
         self.department = Department
 
-        # from .App import db
-        # database = db
 
-    def upsert_dep(self, dep_data):
+    async def upsert_dep(self, dep_data, session):
         """
         Добавляет или обновляет запись в таблице 'departments'.
-        dep_data: словарь с данными департамента
+        Использует только переданную сессию.
         """
-        # print(data)
+        try:
+            # Валидация и нормализация данных
+            new_depat_data = {}
+            for key in dep_data.keys():
+                if key == 'ID':
+                    new_depat_data['id'] = int(dep_data[key])
+                elif key == 'PARENT':
+                    new_depat_data['father_id'] = int(dep_data[key])
+                elif key == 'UF_HEAD':
+                    new_depat_data['user_head_id'] = int(dep_data[key])
+                elif key == 'SORT':
+                    new_depat_data['sort'] = int(dep_data[key])
+                else:
+                    new_depat_data[key.lower()] = dep_data[key]
+            dep_data = new_depat_data
 
-        #валидация
-        new_depat_data = dict()
-        for key in dep_data.keys():
-            if key == 'ID':
-                new_depat_data['id'] = int(dep_data[key])
-            elif key == 'PARENT':
-                new_depat_data['father_id'] = int(dep_data[key])
-            elif key == 'UF_HEAD':
-                new_depat_data['user_head_id'] = int(dep_data[key])
-            elif key == 'SORT':
-                new_depat_data['sort'] = int(dep_data[key])
-            else:
-                new_depat_data[key.lower()] = dep_data[key] # key.lower() - чтобы с БД были одинаковые столбцы
-        dep_data = new_depat_data
-
-        # проверить по id есть ли такой департамент
-        try:  
-            q = database.query(Department).filter(Department.id == dep_data["id"])
-            dep_exist = database.query(q.exists()).scalar() # ПРОВЕРЕНО 
+            # Проверяем существование департамента
+            stmt = select(self.department).where(self.department.id == dep_data["id"])
+            result = await session.execute(stmt)
+            existing_dep = result.scalar_one_or_none()
 
             DB_columns_dep = ['id', 'name', 'sort', 'user_head_id', 'father_id']
 
-            # если такой id существует - проверить необходимость обновленияs
-            if dep_exist:
-
-                dep = database.execute(select(Department).where(self.department.id == dep_data["id"])).scalar()
-                                
+            if existing_dep:
+                # ОБНОВЛЕНИЕ существующего департамента через ORM
+                need_update = False
+                
                 for column in DB_columns_dep:
-
-                    u = getattr(dep, column, None) # значение column в БД
-                    u_id = dep.__dict__["id"] # id данного значения column в БД
-                    
-                    # если есть изменения - обновить                    
-                    if dep_data.get(column) != u:
-                       
-                        if dep_data.get(column) == None:  # если в битриксе нет значения по столбцу, то в БД запишет NULL
-                            sql = text(f"UPDATE {Department.__tablename__} SET {column} = NULL WHERE id = {u_id}")
-
-                        elif isinstance(dep_data.get(column), str): # если строковый тип, запишет в строковом виде
-                            sql = text(f"UPDATE {Department.__tablename__} SET {column} = '{dep_data.get(column)}' WHERE id = {u_id}")
-
-                        else:  # в если в битриксе числовое значение, то значение по колонке в БД запишет как число
-                            sql = text(f"UPDATE {Department.__tablename__} SET {column} = {dep_data.get(column)} WHERE id = {u_id}")
-                            
-
-                        with engine.connect() as connection:
-                            connection.execute(sql, dep_data)
-                            connection.commit()
-                    
-                    # если изменений нет - пропустит итерацию
-                    else:
-                        pass
-                            
-                
-            # если такого id не существует - добавляем        
-            else:
-                columns = "id"
-                values = f"{dep_data['id']}"
-                for key in dep_data.keys():
-                    if key == 'id': # пропускаем итерацию по ключу 'id' тк его мы уже добавили
+                    if column == 'id':  # ID не обновляем
                         continue
-                    elif key == 'name': # отдельно обрабатываем строковые значения
-                        columns += f", {key}"
-                        values += f", \'{dep_data[key]}\'"
-                    else: # тут обрабатываем числовые значения, такие как: father_id, sort, user_head_id
-                        columns += f", {key}"
-                        values += f", {dep_data[key]}"
-    
-                # Запрос
-                sql = text(f"INSERT INTO {Department.__tablename__} ({columns}) VALUES ({values})")
-                
-                # Выполняем SQL-запрос
-                with engine.connect() as connection:
-                    connection.execute(sql, dep_data)
-                    connection.commit()
+                        
+                    current_value = getattr(existing_dep, column)
+                    new_value = dep_data.get(column)
                     
+                    if new_value != current_value:
+                        setattr(existing_dep, column, new_value)
+                        need_update = True
+                
+                if need_update:
+                    # Сессия уже отслеживает изменения, коммит будет позже
+                    LogsMaker().info_message(f"Обновлен департамент {dep_data['id']}")
+                else:
+                    LogsMaker().info_message(f"Департамент {dep_data['id']} не требует обновления")
+                    
+            else:
+                # СОЗДАНИЕ нового департамента через ORM
+                create_data = {col: dep_data[col] for col in DB_columns_dep if col in dep_data}
+                new_dep = self.department(**create_data)
+                session.add(new_dep)
+                LogsMaker().info_message(f"Создан департамент {dep_data['id']}")
 
-        except SQLAlchemyError as e:
-            # print(f'An error: {e}')
-            return LogsMaker().error_message(e)
+            # НЕТ коммита здесь - коммит будет в вызывающем коде
+            return True
+            
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при обработке департамента {dep_data.get("id")}: {e}')
+            # return False
 
-    def find_dep_by_id(self):
+    async def find_dep_by_id(self, session):
         """
         Ищет департамент по id
         """
-        res = database.query(Department).get(self.id) #database.execute(select(self.department).where(self.department.id == self.id)).scalar()
+        result = await session.execute(select(self.department).where(self.department.id == int(self.id)))
+        res = result.scalar()
+        # res = database.query(Department).get(self.id) #database.execute(select(self.department).where(self.department.id == self.id)).scalar()
 
         if res is not None:
             # res = res.__dict__
@@ -139,11 +118,16 @@ class DepartmentModel:
         # else:
         #     return {'err': 'Нет такого департамента'}
     
-    def find_deps_by_father_id(self, father_id):
-        result = []
+
+    async def find_deps_by_father_id(self, father_id, session):
+        # result = []
         #null_depart = database.execute(select(self.department).where(self.department.father_id == None)).scalars().all()
         #res = database.query(self.department).filter(self.department.father_id == father_id).all()
-        res = database.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
+        
+        result = await session.execute(select(self.department).where(self.department.father_id == father_id))
+        res = result.scalars().all()
+        # res = database.execute(select(Department).where(self.department.father_id == father_id)).scalars().all()
+
         if res is not None:
             return res
         else:
@@ -151,5 +135,8 @@ class DepartmentModel:
             #return LogsMaker().warning_message('Нет такого департамента')
             return []
 
-    def all(self):
-        return database.query(Department).all()
+    async def all(self):
+        async with AsyncSessionLocal() as session:
+            res = await session.execute(select(self.department)).scalars().all()
+        # return database.query(Department).all()
+        return res

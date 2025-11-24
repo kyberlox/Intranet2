@@ -39,7 +39,7 @@ const router = createRouter({
       }
     },
     {
-    path: '/about/year-results', 
+    path: '/about/year-results',
     name: 'year-results',
     component: () => import('@/views/about/yearResults/YearResults.vue'),
     },
@@ -512,13 +512,13 @@ const router = createRouter({
     {
       path: '/admin/:id/new',
       name: 'adminElementInnerAdd',
-      component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
     },
     {
       path: '/admin/:id/:elementId',
       name: 'adminElementInnerEdit',
-      component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
+      component: () => import('@/views/admin/editPanel/AdminElementInner.vue'),
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]
@@ -560,14 +560,6 @@ const router = createRouter({
       path: '/admin/curatorhistory',
       name: 'curatorHistory',
       component: () => import('@/views/admin/pointsSystem/curatorHistory/CuratorHistory.vue'),
-      meta: {
-        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
-      }
-    },
-    {
-      path: '/admin/roots',
-      name: 'roots',
-      component: () => import('@/views/admin/rootsPanel/RootsPanel.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }

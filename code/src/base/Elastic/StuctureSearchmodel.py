@@ -1,9 +1,10 @@
 from .App import elastic_client, helpers
 from .App import DOMAIN
 
+import asyncio
 
 
-def get_info_by_obj(obj, parent_path_depart):
+async def get_info_by_obj(obj, parent_path_depart, session):
     from ..pSQL.objects.UsDepModel import UsDepModel
     from ..pSQL.objects.UserModel import UserModel
 
@@ -25,10 +26,11 @@ def get_info_by_obj(obj, parent_path_depart):
     
     usdep_modelo = UsDepModel()
     usdep_modelo.id =obj.id
-    users = usdep_modelo.find_user_by_dep_id()  # берём id всех пользователей департамента
+
+    users = await usdep_modelo.find_user_by_dep_id(session)  # берём id всех пользователей департамента
     if isinstance(users, list):
         for usr_id in users:
-            user = UserModel(Id=usr_id).find_by_id()
+            user = await UserModel(Id=usr_id).find_by_id(session)
             if user:
                 user_data = {}
                 if user['active'] is True:
@@ -45,7 +47,9 @@ def get_info_by_obj(obj, parent_path_depart):
                         pass
 
                     if user['photo_file_id']:
-                        photo_inf = File(id=user['photo_file_id']).get_users_photo()
+
+                        photo_inf = await File(id=user['photo_file_id']).get_users_photo(session)
+
                         url = photo_inf['URL']
                         user_data['image'] = f"{DOMAIN}{url}"
                     else:
@@ -197,7 +201,8 @@ class StructureSearchModel:
         responce = elastic_client.indices.create(index=self.index, body=request_body)
         return responce
 
-    def dump(self):
+
+    async def dump(self, session):
         try:
             self.delete_index()
         except:
@@ -216,7 +221,11 @@ class StructureSearchModel:
         for i in range(8):
             #первый слой - верхушка
             if i == 0:
-                children.insert(i, self.DepartmentModel.find_deps_by_father_id(None)[0])
+
+                # children.insert(i, asyncio.run(self.DepartmentModel.find_deps_by_father_id(father_id=None, session=session))[0])
+                # task = asyncio.create_task(self.DepartmentModel.find_deps_by_father_id(father_id=None, session=session))
+                result = await self.DepartmentModel.find_deps_by_father_id(father_id=None, session=session)
+                children.insert(i, result[0])
                 # parent_path_depart = "53"
                 parent_path_depart = {
                     53 : "."
@@ -232,7 +241,11 @@ class StructureSearchModel:
                 #для каждого родителя
                 for father in parents:
                     #получаем его детей
-                    for child in self.DepartmentModel.find_deps_by_father_id(father.id):
+
+                    # task = asyncio.create_task(self.DepartmentModel.find_deps_by_father_id(father_id=None, session=session))
+                    result = await self.DepartmentModel.find_deps_by_father_id(father_id=father.id, session=session)
+                    # children.insert(i, result[0])
+                    for child in result:
                         #и всех детей кидаем в один слой
                         children.append(child)
                         roots[child.id] = father.id
@@ -241,10 +254,10 @@ class StructureSearchModel:
             
             #заполняю вывод
             for obj in children:
-                layer = get_info_by_obj(obj, parent_path_depart[roots[obj.id]])
+
+                layer = await get_info_by_obj(obj, parent_path_depart[roots[obj.id]], session)
                 parent_path_depart[obj.id] = layer["_source"]['path_depart']
                 dep_data_ES.append(layer)
-
 
 
         helpers.bulk(elastic_client, dep_data_ES)

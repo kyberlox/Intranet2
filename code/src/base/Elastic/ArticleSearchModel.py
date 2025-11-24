@@ -4,6 +4,28 @@ from .App import DOMAIN
 from src.services.LogsMaker import LogsMaker
 
 
+import asyncio
+
+def html_to_text_simple(html_string):
+    """
+    Простая конвертация HTML в текст с помощью регулярных выражений
+    """
+    import re
+
+    if not html_string:
+        return None
+    
+    # Удаляем HTML теги
+    text = re.sub(r'<[^>]+>', '', html_string)
+    
+    # Заменяем HTML entities
+    text = text.replace('&nbsp;', ' ').replace('&amp;', '&')
+    
+    # Убираем лишние пробелы
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    return text
+
 
 class ArticleSearchModel:
 
@@ -123,10 +145,10 @@ class ArticleSearchModel:
         
         return responce
 
-    def dump(self):
+
+    async def dump(self, session):
         from src.model.File import File
 
-        
         try:
             # в самом начале нет индекса, поэтому вылезает ошибка при первой попытке дампа
             self.delete_index()
@@ -135,7 +157,8 @@ class ArticleSearchModel:
         
         self.create_index()
 
-        article_SQL_data = self.ArticleModel.all()
+
+        article_SQL_data = await self.ArticleModel.all(session)
 
         article_data_ES = []
         article_action = {}
@@ -159,41 +182,53 @@ class ArticleSearchModel:
                 else:
                     preview_photo = None
                     # обработка превью
-                    files = File(art_id=article_data['id']).get_files_by_art_id()
-                    
-                    for file in files:
-                        if file["is_preview"]:
-                            url = file["file_url"]
-                            # внедряю компрессию
-                            if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image/yowai_mo"
-                                url = '/'.join(preview_link)
-                            else:
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image"
-                                url = '/'.join(preview_link)
 
-                            preview_photo = f"{DOMAIN}{url}"
+                    files = await File(art_id = int(art_id)).get_files_by_art_id(session=session)
+                    if files:
+                        for file in files:
+                            if file["is_preview"]:
+                                url = file["file_url"]
+                                
+                                #внедряю компрессию
+                                if article_data["section_id"] == 18: #отдельный алгоритм для памятки новому сотруднику
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
 
-                    # находим любую картинку, если она есть
-                    for file in files:
-                        
-                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
-                            "original_name"] or "png" in file["original_name"]:
-                            url = file["file_url"]
-                            LogsMaker().info_message(f"Найден файл URL={url}")
-                            # внедряю компрессию
-                            if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image/yowai_mo"
-                                url = '/'.join(preview_link)
-                            else:
-                                preview_link = url.split("/")
-                                preview_link[-2] = "compress_image"
-                                url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
+                                #Для баготворительных проектов компрессия не требуется
+                                # и для гида по предприятиям 
+                                
+                                elif article_data["section_id"] in [55, 41, 32]:
+                                    preview_photo = f"{DOMAIN}{url}"
+                                else:
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image"
+                                    # preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
 
-                            preview_photo = f"{DOMAIN}{url}"
+                        #находим любую картинку, если она есть
+                        for file in files:
+                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                url = file["file_url"]
+                                #внедряю компрессию
+                                if article_data["section_id"] == 18: #отдельный алгоритм для памятки новому сотруднику
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
+                                #Для баготворительных проектов компрессия не требуется
+                                # и для гида по предприятиям 
+                                elif article_data["section_id"] in [55, 41, 32]:
+                                    preview_photo = f"{DOMAIN}{url}"
+                                else:
+                                    preview_link = url.split("/")
+                                    preview_link[-2] = "compress_image"
+                                    # preview_link[-2] = "compress_image/yowai_mo"
+                                    url = '/'.join(preview_link)
+                                    preview_photo = f"{DOMAIN}{url}"
+                        data_row["preview_photo"] = preview_photo
 
                     data_row["section_id"] = article_data["section_id"]
                     if article_data["section_id"] == 15:
@@ -203,7 +238,8 @@ class ArticleSearchModel:
                     data_row["preview_text"] = article_data["preview_text"]
                     data_row["content_text"] = article_data["content_text"]
                     data_row["content_type"] = article_data["content_type"]
-                    data_row["preview_photo"] = preview_photo
+
+
 
                     article_action = {
                         "_index": self.index,
@@ -219,10 +255,11 @@ class ArticleSearchModel:
 
         return {"status": True}
 
-    def elasticsearch_article(self, key_word):
+
+    async def elasticsearch_article(self, key_word):
         from src.model.Section import Section
 
-        sections = Section().get_all()
+        sections = await Section().get_all()
         result = []
         res = elastic_client.search(
             index=self.index,
@@ -311,7 +348,8 @@ class ArticleSearchModel:
                 art_info['authorId'] = res_info["_source"]["authorId"]
             elif "company" in res_info["_source"].keys() and res_info["_source"]["company"] is not None:
                 art_info['authorId'] = res_info["_source"]['company']
-            art_info['image'] = res_info["_source"]["preview_photo"]
+
+            art_info['image'] = res_info["_source"]["preview_photo"] if "preview_photo" in res_info["_source"].keys() else None
             art_info['coincident'] = res_info['highlight']
             articles.append(art_info)
 
@@ -325,74 +363,123 @@ class ArticleSearchModel:
 
         return result  # res['hits']['hits'] result
 
-    def update_art_el_index(self, article_data):
-        art_id = article_data['id']
-        LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
-        data_row = {}
-        if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
 
-            if isinstance(article_data['indirect_data'], str):
-                article_data['indirect_data'] = json.loads(article_data['indirect_data'])
+    async def update_art_el_index(self, article_data, session, section_id=None):
+        try:
+            from src.model.File import File
+            art_id = article_data['id']
+            LogsMaker().info_message(f"Загрузка данных о статье {art_id} в Эластика")
+            if 'section_id' not in article_data.keys() and section_id is not None:
+                article_data['section_id'] = section_id
+            data_row = {}
+            # print(article_data)
+            if article_data['active'] and article_data['section_id'] != 6 and article_data['section_id'] != 41:
 
-            preview_photo = None
-            # обработка превью
-            files = File(art_id=article_data['id']).get_files_by_art_id()
-            
-            for file in files:
-                if file["is_preview"]:
-                    url = file["file_url"]
-                    # внедряю компрессию
-                    if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image/yowai_mo"
-                        url = '/'.join(preview_link)
-                    else:
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image"
-                        url = '/'.join(preview_link)
+                preview_photo = None
+                # обработка превью
+                files = await File(art_id=article_data['id']).get_files_by_art_id(session)
+                if files:
+                    for file in files:
+                        if file["is_preview"]:
+                            url = file["file_url"]
+                            # внедряю компрессию
+                            if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image/yowai_mo"
+                                url = '/'.join(preview_link)
+                            else:
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image"
+                                url = '/'.join(preview_link)
 
-                    preview_photo = f"{DOMAIN}{url}"
+                            preview_photo = f"{DOMAIN}{url}"
 
-            # находим любую картинку, если она есть
-            for file in files:
+                    # находим любую картинку, если она есть
+                    for file in files:
+                        
+                        if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
+                            "original_name"] or "png" in file["original_name"]:
+                            url = file["file_url"]
+                            LogsMaker().info_message(f"Найден файл URL={url}")
+                            # внедряю компрессию
+                            if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image/yowai_mo"
+                                url = '/'.join(preview_link)
+                            else:
+                                preview_link = url.split("/")
+                                preview_link[-2] = "compress_image"
+                                url = '/'.join(preview_link)
+
+                            preview_photo = f"{DOMAIN}{url}"
                 
-                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
-                    "original_name"] or "png" in file["original_name"]:
-                    url = file["file_url"]
-                    LogsMaker().info_message(f"Найден файл URL={url}")
-                    # внедряю компрессию
-                    if article_data['section_id'] == 18:  # отдельный алгоритм для памятки новому сотруднику
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image/yowai_mo"
-                        url = '/'.join(preview_link)
-                    else:
-                        preview_link = url.split("/")
-                        preview_link[-2] = "compress_image"
-                        url = '/'.join(preview_link)
+                data_row["section_id"] = article_data["section_id"]
+                if "indirect_data" in article_data.keys() and article_data["indirect_data"] is not None: 
+                    if isinstance(article_data['indirect_data'], str):
+                        article_data['indirect_data'] = json.loads(article_data['indirect_data'])
 
-                    preview_photo = f"{DOMAIN}{url}"
+                    if article_data["section_id"] == 15:
+                        data_row["authorId"] = article_data["indirect_data"]["author_uuid"] if "author_uuid" in article_data["indirect_data"].keys() else None
+                        data_row["company"] = article_data["indirect_data"]["company"] if "company" in article_data["indirect_data"].keys() else None
+                data_row["title"] = article_data["name"]
+                data_row["preview_text"] = html_to_text_simple(article_data["preview_text"]) if article_data["preview_text"] else None
+                data_row["content_text"] = html_to_text_simple(article_data["content_text"]) if article_data["content_text"] else None
+                data_row["content_type"] = article_data["content_type"] if "content_type" in article_data.keys() else None
+                data_row["preview_photo"] = preview_photo
 
-            data_row["section_id"] = article_data["section_id"]
-            if article_data["section_id"] == 15:
-                data_row["authorId"] = article_data["indirect_data"]["author_uuid"]
-                data_row["company"] = article_data["indirect_data"]["company"]
-            data_row["title"] = article_data["name"]
-            data_row["preview_text"] = article_data["preview_text"]
-            data_row["content_text"] = article_data["content_text"]
-            data_row["content_type"] = article_data["content_type"]
-            data_row["preview_photo"] = preview_photo
+                doc = {
+                        "doc": data_row
+                    }
+                # try:
+                #     result = elastic_client.update(index=self.index, id=art_id, body=doc)
+                #     print(1)
+                # except:
+                result = elastic_client.index(index=self.index, id=art_id, body=data_row)
+                if result:
+                    return True
+                else:
+                    print(2)
+                    return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при загрузке новой статьи в эластик update_art_el_index: {e}')
 
-            doc = {
-                    "doc": data_row
-                }
-
-            result = elastic_client.update(index=self.index, id=art_id, body=doc)
-            if result:
-                return True
-            else:
-                return False
 
     def delete_index(self):
         elastic_client.indices.delete(index=self.index)
         return {'status': True}
+
+    
+    async def delete_art_from_el_index(self, art_id: int):
+        """
+        Удаляет документ из индекса Elasticsearch по ID с проверкой существования
+        """
+        try:
+            # Сначала проверяем существование документа
+            exists = elastic_client.exists(
+                index=self.index,
+                id=art_id
+            )
+            
+            if not exists:
+                LogsMaker().warning_message(f"Статья {art_id} не найдена в Elasticsearch")
+                return False
+            
+            # Удаляем документ
+            result = elastic_client.delete(
+                index=self.index,
+                id=art_id,
+                refresh=True  # немедленное обновление индекса
+            )
+            
+            if result.get('result') == 'deleted':
+                LogsMaker().info_message(f"Статья {art_id} успешно удалена из Elasticsearch")
+                return True
+            else:
+                LogsMaker().warning_message(f"Неизвестный результат удаления: {result.get('result')}")
+                return False
+                
+        except Exception as e:
+            LogsMaker().error_message(f'Ошибка при удалении статьи {art_id} из Elasticsearch: {e}')
+            return False
+
 

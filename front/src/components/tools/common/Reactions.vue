@@ -12,7 +12,7 @@
             <ViewsIcon />
             {{ newTypeReaction.views }}
         </div>
-        <div v-if="newTypeReaction.likes && !modifiers.includes('noLikes')"
+        <div v-if="newTypeReaction.likes"
              @click.stop.prevent="setLike(id)"
              class="homeview__grid__card__group-buttons__reaction-buttons--like"
              :class="{ 'homeview__grid__card__group-buttons__reaction-buttons--like_active': newTypeReaction.likes.likedByMe }">

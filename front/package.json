@@ -19,7 +19,6 @@
     "@vueuse/core": "^13.5.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
-    "downloadjs": "^1.4.7",
     "markdown-it": "^14.1.0",
     "pinia": "^3.0.1",
     "primevue": "^4.3.4",
@@ -33,7 +32,6 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
-    "@types/downloadjs": "^1.4.6",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.13.9",
     "@vitejs/plugin-vue": "^5.2.1",

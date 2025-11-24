@@ -1,5 +1,6 @@
 # from .App import db
-from .App import get_db
+
+from .App import async_engine, AsyncSessionLocal # get_db,
 from .UserModel import UserModel
 from .DepartmentModel import DepartmentModel
 from .UsDepModel import UsDepModel
@@ -22,12 +23,17 @@ from .RootsModel import RootsModel
 
 from .MerchStoreModel import MerchStoreModel
 
+from .FilesDBModel import FilesDBModel
+from .UserFilesModel import UserFilesModel
 
 
 ## Control imports
 __all__ = [
     # 'db',
     'get_db',
+
+    'async_engine',
+    'AsyncSessionLocal',
     'UserModel',
     'DepartmentModel',
     'UsDepModel',
@@ -42,5 +48,8 @@ __all__ = [
     'PeerUserModel',
     'RootsModel',
     'MerchStoreModel',
-    'SectionModel'
+
+    'SectionModel',
+    'FilesDBModel',
+    'UserFilesModel'
     ]

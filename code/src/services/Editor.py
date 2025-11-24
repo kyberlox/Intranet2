@@ -1,10 +1,12 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, File
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, \
+    File
 from fastapi.responses import JSONResponse
 from typing import Annotated, List
 
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.ArticleModel import ArticleModel
-from ..base.mongodb import FileModel
+# from ..base.mongodb import FileModel
+from ..base.pSQL.objects.FilesDBModel import FilesDBModel
 from ..model.Article import Article
 from ..model.Section import Section
 from ..model.File import File as storeFile
@@ -19,20 +21,31 @@ import datetime
 import os
 from dotenv import load_dotenv
 
+import asyncio
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..base.pSQL.objects.App import get_async_db
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')
 
 editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 
+
 def make_date_valid(date):
     if date is not None:
         try:
-            return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+            # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
         except:
-            return datetime.datetime.strptime(date, '%d.%m.%Y')
+            # return datetime.datetime.strptime(date, '%d.%m.%Y')
+            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     else:
         return None
+
 
 def get_type(value):
     tp = str(type(value)).split('\'')[1]
@@ -41,48 +54,46 @@ def get_type(value):
     return tp
 
 
-
 class Editor:
-    
-    def __init__(self, id=None, art_id=None, section_id=None):
-        self.id = id #!!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
-        
+
+    def __init__(self, id=None, art_id=None, section_id=None, session=None):
+        self.id = id  # !!!проверить доступ!!!, а в будущем надо хранить изменения в таблице, чтобы знать, кто сколько чего публиковал, кто чего наредактировал
+        self.session = session
         self.section_id = section_id
         self.art_id = art_id
-        if self.art_id is not None and section_id is None:
-            art = ArticleModel(id = self.art_id).find_by_id()
-            if "section_id" in art:
-                self.section_id = art["section_id"]
-
-        self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction", "date_creation", "preview_text"]
-        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
-        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172, 56] :
-                self.notEditble.append("preview_text")
-        if self.section_id in [41, 42, 111, 52] :
-                self.notEditble.append("content_text")
 
         self.variable = {
-            "active" : [True, False],
-            "content_type" : ["HTML", "Markdown", None]
+            "active": [True, False],
+            "content_type": ["HTML", "Markdown", None]
         }
 
-        #словарь полей
+        # словарь полей
         fields_data_file = open("./src/base/fields.json", "r")
         self.fields = json.load(fields_data_file)
         fields_data_file.close()
-        
-        #список шаблонов для каждого раздела
+
+        self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction",
+                            "date_creation", "preview_text"]
+        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        self.pattern = None
+
+    async def validate(self):
+        if self.art_id is not None and self.section_id is None:
+
+            art = await ArticleModel(id=self.art_id).find_by_id(session=self.session)
+            # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
+
+            if "section_id" in art:
+                self.section_id = art["section_id"]
+
+        if self.section_id in [14, 18, 41, 42, 52, 54, 111, 172, 56]:
+            self.notEditble.append("preview_text")
+        if self.section_id in [41, 42, 111, 52]:
+            self.notEditble.append("content_text")
+
+        # список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
-
-        #ошибка тут
-        # if self.section_id is not None:
-        #     for sec_pattern in pattern_data:
-        #         LogsMaker().error_message(f'вот тут возникает ошибка с {sec_pattern}, self.section_id = {self.section_id}')
-        #         if self.section_id in sec_pattern["section_id"].keys():
-        #             self.pattern = sec_pattern
-        # else:
-        #     self.pattern = None
 
         if self.section_id is not None:
             for sec_pattern, value in pattern_data.items():
@@ -92,9 +103,10 @@ class Editor:
             self.pattern = None
         pattern_data_file.close()
 
-    def get_pattern(self ):
-        #и ошибка тут
-        #список шаблонов для каждого раздела
+    async def get_pattern(self):
+        await self.validate()
+        # и ошибка тут
+        # список шаблонов для каждого раздела
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
         # if self.section_id is not None:
@@ -113,29 +125,29 @@ class Editor:
 
         return self.pattern
 
-    def set_pattern(self, new_pattern):
-        
-        #получить текущие паттерны
+    async def set_pattern(self, new_pattern):
+        await self.validate()
+
+        # получить текущие паттерны
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
         pattern_data_file.close()
 
-        #заменить паттерн
+        # заменить паттерн
         pattern_data[self.section_id] = new_pattern
 
-        #сохранить в файле
+        # сохранить в файле
         pattern_data_file = open("./src/base/patterns.json", "w")
-        json.dump(pattern_data, pattern_data_file, indent=4) 
+        json.dump(pattern_data, pattern_data_file, indent=4)
         pattern_data_file.close()
 
         return pattern_data
-
 
     '''
     def get_fast_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
-        
+
         fields = []
         files_keys = dict()
         #иду по всем статьям раздела
@@ -147,7 +159,7 @@ class Editor:
                 #если такого поля ещё нет
                 fields_names = [f["field"] for f in fields]
                 if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                        
+
                     field = {
                         "name" : self.fields[k], #хватай имя
                         "field" : k, #хватай поле
@@ -185,20 +197,20 @@ class Editor:
                                         field["data_type"] = get_type(art["indirect_data"][k])
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
-            
-                    
+
+
 
             #теперь проверим какие файлы бывают у статей раздела
             self.art_id = int(art['id'])
             files=self.get_files()
-            
+
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
                 if f_key not in files_keys.keys() and files[f_key] != [] and files[f_key] is not None:
                     files_keys[f_key] = []
 
-            
+
             #if "photo_file_url" in art.keys():
                 # "Фотография (URL)",
 
@@ -211,7 +223,7 @@ class Editor:
             # если поле нередаактируемое
             if field["field"] in self.notEditble:
                     field["disabled"] = True
-            
+
         need_del = False 
         indx = None
         del_key = ["photo_file_url", ""]
@@ -224,17 +236,17 @@ class Editor:
                 need_del = True
             if field["field"] in del_key:
                 del_val.append(i)
-        
+
         if need_del:
             for i in del_val:
                 fields.pop(i)
-        
+
         return {"fields" : fields, "files" : files_keys}
 
     def get_format(self ):
         #собрать поля статьи
         section = ArticleModel(section_id = self.section_id).find_by_section_id()
-        
+
         fields = []
         files_keys = dict()
         #иду по всем статьям раздела
@@ -246,7 +258,7 @@ class Editor:
                 #если такого поля ещё нет
                 fields_names = [f["field"] for f in fields]
                 if k not in fields_names and k != "indirect_data" and k in self.fields.keys():
-                        
+
                     field = {
                         "name" : self.fields[k], #хватай имя
                         "field" : k, #хватай поле
@@ -285,13 +297,13 @@ class Editor:
                                     elif get_type(art["indirect_data"][k]) != "NoneType":
                                         field["data_type"] = "str"
 
-            
-                    
+
+
 
             #теперь проверим какие файлы бывают у статей раздела
             self.art_id = int(art['id'])
             files=self.get_files()
-            
+
             # беру ключи словаря
             for f_key in files.keys():
                 # ЕСЛИ ключ ещё не записан в files_keys и там не пустой массив
@@ -312,7 +324,7 @@ class Editor:
                 # если поле нередактируемое
                 if field["field"] in self.notEditble:
                     field["disabled"] = True
-            
+
         need_del = False 
         indx = None
         del_key = ["photo_file_url", ""]
@@ -325,12 +337,12 @@ class Editor:
                 need_del = True
             if field["field"] in del_key:
                 del_val.append(i)
-        
+
         if need_del:
             for i in del_val:
                 fields.pop(i)
-                
-            
+
+
 
         return {"fields" : fields, "files" : files_keys}
 
@@ -437,38 +449,37 @@ class Editor:
                 else:
                     #Собрать шаблон
                     Pattern = self.get_format()
-                
+
                 #записать паттерн
                 self.set_pattern(Pattern)
-        
+
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
         pattern_data_file.close()
         return pattern_data
     '''
 
-    def section_rendering(self ):
-        result = Article(section_id = self.section_id).all_serch_by_date()
+    async def section_rendering(self):
+        await self.validate()
+        result = await Article(section_id=self.section_id).all_serch_by_date(self.session)
         for art in result:
             self.id = art["id"]
-            art["preview_file_url"] = Article(id = int(self.id)).get_preview()
+            art["preview_file_url"] = await Article(id=int(self.id)).get_preview(self.session)
         return result
-    
-    def rendering(self ):
+
+    async def rendering(self):
+        await self.validate()
         if self.art_id is None:
             return LogsMaker().warning_message("Укажите id статьи")
-        
-        
+
         # вытащить основные поля из psql
-        art = Article(id = self.art_id).find_by_id()
+        art = await Article(id=self.art_id).find_by_id(self.session)
 
         if self.section_id is None:
             if "section_id" in art:
                 self.section_id = art["section_id"]
             else:
                 return LogsMaker().warning_message("Неверный id статьи")
-
-
 
         art_keys = []
         for k in art.keys():
@@ -492,16 +503,15 @@ class Editor:
                     val = art[k]
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]
-                
+
                 data_type = get_type(val)
                 # экземпляр поля
                 fl = {
-                    "name" : self.fields[k],
-                    "value" : val,
-                    "field" : k,
-                    "data_type" : data_type
+                    "name": self.fields[k],
+                    "value": val,
+                    "field": k,
+                    "data_type": data_type
                 }
-
 
                 # если значения варьируются
                 if k in self.variable.keys():
@@ -511,65 +521,56 @@ class Editor:
                 if k in self.notEditble:
                     fl["disabled"] = True
 
-                #загрузил
+                # загрузил
                 field.append(fl)
-
-
 
         got_fields = field
 
-        #photo_file_url нужен только там, где он есть
+        # photo_file_url нужен только там, где он есть
         # for f, i in enumerate(field):
         #     if field["field"] == "photo_file_url" and field["value"] is None:
         #         field.pop(i)
 
-
-
-        #заполнить поля по шаблону
+        # заполнить поля по шаблону
         result_fields = []
-        for need_field in self.get_pattern()["fields"]:
+        curr_patterns = await self.get_pattern()
+        for need_field in curr_patterns["fields"]:
             has_added = False
             for got_field in got_fields:
 
-                
-            
-                #если такое поле есть среди заполненных
+                # если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
 
-                    #отдельно проверить валидность типа
+                    # отдельно проверить валидность типа
                     if need_field["data_type"] != got_field["data_type"]:
-                        got_field["data_type"] = need_field["data_type"]    
-                    
-                    #отдельно проверить валидность вариантов выбора значения
+                        got_field["data_type"] = need_field["data_type"]
+
+                        # отдельно проверить валидность вариантов выбора значения
                     if "values" in need_field:
                         if "values" not in got_field or need_field["values"] != got_field["values"]:
                             got_field["values"] = need_field["values"]
-                    
-                    #вписываем
+
+                    # вписываем
                     result_fields.append(got_field)
                     has_added = True
-                    
 
-
-            #если среди заполненных нет - вписать из шаблона
+            # если среди заполненных нет - вписать из шаблона
             if not has_added:
                 if need_field["field"] == "all_tags":
-                    #получаешь список ВСЕХ доступных тэгов
-                    tags_list = Tag().get_all_tags()
-                    #записываешь в need_field["values"] и в need_field["values"]
+                    # получаешь список ВСЕХ доступных тэгов
+                    tags_list = await Tag().get_all_tags(self.session)
+                    # записываешь в need_field["values"] и в need_field["values"]
                     need_field["values"] = tags_list
-                    
+
                 if need_field["field"] == "tags":
-                    need_field["values"] = Tag(art_id=self.art_id).get_art_tags()
+                    need_field["values"] = await Tag(art_id=self.art_id).get_art_tags(self.session)
                     # need_field.pop("value")
-                
+
                 result_fields.append(need_field)
-
-
 
         # вытащить файлы
         self.art_id = int(self.art_id)
-        files=self.get_files()
+        files = await self.get_files()
 
         '''
         need_del = []
@@ -588,156 +589,188 @@ class Editor:
 
         need_del = []
         for f in files.keys():
-            if files[f] == [] and self.get_pattern()["files"].get(f) is None:
+            curr_pattern = await self.get_pattern()
+            if files[f] == [] and curr_pattern["files"].get(f) is None:
                 need_del.append(f)
         for f in need_del:
             files.pop(f)
 
-
-
         # вывести
-        return {"fields" : result_fields, "files" : files}
+        return {"fields": result_fields, "files": files}
 
-    def pre_add(self, ):
-        #Получаю поля паттерна       
+    async def pre_add(self, ):
+        await self.validate()
+        # Получаю поля паттерна
         fields = self.pattern["fields"]
 
-        #пост обработка и создание пустой болванки
+        # пост обработка и создание пустой болванки
         for field in fields:
 
-            #если это ID статьи
+            # если это ID статьи
             if field["field"] == "id":
-                #отдельно засылаю будущий уже инкрементированнный ID статьи
-                self.art_id = ArticleModel().get_current_id()
+                # отдельно засылаю будущий уже инкрементированнный ID статьи
+                self.art_id = await ArticleModel().get_current_id(self.session)
                 field["value"] = self.art_id
 
-                #создать пустую неактивную статью с этим ID
+                # создать пустую неактивную статью с этим ID
                 art = dict()
 
-                #вписываю значения нередактируемых параметров сам:
+                # вписываю значения нередактируемых параметров сам:
                 art["id"] = self.art_id
                 art["active"] = False
                 art["section_id"] = self.section_id
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
-                #добавить статью
-                Article().set_new(art)
+                # добавить статью
+                await Article().set_new(art, self.session)
                 LogsMaker().ready_status_message(f"Создал {self.art_id}")
-        
-            
-        #Вношу изменеения
+
+            elif field["field"] == "all_tags":
+                # получаешь список ВСЕХ доступных тэгов
+                tags_list = await Tag().get_all_tags(self.session)
+                # записываешь в need_field["values"] и в need_field["values"]
+                field["values"] = tags_list
+
+        # Вношу изменеения
         self.pattern["fields"] = fields
-        
+
         return self.pattern
 
-    def add(self, data : dict):
-        #self.art_id = int(data["id"])
+    async def add(self, data: dict):
+        await self.validate()
+        # self.art_id = int(data["id"])
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id раздела")
 
-        art=Article(id=self.art_id).find_by_id()
+        art = await Article(id=self.art_id).find_by_id(self.session)
         if '_sa_instance_state' in art:
             art.pop('_sa_instance_state')
         indirect_data = dict()
-        #валидировать данные data
+        # валидировать данные data
         for key in data.keys():
-            
-            #если это редактируемый параметр
-            if key not in self.notEditble:
-                #если это один из основных параметров
-                if key in self.fundamental:
-                    #фиксирую
-                    art[key] = data[key]    
 
-                #если это часть indirect_data
+            # если это редактируемый параметр
+            if key not in self.notEditble:
+                # если это один из основных параметров
+                if key in self.fundamental:
+                    # фиксирую
+                    art[key] = data[key]
+
+                    # если это часть indirect_data
                 else:
                     indirect_data[key] = data[key]
 
-            #найти человека по uuid
+            # найти человека по uuid
             if key == "uuid" or key == "author_uuid":
                 uuid = int(data[key])
-                #поиск по uuid
-                usr_dt = User(uuid).search_by_id()
+                # поиск по uuid
+                usr_dt = await User(uuid).search_by_id(self.session)
                 photo = usr_dt["personal_photo"]
                 indirect_data["photo_file_url"] = photo
-            
+
             if key == "tags":
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
-                #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                #вытащить список выбранных тегов
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
+                # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # вытащить список выбранных тегов
                 tags_id = key["tags"]
-                #заменить старое значение новым
+                # заменить старое значение новым
                 indirect_data["tags"] = tags_id
 
         art["indirect_data"] = indirect_data
 
-        #отдельно проверяю дату публикации
+        # отдельно проверяю дату публикации
         if "date_publiction" in art and art["date_publiction"] is not None:
+            print(art["date_publiction"])
             art["date_publiction"] = make_date_valid(art["date_publiction"])
 
-        #отдельно перевожу стоку в булевое значение для active
+        # отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):
             art["active"] = True if (art["active"] == 'true' or art["active"] == 'True') else False
-        
+
         if "content_type" in data:
             art["content_type"] = data["content_type"]
         else:
             art["content_type"] = None
 
-        #вставить данные в статью
-        return Article(id = self.art_id).update(art)
-    
-    def delete_art(self ):
-        return Article(id = self.art_id).delete()
-        
-    def update(self, data : dict):
+        # вставить данные в статью
+        res = await Article(id=self.art_id).update(art, self.session)
+        return res
+
+    async def delete_art(self):
+        await self.validate()
+        res = await Article(id=self.art_id).delete(self.session)
+        return res
+
+    async def update(self, data: dict):
+        from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+        await self.validate()
         if self.art_id is None:
             return LogsMaker.warning_message("Укажите id статьи")
 
         # получаю текущие значения
         # вытащить основные поля из psql
-        art = ArticleModel(id = self.art_id).find_by_id()
+        art = await ArticleModel(id=self.art_id).find_by_id(self.session)
         if "_sa_instance_state" in art:
             art.pop("_sa_instance_state")
 
         # вытаскию новые значения
-        #валидировать данные data
+        # валидировать данные data
         for key in data.keys():
-            #если это редактируемый параметр
+            # если это редактируемый параметр
             if key not in self.notEditble:
-                #если это один из основных параметрова
+                # если это один из основных параметрова
                 if key in self.fundamental:
-                    #фиксирую
-                    art[key] = data[key]
+                    if key == 'date_publiction':
+                        art[key] = make_date_valid(data[key])
+                    else:
+                        # фиксирую
+                        art[key] = data[key]
 
-                #если это часть indirect_data
+                        # отправляю данные в elastic
+                        if key == 'active':
+                            if data['active'] is True:
+                                art_data = data.copy()
+                                await ArticleSearchModel().update_art_el_index(article_data=art_data,
+                                                                               session=self.session,
+                                                                               section_id=art['section_id'])
+
+                            else:
+                                await ArticleSearchModel().delete_art_from_el_index(art_id=self.art_id)
+
+
+
+                # если это часть indirect_data
                 else:
-                    if "indirect_data" in art and art["indirect_data"] is not None: 
+                    if "indirect_data" in art and art["indirect_data"] is not None:
                         if key == "tags":
-                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            #ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
-                            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            tags_id = key["tags"]
-                            #заменить старое значение новым
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            # ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
+                            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                            tags_id = data["tags"]
+                            # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
                         art["indirect_data"][key] = data[key]
 
-        # перезаписать файлы 
+        # перезаписать файлы
         # сохранить
-        return ArticleModel(id = self.art_id).update(art)
+        res = await ArticleModel(id=self.art_id).update(art, self.session)
+        return res
 
-    def get_files(self ):
-        file_data = FileModel(art_id=self.art_id).find_all_by_art_id()
+    async def get_files(self):
+        await self.validate()
+        # file_data = await FileModel(art_id=self.art_id).find_all_by_art_id(self.session)
+        file_data = await FilesDBModel(article_id=self.art_id).find_all_by_art_id(self.session)
         file_list = []
         for file in file_data:
             file_info = {}
-            file_info["id"] = str(file["_id"])
+            file_info["id"] = str(file["id"])
             file_info["original_name"] = file["original_name"]
             file_info["stored_name"] = file["stored_name"]
             file_info["content_type"] = file["content_type"]
 
-            #файлы делятся по категориям
+            # файлы делятся по категориям
             if "image" in file["content_type"]:
                 file_info["type"] = "image"
             elif "video" in file["content_type"]:
@@ -748,26 +781,27 @@ class Editor:
                 file_info["type"] = "documentation"
 
             file_info["article_id"] = file["article_id"]
-            file_info["b24_id"] = file["b24_id"]
+            file_info["b24_url"] = file["b24_url"]
             url = file["file_url"]
-            
+
             file_info["file_url"] = f"{DOMAIN}{url}"
-            
-            file_info["is_archive"] = file["is_archive"]
+
+            file_info["active"] = file["active"]
             file_info["is_preview"] = file["is_preview"]
 
             file_list.append(file_info)
 
-        #разбить по категориям
+        # разбить по категориям
         result = dict()
         result['images'] = []
         result['videos_native'] = []
         result['videos_embed'] = []
         result['documentation'] = []
-        
+
         for file in file_list:
-            #файлы делятся по категориям
-            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+            # файлы делятся по категориям
+            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
+                "original_name"] or "png" in file["original_name"]:
                 url = file["file_url"]
                 result['images'].append(file)
             elif "video" in file["content_type"]:
@@ -780,57 +814,57 @@ class Editor:
 
         return result
 
-    def get_sections_list(self ):
-        all_sections = Section().get_all()
+    async def get_sections_list(self):
+        await self.validate()
+        all_sections = await Section().get_all()
 
         pattern_data_file = open("./src/base/patterns.json", "r")
         pattern_data = json.load(pattern_data_file)
         pattern_data_file.close()
 
-        valid_sec_id =  list(pattern_data.keys())
+        valid_sec_id = list(pattern_data.keys())
         valid_sec_id = [int(item) for item in valid_sec_id]
 
-        #valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 7, 71]
+        # valid_sec_id = [13, 14, 15, 16, 18, 110, 111, 172, 175, 22, 31, 32, 34, 41, 42, 51, 52, 53, 54, 55, 56, 7, 71]
         edited_sections = []
         for sec in all_sections:
             if sec["id"] in valid_sec_id:
                 edited_sections.append(sec)
         return edited_sections
 
-    def get_users_info(self, user_id_list):
-        art = Article(id = self.art_id).find_by_id()
-        
+    async def get_users_info(self, user_id_list):
+        await self.validate()
+        art = await Article(id=self.art_id).find_by_id(self.session)
+
         if user_id_list == []:
             art['indirect_data']['users'] = []
         else:
-            #иду по списку user_id
+            # иду по списку user_id
             for user_id in user_id_list:
-                user_info = User(id=user_id).search_by_id()
-
-                
+                user_info = await User(id=user_id).search_by_id(self.session)
 
                 if art['indirect_data'] is None:
-                    art['indirect_data'] = {"users" : []}
-                
+                    art['indirect_data'] = {"users": []}
+
                 if 'users' not in art['indirect_data']:
                     art['indirect_data']['users'] = []
 
                 users = art['indirect_data']['users']
 
                 if users != []:
-                    #проверяю есть ли такой в списке статьи
+                    # проверяю есть ли такой в списке статьи
                     had_find = False
-                    
+
                     for user in users:
                         if int(user["id"]) == int(user_id):
                             had_find = True
 
-                        #если есть в стаье, но нет в user_id_list
+                        # если есть в стаье, но нет в user_id_list
                         elif int(user["id"]) not in user_id_list:
                             # выписываю
                             art['indirect_data']['users'].remove(user)
 
-                    #если ещё нет
+                    # если ещё нет
                     if not had_find:
 
                         # хватаю ФИО
@@ -849,23 +883,23 @@ class Editor:
 
                         fio = last_name + " " + user_info['name'] + " " + user_info['second_name']
 
-                        #фото
+                        # фото
                         if "photo_file_url" in user_info:
                             photo_file_url = user_info["photo_file_url"]
                         else:
                             photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                        
-                        #взять должность
+
+                        # взять должность
                         if "work_position" in user_info:
                             position = user_info["work_position"]
                         else:
                             position = ""
-                        
+
                         usr = {
-                            "id" : user_id,
-                            "fio" : fio,
-                            "photo_file_url" : photo_file_url,
-                            "position" : position
+                            "id": user_id,
+                            "fio": fio,
+                            "photo_file_url": photo_file_url,
+                            "position": position
                         }
 
                         # записываю
@@ -887,47 +921,48 @@ class Editor:
 
                     fio = last_name + " " + user_info['name'] + " " + user_info['second_name']
 
-                    #фото
+                    # фото
                     if "photo_file_url" in user_info:
                         photo_file_url = user_info["photo_file_url"]
                     else:
                         photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                    
-                    #взять должность
+
+                    # взять должность
                     if "work_position" in user_info:
                         position = user_info["work_position"]
                     else:
                         position = ""
-                    
+
                     usr = {
-                        "id" : user_id,
-                        "fio" : fio,
-                        "photo_file_url" : photo_file_url,
-                        "position" : position
+                        "id": user_id,
+                        "fio": fio,
+                        "photo_file_url": photo_file_url,
+                        "position": position
                     }
 
                     # записываю
                     art['indirect_data']['users'] = [usr]
 
-        #print(art['indirect_data'])
+        # print(art['indirect_data'])
 
-        #сохранил
-        Article(id = self.art_id).update(art)
+        # сохранил
+        await Article(id=self.art_id).update(art, self.session)
 
         return art['indirect_data']['users']
-    
-    def get_user_info(self, user_id):
+
+    async def get_user_info(self, user_id):
+        await self.validate()
         result = {}
         fields_to_return = {
-            "14" : [
+            "14": [
                 "name",
                 "second_name",
                 "last_name",
                 "work_position",
                 "department",
                 "photo_file_url"
-            ], 
-            "15" : [
+            ],
+            "15": [
                 "id",
                 "name",
                 "second_name",
@@ -935,14 +970,14 @@ class Editor:
                 "work_position",
                 "photo_file_url"
             ],
-            "172" : [
+            "172": [
                 "name",
                 "second_name",
                 "last_name",
                 "work_position",
                 "photo_file_url"
             ],
-            "71" : [
+            "71": [
                 "name",
                 "second_name",
                 "last_name",
@@ -950,7 +985,7 @@ class Editor:
                 "department"
             ]
         }
-        user_info = User(id=user_id).search_by_id()
+        user_info = await User(id=user_id).search_by_id(self.session)
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
             for field in fields:
@@ -975,7 +1010,7 @@ class Editor:
                         result[field] = user_info['indirect_data'][field]
                     else:
                         result[field] = ""
-        
+
         result['user_id'] = user_id
 
         if "name" in result.keys():
@@ -983,48 +1018,45 @@ class Editor:
             result.pop('name')
             result.pop('second_name')
             result.pop('last_name')
-        
-        if "department" in result.keys() and type(result["department"]) == type(list()) :
+
+        if "department" in result.keys() and type(result["department"]) == type(list()):
             res_dep = result["department"][0]
             if len(result["department"]) > 1:
                 for dep_i in range(0, len(result["department"])):
                     res_dep = res_dep + ", " + result["department"][dep_i]
             result["department"] = res_dep
 
-        
-        #получаю статью
-        art = Article(id = self.art_id).find_by_id()
+        # получаю статью
+        art = await Article(id=self.art_id).find_by_id()
 
         if self.section_id == 14:
             art["name"] = result["fio"]
-        
+
         if self.section_id == 15:
             result["author"] = result["fio"] + "; " + result['position']
             result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
-        
+
         if self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
             result.pop("fio")
             result.pop("department")
             result.pop('position')
 
-        
-
-        #вписываю в неё эти значения
+        # вписываю в неё эти значения
         for key in result.keys():
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
 
-        #сохранил
-        Article(id = self.art_id).update(art)
+        # сохранил
+        await Article(id=self.art_id).update(art, self.session)
 
         return result
 
 
-def get_uuid_from_request(request):
+async def get_uuid_from_request(request, session):
     from .Auth import AuthService
     session_id = ""
     token = request.cookies.get("Authorization")
@@ -1034,37 +1066,38 @@ def get_uuid_from_request(request):
             session_id = token
     else:
         session_id = token
-    
+
     user = dict(AuthService().get_user_by_seesion_id(session_id))
 
     if user is not None:
         user_uuid = user["user_uuid"]
         username = user["username"]
 
-        #получить и вывести его id
+        # получить и вывести его id
         user = User()
         user.uuid = user_uuid
-        user_inf = user.user_inf_by_uuid()
+        user_inf = await user.user_inf_by_uuid(session)
         if user_inf is not None and "ID" in user_inf.keys():
             return user_inf["ID"]
     return None
 
-def get_editor_roots(user_uuid):
+
+async def get_editor_roots(user_uuid, session):
     from ..base.pSQL.objects.RootsModel import RootsModel
     roots_model = RootsModel()
     roots_model.user_uuid = user_uuid
-    all_roots = roots_model.get_token_by_uuid()
-    editor_roots = roots_model.token_processing_for_editor(all_roots)
+    all_roots = await roots_model.get_token_by_uuid(session)
+    editor_roots = await roots_model.token_processing_for_editor(all_roots)
     return editor_roots
 
 
-
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-def set_user_info(section_id : int, art_id : int, user_id: int):
-    return Editor(art_id = art_id, section_id = section_id).get_user_info(user_id)
+async def set_user_info(section_id: int, art_id: int, user_id: int, session: AsyncSession = Depends(get_async_db)):
+    return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id)
+
 
 @editor_router.post("/get_users_info")
-def set_user_info(data = Body()):
+async def set_user_info(session: AsyncSession = Depends(get_async_db), data=Body()):
     if "art_id" in data:
         art_id = data["art_id"]
     else:
@@ -1074,19 +1107,22 @@ def set_user_info(data = Body()):
     else:
         return "\'users_id\' is not found"
 
-    return Editor(art_id = art_id).get_users_info(user_id_list = users_id)
+    return await Editor(art_id=art_id, session=session).get_users_info(user_id_list=users_id)
 
-#получить паттерн
+
+# получить паттерн
 @editor_router.get("/pattern/{section_id}")
-def get_pattern_by_sec_id(section_id : int):
-    return Editor(section_id = section_id).get_pattern()
+async def get_pattern_by_sec_id(section_id: int):
+    return Editor(section_id=section_id).get_pattern()
 
-#заменить/создать паттерн
+
+# заменить/создать паттерн
 @editor_router.post("/pattern")
-def get_pattern_by_sec_id(data = Body()):
+async def get_pattern_by_sec_id(data=Body()):
     section_id = int(data["section_id"])
     data.pop("section_id")
-    return Editor(section_id = section_id).get_pattern(data)
+    return Editor(section_id=section_id).get_pattern(data)
+
 
 '''
 #автосборка паттернов
@@ -1095,92 +1131,106 @@ async def get_edit_sections():
     return Editor().get_sections()
 '''
 
+
 # вывод списка редактируемых секций
 @editor_router.get("/get_sections_list")
-async def get_sections_list(request: Request):
-    user_uuid = get_uuid_from_request(request)
+async def get_sections_list(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
     # user_uuid = 261
-    editor_roots = get_editor_roots(user_uuid)
+    editor_roots = await get_editor_roots(user_uuid, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
-    
+
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
-        return Editor().get_sections_list()
+        return await Editor(session=session).get_sections_list()
     elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
-        
-        sections = Editor().get_sections_list()
+
+        sections = await Editor(session=session).get_sections_list()
         result = [section for section in sections if section['id'] in editor_roots["EditorModer"]]
         return result
     return LogsMaker().warning_message(f"Недостаточно прав")
-    
 
-#рендеринг статьи
+
+# рендеринг статьи
 @editor_router.get("/rendering/{art_id}")
-async def render(art_id : int ):
-    return Editor(art_id=art_id).rendering()
+async def render(art_id: int, session: AsyncSession = Depends(get_async_db)):
+    return await Editor(art_id=art_id, session=session).rendering()
 
-#рендеринг статей по раздела
+
+# рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
-async def sec_render(sec_id: int, request: Request):
-    user_uuid = get_uuid_from_request(request)
+async def sec_render(request: Request, sec_id: int, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
     # user_uuid = 2366
-    editor_roots = get_editor_roots(user_uuid)
+    editor_roots = await get_editor_roots(user_uuid, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
-    
-    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or ("EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
-        return Editor(section_id = sec_id).section_rendering()
+
+    if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or (
+            "EditorModer" in editor_roots.keys() and sec_id in editor_roots["EditorModer"]):
+        return await Editor(section_id=sec_id, session=session).section_rendering()
     return LogsMaker().warning_message(f"Недостаточно прав")
 
-#изменить статью
+
+# изменить статью
 @editor_router.post("/update/{art_id}")
-async def updt(art_id : int, data = Body()):
-    return Editor(art_id=art_id).update(data)
+async def updt(art_id: int, session: AsyncSession = Depends(get_async_db), data=Body()):
+    # from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+    # await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
+    return await Editor(art_id=art_id, session=session).update(data)
 
-#добавить статью
+
+# добавить статью
 @editor_router.get("/add/{section_id}")
-async def get_form(section_id : int):
-    return Editor(section_id=section_id).pre_add()
-
+async def get_form(section_id: int, session: AsyncSession = Depends(get_async_db)):
+    return await Editor(section_id=section_id, session=session).pre_add()
 
 
 @editor_router.post("/add/{art_id}")
-async def set_new(art_id : int, data = Body()):
-    #section_id = data["section_id"]
-    return Editor(art_id=art_id).add(data)
+async def set_new(art_id: int, session: AsyncSession = Depends(get_async_db), data=Body()):
+    # section_id = data["section_id"]
+    from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+    await ArticleSearchModel().update_art_el_index(article_data=data, session=session)
 
+    return await Editor(art_id=art_id, session=session).add(data)
 
 
 @editor_router.delete("/del/{art_id}")
-async def del_art(art_id : int):
-    return Editor(art_id=int(art_id)).delete_art()
+async def del_art(art_id: int, session: AsyncSession = Depends(get_async_db)):
+    from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
+    await ArticleSearchModel().delete_art_from_el_index(art_id=art_id)
+    return await Editor(art_id=int(art_id), session=session).delete_art()
 
-#посмотреть все файлы статьи
+
+# посмотреть все файлы статьи
 @editor_router.get("/rendering/files/{art_id}")
-async def render(art_id : int):
-    return Editor(art_id=art_id).get_files()
+async def render(art_id: int):
+    return await Editor(art_id=art_id).get_files()
 
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
-async def create_file(file: UploadFile, art_id : int): #нельзя асинхронить
+async def create_file(file: UploadFile, art_id: int,
+                      session: AsyncSession = Depends(get_async_db)):  # нельзя асинхронить
     # Здесь нужно сохранить файл или обработать его содержимое
-    f_inf = await storeFile(art_id = int(art_id)).editor_add_file(file=file)
+    f_inf = await storeFile(art_id=int(art_id)).editor_add_file(session=session, file=file)
     return f_inf
 
+
 @editor_router.delete('/delete_file/{file_id}')
-def del_file(file_id: str):
-    return storeFile(id = file_id).editor_del_file()
+async def del_file(file_id: str, session: AsyncSession = Depends(get_async_db)):
+    return await storeFile(id=file_id).editor_del_file(session=session)
+
 
 @editor_router.post("/upload_files/{art_id}")
-async def create_upload_files(art_id, files: List[UploadFile] ):
+async def create_upload_files(art_id, files: List[UploadFile]):
     try:
         # Обработка каждого файла
         file_infos = []
         for file in files:
             # Здесь можно сохранить файл или обработать его содержимое
-            f_inf = storeFile(art_id).editor_add_file(file=file)
+            f_inf = await storeFile(art_id).editor_add_file(file=file)
             file_infos.append(f_inf)
-        
+
         return JSONResponse(file_infos)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

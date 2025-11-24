@@ -12,22 +12,11 @@
                           class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
             </swiper-slide>
 
-            <template v-if="card.href == 'eventAnnounces'">
-                <swiper-slide v-for="slide in duplicateIfImageIsArray(card.images)"
-                              :key="'slide' + slide">
-                    <a class="homeview__grid__card__link
-                                homeview__grid__card__bg-image"
-                       :href="card.href"
-                       target="_blank"
-                       v-lazy-load="slide.image"></a>
-                </swiper-slide>
-            </template>
-
             <swiper-slide v-else
                           v-for="(slide, index) in card.images"
                           :key="'postImg' + index"
                           class="homeview__grid__card__image__swiper-slide">
-                <!-- Для слайдера конкурсы эмк(вверху страницы) -->
+                <!-- Для афишы -->
                 <a v-if="card.id == 7"
                    class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
@@ -86,20 +75,6 @@ export default defineComponent({
         }
     },
     setup() {
-
-        const duplicateIfImageIsArray = (imagesArr: { id: number, image: string | string[] }[]) => {
-            const newSlidesArr: { id: number, image: string | string[] }[] = [];
-            imagesArr.map((e) => {
-                if (Array.isArray(e.image)) {
-                    e.image.map((image, imgIndex) => {
-                        newSlidesArr.push({ id: Number(`${e.id}.${imgIndex}`), image: image })
-                    })
-                }
-                else newSlidesArr.push(e);
-            })
-            return newSlidesArr
-        }
-
         return {
             orgBanner,
             swiperOn: useSwiperconf('main').swiperOn,
@@ -111,7 +86,6 @@ export default defineComponent({
             isBeginning: useSwiperconf('main').isBeginning,
             repairVideoUrl,
             chooseImgPlug,
-            duplicateIfImageIsArray
         };
     },
 })

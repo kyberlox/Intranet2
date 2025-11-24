@@ -11,12 +11,6 @@ export interface IPostIdea {
     base?: string
 }
 
-export interface IPostEventToExcell{
-    id: number;
-    entryId: string;
-    status: string;
-}
-
 export interface IValidatePoints {
     action_id: number
     uuid_to: number

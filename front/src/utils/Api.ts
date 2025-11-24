@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { useUserData } from '@/stores/userData'
 import { computed } from 'vue'
-import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell } from '@/interfaces/IPostFetch'
+import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad } from '@/interfaces/IPostFetch'
 import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData'
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities'
 import type { IPostInner } from '@/components/tools/common/PostInner.vue'
@@ -40,7 +40,7 @@ export default class Api {
     static async postVendor(url: string, data: INeuroChat[] | null | FormData) {
         return (await vendorApi.post(url, data)).data
     }
-    
+
     static async post(
         url: string,
         data?:
@@ -51,8 +51,7 @@ export default class Api {
             | IPostCardMsg
             | IValidatePoints
             | INewActivityData
-            | IUsersLoad
-            | Array<IPostEventToExcell>
+            | IUsersLoad,
     ) {
         return (await api.post(url, data)).data
     }

@@ -1,96 +1,102 @@
 import json
 
-from ..models.Activities import Activities
-from .PeerUserModel import PeerUserModel
-from .App import func, get_db # db, 
+
+from .App import select, func # db,
 
 
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Активностей")
 
+
+
 class ActivitiesModel:
     def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False, active: bool = False):
-        # self.session = db
+
         self.id = id
         self.name = name
         self.coast = coast
         self.need_valid = need_valid
         self.active = active
+
+        
+        from ..models.Activities import Activities
         self.Activities = Activities
 
-    # def upload_base_activities(self):
-    #     with open('./src/base/peer-data/base_activities.json', mode='r', encoding='UTF-8') as f:
-    #         cur_activities = json.load(f)
-    #     for activity in cur_activities:
-    #         existing_activity = database.query(self.Activities).filter(self.Activities.id == activity['id']).first()
-    #         if existing_activity:
-    #             continue
-    #         else:
-    #             new_activity = self.Activities(id=activity['id'], name=activity['name'], coast=activity['coast'], need_valid=activity['need_valid'])
-    #             database.add(new_activity)
-    #             database.commit()
-    #     database.close()
-    #     return {"status": True}
-    
-    def find_all_activities(self):
-        db_gen = get_db()
-        database = next(db_gen)
-        res = database.query(self.Activities).filter(self.Activities.active == True).all()
-        # database.close()
-        return res
+    async def find_all_activities(self, session):
+        try:
+            stmt = select(self.Activities).where(self.Activities.active == True)
+            result = await session.execute(stmt)
+            activities = result.scalars().all()
+            return activities
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в find_all_activities при получении списка активностей: {e}")
 
-    def update_activity(self, roots):
-        db_gen = get_db()
-        database = next(db_gen)
+    async def update_activity(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                activity = database.query(self.Activities).get(self.id)
+                stmt = select(self.Activities).where(self.Activities.id == self.id)
+                result = await session.execute(stmt)
+                activity = result.scalar_one_or_none()
+
                 if activity:
                     activity.name = self.name
                     activity.coast = self.coast
                     activity.need_valid = self.need_valid
                     activity.active = self.active
-                    database.commit()
+                    await session.commit()
 
-                    return LogsMaker().info_message(f"Обновление активности {self.name} звершено успешно")
+                    return LogsMaker().info_message(f"Обновление активности id = {self.id}, name = '{self.name}' завершено успешно")
                 else:
                     return LogsMaker().warning_message(f"Активности с id = {self.id} не существует!")
             else:
-                return LogsMaker().warning_message(f"У Вас недостаточно прав")
+                return LogsMaker().warning_message(f"Недостаточно прав для обновления активности")
+                
         except Exception as e:
-            return LogsMaker().error_message(str(e))
-        # finally:
-        #     database.close()
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в update_activity при обновлении активности id = {self.id}, name = '{self.name}': {e}")
 
-    def delete_activity(self, roots):
-        db_gen = get_db()
-        database = next(db_gen)
+    async def delete_activity(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                existing_activity = database.query(self.Activities).filter(self.Activities.id == self.id, self.Activities.active == True).first()
+                stmt = select(self.Activities).where(
+                    self.Activities.id == self.id, 
+                    self.Activities.active == True
+                )
+                result = await session.execute(stmt)
+                existing_activity = result.scalar_one_or_none()
+                
                 if existing_activity:
-                    PeerUserModel(activities_id=existing_activity.id).delete_curators(roots)
-                    existing_activity.active = False
-                    database.commit()
+                    # Удаляем кураторов активности
+                    from .PeerUserModel import PeerUserModel
+                    peer_user_model = PeerUserModel(activities_id=existing_activity.id)
+                    await peer_user_model.delete_curators(session, roots)
                     
-                    return LogsMaker().info_message(f"Удаление активности c id = {self.id} звершено успешно")
+                    # Деактивируем активность
+                    existing_activity.active = False
+                    await session.commit()
+                    
+                    return LogsMaker().info_message(f"Удаление активности id = {self.id}, name = '{existing_activity.name}' завершено успешно")
                 else:
                     return LogsMaker().warning_message(f"Активности с id = {self.id} не существует или она не активна!")
             else:
-                return LogsMaker().warning_message(f"У Вас недостаточно прав")
+                return LogsMaker().warning_message(f"Недостаточно прав для удаления активности")
+                
         except Exception as e:
-            return LogsMaker().error_message(str(e))
-        # finally:
-        #     database.close()
-    
-    def new_activity(self, data, roots):
-        db_gen = get_db()
-        database = next(db_gen)
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в delete_activity при удалении активности id = {self.id}: {e}")
+
+    async def new_activity(self, session, data: dict, roots: dict):
         try: 
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                max_id = database.query(func.max(self.Activities.id)).scalar() or 0
+                # Получаем максимальный ID
+                stmt_max = select(func.max(self.Activities.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
                 new_id = max_id + 1
+                
+                # Создаем новую активность
                 new_active = self.Activities(
                     id=new_id,
                     name=data['name'],
@@ -98,30 +104,60 @@ class ActivitiesModel:
                     need_valid=data['need_valid'],
                     active=True
                 )
-                # self.Activities.id=new_id,
-                # self.Activities.name=data['name']
-                # self.Activities.coast=data['coast']
-                # self.Activities.need_valid=data['need_valid']
-                # database.add(new_active)s
-                # database.commit()
-                # добавляем модера
+
+                
+                # Если активность не требует подтверждения, назначаем куратора
                 if data['need_valid'] == True:
-                    database.add(new_active)
-                    database.commit()
-                    return LogsMaker().info_message(f"Обновление активности {data['name']} звершено успешно")
+                    session.add(new_active)
+                    await session.commit()
+                    return LogsMaker().info_message(f"Создание активности '{data['name']}' с id = {new_id} завершено успешно")
                 else:
                     uuid = data['uuid']
-                    curator_status = PeerUserModel(activities_id=new_id, uuid=uuid).add_curator(roots)
+                    from .PeerUserModel import PeerUserModel
+                    peer_user_model = PeerUserModel(activities_id=new_id, uuid=uuid)
+                    curator_status = await peer_user_model.add_curator(session, roots)
+                    
                     if curator_status:
-                        database.add(new_active)
-                        database.commit()
-                        LogsMaker().info_message(f"Пользователь с id = {uuid} назначен куратором активности {data['name']}")
-                        return LogsMaker().info_message(f"Создание активности {data['name']} звершено успешно")
+                        session.add(new_active)
+                        await session.commit()
+                        LogsMaker().info_message(f"Пользователь с id = {uuid} назначен куратором активности '{data['name']}'")
+                        return LogsMaker().info_message(f"Создание активности '{data['name']}' с id = {new_id} завершено успешно")
                     else:
-                        return LogsMaker().warning_message(f"Активность {data['name']} не была создана!")
+                        return LogsMaker().warning_message(f"Активность '{data['name']}' не была создана из-за ошибки назначения куратора!")
             else:
-                return LogsMaker().warning_message(f"У Вас недостаточно прав")
+                return LogsMaker().warning_message(f"Недостаточно прав для создания активности")
+                
         except Exception as e:
-            return LogsMaker().error_message(str(e))
-        # finally:
-        #     database.close()
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в new_activity при создании активности '{data.get('name', 'unknown')}': {e}")
+
+    # Дополнительный метод для загрузки базовых активностей (если нужно)
+    async def upload_base_activities(self, session):
+        try:
+            import json
+            with open('./src/base/peer-data/base_activities.json', mode='r', encoding='UTF-8') as f:
+                cur_activities = json.load(f)
+            
+            for activity in cur_activities:
+                stmt = select(self.Activities).where(self.Activities.id == activity['id'])
+                result = await session.execute(stmt)
+                existing_activity = result.scalar_one_or_none()
+                
+                if existing_activity:
+                    continue
+                else:
+                    new_activity = self.Activities(
+                        id=activity['id'], 
+                        name=activity['name'], 
+                        coast=activity['coast'], 
+                        need_valid=activity['need_valid']
+                    )
+                    session.add(new_activity)
+            
+            await session.commit()
+            return {"status": True}
+            
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в upload_base_activities при загрузке базовых активностей: {e}")
+

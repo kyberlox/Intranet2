@@ -187,7 +187,7 @@ class Article:
             date_creation = None
 
         # записываем файлы в БД
-        # await self.search_files(data["IBLOCK_ID"], self.id, data, session)
+        await self.search_files(data["IBLOCK_ID"], self.id, data, session)
 
         # article_data["indirect_data"]["files"]
 

@@ -224,8 +224,7 @@ class User:
 
     async def check_fields_to_update(self, session):
         fields = [
-            'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT',
-            'PERSONAL_PHOTO', 'WORK_PHONE', 'WORK_POSITION',
+            'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT', 'WORK_PHONE', 'WORK_POSITION',
             'UF_PHONE_INNER', 'UF_USR_DEPARTMENT_MAIN', 'UF_USR_1586854037086',
             'UF_USR_1586861567149', 'UF_USR_1594879216192',
             'UF_USR_1679387413613', 'UF_USR_1696592324977',
@@ -241,14 +240,14 @@ class User:
             psql_data = await self.UserModel.find_by_id_all(session)
             for field in fields:
 
-                if field == 'PERSONAL_PHOTO':
-                    if B24_data[field] == psql_data['photo_file_b24_url']:
-                        LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
-                    elif B24_data[field] != psql_data['photo_file_b24_url']:
-                        LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
-                    continue
-                else:
-                    pass
+                # if field == 'PERSONAL_PHOTO':
+                #     if B24_data[field] == psql_data['photo_file_b24_url']:
+                #         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
+                #     elif B24_data[field] != psql_data['photo_file_b24_url']:
+                #         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
+                #     continue
+                # else:
+                #     pass
                 
                 if field.lower() in psql_data['indirect_data']:
                     ind_data = psql_data['indirect_data']

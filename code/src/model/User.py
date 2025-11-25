@@ -268,7 +268,7 @@ class User:
                     LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
                 elif field not in B24_data:
                     LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
-                    
+                psql_data=psql_data    
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')

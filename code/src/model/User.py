@@ -241,6 +241,8 @@ class User:
             for field in fields:
                 if field.lower() in psql_data['indirect_data']:
                     psql_data = psql_data['indirect_data']
+                else:
+                    psql_data=psql_data
 
                 if field == 'PERSONAL_PHOTO':
                     if B24_data[field] == psql_data['photo_file_b24_url']:

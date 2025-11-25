@@ -222,7 +222,39 @@ class User:
     async def find_by_email(self, email, session):
         return await self.UserModel.find_by_email(email, session)
 
-
+    async def check_fields_to_update(self, session):
+        fields = [
+            'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT',
+            'PERSONAL_PHOTO', 'WORK_PHONE', 'WORK_POSITION',
+            'UF_PHONE_INNER', 'UF_USR_DEPARTMENT_MAIN', 'UF_USR_1586854037086',
+            'UF_USR_1586861567149', 'UF_USR_1594879216192',
+            'UF_USR_1679387413613', 'UF_USR_1696592324977',
+            'UF_USR_1705744824758', 'UF_USR_1707225966581',
+            'UF_USR_1586853958167'
+        ]
+        try:
+            B24_data = await B24().getUser(self.id)
+            psql_data = await self.UserModel.find_by_id_all(session)
+            for field in fields:
+                if field == 'PERSONAL_PHOTO':
+                    if B24_data[field] == psql_data['photo_file_b24_url']:
+                        LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
+                    elif B24_data[field] != psql_data['photo_file_b24_url']:
+                        LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
+                    continue
+                else:
+                    pass
+                    
+                if field.lower() in psql_data:
+                    if B24_data[field] == psql_data[field.lower()]:
+                        LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
+                    elif B24_data[field] != psql_data[field.lower()]:
+                        LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
+                else:
+                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24={B24_data[field]}')
+            return True 
+        except Exception as e:
+            return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -260,11 +292,11 @@ async def update_user(session: AsyncSession = Depends(get_async_db)):
     usr = User()
     return await usr.fetch_users_data(session)
 
-
 @users_router.put("/update_user_info/{user_id}")
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):
     # return await User(id=user_id).update_inf_from_b24(session)
-    return True
+    return await User(id=user_id).check_fields_to_update(session)
+    # return True
 
 
 # Пользователя можно выгрузить

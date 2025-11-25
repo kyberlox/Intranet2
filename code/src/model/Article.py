@@ -37,12 +37,22 @@ article_router = APIRouter(prefix="/article", tags=["Статьи"])
 
 def make_date_valid(date):
     if date is not None:
-        try:
-            # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-        except:
-            return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-            # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        if isinstance(date, str):
+            if '-' in date:  
+                try:
+                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                except:
+                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+            elif '.' in date:
+                try:
+                    return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                except:
+                    return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+
     else:
         return None
 

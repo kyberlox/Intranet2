@@ -41,8 +41,8 @@ def make_date_valid(date):
             # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
             return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
         except:
-            # return datetime.datetime.strptime(date, '%d.%m.%Y')
-            return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+            return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+            # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     else:
         return None
 

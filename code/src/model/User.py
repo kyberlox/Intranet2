@@ -224,7 +224,7 @@ class User:
 
     async def check_fields_to_update(self, session):
         fields = [
-            'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT', 'WORK_PHONE', 'WORK_POSITION',
+            'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT', 'WORK_PHONE', 'WORK_POSITION', 'SECOND_NAME',
             'UF_PHONE_INNER', 'UF_USR_DEPARTMENT_MAIN', 'UF_USR_1586854037086',
             'UF_USR_1586861567149', 'UF_USR_1594879216192',
             'UF_USR_1679387413613', 'UF_USR_1696592324977',

@@ -236,7 +236,7 @@ class User:
             print('*')
             B24_data = await B24().getUser(self.id)
             print('*')
-            self.UserModel.uuid = int(self.id)
+            self.UserModel.id = int(self.id)
             print('*')
             psql_data = await self.UserModel.find_by_id_all(session)
             print('*')

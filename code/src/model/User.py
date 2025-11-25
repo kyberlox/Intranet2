@@ -232,40 +232,32 @@ class User:
             'UF_USR_1705744824758', 'UF_USR_1707225966581',
             'UF_USR_1586853958167'
         ]
+        LogsMaker().info_message(f'ОБНОВЛЯЕМ ИНФУ О ПОЛЬЗОВАТЕЛЕ User с id={self.id} ')
         try:
-            print('*')
             res = await B24().getUser(self.id)
             B24_data = res[0]
-            print(B24_data, type(B24_data))
             self.UserModel.id = int(self.id)
-            print('*')
             psql_data = await self.UserModel.find_by_id_all(session)
-            print('*')
             for field in fields:
-                print(field)
                 if field == 'PERSONAL_PHOTO':
-                    print('photo')
                     if B24_data[field] == psql_data['photo_file_b24_url']:
-                        print('1')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                     elif B24_data[field] != psql_data['photo_file_b24_url']:
-                        print('2')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
                     continue
                 else:
                     pass
 
                 if field.lower() in psql_data and field in B24_data:
-                    print('23')
                     if B24_data[field] == psql_data[field.lower()]:
-                        print('3')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                     elif B24_data[field] != psql_data[field.lower()]:
-                        print('4')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
-                else:
-                    print('5')
+                elif field.lower() not in psql_data:
                     LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL')
+                elif field not in B24_data:
+                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
+                    
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')

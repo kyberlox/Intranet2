@@ -233,26 +233,37 @@ class User:
             'UF_USR_1586853958167'
         ]
         try:
-            print(self.id, type(self.id))
+            print('*')
             B24_data = await B24().getUser(self.id)
+            print('*')
             self.UserModel.uuid = int(self.id)
+            print('*')
             psql_data = await self.UserModel.find_by_id_all(session)
+            print('*')
             for field in fields:
+                print(field)
                 if field == 'PERSONAL_PHOTO':
+                    print('photo')
                     if B24_data[field] == psql_data['photo_file_b24_url']:
+                        print('1')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                     elif B24_data[field] != psql_data['photo_file_b24_url']:
+                        print('2')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
                     continue
                 else:
                     pass
 
                 if field.lower() in psql_data:
+                    print('23')
                     if B24_data[field] == psql_data[field.lower()]:
+                        print('3')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                     elif B24_data[field] != psql_data[field.lower()]:
+                        print('4')
                         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
                 else:
+                    print('5')
                     LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24={B24_data[field]}')
             return True 
         except Exception as e:

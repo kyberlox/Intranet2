@@ -21,7 +21,7 @@ class B24:
         return result
     
     def getUser(self, ID):
-        result = self.bx24.callMethod('user.get?ID={ID}')
+        result = self.bx24.callMethod(f'user.get?ID={ID}')
         return result
 
     def getDeps(self):

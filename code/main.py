@@ -410,10 +410,10 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     time_start = time.time()
     status = 0
 
-    """
+    
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()
-    """
+    
     
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")

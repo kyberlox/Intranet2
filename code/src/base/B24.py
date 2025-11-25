@@ -12,7 +12,8 @@ b24_router = APIRouter(prefix="/b24", tags=["Битрикс24"])
 
 class B24:
     def __init__(self):
-        self.bx24 = Bitrix24("https://test-portal.emk.ru//rest/2158/qunp7dwdrwwhsh1w/")
+        # self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
+        self.bx24 = Bitrix24("https://test-portal.emk.ru/rest/3830/0gtzqs1nai8ocqft/")
 
 
 

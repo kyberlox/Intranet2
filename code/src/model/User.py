@@ -253,6 +253,8 @@ class User:
                         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                     elif B24_data[field] != psql_data[field.lower()]:
                         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
+                elif field.lower() not in psql_data and field not in B24_data:
+                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
                 elif field.lower() not in psql_data:
                     LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL')
                 elif field not in B24_data:

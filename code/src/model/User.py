@@ -233,6 +233,7 @@ class User:
             'UF_USR_1586853958167'
         ]
         try:
+            print(self.id, type(self.id))
             B24_data = await B24().getUser(self.id)
             self.UserModel.uuid = int(self.id)
             psql_data = await self.UserModel.find_by_id_all(session)

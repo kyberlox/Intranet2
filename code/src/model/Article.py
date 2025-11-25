@@ -2207,7 +2207,7 @@ class Article:
             second_page = {
                 'id': section_id,
                 'type': 'section',
-                'title': 'Бизнес-новости',
+                'title': 'Актуальные-новости',
                 'href': 'actualArticle',
                 'sectionId': 'actualNews',
                 'images': []

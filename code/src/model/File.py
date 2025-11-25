@@ -584,10 +584,7 @@ class File:
     async def get_users_photo(self, session):
         #переделать с учетом is_archive
         file_data = await UserFilesModel(id=self.id).find_user_photo_by_id(session)
-        print(file_data)
-        if not file_data:
-            raise HTTPException(status_code=404, detail="File not found")
-        elif not file_data["active"]:
+        if not file_data or not file_data["active"]:
             raise HTTPException(status_code=404, detail="File not found")
         else:
             file_info = dict()

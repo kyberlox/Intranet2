@@ -154,7 +154,8 @@ class UserFilesModel():
             return None
             
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в find_user_photo_by_id при поиске фото {self.id}: {e}")
+            LogsMaker().error_message(f"Ошибка в find_user_photo_by_id при поиске фото {self.id}: {e}")
+            return None
 
     async def find_user_photo_by_uuid(self, session, uuid: int):
         try:

@@ -240,8 +240,10 @@ class User:
             psql_data = await self.UserModel.find_by_id_all(session)
             for field in fields:
                 if field.lower() in psql_data['indirect_data']:
+                    print(1)
                     psql_data = psql_data['indirect_data']
                 else:
+                    print(2)
                     psql_data=psql_data
 
                 if field == 'PERSONAL_PHOTO':

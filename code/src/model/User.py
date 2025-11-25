@@ -239,12 +239,6 @@ class User:
             self.UserModel.id = int(self.id)
             psql_data = await self.UserModel.find_by_id_all(session)
             for field in fields:
-                if field.lower() in psql_data['indirect_data']:
-                    print(psql_data, field)
-                    psql_data = psql_data['indirect_data']
-                else:
-                    print(2)
-                    psql_data=psql_data
 
                 if field == 'PERSONAL_PHOTO':
                     if B24_data[field] == psql_data['photo_file_b24_url']:
@@ -255,20 +249,32 @@ class User:
                 else:
                     pass
                 
-                
-
-                if field.lower() in psql_data and field in B24_data:
-                    if B24_data[field] == psql_data[field.lower()]:
-                        LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
-                    elif B24_data[field] != psql_data[field.lower()]:
-                        LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
-                elif field.lower() not in psql_data and field not in B24_data:
-                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
-                elif field.lower() not in psql_data:
-                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
-                elif field not in B24_data:
-                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
-                psql_data=psql_data    
+                if field.lower() in psql_data['indirect_data']:
+                    ind_data = psql_data['indirect_data']
+                    if field.lower() in ind_data and field in B24_data:
+                        if B24_data[field] == ind_data[field.lower()]:
+                            LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
+                        elif B24_data[field] != ind_data[field.lower()]:
+                            LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={ind_data[field.lower()]}')
+                    elif field.lower() not in ind_data and field not in B24_data:
+                        LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
+                    elif field.lower() not in ind_data:
+                        LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
+                    elif field not in B24_data:
+                        LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
+                else:
+                    if field.lower() in psql_data and field in B24_data:
+                        if B24_data[field] == psql_data[field.lower()]:
+                            LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
+                        elif B24_data[field] != psql_data[field.lower()]:
+                            LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
+                    elif field.lower() not in psql_data and field not in B24_data:
+                        LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
+                    elif field.lower() not in psql_data:
+                        LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
+                    elif field not in B24_data:
+                        LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
+                  
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')

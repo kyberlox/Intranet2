@@ -234,7 +234,8 @@ class User:
         ]
         try:
             print('*')
-            B24_data = await B24().getUser(self.id)
+            res = await B24().getUser(self.id)
+            B24_data = res[0]
             print(B24_data, type(B24_data))
             self.UserModel.id = int(self.id)
             print('*')

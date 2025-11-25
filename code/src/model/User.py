@@ -239,6 +239,9 @@ class User:
             self.UserModel.id = int(self.id)
             psql_data = await self.UserModel.find_by_id_all(session)
             for field in fields:
+                if field.lower() in psql_data['indirect_data']:
+                    psql_data = psql_data['indirect_data']
+
                 if field == 'PERSONAL_PHOTO':
                     if B24_data[field] == psql_data['photo_file_b24_url']:
                         LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
@@ -247,6 +250,8 @@ class User:
                     continue
                 else:
                     pass
+                
+                
 
                 if field.lower() in psql_data and field in B24_data:
                     if B24_data[field] == psql_data[field.lower()]:

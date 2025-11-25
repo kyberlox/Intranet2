@@ -232,8 +232,8 @@ class User:
             'UF_USR_1705744824758', 'UF_USR_1707225966581',
             'UF_USR_1586853958167'
         ]
-        time_now = datetime.now()
-        LogsMaker().info_message(f'ОБНОВЛЯЕМ ИНФУ О ПОЛЬЗОВАТЕЛЕ User с id={self.id}, время: {time_now}')
+        # time_now = datetime.now()
+        LogsMaker().info_message(f'ОБНОВЛЯЕМ ИНФУ О ПОЛЬЗОВАТЕЛЕ User с id={self.id}')
         try:
             res = await B24().getUser(self.id)
             B24_data = res[0]

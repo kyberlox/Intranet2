@@ -255,7 +255,7 @@ class User:
                 else:
                     pass
 
-                if field.lower() in psql_data:
+                if field.lower() in psql_data and field in B24_data:
                     print('23')
                     if B24_data[field] == psql_data[field.lower()]:
                         print('3')
@@ -265,7 +265,7 @@ class User:
                         LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={psql_data[field.lower()]}')
                 else:
                     print('5')
-                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24={B24_data[field]}')
+                    LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL')
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')

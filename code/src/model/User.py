@@ -173,7 +173,8 @@ class User:
             # смотрим логи 
             await self.check_fields_to_update(session)
 
-            usr_data = await B24().getUser(self.id)
+            res = await B24().getUser(self.id)
+            usr_data = res[0]
             if usr_data == []:
                 self.UserModel.id = int(self.id)
                 psql_user = await self.UserModel.find_by_id_all(session)

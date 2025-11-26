@@ -188,7 +188,7 @@ class UserFilesModel():
                 )
                 result_max = await session.execute(stmt_max)
                 max_num = result_max.scalar_one_or_none()
-
+                print(max_num, 'макс который нашли')
                 # Извлекаем номер из имени файла
                 if max_num:
                     current_num = int(max_num.split('_')[-1].split('.')[0])

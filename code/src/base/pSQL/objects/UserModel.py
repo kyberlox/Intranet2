@@ -444,7 +444,7 @@ class UserModel:
     async def all(self, session):
         # async with AsyncSessionLocal() as session:
             # result = await database.query(self.user).all()
-        stmt = select(self.user)
+        stmt = select(self.user.id)
         res = await session.execute(stmt)
         result = res.scalars().all()
 

@@ -170,58 +170,58 @@ class User:
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
         try:
-            # смотрим логи 
-            await self.check_fields_to_update(session)
-
             res = await B24().getUser(self.id)
             usr_data = res[0]
-            if usr_data == []:
-                self.UserModel.id = int(self.id)
+
+            # смотрим логи 
+            await self.check_fields_to_update(session=session, b24_data=usr_data)
+            # if usr_data == []:
+            #     self.UserModel.id = int(self.id)
+            #     psql_user = await self.UserModel.find_by_id_all(session)
+            #     if psql_user and psql_user['active'] == True:
+            #         psql_user['active'] = False 
+            #         update_user = await self.UserModel.update_user_info(user_data=psql_user, session=session)
+            #         return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL занесли в архив")
+            #     else:
+            #         return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL уже в архиве либо отсутствует")
+            # else:
+            print(usr_data, 'пользователь')
+            await self.UserModel.upsert_user(user_data=usr_data, session=session)
+            await session.commit()
+            # usr_data["ACTIVE"] = False
+            if "ACTIVE" in usr_data and usr_data["ACTIVE"] == True:
+                # загружаем фотку:
+                uuid = self.id
+                # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
+                self.UserModel.id = int(uuid)
                 psql_user = await self.UserModel.find_by_id_all(session)
-                if psql_user and psql_user['active'] == True:
-                    psql_user['active'] = False 
-                    update_user = await self.UserModel.update_user_info(user_data=psql_user, session=session)
-                    return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL занесли в архив")
-                else:
-                    return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL уже в архиве либо отсутствует")
+                if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
+
+                    b24_url = usr_data['PERSONAL_PHOTO']
+                    # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
+                    b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
+                    # проверим url первоисточника текущей аватарки
+                    if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
+                        # срабатывает это условие и уходит в else
+                        print('РАЗНЫЕ ФОТКИ')
+                        # cтарую фотку - в архив
+                        if psql_user['photo_file_b24_url'] is not None and psql_user[
+                            'photo_file_b24_url'] != b24_url:
+                            old_file_id = psql_user['photo_file_id']
+                            await File(id=old_file_id).delete_user_img(session)
+                        # если есть несоответствие - скачать новую
+                        file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
+
+                        if file_data is not False:
+                            # обновить данные в pSQL
+                            self.UserModel.uuid = uuid
+                            await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
+                # обновляем эластик
+                await self.update_user_elastic(session)
             else:
-                print(usr_data, 'пользователь')
-                await self.UserModel.upsert_user(user_data=usr_data, session=session)
-                await session.commit()
-                # usr_data["ACTIVE"] = False
-                if "ACTIVE" in usr_data and usr_data["ACTIVE"] == True:
-                    # загружаем фотку:
-                    uuid = self.id
-                    # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
-                    self.UserModel.id = int(uuid)
-                    psql_user = await self.UserModel.find_by_id_all(session)
-                    if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
-
-                        b24_url = usr_data['PERSONAL_PHOTO']
-                        print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
-                        # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
-                        # проверим url первоисточника текущей аватарки
-                        if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
-                            # срабатывает это условие и уходит в else
-                            print('РАЗНЫЕ ФОТКИ')
-                            # cтарую фотку - в архив
-                            if psql_user['photo_file_b24_url'] is not None and psql_user[
-                                'photo_file_b24_url'] != b24_url:
-                                old_file_id = psql_user['photo_file_id']
-                                await File(id=old_file_id).delete_user_img(session)
-                            # если есть несоответствие - скачать новую
-                            file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
-
-                            if file_data is not False:
-                                # обновить данные в pSQL
-                                self.UserModel.uuid = uuid
-                                await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
-                    # обновляем эластик
-                    await self.update_user_elastic(session)
-                else:
-                    # не скачиваем фотку у неактивных пользователей
-                    await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
-                return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
+                # не скачиваем фотку у неактивных пользователей
+                await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
+            return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {self.id}")
         except Exception as e:
             return LogsMaker().error_message(
                 f'Ошибка при обновлении инф о пользователе update_inf_from_b24 с id = {self.id}: {e}')
@@ -238,7 +238,7 @@ class User:
     async def find_by_email(self, email, session):
         return await self.UserModel.find_by_email(email, session)
 
-    async def check_fields_to_update(self, session):
+    async def check_fields_to_update(self, session, b24_data):
         fields = [
             'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT', 'WORK_PHONE', 'WORK_POSITION', 'SECOND_NAME',
             'UF_PHONE_INNER', 'UF_USR_DEPARTMENT_MAIN', 'UF_USR_1586854037086',
@@ -251,7 +251,7 @@ class User:
         # time_now = datetime.now()
         LogsMaker().info_message(f'ОБНОВЛЯЕМ ИНФУ О ПОЛЬЗОВАТЕЛЕ User с id={self.id}')
         try:
-            res = await B24().getUser(self.id)
+            res = b24_data
             if res == []:
                 #удалить у нас пользователя (сделать не активным)
                 pass
@@ -392,11 +392,6 @@ def send_test_mail(data=Body(...)):
 async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id=user_id).get_user_likes(session)
 
-
-@users_router.get("/get_users")
-async def get_users(session: AsyncSession = Depends(get_async_db)):
-    from ..base.pSQL.objects.UserModel import UserModel
-    return await UserModel().all(session)
 
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):

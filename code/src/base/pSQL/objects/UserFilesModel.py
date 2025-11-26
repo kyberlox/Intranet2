@@ -180,7 +180,7 @@ class UserFilesModel():
 
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)
-                users_photo = result_exists.all()
+                users_photo = result_exists.scalars().all()
                 print(users_photo, 'dct afqks')
                 # Если нет - будет первым
                 if not user_exists:

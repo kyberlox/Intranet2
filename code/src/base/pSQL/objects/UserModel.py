@@ -447,8 +447,8 @@ class UserModel:
         stmt = select(self.user.id)
         res = await session.execute(stmt)
         result = res.scalars().all()
-        res = result.sort()
-        return res
+        a = result.sort()
+        return a
     
     async def set_user_photo(self, file_id, session):
         # from .App import engine

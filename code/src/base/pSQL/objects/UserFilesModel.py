@@ -109,17 +109,17 @@ class UserFilesModel():
         """
         from ..models.User import User
         import os
-        from sqlalchemy import text
+        # from sqlalchemy import text
         try:
-            # Проверяем тип photo_file_id в БД
-            sql = text("""
-                SELECT column_name, data_type 
-                FROM information_schema.columns 
-                WHERE table_name = 'users' AND column_name = 'photo_file_id'
-            """)
-            result = await session.execute(sql)
-            column_info = result.fetchone()
-            LogsMaker().info_message(f"Тип photo_file_id в БД: {column_info}")
+            # # Проверяем тип photo_file_id в БД
+            # sql = text("""
+            #     SELECT column_name, data_type 
+            #     FROM information_schema.columns 
+            #     WHERE table_name = 'users' AND column_name = 'photo_file_id'
+            # """)
+            # result = await session.execute(sql)
+            # column_info = result.fetchone()
+            # LogsMaker().info_message(f"Тип photo_file_id в БД: {column_info}")
 
             stmt = select(UserFiles).where(UserFiles.id == int(self.id))
             result = await session.execute(stmt)
@@ -159,13 +159,13 @@ class UserFilesModel():
             result = await session.execute(stmt)
             res = result.scalar_one_or_none()
 
-            stmt = select(UserFiles).where(
-                UserFiles.id == int(self.id)
-            )
-            result = await session.execute(stmt)
-            resu = result.all()
-            # usr_photos = [photo.__dict__ for photo in resu]
-            print(resu[0][0].__dict__)
+            # stmt = select(UserFiles).where(
+            #     UserFiles.id == int(self.id)
+            # )
+            # result = await session.execute(stmt)
+            # resu = result.all()
+            # # usr_photos = [photo.__dict__ for photo in resu]
+            # print(resu[0][0].__dict__)
             if res:
                 user_photo_inf = res.__dict__
 

@@ -577,6 +577,7 @@ class UserModel:
     
 
 
+
     """
     def put_uf_depart(self, usr_dep):
         

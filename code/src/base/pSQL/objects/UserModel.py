@@ -448,7 +448,7 @@ class UserModel:
         res = await session.execute(stmt)
         result = res.scalars().all()
         result.sort()
-        return result
+        return max(result)
     
     async def set_user_photo(self, file_id, session):
         # from .App import engine

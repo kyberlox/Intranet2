@@ -612,7 +612,7 @@ class File:
         img_path = f"{USER_STORAGE_PATH}/{name}"
         
         try:
-            print(url, img_path)
+            # print(url, img_path)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
                     if response.status == 200:

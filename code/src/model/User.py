@@ -199,7 +199,7 @@ class User:
 
                     b24_url = usr_data['PERSONAL_PHOTO']
                     # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
-                    b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
+                    # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
                     # проверим url первоисточника текущей аватарки
                     if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
                         # срабатывает это условие и уходит в else

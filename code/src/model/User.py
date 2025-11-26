@@ -170,6 +170,9 @@ class User:
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
         try:
+            # смотрим логи 
+            await self.check_fields_to_update(session)
+
             usr_data = await B24().getUser(self.id)
             if usr_data == []:
                 self.UserModel.id = int(self.id)

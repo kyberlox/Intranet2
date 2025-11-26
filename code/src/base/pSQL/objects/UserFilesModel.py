@@ -181,7 +181,8 @@ class UserFilesModel():
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)
                 users_photo = result_exists.scalars().all()
-                print(users_photo, 'dct afqks')
+                usr_photo = [photo.__dict__ for photo in users_photo]
+                print(usr_photo, 'dct afqks')
                 # Если нет - будет первым
                 if not user_exists:
                     return f"{self.user_id}_1.{file_format}"

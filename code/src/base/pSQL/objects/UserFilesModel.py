@@ -177,7 +177,7 @@ class UserFilesModel():
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)
                 user_exists = result_exists.first()
-                
+                print(result_exists.all(), 'dct afqks')
                 # Если нет - будет первым
                 if not user_exists:
                     return f"{self.user_id}_1.{file_format}"
@@ -188,7 +188,6 @@ class UserFilesModel():
                 )
                 result_max = await session.execute(stmt_max)
                 max_num = result_max.scalar_one_or_none()
-                print(max_num, 'макс который нашли')
                 # Извлекаем номер из имени файла
                 if max_num:
                     current_num = int(max_num.split('_')[-1].split('.')[0])

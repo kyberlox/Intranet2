@@ -152,8 +152,8 @@ class UserFilesModel():
                 UserFiles.id == int(self.id)
             )
             result = await session.execute(stmt)
-            res = result.all()
-            usr_photos = [photo.__dict__ for photo in res]
+            resu = result.all()
+            usr_photos = [photo.__dict__ for photo in resu]
             print(usr_photos)
             if res:
                 user_photo_inf = res.__dict__

@@ -256,7 +256,7 @@ class User:
                 #удалить у нас пользователя (сделать не активным)
                 pass
             else:
-                B24_data = res[0]
+                B24_data = res
                 self.UserModel.id = int(self.id)
                 psql_data = await self.UserModel.find_by_id_all(session)
                 if psql_data and psql_data != []:

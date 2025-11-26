@@ -185,7 +185,7 @@ class User:
                 else:
                     return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL уже в архиве либо отсутствует")
             else:
-                # print(usr_data, 'пользователь')
+                print(usr_data, 'пользователь')
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
                 # usr_data["ACTIVE"] = False
                 if "ACTIVE" in usr_data and usr_data["ACTIVE"] == True:

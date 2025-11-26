@@ -71,158 +71,6 @@ class UserModel:
 
 
 
-    # async def upsert_user(self, user_data : dict, session):
-    #     # from .App import engine
-    #     """
-    #     Добавляет или обновляет запись в таблице.
-    #     user_data: словарь с данными пользователя
-    #     """
-
-    #     #валидация
-    #     new_user_data = dict()
-    #     for key in user_data.keys():
-    #         # валидация
-    #         if key == 'ID':
-    #             new_user_data["id"] = int(user_data[key])
-    #         elif key == 'XML_ID':
-    #             new_user_data["uuid"] = user_data["XML_ID"][3:]
-    #         else:
-    #             new_user_data[key.lower()] = user_data[key]
-    #     user_data = new_user_data
-
-    #     #проверить по id есть ли такой пользователь
-    #     try:
-    #         #usr = db.query(self.user).get(user_data['id'])
-    #         #usr = db.query(User).filter(self.user.id == user_data['id']).first()
-    #         # async with AsyncSessionLocal() as session:
-    #         stmt = select(self.user).where(self.user.id == user_data["id"])
-    #         result = await session.execute(stmt)
-    #         usr = result.scalar_one_or_none()  # True или False
-
-    #         DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 'personal_mobile', 'uf_phone_inner', 'personal_city', 'personal_gender', 'personal_birthday']
-
-    #         #если есть - проверить необходимость обновления
-    #         if usr:
-    #             #user = db.query(self.user).filter(User.id == user_data["id"]).first()
-    #             # async with AsyncSessionLocal() as session:
-    #                 # user = await session.query(self.user).get(user_data['id'])
-    #             user = await session.get(self.user, user_data['id'])
-
-    #             #проверить есть ли изменения
-    #             need_update = False
-
-    #             #проверка основных параметров
-    #             new_params = []
-    #             for column in DB_columns:
-    #                 if user_data.get(column) != user.__dict__[column]:
-    #                     if column == 'personal_birthday':
-    #                         # обработка дат
-    #                         if user_data.get('personal_birthday') != "":
-    #                             dt_new = datetime.strptime(user_data.get('personal_birthday').split('T')[0], '%Y-%m-%d').date()
-    #                             cur_dt = f"\'{datetime.strptime(user_data.get('personal_birthday').split('T')[0], '%Y-%m-%d').date()}  04:00:00\'"
-    #                         else:
-    #                             dt_new = None
-
-    #                         if user.personal_birthday is not None:
-    #                             dt_old = user.personal_birthday.date()
-    #                         else:
-    #                             dt_old = user.personal_birthday
-
-    #                         if dt_new != dt_old:
-    #                             need_update = True
-    #                             new_params.append(column)
-    #                             user.__dict__[column] = dt_new
-    #                             #print(user.id , column, dt_new)
-    #                     else:
-    #                         need_update = True
-    #                         new_params.append(column)
-    #                         if user_data.get(column) == "":
-    #                             user.__dict__[column] = "NULL"
-    #                         else:
-    #                             user.__dict__[column] = f"\'{user_data.get(column)}\'"
-    #                         #print(user.id, column, user_data.get(column))
-
-    #             # если есть изменения - внести
-    #             if need_update:
-    #                 for cls in new_params:
-    #                     sql = text(f"UPDATE {self.user.__tablename__} SET {cls} = {user.__dict__[cls]} WHERE id = {user.id}")
-    #                     # async with async_engine.connect() as connection:
-    #                     await session.execute(sql, user_data)
-    #                     await session.commit()
-                    
-    #                 LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
-
-
-    #             # проверить есть ли изменения
-    #             need_update_indirect_data = False
-    #             #проверка доп. параметров
-    #             for key in user_data.keys():
-    #                 if key not in DB_columns:
-    #                     if (key not in user.indirect_data) or (user_data[key] != user.indirect_data[key]):
-    #                         #изменить, если требуется
-    #                         need_update_indirect_data = True
-    #                         user.indirect_data[key] = user_data[key]
-    #                         #print(key, user.indirect_data[key])
-
-    #             # если есть изменения - внести
-    #             if need_update_indirect_data:
-    #                 indirect_jsnb = json.dumps(user.indirect_data)
-    #                 sql = text(f"UPDATE {self.user.__tablename__} SET indirect_data = \'{indirect_jsnb}\' WHERE id = {user.id}")
-    #                 # async with async_engine.connect() as connection:
-    #                 await session.execute(sql, user_data)
-    #                 await session.commit()
-                
-    #             LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
-
-    #         #если нет - добавить
-    #         else:
-    #             # Формируем SQL-запрос
-    #             columns = "id"
-    #             values = f"{user_data['id']}"
-    #             meta = dict()
-    #             # Все данные пользователя
-    #             for key in user_data.keys():
-    #                 #если это обязательные поля
-    #                 if key in DB_columns:
-    #                     #отдельно обработаем active так это не строковый формат
-    #                     if key == 'active':
-    #                         columns += f", active"
-    #                         values += f", {user_data[key]}"
-    #                     #если дата - пустая строка
-    #                     elif key == 'personal_birthday' and user_data[key] == "":
-    #                         columns += f", {key}"
-    #                         values += f", NULL"
-    #                     #потом остальные
-    #                     else:
-    #                         columns += f", {key}"
-    #                         values += f", \'{user_data[key]}\'"
-
-    #                 #оставшиеся - в метаданные
-    #                 else:
-    #                     meta[key] = user_data[key]
-
-
-
-    #             columns += f", indirect_data"
-    #             indirect_jsnb = json.dumps(meta)
-    #             values += f", \'{indirect_jsnb}\'"
-    #             # Запрос
-    #             sql = text(f"INSERT INTO {self.user.__tablename__} ({columns}) VALUES ({values})")
-
-    #             # Выполняем SQL-запрос
-    #             # async with async_engine.connect() as connection:
-    #             await session.execute(sql, user_data)
-    #             await session.commit()
-    #             user_id = user_data["id"]
-    #             LogsMaker().info_message(f"Создан пользователь с id = {user_id}")
-
-            
-            
-    #     except SQLAlchemyError as e:
-    #         # database.rollback()
-    #         #print(f"An error occurred: {e}")
-    #         LogsMaker().error_message(str(e))
-
     async def upsert_user(self, user_data: dict, session):
         """
         Добавляет или обновляет запись в таблице.
@@ -409,6 +257,17 @@ class UserModel:
             LogsMaker().warning_message(f"Invalid user id = {self.id}")
             return None
 
+    async def update_user_info(self, user_data, session):
+        try:
+            new_user = self.user(**insert_data)
+            session.add(new_user)
+            await session.commit()
+            LogsMaker().info_message(f'User с id={user_data['id']} добавлен в архив')
+            return True
+        except Exception as e:
+            await session.rollback()
+            LogsMaker().error_message(f'Произошла ошшибка при добавлении в архив User с id={user_data['id']}')
+            return False
 
     async def find_by_id(self, session):
         from src.model.File import File

@@ -394,8 +394,9 @@ async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async
 
 @users_router.get("/get_users")
 async def get_users(session: AsyncSession = Depends(get_async_db)):
+    from ..base.pSQL.objects.UserModel import UserModel
     return await UserModel().all(session)
-all
+
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

@@ -201,7 +201,7 @@ class User:
                         # проверим url первоисточника текущей аватарки
                         if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
                             # срабатывает это условие и уходит в else
-
+                            print('РАЗНЫЕ ФОТКИ')
                             # cтарую фотку - в архив
                             if psql_user['photo_file_b24_url'] is not None and psql_user[
                                 'photo_file_b24_url'] != b24_url:

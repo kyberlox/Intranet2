@@ -142,8 +142,8 @@ class UserFilesModel():
     async def find_user_photo_by_id(self, session):
         try:
             stmt = select(UserFiles).where(
-                UserFiles.id == int(self.id)
-                # UserFiles.active == True
+                UserFiles.id == int(self.id),
+                UserFiles.active == True
             )
             result = await session.execute(stmt)
             res = result.scalar_one_or_none()

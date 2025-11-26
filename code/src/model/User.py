@@ -196,7 +196,7 @@ class User:
                     psql_user = await self.UserModel.find_by_id_all(session)
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
-                        # b24_url = usr_data['PERSONAL_PHOTO']
+                        b24_url = usr_data['PERSONAL_PHOTO']
                         # print(b24_url, 'РАЗНЫЕ ФОТКИ')
                         b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
                         # проверим url первоисточника текущей аватарки

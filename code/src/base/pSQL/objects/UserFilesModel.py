@@ -126,7 +126,7 @@ class UserFilesModel():
                 # Удаляем запись из базы
                 await session.delete(existing_photo)
                 # Удаляем запись из базы User
-                stmt = select(User).where(User.photo_file_id == str(self.id))
+                stmt = select(User).where(User.photo_file_id == int(self.id))
                 result = await session.execute(stmt)
                 existing_user = result.scalar_one_or_none()
                 existing_user.photo_file_id = None

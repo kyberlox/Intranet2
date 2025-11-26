@@ -193,7 +193,7 @@ class UserFilesModel():
                     next_num = current_num + 1
                 else:
                     next_num = 1
-
+                print(next_num, 'слуд цифра')
                 return f"{self.user_id}_{next_num}.{file_format}"
             else:
                 return None

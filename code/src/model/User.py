@@ -187,6 +187,7 @@ class User:
             else:
                 print(usr_data, 'пользователь')
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
+                await session.commit()
                 # usr_data["ACTIVE"] = False
                 if "ACTIVE" in usr_data and usr_data["ACTIVE"] == True:
                     # загружаем фотку:

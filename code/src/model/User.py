@@ -335,8 +335,8 @@ async def update_user(session: AsyncSession = Depends(get_async_db)):
 
 @users_router.put("/update_user_info/{user_id}")
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):
-    # return await User(id=user_id).update_inf_from_b24(session)
-    return await User(id=user_id).check_fields_to_update(session)
+    return await User(id=user_id).update_inf_from_b24(session)
+    # return await User(id=user_id).check_fields_to_update(session)
     # return True
 
 

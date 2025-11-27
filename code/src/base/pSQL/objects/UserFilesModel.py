@@ -122,11 +122,11 @@ class UserFilesModel():
             # column_info = result.fetchone()
             # LogsMaker().info_message(f"Тип photo_file_id в БД: {column_info}")
 
-            stmt = select(UserFiles).where(UserFiles.user_id == 4133)
-            result = await session.execute(stmt)
-            user_info = result.scalars().all()
-            usr_photo = [photo.__dict__ for photo in user_info]
-            print(usr_photo)
+            # stmt = select(UserFiles).where(UserFiles.user_id == 4133)
+            # result = await session.execute(stmt)
+            # user_info = result.scalars().all()
+            # usr_photo = [photo.__dict__ for photo in user_info]
+            # print(usr_photo)
 
             stmt = select(UserFiles).where(UserFiles.id == int(self.id))
             result = await session.execute(stmt)
@@ -202,6 +202,12 @@ class UserFilesModel():
             
             # Проверим есть к чему крепить файл
             if self.user_id is not None:
+                stmt = select(UserFiles).where(UserFiles.user_id == 4133)
+                result = await session.execute(stmt)
+                user_info = result.scalars().all()
+                usr_photo = [photo.__dict__ for photo in user_info]
+                print(usr_photo)
+
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)
                 user_exists = result_exists.first()

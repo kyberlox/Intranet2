@@ -175,17 +175,7 @@ class User:
 
             # смотрим логи 
             await self.check_fields_to_update(session=session, b24_data=usr_data)
-            # if usr_data == []:
-            #     self.UserModel.id = int(self.id)
-            #     psql_user = await self.UserModel.find_by_id_all(session)
-            #     if psql_user and psql_user['active'] == True:
-            #         psql_user['active'] = False 
-            #         update_user = await self.UserModel.update_user_info(user_data=psql_user, session=session)
-            #         return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL занесли в архив")
-            #     else:
-            #         return LogsMaker().ready_status_message(f"Пользователь с ID = {self.id} отсутствует в B24, в pSQL уже в архиве либо отсутствует")
-            # else:
-            print(usr_data, 'пользователь')
+           
             await self.UserModel.upsert_user(user_data=usr_data, session=session)
             await session.commit()
             # usr_data["ACTIVE"] = False
@@ -197,9 +187,9 @@ class User:
                 psql_user = await self.UserModel.find_by_id_all(session)
                 if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
-                    b24_url = usr_data['PERSONAL_PHOTO']
+                    # b24_url = usr_data['PERSONAL_PHOTO']
                     # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
-                    # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
+                    b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
                     # проверим url первоисточника текущей аватарки
                     if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
                         # срабатывает это условие и уходит в else

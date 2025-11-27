@@ -109,17 +109,24 @@ class UserFilesModel():
         """
         from ..models.User import User
         import os
-        from sqlalchemy import text
+        
         try:
-            # Проверяем тип photo_file_id в БД
-            sql = text("""
-                SELECT column_name, data_type 
-                FROM information_schema.columns 
-                WHERE table_name = 'users' AND column_name = 'photo_file_id'
-            """)
-            result = await session.execute(sql)
-            column_info = result.fetchone()
-            LogsMaker().info_message(f"Тип photo_file_id в БД: {column_info}")
+            # from sqlalchemy import text
+            # # Проверяем тип photo_file_id в БД
+            # sql = text("""
+            #     SELECT column_name, data_type 
+            #     FROM information_schema.columns 
+            #     WHERE table_name = 'users' AND column_name = 'photo_file_id'
+            # """)
+            # result = await session.execute(sql)
+            # column_info = result.fetchone()
+            # LogsMaker().info_message(f"Тип photo_file_id в БД: {column_info}")
+
+            stmt = select(UserFiles).where(UserFiles.user_id == 4133)
+            result = await session.execute(stmt)
+            user_info = result.scalars().all()
+            usr_photo = [photo.__dict__ for photo in user_info]
+            print(usr_photo)
 
             stmt = select(UserFiles).where(UserFiles.id == int(self.id))
             result = await session.execute(stmt)

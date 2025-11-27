@@ -489,7 +489,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
 
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
-@app.delete("delete_tables")
+@app.delete("/api/delete_tables")
 async def delete_tables(session: AsyncSession=Depends(get_async_db)):
     from sqlalchemy import text
     try:

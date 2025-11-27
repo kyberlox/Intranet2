@@ -46,7 +46,7 @@ import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
-import { useAdminData } from '@/stores/AdminData';
+import { useAdminData } from '@/stores/adminData';
 import { featureFlags } from '@/assets/static/featureFlags';
 
 type AdminSection = {

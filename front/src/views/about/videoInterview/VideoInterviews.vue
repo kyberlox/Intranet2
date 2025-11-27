@@ -1,11 +1,11 @@
 <template>
-    <div class="page__wrapper mt20">
-        <h1 class="page__title">Видеоинтервью</h1>
-        <SampleGallery class="mt20"
-                       :gallery="interviews"
-                       :routeTo="'videoInterview'"
-                       :type="'video'" />
-    </div>
+<div class="page__wrapper mt20">
+    <h1 class="page__title">Видеоинтервью</h1>
+    <SampleGallery class="mt20"
+                   :gallery="interviews"
+                   :routeTo="'videoInterview'"
+                   :type="'video'" />
+</div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, computed } from "vue";
@@ -13,7 +13,6 @@ import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData"
-import { useLoadingStore } from "@/stores/loadingStore";
 import type { IVideoInterview } from "@/interfaces/IEntities";
 
 export default defineComponent({
@@ -24,14 +23,11 @@ export default defineComponent({
 
         onMounted(() => {
             if (interviews.value.length) return;
-            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['Видеоинтервью']}`)
                 .then(res => {
                     viewsData.setData(res, 'videoInterviewsData')
                 })
-                .finally(() => {
-                    useLoadingStore().setLoadingStatus(false);
-                })
+
         })
         return {
             interviews,

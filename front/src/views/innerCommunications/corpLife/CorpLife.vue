@@ -24,7 +24,6 @@ import { defineComponent, ref, onMounted, computed, type ComputedRef, type Ref }
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from "@/utils/showEventsByYear";
 import { useViewsDataStore } from '@/stores/viewsData';
-import { useLoadingStore } from '@/stores/loadingStore';
 import type { IBaseEntity } from '@/interfaces/IEntities';
 
 export default defineComponent({
@@ -41,15 +40,12 @@ export default defineComponent({
 
         onMounted(() => {
             if (allEvents.value.length) return;
-            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['КорпоративнаяЖизнь']}`)
                 .then((res) => {
                     useViewsDataStore().setData(res, 'corpLifeData')
                     visibleEvents.value = res;
                 })
-                .finally(() => {
-                    useLoadingStore().setLoadingStatus(false);
-                })
+
         })
 
         const filterYear = (year: string) => {

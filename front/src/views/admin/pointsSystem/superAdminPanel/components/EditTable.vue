@@ -63,7 +63,7 @@ import AddNewEntinyModal from './AddNewEntinyModal.vue';
 import type { INewActivityData } from '@/interfaces/IPutFetchData';
 import type { ICurator, IPointsModer, IPointsAdmin } from '@/interfaces/IEntities';
 import Loader from '@/components/layout/Loader.vue';
-import { usePointsData } from '@/stores/PointsData';
+import { usePointsData } from '@/stores/pointsData';
 
 export default defineComponent({
     name: 'EditTable',

@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, ref } from 'vue';
-import { useAdminData } from '@/stores/AdminData';
+import { useAdminData } from '@/stores/adminData';
 import AdminSidebar from '../components/AdminSidebar.vue';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 

@@ -34,7 +34,7 @@
 import { defineComponent, computed, ref } from 'vue';
 import CancelIcon from '@/assets/icons/common/Cancel.svg?component';
 import PencilIcon from '@/assets/icons/common/Pencil.svg?component';
-import { usePointsData } from '@/stores/PointsData';
+import { usePointsData } from '@/stores/pointsData';
 import type { INewActivityData } from '@/interfaces/IPutFetchData';
 
 export default defineComponent({

@@ -56,7 +56,7 @@ import { useToast } from 'primevue/usetoast';
 import UsersSearchList from '@/components/tools/common/UsersSearchList.vue';
 import type { IUserSearch } from '@/interfaces/IEntities';
 import { watchDebounced } from '@vueuse/core';
-import { usePointsData } from '@/stores/PointsData';
+import { usePointsData } from '@/stores/pointsData';
 
 import type { INewActivityData } from '@/interfaces/IPutFetchData';
 

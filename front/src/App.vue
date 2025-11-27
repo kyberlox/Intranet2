@@ -1,6 +1,6 @@
 <template>
 <div v-if="isLogin">
-    <LayoutHeader />
+    <LayoutHeader :class="{ 'dark': isDarkMode }" />
     <main>
         <div class="container-fluid"
              :class="{ 'container-fluid--nopadding': !isLogin }">
@@ -30,7 +30,6 @@
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
-
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/RightSidebar.vue";
@@ -40,6 +39,7 @@ import YandexMetrika from "./components/tools/common/YandexMetrika.vue";
 import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./composables/usePrefetchSection";
 import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
+import { useStyleModeStore } from "./stores/styleMode";
 
 export default defineComponent({
     name: "app-layout",
@@ -81,7 +81,8 @@ export default defineComponent({
 
         return {
             isLogin,
-            userId: computed(() => useUserData().getMyId)
+            userId: computed(() => useUserData().getMyId),
+            isDarkMode: computed(() => useStyleModeStore().getDarkMode)
         }
     }
 })

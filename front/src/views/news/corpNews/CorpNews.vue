@@ -17,7 +17,6 @@ import type { INews } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData"
-import { useLoadingStore } from "@/stores/loadingStore";
 export default defineComponent({
     components: {
         SampleGallery
@@ -31,13 +30,9 @@ export default defineComponent({
 
         onMounted(() => {
             if (news.value.length) return;
-            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['НовостиОргРазвития']}`)
                 .then((res) => {
                     viewsData.setData(res, 'corpNewsData');
-                })
-                .finally(() => {
-                    useLoadingStore().setLoadingStatus(false);
                 })
         })
         return {

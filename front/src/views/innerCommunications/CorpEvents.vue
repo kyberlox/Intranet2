@@ -23,7 +23,6 @@ import { extractYears } from "@/utils/extractYearsFromPosts";
 import type { INews } from "@/interfaces/IEntities";
 import { showEventsByYear } from "@/utils/showEventsByYear";
 import { useViewsDataStore } from "@/stores/viewsData";
-import { useLoadingStore } from "@/stores/loadingStore";
 
 export default defineComponent({
     components: { SampleGallery, DateFilter },
@@ -38,14 +37,10 @@ export default defineComponent({
         const showFilter = ref(false);
         onMounted(() => {
             if (allEvents.value.length) return;
-            useLoadingStore().setLoadingStatus(true);
             Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                 .then(res => {
                     useViewsDataStore().setData(res, 'corpEventsData');
                     visibleEvents.value = res;
-                })
-                .finally(() => {
-                    useLoadingStore().setLoadingStatus(false);
                 })
         })
 

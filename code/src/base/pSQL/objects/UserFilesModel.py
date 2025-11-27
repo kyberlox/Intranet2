@@ -127,7 +127,12 @@ class UserFilesModel():
             # user_info = result.scalars().all()
             # usr_photo = [photo.__dict__ for photo in user_info]
             # print(usr_photo)
-
+            stmt = select(UserFiles).where(UserFiles.user_id == 4133)
+            result = await session.execute(stmt)
+            user_info = result.scalars().all()
+            usr_photo = [photo.__dict__ for photo in user_info]
+            print(usr_photo, 'ДО УДАЛЕНИЯ')
+            
             stmt = select(UserFiles).where(UserFiles.id == int(self.id))
             result = await session.execute(stmt)
             existing_photo = result.scalar_one_or_none()
@@ -206,7 +211,7 @@ class UserFilesModel():
                 result = await session.execute(stmt)
                 user_info = result.scalars().all()
                 usr_photo = [photo.__dict__ for photo in user_info]
-                print(usr_photo)
+                print(usr_photo, 'ПОСЛЕ УДАЛЕНИЯ ПРИ ГЕНЕРАЦИИ ФОТО')
 
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)

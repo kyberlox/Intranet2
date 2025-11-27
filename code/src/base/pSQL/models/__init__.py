@@ -25,6 +25,9 @@ from .UservisionsRoot import UservisionsRoot
 
 from .Section import Section
 
+from .UserFiles import UserFiles
+from .FilesDB import FilesDB
+
 ## Control imports
 __all__ = [
     'Base',
@@ -43,5 +46,8 @@ __all__ = [
     'ActiveUsers',
     'Section',
     'ArtVis',
-    'UservisionsRoot'
+
+    'UservisionsRoot',
+    'UserFiles',
+    'FilesDB'
 ]

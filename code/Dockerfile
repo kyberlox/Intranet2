@@ -1,6 +1,10 @@
-FROM python:3.13-bookworm
+FROM python:3.13
 
 WORKDIR /data/app
+RUN mkdir files_db vcard_db
+RUN mkdir /data/app/files_db/tours
+RUN mkdir /data/app/files_db/user_photo
+
 COPY ./requirements.txt /data/app/requirements.txt
 
 # Устанавливаем системные зависимости

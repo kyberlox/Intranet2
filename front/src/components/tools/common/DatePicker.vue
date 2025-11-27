@@ -3,7 +3,7 @@
                locale="ru"
                cancelText="Назад"
                selectText="Ок"
-               :enable-time-picker="timePicker"
+               :enable-time-picker="false"
                disable-year-select
                :six-weeks="true"
                auto-apply
@@ -45,10 +45,6 @@ export default defineComponent({
         },
         defaultData: {
             type: String
-        },
-        timePicker: {
-            type: Boolean,
-            default: () => false
         }
     },
     setup(props, { emit }) {
@@ -78,8 +74,6 @@ export default defineComponent({
             const day = date.getDate();
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
-            const time = String(date).split(' ')[4];
-
             if (props.calendarType == 'dayAndMonth') {
                 return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}`;
             }
@@ -91,8 +85,7 @@ export default defineComponent({
                 return formatMonth.charAt(0).toUpperCase() + formatMonth.slice(1);
             }
             else if (props.calendarType == 'full') {
-                const formatted = `${day > 9 ? day : "0" + day}-${month > 9 ? month : "0" + month}-${year}`
-                return props.timePicker ? formatted + ` ${time}` : formatted;
+                return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
             }
         };
 

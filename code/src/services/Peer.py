@@ -4,12 +4,21 @@ from fastapi import APIRouter, Body, Request
 from ..model import User
 from .Auth import AuthService
 
-#тут придется отладить ВСЕ
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..base.pSQL.objects.App import get_async_db
+
+import asyncio
+
+# тут придется отладить ВСЕ
 
 peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эффективности"])
 
+
 class Peer:
-    def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False, active: bool = False, activities_id: int = 0):
+    def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False,
+                 active: bool = False, activities_id: int = 0):
         self.id = id
         self.name = name
         self.coast = coast
@@ -30,140 +39,208 @@ class Peer:
         from ..base.pSQL.objects.PeerUserModel import PeerUserModel
         self.PeerUserModel = PeerUserModel()
 
-        self.RootsModel.user_uuid = self.user_uuid
-        self.Roots = self.RootsModel.get_token_by_uuid()
-        self.roots = self.RootsModel.token_processing_for_peer(self.Roots)
-    
+        # self.RootsModel.user_uuid = self.user_uuid
+        # self.Roots = self.RootsModel.get_token_by_uuid()
+        # self.roots = self.RootsModel.token_processing_for_peer(self.Roots)
+
     """Ручки которые доступны любому пользователю"""
-    def sum(self):
-        result = self.ActiveUsersModel.sum(self.user_uuid)
-        return result
-    
-    def statistics(self):
-        self.ActiveUsersModel.uuid_to = self.user_uuid
-        return self.ActiveUsersModel.statistics()
-    
-    def actions(self):
-        result = self.ActiveUsersModel.actions(self.roots)
-        return result
-    """"""
-    def get_all_activities(self):
-        result = self.ActivitiesModel.find_all_activities()
+
+    async def sum(self, session):
+        result = await self.ActiveUsersModel.sum(uuid=self.user_uuid, session=session)
         return result
 
-    # def upload_base_activities(self):
+    async def statistics(self, session):
+        self.ActiveUsersModel.uuid_to = self.user_uuid
+        return await self.ActiveUsersModel.statistics(session)
+
+    async def actions(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        result = await self.ActiveUsersModel.actions(session=session, roots=roots)
+        return result
+
+    """"""
+
+    async def get_all_activities(self, session):
+        result = await self.ActivitiesModel.find_all_activities(session=session)
+        return result
+
+    # async def upload_base_activities(self):
     #     return self.ActivitiesModel.upload_base_activities()
-    
-    def edit_activity(self):
+
+    async def edit_activity(self, session):
         self.ActivitiesModel.id = self.id
         self.ActivitiesModel.name = self.name
         self.ActivitiesModel.coast = self.coast
         self.ActivitiesModel.need_valid = self.need_valid
         self.ActivitiesModel.active = self.active
-        return self.ActivitiesModel.update_activity(self.roots)
-    
-    def remove_activity(self):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        return await self.ActivitiesModel.update_activity(roots=roots, session=session)
+
+    async def remove_activity(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.ActivitiesModel.id = self.id
-        return self.ActivitiesModel.delete_activity(self.roots)
+        return await self.ActivitiesModel.delete_activity(roots=roots, session=session)
+
     """"""
-    # def upload_past_moders(self):
-    #     return self.PeerUserModel().upload_past_moders()
-    
-    def confirmation(self): 
-        self.PeerUserModel.activities_id = self.activities_id
-        return self.PeerUserModel.confirmation()
-    
-    def do_valid(self, action_id, uuid_to): 
-        self.PeerUserModel.uuid = self.user_uuid
-        return self.PeerUserModel.do_valid(action_id, uuid_to, self.roots)
 
-    def do_not_valid(self, action_id): 
+    async def do_valid(self, action_id, uuid_to, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = self.user_uuid
-        return self.PeerUserModel.do_not_valid(action_id, self.roots)
+        return await self.PeerUserModel.do_valid(session=session, action_id=action_id, uuid_to=uuid_to, roots=roots)
 
-    def points_to_confirm(self): 
+    async def do_not_valid(self, action_id, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        self.PeerUserModel.uuid = self.user_uuid
+        return await self.PeerUserModel.do_not_valid(session=session, action_id=action_id, roots=roots)
+
+    async def points_to_confirm(self, session):
         self.PeerUserModel.activities_id = self.activities_id
-        return self.PeerUserModel.points_to_confirm()
-    
-    def get_curators(self): 
-        return self.PeerUserModel.get_curators()
-    
-    def add_curator(self, user_id):
+        return await self.PeerUserModel.points_to_confirm(session=session)
+
+    async def get_curators(self, session):
+        return await self.PeerUserModel.get_curators(session=session)
+
+    async def add_curator(self, user_id, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.activities_id = self.activities_id
         self.PeerUserModel.uuid = user_id
-        return self.PeerUserModel.add_curator(roots=self.roots)
-    
-    def delete_curator(self, user_id):
+        return await self.PeerUserModel.add_curator(session=session, roots=roots)
+
+    async def delete_curator(self, user_id, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.activities_id = self.activities_id
         self.PeerUserModel.uuid = user_id
-        result = self.PeerUserModel.delete_curator(roots=self.roots)
+        result = await self.PeerUserModel.delete_curator(session=session, roots=roots)
         return result
 
-    def new_activity(self, data): 
+    async def new_activity(self, data, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
         data["uuid"] = self.user_uuid
-        return self.ActivitiesModel.new_activity(data, self.roots)
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        return await self.ActivitiesModel.new_activity(data=data, roots=roots, session=session)
 
     """"""
-    # def upload_past_activeusers(self): 
+
+    # async def upload_past_activeusers(self):
     #     return self.ActiveUsersModel().upload_past_table_ActiveUsers()
-        
-    # def history_mdr(self, activity_name): 
+
+    # async def history_mdr(self, activity_name):
     #     return self.ActiveUsersModel().history_mdr(activity_name)
 
-    # def top(self): 
+    # async def top(self):
     #     return self.ActiveUsersModel().top()
 
-    # def my_place(self): 
+    # async def my_place(self):
     #     return self.ActiveUsersModel(uuid_to=self.user_uuid).my_place()
-    
-    # def statistics_history(self):
+
+    # async def statistics_history(self):
     #     return self.ActiveUsersModel(uuid_to=self.user_uuid, activities_id=self.activities_id).statistics_history()
 
-    # def new_a_week(self): 
+    # async def new_a_week(self):
     #     return self.ActiveUsersModel(uuid_to=self.user_uuid).new_a_week()
-    
-    def user_history(self): 
+
+    async def user_history(self, session):
         self.ActiveUsersModel.uuid_to = self.user_uuid
-        return self.ActiveUsersModel.user_history()
+        return await self.ActiveUsersModel.user_history(session=session)
+
     """"""
-    def send_points(self, data):
-        return self.PeerUserModel.send_points(data=data, roots=self.roots)
 
-    def get_admins_list(self):
-        return self.PeerUserModel.get_admins_list(self.roots)
+    async def send_points(self, data, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        return await self.PeerUserModel.send_points(data=data, roots=roots, session=session)
 
-    def add_peer_admin(self, uuid):
+    async def get_admins_list(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        return await self.PeerUserModel.get_admins_list(session=session, roots=roots)
+
+    async def add_peer_admin(self, uuid, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = uuid
-        return self.PeerUserModel.add_peer_admin(self.roots)
+        return await self.PeerUserModel.add_peer_admin(roots=roots, session=session)
 
-    def delete_admin(self, uuid):
+    async def delete_admin(self, uuid, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = uuid
-        return self.PeerUserModel.delete_admin(self.roots)
-    
-    def get_moders_list(self):
-        return self.PeerUserModel.get_moders_list(self.roots)
+        return await self.PeerUserModel.delete_admin(self.roots)
 
-    def add_peer_moder(self, uuid):
+    async def get_moders_list(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        return await self.PeerUserModel.get_moders_list(roots=roots, session=session)
+
+    async def add_peer_moder(self, uuid, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = uuid
-        return self.PeerUserModel.add_peer_moder(self.roots)
+        return await self.PeerUserModel.add_peer_moder(roots=roots, session=session)
 
-    def delete_peer_moder(self, uuid):
+    async def delete_peer_moder(self, uuid, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = uuid
-        return self.PeerUserModel.delete_peer_moder(self.roots)
-    
-    def get_curators_history(self):
-        return self.PeerUserModel.get_curators_history(self.roots)
+        return await self.PeerUserModel.delete_peer_moder(roots=roots, session=session)
 
-    def return_points_to_user(self, note_id, user_uuid):
-        return self.PeerUserModel.return_points_to_user(note_id, user_uuid)
-    
-    def remove_user_points(self, action_id, user_uuid):
+    async def get_curators_history(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        return await self.PeerUserModel.get_curators_history(roots=roots, session=session)
+
+    async def return_points_to_user(self, note_id, user_uuid, session):
+        return await self.PeerUserModel.return_points_to_user(session=session, note_id=note_id, user_uuid=user_uuid)
+
+    async def remove_user_points(self, action_id, user_uuid, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
         self.PeerUserModel.uuid = user_uuid
-        return self.PeerUserModel.remove_user_points(action_id, self.roots)
-        
-    
+        return await self.PeerUserModel.remove_user_points(action_id=action_id, roots=roots, session=session)
 
-def get_uuid_from_request(request):
+
+async def get_uuid_from_request(request, session):
     session_id = ""
     token = request.cookies.get("Authorization")
     if token is None:
@@ -172,17 +249,17 @@ def get_uuid_from_request(request):
             session_id = token
     else:
         session_id = token
-    
+
     user = dict(AuthService().get_user_by_seesion_id(session_id))
 
     if user is not None:
         user_uuid = user["user_uuid"]
         username = user["username"]
 
-        #получить и вывести его id
+        # получить и вывести его id
         user = User()
         user.uuid = user_uuid
-        user_inf = user.user_inf_by_uuid()
+        user_inf = await user.user_inf_by_uuid(session)
         if user_inf is not None and "ID" in user_inf.keys():
             return user_inf["ID"]
     return None
@@ -190,149 +267,187 @@ def get_uuid_from_request(request):
 
 # # дампит старые данные
 # @peer_router.put("/put_tables")
-# def load_activities():
+# async def load_activities():
 #     Peer().upload_base_activities()
 #     Peer().upload_past_moders()
 #     Peer().upload_past_activeusers()
-#     return {"status": True} 
+#     return {"status": True}
 
 """Ручки которые доступны любому пользователю"""
-@peer_router.get("/sum")
-def sum(request: Request):
-    uuid = get_uuid_from_request(request)
 
-    return Peer(user_uuid=uuid).sum()
+
+@peer_router.get("/sum")
+async def sum(request: Request, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+
+    return await Peer(user_uuid=uuid).sum(session)
 
 
 # @peer_router.get("/statistics")
-# def statistics(request: Request):
+# async def statistics(request: Request):
 #     uuid = get_uuid_from_request(request)
 #     return Peer(user_uuid=uuid).statistics()
 
 @peer_router.get("/actions")
-def get_actions(request: Request):
-    uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid).actions()
+async def get_actions(request: Request, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=uuid).actions(session)
+
+
 """"""
+
+
 @peer_router.get("/get_all_activities")
-def get_activities():
-    return Peer().get_all_activities()
+async def get_activities(session: AsyncSession = Depends(get_async_db)):
+    return await Peer().get_all_activities(session)
+
 
 @peer_router.post("/edit_activity")
-def post_edit_activity(request: Request, data = Body()):
-    uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'], need_valid=data['need_valid'], active=data['active']).edit_activity()
+async def post_edit_activity(request: Request, session: AsyncSession = Depends(get_async_db), data=Body()):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'],
+                      need_valid=data['need_valid'], active=data['active']).edit_activity(session)
+
 
 @peer_router.delete("/remove_activity/{id}")
-def del_remove_activity(request: Request, id: str):
-    uuid = get_uuid_from_request(request)
-    return Peer(id=id, user_uuid=uuid).remove_activity()
+async def del_remove_activity(request: Request, id: str, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(id=id, user_uuid=uuid).remove_activity(session)
+
+
 """"""
+
+
 @peer_router.post("/do_valid/{action_id}/{uuid_to}")
-def post_do_valid(request: Request, action_id: int, uuid_to: int):
-    uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid).do_valid(action_id, uuid_to) 
+async def post_do_valid(request: Request, action_id: int, uuid_to: int, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=uuid).do_valid(action_id=action_id, uuid_to=uuid_to, session=session)
+
 
 @peer_router.post("/do_not_valid/{action_id}")
-def post_do_not_valid(request: Request, action_id: int):
-    uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid).do_not_valid(action_id) 
+async def post_do_not_valid(request: Request, action_id: int, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=uuid).do_not_valid(action_id=action_id, session=session)
+
 
 @peer_router.get("/points_to_confirm/{activities_id}")
-def get_points_to_confirm(activities_id: int):
-    return Peer(activities_id=activities_id).points_to_confirm()
+async def get_points_to_confirm(activities_id: int, session: AsyncSession = Depends(get_async_db)):
+    return await Peer(activities_id=activities_id).points_to_confirm(session)
+
 
 @peer_router.get("/get_curators")
-def get_req_curators():
-    return Peer().get_curators()
+async def get_req_curators(session: AsyncSession = Depends(get_async_db)):
+    return await Peer().get_curators(session)
+
 
 @peer_router.put("/add_curator/{uuid}/{activities_id}")
-def add_curator(uuid: int, request: Request, activities_id: int):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid, activities_id=activities_id).add_curator(uuid)
+async def add_curator(uuid: int, request: Request, activities_id: int, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid, activities_id=activities_id).add_curator(user_id=uuid, session=session)
+
 
 @peer_router.delete("/delete_curator/{uuid}/{activities_id}")
-def delete_curator(uuid: int, request: Request, activities_id: int):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(uuid)
+async def delete_curator(uuid: int, request: Request, activities_id: int,
+                         session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(user_id=uuid, session=session)
+
 
 @peer_router.put("/new_activity")
-def put_new_activity(request: Request, data = Body()):
-    uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid).new_activity(data) # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
+async def put_new_activity(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=uuid).new_activity(data=data,
+                                                   session=session)  # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
+
 
 """"""
+
+
 # @peer_router.get("/history_mdr/{activity_name}")
-# def history_mdr(activity_name: str):
+# async def history_mdr(activity_name: str):
 #     return Peer().history_mdr(activity_name)
 
 # @peer_router.get("/statistics_history/{activities_id}/{uuid}")
-# def statistics_history(activities_id: int, uuid: int):
+# async def statistics_history(activities_id: int, uuid: int):
 #     return Peer(activities_id=activities_id, user_uuid=uuid).statistics_history()
 
 # @peer_router.get("/top")
-# def top():
+# async def top():
 #     return Peer().top()
 
 # @peer_router.get("/my_place/{uuid}")
-# def my_place(uuid: int):
+# async def my_place(uuid: int):
 #     return Peer(user_uuid=uuid).my_place()
 
 # @peer_router.get("/new_a_week/{uuid}")
-# def new_a_week(uuid: int):
+# async def new_a_week(uuid: int):
 #     return Peer(user_uuid=uuid).new_a_week()
 
 @peer_router.get("/user_history")
-def user_history(request: Request):
-    uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=uuid).user_history()
+async def user_history(request: Request, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=uuid).user_history(session=session)
+
+
 """"""
+
+
 @peer_router.put("/send_points")
-def send_points(request: Request, data = Body()):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).send_points(data) # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
+async def send_points(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).send_points(data=data,
+                                                       session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
+
 
 @peer_router.get("/get_admins_list")
-def get_admins_list(request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).get_admins_list()
+async def get_admins_list(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).get_admins_list(session=session)
+
 
 @peer_router.put("/add_peer_admin/{uuid}")
-def add_peer_admin(uuid: int, request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).add_peer_admin(uuid)
+async def add_peer_admin(uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).add_peer_admin(uuid=uuid, session=session)
+
 
 @peer_router.delete("/delete_admin/{uuid}")
-def delete_admin(uuid: str, request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).delete_admin(uuid)
+async def delete_admin(uuid: str, request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).delete_admin(uuid=uuid, session=session)
 
 
 @peer_router.get("/get_moders_list")
-def get_moders_list(request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).get_moders_list()
+async def get_moders_list(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).get_moders_list(session)
+
 
 @peer_router.put("/add_peer_moder/{uuid}")
-def add_peer_moder(uuid: int, request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).add_peer_moder(uuid)
+async def add_peer_moder(uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).add_peer_moder(uuid=uuid, session=session)
+
 
 @peer_router.delete("/delete_peer_moder/{uuid}")
-def delete_peer_moder(uuid: str, request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).delete_peer_moder(uuid)
+async def delete_peer_moder(uuid: str, request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).delete_peer_moder(uuid=uuid, session=session)
+
 
 @peer_router.get("/get_curators_history")
-def get_curators_history(request: Request):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).get_curators_history()
+async def get_curators_history(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).get_curators_history(session=session)
+
 
 @peer_router.post("/return_points_to_user/{user_uuid}/{note_id}")
-def return_points_to_user(user_uuid: int, note_id: int):
-    return Peer().return_points_to_user(note_id, user_uuid)
+async def return_points_to_user(user_uuid: int, note_id: int, session: AsyncSession = Depends(get_async_db)):
+    return await Peer().return_points_to_user(note_id=note_id, user_uuid=user_uuid, session=session)
+
 
 @peer_router.post("/remove_user_points/{uuid}/{action_id}")
-def remove_user_points(request: Request, uuid: int, action_id: int):
-    user_uuid = get_uuid_from_request(request)
-    return Peer(user_uuid=user_uuid).remove_user_points(action_id, uuid)
+async def remove_user_points(request: Request, uuid: int, action_id: int,
+                             session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    return await Peer(user_uuid=user_uuid).remove_user_points(action_id=action_id, user_uuid=uuid, session=session)

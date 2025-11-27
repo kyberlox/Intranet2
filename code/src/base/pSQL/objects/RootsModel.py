@@ -1,5 +1,6 @@
 from src.services.LogsMaker import LogsMaker
-from .App import flag_modified, get_db, func
+
+from .App import flag_modified, select, func, delete
 LogsMaker().ready_status_message("Успешная инициализация таблицы Прав доступа")
 
 
@@ -14,22 +15,22 @@ class RootsModel:
         self.Roots = Roots
         self.user_uuid = user_uuid
 
-    def get_token_by_id(self):
-        db_gen = get_db()
-        database = next(db_gen)
-        result = database.query(self.Roots.root_token).filter(self.Roots.id == self.id).first()
+
+    async def get_token_by_id(self, session):
+        res = await session.execute(select(self.Roots.root_token).where(self.Roots.id == self.id))
+        result = res.scalar_one_or_none()
         return result
 
-    def get_token_by_uuid(self):
-        db_gen = get_db()
-        database = next(db_gen)
+    async def get_token_by_uuid(self, session):
         try:
-            result = database.query(self.Roots.root_token).filter(self.Roots.user_uuid == self.user_uuid).scalar()
+            res = await session.execute(select(self.Roots.root_token).where(self.Roots.user_uuid == self.user_uuid))
+            result = res.scalar()
             return result
         except Exception as e:
             LogsMaker().error_message(str(e))
 
-    def token_processing_for_peer(self, root_token):
+
+    async def token_processing_for_peer(self, root_token):
         roots = {
             'user_id': self.user_uuid
         }
@@ -43,7 +44,8 @@ class RootsModel:
                     roots["PeerCurator"] = value
         return roots
     
-    def token_processing_for_vision(self, root_token):
+
+    async def token_processing_for_vision(self, root_token):
         roots = {
             'user_id': self.user_uuid
         }
@@ -55,7 +57,8 @@ class RootsModel:
                     roots["VisionRoots"] = value
         return roots
     
-    def token_processing_for_editor(self, root_token):
+
+    async def token_processing_for_editor(self, root_token):
         roots = {
             'user_id': self.user_uuid
         }
@@ -67,18 +70,21 @@ class RootsModel:
                     roots["EditorModer"] = value
         return roots
 
-    def create_primary_admins(self):
-        db_gen = get_db()
-        database = next(db_gen)
+
+    async def create_primary_admins(self, session):
         BOYS_DONT_CRY = [2366, 2375, 4133]
         try:
             for guy in BOYS_DONT_CRY:
-                existing_admin = database.query(self.Roots).filter(self.Roots.user_uuid == guy).first()
+                res = await session.execute(select(self.Roots).where(self.Roots.user_uuid == guy))
+                existing_admin = res.scalar_one_or_none()
                 if existing_admin:
                     continue
                     
                 else:
-                    max_id = database.query(func.max(self.Roots.id)).scalar() or 0
+
+                    stmt = select(func.max(self.Roots.id))
+                    result = await session.execute(stmt)
+                    max_id = result.scalar() or 0
                     new_id = max_id + 1
                     new_moder = self.Roots()
                     new_moder.id=new_id
@@ -88,60 +94,60 @@ class RootsModel:
                         "VisionAdmin": True,
                         "EditorAdmin": True
                     }
-                    
-                    database.add(new_moder)
-                    database.commit()
+
+                    session.add(new_moder)
+                    await session.commit()
             return True
             
         except Exception as e:
-            database.rollback()
             return LogsMaker().error_message(f"Ошибка создания первичных админов: {e}")
 
-    def create_editor_moder(self, sec_id):
-        db_gen = get_db()
-        database = next(db_gen)
+    async def create_editor_moder(self, sec_id, session):
         try:
-            existing_moder = database.query(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).filter(self.Roots.user_uuid == self.user_uuid).first()
+            stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
+            res = await session.execute(stmt)
+            existing_moder = res.scalar_one_or_none()
             if existing_moder:
                 if "EditorModer" in existing_moder.root_token.keys() and sec_id in existing_moder.root_token['EditorModer']:
                     return False
                 elif "EditorModer" in existing_moder.root_token.keys():
                     existing_moder.root_token["EditorModer"].append(sec_id)
                     flag_modified(existing_moder, 'root_token')
-                    database.commit()
+
+                    await session.commit()
                     return True
                 else:
                     existing_moder.root_token["EditorModer"] = [sec_id]
                     flag_modified(existing_moder, 'root_token')
-                    database.commit()
+
+                    await session.commit()
                     return True
             else:
-                max_id = database.query(func.max(self.Roots.id)).scalar() or 0
+                stmt = select(func.max(self.Roots.id))
+                result = await session.execute(stmt)
+                max_id = result.scalar() or 0
                 new_id = max_id + 1
                 new_moder = self.Roots(
                     id=new_id,
                     user_uuid=int(self.user_uuid),
                     root_token={"EditorModer": [sec_id]}
                 )
-                database.add(new_moder)
-                database.commit()
+
+                session.add(new_moder)
+                await session.commit()
                 return True
         except Exception as e:
-            database.rollback()
             return LogsMaker().error_message(f"Ошибка добавления модератора редакторки в раздел с id = {sec_id}: {e}")
     
-    def delete_editor_moder(self, sec_id):
-        db_gen = get_db()
-        database = next(db_gen)
+    async def delete_editor_moder(self, sec_id, session):
         try:
-            user = database.query(self.Roots).filter(
-                self.Roots.user_uuid == self.user_uuid,
-                self.Roots.root_token['EditorModer'].contains([sec_id])
-            ).first()
+            stmt = select(self.Roots).where(self.Roots.user_uuid == self.user_uuid, self.Roots.root_token['EditorModer'].contains([sec_id]))
+            res = await session.execute(stmt)
+            user = res.scalar_one_or_none()
             if user:
                 user.root_token['EditorModer'].remove(sec_id)
                 flag_modified(user, 'root_token')
-                database.commit()
+                await session.commit()
                 return LogsMaker().info_message(f"У раздела с id = {sec_id} пользователь с id = {self.user_uuid} больше не является редактором")
             else:
                 return LogsMaker().info_message(f"У раздела с id = {sec_id} не редактировал пользователь с id = {self.user_uuid}")
@@ -149,27 +155,31 @@ class RootsModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении редактора с id = {self.user_uuid} из раздела с id = {sec_id}: {e}")
     
-    def create_editor_admin(self):
-        db_gen = get_db()
-        database = next(db_gen)
+
+    async def create_editor_admin(self, session):
         try:
-            existing_admin = database.query(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).filter(self.Roots.user_uuid == self.user_uuid).first()
+            stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
+            res = await session.execute(stmt)
+            existing_admin = res.scalar_one_or_none()
             if existing_admin:
                 if "EditorAdmin" in existing_admin.root_token.keys() and existing_admin.root_token["EditorAdmin"] == True:
                     return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} уже является администратором радакторки")
                 elif "EditorAdmin" in existing_admin.root_token.keys() and existing_admin.root_token["EditorAdmin"] == False:
                     existing_admin.root_token["EditorAdmin"] = True
                     flag_modified(existing_admin, 'root_token')
-                    database.commit()
+
+                    await session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} назначен администратором радакторки")
                 else:
                     existing_admin.root_token["EditorAdmin"] = True
                     flag_modified(existing_admin, 'root_token')
-                    database.commit()
+
+                    await session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} назначен администратором радакторки")
             else:
-                max_id = database.query(func.max(self.Roots.id)).scalar() or 0
-                new_id = max_id + 1
+                stmt = select(func.max(self.Roots.id))
+                result = await session.execute(stmt)
+                max_id = result.scalar() or 0
                 new_admin = self.Roots(
                     id=new_id,
                     user_uuid=int(self.user_uuid),
@@ -177,39 +187,48 @@ class RootsModel:
                 )
                 # self.Roots.user_uuid=int(self.uuid)
                 # self.Roots.root_token={"PeerAdmin": True}
-                database.add(new_admin)
-                database.commit()
+
+                session.add(new_admin)
+                await session.commit()
                 return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} назначен администратором радакторки")
             
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при назначении пользователя с id = {self.user_uuid} администратором радакторки: {e}")
     
-    def delete_editor_admin(self):
-        db_gen = get_db()
-        database = next(db_gen)
+
+    async def delete_editor_admin(self, session):
         try:
-            existing_admin = database.query(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).filter(self.Roots.user_uuid == self.user_uuid).first()
+            stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
+            res = await session.execute(stmt)
+            existing_admin = res.scalar_one_or_none()
             if existing_admin:
                 if "EditorAdmin" in existing_admin.root_token.keys() and existing_admin.root_token["EditorAdmin"] == True:
                     existing_admin.root_token["EditorAdmin"] = False
                     flag_modified(existing_admin, 'root_token')
-                    database.commit()
+
+                    await session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} больше не администратор радакторки")
             return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} не был администратором радакторки")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении пользователя с id = {self.user_uuid} из администраторов радакторки: {e}")
 
-    def get_editors_list(self, sec_id):
+
+    async def get_editors_list(self, sec_id, session):
         from ..models.Section import Section
-        db_gen = get_db()
-        database = next(db_gen)
         result = []
         try:
-            moders = database.query(self.Roots).filter(self.Roots.root_token.has_key("EditorModer")).all()
+            stmt = select(self.Roots).where(self.Roots.root_token.has_key("EditorModer"))
+            res = await session.execute(stmt)
+            moders = res.scalars().all()
             for moder in moders:
                 for sec_id in moder.root_token['EditorModer']:
-                    section_name = database.query(Section.name).filter(Section.id == sec_id).scalar()
-                    moder_fio = database.query(self.User.name, self.User.second_name, self.User.last_name).filter(self.User.id == moder.user_uuid).first()
+                    stmt = select(Section.name).where(Section.id == sec_id)
+                    res = await session.execute(stmt)
+                    section_name = res.scalar()
+
+                    stmt = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == moder.user_uuid)
+                    res = await session.execute(stmt)
+                    moder_fio = res.first()
                     moder_info = {
                         'moder_id': moder.user_uuid,
                         "moder_name": moder_fio.name,
@@ -222,5 +241,4 @@ class RootsModel:
 
             return result
         except Exception as e:
-            database.rollback()
             return LogsMaker().error_message(f"Ошибка вывода кураторов: {e}")

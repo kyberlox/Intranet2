@@ -51,6 +51,9 @@ import time
 import asyncio
 
 
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.base.pSQL.objects.App import get_async_db
 
 load_dotenv()
 
@@ -96,7 +99,8 @@ app.include_router(C_app, prefix="/api")
 #     #"http://intranet.emk.org.ru"
 # ]
 
-origins = ["*"]
+
+origins = ['*']
 
 app.add_middleware(
     CORSMiddleware,
@@ -126,7 +130,7 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
 open_links = [
     "/docs",
-    "/api/users_update",
+    "/api/users/update",
     "/api/users/update_user_info",
     "/openapi.json",
     "/api/auth_router",
@@ -290,6 +294,13 @@ def get_info_message():
 def get_test_elastic(word: str):
     return StructureSearchModel().get_structure_by_name(word)
 
+
+@app.put("/create_tables")
+async def create_tables():
+    from src.base.pSQL.models.App import create_tables
+    res = await create_tables()
+    return res
+
 @app.get("/get_sec_data/{section_id}")
 def test_sec_data(section_id):
     b24 = B24()
@@ -314,13 +325,13 @@ def elastic_search(keyword: str):
     return search_everywhere(key_word=keyword)
 
 @app.put("/api/full_elastic_dump")
-def elastic_dump():
+async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
     from src.base.Elastic.UserSearchModel import UserSearchModel
     from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
     from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
-    UserSearchModel().dump()
-    StructureSearchModel().dump()
-    ArticleSearchModel().dump()
+    await UserSearchModel().dump(session)
+    await StructureSearchModel().dump(session)
+    await ArticleSearchModel().dump(session)
     return {"status": True}
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")
@@ -381,7 +392,7 @@ def total_users_update():
 
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
-    if Article().uplod()["status"]:
+    if asyncio.run(Article().uplod())["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
@@ -395,46 +406,57 @@ def total_users_update():
 
 
 @app.put("/api/total_update")
-def total_update():
+async def total_update(session: AsyncSession=Depends(get_async_db)):
     time_start = time.time()
     status = 0
 
     
-
+    from src.base.pSQL.models.App import create_tables
+    res = await create_tables()
+    
+    
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
-    if Department().fetch_departments_data()["status"]:
+    res = await Department().fetch_departments_data(session)
+    if res["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
 
+    
+
+    
     LogsMaker().info_message("Обновление информации о пользователях")
     from src.model.User import User
-    dowload_status = User().fetch_users_data()["status"]
-    if dowload_status:
+    dowload_status = await User().fetch_users_data(session)
+    if dowload_status["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-
+    
+    
     from src.model.UsDep import UsDep
     LogsMaker().info_message("Обновление информации о связи подразделений и пользователей")
-    if UsDep().get_usr_dep()["status"]:
+    res = await UsDep().get_usr_dep(session)
+    if res["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
 
+    
     from src.model.Section import Section
     LogsMaker().info_message("Обновление информации о разделах сайта")
-    Section().load()
+    await Section().load(session)
     status += 1
     LogsMaker().ready_status_message("Успешно!")
 
     from src.model.Tag import Tag
     LogsMaker().info_message("Обновление информации о тэгах сайта")
-    if Tag().add_b24_tag()["status"]:
+    res = await Tag().add_b24_tag(session)
+    if res["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
@@ -442,7 +464,8 @@ def total_update():
 
     from src.model.Article import Article
     LogsMaker().info_message("Обновление информации о статьях сайта")
-    if Article().uplod()["status"]:
+    res = await Article().uplod(session)
+    if res["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
@@ -450,7 +473,8 @@ def total_update():
 
     from src.services.Roots import Roots
     LogsMaker().info_message("Обновление информации об администратарах сайта")
-    if Roots().create_primary_admins()["status"]:
+    res = await Roots().create_primary_admins(session)
+    if res["status"]:
         status += 1
         LogsMaker().ready_status_message("Успешно!")
     else:
@@ -466,11 +490,13 @@ def total_update():
 
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
-# @app.get("/elastic_dump")
-# def elastic_dump():
-#     # res = UserSearchModel().dump()
-#     res = StructureSearchModel().dump()
-#     return res
+
+@app.get("/elastic_dump")
+async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
+    await UserSearchModel().dump(session)
+    await StructureSearchModel().dump(session)
+    await ArticleSearchModel().dump(session)
+    return res
 '''
 ! Особенные запросы
 '''

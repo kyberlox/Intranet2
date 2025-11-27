@@ -22,8 +22,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="news__detail">
-                    <div v-if="currentPost.reactions && currentPost.section_id !== 32"
+                <div class="news__detail"
+                     :class="{ 'news__detail--corpnews': currentPost.section_id == 32 }">
+                    <div v-if="currentPost.reactions"
                          class="news__detail__like-wrapper">
                         <Reactions :id="Number(currentPost.id)"
                                    :reactions="currentPost.reactions"
@@ -143,7 +144,8 @@ export interface IPostInner extends IBaseEntity {
     }[],
     // Блоги
     TITLE?: string,
-    author?: string,
+    author?: string
+
 }
 
 export default defineComponent({

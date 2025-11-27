@@ -1,5 +1,9 @@
 from sqlalchemy.sql.expression import func, or_, and_
 
+
+from .App import select, func
+
+
 import json
 
 from datetime import datetime, timedelta
@@ -10,11 +14,8 @@ from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Истории Активностей Пользователей")
 
 
-
 class ActiveUsersModel:
-
     def __init__(self, id: int = 0, description: str = '', valid: int = 0, uuid_from: int = 0, uuid_to: int = 0, activities_id: int = 0):
-        
         self.id = id
         self.description = description
         self.valid = valid
@@ -22,8 +23,6 @@ class ActiveUsersModel:
         self.uuid_to = uuid_to
         self.activities_id = activities_id
 
-        # from .App import db
-        # self.session = db
 
         from ..models.ActiveUsers import ActiveUsers
         self.ActiveUsers = ActiveUsers
@@ -37,271 +36,356 @@ class ActiveUsersModel:
         from ..models.Roots import Roots
         self.Roots = Roots
 
-    def upload_past_table_ActiveUsers(self):
-        from .App import get_db
-        db_gen = get_db()
-        database = next(db_gen)
-        with open('./src/base/peer-data/active_users.json', mode='r', encoding='UTF-8') as f:
-            cur_activities = json.load(f)
-        for activity in cur_activities:
-            existing_activity = database.query(self.ActiveUsers).filter(self.ActiveUsers.id == activity['id']).first()
-            if existing_activity:
-                continue
-            else:
-                new_activity = self.ActiveUsers(id=activity['id'], uuid_from=activity['uuid_from'], uuid_to=activity['uuid_to'], description=activity['description'], valid=activity['valid'], date_time=activity['date_time'], activities_id=activity['activities_id'])
-                database.add(new_activity)
-                database.commit()
-        # database.close()
-        return {"status": True}
-
-    def actions(self, roots):
-        from .App import get_db
-        db_gen = get_db()
-        database = next(db_gen)
-        """выводит список доступных пользователю активностей"""
-        month_ago = datetime.now() - timedelta(days=30)
-        
-        activities_list = []
-        actions_for_all = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.need_valid == True, self.Activities.active == True).all()
-        if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
-            
-            for activity_id in roots['PeerCurator']:
-                activity_info = database.query(self.Activities.id, self.Activities.name).filter(self.Activities.id == activity_id, self.Activities.active == True).first()
-                part = {"value": activity_info.id, "name": activity_info.name}
-                activities_list.append(part)
-            # database.close()
-            return {
-                "activities": activities_list
-            }
-        
-        for activity in actions_for_all:
-            likes_count = database.query(self.ActiveUsers).filter(self.ActiveUsers.uuid_from == roots['user_id'], self.ActiveUsers.activities_id == activity.id, self.ActiveUsers.date_time >= month_ago).count()
-
-            #проверить остаток доступных лайков
-            likes_left = 10 - likes_count
-            if likes_count > 10:
-                likes_left = 0
-            action = {"value": activity.id, "name": activity.name, "likes_left": likes_left}
-            activities_list.append(action)
-        # database.close()
-        return {
-            "activities": activities_list
-        }
-
-    def history_mdr(self, activity_name):
-        from .App import get_db
-        db_gen = get_db()
-        database = next(db_gen)
-        result = []
-        res = database.scalars(database.query(self.ActiveUsers).join(Activities, and_(self.ActiveUsers.activities_id == Activities.id, Activities.name == activity_name))).all()
-        stat = {0 : "Не подтверждено", 1 : "Подтверждено", 2 : "Отказано"}
-        if res:
-            for re in res:
-                info = re.__dict__
-                stat['valid'] = info['valid']
-                info['stat'] = stat
-                info.pop('valid')
-                result.append(info)
-            database.close()
-            return result
-        # database.close()
-        return res
-
-    def sum(self, uuid):
-        from .App import get_db
-        db_gen = get_db()
-        database = next(db_gen)
-        user_info = database.query(self.Roots).filter(self.Roots.user_uuid == uuid).first()
-        # user_info = database.query(self.Roots).filter(self.Roots.user_uuid == 2375).first()
-        # database.close()
-        if user_info:
-            if user_info.user_points:
-                points = user_info.user_points
-                return points
-        return 0
-    
-    def top(self):
-        stmt = database.query(
-            self.ActiveUsers.uuid_to,
-            func.sum(self.Activities.coast)
-        ).join(
-            self.Activities,
-            self.Activities.id == self.ActiveUsers.activities_id
-        ).filter(self.ActiveUsers.valid == 1).group_by(
-            self.ActiveUsers.uuid_to
-        ).order_by(
-            func.sum(self.Activities.coast).desc()
-        ).limit(10)
-        res = database.scalars(stmt).all()
-        database.close()
-        return res
-
-    def my_place(self):
-        results = database.query(
-            self.ActiveUsers.uuid_to,
-            func.sum(self.Activities.coast).label('total_coast')
-        ).join(
-            self.Activities,
-            self.Activities.id == self.ActiveUsers.activities_id
-        ).filter(
-            self.ActiveUsers.valid == 1
-        ).group_by(
-            self.ActiveUsers.uuid_to
-        ).order_by(
-            func.coalesce(func.sum(self.Activities.coast), 0).desc()
-        ).all()
-
-        for rank, (uuid, coast) in enumerate(results, 1):
-            if uuid == self.uuid_to:
-                return rank
-        database.close()
-        return "Либо Вы вне всяких оценок, либо ВЫ ЕЩЁ СПИТЕ!"
-
-    def statistics(self):
-        results = database.query(
-            self.Activities.id,
-            self.Activities.name,
-            func.coalesce(func.sum(self.Activities.coast), 0)
-        ).join(
-            self.ActiveUsers,
-            self.ActiveUsers.activities_id == self.Activities.id
-        ).filter(
-            self.ActiveUsers.uuid_to == self.uuid_to,
-            self.ActiveUsers.valid == 1
-        ).group_by(
-            self.Activities.name,
-            self.Activities.id
-        ).order_by(
-            func.sum(self.Activities.coast).desc()
-        ).all()
-        database.close()
-        return [
-            {
-                'activity_id': activity_id,
-                'activity_name': activity_name,
-                'total_coast': total_coast
-            }
-            for activity_id, activity_name, total_coast in results
-        ]   
-
-    def statistics_history(self):
-        results = database.query(
-            self.ActiveUsers.id,
-            self.ActiveUsers.uuid_from,
-            self.ActiveUsers.description,
-            self.ActiveUsers.date_time,
-            self.Activities.name,
-            self.Activities.coast,
-            self.Activities.id
-        ).join(self.Activities).filter(
-            self.ActiveUsers.uuid_to == self.uuid_to,
-            self.ActiveUsers.valid == 1,
-            self.Activities.id == self.activities_id
-        ).all()
-
-        processed_results = []
-        for result in results:
-            adjusted_time = result.date_time + timedelta(hours=4) if result.date_time else None
-            processed_results.append({
-                'id': result.id,
-                'uuid_from': result.uuid_from,
-                'description': result.description,
-                'adjusted_time': adjusted_time,
-                'activity_name': result.name,
-                'coast': result.coast,
-                'activity_id': result.id
-            })
-        database.close()
-        return processed_results
-
-    def new_a_week(self):
-        week_start = func.date_trunc('week', func.now())
-        results = database.query(
-            self.ActiveUsers.id,
-            self.ActiveUsers.uuid_from,
-            self.ActiveUsers.description,
-            self.ActiveUsers.date_time,
-            self.Activities.name,
-            self.Activities.coast,
-            self.Activities.id,
-            func.sum(self.Activities.coast).over().label('total_sum')
-        ).join(self.Activities).filter(
-            self.ActiveUsers.uuid_to == self.uuid_to,
-            func.date_trunc('week', self.ActiveUsers.date_time) == week_start,
-            self.ActiveUsers.valid == 1
-        ).all()
-
-        activities = []
-        for result in results:
-            activities.append({
-                "id_activeusers": result.id,
-                "uuid": result.uuid_from,
-                "description": result.description,
-                "date_time": result.date_time,
-                "activity_name": result.name,
-                "cost": result.coast,
-                "id_activites": result.id
-            })
-        total_sum = results[0].total_sum if results else 0
-        database.close()
-        return {"sum": total_sum, "activities": activities}
-
-    def user_history(self):
-        # results = database.query(
-        #     self.ActiveUsers.id,
-        #     self.ActiveUsers.uuid_from,
-        #     self.ActiveUsers.description,
-        #     self.ActiveUsers.date_time,
-        #     self.Activities.name,
-        #     self.Activities.coast,
-        #     self.Activities.id,
-        # ).join(self.Activities).filter(
-        #     self.ActiveUsers.uuid_to == self.uuid_to,
-        #     self.ActiveUsers.valid == 1
-        # ).all()
         from ..models.User import User
+        self.User = User
 
-        from .App import get_db
-        db_gen = get_db()
-        database = next(db_gen)
-        results = database.query(
-            self.ActiveUsers.id,
-            self.ActiveUsers.uuid_from,
-            self.ActiveUsers.description,
-            self.ActiveUsers.date_time,
-            self.Activities.name,
-            self.Activities.coast,
-            self.Activities.id,
-        ).join(self.Activities).filter(
-            self.ActiveUsers.uuid_to == self.uuid_to,
-            self.ActiveUsers.valid == 1
-        ).all()
-        # database.close()
-        activities = []
-        
-        for result in results:
-            user_info = database.query(User.name, User.second_name, User.last_name).filter(User.id == result.uuid_from).first()
-            user_fio = user_info.last_name + " " + user_info.name + " " + user_info.second_name
-            activities.append({
-                # "id_activeusers": result.id,
-                "id_activeusers": result[0],
-                "uuid_from": result.uuid_from,
-                "fio_from": user_fio,
-                "description": result.description,
-                "date_time": result.date_time,
-                "activity_name": result.name,
-                "cost": result.coast,
-                # "id_activites": result.id
-                "id_activites": result[-1]
-            })
+    async def upload_past_table_ActiveUsers(self, session):
+        try:
+            with open('./src/base/peer-data/active_users.json', mode='r', encoding='UTF-8') as f:
+                cur_activities = json.load(f)
+            
+            for activity in cur_activities:
+                stmt = select(self.ActiveUsers).where(self.ActiveUsers.id == activity['id'])
+                result = await session.execute(stmt)
+                existing_activity = result.scalar_one_or_none()
+                
+                if existing_activity:
+                    continue
+                else:
+                    new_activity = self.ActiveUsers(
+                        id=activity['id'], 
+                        uuid_from=activity['uuid_from'], 
+                        uuid_to=activity['uuid_to'], 
+                        description=activity['description'], 
+                        valid=activity['valid'], 
+                        date_time=activity['date_time'], 
+                        activities_id=activity['activities_id']
+                    )
+                    session.add(new_activity)
+            
+            await session.commit()
+            return {"status": True}
+            
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в upload_past_table_ActiveUsers при загрузке исторических данных ActiveUsers: {e}")
 
-        merch_history = database.query(self.PeerHistory).filter(self.PeerHistory.user_uuid == self.uuid_to, self.PeerHistory.info_type == 'merch').all()
-        for merch in merch_history:
-            activities.append({
-                "id": merch.id,
-                "merch_info": merch.merch_info,
-                "date_time": merch.date_time,
-                "merch_coast": merch.merch_coast
-            })
-        
-        return activities
+    async def actions(self, session, roots):
+        """выводит список доступных пользователю активностей"""
+        try:
+            month_ago = datetime.now() - timedelta(days=30)
+            activities_list = []
+            
+            # Активности для всех
+            stmt_all = select(self.Activities.id, self.Activities.name).where(
+                self.Activities.need_valid == True, 
+                self.Activities.active == True
+            )
+            result_all = await session.execute(stmt_all)
+            actions_for_all = result_all.all()
+
+            if 'PeerCurator' in roots.keys() and len(roots['PeerCurator']) != 0:
+                for activity_id in roots['PeerCurator']:
+                    stmt_activity = select(self.Activities.id, self.Activities.name).where(
+                        self.Activities.id == activity_id, 
+                        self.Activities.active == True
+                    )
+                    result_activity = await session.execute(stmt_activity)
+                    activity_info = result_activity.first()
+                    
+                    if activity_info:
+                        part = {"value": activity_info.id, "name": activity_info.name}
+                        activities_list.append(part)
+                
+                return {"activities": activities_list}
+            
+            # Для обычных пользователей
+            for activity in actions_for_all:
+                stmt_count = select(func.count(self.ActiveUsers.id)).where(
+                    self.ActiveUsers.uuid_from == roots['user_id'],
+                    self.ActiveUsers.activities_id == activity.id,
+                    self.ActiveUsers.date_time >= month_ago
+                )
+                result_count = await session.execute(stmt_count)
+                likes_count = result_count.scalar()
+
+                likes_left = 10 - likes_count
+                if likes_count > 10:
+                    likes_left = 0
+                    
+                action = {"value": activity.id, "name": activity.name, "likes_left": likes_left}
+                activities_list.append(action)
+                
+            return {"activities": activities_list}
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в actions при получении списка активностей для пользователя {roots.get('user_id', 'unknown')}: {e}")
+
+    async def history_mdr(self, session, activity_name: str):
+        try:
+            result = []
+            stmt = select(self.ActiveUsers).join(
+                self.Activities, 
+                and_(
+                    self.ActiveUsers.activities_id == self.Activities.id, 
+                    self.Activities.name == activity_name
+                )
+            )
+            query_result = await session.execute(stmt)
+            res = query_result.scalars().all()
+            
+            stat = {0: "Не подтверждено", 1: "Подтверждено", 2: "Отказано"}
+            
+            if res:
+                for re in res:
+                    info = re.__dict__
+                    info['stat'] = stat[info['valid']]
+                    info.pop('_sa_instance_state', None)
+                    result.append(info)
+                return result
+                
+            return []
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в history_mdr при получении истории для активности '{activity_name}': {e}")
+
+    async def sum(self, session, uuid: int):
+        try:
+            stmt = select(self.Roots).where(self.Roots.user_uuid == uuid)
+            result = await session.execute(stmt)
+            user_info = result.scalar_one_or_none()
+            
+            if user_info and user_info.user_points:
+                return user_info.user_points
+            return 0
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в sum при получении суммы очков для пользователя {uuid}: {e}")
+
+    async def top(self, session):
+        try:
+            stmt = select(
+                self.ActiveUsers.uuid_to,
+                func.sum(self.Activities.coast).label('total_coast')
+            ).join(
+                self.Activities,
+                self.Activities.id == self.ActiveUsers.activities_id
+            ).where(
+                self.ActiveUsers.valid == 1
+            ).group_by(
+                self.ActiveUsers.uuid_to
+            ).order_by(
+                func.sum(self.Activities.coast).desc()
+            ).limit(10)
+            
+            result = await session.execute(stmt)
+            return result.all()
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в top при получении топа пользователей: {e}")
+
+    async def my_place(self, session):
+        try:
+            stmt = select(
+                self.ActiveUsers.uuid_to,
+                func.sum(self.Activities.coast).label('total_coast')
+            ).join(
+                self.Activities,
+                self.Activities.id == self.ActiveUsers.activities_id
+            ).where(
+                self.ActiveUsers.valid == 1
+            ).group_by(
+                self.ActiveUsers.uuid_to
+            ).order_by(
+                func.coalesce(func.sum(self.Activities.coast), 0).desc()
+            )
+            
+            result = await session.execute(stmt)
+            results = result.all()
+            
+            for rank, (uuid, coast) in enumerate(results, 1):
+                if uuid == self.uuid_to:
+                    return rank
+                    
+            return "Либо Вы вне всяких оценок, либо ВЫ ЕЩЁ СПИТЕ!"
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в my_place при определении места пользователя {self.uuid_to}: {e}")
+
+    async def statistics(self, session):
+        try:
+            stmt = select(
+                self.Activities.id,
+                self.Activities.name,
+                func.coalesce(func.sum(self.Activities.coast), 0).label('total_coast')
+            ).join(
+                self.ActiveUsers,
+                self.ActiveUsers.activities_id == self.Activities.id
+            ).where(
+                self.ActiveUsers.uuid_to == self.uuid_to,
+                self.ActiveUsers.valid == 1
+            ).group_by(
+                self.Activities.name,
+                self.Activities.id
+            ).order_by(
+                func.sum(self.Activities.coast).desc()
+            )
+            
+            result = await session.execute(stmt)
+            results = result.all()
+            
+            return [
+                {
+                    'activity_id': activity_id,
+                    'activity_name': activity_name,
+                    'total_coast': total_coast
+                }
+                for activity_id, activity_name, total_coast in results
+            ]
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в statistics при получении статистики для пользователя {self.uuid_to}: {e}")
+
+    async def statistics_history(self, session):
+        try:
+            stmt = select(
+                self.ActiveUsers.id,
+                self.ActiveUsers.uuid_from,
+                self.ActiveUsers.description,
+                self.ActiveUsers.date_time,
+                self.Activities.name,
+                self.Activities.coast,
+                self.Activities.id
+            ).join(self.Activities).where(
+                self.ActiveUsers.uuid_to == self.uuid_to,
+                self.ActiveUsers.valid == 1,
+                self.Activities.id == self.activities_id
+            )
+            
+            result = await session.execute(stmt)
+            results = result.all()
+
+            processed_results = []
+            for row in results:
+                adjusted_time = row.date_time + timedelta(hours=4) if row.date_time else None
+                processed_results.append({
+                    'id': row.id,
+                    'uuid_from': row.uuid_from,
+                    'description': row.description,
+                    'adjusted_time': adjusted_time,
+                    'activity_name': row.name,
+                    'coast': row.coast,
+                    'activity_id': row.id
+                })
+                
+            return processed_results
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в statistics_history при получении истории статистики для пользователя {self.uuid_to} и активности {self.activities_id}: {e}")
+
+    async def new_a_week(self, session):
+        try:
+            week_start = func.date_trunc('week', func.now())
+            stmt = select(
+                self.ActiveUsers.id,
+                self.ActiveUsers.uuid_from,
+                self.ActiveUsers.description,
+                self.ActiveUsers.date_time,
+                self.Activities.name,
+                self.Activities.coast,
+                self.Activities.id,
+                func.sum(self.Activities.coast).over().label('total_sum')
+            ).join(self.Activities).where(
+                self.ActiveUsers.uuid_to == self.uuid_to,
+                func.date_trunc('week', self.ActiveUsers.date_time) == week_start,
+                self.ActiveUsers.valid == 1
+            )
+            
+            result = await session.execute(stmt)
+            results = result.all()
+
+            activities = []
+            for row in results:
+                activities.append({
+                    "id_activeusers": row.id,
+                    "uuid": row.uuid_from,
+                    "description": row.description,
+                    "date_time": row.date_time,
+                    "activity_name": row.name,
+                    "cost": row.coast,
+                    "id_activites": row.id
+                })
+                
+            total_sum = results[0].total_sum if results else 0
+            return {"sum": total_sum, "activities": activities}
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в new_a_week при получении недельной статистики для пользователя {self.uuid_to}: {e}")
+
+    async def user_history(self, session):
+        try:
+            # Получаем активность пользователя
+            stmt_activities = select(
+                self.ActiveUsers.id,
+                self.ActiveUsers.uuid_from,
+                self.ActiveUsers.description,
+                self.ActiveUsers.date_time,
+                self.Activities.name,
+                self.Activities.coast,
+                self.Activities.id,
+            ).join(self.Activities).where(
+                self.ActiveUsers.uuid_to == self.uuid_to,
+                self.ActiveUsers.valid == 1
+            )
+            
+            result_activities = await session.execute(stmt_activities)
+            results = result_activities.all()
+            
+            activities = []
+            
+            for row in results:
+                # Получаем информацию о пользователе
+                stmt_user = select(
+                    self.User.name, 
+                    self.User.second_name, 
+                    self.User.last_name
+                ).where(self.User.id == row.uuid_from)
+                
+                result_user = await session.execute(stmt_user)
+                user_info = result_user.first()
+                
+                user_fio = ""
+                if user_info:
+                    user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
+                
+                activities.append({
+                    "id_activeusers": row.id,
+                    "uuid_from": row.uuid_from,
+                    "fio_from": user_fio,
+                    "description": row.description,
+                    "date_time": row.date_time,
+                    "activity_name": row.name,
+                    "cost": row.coast,
+                    "id_activites": row.id
+                })
+
+            # Получаем историю мерча
+            stmt_merch = select(self.PeerHistory).where(
+                self.PeerHistory.user_uuid == self.uuid_to,
+                self.PeerHistory.info_type == 'merch'
+            )
+            result_merch = await session.execute(stmt_merch)
+            merch_history = result_merch.scalars().all()
+            
+            for merch in merch_history:
+                activities.append({
+                    "id": merch.id,
+                    "merch_info": merch.merch_info,
+                    "date_time": merch.date_time,
+                    "merch_coast": merch.merch_coast
+                })
+            
+            return activities
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в user_history при получении полной истории для пользователя {self.uuid_to}: {e}")

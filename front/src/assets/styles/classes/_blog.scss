@@ -7,13 +7,6 @@
         }
     }
 
-    &__article__content {
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    }
-
     &__avatar__wrapper {
         @include sm {
             width: 100%;

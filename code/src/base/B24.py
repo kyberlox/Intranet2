@@ -4,18 +4,25 @@ from fastapi.responses import JSONResponse
 from bitrix24 import Bitrix24
 import requests
 
-#import asyncio
+import asyncio
+import aiohttp
+
 
 b24_router = APIRouter(prefix="/b24", tags=["Битрикс24"])
 
 class B24:
     def __init__(self):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
+        # self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
+        self.bx24 = Bitrix24("https://test-portal.emk.ru/rest/3830/0gtzqs1nai8ocqft/")
 
 
 
     def getUsers(self):
         result = self.bx24.callMethod('user.get')
+        return result
+    
+    def getUser(self, ID):
+        result = self.bx24.callMethod(f'user.get?ID={ID}')
         return result
 
     def getDeps(self):
@@ -30,16 +37,26 @@ class B24:
 
 
 
-    def get_file(self, id, inf_id):
+
+    async def get_file(self, id, inf_id):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/j6122m0ystded5ag/")
-        result = self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID={inf_id}&id={id}')
+        result = await self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID={inf_id}&id={id}')
         return result
 
-    def get_all_files(self, id):
+    async def get_all_files(self, id):
         url = f'https://portal.emk.ru/pub/rest/d105d8c66fc049a96c58d2cc18ea171e98c7ba89a9afa6425f003e42b4d90991/getBfileById.php?id={id}'
-        response = requests.get(url)
-        result = response.json()
-        return result
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    return result
+                else:
+                    return None
+        
+        
+        # response = requests.get(url)
+        # result = response.json()
+        # return result
 
 
 

@@ -12,6 +12,9 @@ from .models.Activities import Activities
 from .models.ActiveUsers import ActiveUsers
 from .models.PeerHistory import PeerHistory
 from .models.Roots import Roots
+
+from .models.UserFiles import UserFiles
+from .models.FilesDB import FilesDB
 # from .models.Moders import Moders
 
 # from .models.UservisionsRoot import UservisionsRoot
@@ -40,6 +43,9 @@ from .objects.MerchStoreModel import MerchStoreModel
 
 from .objects.SectionModel import SectionModel
 
+from .objects.FilesDBModel import FilesDBModel
+from .objects.UserFilesModel import UserFilesModel
+
 ## Control imports
 __all__ = [
     'UserModel',
@@ -56,5 +62,8 @@ __all__ = [
     'RootsModel',
     'PeerUserModel',
     'MerchStoreModel',
-    'SectionModel'
+
+    'SectionModel',
+    'UserFilesModel',
+    'FilesDBModel'
     ]

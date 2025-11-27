@@ -21,13 +21,18 @@ from .pSQL.objects.RootsModel import RootsModel
 
 from .pSQL.objects.MerchStoreModel import MerchStoreModel
 
+
+from .pSQL.objects.FilesDBModel import FilesDBModel
+from .pSQL.objects.UserFilesModel import UserFilesModel
+
+
 from .pSQL import *
 
 
 
 from .RedisStorage import RedisStorage
 from .B24 import B24, b24_router
-from .mongodb import FileModel
+
 
 from .Elastic.App import search_router, search_everywhere
 from .Elastic.UserSearchModel import UserSearchModel
@@ -57,10 +62,15 @@ __all__ = [
     'RootsModel',
 
     'MerchStoreModel',
+
+    'FilesDBModel',
+    'UserFilesModel',
+
+    #'FileModel',
+
     'RedisStorage'
     'B24',
     'b24_router',
-    'FileModel',
     'UserSearchModel',
     'StructureSearchModel',
     'ArticleSearchModel',

@@ -21,7 +21,6 @@ const messages: messages = {
         pointsSendSuccess: 'Баллы успешно отправлены',
         ideaSendSuccess: 'Идея успешно отправлена! Спасибо!',
         merchBuySuccess: 'Ваш запрос успешно отправлен! Скоро с вами свяжутся для уточнения',
-        EventExcellSuccess: ''
     },
     warn:{
         merchBuyWarning: 'Покупка станет доступна после полноценного запуска',

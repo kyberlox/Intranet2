@@ -132,24 +132,26 @@ class UserFilesModel():
             result = await session.execute(stmt)
             existing_photo = result.scalar_one_or_none()
             
-            # if existing_photo:
-            #     # Удаляем физический файл
-            #     unique_name = file_data['name']
-            #     file_path = os.path.join(USER_STORAGE_PATH, unique_name)
-            #     if os.path.exists(file_path):
-            #         os.remove(file_path)
-            #     else:  
-            #         LogsMaker().warning_message(f"Файл {file_path} не найден")
+            if existing_photo:
+                # Удаляем физический файл
+                unique_name = file_data['name']
+                file_path = os.path.join(USER_STORAGE_PATH, unique_name)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print('УДАЛИЛИ ФАЙЛ')
+                else:  
+                    LogsMaker().warning_message(f"Файл {file_path} не найден")
 
-            #     # Удаляем запись из базы
-            #     await session.delete(existing_photo)
-            #     # Удаляем запись из базы User
-            #     stmt = select(User).where(User.photo_file_id == int(self.id))
-            #     result = await session.execute(stmt)
-            #     existing_user = result.scalar_one_or_none()
-            #     existing_user.photo_file_id = None
-            #     await session.commit()
-            #     return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно удалено")
+                # Удаляем запись из базы
+                await session.delete(existing_photo)
+                # Удаляем запись из базы User
+                stmt = select(User).where(User.photo_file_id == int(self.id))
+                result = await session.execute(stmt)
+                existing_user = result.scalar_one_or_none()
+                existing_user.photo_file_id = None
+                print('СДЕЛАЛИ NONE')
+                await session.commit()
+                return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно удалено")
 
             return LogsMaker().info_message(f"Фото пользователя с id = {self.id} не найдено")
             
@@ -213,6 +215,7 @@ class UserFilesModel():
                 )
                 result_max = await session.execute(stmt_max)
                 max_num = result_max.scalar_one_or_none()
+                print(max_num, 'слуд max_num')
                 # Извлекаем номер из имени файла
                 if max_num:
                     current_num = int(max_num.split('_')[-1].split('.')[0])

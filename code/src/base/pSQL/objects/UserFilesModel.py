@@ -127,11 +127,6 @@ class UserFilesModel():
             # user_info = result.scalars().all()
             # usr_photo = [photo.__dict__ for photo in user_info]
             # print(usr_photo)
-            stmt = select(UserFiles).where(UserFiles.user_id == 4133)
-            result = await session.execute(stmt)
-            user_info = result.scalars().all()
-            usr_photo = [photo.__dict__ for photo in user_info]
-            print(usr_photo, 'ДО УДАЛЕНИЯ')
             
             stmt = select(UserFiles).where(UserFiles.id == int(self.id))
             result = await session.execute(stmt)
@@ -143,7 +138,6 @@ class UserFilesModel():
                 file_path = os.path.join(USER_STORAGE_PATH, unique_name)
                 if os.path.exists(file_path):
                     os.remove(file_path)
-                    print('УДАЛИЛИ ФАЙЛ')
                 else:  
                     LogsMaker().warning_message(f"Файл {file_path} не найден")
 
@@ -154,7 +148,6 @@ class UserFilesModel():
                 result = await session.execute(stmt)
                 existing_user = result.scalar_one_or_none()
                 existing_user.photo_file_id = None
-                print('СДЕЛАЛИ NONE')
                 await session.commit()
                 return LogsMaker().info_message(f"Фото пользователя с id = {self.id} успешно удалено")
 
@@ -207,11 +200,6 @@ class UserFilesModel():
             
             # Проверим есть к чему крепить файл
             if self.user_id is not None:
-                stmt = select(UserFiles).where(UserFiles.user_id == 4133)
-                result = await session.execute(stmt)
-                user_info = result.scalars().all()
-                usr_photo = [photo.__dict__ for photo in user_info]
-                print(usr_photo, 'ПОСЛЕ УДАЛЕНИЯ ПРИ ГЕНЕРАЦИИ ФОТО')
 
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)

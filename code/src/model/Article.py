@@ -1765,7 +1765,7 @@ class Article:
                     return f"{DOMAIN}{url}"
 
             #Сортируем чтобы файлы были по порядку
-            sorted_files = sorted(files, key=lambda x: x['id'], reverse=True)
+            sorted_files = sorted(files, key=lambda x: x['id'], reverse=False)
 
             # находим первую картинку, если она есть
             for file in sorted_files:

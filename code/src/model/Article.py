@@ -1764,28 +1764,31 @@ class Article:
 
                     return f"{DOMAIN}{url}"
 
+            #Сортируем чтобы файлы были по порядку
+            sorted_files = sorted(files, key=lambda x: x['id'], reverse=True)
+
             # находим первую картинку, если она есть
-            for file in files:
+            for file in sorted_files:
                 if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
                     "original_name"] or "png" in file["original_name"]:
-                    current_num = int(file['name'].split('_')[-1].split('.')[0])
-                    if 1 == current_num:
-                        url = file["file_url"]
-                        # внедряю компрессию
-                        if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
-                            preview_link = url.split("/")
-                            preview_link[-2] = "compress_image/yowai_mo"
-                            url = '/'.join(preview_link)
-                        # Для баготворительных проектов компрессия не требуется
-                        # и для гида по предприятиям
-                        elif self.section_id in ["55", "41", "32"]:
-                            return f"{DOMAIN}{url}"
-                        else:
-                            preview_link = url.split("/")
-                            preview_link[-2] = "compress_image"
-                            # preview_link[-2] = "compress_image/yowai_mo"
-                            url = '/'.join(preview_link)
+                    # current_num = int(file['name'].split('_')[-1].split('.')[0])
+                    # if 1 == current_num:
+                    url = file["file_url"]
+                    # внедряю компрессию
+                    if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    # Для баготворительных проектов компрессия не требуется
+                    # и для гида по предприятиям
+                    elif self.section_id in ["55", "41", "32"]:
                         return f"{DOMAIN}{url}"
+                    else:
+                        preview_link = url.split("/")
+                        preview_link[-2] = "compress_image"
+                        # preview_link[-2] = "compress_image/yowai_mo"
+                        url = '/'.join(preview_link)
+                    return f"{DOMAIN}{url}"
 
         return None
 

@@ -1955,8 +1955,7 @@ class Article:
 
                             # res["preview_file_url"] = await self.get_preview(session)
                             prev = await self.get_preview(session)
-                            res[
-                                "preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                            res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                             # сюда лайки и просмотры
                             # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                             user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
@@ -1968,15 +1967,15 @@ class Article:
                     else:
                         self.id = res["id"]
                         prev = await self.get_preview(session)
-                        res[
-                            "preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                        # res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
                         if res["preview_file_url"] is None:
                             if int(self.section_id) == 32:
                                 res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
+                            elif int(self.section_id) == 15:
+                                res["preview_file_url"] = None
                             else:
-                                res[
-                                    "preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                                res["preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list:  # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков

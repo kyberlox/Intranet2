@@ -15,7 +15,7 @@ class UserFiles(Base):
     active = Column(Boolean, nullable=True)
     URL = Column(Text, nullable=True)
     
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
 
     # Отношения втарок и пользователей
     

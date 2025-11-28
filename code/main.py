@@ -489,22 +489,22 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
 
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
-# @app.delete("/api/delete_tables")
-# async def delete_tables(session: AsyncSession=Depends(get_async_db)):
-#     from sqlalchemy import text
-#     try:
-#         # Удаляем таблицы (важен порядок из-за foreign keys)
-#         await session.execute(text("DROP TABLE IF EXISTS users CASCADE"))
-#         await session.execute(text("DROP TABLE IF EXISTS userfiles CASCADE"))
-#         await session.commit()
+@app.delete("/api/delete_tables")
+async def delete_tables(session: AsyncSession=Depends(get_async_db)):
+    from sqlalchemy import text
+    try:
+        # Удаляем таблицы (важен порядок из-за foreign keys)
+        await session.execute(text("DROP TABLE IF EXISTS users CASCADE"))
+        await session.execute(text("DROP TABLE IF EXISTS userfiles CASCADE"))
+        await session.commit()
         
-#         print("✅ Таблицы User и UserFiles успешно удалены")
-#         return True
+        print("✅ Таблицы User и UserFiles успешно удалены")
+        return True
         
-#     except Exception as e:
-#         await session.rollback()
-#         print(f"❌ Ошибка при удалении таблиц: {e}")
-#         return False
+    except Exception as e:
+        await session.rollback()
+        print(f"❌ Ошибка при удалении таблиц: {e}")
+        return False
 '''
 ! Особенные запросы
 '''

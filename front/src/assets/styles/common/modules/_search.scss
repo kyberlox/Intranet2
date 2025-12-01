@@ -58,7 +58,7 @@
 
         &:focus-within {
             border-color: var(--emk-brand-color);
-            box-shadow: 0 0 0 3px rgba(var(--emk-brand-color-rgb), 0.1);
+            // box-shadow: 0 0 0 3px rgba(var(--emk-brand-color), 0.1);
         }
 
         &>input {
@@ -114,7 +114,6 @@
 }
 
 .search-result-block-info {
-    margin-top: 5px;
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -128,9 +127,13 @@
     justify-content: flex-start;
     transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
 
+    &:not(:first-child) {
+        margin-top: 10px;
+    }
+
     &:hover {
         color: var(--emk-brand-color);
-        box-shadow: 0 4px 12px 0 rgba(var(--emk-brand-color-rgb), 0.2);
+        // box-shadow: 0 4px 12px 0 rgba(var(--emk-brand-color), 0.2);
         transform: translateY(-2px);
     }
 }

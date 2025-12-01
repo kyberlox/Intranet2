@@ -37,12 +37,11 @@
         </iframe>
     </swiper-slide>
 
+    <SwiperButtons :isBeginning="isBeginning"
+                   :isEnd="isEnd"
+                   @slideNext="slideNext"
+                   @slidePrev="slidePrev" />
 </swiper>
-<SwiperButtons :isBeginning="isBeginning"
-               :isEnd="isEnd"
-               :buttonsPos="'bottom'"
-               @slideNext="slideNext"
-               @slidePrev="slidePrev" />
 
 <ZoomModal v-if="modalIsVisible"
            :image="images"

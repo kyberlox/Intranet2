@@ -3,11 +3,15 @@
      style="display: block;">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content modal__content--fullscreen modal__content--pdf">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">{{ activeGazete.name ?? 'Корпоративная газета' }}</h1>
+            <div class="modal__header">
+                <h1 class="modal-title fs-5">
+                    {{ activeGazete.name ?? 'Корпоративная газета' }}
+                </h1>
                 <button @click="closeModal"
                         type="button"
-                        class="btn-close mr10"></button>
+                        class="mr10 modal__close-btn">
+                    <CloseIcon />
+                </button>
             </div>
             <div class="modal-body">
                 <object :data='activeGazete.indirect_data.pdf'></object>
@@ -21,8 +25,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-
+import CloseIcon from '@/assets/icons/common/Cancel.svg?component'
 export default defineComponent({
+    components: {
+        CloseIcon
+    },
     props: {
         activeGazete: {
             type: Object,

@@ -18,9 +18,9 @@
                 <div class="personal__user__mess">
                     <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"'
                        target="_blank"
-                       class="personal__user__mess__link">Профиль в Bitrix24</a>
+                       class="personal__user__mess__link primary-button">Профиль в Bitrix24</a>
                     <button v-if="user.id !== myId && featureFlags.pointsSystem"
-                            class="personal__user__mess__link"
+                            class="personal__user__mess__link primary-button"
                             @click="isPointsModalOpen = true">Отправить баллы</button>
                 </div>
             </div>

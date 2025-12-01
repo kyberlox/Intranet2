@@ -70,16 +70,19 @@ export default defineComponent({
             showFilter.value = false;
         })
 
-        onMounted(async () => {
-            if (allNews.value.length) return;
-            await Api.get(`article/find_by/${sectionTips['АктуальныеНовости']}`)
-                .then((res) => {
-                    viewsData.setData(res, 'actualNewsData');
-                    if (!props.tagId) visibleNews.value = res;
-                })
-                .finally(() => {
-                    filterYears.value = extractYears(visibleNews.value);
-                })
+        onMounted(() => {
+            if (allNews.value.length) {
+                visibleNews.value = allNews.value
+            }
+            else
+                Api.get(`article/find_by/${sectionTips['АктуальныеНовости']}`)
+                    .then((res) => {
+                        viewsData.setData(res, 'actualNewsData');
+                        if (!props.tagId) visibleNews.value = res;
+                    })
+                    .finally(() => {
+                        filterYears.value = extractYears(visibleNews.value);
+                    })
         })
 
         return {

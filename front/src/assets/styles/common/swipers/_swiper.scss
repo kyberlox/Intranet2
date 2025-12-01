@@ -1,8 +1,10 @@
 @use '/src/assets/styles/mixins' as *;
 
 .swiper {
+    width: 100%;
     max-width: 100%;
     height: auto;
+    aspect-ratio: 16/9;
 
     &-slide {
         height: auto !important;
@@ -52,15 +54,15 @@
                 z-index: 2;
 
                 &--prev {
-                    left: 0;
-                    top: 40%;
-                    transform: translateY(-40%);
+                    left: 2%;
+                    top: 50%;
+                    transform: translateY(-50%);
                 }
 
                 &--next {
-                    right: 0;
-                    top: 40%;
-                    transform: translateY(-40%);
+                    right: 2%;
+                    top: 50%;
+                    transform: translateY(-50%);
                 }
 
                 &--bottom {

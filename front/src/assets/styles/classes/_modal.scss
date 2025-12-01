@@ -2,12 +2,12 @@
 
 .modal {
     &--fullscreen {
-        z-index: 70;
+        z-index: 700;
         background: white;
     }
 
     &--gazette {
-        margin-top: 100px;
+        margin-top: 90px;
     }
 
     &__video {
@@ -59,12 +59,15 @@
             justify-content: center;
             z-index: 31;
             transition: 0.2s all;
-            color: #6d6d6d;
             background: #272727;
             padding: 5px;
 
-            &:hover {
-                color: var(--emk-brand-color);
+            & svg {
+                color: #6d6d6d !important;
+
+                &:hover {
+                    color: var(--emk-brand-color) !important;
+                }
             }
         }
 
@@ -146,6 +149,8 @@
             width: 100%;
             height: 100%;
         }
+
+        overflow-y: hidden !important;
     }
 
     &__body {

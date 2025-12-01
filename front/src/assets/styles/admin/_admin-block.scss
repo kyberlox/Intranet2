@@ -4,7 +4,7 @@
     &__page__wrapper {
         display: flex;
         min-height: 100vh;
-        height: 100%;
+        // height: 100%;
         background-color: #f8f9fa;
 
         @include lg {
@@ -109,11 +109,11 @@
                 }
 
                 &--blue {
-                    background: #0064ffde;
+                    background: #0064ffde !important;
                     color: white;
 
                     &:hover {
-                        background: #0064ffab;
+                        background: #0064ffab !important;
                         transform: translateY(-1px);
                     }
                 }

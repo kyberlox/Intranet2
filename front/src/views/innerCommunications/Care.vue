@@ -1,5 +1,7 @@
 <template>
-<div class="page__title mt20">Благотворительные проекты</div>
+<div class="page__title mt20">
+    Благотворительные проекты
+</div>
 <div v-if="careSlides.length"
      class="care__section">
     <div v-for="(item, index) in careSlides"

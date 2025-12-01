@@ -56,10 +56,9 @@ export default defineComponent({
         },
     },
     setup(props) {
-
         const checkCardDate = (slide: IComplexGalleryCardBasic) => {
             if (!slide.indirect_data?.date_from) return;
-            if (slide.indirect_data.date_to && slide.indirect_data.date_to! === slide.indirect_data.date_from) {
+            if (slide.indirect_data.date_to && slide.indirect_data.date_to !== slide.indirect_data.date_from) {
                 return `${slide.indirect_data.date_from} - ${slide.indirect_data.date_to}`
             }
             else return slide.indirect_data.date_from

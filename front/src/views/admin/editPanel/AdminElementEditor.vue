@@ -30,15 +30,14 @@
   </div>
 
   <div class="admin-element-inner__actions">
+    <button @click="router.push({ name: 'adminBlockInner', params: { id: id } })">
+      <span class="admin-element-inner__action-text">Назад</span>
+    </button>
     <button @click="applyNewData"
             :disabled="buttonIsDisabled"
             class="admin-element-inner__action-button admin-element-inner__action-button--save">
       <span class="admin-element-inner__action-text">Сохранить</span>
     </button>
-    <RouterLink :to="{ name: 'adminBlockInner', params: { id: id } }"
-                class="admin-element-inner__action-button admin-element-inner__action-button--cancel">
-      <span class="admin-element-inner__action-text">Назад</span>
-    </RouterLink>
   </div>
 </div>
 </template>

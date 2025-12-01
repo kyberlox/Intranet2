@@ -19,11 +19,11 @@
                         <div href="http://motiw.imp.int/user/"
                              target="_blank">{{ workLink.title }}</div>
                     </h3>
-                    <div class="task__block__portal__link__link"
-                         :href="workLink.href"
-                         target="_blank">
+                    <h4 class="task__block__portal__link__link"
+                        :href="workLink.href"
+                        target="_blank">
                         {{ workLink.description }}
-                    </div>
+                    </h4>
                 </div>
             </div>
             <div class="homeview__item__link"

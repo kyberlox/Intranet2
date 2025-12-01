@@ -10,7 +10,7 @@
 			 class="col-sm-8">
 			<h2>{{ currentArticle.name }}</h2>
 			<div v-if="currentArticle.content_text"
-				 class="mt20"
+				 class="mt20 blog__content"
 				 v-html="parseMarkdown(currentArticle.content_text)">
 			</div>
 			<div v-if="(currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed)"

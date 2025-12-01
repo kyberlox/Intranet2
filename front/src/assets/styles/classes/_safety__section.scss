@@ -18,11 +18,12 @@
             list-style: none;
             margin: 0;
             padding: 14px 0 30px;
+            background: none !important;
 
             &>li {
                 font-size: 12px;
                 line-height: 16px;
-                color: #666666;
+                color: #818181;
                 min-height: 28px;
                 // margin: 0 0 20px;
                 position: relative;
@@ -66,6 +67,7 @@
 
         &__swiper-wrapper {
             max-width: 50%;
+            position: relative;
         }
 
         &__floor {

@@ -1,7 +1,7 @@
 <template>
 <h1 class="page__title mt20">Корпоративные события</h1>
 <button @click="showFilter = !showFilter"
-        class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+        class="btn  dropdown-toggle tagDateNavBar__dropdown-toggle">
     Год публикации
 </button>
 <DateFilter v-if="allEvents && showFilter"

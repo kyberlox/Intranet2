@@ -3,17 +3,18 @@
     <h1 class="page__title">Сервис отправки поздравительных открыток</h1>
     <div class="postcard__container">
         <div class="postcard__form-wrapper">
-            <select class="postcard__select"
-                    v-model="activeHoliday">
-                <option value=""
-                        disabled
-                        selected>Выберите праздник</option>
-                <option v-for="holiday in postCards"
-                        :key="holiday.id"
-                        :value="holiday.id">
-                    {{ holiday.name }}
-                </option>
-            </select>
+
+            <div class="postcard__form-group">
+                <label>Выберите праздник</label>
+                <select class="postcard__select"
+                        v-model="activeHoliday">
+                    <option v-for="holiday in postCards"
+                            :key="holiday.id"
+                            :value="holiday.id">
+                        {{ holiday.name }}
+                    </option>
+                </select>
+            </div>
 
             <VForm @submit="sendMsg"
                    class="postcard__form">

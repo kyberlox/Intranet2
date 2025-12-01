@@ -47,10 +47,10 @@
     </div>
 </div>
 <div class="row mt-5">
-    <div class="col-sm-12 d-flex align-items-stretch">
-        <div class="company__values">
-            <h3 class="page__title">Ценности компании</h3>
+    <div class="col-sm-12">
+        <div class="company__mission">
             <ul>
+                <h3 class="page__title">Ценности компании</h3>
                 <li v-for="(item, index) in ourPleasures"
                     :key="'pleasure' + index">
                     {{ item }}

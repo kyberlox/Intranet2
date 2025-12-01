@@ -293,7 +293,7 @@
             transition: 0.2s;
 
             &--chosen {
-                background: rgba(from var(--event-color) r g b / 0.8);
+                background: rgba(from var(--event-color) r g b / 0.4);
                 color: black;
             }
 
@@ -323,7 +323,8 @@
             }
 
             &--no-border {
-                border: none;
+                border: none !important;
+                background: none !important;
             }
 
             &--ovk {

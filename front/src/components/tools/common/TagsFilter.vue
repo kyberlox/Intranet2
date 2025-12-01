@@ -1,9 +1,9 @@
 <template>
 <div>
-    <div class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle"
-         @click="tagsVisible = !tagsVisible">
+    <button class="btn dropdown-toggle tagDateNavBar__dropdown-toggle"
+            @click="tagsVisible = !tagsVisible">
         {{ activeTag?.tag_name ?? 'Теги' }}
-    </div>
+    </button>
     <Transition name="slide-down">
         <div v-if="tagsVisible"
              class="tags">

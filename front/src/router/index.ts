@@ -533,14 +533,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/admin/files',
-      name: 'fileManager',
-      component: () => import('@/views/admin/visibilityAreaEditor/VisibilityAreaEditor.vue'),
-      meta: {
-        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
-      }
-    },
-    {
       path: '/admin/scoreAdmin',
       name: 'pointsAdministrator',
       component: () => import('@/views/admin/pointsSystem/superAdminPanel/SuperAdminPanel.vue'),
@@ -560,6 +552,14 @@ const router = createRouter({
       path: '/admin/curatorhistory',
       name: 'curatorHistory',
       component: () => import('@/views/admin/pointsSystem/curatorHistory/CuratorHistory.vue'),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
+    },
+    {
+      path: '/admin/roots',
+      name: 'roots',
+      component: () => import('@/views/admin/rootsPanel/RootsPanel.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }

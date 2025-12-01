@@ -10,6 +10,7 @@
                placeholder="Выберите дату"
                :format="format"
                :markers="markers"
+               :dark="dark"
                @cleared="$emit('clearValue')"
                @update:model-value="handleDate">
     <template #marker="{ marker }">
@@ -26,9 +27,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, ref, watch, computed } from 'vue';
 import { type ICalendarMarker } from '@/components/layout/RightSidebarCalendar.vue';
-
+import { useStyleModeStore } from '@/stores/styleMode';
 export default defineComponent({
     name: 'DatePicker',
     props: {
@@ -111,7 +112,8 @@ export default defineComponent({
             pickDate,
             openDatePicker,
             format,
-            handleDate
+            handleDate,
+            dark: computed(() => useStyleModeStore().getDarkMode)
         };
     }
 })

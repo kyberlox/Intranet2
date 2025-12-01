@@ -6,7 +6,7 @@
              :key="index + 'filter'"
              class="dropdown-wrapper tagDateNavBar__dropdown-wrapper tagDateNavBar__dropdown-wrapper--long">
             <button @click="handleButtonClick(name)"
-                    class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+                    class="btn  dropdown-toggle tagDateNavBar__dropdown-toggle">
                 {{ name }}
             </button>
             <DateFilter v-if="showThis == name"

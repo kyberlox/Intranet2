@@ -56,7 +56,7 @@
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-            border: 2px solid #e9ecef;
+            border: 2px solid #9b9b9b;
             transition: all 0.3s ease;
             cursor: pointer;
 
@@ -86,12 +86,12 @@
                 font-size: 16px;
             }
 
-            & > P {
+            &>P {
                 margin: 0;
                 padding: 0;
             }
 
-            & > a {
+            &>a {
                 color: rgba(0, 0, 0, 0.87);
                 position: relative;
                 z-index: 5;

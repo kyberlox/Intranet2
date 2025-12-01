@@ -1,10 +1,16 @@
 <template>
-<div class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group">
+<div v-if="inPost"
+     class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group">
     <p class="admin-element-inner__field-title fs-l">заполнить данными о сотруднике</p>
     <div @click="showSearchModal = true"
          class="admin-element__reportage-group__add-button primary-button">
         <PlusIcon />
     </div>
+</div>
+<div v-else
+     class="primary-button"
+     @click="showSearchModal = true">
+    Добавить
 </div>
 <SlotModal v-if="showSearchModal"
            @close="showSearchModal = false">
@@ -43,6 +49,10 @@ export default defineComponent({
         type: {
             type: String
         },
+        inPost: {
+            type: Boolean,
+            deafault: true
+        }
     },
     name: 'adminEditUserSearch',
     emits: ['usersPicked', 'userPicked'],

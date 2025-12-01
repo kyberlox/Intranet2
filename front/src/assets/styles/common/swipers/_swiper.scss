@@ -10,7 +10,7 @@
         align-items: center;
         justify-content: center;
         object-fit: contain;
-        aspect-ratio: 16/9;
+        // aspect-ratio: 16/9;
         background: #b1b1b137;
         border-radius: 4px;
 
@@ -20,7 +20,7 @@
 
         iframe {
             height: 100%;
-            border-radius: 15px;
+            // border-radius: 15px;
         }
 
         img {
@@ -64,7 +64,7 @@
                 }
 
                 &--bottom {
-                    top: auto;
+                    top: 90%;
                     transform: none;
                     margin: 5px;
                 }

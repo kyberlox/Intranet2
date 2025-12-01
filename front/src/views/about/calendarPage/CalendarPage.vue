@@ -89,6 +89,7 @@ import DatePicker from '@/components/tools/common/DatePicker.vue';
 import { getMonth, formatDateNoTime } from '@/utils/dateConvert';
 import Loader from '@/components/layout/Loader.vue';
 import { useViewsDataStore } from '@/stores/viewsData';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     components: {
@@ -162,6 +163,7 @@ export default defineComponent({
             date,
             monthNodes,
             eventNodes,
+            router: useRouter(),
             checkButtonStatus,
             getMonth,
             formatDateNoTime,

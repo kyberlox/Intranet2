@@ -1,7 +1,7 @@
 <template>
 <div class="page__title mt20">Официальные события</div>
 <button @click="showFilter = !showFilter"
-        class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+        class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
     Год публикации
 </button>
 <DateFilter v-if="allSlides && showFilter"

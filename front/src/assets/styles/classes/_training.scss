@@ -2,6 +2,8 @@
 
 .training {
     &__center {
+
+
         &__section {
             &__items {
                 row-gap: 20px;
@@ -9,7 +11,7 @@
 
             &__item {
                 text-decoration: none;
-                border: 1px solid rgba(0, 0, 0, 0.12);
+                border: 2px solid rgb(105 100 100 / 12%);
                 box-sizing: border-box;
                 border-radius: 4px;
                 display: flex;
@@ -69,6 +71,10 @@
                 line-height: 170%;
                 color: #282828;
                 text-align: justify;
+
+                ul {
+                    background: none !important;
+                }
 
                 & h3 {
                     font-weight: bold;

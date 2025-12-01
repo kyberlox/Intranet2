@@ -26,6 +26,12 @@
         padding-right: 5px;
     }
 
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
     &-list {
         &__item {
             display: flex;

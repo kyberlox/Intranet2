@@ -1,6 +1,7 @@
 <template>
-<div v-if="isLogin">
-    <LayoutHeader :class="{ 'dark': isDarkMode }" />
+<div v-if="isLogin"
+     :class="{ 'dark-mode': isDarkMode }">
+    <LayoutHeader />
     <main>
         <div class="container-fluid"
              :class="{ 'container-fluid--nopadding': !isLogin }">

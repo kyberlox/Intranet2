@@ -1,6 +1,6 @@
 <template>
 <header class="header sticky-top d-print-none">
-    <nav class="navbar navbar-light bg-light navbar-expand-lg">
+    <nav class="navbar navbar-light navbar-expand-lg">
         <div class="w-100">
             <div class="container-fluid">
                 <div class="row">
@@ -58,6 +58,7 @@
                                             @click="visibleSearchModal = true" />
                                 <SearchModal :visibleModal=visibleSearchModal
                                              @closeSearchModal="visibleSearchModal = false" />
+                                <LayoutHeaderModeChanger />
                             </ul>
                         </div>
                     </div>
@@ -122,6 +123,7 @@ import SlotModal from "../tools/modal/SlotModal.vue";
 import LayoutHeaderPointsModal from "./LayoutHeaderPointsModal.vue";
 
 import { featureFlags } from "@/assets/static/featureFlags";
+import LayoutHeaderModeChanger from "./LayoutHeaderModeChanger.vue";
 
 export default defineComponent({
     components: {
@@ -129,7 +131,8 @@ export default defineComponent({
         SearchIcon,
         SearchModal,
         SlotModal,
-        LayoutHeaderPointsModal
+        LayoutHeaderPointsModal,
+        LayoutHeaderModeChanger
     },
     setup() {
         const userData = useUserData();

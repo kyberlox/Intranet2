@@ -13,6 +13,7 @@
 
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
                              :type="item.data_type"
+                             :inPost="true"
                              @userPicked="handleUserPick"
                              @usersPicked="handleUsersPick" />
 

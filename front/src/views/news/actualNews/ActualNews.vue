@@ -3,7 +3,7 @@
 <div class="tags__page__filter">
     <div>
         <button @click="showFilter = !showFilter"
-                class="btn btn-light dropdown-toggle tagDateNavBar__dropdown-toggle">
+                class="btn  dropdown-toggle tagDateNavBar__dropdown-toggle">
             Год публикации
         </button>
         <DateFilter v-if="showFilter"

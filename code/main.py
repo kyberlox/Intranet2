@@ -414,7 +414,7 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()
     
-    
+  
     from src.model.Department import Department
     LogsMaker().info_message("Обновление информации о подразделениях")
     res = await Department().fetch_departments_data(session)
@@ -479,7 +479,6 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
         LogsMaker().ready_status_message("Успешно!")
     else:
         LogsMaker().error_message("Ошибка!")
-
     #Права пользователей
     # Лайки и просмотры
     # Тэги
@@ -490,13 +489,22 @@ async def total_update(session: AsyncSession=Depends(get_async_db)):
 
     return {"status_code" : f"{status}/5", "time_start" : time_start, "time_end" : time_end, "total_time_sec" : total_time_sec}
 
-
-@app.get("/elastic_dump")
-async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
-    await UserSearchModel().dump(session)
-    await StructureSearchModel().dump(session)
-    await ArticleSearchModel().dump(session)
-    return res
+@app.delete("/api/delete_tables")
+async def delete_tables(session: AsyncSession=Depends(get_async_db)):
+    from sqlalchemy import text
+    try:
+        # Удаляем таблицы (важен порядок из-за foreign keys)
+        await session.execute(text("DROP TABLE IF EXISTS users CASCADE"))
+        await session.execute(text("DROP TABLE IF EXISTS userfiles CASCADE"))
+        await session.commit()
+        
+        print("✅ Таблицы User и UserFiles успешно удалены")
+        return True
+        
+    except Exception as e:
+        await session.rollback()
+        print(f"❌ Ошибка при удалении таблиц: {e}")
+        return False
 '''
 ! Особенные запросы
 '''

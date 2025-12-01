@@ -109,8 +109,9 @@ class UserFilesModel():
         """
         from ..models.User import User
         import os
-        # from sqlalchemy import text
+        
         try:
+            # from sqlalchemy import text
             # # Проверяем тип photo_file_id в БД
             # sql = text("""
             #     SELECT column_name, data_type 
@@ -121,6 +122,12 @@ class UserFilesModel():
             # column_info = result.fetchone()
             # LogsMaker().info_message(f"Тип photo_file_id в БД: {column_info}")
 
+            # stmt = select(UserFiles).where(UserFiles.user_id == 4133)
+            # result = await session.execute(stmt)
+            # user_info = result.scalars().all()
+            # usr_photo = [photo.__dict__ for photo in user_info]
+            # print(usr_photo)
+            
             stmt = select(UserFiles).where(UserFiles.id == int(self.id))
             result = await session.execute(stmt)
             existing_photo = result.scalar_one_or_none()
@@ -193,6 +200,7 @@ class UserFilesModel():
             
             # Проверим есть к чему крепить файл
             if self.user_id is not None:
+
                 stmt_exists = select(UserFiles).where(UserFiles.user_id == self.user_id)
                 result_exists = await session.execute(stmt_exists)
                 user_exists = result_exists.first()
@@ -206,6 +214,7 @@ class UserFilesModel():
                 )
                 result_max = await session.execute(stmt_max)
                 max_num = result_max.scalar_one_or_none()
+                print(max_num, 'слуд max_num')
                 # Извлекаем номер из имени файла
                 if max_num:
                     current_num = int(max_num.split('_')[-1].split('.')[0])

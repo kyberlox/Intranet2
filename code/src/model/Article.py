@@ -1764,10 +1764,15 @@ class Article:
 
                     return f"{DOMAIN}{url}"
 
-            # находим любую картинку, если она есть
-            for file in files:
+            #Сортируем чтобы файлы были по порядку
+            sorted_files = sorted(files, key=lambda x: x['id'], reverse=False)
+
+            # находим первую картинку, если она есть
+            for file in sorted_files:
                 if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
                     "original_name"] or "png" in file["original_name"]:
+                    # current_num = int(file['name'].split('_')[-1].split('.')[0])
+                    # if 1 == current_num:
                     url = file["file_url"]
                     # внедряю компрессию
                     if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
@@ -1955,8 +1960,7 @@ class Article:
 
                             # res["preview_file_url"] = await self.get_preview(session)
                             prev = await self.get_preview(session)
-                            res[
-                                "preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                            res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                             # сюда лайки и просмотры
                             # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
                             user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
@@ -1968,15 +1972,17 @@ class Article:
                     else:
                         self.id = res["id"]
                         prev = await self.get_preview(session)
-                        res[
-                            "preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                        # res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
-                        if res["preview_file_url"] is None:
+                        if prev is None:
                             if int(self.section_id) == 32:
                                 res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
+                            elif int(self.section_id) == 15:
+                                res["preview_file_url"] = prev
                             else:
-                                res[
-                                    "preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                                res["preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                        else:
+                            res["preview_file_url"] = prev
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list:  # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков

@@ -5,7 +5,7 @@ from ..model.User import User
 
 from .LogsMaker import LogsMaker
 
-import acyncio
+import asyncio
 
 idea_router = APIRouter(prefix="/idea", tags=["Есть Идея!"])
 

@@ -1885,7 +1885,7 @@ class Article:
             return sorted_active_articles
 
         elif self.section_id == "8":  # Есть Идея
-            ideas = Idea().get_ideas(session_id)
+            ideas = await Idea().get_ideas(session_id=session_id, session=session)
             if ideas is not None:
                 sorted_active_articles = sorted(ideas, key=lambda x: x['number'], reverse=False)
                 return sorted_active_articles

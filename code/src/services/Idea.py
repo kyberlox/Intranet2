@@ -5,7 +5,7 @@ from ..model.User import User
 
 from .LogsMaker import LogsMaker
 
-
+import asyncio
 
 idea_router = APIRouter(prefix="/idea", tags=["Есть Идея!"])
 
@@ -23,8 +23,15 @@ def take_value(PROPERTY):
 
 class Idea:
     def __init__(self, user_id=None, user_uuid=None):
+        
+
+        self.ideas = []
+        self.user_uuid = None
+        self.username = None
+
+    async def validate_ideas(self):
         #беру идеи из битры
-        b24_ideas = B24().getInfoBlock(121)
+        b24_ideas = await B24().getInfoBlock(121)
 
         
 
@@ -76,12 +83,9 @@ class Idea:
 
             #сохраняю
             ideas.append(cool_idea)
-
         self.ideas = ideas
-        self.user_uuid = None
-        self.username = None
 
-    def get_user(self, session_id):
+    async def get_user(self, session_id, session):
         from src.services.Auth import AuthService
         self.user = dict(AuthService().get_user_by_seesion_id(session_id))
 
@@ -90,12 +94,13 @@ class Idea:
             self.username = self.user["username"]
 
             #получить и вывести его id
-            user_inf = User(uuid = self.user_uuid).user_inf_by_uuid()
+            user_inf = await User(uuid = self.user_uuid).user_inf_by_uuid(session)
             return user_inf["ID"]
         return None
         
-    def get_ideas(self, session_id):
-        user_id = self.get_user(session_id)
+    async def get_ideas(self, session_id, session):
+        await self.validate_ideas()
+        user_id = await self.get_user(session_id=session_id, session=session)
         if user_id is not None:
             #print(user_id)
             result = []
@@ -119,7 +124,8 @@ class Idea:
         else:
             return None
     
-    def add(self, fields):
+    async def add(self, fields):
+        await self.validate_ideas()
         #получить значение инкремента
         print(self.ideas[-1])
 
@@ -139,7 +145,7 @@ class Idea:
 
 
 @idea_router.post("/new/")
-def calendar_event(data = Body()):
+async def calendar_event(data = Body()):
     #print(data)
     #return data
-    return Idea().add(dict(data))
+    return await Idea().add(dict(data))

@@ -23,6 +23,13 @@ def take_value(PROPERTY):
 
 class Idea:
     def __init__(self, user_id=None, user_uuid=None):
+        
+
+        self.ideas = []
+        self.user_uuid = None
+        self.username = None
+
+    async def validate_ideas(self):
         #беру идеи из битры
         b24_ideas = B24().getInfoBlock(121)
 
@@ -76,10 +83,7 @@ class Idea:
 
             #сохраняю
             ideas.append(cool_idea)
-
         self.ideas = ideas
-        self.user_uuid = None
-        self.username = None
 
     async def get_user(self, session_id, session):
         from src.services.Auth import AuthService
@@ -95,6 +99,7 @@ class Idea:
         return None
         
     async def get_ideas(self, session_id, session):
+        await self.validate_ideas()
         user_id = await self.get_user(session_id=session_id, session=session)
         if user_id is not None:
             #print(user_id)
@@ -120,6 +125,7 @@ class Idea:
             return None
     
     async def add(self, fields):
+        await self.validate_ideas()
         #получить значение инкремента
         print(self.ideas[-1])
 

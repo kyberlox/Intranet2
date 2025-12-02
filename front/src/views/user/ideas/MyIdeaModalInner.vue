@@ -22,15 +22,17 @@
                 <h2 class="page__title text-center">#{{ textContent?.number }} {{ textContent?.name }}
                 </h2>
                 <div v-if="textContent?.content"
-                     class="mb-3 modal__text__content__detail"
-                     style="text-align: justify">
-                    {{ textContent.content }}
+                     class="mb-3 modal__text__content__detail">
+                    <span>
+                        {{ textContent.content }}
+                    </span>
                 </div>
                 <div class="mb-3 modal__text__content__detail modal__text__content__detail--link">
                     <a v-if="textContent?.files"
-                       :href="textContent.files.file_url"
-                       style="text-align: justify">
-                        {{ textContent.files.original_name }}
+                       :href="textContent.files.file_url">
+                        <span>
+                            {{ textContent.files.original_name }}
+                        </span>
                     </a>
                 </div>
                 <div>

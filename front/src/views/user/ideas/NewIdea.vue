@@ -46,7 +46,7 @@
 
                 <div class="idea-new__file-group">
                     <label for="formFile"
-                           class="idea-new__file-label">Добавить файл</label>
+                           class="idea-new__file-label"><span>Добавить файл</span></label>
                     <input class="idea-new__file-input"
                            name="attachments-files"
                            ref="fileInput"

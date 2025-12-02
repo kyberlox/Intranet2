@@ -16,8 +16,7 @@
                 </div>
                 <div class="task__block__portal__link">
                     <h3 class="task__block__portal__link__title">
-                        <div href="http://motiw.imp.int/user/"
-                             target="_blank">{{ workLink.title }}</div>
+                        {{ workLink.title }}
                     </h3>
                     <h4 class="task__block__portal__link__link"
                         :href="workLink.href"

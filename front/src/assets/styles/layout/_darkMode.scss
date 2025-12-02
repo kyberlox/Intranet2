@@ -3,11 +3,27 @@
     .header,
     .sidebar-lk,
     .search-wrapper,
-    .search-footer {
+    .search-footer,
+    .idea__table__tr>td,
+    .idea__table th,
+    .modal__text__content,
+    .idea-new__form-container {
         background: #1b1b1b;
 
         ul {
             background: #1b1b1b;
+        }
+    }
+
+    .idea__table th,
+    .idea__table__tr>td {
+        border-color: gray;
+        color: #b2b0b0;
+    }
+
+    .idea__table__tr:hover {
+        &>td {
+            color: var(--emk-brand-color);
         }
     }
 
@@ -90,12 +106,14 @@
     .tags__tag,
     span,
     a,
-    .book-nav__sidebar__burger {
+    .book-nav__sidebar__burger,
+    .homeview__item__link {
         color: #e0dede;
     }
 
     h4,
     h5,
+    h6,
     .page__title,
     .breadcrumb-item+.breadcrumb-item::before,
     li {

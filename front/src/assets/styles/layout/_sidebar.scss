@@ -16,13 +16,13 @@
                 border: 1.5px solid var(--emk-brand-color);
             }
 
-            .support__block__icon--with-outer {
+            .homeview__item__link,
+            .support__block__icon--with-outer,
+            h4,
+            h3 {
                 color: var(--emk-brand-color);
             }
 
-            .homeview__item__link {
-                color: var(--emk-brand-color);
-            }
         }
 
         &__title {
@@ -38,6 +38,8 @@
             display: flex;
             flex-direction: column;
             margin: 0 0 0 20px;
+
+
 
             &__title,
             &__title a {
@@ -100,6 +102,10 @@
         width: 14px;
         height: 14px;
         margin: 0 0 0 5px;
+    }
+
+    &:hover {
+        color: var(--emk-brand-color) !important;
     }
 }
 

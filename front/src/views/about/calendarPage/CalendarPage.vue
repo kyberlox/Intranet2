@@ -28,12 +28,12 @@
              v-for="month in visibleMonthes"
              :key="'month' + month.value">
             <div class="calendar-year__item">
-                <div class="calendar-year__title "
-                     :class="{ 'calendar-year__title--target': String(targetId) == month.value }"
-                     :data-month-num="month.value"
-                     ref=monthNodes>
+                <h6 class="calendar-year__title"
+                    :class="{ 'calendar-year__title--target': String(targetId) == month.value }"
+                    :data-month-num="month.value"
+                    ref=monthNodes>
                     {{ month.name }}
-                </div>
+                </h6>
                 <div class="calendar-year__content">
                     <div class="calendar-year__event__wrapper"
                          v-for="(event, index) in getEventFromMonth(month.value)"
@@ -55,7 +55,9 @@
                             </div>
                             <div v-else
                                  class="calendar-year__event__date">
-                                {{ formatDateNoTime('DATE_FROM' in event ? event.DATE_FROM : '') }}
+                                <span>
+                                    {{ formatDateNoTime('DATE_FROM' in event ? event.DATE_FROM : '') }}
+                                </span>
                             </div>
                             <span class="calendar-year__event__name">
                                 {{ event.NAME }}

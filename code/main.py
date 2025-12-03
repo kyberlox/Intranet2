@@ -59,7 +59,7 @@ load_dotenv()
 
 DOMAIN = os.getenv('HOST')
 
-app = FastAPI(root_url="/api") # timeout=60*20
+app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")
@@ -505,6 +505,24 @@ async def delete_tables(session: AsyncSession=Depends(get_async_db)):
         await session.rollback()
         print(f"❌ Ошибка при удалении таблиц: {e}")
         return False
+
+from fastapi.openapi.docs import get_swagger_ui_html
+
+
+@app.get("/api/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="My API - Swagger UI",
+        swagger_ui_parameters={
+            "defaultModelsExpandDepth": -1,
+            "docExpansion": "none",
+            "filter": True,
+            "displayRequestDuration": True,
+            "tryItOutEnabled": True,
+        }
+    )
+
 '''
 ! Особенные запросы
 '''

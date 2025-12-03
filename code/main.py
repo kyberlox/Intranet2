@@ -1143,7 +1143,7 @@ async def custom_swagger_ui_html():
     # )
     
     # 5. Добавляем кастомные стили в head
-    modified_html = modified_html.replace('</head>', CUSTOM_STYLE + '</head>')
+    modified_html = modified_html.replace('</head>', CUSTOM_CSS + '</head>')
     
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)

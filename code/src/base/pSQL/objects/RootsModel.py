@@ -232,10 +232,12 @@ class RootsModel:
                     stmt = select(self.User.name, self.User.second_name, self.User.last_name, self.User.photo_file_id).where(self.User.id == moder.user_uuid)
                     res = await session.execute(stmt)
                     moder_fio = res.first()
-
-                    photo_inf = await File(id=moder_fio.photo_file_id).get_users_photo(session)
-                    url = photo_inf['URL']
-                    photo_file_url = f"{DOMAIN}{url}" if url else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                    if moder_fio.photo_file_id:
+                        photo_inf = await File(id=moder_fio.photo_file_id).get_users_photo(session)
+                        url = photo_inf['URL']
+                        photo_file_url = f"{DOMAIN}{url}" 
+                    else:
+                        photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     moder_info = {
                         'id': moder.user_uuid,
                         'name': f"{moder_fio.last_name} {moder_fio.name} {moder_fio.second_name}",

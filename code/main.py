@@ -525,6 +525,8 @@ import markdown2
 from typing import Any, Dict, Optional
 from html import escape
 
+HAS_MARKDOWN2=True
+
 
 
 # Кастомные стили

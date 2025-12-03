@@ -64,7 +64,7 @@ app = FastAPI(
     version="2.0.0",
     docs_url="/api/docs",
     redoc_url=None,
-    openapi_url=None
+    openapi_url="/api/openapi.json"
 )
 
 app.include_router(users_router, prefix="/api")
@@ -153,6 +153,13 @@ open_links = [
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
+    if request.url.path == "/openapi.json":
+        # Логируем запрос к схеме
+        print("OpenAPI schema requested")
+    
+    response = await call_next(request)
+    return response
+    
     # Внедряю свою отладку
     log = LogsMaker()
 
@@ -530,7 +537,7 @@ def custom_openapi():
         version="2.0.0",
         description="API description",
         routes=app.routes,
-        openapi_version="3.1.0"  # Указываем версию OpenAPI
+        openapi_version="3.1.0"
     )
     
     app.openapi_schema = openapi_schema

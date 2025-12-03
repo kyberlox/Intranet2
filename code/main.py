@@ -138,7 +138,7 @@ open_links = [
     "/api/docs",
     "/api/users/update",
     "/api/users/update_user_info",
-    "/openapi.json",
+    #"/openapi.json",
     "/api/auth_router",
     "/api/total_update",
     "/api/files",

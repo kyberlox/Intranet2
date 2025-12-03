@@ -521,6 +521,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import re
+import markdown2
 
 
 
@@ -862,6 +863,212 @@ CUSTOM_CSS = """
         border-radius: 3px !important;
         font-family: monospace !important;
     }
+
+    .swagger-ui .info .description,
+    .swagger-ui .opblock .opblock-summary-description,
+    .swagger-ui .model .model .property .description,
+    .swagger-ui .parameter__description,
+    .swagger-ui .response .response .description {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif !important;
+        line-height: 1.6 !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* Заголовки */
+    .swagger-ui .info .description h1,
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3,
+    .swagger-ui .info .description h4,
+    .swagger-ui .opblock .opblock-summary-description h1,
+    .swagger-ui .opblock .opblock-summary-description h2,
+    .swagger-ui .opblock .opblock-summary-description h3,
+    .swagger-ui .opblock .opblock-summary-description h4 {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        margin: 1.5em 0 0.8em 0 !important;
+        padding-bottom: 0.3em !important;
+        border-bottom: 1px solid var(--border-light) !important;
+    }
+
+    .swagger-ui .info .description h1 {
+        font-size: 2em !important;
+        border-bottom-width: 2px !important;
+        border-bottom-color: var(--accent) !important;
+    }
+
+    .swagger-ui .info .description h2 {
+        font-size: 1.5em !important;
+    }
+
+    /* Параграфы и текст */
+    .swagger-ui .info .description p {
+        margin: 1em 0 !important;
+        color: var(--text-primary) !important;
+    }
+
+    .swagger-ui .info .description strong {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+    }
+
+    .swagger-ui .info .description em {
+        font-style: italic !important;
+        color: var(--text-secondary) !important;
+    }
+
+    /* Списки */
+    .swagger-ui .info .description ul,
+    .swagger-ui .info .description ol {
+        margin: 1em 0 1em 2em !important;
+        color: var(--text-primary) !important;
+    }
+
+    .swagger-ui .info .description li {
+        margin: 0.5em 0 !important;
+        line-height: 1.5 !important;
+    }
+
+    .swagger-ui .info .description ul li {
+        list-style-type: disc !important;
+    }
+
+    .swagger-ui .info .description ol li {
+        list-style-type: decimal !important;
+    }
+
+    /* Блоки кода (inline) */
+    .swagger-ui .info .description code,
+    .swagger-ui .opblock .opblock-summary-description code {
+        background-color: var(--bg-block) !important;
+        color: var(--accent) !important;
+        padding: 0.2em 0.4em !important;
+        border-radius: 3px !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
+        font-size: 0.9em !important;
+        border: 1px solid var(--border-light) !important;
+    }
+
+    /* Блоки кода (fenced code blocks) */
+    .swagger-ui .info .description pre,
+    .swagger-ui .opblock .opblock-summary-description pre {
+        background-color: var(--bg-block) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 6px !important;
+        padding: 16px !important;
+        margin: 1em 0 !important;
+        overflow-x: auto !important;
+    }
+
+    .swagger-ui .info .description pre code,
+    .swagger-ui .opblock .opblock-summary-description pre code {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        color: var(--text-primary) !important;
+        font-size: 0.9em !important;
+        line-height: 1.5 !important;
+    }
+
+    /* Подсветка синтаксиса (если установлен pygments) */
+    .swagger-ui .info .description .highlight,
+    .swagger-ui .opblock .opblock-summary-description .highlight {
+        background-color: var(--bg-block) !important;
+        border-radius: 6px !important;
+        padding: 1px !important;
+    }
+
+    /* Таблицы */
+    .swagger-ui .info .description table,
+    .swagger-ui .opblock .opblock-summary-description table {
+        border-collapse: collapse !important;
+        margin: 1em 0 !important;
+        width: 100% !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 6px !important;
+        overflow: hidden !important;
+    }
+
+    .swagger-ui .info .description table th,
+    .swagger-ui .opblock .opblock-summary-description table th {
+        background-color: rgba(245, 130, 31, 0.1) !important;
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        padding: 12px !important;
+        text-align: left !important;
+        border-bottom: 2px solid var(--border-light) !important;
+    }
+
+    .swagger-ui .info .description table td,
+    .swagger-ui .opblock .opblock-summary-description table td {
+        padding: 10px 12px !important;
+        border-bottom: 1px solid var(--border-light) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .swagger-ui .info .description table tr:last-child td,
+    .swagger-ui .opblock .opblock-summary-description table tr:last-child td {
+        border-bottom: none !important;
+    }
+
+    /* Цитаты */
+    .swagger-ui .info .description blockquote,
+    .swagger-ui .opblock .opblock-summary-description blockquote {
+        margin: 1em 0 !important;
+        padding: 0.5em 1em !important;
+        border-left: 4px solid var(--accent) !important;
+        background-color: rgba(245, 130, 31, 0.05) !important;
+        color: var(--text-secondary) !important;
+        font-style: italic !important;
+        border-radius: 0 4px 4px 0 !important;
+    }
+
+    /* Горизонтальные линии */
+    .swagger-ui .info .description hr,
+    .swagger-ui .opblock .opblock-summary-description hr {
+        height: 1px !important;
+        background-color: var(--border-light) !important;
+        border: none !important;
+        margin: 2em 0 !important;
+    }
+
+    /* Списки задач (task lists) */
+    .swagger-ui .info .description .task-list-item,
+    .swagger-ui .opblock .opblock-summary-description .task-list-item {
+        list-style-type: none !important;
+        margin-left: -1.5em !important;
+    }
+
+    .swagger-ui .info .description .task-list-item-checkbox,
+    .swagger-ui .opblock .opblock-summary-description .task-list-item-checkbox {
+        margin-right: 0.5em !important;
+    }
+
+    /* Зачеркнутый текст */
+    .swagger-ui .info .description del,
+    .swagger-ui .opblock .opblock-summary-description del {
+        color: var(--text-secondary) !important;
+        text-decoration: line-through !important;
+    }
+
+    /* Ссылки */
+    .swagger-ui .info .description a,
+    .swagger-ui .opblock .opblock-summary-description a {
+        color: var(--accent) !important;
+        text-decoration: none !important;
+        border-bottom: 1px dotted var(--accent) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .swagger-ui .info .description a:hover,
+    .swagger-ui .opblock .opblock-summary-description a:hover {
+        border-bottom-style: solid !important;
+        color: var(--accent-light) !important;
+    }
+
+    /* Иконки для списков */
+    .swagger-ui .info .description ul li:before {
+        color: var(--accent) !important;
+    }
 </style>
 
 <script>
@@ -1085,3 +1292,52 @@ async def custom_swagger_ui_html():
     
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
+
+def markdown_to_html(text: str) -> str:
+    """Преобразует Markdown в HTML с поддержкой GitHub-стиля."""
+    if not text or not HAS_MARKDOWN2:
+        return text
+    
+    try:
+        # Используем markdown2 с расширениями для GitHub-стиля
+        html = markdown2.markdown(
+            text,
+            extras=[
+                "fenced-code-blocks",    # Блоки кода с ```
+                "code-friendly",         # Не преобразовывать подчеркивания в em/strong
+                "tables",                # Поддержка таблиц
+                "break-on-newline",      # Разрывы строк
+                "cuddled-lists",         # Списки без пустых строк
+                "task_list",             # Списки задач [x]
+                "strike",                # Зачеркнутый текст
+                "highlight",             == Подсветка синтаксиса (нужен pygments)
+            ]
+        )
+        return html.strip()
+    except Exception as e:
+        print(f"⚠️  Ошибка преобразования Markdown: {e}")
+        return text
+
+def process_description(obj: Any) -> Any:
+    """Рекурсивно обрабатывает все описания в объекте."""
+    if isinstance(obj, dict):
+        result = {}
+        for key, value in obj.items():
+            if key in ["description", "summary", "title"] and isinstance(value, str):
+                # Преобразуем Markdown в HTML для полей описания
+                result[key] = markdown_to_html(value)
+            else:
+                result[key] = process_description(value)
+        return result
+    elif isinstance(obj, list):
+        return [process_description(item) for item in obj]
+    else:
+        return obj
+
+def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
+    """Конвертирует все Markdown описания в OpenAPI схеме в HTML."""
+    if not HAS_MARKDOWN2:
+        return schema
+    
+    print("🔄 Преобразую Markdown описания в HTML...")
+    return process_description(schema)

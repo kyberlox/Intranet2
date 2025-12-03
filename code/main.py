@@ -522,8 +522,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import re
 import markdown2
-from typing import Any, Dict
-
+from typing import Any, Dict, Optional
+from html import escape
 
 
 

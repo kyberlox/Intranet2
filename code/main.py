@@ -1313,7 +1313,7 @@ def markdown_to_html(text: str) -> str:
                 "cuddled-lists",         # Списки без пустых строк
                 "task_list",             # Списки задач [x]
                 "strike",                # Зачеркнутый текст
-                "highlight",             # == Подсветка синтаксиса (нужен pygments)
+                "highlight",             # Подсветка синтаксиса (нужен pygments)
             ]
         )
         return html.strip()

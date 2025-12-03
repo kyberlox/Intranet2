@@ -1341,13 +1341,7 @@ def markdown_to_html(text: str) -> str:
             text,
             extras=["fenced-code-blocks", "break-on-newline"]
         )
-        # Это преобразует <pre><code>...</code></pre> в <pre><samp>...</samp></pre>
-        if code_tag != 'code':
-            # Ищем все блоки <pre><code>...</code></pre>
-            # Используем ленивый квантификатор, чтобы захватить до ближайшего закрывающего </code></pre>
-            pattern = r'<pre><code>(.*?)</code></pre>'
-            replacement = '<pre><samp>\\1</samp></pre>'
-            html = re.sub(pattern, replacement, html, flags=re.DOTALL)
+        
 
         return html.strip()
     except Exception as e:

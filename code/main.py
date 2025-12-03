@@ -1212,8 +1212,6 @@ def markdown_to_html_safe(text: str) -> str:
     Безопасное преобразование Markdown в HTML.
     Преобразует только блоки кода (```), а обычный текст оставляет как есть.
     """
-    if not text or not HAS_MARKDOWN2:
-        return text
     
     try:
         # Шаг 1: Защищаем блоки кода (```)

@@ -180,6 +180,7 @@ class RootsModel:
                 stmt = select(func.max(self.Roots.id))
                 result = await session.execute(stmt)
                 max_id = result.scalar() or 0
+                new_id = max_id + 1
                 new_admin = self.Roots(
                     id=new_id,
                     user_uuid=int(self.user_uuid),

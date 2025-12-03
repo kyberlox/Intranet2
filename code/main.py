@@ -519,250 +519,523 @@ async def delete_tables(session: AsyncSession=Depends(get_async_db)):
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+import re
+
 
 # Встроенный CSS стиль
-CUSTOM_STYLE = """
+# Кастомные стили
+CUSTOM_CSS = """
 <style>
-    /* Основные цвета */
+    /* Основные переменные */
     :root {
-        --orange: #ff6600;
-        --black: #000000;
-        --dark-bg: #0a0a0a;
-        --white: #ffffff;
-        --gray: #333333;
+        --primary: #ff6600;
+        --primary-light: #ff8533;
+        --primary-dark: #cc5200;
+        --bg-dark: #0a0a0a;
+        --bg-darker: #050505;
+        --bg-black: #000000;
+        --text-white: #ffffff;
+        --text-gray: #cccccc;
+        --text-dark: #333333;
+        --border-color: #333333;
+        --border-light: #444444;
+        --success: #00cc66;
+        --warning: #ffaa00;
+        --error: #ff3333;
+        --info: #3399ff;
     }
-    
+
     /* Общие стили */
     body {
-        background-color: var(--dark-bg) !important;
-        color: var(--white) !important;
+        background-color: var(--bg-dark) !important;
+        color: var(--text-white) !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
-    
-    /* Контейнер Swagger UI */
+
+    /* Заменяем стандартные стили Swagger */
     .swagger-ui {
-        font-family: sans-serif !important;
-        background-color: var(--dark-bg) !important;
+        background-color: var(--bg-dark) !important;
+        font-family: inherit !important;
     }
-    
+
     /* Верхняя панель */
     .swagger-ui .topbar {
-        background-color: var(--black) !important;
-        border-bottom: 2px solid var(--orange) !important;
-        padding: 10px 0 !important;
+        background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-darker) 100%) !important;
+        border-bottom: 3px solid var(--primary) !important;
+        padding: 15px 0 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
     }
-    
+
     .swagger-ui .topbar-wrapper {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+        padding: 0 20px !important;
         display: flex !important;
         align-items: center !important;
     }
-    
+
     .swagger-ui .topbar-wrapper svg {
         display: none !important;
     }
-    
+
     .swagger-ui .topbar-wrapper .link {
-        color: var(--orange) !important;
-        font-size: 1.5em !important;
+        color: var(--primary) !important;
+        font-size: 24px !important;
         font-weight: bold !important;
         text-decoration: none !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
     }
-    
-    /* Заголовки */
+
+    .swagger-ui .topbar-wrapper .link::before {
+        content: "🚀";
+        font-size: 28px;
+    }
+
+    .swagger-ui .topbar-wrapper .link::after {
+        content: "Intranet2.0 API v2.0.0";
+    }
+
+    /* Заголовок */
     .swagger-ui .info .title {
-        color: var(--orange) !important;
-        font-size: 2em !important;
+        color: var(--primary) !important;
+        font-size: 36px !important;
         font-weight: bold !important;
-        margin-bottom: 20px !important;
-    }
-    
-    .swagger-ui .info h2 {
-        color: var(--orange) !important;
-    }
-    
-    /* Методы запросов */
-    .swagger-ui .opblock-tag {
-        color: var(--white) !important;
-        font-size: 1.2em !important;
-        border-bottom: 1px solid var(--gray) !important;
-        padding-bottom: 10px !important;
-        margin-top: 20px !important;
-    }
-    
-    .swagger-ui .opblock-tag:hover {
-        background-color: var(--black) !important;
-    }
-    
-    .swagger-ui .opblock .opblock-summary-method {
-        background-color: var(--orange) !important;
-        color: var(--black) !important;
-        font-weight: bold !important;
-        border-radius: 3px !important;
-        padding: 5px 10px !important;
-        min-width: 80px !important;
-        text-align: center !important;
-    }
-    
-    /* Карточки */
-    .swagger-ui .opblock {
-        background-color: var(--black) !important;
-        border: 1px solid var(--gray) !important;
-        border-left: 4px solid var(--orange) !important;
-        border-radius: 4px !important;
         margin-bottom: 15px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
     }
-    
-    .swagger-ui .opblock .opblock-summary {
-        padding: 15px !important;
+
+    .swagger-ui .info .title::after {
+        content: " v2.0.0";
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: var(--bg-black);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 15px;
+        vertical-align: middle;
     }
-    
-    .swagger-ui .opblock .opblock-summary-path,
+
+    /* Теги (группы endpoints) */
+    .swagger-ui .opblock-tag {
+        color: var(--text-white) !important;
+        font-size: 24px !important;
+        font-weight: 600 !important;
+        border-bottom: 3px solid var(--primary) !important;
+        padding: 20px 0 15px 0 !important;
+        margin: 40px 0 20px 0 !important;
+        background: none !important;
+    }
+
+    .swagger-ui .opblock-tag:hover {
+        background: rgba(255, 102, 0, 0.1) !important;
+        cursor: pointer;
+    }
+
+    /* Блоки операций */
+    .swagger-ui .opblock {
+        background: var(--bg-black) !important;
+        border: 1px solid var(--border-color) !important;
+        border-left: 6px solid var(--primary) !important;
+        border-radius: 10px !important;
+        margin-bottom: 25px !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .swagger-ui .opblock:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+        border-color: var(--primary-light) !important;
+    }
+
+    /* Методы HTTP */
+    .swagger-ui .opblock .opblock-summary-method {
+        background: var(--primary) !important;
+        color: var(--bg-black) !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
+        min-width: 90px !important;
+        text-align: center !important;
+        padding: 8px 0 !important;
+        font-size: 14px !important;
+        text-transform: uppercase !important;
+        border: none !important;
+        box-shadow: 0 2px 4px rgba(255, 102, 0, 0.3) !important;
+    }
+
+    /* Цвета для разных методов */
+    .swagger-ui .opblock.opblock-get .opblock-summary-method {
+        background: var(--primary) !important;
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method {
+        background: var(--success) !important;
+    }
+
+    .swagger-ui .opblock.opblock-put .opblock-summary-method {
+        background: var(--warning) !important;
+    }
+
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method {
+        background: var(--error) !important;
+    }
+
+    .swagger-ui .opblock.opblock-patch .opblock-summary-method {
+        background: var(--info) !important;
+    }
+
+    /* Путь endpoint */
+    .swagger-ui .opblock .opblock-summary-path {
+        color: var(--text-white) !important;
+        font-size: 18px !important;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-weight: 500 !important;
+        margin-left: 15px !important;
+    }
+
+    /* Описание endpoint */
     .swagger-ui .opblock .opblock-summary-description {
-        color: var(--white) !important;
+        color: var(--text-gray) !important;
+        font-size: 14px !important;
+        margin-top: 10px !important;
     }
-    
-    /* Секция с параметрами и ответами */
-    .swagger-ui .opblock .opblock-section-header {
-        background-color: #111111 !important;
-        border-bottom: 1px solid var(--gray) !important;
-    }
-    
-    .swagger-ui .opblock .opblock-section-header h4 {
-        color: var(--white) !important;
-    }
-    
-    .swagger-ui .opblock .tab-header .tab-item.active h4 span {
-        color: var(--orange) !important;
-    }
-    
+
     /* Кнопки */
     .swagger-ui .btn {
-        background-color: var(--orange) !important;
-        color: var(--black) !important;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+        color: var(--bg-black) !important;
         border: none !important;
+        border-radius: 6px !important;
         font-weight: bold !important;
-        border-radius: 4px !important;
-        padding: 8px 16px !important;
-        transition: background-color 0.3s !important;
+        padding: 12px 24px !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3) !important;
     }
-    
+
     .swagger-ui .btn:hover {
-        background-color: #ff8533 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(255, 102, 0, 0.4) !important;
     }
-    
+
     .swagger-ui .btn.execute {
-        background-color: var(--orange) !important;
-        color: var(--black) !important;
+        min-width: 100px !important;
     }
-    
-    /* Текст */
-    .swagger-ui .info p,
-    .swagger-ui .info li,
-    .swagger-ui .opblock-tag {
-        color: var(--white) !important;
-    }
-    
-    .swagger-ui .info li {
-        margin-bottom: 5px !important;
-    }
-    
-    /* Input поля */
+
+    /* Поля ввода */
     .swagger-ui input[type="text"],
+    .swagger-ui input[type="password"],
+    .swagger-ui input[type="email"],
+    .swagger-ui input[type="number"],
     .swagger-ui select,
     .swagger-ui textarea {
-        background-color: var(--black) !important;
-        color: var(--white) !important;
-        border: 1px solid var(--gray) !important;
-        border-radius: 4px !important;
-        padding: 8px !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        color: var(--text-white) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
     }
-    
+
+    .swagger-ui input:focus,
+    .swagger-ui select:focus,
+    .swagger-ui textarea:focus {
+        border-color: var(--primary) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2) !important;
+    }
+
+    /* Параметры */
     .swagger-ui .parameters-col_name {
-        color: var(--white) !important;
+        color: var(--text-white) !important;
+        font-weight: 500 !important;
     }
-    
+
     .swagger-ui .parameter__type {
-        color: var(--orange) !important;
+        color: var(--primary) !important;
+        font-weight: bold !important;
     }
-    
+
+    /* Ответы */
+    .swagger-ui .response-col_status {
+        color: var(--primary) !important;
+        font-weight: bold !important;
+    }
+
+    /* Модели */
+    .swagger-ui .model-title {
+        color: var(--primary) !important;
+        font-weight: bold !important;
+    }
+
+    /* Панель авторизации */
+    .swagger-ui .scheme-container {
+        background: rgba(0, 0, 0, 0.5) !important;
+        box-shadow: none !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 10px !important;
+        margin: 20px 0 !important;
+        padding: 20px !important;
+    }
+
     /* Таблицы */
     .swagger-ui table thead tr th,
     .swagger-ui table thead tr td {
-        background-color: var(--black) !important;
-        color: var(--white) !important;
-        border-bottom: 2px solid var(--orange) !important;
-        padding: 10px !important;
+        background: var(--bg-black) !important;
+        color: var(--text-white) !important;
+        border-bottom: 2px solid var(--primary) !important;
     }
-    
-    .swagger-ui table tbody tr {
-        background-color: #111111 !important;
-    }
-    
+
     .swagger-ui table tbody tr td {
-        color: var(--white) !important;
-        padding: 10px !important;
-        border-bottom: 1px solid var(--gray) !important;
+        color: var(--text-gray) !important;
+        border-bottom: 1px solid var(--border-color) !important;
     }
-    
-    /* Модели */
-    .swagger-ui section.models {
-        background-color: var(--black) !important;
-        border: 1px solid var(--gray) !important;
+
+    /* Вкладки */
+    .swagger-ui .tab {
+        border-bottom: 3px solid transparent !important;
+        padding: 10px 20px !important;
     }
-    
-    .swagger-ui section.models .model-container {
-        background-color: #111111 !important;
-        color: var(--white) !important;
+
+    .swagger-ui .tab:hover {
+        background: rgba(255, 102, 0, 0.1) !important;
     }
-    
-    .swagger-ui .model-title {
-        color: var(--orange) !important;
+
+    .swagger-ui .tab.active {
+        border-bottom-color: var(--primary) !important;
+        color: var(--primary) !important;
+        font-weight: bold !important;
     }
-    
-    .swagger-ui .model {
-        color: var(--white) !important;
+
+    /* Скрываем ненужные элементы */
+    .swagger-ui .download-url-wrapper {
+        display: none !important;
     }
-    
-    /* Плейсхолдеры */
-    .swagger-ui .placeholder-text {
-        color: #888 !important;
+
+    /* Кастомный скроллбар */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
     }
-    
-    /* Ссылки */
-    .swagger-ui a {
-        color: var(--orange) !important;
+
+    ::-webkit-scrollbar-track {
+        background: var(--bg-dark);
     }
-    
-    .swagger-ui a:hover {
-        color: #ff8533 !important;
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 5px;
     }
-    
-    /* Попапы */
-    .swagger-ui .dialog-ux .modal-ux-header {
-        background-color: var(--black) !important;
-        border-bottom: 1px solid var(--orange) !important;
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-light);
     }
-    
-    .swagger-ui .dialog-ux .modal-ux-content {
-        background-color: #111111 !important;
-        color: var(--white) !important;
+
+    /* Анимации */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-    
-    /* Секция авторизации */
-    .swagger-ui .auth-btn-wrapper {
-        margin: 20px 0 !important;
+
+    .swagger-ui .opblock {
+        animation: fadeIn 0.5s ease-out;
     }
-    
-    /* Секция информации */
-    .swagger-ui .info {
-        margin: 30px 0 !important;
+
+    /* Кастомный заголовок */
+    .custom-header {
+        background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-darker) 100%);
+        padding: 30px;
+        margin: 0 0 30px 0;
+        border-radius: 12px;
+        border-left: 8px solid var(--primary);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.7s ease-out;
     }
-    
-    /* Загрузка */
-    .swagger-ui .loading-container {
-        color: var(--white) !important;
+
+    .custom-header h1 {
+        color: var(--primary);
+        font-size: 32px;
+        margin: 0 0 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .custom-header h1::before {
+        content: "🚀";
+        font-size: 36px;
+    }
+
+    .custom-header p {
+        color: var(--text-gray);
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Дополнительные улучшения */
+    .swagger-ui .info .description {
+        color: var(--text-gray) !important;
+        font-size: 16px !important;
+        line-height: 1.8 !important;
+    }
+
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3 {
+        color: var(--primary) !important;
+        margin: 20px 0 10px 0 !important;
+    }
+
+    /* Иконки для методов */
+    .swagger-ui .opblock-summary-method::before {
+        margin-right: 5px;
+    }
+
+    .swagger-ui .opblock.opblock-get .opblock-summary-method::before {
+        content: "📥 ";
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method::before {
+        content: "➕ ";
+    }
+
+    .swagger-ui .opblock.opblock-put .opblock-summary-method::before {
+        content: "✏️ ";
+    }
+
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method::before {
+        content: "🗑️ ";
+    }
+
+    .swagger-ui .opblock.opblock-patch .opblock-summary-method::before {
+        content: "🔄 ";
     }
 </style>
+
+<script>
+    // Дополнительный JavaScript для улучшений
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем кнопку "Наверх"
+        const scrollToTopBtn = document.createElement('button');
+        scrollToTopBtn.innerHTML = '⬆';
+        scrollToTopBtn.title = 'Наверх';
+        scrollToTopBtn.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6600, #ff8533);
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+            transition: all 0.3s ease;
+        `;
+        
+        scrollToTopBtn.addEventListener('mouseover', () => {
+            scrollToTopBtn.style.transform = 'scale(1.1)';
+            scrollToTopBtn.style.boxShadow = '0 6px 16px rgba(255, 102, 0, 0.4)';
+        });
+        
+        scrollToTopBtn.addEventListener('mouseout', () => {
+            scrollToTopBtn.style.transform = 'scale(1)';
+            scrollToTopBtn.style.boxShadow = '0 4px 12px rgba(255, 102, 0, 0.3)';
+        });
+        
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        document.body.appendChild(scrollToTopBtn);
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.style.display = 'block';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        });
+        
+        // Уведомление о загрузке
+        setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #000, #333);
+                    color: #ff6600;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    border-left: 4px solid #ff6600;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    max-width: 300px;
+                    animation: slideIn 0.5s ease-out;
+                ">
+                    <strong>🎯 Документация загружена!</strong>
+                    <div style="margin-top: 5px; font-size: 12px; color: #ccc;">
+                        Используйте Try it out для тестирования API
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease-out';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }, 1000);
+        
+        // Добавляем стили для анимаций уведомлений
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
 """
 
 # 1. Создаем кастомную OpenAPI схему
@@ -802,577 +1075,65 @@ app.openapi = custom_openapi
 async def get_openapi_endpoint():
     return app.openapi()
 
-# Кастомный HTML для Swagger UI с inline стилями
-SWAGGER_UI_HTML = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>🚀 Intranet2.0 API Docs</title>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/index.css">
-    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/favicon-16x16.png" sizes="16x16">
-    <style>
-        :root {
-            --orange: #ff6600;
-            --black: #000000;
-            --dark-bg: #0a0a0a;
-            --white: #ffffff;
-            --gray: #333333;
-            --light-gray: #444444;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: sans-serif;
-            background: var(--dark-bg);
-            color: var(--white);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
-            padding: 20px 40px;
-            border-bottom: 3px solid var(--orange);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .logo-title {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .logo {
-            width: 60px;
-            height: 60px;
-            background: var(--orange);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--black);
-            box-shadow: 0 4px 8px rgba(255,102,0,0.3);
-        }
-        
-        .title-section h1 {
-            color: var(--orange);
-            font-size: 28px;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        .title-section p {
-            color: #cccccc;
-            font-size: 16px;
-        }
-        
-        .version-badge {
-            background: var(--orange);
-            color: var(--black);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-left: 15px;
-        }
-        
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 40px;
-        }
-        
-        /* Swagger UI Customizations */
-        #swagger-ui {
-            padding-top: 20px;
-        }
-        
-        .swagger-ui .information-container {
-            background: var(--black) !important;
-            border: 1px solid var(--gray) !important;
-            border-radius: 8px !important;
-            margin: 20px 0 !important;
-            padding: 25px !important;
-        }
-        
-        .swagger-ui .info .title {
-            color: var(--orange) !important;
-            font-size: 32px !important;
-            margin-bottom: 10px !important;
-        }
-        
-        .swagger-ui .info .description {
-            color: #cccccc !important;
-            font-size: 16px !important;
-            line-height: 1.8 !important;
-        }
-        
-        .swagger-ui .opblock-tag {
-            color: var(--white) !important;
-            font-size: 22px !important;
-            border-bottom: 2px solid var(--orange) !important;
-            padding-bottom: 10px !important;
-            margin-top: 40px !important;
-            background: rgba(0,0,0,0.3) !important;
-            padding: 15px !important;
-            border-radius: 8px !important;
-        }
-        
-        .swagger-ui .opblock {
-            background: var(--black) !important;
-            border: 1px solid var(--gray) !important;
-            border-left: 5px solid var(--orange) !important;
-            border-radius: 8px !important;
-            margin-bottom: 20px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-        }
-        
-        .swagger-ui .opblock:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
-        }
-        
-        .swagger-ui .opblock .opblock-summary-method {
-            background: var(--orange) !important;
-            color: var(--black) !important;
-            font-weight: bold !important;
-            border-radius: 4px !important;
-            min-width: 85px !important;
-            text-align: center !important;
-            padding: 6px 0 !important;
-            font-size: 14px !important;
-            border: none !important;
-        }
-        
-        .swagger-ui .opblock .opblock-summary-path {
-            color: var(--white) !important;
-            font-size: 16px !important;
-            font-family: monospace !important;
-        }
-        
-        .swagger-ui .opblock .opblock-summary-description {
-            color: #cccccc !important;
-            font-size: 14px !important;
-        }
-        
-        .swagger-ui .btn {
-            background: var(--orange) !important;
-            color: var(--black) !important;
-            border: none !important;
-            border-radius: 4px !important;
-            font-weight: bold !important;
-            padding: 10px 20px !important;
-            transition: all 0.3s ease !important;
-        }
-        
-        .swagger-ui .btn:hover {
-            background: #ff8533 !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 4px 8px rgba(255,102,0,0.3) !important;
-        }
-        
-        .swagger-ui .btn.execute {
-            background: var(--orange) !important;
-            color: var(--black) !important;
-        }
-        
-        .swagger-ui .btn.cancel {
-            background: var(--light-gray) !important;
-            color: var(--white) !important;
-        }
-        
-        .swagger-ui input[type="text"],
-        .swagger-ui select,
-        .swagger-ui textarea {
-            background: rgba(0,0,0,0.5) !important;
-            color: var(--white) !important;
-            border: 1px solid var(--gray) !important;
-            border-radius: 4px !important;
-            padding: 10px !important;
-            font-size: 14px !important;
-        }
-        
-        .swagger-ui input[type="text"]:focus,
-        .swagger-ui select:focus,
-        .swagger-ui textarea:focus {
-            border-color: var(--orange) !important;
-            outline: none !important;
-            box-shadow: 0 0 0 2px rgba(255,102,0,0.2) !important;
-        }
-        
-        .swagger-ui .parameters-col_name {
-            color: var(--white) !important;
-            font-weight: 500 !important;
-        }
-        
-        .swagger-ui .parameter__type {
-            color: var(--orange) !important;
-            font-weight: bold !important;
-        }
-        
-        .swagger-ui .response-col_status {
-            color: var(--orange) !important;
-            font-weight: bold !important;
-        }
-        
-        .swagger-ui .response-col_description {
-            color: #cccccc !important;
-        }
-        
-        .swagger-ui .tab {
-            border-bottom: 2px solid transparent !important;
-        }
-        
-        .swagger-ui .tab.active {
-            border-bottom-color: var(--orange) !important;
-        }
-        
-        .swagger-ui .tab-item.active h4 span {
-            color: var(--orange) !important;
-        }
-        
-        .swagger-ui .model-title {
-            color: var(--orange) !important;
-        }
-        
-        .swagger-ui .model-toggle::after {
-            background-color: var(--orange) !important;
-        }
-        
-        .swagger-ui .topbar {
-            display: none !important;
-        }
-        
-        .swagger-ui .scheme-container {
-            background: rgba(0,0,0,0.3) !important;
-            box-shadow: none !important;
-            border: 1px solid var(--gray) !important;
-            border-radius: 8px !important;
-            margin: 20px 0 !important;
-        }
-        
-        .swagger-ui .auth-btn-wrapper {
-            padding: 20px !important;
-        }
-        
-        .footer {
-            background: var(--black);
-            border-top: 1px solid var(--gray);
-            padding: 30px 40px;
-            margin-top: 50px;
-            text-align: center;
-        }
-        
-        .footer-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            color: #888;
-            font-size: 14px;
-        }
-        
-        .footer a {
-            color: var(--orange);
-            text-decoration: none;
-        }
-        
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--black);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--orange);
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff8533;
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-title">
-                <div class="logo">API</div>
-                <div class="title-section">
-                    <h1>🚀 Intranet2.0 API Documentation <span class="version-badge">v2.0.0</span></h1>
-                    <p>Interactive API documentation for Intranet2.0 services and endpoints</p>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <main class="main-container">
-        <div id="swagger-ui"></div>
-    </main>
-    
-    <footer class="footer">
-        <div class="footer-content">
-            <p>© 2024 Intranet2.0 API. All rights reserved.</p>
-            <p>For support contact: <a href="mailto:support@intranet.com">support@intranet.com</a></p>
-        </div>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
-    <script>
-    window.onload = function() {
-        // Swagger UI configuration
-        const ui = SwaggerUIBundle({
-            url: "/openapi.json",
-            dom_id: '#swagger-ui',
-            deepLinking: true,
-            presets: [
-                SwaggerUIBundle.presets.apis,
-                SwaggerUIStandalonePreset
-            ],
-            plugins: [
-                SwaggerUIBundle.plugins.DownloadUrl
-            ],
-            layout: "StandaloneLayout",
-            docExpansion: 'list',
-            defaultModelsExpandDepth: 1,
-            defaultModelExpandDepth: 2,
-            defaultModelRendering: 'model',
-            displayRequestDuration: true,
-            filter: true,
-            operationsSorter: 'alpha',
-            tagsSorter: 'alpha',
-            showExtensions: true,
-            showCommonExtensions: true,
-            tryItOutEnabled: true,
-            requestSnippetsEnabled: true,
-            persistAuthorization: true,
-            displayOperationId: false,
-            syntaxHighlight: {
-                theme: 'monokai'
-            },
-            onComplete: function() {
-                // Custom initialization after Swagger UI loads
-                console.log('Intranet2.0 API Documentation loaded successfully!');
-                
-                // Add custom classes to enhance styling
-                setTimeout(() => {
-                    // Style the info container
-                    const infoContainer = document.querySelector('.information-container');
-                    if (infoContainer) {
-                        infoContainer.style.cssText += 'background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;';
-                    }
-                    
-                    // Style operation blocks
-                    const opblocks = document.querySelectorAll('.opblock');
-                    opblocks.forEach(opblock => {
-                        opblock.style.cssText += 'transition: all 0.3s ease !important;';
-                    });
-                    
-                    // Style buttons
-                    const buttons = document.querySelectorAll('.btn');
-                    buttons.forEach(btn => {
-                        if (!btn.classList.contains('execute')) {
-                            btn.style.cssText += 'background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%) !important;';
-                        }
-                    });
-                }, 100);
-            }
-        });
-        
-        // Make UI accessible globally
-        window.ui = ui;
-        
-        // Theme toggle functionality
-        const style = document.createElement('style');
-        style.textContent = `
-            .theme-toggle {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: var(--orange);
-                color: var(--black);
-                border: none;
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-            }
-            
-            .theme-toggle:hover {
-                transform: scale(1.1);
-                box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Add theme toggle button
-        const themeToggle = document.createElement('button');
-        themeToggle.className = 'theme-toggle';
-        themeToggle.innerHTML = '🎨';
-        themeToggle.title = 'Toggle theme colors';
-        document.body.appendChild(themeToggle);
-        
-        let isDarkTheme = true;
-        themeToggle.addEventListener('click', function() {
-            const root = document.documentElement;
-            if (isDarkTheme) {
-                // Switch to light theme
-                root.style.setProperty('--dark-bg', '#f5f5f5');
-                root.style.setProperty('--black', '#ffffff');
-                root.style.setProperty('--white', '#333333');
-                root.style.setProperty('--gray', '#dddddd');
-                document.body.style.background = '#f5f5f5';
-                themeToggle.innerHTML = '🌙';
-            } else {
-                // Switch back to dark theme
-                root.style.setProperty('--dark-bg', '#0a0a0a');
-                root.style.setProperty('--black', '#000000');
-                root.style.setProperty('--white', '#ffffff');
-                root.style.setProperty('--gray', '#333333');
-                document.body.style.background = '#0a0a0a';
-                themeToggle.innerHTML = '🎨';
-            }
-            isDarkTheme = !isDarkTheme;
-        });
-    };
-    </script>
-</body>
-</html>
-"""
-
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    async def custom_docs():
-        return HTMLResponse("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>API Docs</title>
-            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css">
-            <style>
-                body { background: #0a0a0a; color: white; }
-                .swagger-ui .info .title { color: #ff6600 !important; }
-            </style>
-        </head>
-        <body>
-            <div id="swagger-ui"></div>
-            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
-            <script>
-                window.onload = () => {
-                    SwaggerUIBundle({
-                        url: '/openapi.json',
-                        dom_id: '#swagger-ui',
-                        presets: [SwaggerUIBundle.presets.apis]
-                    });
-                };
-            </script>
-        </body>
-        </html>
-        """)
-
-# async def custom_swagger_ui_html():
-#     html = get_swagger_ui_html(
-#         openapi_url="/openapi.json",
-#         title="🚀 Intranet2.0 API Docs",
-#         swagger_ui_parameters={
-#             "defaultModelsExpandDepth": 1,
-#             "defaultModelExpandDepth": 2,
-#             "defaultModelRendering": "model",
-#             "displayRequestDuration": True,
-#             "docExpansion": "list",
-#             "filter": True,
-#             "maxDisplayedTags": 20,
-#             "operationsSorter": "alpha",
-#             "tagsSorter": "alpha",
-#             "showExtensions": True,
-#             "showCommonExtensions": True,
-#             "tryItOutEnabled": True,
-#             "requestSnippetsEnabled": True,
-#             "persistAuthorization": True,
-#             "displayOperationId": False,
-#             "deepLinking": True,
-#             "syntaxHighlight": {
-#                 "theme": "monokai"
-#             },
-#             "tryItOutEnabled": True,
-#             "displayRequestDuration": True,
-#             "requestSnippetsEnabled": True,
-#             # Убрана опция темы, так как она конфликтует с кастомными стилями
-#         }
-#     )
-
-#     # Добавляем кастомный HTML заголовок перед основным контентом
-#     custom_header = """
-#     <div style="
-#         background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-#         padding: 20px;
-#         margin-bottom: 30px;
-#         border-radius: 8px;
-#         border-left: 6px solid #ff6600;
-#     ">
-#         <h1 style="color: #ff6600; margin: 0 0 10px 0;">🚀 Intranet2.0 API Documentation</h1>
-#         <p style="color: #ffffff; margin: 0; font-size: 16px;">
-#             Welcome to the Intranet2.0 API documentation. Explore available endpoints, test requests, 
-#             and integrate with our services.
-#         </p>
-#     </div>
-#     """
+    html = get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="🚀 Intranet2.0 API Docs",
+        swagger_ui_parameters={
+            "defaultModelsExpandDepth": 1,
+            "defaultModelExpandDepth": 2,
+            "defaultModelRendering": "model",
+            "displayRequestDuration": True,
+            "docExpansion": "list",
+            "filter": True,
+            "maxDisplayedTags": 20,
+            "operationsSorter": "alpha",
+            "tagsSorter": "alpha",
+            "showExtensions": True,
+            "showCommonExtensions": True,
+            "tryItOutEnabled": True,
+            "requestSnippetsEnabled": True,
+            "persistAuthorization": True,
+            "displayOperationId": False,
+            "deepLinking": True,
+            "syntaxHighlight": {
+                "theme": "monokai"
+            },
+            "tryItOutEnabled": True,
+            "displayRequestDuration": True,
+            "requestSnippetsEnabled": True,
+        }
+    )
     
-#     # Добавляем стили в head
-#     html = html.replace('</head>', CUSTOM_STYLE + '</head>')
+    # Добавляем кастомный заголовок
+    custom_header = """
+    <div class="custom-header">
+        <h1>Intranet2.0 API Documentation</h1>
+        <p>
+            Welcome to the Intranet2.0 API documentation. This interactive documentation allows you to 
+            explore all available endpoints, test API requests directly from your browser, and understand 
+            how to integrate with our services. Use the <strong>Try it out</strong> buttons to test endpoints 
+            with real data.
+        </p>
+    </div>
+    """
     
-#     # Добавляем кастомный заголовок после открывающего тега body
-#     html = html.replace('<body>', f'<body><div class="swagger-ui"><div class="wrapper">{custom_header}')
+    # Вставляем кастомный заголовок после wrapper
+    html = re.sub(
+        r'(<div class="swagger-ui"><div class="wrapper">)',
+        r'\1' + custom_header,
+        html
+    )
     
-#     return HTMLResponse(content=html)
-
-    # return get_swagger_ui_html(
-    #     openapi_url="/openapi.json",  # ссылка на нашу схему
-    #     title="My API - Swagger UI",
-    #     oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-    #     swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
-    #     swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
-    #     swagger_ui_parameters={
-    #         "defaultModelsExpandDepth": -1,
-    #         "docExpansion": "none",
-    #         "filter": True,
-    #         "displayRequestDuration": True,
-    #         "tryItOutEnabled": True,
-    #     }
-    # )
+    # Заменяем стандартные CSS стили
+    html = html.replace(
+        '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">',
+        '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">\n' + CUSTOM_CSS
+    )
+    
+    # Удаляем стандартную тему, если она есть
+    html = re.sub(r'"theme":\s*{[^}]*}', '', html)
+    
+    return HTMLResponse(content=html)

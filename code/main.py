@@ -1339,24 +1339,77 @@ def markdown_to_html(text: str) -> str:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")
         return text
 
-def process_description(obj: Any) -> Any:
-    """Рекурсивно обрабатывает все описания в объекте."""
+def process_description(obj: Any, context: str = "root") -> Any:
+    """
+    Рекурсивно обрабатывает объект OpenAPI схемы.
+    context: текущий контекст ('description', 'summary', 'title', 'model', 'field')
+    """
     if isinstance(obj, dict):
         result = {}
         for key, value in obj.items():
-            if key in ["description", "summary", "title"] and isinstance(value, str):
-                # Преобразуем Markdown в HTML для полей описания
+            # Определяем, нужно ли преобразовывать Markdown в HTML
+            should_convert_markdown = False
+            
+            # Обрабатываем описания, которые могут содержать Markdown
+            if key in ["description", "summary"]:
+                should_convert_markdown = True
+                new_context = key
+            # Заголовки тоже могут содержать Markdown
+            elif key == "title" and context in ["info", "tag", "schema"]:
+                should_convert_markdown = True
+                new_context = "title"
+            else:
+                new_context = key
+            
+            # Преобразуем только если нужно и значение - строка
+            if should_convert_markdown and isinstance(value, str):
                 result[key] = markdown_to_html(value)
             else:
-                result[key] = process_description(value)
+                # Рекурсивно обрабатываем остальное
+                result[key] = process_description(value, new_context)
         return result
     elif isinstance(obj, list):
-        return [process_description(item) for item in obj]
+        return [process_description(item, context) for item in obj]
     else:
         return obj
 
 def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
-    """Конвертирует все Markdown описания в OpenAPI схеме в HTML."""
+    """Конвертирует Markdown только в разрешенных местах."""
     
-    print("🔄 Преобразую Markdown описания в HTML...")
-    return process_description(schema)
+    print("🔄 Преобразую Markdown описания в HTML (только в description/summary)...")
+    
+    # Создаем копию схемы для обработки
+    processed_schema = schema.copy()
+    
+    # Обрабатываем info блок
+    if "info" in processed_schema:
+        processed_schema["info"] = process_description(processed_schema["info"], "info")
+    
+    # Обрабатываем пути (paths)
+    if "paths" in processed_schema:
+        processed_schema["paths"] = process_description(processed_schema["paths"], "paths")
+    
+    # Обрабатываем компоненты (components)
+    if "components" in processed_schema:
+        # Для схем в components нужно быть осторожнее
+        components = processed_schema["components"].copy()
+        
+        # Обрабатываем схемы
+        if "schemas" in components:
+            schemas = {}
+            for schema_name, schema_def in components["schemas"].items():
+                # В названиях схем НЕ должно быть HTML
+                # Но в описаниях схем - может быть
+                if isinstance(schema_def, dict):
+                    schemas[schema_name] = process_description(schema_def, "schema")
+                else:
+                    schemas[schema_name] = schema_def
+            components["schemas"] = schemas
+        
+        processed_schema["components"] = components
+    
+    # Обрабатываем теги
+    if "tags" in processed_schema:
+        processed_schema["tags"] = process_description(processed_schema["tags"], "tag")
+    
+    return processed_schema

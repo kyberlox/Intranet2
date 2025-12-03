@@ -1323,38 +1323,130 @@ def process_code_blocks(html: str) -> str:
     
     return re.sub(pattern, replace_code_tag, html, flags=re.DOTALL)
 
-def detect_language_from_content(content: str) -> str:
-    """Определяет язык программирования по содержимому."""
-    first_line = content.strip().split('\n')[0].strip() if content.strip() else ""
+def detect_language_improved(code_content: str) -> str:
+    """
+    Улучшенное определение языка по содержимому блока кода.
+    """
+    if not code_content:
+        return "text"
     
-    # HTTP запросы
+    lines = code_content.strip().split('\n')
+    if not lines:
+        return "text"
+    
+    first_line = lines[0].strip()
+    
+    # Проверяем на HTTP запросы (самое важное!)
     http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
-    if any(method in first_line.upper() for method in http_methods):
-        return "http"
     
-    # Bash команды
-    if first_line.startswith(('$', '#', 'curl', 'wget', 'ssh', 'git', 'docker')):
-        return "bash"
+    # Проверяем, начинается ли строка с HTTP метода
+    for method in http_methods:
+        if first_line.upper().startswith(method + ' '):
+            return "http"
     
-    # Python
-    python_keywords = ['import ', 'def ', 'class ', 'from ', 'print(', 'async ', 'await ']
-    if any(keyword in first_line for keyword in python_keywords):
-        return "python"
+    # Ищем HTTP методы в любом месте первой строки
+    for method in http_methods:
+        if method in first_line.upper():
+            return "http"
     
-    # JSON
-    if first_line.startswith(('{', '[', '"')):
+    # Проверяем на bash команды
+    bash_indicators = ['$ ', '# ', 'curl ', 'wget ', 'ssh ', 'git ', 'docker ', './']
+    for indicator in bash_indicators:
+        if first_line.startswith(indicator):
+            return "bash"
+    
+    # Проверяем на JSON
+    json_indicators = ['{', '[', '"']
+    if first_line.startswith(tuple(json_indicators)):
         return "json"
     
-    # SQL
-    sql_keywords = ['SELECT ', 'INSERT ', 'UPDATE ', 'DELETE ', 'CREATE ', 'DROP ']
-    if any(keyword in first_line.upper() for keyword in sql_keywords):
-        return "sql"
+    # Проверяем на Python
+    python_keywords = ['import ', 'def ', 'class ', 'async ', 'await ', 'print(']
+    for keyword in python_keywords:
+        if keyword in first_line.lower():
+            return "python"
     
-    # YAML
-    if first_line.startswith(('---', 'apiVersion:', 'version:', 'name:')):
-        return "yaml"
+    # Проверяем на SQL
+    sql_keywords = ['SELECT ', 'INSERT ', 'UPDATE ', 'DELETE ', 'CREATE ', 'DROP ', 'ALTER ']
+    for keyword in sql_keywords:
+        if keyword in first_line.upper():
+            return "sql"
     
+    # По умолчанию - текст
     return "text"
+
+def create_code_block(code_content: str, language: str = "") -> str:
+    """
+    Создает HTML для блока кода с улучшенным определением языка.
+    """
+    # Если язык не указан или "text", пытаемся определить автоматически
+    if not language or language == "text":
+        detected_lang = detect_language_improved(code_content)
+    else:
+        detected_lang = language.lower()
+    
+    # Отображаемое название языка
+    lang_names = {
+        "http": "HTTP",
+        "bash": "BASH", 
+        "python": "PYTHON",
+        "json": "JSON",
+        "sql": "SQL",
+        "yaml": "YAML",
+        "xml": "XML"
+    }
+    
+    lang_display = lang_names.get(detected_lang, "CODE")
+    lang_class = f"language-{detected_lang}"
+    
+    # Экранируем HTML в коде
+    from html import escape
+    escaped_code = escape(code_content.strip())
+    
+    # Добавляем подсветку для HTTP методов, если это HTTP
+    if detected_lang == "http":
+        escaped_code = highlight_http_methods(escaped_code)
+    
+    return f'''
+    <div class="code-block-container" data-language="{detected_lang}">
+        <div class="code-header">
+            <span class="language-badge">{lang_display}</span>
+            <button class="copy-code-btn" onclick="copyCodeBlock(this)">
+                <span class="copy-icon">📋</span>
+                <span class="copy-text">Копировать</span>
+            </button>
+        </div>
+        <pre><code class="{lang_class}">{escaped_code}</code></pre>
+    </div>
+    '''
+
+def highlight_http_methods(code_html: str) -> str:
+    """
+    Подсвечивает HTTP методы в блоке кода.
+    """
+    import re
+    
+    # HTTP методы для подсветки
+    http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
+    
+    # Создаем regex для поиска HTTP методов
+    methods_pattern = r'\b(' + '|'.join(http_methods) + r')\b'
+    
+    # Заменяем методы с подсветкой
+    def highlight_match(match):
+        method = match.group(1)
+        return f'<span class="http-method-highlight">{method}</span>'
+    
+    highlighted = re.sub(methods_pattern, highlight_match, code_html, flags=re.IGNORECASE)
+    
+    # Также подсвечиваем URL пути после методов
+    highlighted = re.sub(
+        r'(<span class="http-method-highlight">[^<]+</span>)\s+([^\s]+)',
+        r'\1 <span class="http-path">\2</span>',
+        highlighted
+    )
+    
+    return highlighted
 
 def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
     """

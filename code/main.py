@@ -1212,8 +1212,6 @@ def markdown_to_html_fixed(text: str) -> str:
     Преобразует Markdown в HTML БЕЗ лишнего экранирования.
     Возвращает чистый HTML, который Swagger UI отобразит правильно.
     """
-    if not text or not HAS_MARKDOWN2:
-        return text
     
     try:
         # Шаг 1: Обрабатываем блоки кода (```)

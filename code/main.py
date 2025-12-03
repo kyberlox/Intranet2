@@ -153,12 +153,6 @@ open_links = [
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
-    # if request.url.path == "/openapi.json":
-    #     # Логируем запрос к схеме
-    #     print("OpenAPI schema requested")
-    
-    # response = await call_next(request)
-    # return response
 
     # Внедряю свою отладку
     log = LogsMaker()

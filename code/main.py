@@ -1094,6 +1094,199 @@ CUSTOM_CSS = """
         }
     });
 </script>
+<script>
+    // === ОБРАБОТКА MARKDOWN НА КЛИЕНТЕ ===
+
+    function processMarkdownOnClient() {
+        console.log("🔧 Обрабатываю Markdown на клиенте...");
+        
+        // 1. Обрабатываем основное описание
+        const infoDescription = document.querySelector('.swagger-ui .info .description');
+        if (infoDescription) {
+            infoDescription.innerHTML = convertMarkdownToHtml(infoDescription.textContent);
+        }
+        
+        // 2. Обрабатываем описания эндпоинтов
+        document.querySelectorAll('.swagger-ui .opblock .opblock-summary-description').forEach(desc => {
+            if (desc.textContent.includes('[CODE_BLOCK')) {
+                desc.innerHTML = convertMarkdownToHtml(desc.textContent);
+            }
+        });
+        
+        // 3. Обрабатываем все текстовые элементы с Markdown
+        document.querySelectorAll('.swagger-ui .renderedMarkdown, .swagger-ui .markdown').forEach(element => {
+            if (element.textContent.includes('[CODE_BLOCK')) {
+                element.innerHTML = convertMarkdownToHtml(element.textContent);
+            }
+        });
+        
+        console.log("✅ Markdown обработан");
+    }
+
+    function convertMarkdownToHtml(text) {
+        if (!text) return '';
+        
+        let html = text;
+        
+        // 1. Обрабатываем блоки кода [CODE_BLOCK]
+        const codeBlockRegex = /\[CODE_BLOCK language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
+        
+        html = html.replace(codeBlockRegex, function(match, language, codeContent) {
+            // Очищаем код от лишних пробелов
+            codeContent = codeContent.trim();
+            
+            // Определяем отображаемое имя языка
+            let langDisplay = language.toUpperCase();
+            if (language === 'text') {
+                // Автоматически определяем HTTP
+                const firstLine = codeContent.split('\n')[0];
+                if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].some(m => firstLine.includes(m))) {
+                    langDisplay = 'HTTP';
+                    language = 'http';
+                } else {
+                    langDisplay = 'CODE';
+                }
+            }
+            
+            // Экранируем HTML в коде
+            const escapedCode = codeContent
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+            
+            // Подсвечиваем HTTP методы если это HTTP
+            let highlightedCode = escapedCode;
+            if (language === 'http') {
+                highlightedCode = highlightHttpMethods(escapedCode);
+            }
+            
+            return `
+            <div class="code-block-container" data-language="${language}">
+                <div class="code-header">
+                    <span class="language-badge">${langDisplay}</span>
+                    <button class="copy-code-btn" onclick="copyCodeBlock(this)">
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Копировать</span>
+                    </button>
+                </div>
+                <pre><code class="language-${language}">${highlightedCode}</code></pre>
+            </div>
+            `;
+        });
+        
+        // 2. Обрабатываем заголовки
+        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+        
+        // 3. Обрабатываем жирный текст
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        
+        // 4. Обрабатываем курсив
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+        
+        // 5. Обрабатываем списки
+        html = html.replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>');
+        html = html.replace(/^\s*\*\s+(.*$)/gim, '<li>$1</li>');
+        
+        // Группируем li в ul
+        html = html.replace(/(<li>.*?<\/li>)/g, '<ul>$1</ul>');
+        
+        // 6. Обрабатываем параграфы
+        html = html.replace(/\n\n/g, '</p><p>');
+        html = '<p>' + html + '</p>';
+        html = html.replace(/<p><\/p>/g, ''); // Убираем пустые параграфы
+        
+        // 7. Обрабатываем inline код (`code`)
+        html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        
+        // 8. Обрабатываем переносы строк
+        html = html.replace(/\n/g, '<br>');
+        
+        return html;
+    }
+
+    function highlightHttpMethods(codeHtml) {
+        // HTTP методы для подсветки
+        const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
+        
+        let highlighted = codeHtml;
+        
+        httpMethods.forEach(method => {
+            const regex = new RegExp(`\\b(${method})\\b`, 'gi');
+            highlighted = highlighted.replace(regex, '<span class="http-method-highlight">$1</span>');
+        });
+        
+        // Также подсвечиваем пути после методов
+        highlighted = highlighted.replace(
+            /(<span class="http-method-highlight">[^<]+<\/span>)\s+([^\s<]+)/g,
+            '$1 <span class="http-path">$2</span>'
+        );
+        
+        return highlighted;
+    }
+
+    // Функция копирования кода
+    function copyCodeBlock(button) {
+        const container = button.closest('.code-block-container');
+        const codeElement = container.querySelector('code');
+        const text = codeElement.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<span class="copy-icon">✓</span><span class="copy-text">Скопировано!</span>';
+            button.style.background = 'rgba(76, 175, 80, 0.2)';
+            
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.style.background = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Ошибка копирования:', err);
+            button.innerHTML = '<span class="copy-icon">❌</span><span class="copy-text">Ошибка</span>';
+            button.style.background = 'rgba(244, 67, 54, 0.2)';
+            
+            setTimeout(() => {
+                button.innerHTML = '<span class="copy-icon">📋</span><span class="copy-text">Копировать</span>';
+                button.style.background = '';
+            }, 2000);
+        });
+    }
+
+    // Запускаем обработку при загрузке и после изменений
+    document.addEventListener('DOMContentLoaded', function() {
+        // Первая обработка
+        setTimeout(processMarkdownOnClient, 500);
+        
+        // Обрабатываем при изменении контента (для динамических элементов)
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    setTimeout(processMarkdownOnClient, 100);
+                }
+            });
+        });
+        
+        // Наблюдаем за изменениями в Swagger UI
+        const swaggerContainer = document.querySelector('.swagger-ui');
+        if (swaggerContainer) {
+            observer.observe(swaggerContainer, {
+                childList: true,
+                subtree: true
+            });
+        }
+    });
+
+    // Также обрабатываем при клике на эндпоинты
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.opblock')) {
+            setTimeout(processMarkdownOnClient, 300);
+        }
+    });
+</script>
 """
 
 # 1. Создаем кастомную OpenAPI схему
@@ -1126,7 +1319,7 @@ def custom_openapi():
     print(f"[DEBUG] Первые 500 символов схемы:\n{schema_preview}")
 
     # Преобразуем Markdown описания в HTML
-    openapi_schema = convert_markdown_in_schema(openapi_schema)
+    openapi_schema = convert_markdown_in_schema_safe(openapi_schema)
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -1209,10 +1402,10 @@ async def custom_swagger_ui_html():
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
 
-def markdown_to_html_direct(text: str) -> str:
+def markdown_to_plain(text: str) -> str:
     """
-    Прямое преобразование Markdown в HTML.
-    Просто и понятно.
+    Простое преобразование Markdown в текст БЕЗ HTML.
+    Блоки кода помечаем специальными метками.
     """
     if not text:
         return text
@@ -1220,19 +1413,18 @@ def markdown_to_html_direct(text: str) -> str:
     result = []
     lines = text.split('\n')
     i = 0
-    n = len(lines)
     
-    while i < n:
+    while i < len(lines):
         line = lines[i]
         
-        # Проверяем начало блока кода ```
+        # Блок кода ```
         if line.strip().startswith('```'):
             # Начало блока кода
-            language = line.strip()[3:].strip()  # Язык после ```
+            language = line.strip()[3:].strip() or "text"
             code_lines = []
             
             i += 1
-            while i < n and not lines[i].strip().startswith('```'):
+            while i < len(lines) and not lines[i].strip().startswith('```'):
                 code_lines.append(lines[i])
                 i += 1
             
@@ -1240,321 +1432,40 @@ def markdown_to_html_direct(text: str) -> str:
             i += 1
             
             # Собираем код
-            code_content = '\n'.join(code_lines)
+            code_content = '\n'.join(code_lines).strip()
             
-            # Определяем язык
-            if not language:
-                # Автоматическое определение
+            # Определяем язык (особенно HTTP)
+            if language == "text":
                 first_line = code_content.split('\n')[0] if '\n' in code_content else code_content
-                if any(method in first_line.upper() for method in ['GET', 'POST', 'PUT', 'DELETE']):
-                    language = 'http'
-                else:
-                    language = 'text'
+                if any(method.upper() in first_line.upper() for method in ['GET', 'POST', 'PUT', 'DELETE']):
+                    language = "http"
             
-            # Создаем HTML блока кода
-            lang_display = 'HTTP' if language == 'http' else 'CODE'
-            
-            code_block = f'''
-            <div class="code-block-container" data-language="{language}">
-                <div class="code-header">
-                    <span class="language-badge">{lang_display}</span>
-                    <button class="copy-code-btn" onclick="copyCodeBlock(this)">
-                        <span class="copy-icon">📋</span>
-                        <span class="copy-text">Копировать</span>
-                    </button>
-                </div>
-                <pre><code class="language-{language}">{code_content}</code></pre>
-            </div>
-            '''
-            
-            result.append(code_block)
+            # Добавляем специальную метку для JS
+            result.append(f'[CODE_BLOCK language="{language}"]{code_content}[/CODE_BLOCK]')
             continue
         
-        # Обычный текст - используем markdown2
+        # Обычный текст
         result.append(line)
         i += 1
     
-    # Объединяем все строки
-    text_to_process = '\n'.join(result)
-    
-    if HAS_MARKDOWN2:
-        try:
-            html = markdown2.markdown(
-                text_to_process,
-                extras=["break-on-newline", "cuddled-lists"],
-                safe_mode=False  # Не экранировать HTML!
-            )
-            return html
-        except:
-            return text_to_process
-    else:
-        return text_to_process
-        
-    except Exception as e:
-        print(f"⚠️  Ошибка преобразования Markdown: {e}")
-        import traceback
-        traceback.print_exc()
-        return text
+    return '\n'.join(result)
 
-def highlight_http_in_blocks(html: str) -> str:
+def convert_markdown_in_schema_safe(schema: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Добавляет подсветку HTTP методов в уже созданных блоках кода.
+    Безопасное преобразование Markdown БЕЗ HTML.
     """
-    import re
-    
-    # Ищем блоки кода с HTTP
-    def highlight_http(match):
-        code_content = match.group(1)
-        
-        # Подсвечиваем HTTP методы
-        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
-        for method in http_methods:
-            pattern = rf'\b({method})\b'
-            code_content = re.sub(
-                pattern, 
-                f'<span class="http-method-highlight">\\1</span>', 
-                code_content,
-                flags=re.IGNORECASE
-            )
-        
-        return f'<code class="language-http">{code_content}</code>'
-    
-    # Применяем подсветку ко всем code блокам с классом language-http
-    pattern = r'<code class="language-http">(.*?)</code>'
-    return re.sub(pattern, highlight_http, html, flags=re.DOTALL)
-
-def create_code_block(code_content: str, language: str = "text") -> str:
-    """
-    Создает HTML для блока кода.
-    language: python, bash, http, json, text и т.д.
-    """
-    # Определяем язык
-    lang_display = language.upper() if language and language != "text" else "CODE"
-    
-    # Определяем класс языка для подсветки
-    lang_class = f"language-{language}" if language else "language-text"
-    
-    return f'''
-    <div class="code-block-container">
-        <div class="code-header">
-            <span class="language-badge">{lang_display}</span>
-            <button class="copy-code-btn" onclick="copyCodeBlock(this)">
-                <span class="copy-icon">📋</span>
-                <span class="copy-text">Копировать</span>
-            </button>
-        </div>
-        <pre><code class="{lang_class}">{code_content}</code></pre>
-    </div>
-    '''
-
-def process_code_blocks(html: str) -> str:
-    """Обрабатывает блоки кода, заменяя стандартные теги."""
-    # Обрабатываем блоки кода из Markdown
-    # Они уже преобразованы markdown2 в <pre><code>...</code></pre>
-    
-    # Заменяем <code> внутри <pre> на кастомный тег
-    def replace_code_tag(match):
-        code_content = match.group(2)
-        # Очищаем HTML-сущности
-        from html import unescape
-        code_content = unescape(code_content)
-        
-        # Экранируем специальные символы
-        code_content = escape(code_content)
-        
-        # Определяем язык
-        language = detect_language_from_content(code_content)
-        
-        # Создаем новый блок кода
-        return f'''
-        <div class="code-block-container">
-            <div class="code-header">
-                <span class="language-badge">{language}</span>
-                <button class="copy-code-btn" onclick="copyCodeBlock(this)">
-                    <span class="copy-icon">📋</span>
-                    <span class="copy-text">Копировать</span>
-                </button>
-            </div>
-            <pre><code class="language-{language}">{code_content}</code></pre>
-        </div>
-        '''
-    
-    # Регулярное выражение для поиска <pre><code>...</code></pre>
-    pattern = r'<pre>\s*<code(?:\s+class="([^"]*)")?>(.*?)</code>\s*</pre>'
-    
-    return re.sub(pattern, replace_code_tag, html, flags=re.DOTALL)
-
-def detect_language_improved(code_content: str) -> str:
-    """
-    Улучшенное определение языка по содержимому блока кода.
-    """
-    if not code_content:
-        return "text"
-    
-    lines = code_content.strip().split('\n')
-    if not lines:
-        return "text"
-    
-    first_line = lines[0].strip()
-    
-    # Проверяем на HTTP запросы (самое важное!)
-    http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
-    
-    # Проверяем, начинается ли строка с HTTP метода
-    for method in http_methods:
-        if first_line.upper().startswith(method + ' '):
-            return "http"
-    
-    # Ищем HTTP методы в любом месте первой строки
-    for method in http_methods:
-        if method in first_line.upper():
-            return "http"
-    
-    # Проверяем на bash команды
-    bash_indicators = ['$ ', '# ', 'curl ', 'wget ', 'ssh ', 'git ', 'docker ', './']
-    for indicator in bash_indicators:
-        if first_line.startswith(indicator):
-            return "bash"
-    
-    # Проверяем на JSON
-    json_indicators = ['{', '[', '"']
-    if first_line.startswith(tuple(json_indicators)):
-        return "json"
-    
-    # Проверяем на Python
-    python_keywords = ['import ', 'def ', 'class ', 'async ', 'await ', 'print(']
-    for keyword in python_keywords:
-        if keyword in first_line.lower():
-            return "python"
-    
-    # Проверяем на SQL
-    sql_keywords = ['SELECT ', 'INSERT ', 'UPDATE ', 'DELETE ', 'CREATE ', 'DROP ', 'ALTER ']
-    for keyword in sql_keywords:
-        if keyword in first_line.upper():
-            return "sql"
-    
-    # По умолчанию - текст
-    return "text"
-
-def create_code_block(code_content: str, language: str = "") -> str:
-    """
-    Создает HTML для блока кода с улучшенным определением языка.
-    """
-    # Если язык не указан или "text", пытаемся определить автоматически
-    if not language or language == "text":
-        detected_lang = detect_language_improved(code_content)
-    else:
-        detected_lang = language.lower()
-    
-    # Отображаемое название языка
-    lang_names = {
-        "http": "HTTP",
-        "bash": "BASH", 
-        "python": "PYTHON",
-        "json": "JSON",
-        "sql": "SQL",
-        "yaml": "YAML",
-        "xml": "XML"
-    }
-    
-    lang_display = lang_names.get(detected_lang, "CODE")
-    lang_class = f"language-{detected_lang}"
-    
-    # Экранируем HTML в коде
-    from html import escape
-    escaped_code = escape(code_content.strip())
-    
-    # Добавляем подсветку для HTTP методов, если это HTTP
-    if detected_lang == "http":
-        escaped_code = highlight_http_methods(escaped_code)
-    
-    return f'''
-    <div class="code-block-container" data-language="{detected_lang}">
-        <div class="code-header">
-            <span class="language-badge">{lang_display}</span>
-            <button class="copy-code-btn" onclick="copyCodeBlock(this)">
-                <span class="copy-icon">📋</span>
-                <span class="copy-text">Копировать</span>
-            </button>
-        </div>
-        <pre><code class="{lang_class}">{escaped_code}</code></pre>
-    </div>
-    '''
-
-def highlight_http_methods(code_html: str) -> str:
-    """
-    Подсвечивает HTTP методы в блоке кода.
-    """
-    import re
-    
-    # HTTP методы для подсветки
-    http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
-    
-    # Создаем regex для поиска HTTP методов
-    methods_pattern = r'\b(' + '|'.join(http_methods) + r')\b'
-    
-    # Заменяем методы с подсветкой
-    def highlight_match(match):
-        method = match.group(1)
-        return f'<span class="http-method-highlight">{method}</span>'
-    
-    highlighted = re.sub(methods_pattern, highlight_match, code_html, flags=re.IGNORECASE)
-    
-    # Также подсвечиваем URL пути после методов
-    highlighted = re.sub(
-        r'(<span class="http-method-highlight">[^<]+</span>)\s+([^\s]+)',
-        r'\1 <span class="http-path">\2</span>',
-        highlighted
-    )
-    
-    return highlighted
-
-def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Конвертирует Markdown в HTML только в нужных местах.
-    Работает безопасно и не ломает структуру схемы.
-    """
-    
-    print("🔧 Преобразую Markdown описания...")
-    
-    # Создаем глубокую копию
     import copy
-    processed_schema = copy.deepcopy(schema)
     
-    # Рекурсивная функция для обработки
-    def process_dict(obj):
-        if isinstance(obj, dict):
-            for key, value in obj.items():
-                # Преобразуем только description и summary
-                if key in ["description", "summary"] and isinstance(value, str):
-                    obj[key] = markdown_to_html_direct(value)
-                elif isinstance(value, dict):
-                    process_dict(value)
-                elif isinstance(value, list):
-                    process_list(value)
-        return obj
+    def process_value(value):
+        if isinstance(value, dict):
+            return {k: process_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [process_value(item) for item in value]
+        elif isinstance(value, str):
+            if value:  # Преобразуем только непустые строки
+                return markdown_to_plain(value)
+            return value
+        else:
+            return value
     
-    def process_list(items):
-        for i, item in enumerate(items):
-            if isinstance(item, dict):
-                process_dict(item)
-            elif isinstance(item, list):
-                process_list(item)
-        return items
-    
-    # Обрабатываем основные части схемы
-    if "info" in processed_schema:
-        process_dict(processed_schema["info"])
-    
-    if "paths" in processed_schema:
-        process_dict(processed_schema["paths"])
-    
-    if "components" in processed_schema and "schemas" in processed_schema["components"]:
-        for schema_name, schema_def in processed_schema["components"]["schemas"].items():
-            if isinstance(schema_def, dict):
-                process_dict(schema_def)
-    
-    if "tags" in processed_schema:
-        process_list(processed_schema["tags"])
-    
-    return processed_schema
+    return process_value(copy.deepcopy(schema))

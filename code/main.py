@@ -528,7 +528,7 @@ def custom_openapi():
         return app.openapi_schema
     
     openapi_schema = get_openapi(
-        title="My API",
+        title="Intranet2.0 API Docs",
         version="2.0.0",
         description="API description",
         routes=app.routes,

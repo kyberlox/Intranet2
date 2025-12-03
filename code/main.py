@@ -1298,23 +1298,34 @@ async def custom_swagger_ui_html():
     return HTMLResponse(content=modified_html)
 
 def markdown_to_html(text: str) -> str:
-    """Преобразует Markdown в HTML с поддержкой GitHub-стиля."""
+    """Преобразует Markdown в HTML с улучшенным форматированием кода."""
+    if not text or not HAS_MARKDOWN2:
+        return text
     
     try:
-        # Используем markdown2 с расширениями для GitHub-стиля
+        # Преобразуем Markdown в HTML
         html = markdown2.markdown(
             text,
             extras=[
-                "fenced-code-blocks",    # Блоки кода с ```
-                "code-friendly",         # Не преобразовывать подчеркивания в em/strong
-                "tables",                # Поддержка таблиц
-                "break-on-newline",      # Разрывы строк
-                "cuddled-lists",         # Списки без пустых строк
-                "task_list",             # Списки задач [x]
-                "strike",                # Зачеркнутый текст
-                "highlight",             # Подсветка синтаксиса (нужен pygments)
+                "fenced-code-blocks",  # Блоки кода с ```
+                "code-friendly",
+                "tables",
+                "break-on-newline",
             ]
         )
+        
+        # Улучшаем блоки кода - добавляем классы для стилизации
+        # Заменяем простые <pre><code> на более структурированные блоки
+        html = re.sub(
+            r'<pre><code>(.*?)</code></pre>',
+            lambda m: format_code_block(m.group(1)),
+            html,
+            flags=re.DOTALL
+        )
+        
+        # Добавляем классы для inline кода
+        html = html.replace('<code>', '<code class="inline-code">')
+        
         return html.strip()
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")

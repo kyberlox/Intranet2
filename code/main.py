@@ -534,6 +534,13 @@ def custom_openapi():
         routes=app.routes,
         openapi_version="3.1.0"
     )
+
+    # Добавляем кастомную информацию
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://img.icons8.com/color/96/000000/api.png",
+        "backgroundColor": "#000000",
+        "altText": "API Logo"
+    }
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -548,22 +555,130 @@ async def get_openapi_endpoint():
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
+    async def get_documentation():
     return get_swagger_ui_html(
-        openapi_url="/openapi.json",  # ссылка на нашу схему
-        title="My API - Swagger UI",
-        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-        swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
-        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+        openapi_url="/openapi.json",
+        title="Intranet2.0 API Docs",
         swagger_ui_parameters={
             "defaultModelsExpandDepth": -1,
+            "defaultModelExpandDepth": 2,
+            "defaultModelRendering": "model",
+            "displayRequestDuration": True,
             "docExpansion": "none",
             "filter": True,
-            "displayRequestDuration": True,
+            "maxDisplayedTags": None,
+            "operationsSorter": "alpha",
+            "tagsSorter": "alpha",
+            "showExtensions": True,
+            "showCommonExtensions": True,
             "tryItOutEnabled": True,
+            "requestSnippetsEnabled": True,
+            "persistAuthorization": True,
         }
-    )
+    ) + CUSTOM_STYLE  # добавляем кастомные стили
+
+    # return get_swagger_ui_html(
+    #     openapi_url="/openapi.json",  # ссылка на нашу схему
+    #     title="My API - Swagger UI",
+    #     oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+    #     swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
+    #     swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+    #     swagger_ui_parameters={
+    #         "defaultModelsExpandDepth": -1,
+    #         "docExpansion": "none",
+    #         "filter": True,
+    #         "displayRequestDuration": True,
+    #         "tryItOutEnabled": True,
+    #     }
+    # )
 
 
-'''
-! Особенные запросы
-'''
+# Встроенный CSS стиль
+CUSTOM_STYLE = """
+<style>
+    /* Основные цвета */
+    :root {
+        --orange: #ff6600;
+        --black: #000000;
+        --dark-bg: #0a0a0a;
+        --white: #ffffff;
+        --gray: #333333;
+    }
+    
+    /* Общие стили */
+    body {
+        background-color: var(--dark-bg) !important;
+    }
+    
+    /* Swagger UI переопределения */
+    .swagger-ui {
+        background-color: var(--dark-bg) !important;
+        color: var(--white) !important;
+    }
+    
+    /* Верхняя панель */
+    .swagger-ui .topbar {
+        background-color: var(--black) !important;
+        border-bottom: 2px solid var(--orange) !important;
+    }
+    
+    /* Заголовки */
+    .swagger-ui .info .title {
+        color: var(--orange) !important;
+        font-size: 2em !important;
+    }
+    
+    /* Методы запросов */
+    .swagger-ui .opblock .opblock-summary-method {
+        background-color: var(--orange) !important;
+        color: var(--black) !important;
+        font-weight: bold !important;
+    }
+    
+    /* Карточки */
+    .swagger-ui .opblock {
+        background-color: var(--black) !important;
+        border: 1px solid var(--gray) !important;
+        border-left: 4px solid var(--orange) !important;
+    }
+    
+    /* Кнопки */
+    .swagger-ui .btn {
+        background-color: var(--orange) !important;
+        color: var(--black) !important;
+        border: none !important;
+        font-weight: bold !important;
+    }
+    
+    .swagger-ui .btn:hover {
+        background-color: #ff8533 !important;
+    }
+    
+    /* Текст */
+    .swagger-ui .info p,
+    .swagger-ui .info li,
+    .swagger-ui .opblock-tag {
+        color: var(--white) !important;
+    }
+    
+    /* Input поля */
+    .swagger-ui input,
+    .swagger-ui select,
+    .swagger-ui textarea {
+        background-color: var(--black) !important;
+        color: var(--white) !important;
+        border: 1px solid var(--gray) !important;
+    }
+    
+    /* Таблицы */
+    .swagger-ui table thead tr {
+        background-color: var(--black) !important;
+    }
+    
+    .swagger-ui table tbody tr {
+        background-color: #111111 !important;
+    }
+</style>
+"""
+
+

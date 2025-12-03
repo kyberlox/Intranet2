@@ -1278,8 +1278,34 @@ SWAGGER_UI_HTML = """
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    return HTMLResponse(content=SWAGGER_UI_HTML)
-    
+    async def custom_docs():
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>API Docs</title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css">
+        <style>
+            body { background: #0a0a0a; color: white; }
+            .swagger-ui .info .title { color: #ff6600 !important; }
+        </style>
+    </head>
+    <body>
+        <div id="swagger-ui"></div>
+        <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+        <script>
+            window.onload = () => {
+                SwaggerUIBundle({
+                    url: '/openapi.json',
+                    dom_id: '#swagger-ui',
+                    presets: [SwaggerUIBundle.presets.apis]
+                });
+            };
+        </script>
+    </body>
+    </html>
+    """)
+
 # async def custom_swagger_ui_html():
 #     html = get_swagger_ui_html(
 #         openapi_url="/openapi.json",

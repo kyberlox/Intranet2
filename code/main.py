@@ -1040,6 +1040,150 @@ CUSTOM_CSS = """
         border-radius: 6px !important;
         margin-top: 20px !important;
     }
+    /* === СТИЛИ ДЛЯ ОБРАБОТАННОГО MARKDOWN === */
+
+    /* Заголовки в описаниях */
+    .swagger-ui .info .description h1,
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3,
+    .swagger-ui .info .description h4,
+    .swagger-ui .opblock .opblock-summary-description h1,
+    .swagger-ui .opblock .opblock-summary-description h2,
+    .swagger-ui .opblock .opblock-summary-description h3,
+    .swagger-ui .opblock .opblock-summary-description h4 {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        margin: 1em 0 0.5em 0 !important;
+        padding-bottom: 0.3em !important;
+        border-bottom: 1px solid var(--border-light) !important;
+    }
+
+    /* Параграфы */
+    .swagger-ui .info .description p,
+    .swagger-ui .opblock .opblock-summary-description p {
+        color: var(--text-primary) !important;
+        margin: 0.8em 0 !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Списки */
+    .swagger-ui .info .description ul,
+    .swagger-ui .opblock .opblock-summary-description ul {
+        color: var(--text-primary) !important;
+        margin: 0.8em 0 0.8em 1.5em !important;
+        padding-left: 0 !important;
+    }
+
+    .swagger-ui .info .description li,
+    .swagger-ui .opblock .opblock-summary-description li {
+        color: var(--text-primary) !important;
+        margin: 0.4em 0 !important;
+        line-height: 1.5 !important;
+        list-style-type: disc !important;
+    }
+
+    /* Жирный текст */
+    .swagger-ui .info .description strong,
+    .swagger-ui .opblock .opblock-summary-description strong {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+    }
+
+    /* Курсив */
+    .swagger-ui .info .description em,
+    .swagger-ui .opblock .opblock-summary-description em {
+        font-style: italic !important;
+        opacity: 0.9 !important;
+    }
+
+    /* Inline код */
+    .swagger-ui .info .description code.inline-code,
+    .swagger-ui .opblock .opblock-summary-description code.inline-code {
+        background-color: rgba(245, 130, 31, 0.15) !important;
+        color: var(--accent-light) !important;
+        padding: 0.2em 0.4em !important;
+        border-radius: 3px !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+        font-size: 0.9em !important;
+        border: 1px solid rgba(245, 130, 31, 0.3) !important;
+    }
+
+    /* Блоки кода, созданные JavaScript */
+    .code-block-container {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        margin: 1em 0 !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .code-header {
+        background: linear-gradient(90deg, rgba(245, 130, 31, 0.1), rgba(245, 130, 31, 0.05)) !important;
+        border-bottom: 1px solid var(--border-light) !important;
+        padding: 10px 15px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .language-badge {
+        background-color: var(--accent) !important;
+        color: var(--bg-main) !important;
+        font-size: 0.75em !important;
+        font-weight: bold !important;
+        padding: 4px 10px !important;
+        border-radius: 12px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .copy-code-btn {
+        background-color: rgba(245, 130, 31, 0.2) !important;
+        color: var(--accent) !important;
+        border: 1px solid rgba(245, 130, 31, 0.3) !important;
+        border-radius: 6px !important;
+        padding: 6px 12px !important;
+        font-size: 0.8em !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .copy-code-btn:hover {
+        background-color: rgba(245, 130, 31, 0.3) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 8px rgba(245, 130, 31, 0.2) !important;
+    }
+
+    .code-block-container pre {
+        background-color: var(--bg-block) !important;
+        margin: 0 !important;
+        padding: 16px !important;
+        overflow-x: auto !important;
+    }
+
+    .code-block-container code {
+        display: block !important;
+        color: var(--text-primary) !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
+        font-size: 0.9em !important;
+        line-height: 1.5 !important;
+        white-space: pre !important;
+    }
+
+    /* Подсветка HTTP */
+    .http-method-highlight {
+        color: var(--accent) !important;
+        font-weight: bold !important;
+    }
+
+    .http-path {
+        color: var(--text-primary) !important;
+        font-weight: 500 !important;
+    }
 </style>
 
 <script>

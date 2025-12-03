@@ -59,13 +59,13 @@ load_dotenv()
 
 DOMAIN = os.getenv('HOST')
 
-#app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
-app = FastAPI(
-    version="2.0.0",
-    docs_url="/api/docs",
-    redoc_url=None,
-    #openapi_url="/api/openapi.json"
-)
+app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ", docs_url="/api/docs") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
+# app = FastAPI(
+#     version="2.0.0",
+#     docs_url="/api/docs",
+#     redoc_url=None,
+#     #openapi_url="/api/openapi.json"
+# )
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")
@@ -515,52 +515,52 @@ async def delete_tables(session: AsyncSession=Depends(get_async_db)):
 
 
 
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.staticfiles import StaticFiles
+# from fastapi.openapi.docs import get_swagger_ui_html
+# from fastapi.openapi.utils import get_openapi
+# from fastapi.staticfiles import StaticFiles
 
 
 
-# 1. Создаем кастомную OpenAPI схему
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
+# # 1. Создаем кастомную OpenAPI схему
+# def custom_openapi():
+#     if app.openapi_schema:
+#         return app.openapi_schema
     
-    openapi_schema = get_openapi(
-        title="My API",
-        version="2.0.0",
-        description="API description",
-        routes=app.routes,
-        openapi_version="3.1.0"
-    )
+#     openapi_schema = get_openapi(
+#         title="My API",
+#         version="2.0.0",
+#         description="API description",
+#         routes=app.routes,
+#         openapi_version="3.1.0"
+#     )
     
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
+#     app.openapi_schema = openapi_schema
+#     return app.openapi_schema
 
-app.openapi = custom_openapi
+# app.openapi = custom_openapi
 
 # # 2. Endpoint для получения OpenAPI схемы
 # @app.get("/openapi.json", include_in_schema=False)
 # async def get_openapi_endpoint():
 #     return app.openapi()
 
-# 3. Endpoint для Swagger UI
-@app.get("/api/docs", include_in_schema=False)
-async def custom_swagger_ui_html():
-    return get_swagger_ui_html(
-        openapi_url="/openapi.json",  # ссылка на нашу схему
-        title="My API - Swagger UI",
-        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-        swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
-        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
-        swagger_ui_parameters={
-            "defaultModelsExpandDepth": -1,
-            "docExpansion": "none",
-            "filter": True,
-            "displayRequestDuration": True,
-            "tryItOutEnabled": True,
-        }
-    )
+# # 3. Endpoint для Swagger UI
+# @app.get("/api/docs", include_in_schema=False)
+# async def custom_swagger_ui_html():
+#     return get_swagger_ui_html(
+#         openapi_url="/openapi.json",  # ссылка на нашу схему
+#         title="My API - Swagger UI",
+#         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+#         swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
+#         swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+#         swagger_ui_parameters={
+#             "defaultModelsExpandDepth": -1,
+#             "docExpansion": "none",
+#             "filter": True,
+#             "displayRequestDuration": True,
+#             "tryItOutEnabled": True,
+#         }
+#     )
 
 
 '''

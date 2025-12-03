@@ -539,10 +539,10 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-# 2. Endpoint для получения OpenAPI схемы
-@app.get("/openapi.json", include_in_schema=False)
-async def get_openapi_endpoint():
-    return app.openapi()
+# # 2. Endpoint для получения OpenAPI схемы
+# @app.get("/openapi.json", include_in_schema=False)
+# async def get_openapi_endpoint():
+#     return app.openapi()
 
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)

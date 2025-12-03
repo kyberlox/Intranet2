@@ -1210,45 +1210,83 @@ async def custom_swagger_ui_html():
 def markdown_to_html_safe(text: str) -> str:
     """
     Безопасное преобразование Markdown в HTML.
-    Обрабатывает вложенные теги <code> правильно.
+    Преобразует только блоки кода (```), а обычный текст оставляет как есть.
     """
+    if not text or not HAS_MARKDOWN2:
+        return text
     
     try:
-        # Шаг 1: Защищаем существующие HTML теги (особенно <code>)
-        # Помечаем теги <code> чтобы markdown2 их не трогал
-        protected_pattern = r'<code\b[^>]*>.*?</code>'
-        protected_parts = []
+        # Шаг 1: Защищаем блоки кода (```)
+        # Находим все блоки кода между ```
+        code_block_pattern = r'```(\w*)\n(.*?)```'
+        code_blocks = []
         
-        def protect_code(match):
-            protected_parts.append(match.group(0))
-            return f'__PROTECTED_CODE_{len(protected_parts)-1}__'
+        def protect_code_blocks(match):
+            language = match.group(1) or "text"
+            code_content = match.group(2)
+            code_blocks.append((language, code_content))
+            return f'__CODE_BLOCK_{len(code_blocks)-1}__'
         
-        # Защищаем все теги <code> перед преобразованием Markdown
-        protected_text = re.sub(protected_pattern, protect_code, text, flags=re.DOTALL)
+        # Заменяем блоки кода на плейсхолдеры
+        protected_text = re.sub(code_block_pattern, protect_code_blocks, text, flags=re.DOTALL)
         
-        # Шаг 2: Преобразуем Markdown в HTML
+        # Шаг 2: Преобразуем остальной Markdown (без блоков кода)
         html = markdown2.markdown(
             protected_text,
             extras=[
-                "fenced-code-blocks",  # Блоки кода с ```
-                "code-friendly",       # Не портить подчеркивания
-                "break-on-newline",    # Разрывы строк
-                "cuddled-lists",       # Компактные списки
+                "fenced-code-blocks",  # Это важно, чтобы markdown2 знал о блоках кода
+                "break-on-newline",
+                "cuddled-lists",
+                "code-friendly",
             ]
         )
         
-        # Шаг 3: Восстанавливаем защищенные теги <code>
-        for i, code_content in enumerate(protected_parts):
-            html = html.replace(f'__PROTECTED_CODE_{i}__', code_content)
+        # Шаг 3: Восстанавливаем блоки кода с правильным оформлением
+        for i, (language, code_content) in enumerate(code_blocks):
+            # Очищаем и форматируем код
+            from html import escape
+            formatted_code = escape(code_content.strip())
+            
+            # Создаем HTML для блока кода
+            code_html = create_code_block(formatted_code, language)
+            
+            # Заменяем плейсхолдер
+            placeholder = f'__CODE_BLOCK_{i}__'
+            html = html.replace(placeholder, code_html)
         
-        # Шаг 4: Обрабатываем блоки кода (```code```)
-        # Находим блоки кода и оборачиваем их в <pre><code>
-        html = process_code_blocks(html)
+        # Шаг 4: Обрабатываем inline код (`code`)
+        # markdown2 уже преобразовал `code` в <code>, это правильно
+        # Просто добавляем класс для inline кода
+        html = html.replace('<code>', '<code class="inline-code">')
         
         return html.strip()
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")
         return text
+
+def create_code_block(code_content: str, language: str = "text") -> str:
+    """
+    Создает HTML для блока кода.
+    language: python, bash, http, json, text и т.д.
+    """
+    # Определяем язык
+    lang_display = language.upper() if language and language != "text" else "CODE"
+    
+    # Определяем класс языка для подсветки
+    lang_class = f"language-{language}" if language else "language-text"
+    
+    return f'''
+    <div class="code-block-container">
+        <div class="code-header">
+            <span class="language-badge">{lang_display}</span>
+            <button class="copy-code-btn" onclick="copyCodeBlock(this)">
+                <span class="copy-icon">📋</span>
+                <span class="copy-text">Копировать</span>
+            </button>
+        </div>
+        <pre><code class="{lang_class}">{code_content}</code></pre>
+    </div>
+    '''
 
 def process_code_blocks(html: str) -> str:
     """Обрабатывает блоки кода, заменяя стандартные теги."""

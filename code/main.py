@@ -1335,14 +1335,12 @@ async def custom_swagger_ui_html():
 
 def markdown_to_html(text: str) -> str:
     """Преобразует Markdown в HTML с улучшенным форматированием кода."""
-    
+
     try:
-        # Преобразуем Markdown в HTML
-        try:
-            html = markdown2.markdown(
-                text,
-                extras=["fenced-code-blocks", "break-on-newline"]
-            )
+        html = markdown2.markdown(
+            text,
+            extras=["fenced-code-blocks", "break-on-newline"]
+        )
         return html.strip()
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")

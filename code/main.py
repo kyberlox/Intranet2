@@ -61,7 +61,7 @@ DOMAIN = os.getenv('HOST')
 
 #app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ", docs_url="/api/docs") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
 app = FastAPI(
-    titile="Intranet2.0 API DOCS",
+    title="Intranet2.0 API DOCS",
     version="2.0.0",
     docs_url=None,#"/api/docs",
     redoc_url=None,
@@ -1080,7 +1080,8 @@ async def get_openapi_endpoint():
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    html = get_swagger_ui_html(
+    # 1. Получаем объект HTMLResponse от стандартной функции
+    response_obj = get_swagger_ui_html(
         openapi_url="/openapi.json",
         title="🚀 Intranet2.0 API Docs",
         swagger_ui_parameters={
@@ -1100,42 +1101,49 @@ async def custom_swagger_ui_html():
             "persistAuthorization": True,
             "displayOperationId": False,
             "deepLinking": True,
-            "syntaxHighlight": {
-                "theme": "monokai"
-            },
+            "syntaxHighlight": {"theme": "monokai"},
             "tryItOutEnabled": True,
             "displayRequestDuration": True,
             "requestSnippetsEnabled": True,
         }
     )
     
-    # Добавляем кастомный заголовок
+    # 2. Извлекаем тело HTML как строку
+    html_content = response_obj.body.decode("utf-8")
+    
+    # 3. Добавляем кастомный заголовок
     custom_header = """
-    <div class="custom-header">
-        <h1>Intranet2.0 API Documentation</h1>
-        <p>
-            Welcome to the Intranet2.0 API documentation. This interactive documentation allows you to 
-            explore all available endpoints, test API requests directly from your browser, and understand 
-            how to integrate with our services. Use the <strong>Try it out</strong> buttons to test endpoints 
-            with real data.
+    <div style="
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        border-left: 6px solid #ff6600;
+    ">
+        <h1 style="color: #ff6600; margin: 0 0 10px 0;">🚀 Intranet2.0 API Documentation</h1>
+        <p style="color: #ffffff; margin: 0; font-size: 16px;">
+            Welcome to the Intranet2.0 API documentation. Explore available endpoints, test requests, 
+            and integrate with our services.
         </p>
     </div>
     """
     
-    # Вставляем кастомный заголовок после wrapper
-    html = re.sub(
+    # 4. Вставляем кастомный заголовок в HTML (используйте вашу логику)
+    # Вариант A: Замена через re.sub (как у вас)
+    modified_html = re.sub(
         r'(<div class="swagger-ui"><div class="wrapper">)',
         r'\1' + custom_header,
-        html
+        html_content
     )
     
-    # Заменяем стандартные CSS стили
-    html = html.replace(
-        '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">',
-        '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">\n' + CUSTOM_CSS
-    )
+    # ИЛИ Вариант B: Более простой способ через replace
+    # modified_html = html_content.replace(
+    #     '<div class="swagger-ui"><div class="wrapper">',
+    #     '<div class="swagger-ui"><div class="wrapper">' + custom_header
+    # )
     
-    # Удаляем стандартную тему, если она есть
-    html = re.sub(r'"theme":\s*{[^}]*}', '', html)
+    # 5. Добавляем кастомные стили в head
+    modified_html = modified_html.replace('</head>', CUSTOM_STYLE + '</head>')
     
-    return HTMLResponse(content=html)
+    # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
+    return HTMLResponse(content=modified_html)

@@ -528,46 +528,49 @@ import re
 # Кастомные стили
 CUSTOM_CSS = """
 <style>
-    /* Основные переменные */
+    /* === ОСНОВНЫЕ ПЕРЕМЕННЫЕ И СБРОС === */
     :root {
-        --primary: #ff6600;
-        --primary-light: #ff8533;
-        --primary-dark: #cc5200;
-        --bg-dark: #0a0a0a;
-        --bg-darker: #050505;
-        --bg-black: #000000;
-        --text-white: #ffffff;
-        --text-gray: #cccccc;
-        --text-dark: #333333;
-        --border-color: #333333;
-        --border-light: #444444;
-        --success: #00cc66;
-        --warning: #ffaa00;
-        --error: #ff3333;
-        --info: #3399ff;
+        --accent: #f5821f;
+        --accent-light: #ff9a42;
+        --accent-dark: #d6690b;
+        --text-primary: #d3d3d3;
+        --text-secondary: #A5A5A5;
+        --bg-main: rgb(19, 19, 19);
+        --bg-block: #1b1b1b;
+        --border-color: #f5821f;
+        --border-light: #333333;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --info: #3b82f6;
     }
 
-    /* Общие стили */
+    /* === ОСНОВНОЙ ФОН И ТЕКСТ === */
     body {
-        background-color: var(--bg-dark) !important;
-        color: var(--text-white) !important;
+        background-color: var(--bg-main) !important;
+        color: var(--text-primary) !important;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif !important;
         margin: 0 !important;
-        padding: 0 !important;
     }
 
-    /* Заменяем стандартные стили Swagger */
+    /* === КОНТЕЙНЕР SWAGGER UI === */
     .swagger-ui {
-        background-color: var(--bg-dark) !important;
+        background-color: var(--bg-main) !important;
         font-family: inherit !important;
     }
 
-    /* Верхняя панель */
+    .swagger-ui .wrapper {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+        padding: 20px !important;
+    }
+
+    /* === ВЕРХНЯЯ ПАНЕЛЬ (TOP BAR) === */
     .swagger-ui .topbar {
-        background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-darker) 100%) !important;
-        border-bottom: 3px solid var(--primary) !important;
+        background-color: var(--bg-block) !important;
+        border-bottom: 2px solid var(--border-color) !important;
         padding: 15px 0 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
     }
 
     .swagger-ui .topbar-wrapper {
@@ -583,8 +586,8 @@ CUSTOM_CSS = """
     }
 
     .swagger-ui .topbar-wrapper .link {
-        color: var(--primary) !important;
-        font-size: 24px !important;
+        color: var(--accent) !important;
+        font-size: 1.5em !important;
         font-weight: bold !important;
         text-decoration: none !important;
         display: flex !important;
@@ -593,337 +596,271 @@ CUSTOM_CSS = """
     }
 
     .swagger-ui .topbar-wrapper .link::before {
-        content: "🚀";
-        font-size: 28px;
+        content: "📚";
+        font-size: 1.3em;
     }
 
-    .swagger-ui .topbar-wrapper .link::after {
-        content: "Intranet2.0 API v2.0.0";
-    }
-
-    /* Заголовок */
+    /* === ЗАГОЛОВОК ИНФОРМАЦИОННОГО БЛОКА === */
     .swagger-ui .info .title {
-        color: var(--primary) !important;
-        font-size: 36px !important;
+        color: var(--accent) !important;
+        font-size: 2.5em !important;
         font-weight: bold !important;
-        margin-bottom: 15px !important;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+        margin-bottom: 10px !important;
+        border-bottom: 2px solid var(--border-color) !important;
+        padding-bottom: 15px !important;
     }
 
-    .swagger-ui .info .title::after {
-        content: " v2.0.0";
-        background: linear-gradient(135deg, var(--primary), var(--primary-light));
-        color: var(--bg-black);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: bold;
-        margin-left: 15px;
-        vertical-align: middle;
+    .swagger-ui .info .title small {
+        background-color: var(--accent) !important;
+        color: var(--bg-main) !important;
+        padding: 3px 10px !important;
+        border-radius: 12px !important;
+        font-size: 0.6em !important;
+        margin-left: 15px !important;
+        vertical-align: middle !important;
     }
 
-    /* Теги (группы endpoints) */
+    .swagger-ui .info .description p,
+    .swagger-ui .info .description li {
+        color: var(--text-primary) !important;
+        line-height: 1.6 !important;
+    }
+
+    .swagger-ui .info .description h1,
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3,
+    .swagger-ui .info .description h4 {
+        color: var(--accent) !important;
+        margin-top: 1.5em !important;
+        border-left: 4px solid var(--accent) !important;
+        padding-left: 10px !important;
+    }
+
+    /* === ТЕГИ (ГРУППЫ ЭНДПОИНТОВ) === */
     .swagger-ui .opblock-tag {
-        color: var(--text-white) !important;
-        font-size: 24px !important;
+        color: var(--accent) !important;
+        font-size: 1.3em !important;
         font-weight: 600 !important;
-        border-bottom: 3px solid var(--primary) !important;
-        padding: 20px 0 15px 0 !important;
-        margin: 40px 0 20px 0 !important;
-        background: none !important;
+        background-color: var(--bg-block) !important;
+        border: 1px solid var(--border-light) !important;
+        border-left: 4px solid var(--accent) !important;
+        border-radius: 8px !important;
+        padding: 15px 20px !important;
+        margin: 20px 0 !important;
+        transition: all 0.3s ease !important;
     }
 
     .swagger-ui .opblock-tag:hover {
-        background: rgba(255, 102, 0, 0.1) !important;
-        cursor: pointer;
+        background-color: #222222 !important;
+        transform: translateX(5px) !important;
+        cursor: pointer !important;
     }
 
-    /* Блоки операций */
+    /* === БЛОКИ ОПЕРАЦИЙ (ENDPOINTS) === */
     .swagger-ui .opblock {
-        background: var(--bg-black) !important;
-        border: 1px solid var(--border-color) !important;
-        border-left: 6px solid var(--primary) !important;
-        border-radius: 10px !important;
-        margin-bottom: 25px !important;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        background-color: var(--bg-block) !important;
+        border: 1px solid var(--border-light) !important;
+        border-left: 4px solid var(--accent) !important;
+        border-radius: 8px !important;
+        margin-bottom: 15px !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
         transition: all 0.3s ease !important;
     }
 
     .swagger-ui .opblock:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
-        border-color: var(--primary-light) !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important;
+        transform: translateY(-2px) !important;
+        border-left-color: var(--accent-light) !important;
     }
 
-    /* Методы HTTP */
+    .swagger-ui .opblock .opblock-summary {
+        padding: 15px !important;
+    }
+
+    /* === МЕТОДЫ HTTP (GET, POST, ETC) === */
     .swagger-ui .opblock .opblock-summary-method {
-        background: var(--primary) !important;
-        color: var(--bg-black) !important;
+        background-color: var(--accent) !important;
+        color: var(--bg-main) !important;
         font-weight: bold !important;
-        border-radius: 6px !important;
-        min-width: 90px !important;
+        border-radius: 4px !important;
+        min-width: 70px !important;
         text-align: center !important;
-        padding: 8px 0 !important;
-        font-size: 14px !important;
-        text-transform: uppercase !important;
+        padding: 6px 0 !important;
+        font-size: 0.9em !important;
         border: none !important;
-        box-shadow: 0 2px 4px rgba(255, 102, 0, 0.3) !important;
     }
 
-    /* Цвета для разных методов */
+    /* Цвета для разных HTTP методов */
     .swagger-ui .opblock.opblock-get .opblock-summary-method {
-        background: var(--primary) !important;
+        background-color: var(--accent) !important; /* GET - оранжевый */
     }
-
     .swagger-ui .opblock.opblock-post .opblock-summary-method {
-        background: var(--success) !important;
+        background-color: var(--success) !important; /* POST - зеленый */
     }
-
     .swagger-ui .opblock.opblock-put .opblock-summary-method {
-        background: var(--warning) !important;
+        background-color: var(--warning) !important; /* PUT - желтый */
     }
-
     .swagger-ui .opblock.opblock-delete .opblock-summary-method {
-        background: var(--error) !important;
+        background-color: var(--error) !important; /* DELETE - красный */
     }
-
     .swagger-ui .opblock.opblock-patch .opblock-summary-method {
-        background: var(--info) !important;
+        background-color: var(--info) !important; /* PATCH - синий */
     }
 
-    /* Путь endpoint */
+    /* === ПУТЬ И ОПИСАНИЕ ЭНДПОИНТА === */
     .swagger-ui .opblock .opblock-summary-path {
-        color: var(--text-white) !important;
-        font-size: 18px !important;
+        color: var(--text-primary) !important;
+        font-size: 1.1em !important;
         font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        margin-left: 10px !important;
         font-weight: 500 !important;
-        margin-left: 15px !important;
     }
 
-    /* Описание endpoint */
     .swagger-ui .opblock .opblock-summary-description {
-        color: var(--text-gray) !important;
-        font-size: 14px !important;
-        margin-top: 10px !important;
+        color: var(--text-secondary) !important;
+        font-size: 0.9em !important;
+        margin-top: 5px !important;
     }
 
-    /* Кнопки */
+    /* === КНОПКИ === */
     .swagger-ui .btn {
-        background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
-        color: var(--bg-black) !important;
+        background-color: var(--accent) !important;
+        color: var(--bg-main) !important;
         border: none !important;
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         font-weight: bold !important;
-        padding: 12px 24px !important;
-        font-size: 14px !important;
+        padding: 8px 16px !important;
+        font-size: 0.9em !important;
         cursor: pointer !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3) !important;
+        transition: all 0.2s ease !important;
     }
 
     .swagger-ui .btn:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 12px rgba(255, 102, 0, 0.4) !important;
+        background-color: var(--accent-light) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 8px rgba(245, 130, 31, 0.2) !important;
     }
 
     .swagger-ui .btn.execute {
-        min-width: 100px !important;
+        min-width: 80px !important;
     }
 
-    /* Поля ввода */
+    /* === ПОЛЯ ВВОДА И СЕЛЕКТОРЫ === */
     .swagger-ui input[type="text"],
     .swagger-ui input[type="password"],
     .swagger-ui input[type="email"],
     .swagger-ui input[type="number"],
     .swagger-ui select,
     .swagger-ui textarea {
-        background: rgba(0, 0, 0, 0.7) !important;
-        color: var(--text-white) !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 6px !important;
-        padding: 12px 15px !important;
-        font-size: 14px !important;
-        transition: all 0.3s ease !important;
+        background-color: var(--bg-block) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 4px !important;
+        padding: 10px !important;
+        font-size: 0.95em !important;
     }
 
     .swagger-ui input:focus,
     .swagger-ui select:focus,
     .swagger-ui textarea:focus {
-        border-color: var(--primary) !important;
+        border-color: var(--accent) !important;
         outline: none !important;
-        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2) !important;
+        box-shadow: 0 0 0 2px rgba(245, 130, 31, 0.2) !important;
     }
 
-    /* Параметры */
+    /* === ПАРАМЕТРЫ === */
     .swagger-ui .parameters-col_name {
-        color: var(--text-white) !important;
+        color: var(--text-primary) !important;
         font-weight: 500 !important;
     }
 
     .swagger-ui .parameter__type {
-        color: var(--primary) !important;
+        color: var(--accent) !important;
         font-weight: bold !important;
     }
 
-    /* Ответы */
+    .swagger-ui .parameter__name {
+        color: var(--text-secondary) !important;
+    }
+
+    /* === ОТВЕТЫ (RESPONSES) === */
     .swagger-ui .response-col_status {
-        color: var(--primary) !important;
+        color: var(--accent) !important;
         font-weight: bold !important;
     }
 
-    /* Модели */
+    .swagger-ui .response-col_description {
+        color: var(--text-secondary) !important;
+    }
+
+    /* === МОДЕЛИ ДАННЫХ === */
+    .swagger-ui section.models {
+        background-color: var(--bg-block) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 8px !important;
+    }
+
     .swagger-ui .model-title {
-        color: var(--primary) !important;
+        color: var(--accent) !important;
         font-weight: bold !important;
     }
 
-    /* Панель авторизации */
-    .swagger-ui .scheme-container {
-        background: rgba(0, 0, 0, 0.5) !important;
-        box-shadow: none !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 10px !important;
-        margin: 20px 0 !important;
-        padding: 20px !important;
+    .swagger-ui .model {
+        color: var(--text-secondary) !important;
     }
 
-    /* Таблицы */
+    /* === ТАБЛИЦЫ === */
     .swagger-ui table thead tr th,
     .swagger-ui table thead tr td {
-        background: var(--bg-black) !important;
-        color: var(--text-white) !important;
-        border-bottom: 2px solid var(--primary) !important;
+        background-color: var(--bg-block) !important;
+        color: var(--accent) !important;
+        border-bottom: 2px solid var(--border-color) !important;
+    }
+
+    .swagger-ui table tbody tr {
+        background-color: var(--bg-block) !important;
     }
 
     .swagger-ui table tbody tr td {
-        color: var(--text-gray) !important;
-        border-bottom: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+        border-bottom: 1px solid var(--border-light) !important;
     }
 
-    /* Вкладки */
-    .swagger-ui .tab {
-        border-bottom: 3px solid transparent !important;
-        padding: 10px 20px !important;
+    /* === ПАНЕЛЬ АВТОРИЗАЦИИ === */
+    .swagger-ui .scheme-container {
+        background-color: var(--bg-block) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        margin: 20px 0 !important;
+        padding: 15px !important;
     }
 
-    .swagger-ui .tab:hover {
-        background: rgba(255, 102, 0, 0.1) !important;
-    }
-
-    .swagger-ui .tab.active {
-        border-bottom-color: var(--primary) !important;
-        color: var(--primary) !important;
-        font-weight: bold !important;
-    }
-
-    /* Скрываем ненужные элементы */
-    .swagger-ui .download-url-wrapper {
-        display: none !important;
-    }
-
-    /* Кастомный скроллбар */
+    /* === СКРОЛЛБАР (CUSTOM) === */
     ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
     }
-
     ::-webkit-scrollbar-track {
-        background: var(--bg-dark);
+        background: var(--bg-main);
     }
-
     ::-webkit-scrollbar-thumb {
-        background: var(--primary);
+        background: var(--accent);
         border-radius: 5px;
     }
-
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--primary-light);
+        background: var(--accent-light);
     }
 
-    /* Анимации */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .swagger-ui .opblock {
-        animation: fadeIn 0.5s ease-out;
-    }
-
-    /* Кастомный заголовок */
-    .custom-header {
-        background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-darker) 100%);
-        padding: 30px;
-        margin: 0 0 30px 0;
-        border-radius: 12px;
-        border-left: 8px solid var(--primary);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        animation: fadeIn 0.7s ease-out;
-    }
-
-    .custom-header h1 {
-        color: var(--primary);
-        font-size: 32px;
-        margin: 0 0 10px 0;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .custom-header h1::before {
-        content: "🚀";
-        font-size: 36px;
-    }
-
-    .custom-header p {
-        color: var(--text-gray);
-        font-size: 16px;
-        line-height: 1.6;
-        margin: 0;
-    }
-
-    /* Дополнительные улучшения */
-    .swagger-ui .info .description {
-        color: var(--text-gray) !important;
-        font-size: 16px !important;
-        line-height: 1.8 !important;
-    }
-
-    .swagger-ui .info .description h2,
-    .swagger-ui .info .description h3 {
-        color: var(--primary) !important;
-        margin: 20px 0 10px 0 !important;
-    }
-
-    /* Иконки для методов */
-    .swagger-ui .opblock-summary-method::before {
-        margin-right: 5px;
-    }
-
-    .swagger-ui .opblock.opblock-get .opblock-summary-method::before {
-        content: "📥 ";
-    }
-
-    .swagger-ui .opblock.opblock-post .opblock-summary-method::before {
-        content: "➕ ";
-    }
-
-    .swagger-ui .opblock.opblock-put .opblock-summary-method::before {
-        content: "✏️ ";
-    }
-
-    .swagger-ui .opblock.opblock-delete .opblock-summary-method::before {
-        content: "🗑️ ";
-    }
-
-    .swagger-ui .opblock.opblock-patch .opblock-summary-method::before {
-        content: "🔄 ";
+    /* === ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ === */
+    .swagger-ui .info .description .markdown code,
+    .swagger-ui .opblock-description-wrapper .markdown code {
+        background-color: var(--bg-block) !important;
+        color: var(--accent) !important;
+        border: 1px solid var(--border-light) !important;
+        padding: 2px 5px !important;
+        border-radius: 3px !important;
+        font-family: monospace !important;
     }
 </style>
 

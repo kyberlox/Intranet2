@@ -224,9 +224,9 @@ class RootsModel:
             res = await session.execute(stmt)
             moders = res.scalars().all()
             for moder in moders:
-                # if section_id in moder.root_token['EditorModer']:
-                for sec_id in moder.root_token['EditorModer']:
-                    stmt = select(Section.name).where(Section.id == sec_id)
+                if section_id in moder.root_token['EditorModer']:
+                # for sec_id in moder.root_token['EditorModer']:
+                    stmt = select(Section.name).where(Section.id == section_id)
                     res = await session.execute(stmt)
                     section_name = res.scalar()
 
@@ -243,7 +243,7 @@ class RootsModel:
                         'id': moder.user_uuid,
                         'name': f"{moder_fio.last_name} {moder_fio.name} {moder_fio.second_name}",
                         'photo_file_url': photo_file_url,
-                        'section_id': sec_id,
+                        'section_id': section_id,
                         'section_name': section_name
                     }
                     result.append(moder_info)

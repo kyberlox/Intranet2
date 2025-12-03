@@ -526,7 +526,7 @@ from typing import Any, Dict
 
 
 
-# Встроенный CSS стиль
+
 # Кастомные стили
 CUSTOM_CSS = """
 <style>
@@ -537,20 +537,20 @@ CUSTOM_CSS = """
         --accent-light: #ff9a42;
         --accent-dark: #d6690b;
         
-        /* Текст - теперь ВСЕГДА белый/светлый для лучшей читаемости */
+        /* Текст - ВСЕ БЕЛЫЙ для максимальной читаемости */
         --text-primary: #ffffff;           /* Основной текст - чистый белый */
-        --text-secondary: #e0e0e0;         /* Вторичный текст - светло-серый */
-        --text-muted: #b0b0b0;             /* Приглушенный текст */
+        --text-secondary: #ffffff;         /* Вторичный текст - тоже белый */
+        --text-muted: #ffffff;             /* Приглушенный текст - белый с прозрачностью */
         
-        /* Фоны - сделаем чуть светлее, как вы просили */
-        --bg-main: rgb(28, 28, 28);        /* Основной фон (было 19,19,19) */
-        --bg-block: #242424;               /* Фон блоков (было 1b,1b,1b) */
-        --bg-card: #2a2a2a;                /* Дополнительный фон для карточек */
+        /* Фоны */
+        --bg-main: rgb(35, 35, 35);        /* Ещё светлее основной фон */
+        --bg-block: #2d2d2d;               /* Более светлый фон блоков */
+        --bg-card: #363636;                /* Самый светлый фон для карточек */
         
         /* Границы */
         --border-color: #f5821f;
-        --border-light: #404040;           /* Более светлые границы */
-        --border-soft: #333333;
+        --border-light: #505050;           /* Светлые границы */
+        --border-soft: #444444;
         
         /* Статусные цвета */
         --success: #4caf50;
@@ -595,6 +595,103 @@ CUSTOM_CSS = """
         font-weight: bold !important;
     }
 
+    /* === ОПИСАНИЯ В SWAGGER UI - ВСЁ БЕЛОЕ! === */
+    
+    /* Основные описания */
+    .swagger-ui .info .description *,
+    .swagger-ui .info .description,
+    .swagger-ui .opblock .opblock-summary-description *,
+    .swagger-ui .opblock .opblock-summary-description,
+    .swagger-ui .opblock .opblock-summary-description p,
+    .swagger-ui .opblock .opblock-summary-description li,
+    .swagger-ui .opblock .opblock-summary-description span,
+    .swagger-ui .opblock .opblock-summary-description div,
+    .swagger-ui .opblock .opblock-summary-description strong,
+    .swagger-ui .opblock .opblock-summary-description em {
+        color: var(--text-primary) !important;  /* БЕЛЫЙ! */
+    }
+
+    /* Параграфы в описаниях */
+    .swagger-ui .info .description p,
+    .swagger-ui .opblock .opblock-summary-description p {
+        color: var(--text-primary) !important;
+        margin: 1em 0 !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Списки в описаниях - КРИТИЧНО ВАЖНО! */
+    .swagger-ui .info .description ul,
+    .swagger-ui .info .description ol,
+    .swagger-ui .opblock .opblock-summary-description ul,
+    .swagger-ui .opblock .opblock-summary-description ol {
+        color: var(--text-primary) !important;
+        margin: 1em 0 1em 2em !important;
+    }
+
+    .swagger-ui .info .description li,
+    .swagger-ui .opblock .opblock-summary-description li {
+        color: var(--text-primary) !important;
+        margin: 0.5em 0 !important;
+        line-height: 1.5 !important;
+        list-style-type: disc !important;
+    }
+
+    /* Элементы списков (маркеры) */
+    .swagger-ui .info .description li::marker,
+    .swagger-ui .opblock .opblock-summary-description li::marker {
+        color: var(--accent) !important;
+    }
+
+    /* Заголовки в описаниях */
+    .swagger-ui .info .description h1,
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3,
+    .swagger-ui .info .description h4,
+    .swagger-ui .info .description h5,
+    .swagger-ui .info .description h6,
+    .swagger-ui .opblock .opblock-summary-description h1,
+    .swagger-ui .opblock .opblock-summary-description h2,
+    .swagger-ui .opblock .opblock-summary-description h3,
+    .swagger-ui .opblock .opblock-summary-description h4,
+    .swagger-ui .opblock .opblock-summary-description h5,
+    .swagger-ui .opblock .opblock-summary-description h6 {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        margin: 1.5em 0 0.8em 0 !important;
+        padding-bottom: 0.3em !important;
+        border-bottom: 1px solid var(--border-light) !important;
+    }
+
+    /* Жирный текст в описаниях */
+    .swagger-ui .info .description strong,
+    .swagger-ui .opblock .opblock-summary-description strong {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+    }
+
+    /* Курсив в описаниях */
+    .swagger-ui .info .description em,
+    .swagger-ui .opblock .opblock-summary-description em {
+        color: var(--text-primary) !important;
+        font-style: italic !important;
+        opacity: 0.9 !important;
+    }
+
+    /* Ссылки в описаниях */
+    .swagger-ui .info .description a,
+    .swagger-ui .opblock .opblock-summary-description a {
+        color: var(--accent-light) !important;
+        text-decoration: none !important;
+        border-bottom: 1px dotted var(--accent) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .swagger-ui .info .description a:hover,
+    .swagger-ui .opblock .opblock-summary-description a:hover {
+        border-bottom-style: solid !important;
+        color: var(--accent) !important;
+    }
+
     /* === ЗАГОЛОВОК ИНФОРМАЦИОННОГО БЛОКА === */
     .swagger-ui .info .title {
         color: var(--accent) !important;
@@ -604,12 +701,6 @@ CUSTOM_CSS = """
         border-bottom: 2px solid var(--border-color) !important;
         padding-bottom: 15px !important;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    .swagger-ui .info .description p,
-    .swagger-ui .info .description li {
-        color: var(--text-secondary) !important;
-        line-height: 1.6 !important;
     }
 
     /* === ТЕГИ (ГРУППЫ ЭНДПОИНТОВ) === */
@@ -657,10 +748,18 @@ CUSTOM_CSS = """
         font-weight: 500 !important;
     }
 
+    /* Описание эндпоинта - теперь отдельный блок */
     .swagger-ui .opblock .opblock-summary-description {
-        color: var(--text-secondary) !important;
-        font-size: 0.9em !important;
-        margin-top: 5px !important;
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        padding: 15px !important;
+        margin-top: 10px !important;
+        font-size: 0.95em !important;
+        line-height: 1.6 !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     }
 
     /* === КНОПКИ === */
@@ -801,7 +900,7 @@ CUSTOM_CSS = """
     .swagger-ui .opblock .opblock-summary-description pre samp {
         display: block !important;
         background-color: transparent !important;
-        color: var(--text-primary) !important;  /* Белый текст для кода! */
+        color: var(--text-primary) !important;
         padding: 0 !important;
         margin: 0 !important;
         font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
@@ -811,47 +910,6 @@ CUSTOM_CSS = """
         word-break: normal !important;
         word-wrap: normal !important;
         overflow-x: visible !important;
-    }
-
-    /* Бейдж языка в правом верхнем углу */
-    .swagger-ui .info .description pre::after,
-    .swagger-ui .opblock .opblock-summary-description pre::after {
-        content: attr(data-language) !important;
-        position: absolute !important;
-        top: 0 !important;
-        right: 0 !important;
-        background-color: var(--accent) !important;
-        color: var(--bg-main) !important;
-        font-size: 0.7em !important;
-        padding: 4px 10px !important;
-        border-radius: 0 6px 0 4px !important;
-        font-weight: bold !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.5px !important;
-        opacity: 0.9 !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-    }
-
-    /* Цвета бейджей для разных языков */
-    .swagger-ui .info .description pre[data-language="HTTP"]::after,
-    .swagger-ui .opblock .opblock-summary-description pre[data-language="HTTP"]::after {
-        background-color: var(--accent) !important;
-    }
-
-    .swagger-ui .info .description pre[data-language="BASH"]::after,
-    .swagger-ui .opblock .opblock-summary-description pre[data-language="BASH"]::after {
-        background-color: var(--success) !important;
-    }
-
-    .swagger-ui .info .description pre[data-language="PYTHON"]::after,
-    .swagger-ui .opblock .opblock-summary-description pre[data-language="PYTHON"]::after {
-        background-color: var(--info) !important;
-    }
-
-    .swagger-ui .info .description pre[data-language="JSON"]::after,
-    .swagger-ui .opblock .opblock-summary-description pre[data-language="JSON"]::after {
-        background-color: var(--warning) !important;
-        color: #000 !important;
     }
 
     /* Стили для HTTP подсветки */
@@ -875,60 +933,6 @@ CUSTOM_CSS = """
         color: #64b5f6 !important;
         text-decoration: underline !important;
         text-decoration-color: rgba(100, 181, 246, 0.4) !important;
-    }
-
-    /* === КАСТОМНЫЕ ЗАГОЛОВКИ В Markdown === */
-    .swagger-ui .info .description h1,
-    .swagger-ui .info .description h2,
-    .swagger-ui .info .description h3,
-    .swagger-ui .info .description h4,
-    .swagger-ui .opblock .opblock-summary-description h1,
-    .swagger-ui .opblock .opblock-summary-description h2,
-    .swagger-ui .opblock .opblock-summary-description h3,
-    .swagger-ui .opblock .opblock-summary-description h4 {
-        color: var(--accent) !important;
-        font-weight: 600 !important;
-        margin: 1.5em 0 0.8em 0 !important;
-        padding-bottom: 0.3em !important;
-        border-bottom: 1px solid var(--border-light) !important;
-    }
-
-    .swagger-ui .info .description p {
-        margin: 1em 0 !important;
-        color: var(--text-secondary) !important;
-    }
-
-    .swagger-ui .info .description strong {
-        color: var(--accent) !important;
-        font-weight: 600 !important;
-    }
-
-    /* Списки */
-    .swagger-ui .info .description ul,
-    .swagger-ui .info .description ol {
-        margin: 1em 0 1em 2em !important;
-        color: var(--text-secondary) !important;
-    }
-
-    .swagger-ui .info .description li {
-        margin: 0.5em 0 !important;
-        line-height: 1.5 !important;
-        color: var(--text-secondary) !important;
-    }
-
-    /* Ссылки */
-    .swagger-ui .info .description a,
-    .swagger-ui .opblock .opblock-summary-description a {
-        color: var(--accent-light) !important;
-        text-decoration: none !important;
-        border-bottom: 1px dotted var(--accent) !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .swagger-ui .info .description a:hover,
-    .swagger-ui .opblock .opblock-summary-description a:hover {
-        border-bottom-style: solid !important;
-        color: var(--accent) !important;
     }
 
     /* === СКРОЛЛБАРЫ === */
@@ -999,10 +1003,40 @@ CUSTOM_CSS = """
         font-weight: bold !important;
     }
 
-    /* Информационные сообщения */
-    .swagger-ui .info .description .markdown p,
-    .swagger-ui .info .description .renderedMarkdown p {
-        color: var(--text-secondary) !important;
+    /* === ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ === */
+    
+    /* Делаем фон описаний API ещё светлее */
+    .swagger-ui .info {
+        background-color: var(--bg-block) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 10px !important;
+        padding: 25px !important;
+        margin: 20px 0 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* Выделяем маркеры списков акцентным цветом */
+    .swagger-ui .info .description ul li::before {
+        content: "•" !important;
+        color: var(--accent) !important;
+        font-size: 1.2em !important;
+        margin-right: 8px !important;
+        vertical-align: middle !important;
+    }
+
+    /* Разделители между пунктами в списках */
+    .swagger-ui .info .description li {
+        border-left: 2px solid rgba(245, 130, 31, 0.2) !important;
+        padding-left: 10px !important;
+        margin-left: -10px !important;
+    }
+
+    /* Особое выделение для блоков с примерами */
+    .swagger-ui .opblock .opblock-summary-description h3 {
+        background: linear-gradient(90deg, rgba(245, 130, 31, 0.1), transparent) !important;
+        padding: 8px 15px !important;
+        border-radius: 6px !important;
+        margin-top: 20px !important;
     }
 </style>
 
@@ -1056,151 +1090,6 @@ CUSTOM_CSS = """
             
             element.innerHTML = withUrls;
         }
-    });
-
-    // Дополнительный JavaScript для улучшений
-    document.addEventListener('DOMContentLoaded', function() {
-        // Добавляем кнопку "Наверх"
-        const scrollToTopBtn = document.createElement('button');
-        scrollToTopBtn.innerHTML = '⬆';
-        scrollToTopBtn.title = 'Наверх';
-        scrollToTopBtn.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ff6600, #ff8533);
-            color: #000;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 1000;
-            display: none;
-            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
-            transition: all 0.3s ease;
-        `;
-        
-        scrollToTopBtn.addEventListener('mouseover', () => {
-            scrollToTopBtn.style.transform = 'scale(1.1)';
-            scrollToTopBtn.style.boxShadow = '0 6px 16px rgba(255, 102, 0, 0.4)';
-        });
-        
-        scrollToTopBtn.addEventListener('mouseout', () => {
-            scrollToTopBtn.style.transform = 'scale(1)';
-            scrollToTopBtn.style.boxShadow = '0 4px 12px rgba(255, 102, 0, 0.3)';
-        });
-        
-        scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        
-        document.body.appendChild(scrollToTopBtn);
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollToTopBtn.style.display = 'block';
-            } else {
-                scrollToTopBtn.style.display = 'none';
-            }
-        });
-        
-        // Уведомление о загрузке
-        setTimeout(() => {
-            const notification = document.createElement('div');
-            notification.innerHTML = `
-                <div style="
-                    position: fixed;
-                    top: 80px;
-                    right: 20px;
-                    background: linear-gradient(135deg, #000, #333);
-                    color: #ff6600;
-                    padding: 15px 20px;
-                    border-radius: 8px;
-                    border-left: 4px solid #ff6600;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    z-index: 1000;
-                    max-width: 300px;
-                    animation: slideIn 0.5s ease-out;
-                ">
-                    <strong>🎯 Документация загружена!</strong>
-                    <div style="margin-top: 5px; font-size: 12px; color: #ccc;">
-                        Используйте Try it out для тестирования API
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.5s ease-out';
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
-        }, 1000);
-        
-        // Добавляем стили для анимаций уведомлений
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    });
-    // Функция для копирования кода в буфер обмена
-    function copyCode(button) {
-        const codeBlock = button.closest('.code-block').querySelector('code');
-        const textToCopy = codeBlock.textContent;
-        
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            // Визуальная обратная связь
-            const originalText = button.textContent;
-            button.textContent = '✓ Скопировано!';
-            button.style.backgroundColor = '#10b981';
-            
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.style.backgroundColor = '';
-            }, 2000);
-        }).catch(err => {
-            console.error('Ошибка копирования:', err);
-            button.textContent = '❌ Ошибка';
-            button.style.backgroundColor = '#ef4444';
-            
-            setTimeout(() => {
-                button.textContent = '📋 Копировать';
-                button.style.backgroundColor = '';
-            }, 2000);
-        });
-    }
-
-    // Автоматическая инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        // Добавляем обработчики ко всем существующим кнопкам копирования
-        document.querySelectorAll('.copy-button').forEach(button => {
-            button.addEventListener('click', function() {
-                copyCode(this);
-            });
-        });
     });
 </script>
 """

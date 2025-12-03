@@ -1338,8 +1338,6 @@ def process_description(obj: Any) -> Any:
 
 def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
     """Конвертирует все Markdown описания в OpenAPI схеме в HTML."""
-    if not HAS_MARKDOWN2:
-        return schema
     
     print("🔄 Преобразую Markdown описания в HTML...")
     return process_description(schema)

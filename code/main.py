@@ -1207,43 +1207,55 @@ async def custom_swagger_ui_html():
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
 
-def markdown_to_html_fixed(text: str) -> str:
+def markdown_to_html_direct(text: str) -> str:
     """
-    Преобразует Markdown в HTML БЕЗ лишнего экранирования.
-    Возвращает чистый HTML, который Swagger UI отобразит правильно.
+    Прямое преобразование Markdown в HTML.
+    Просто и понятно.
     """
+    if not text:
+        return text
     
-    try:
-        # Шаг 1: Обрабатываем блоки кода (```)
-        # Важно: экранируем только содержимое внутри блоков кода
+    result = []
+    lines = text.split('\n')
+    i = 0
+    n = len(lines)
+    
+    while i < n:
+        line = lines[i]
         
-        # Находим блоки кода
-        import re
-        
-        # Паттерн для блоков кода с ```язык\nкод\n```
-        code_block_pattern = r'```(\w*)\n(.*?)```'
-        
-        # Список для хранения обработанных блоков кода
-        processed_blocks = []
-        
-        def process_code_block(match):
-            language = match.group(1).strip()
-            code_content = match.group(2).strip()
+        # Проверяем начало блока кода ```
+        if line.strip().startswith('```'):
+            # Начало блока кода
+            language = line.strip()[3:].strip()  # Язык после ```
+            code_lines = []
             
-            # Определяем язык (если не указан)
+            i += 1
+            while i < n and not lines[i].strip().startswith('```'):
+                code_lines.append(lines[i])
+                i += 1
+            
+            # Пропускаем закрывающий ```
+            i += 1
+            
+            # Собираем код
+            code_content = '\n'.join(code_lines)
+            
+            # Определяем язык
             if not language:
-                # Простая проверка на HTTP
+                # Автоматическое определение
                 first_line = code_content.split('\n')[0] if '\n' in code_content else code_content
-                if any(method in first_line.upper() for method in ['GET ', 'POST ', 'PUT ', 'DELETE ', 'PATCH ']):
+                if any(method in first_line.upper() for method in ['GET', 'POST', 'PUT', 'DELETE']):
                     language = 'http'
                 else:
                     language = 'text'
             
-            # Создаем HTML для блока кода
-            code_html = f'''
+            # Создаем HTML блока кода
+            lang_display = 'HTTP' if language == 'http' else 'CODE'
+            
+            code_block = f'''
             <div class="code-block-container" data-language="{language}">
                 <div class="code-header">
-                    <span class="language-badge">{language.upper() if language != 'text' else 'CODE'}</span>
+                    <span class="language-badge">{lang_display}</span>
                     <button class="copy-code-btn" onclick="copyCodeBlock(this)">
                         <span class="copy-icon">📋</span>
                         <span class="copy-text">Копировать</span>
@@ -1253,36 +1265,28 @@ def markdown_to_html_fixed(text: str) -> str:
             </div>
             '''
             
-            processed_blocks.append(code_html)
-            return f'__CODE_BLOCK_{len(processed_blocks)-1}__'
+            result.append(code_block)
+            continue
         
-        # Заменяем блоки кода на плейсхолдеры
-        text_with_placeholders = re.sub(
-            code_block_pattern, 
-            process_code_block, 
-            text, 
-            flags=re.DOTALL | re.MULTILINE
-        )
-        
-        # Шаг 2: Преобразуем остальной Markdown
-        # Используем markdown2 БЕЗ экранирования HTML
-        html = markdown2.markdown(
-            text_with_placeholders,
-            extras=["fenced-code-blocks", "break-on-newline", "cuddled-lists"],
-            safe_mode=False  # Важно: не экранировать HTML!
-        )
-        
-        # Шаг 3: Восстанавливаем блоки кода
-        for i, block_html in enumerate(processed_blocks):
-            html = html.replace(f'__CODE_BLOCK_{i}__', block_html)
-        
-        # Шаг 4: Обрабатываем inline код (`code`)
-        html = html.replace('<code>', '<code class="inline-code">')
-        
-        # Шаг 5: Добавляем подсветку для HTTP методов в уже созданных блоках
-        html = highlight_http_in_blocks(html)
-        
-        return html.strip()
+        # Обычный текст - используем markdown2
+        result.append(line)
+        i += 1
+    
+    # Объединяем все строки
+    text_to_process = '\n'.join(result)
+    
+    if HAS_MARKDOWN2:
+        try:
+            html = markdown2.markdown(
+                text_to_process,
+                extras=["break-on-newline", "cuddled-lists"],
+                safe_mode=False  # Не экранировать HTML!
+            )
+            return html
+        except:
+            return text_to_process
+    else:
+        return text_to_process
         
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")
@@ -1521,7 +1525,7 @@ def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
             for key, value in obj.items():
                 # Преобразуем только description и summary
                 if key in ["description", "summary"] and isinstance(value, str):
-                    obj[key] = markdown_to_html_fixed(value)
+                    obj[key] = markdown_to_html_direct(value)
                 elif isinstance(value, dict):
                     process_dict(value)
                 elif isinstance(value, list):

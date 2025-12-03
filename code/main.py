@@ -62,8 +62,7 @@ DOMAIN = os.getenv('HOST')
 #app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
 app = FastAPI(
     version="2.0.0",
-    # Отключаем автоматическую документацию
-    docs_url=None,
+    docs_url="/api/docs",
     redoc_url=None,
     openapi_url=None
 )
@@ -136,7 +135,7 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
 open_links = [
-    "/docs",
+    "/api/docs",
     "/api/users/update",
     "/api/users/update_user_info",
     "/openapi.json",

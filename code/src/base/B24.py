@@ -194,10 +194,6 @@ description="""
     GET /calendar/01.01.2024/01.01.2025
     ```
 
-    ## Пример вывода:
-    ```
-    
-    ```
     """,
 )
 def calendar_event(date_from, date_to):

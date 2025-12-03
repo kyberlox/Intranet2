@@ -61,7 +61,7 @@ DOMAIN = os.getenv('HOST')
 
 #app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ", docs_url="/api/docs") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
 app = FastAPI(
-    titile="Intranet2.0 API DOCS"
+    titile="Intranet2.0 API DOCS",
     version="2.0.0",
     docs_url="/api/docs",
     redoc_url=None,

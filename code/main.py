@@ -1181,6 +1181,42 @@ CUSTOM_CSS = """
         `;
         document.head.appendChild(style);
     });
+    // Функция для копирования кода в буфер обмена
+    function copyCode(button) {
+        const codeBlock = button.closest('.code-block').querySelector('code');
+        const textToCopy = codeBlock.textContent;
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // Визуальная обратная связь
+            const originalText = button.textContent;
+            button.textContent = '✓ Скопировано!';
+            button.style.backgroundColor = '#10b981';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Ошибка копирования:', err);
+            button.textContent = '❌ Ошибка';
+            button.style.backgroundColor = '#ef4444';
+            
+            setTimeout(() => {
+                button.textContent = '📋 Копировать';
+                button.style.backgroundColor = '';
+            }, 2000);
+        });
+    }
+
+    // Автоматическая инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем обработчики ко всем существующим кнопкам копирования
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', function() {
+                copyCode(this);
+            });
+        });
+    });
 </script>
 """
 

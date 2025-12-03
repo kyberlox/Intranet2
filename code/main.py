@@ -555,7 +555,6 @@ async def get_openapi_endpoint():
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    async def get_documentation():
     return get_swagger_ui_html(
         openapi_url="/openapi.json",
         title="Intranet2.0 API Docs",

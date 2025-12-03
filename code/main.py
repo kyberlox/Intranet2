@@ -97,7 +97,7 @@ app.include_router(C_app, prefix="/api")
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
-templates = Jinja2Templates(directory="./src/services/templates") 
+#templates = Jinja2Templates(directory="./src/services/templates") 
 
 # origins = [
 #     "http://localhost:8000",
@@ -521,6 +521,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import re
+
 
 
 # Встроенный CSS стиль

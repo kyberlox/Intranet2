@@ -1042,85 +1042,75 @@ CUSTOM_CSS = """
     }
 </style>
 
-<!-- JavaScript для добавления data-language атрибутов -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Находим все блоки <pre><samp>
-        document.querySelectorAll('pre samp').forEach(function(sampElement) {
-            const preElement = sampElement.parentElement;
-            
-            // Определяем язык по классу
-            if (sampElement.classList.contains('language-http')) {
-                preElement.setAttribute('data-language', 'HTTP');
-                highlightHttpMethods(sampElement);
-            } else if (sampElement.classList.contains('language-bash')) {
-                preElement.setAttribute('data-language', 'BASH');
-            } else if (sampElement.classList.contains('language-python')) {
-                preElement.setAttribute('data-language', 'PYTHON');
-            } else if (sampElement.classList.contains('language-json')) {
-                preElement.setAttribute('data-language', 'JSON');
-            } else if (sampElement.classList.contains('language-sql')) {
-                preElement.setAttribute('data-language', 'SQL');
-            } else if (sampElement.classList.contains('language-yaml')) {
-                preElement.setAttribute('data-language', 'YAML');
-            } else {
-                preElement.setAttribute('data-language', 'CODE');
-            }
-        });
-        
-        // Подсветка HTTP методов
-        function highlightHttpMethods(element) {
-            const html = element.innerHTML;
-            
-            // Подсвечиваем HTTP методы и пути
-            const highlighted = html.replace(
-                /(\b(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD)\b)(\s+)(\/[^\s]*)/g,
-                '<span class="http-method">$1</span>$3<span class="http-path">$4</span>'
-            );
-            
-            // Подсвечиваем заголовки (-H ...)
-            const withHeaders = highlighted.replace(
-                /(-H\s+["']([^"']+)["'])/g,
-                '<span class="http-header">$1</span>'
-            );
-            
-            // Подсвечиваем URL
-            const withUrls = withHeaders.replace(
-                /(https?:\/\/[^\s"'<>]+)/g,
-                '<span class="http-url">$1</span>'
-            );
-            
-            element.innerHTML = withUrls;
-        }
-    });
-</script>
-<script>
-    // === ОБРАБОТКА MARKDOWN НА КЛИЕНТЕ ===
+    // === ОСНОВНАЯ ФУНКЦИЯ ОБРАБОТКИ MARKDOWN ===
 
-    function processMarkdownOnClient() {
-        console.log("🔧 Обрабатываю Markdown на клиенте...");
+    function initMarkdownProcessing() {
+        console.log("🚀 Инициализирую обработку Markdown...");
         
-        // 1. Обрабатываем основное описание
-        const infoDescription = document.querySelector('.swagger-ui .info .description');
-        if (infoDescription) {
-            infoDescription.innerHTML = convertMarkdownToHtml(infoDescription.textContent);
+        // Обрабатываем сразу при загрузке
+        processAllMarkdown();
+        
+        // Наблюдатель за изменениями DOM
+        setupMutationObserver();
+        
+        // Обработчик кликов
+        document.addEventListener('click', handleSwaggerClick);
+    }
+
+    function processAllMarkdown() {
+        console.log("🔍 Ищу элементы с Markdown...");
+        
+        // 1. Основное описание API
+        const infoElement = document.querySelector('.swagger-ui .info .description');
+        if (infoElement) {
+            console.log("Найдено основное описание");
+            processElementMarkdown(infoElement);
         }
         
-        // 2. Обрабатываем описания эндпоинтов
-        document.querySelectorAll('.swagger-ui .opblock .opblock-summary-description').forEach(desc => {
-            if (desc.textContent.includes('[CODE_BLOCK')) {
-                desc.innerHTML = convertMarkdownToHtml(desc.textContent);
+        // 2. Описания всех эндпоинтов
+        const endpointDescriptions = document.querySelectorAll('.swagger-ui .opblock .opblock-summary-description');
+        console.log(`Найдено описаний эндпоинтов: ${endpointDescriptions.length}`);
+        
+        endpointDescriptions.forEach((desc, index) => {
+            if (desc.textContent && (desc.textContent.includes('[CODE_BLOCK') || desc.textContent.includes('###'))) {
+                console.log(`Обрабатываю описание ${index + 1}`);
+                processElementMarkdown(desc);
             }
         });
         
-        // 3. Обрабатываем все текстовые элементы с Markdown
-        document.querySelectorAll('.swagger-ui .renderedMarkdown, .swagger-ui .markdown').forEach(element => {
-            if (element.textContent.includes('[CODE_BLOCK')) {
-                element.innerHTML = convertMarkdownToHtml(element.textContent);
+        // 3. Все элементы с классом markdown
+        const markdownElements = document.querySelectorAll('.swagger-ui .markdown, .swagger-ui .renderedMarkdown');
+        markdownElements.forEach(el => {
+            if (el.textContent && el.textContent.includes('[CODE_BLOCK')) {
+                processElementMarkdown(el);
             }
         });
         
-        console.log("✅ Markdown обработан");
+        console.log("✅ Обработка завершена");
+    }
+
+    function processElementMarkdown(element) {
+        if (!element || !element.textContent) return;
+        
+        const originalText = element.textContent;
+        
+        // Проверяем, нужно ли обрабатывать
+        if (!originalText.includes('[CODE_BLOCK') && 
+            !originalText.includes('### ') && 
+            !originalText.includes('## ') && 
+            !originalText.includes('# ') &&
+            !originalText.includes('**')) {
+            return; // Нет Markdown разметки
+        }
+        
+        console.log("📝 Обрабатываю элемент:", originalText.substring(0, 100) + "...");
+        
+        const html = convertMarkdownToHtml(originalText);
+        element.innerHTML = html;
+        
+        // Инициализируем кнопки копирования в новых блоках кода
+        initCopyButtons();
     }
 
     function convertMarkdownToHtml(text) {
@@ -1128,19 +1118,26 @@ CUSTOM_CSS = """
         
         let html = text;
         
-        // 1. Обрабатываем блоки кода [CODE_BLOCK]
-        const codeBlockRegex = /\[CODE_BLOCK language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
+        // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
+        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
         
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
-            // Очищаем код от лишних пробелов
+            console.log(`Найден блок кода с языком: ${language}`);
+            
+            // Очищаем код
             codeContent = codeContent.trim();
             
             // Определяем отображаемое имя языка
             let langDisplay = language.toUpperCase();
-            if (language === 'text') {
+            if (language === 'text' || language === '') {
                 // Автоматически определяем HTTP
                 const firstLine = codeContent.split('\n')[0];
-                if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].some(m => firstLine.includes(m))) {
+                const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+                const isHttp = httpMethods.some(method => 
+                    firstLine.toUpperCase().includes(method.toUpperCase())
+                );
+                
+                if (isHttp) {
                     langDisplay = 'HTTP';
                     language = 'http';
                 } else {
@@ -1153,7 +1150,8 @@ CUSTOM_CSS = """
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
             
             // Подсвечиваем HTTP методы если это HTTP
             let highlightedCode = escapedCode;
@@ -1161,11 +1159,14 @@ CUSTOM_CSS = """
                 highlightedCode = highlightHttpMethods(escapedCode);
             }
             
+            // Создаем уникальный ID для блока
+            const blockId = 'code-block-' + Math.random().toString(36).substr(2, 9);
+            
             return `
-            <div class="code-block-container" data-language="${language}">
+            <div id="${blockId}" class="code-block-container" data-language="${language}">
                 <div class="code-header">
                     <span class="language-badge">${langDisplay}</span>
-                    <button class="copy-code-btn" onclick="copyCodeBlock(this)">
+                    <button class="copy-code-btn" data-target="${blockId}">
                         <span class="copy-icon">📋</span>
                         <span class="copy-text">Копировать</span>
                     </button>
@@ -1176,43 +1177,65 @@ CUSTOM_CSS = """
         });
         
         // 2. Обрабатываем заголовки
-        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+        html = html.replace(/^###\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
         
-        // 3. Обрабатываем жирный текст
-        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        // 3. Обрабатываем жирный текст (**текст**)
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
         
-        // 4. Обрабатываем курсив
-        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-        html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+        // 4. Обрабатываем курсив (*текст*)
+        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
         
-        // 5. Обрабатываем списки
-        html = html.replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>');
-        html = html.replace(/^\s*\*\s+(.*$)/gim, '<li>$1</li>');
+        // 5. Обрабатываем списки (начинающиеся с -)
+        // Сначала находим все строки со списками
+        const lines = html.split('\n');
+        let inList = false;
+        let listHtml = '';
         
-        // Группируем li в ul
-        html = html.replace(/(<li>.*?<\/li>)/g, '<ul>$1</ul>');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            if (line.startsWith('- ')) {
+                if (!inList) {
+                    inList = true;
+                    listHtml += '<ul class="markdown-list">';
+                }
+                const itemText = line.substring(2);
+                listHtml += `<li class="markdown-list-item">${itemText}</li>`;
+            } else {
+                if (inList) {
+                    inList = false;
+                    listHtml += '</ul>';
+                }
+                listHtml += line + '\n';
+            }
+        }
         
-        // 6. Обрабатываем параграфы
-        html = html.replace(/\n\n/g, '</p><p>');
-        html = '<p>' + html + '</p>';
-        html = html.replace(/<p><\/p>/g, ''); // Убираем пустые параграфы
+        if (inList) {
+            listHtml += '</ul>';
+        }
         
-        // 7. Обрабатываем inline код (`code`)
+        html = listHtml;
+        
+        // 6. Обрабатываем inline код (`code`)
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
-        // 8. Обрабатываем переносы строк
+        // 7. Заменяем двойные переносы на параграфы
+        html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
+        html = '<p class="markdown-p">' + html + '</p>';
+        
+        // 8. Убираем пустые параграфы
+        html = html.replace(/<p class="markdown-p"><\/p>/g, '');
+        
+        // 9. Заменяем одиночные переносы на <br>
         html = html.replace(/\n/g, '<br>');
         
         return html;
     }
 
     function highlightHttpMethods(codeHtml) {
-        // HTTP методы для подсветки
         const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
-        
         let highlighted = codeHtml;
         
         httpMethods.forEach(method => {
@@ -1220,7 +1243,7 @@ CUSTOM_CSS = """
             highlighted = highlighted.replace(regex, '<span class="http-method-highlight">$1</span>');
         });
         
-        // Также подсвечиваем пути после методов
+        // Подсвечиваем пути после HTTP методов
         highlighted = highlighted.replace(
             /(<span class="http-method-highlight">[^<]+<\/span>)\s+([^\s<]+)/g,
             '$1 <span class="http-path">$2</span>'
@@ -1229,63 +1252,188 @@ CUSTOM_CSS = """
         return highlighted;
     }
 
-    // Функция копирования кода
-    function copyCodeBlock(button) {
-        const container = button.closest('.code-block-container');
-        const codeElement = container.querySelector('code');
-        const text = codeElement.textContent;
+    // === ФУНКЦИИ ДЛЯ КНОПОК КОПИРОВАНИЯ ===
+
+    function initCopyButtons() {
+        document.querySelectorAll('.copy-code-btn').forEach(button => {
+            // Убираем старые обработчики
+            button.replaceWith(button.cloneNode(true));
+        });
         
-        navigator.clipboard.writeText(text).then(() => {
-            const originalHTML = button.innerHTML;
-            button.innerHTML = '<span class="copy-icon">✓</span><span class="copy-text">Скопировано!</span>';
-            button.style.background = 'rgba(76, 175, 80, 0.2)';
-            
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.style.background = '';
-            }, 2000);
-        }).catch(err => {
-            console.error('Ошибка копирования:', err);
-            button.innerHTML = '<span class="copy-icon">❌</span><span class="copy-text">Ошибка</span>';
-            button.style.background = 'rgba(244, 67, 54, 0.2)';
-            
-            setTimeout(() => {
-                button.innerHTML = '<span class="copy-icon">📋</span><span class="copy-text">Копировать</span>';
-                button.style.background = '';
-            }, 2000);
+        document.querySelectorAll('.copy-code-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const blockId = this.getAttribute('data-target');
+                const codeBlock = document.getElementById(blockId);
+                
+                if (!codeBlock) return;
+                
+                const codeElement = codeBlock.querySelector('code');
+                const text = codeElement ? codeElement.textContent : '';
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<span class="copy-icon">✓</span><span class="copy-text">Скопировано!</span>';
+                    this.style.background = 'rgba(76, 175, 80, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Ошибка копирования:', err);
+                    this.innerHTML = '<span class="copy-icon">❌</span><span class="copy-text">Ошибка</span>';
+                    this.style.background = 'rgba(244, 67, 54, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<span class="copy-icon">📋</span><span class="copy-text">Копировать</span>';
+                        this.style.background = '';
+                    }, 2000);
+                });
+            });
         });
     }
 
-    // Запускаем обработку при загрузке и после изменений
-    document.addEventListener('DOMContentLoaded', function() {
-        // Первая обработка
-        setTimeout(processMarkdownOnClient, 500);
-        
-        // Обрабатываем при изменении контента (для динамических элементов)
+    // === НАБЛЮДАТЕЛЬ И ОБРАБОТЧИКИ СОБЫТИЙ ===
+
+    function setupMutationObserver() {
         const observer = new MutationObserver(function(mutations) {
+            let shouldProcess = false;
+            
             mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length) {
-                    setTimeout(processMarkdownOnClient, 100);
+                if (mutation.addedNodes.length > 0) {
+                    shouldProcess = true;
                 }
             });
+            
+            if (shouldProcess) {
+                setTimeout(() => {
+                    processAllMarkdown();
+                }, 100);
+            }
         });
         
-        // Наблюдаем за изменениями в Swagger UI
         const swaggerContainer = document.querySelector('.swagger-ui');
         if (swaggerContainer) {
             observer.observe(swaggerContainer, {
                 childList: true,
-                subtree: true
+                subtree: true,
+                attributes: false,
+                characterData: false
             });
         }
+    }
+
+    function handleSwaggerClick(e) {
+        // Если кликнули на эндпоинт
+        if (e.target.closest('.opblock-tag') || 
+            e.target.closest('.opblock-summary') ||
+            e.target.closest('.expand-operation')) {
+            setTimeout(() => {
+                processAllMarkdown();
+            }, 300);
+        }
+    }
+
+    // === СТИЛИ ДЛЯ MARKDOWN ===
+    const markdownStyles = `
+        <style>
+            .markdown-h1 { color: #f5821f; font-size: 1.8em; margin: 1em 0 0.5em 0; font-weight: bold; }
+            .markdown-h2 { color: #f5821f; font-size: 1.5em; margin: 1em 0 0.5em 0; font-weight: bold; }
+            .markdown-h3 { color: #f5821f; font-size: 1.3em; margin: 1em 0 0.5em 0; font-weight: bold; }
+            .markdown-p { margin: 0.5em 0; line-height: 1.5; color: #ffffff; }
+            .markdown-list { margin: 0.5em 0 0.5em 1.5em; color: #ffffff; }
+            .markdown-list-item { margin: 0.3em 0; line-height: 1.4; color: #ffffff; }
+            .inline-code { background: rgba(245, 130, 31, 0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #ff9a42; }
+            strong { color: #f5821f; font-weight: bold; }
+            em { font-style: italic; opacity: 0.9; }
+            
+            .code-block-container { 
+                background: #2d2d2d; 
+                border: 1px solid #404040; 
+                border-radius: 8px; 
+                margin: 1em 0; 
+                overflow: hidden; 
+            }
+            .code-header { 
+                background: linear-gradient(90deg, rgba(245,130,31,0.1), rgba(245,130,31,0.05)); 
+                border-bottom: 1px solid #404040; 
+                padding: 8px 12px; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+            }
+            .language-badge { 
+                background: #f5821f; 
+                color: #000; 
+                font-size: 0.75em; 
+                font-weight: bold; 
+                padding: 3px 8px; 
+                border-radius: 4px; 
+                text-transform: uppercase; 
+            }
+            .copy-code-btn { 
+                background: rgba(245,130,31,0.2); 
+                color: #f5821f; 
+                border: 1px solid rgba(245,130,31,0.3); 
+                border-radius: 4px; 
+                padding: 4px 8px; 
+                font-size: 0.8em; 
+                cursor: pointer; 
+                display: flex; 
+                align-items: center; 
+                gap: 4px; 
+                transition: all 0.2s; 
+            }
+            .copy-code-btn:hover { 
+                background: rgba(245,130,31,0.3); 
+                transform: translateY(-1px); 
+            }
+            .code-block-container pre { 
+                margin: 0; 
+                padding: 12px; 
+                overflow-x: auto; 
+                background: #242424; 
+            }
+            .code-block-container code { 
+                display: block; 
+                color: #ffffff; 
+                font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; 
+                font-size: 0.9em; 
+                line-height: 1.4; 
+                white-space: pre; 
+            }
+            .http-method-highlight { color: #f5821f; font-weight: bold; }
+            .http-path { color: #ffffff; }
+        </style>
+    `;
+
+    // === ЗАПУСК ВСЕГО ПРИ ЗАГРУЗКЕ ===
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем стили
+        document.head.insertAdjacentHTML('beforeend', markdownStyles);
+        
+        // Запускаем обработку с небольшой задержкой для полной загрузки Swagger UI
+        setTimeout(initMarkdownProcessing, 1000);
+        
+        // Также пробуем каждые 500ms на случай если Swagger грузится медленно
+        let attempts = 0;
+        const checkInterval = setInterval(() => {
+            attempts++;
+            if (document.querySelector('.swagger-ui .info') || attempts > 10) {
+                clearInterval(checkInterval);
+                if (attempts <= 10) {
+                    initMarkdownProcessing();
+                }
+            }
+        }, 500);
     });
 
-    // Также обрабатываем при клике на эндпоинты
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.opblock')) {
-            setTimeout(processMarkdownOnClient, 300);
-        }
-    });
+    // Экспортируем функции для отладки
+    window.processMarkdown = processAllMarkdown;
+    window.convertMarkdown = convertMarkdownToHtml;
 </script>
 """
 

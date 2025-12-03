@@ -1211,6 +1211,9 @@ def custom_openapi():
     import json
     schema_preview = json.dumps(openapi_schema, indent=2, ensure_ascii=False)[:500]
     print(f"[DEBUG] Первые 500 символов схемы:\n{schema_preview}")
+
+    # Преобразуем Markdown описания в HTML
+    openapi_schema = convert_markdown_in_schema(openapi_schema)
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema

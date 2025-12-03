@@ -1338,28 +1338,11 @@ def markdown_to_html(text: str) -> str:
     
     try:
         # Преобразуем Markdown в HTML
+        try:
         html = markdown2.markdown(
             text,
-            extras=[
-                "fenced-code-blocks",  # Блоки кода с ```
-                "code-friendly",
-                "tables",
-                "break-on-newline",
-            ]
+            extras=["fenced-code-blocks", "break-on-newline"]
         )
-        
-        # Улучшаем блоки кода - добавляем классы для стилизации
-        # Заменяем простые <pre><code> на более структурированные блоки
-        html = re.sub(
-            r'<pre><code>(.*?)</code></pre>',
-            lambda m: format_code_block(m.group(1)),
-            html,
-            flags=re.DOTALL
-        )
-        
-        # Добавляем классы для inline кода
-        html = html.replace('<code>', '<code class="inline-code">')
-        
         return html.strip()
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")

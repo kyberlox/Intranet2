@@ -63,7 +63,7 @@ DOMAIN = os.getenv('HOST')
 app = FastAPI(
     titile="Intranet2.0 API DOCS",
     version="2.0.0",
-    docs_url="/api/docs",
+    docs_url=None,#"/api/docs",
     redoc_url=None,
     openapi_url="/api/openapi.json"
 )
@@ -1048,7 +1048,7 @@ def custom_openapi():
         title="Intranet2.0 API Docs",
         version="2.0.0",
         description="""
-        Добро пожаловать! 
+        Добро пожаловать!
         Тут проедставлена документация к ресурсам REST API, реализованного с помощью Python3 Fastapi, для внутреннего функционирования веб-сервиса Intranet2.0!
 
         Особенности проекта:

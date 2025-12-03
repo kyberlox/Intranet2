@@ -1275,7 +1275,7 @@ CUSTOM_CSS = """
             let langDisplay = language.toUpperCase();
             if (language === 'text' || language === '') {
                 // Автоматически определяем HTTP
-                const firstLine = codeContent.split('\n')[0];
+                const firstLine = codeContent.split('\\n')[0];
                 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
                 const isHttp = httpMethods.some(method => 
                     firstLine.toUpperCase().includes(method.toUpperCase())
@@ -1333,7 +1333,7 @@ CUSTOM_CSS = """
         
         // 5. Обрабатываем списки (начинающиеся с -)
         // Сначала находим все строки со списками
-        const lines = html.split('\n');
+        const lines = html.split('\\n');
         let inList = false;
         let listHtml = '';
         
@@ -1352,7 +1352,7 @@ CUSTOM_CSS = """
                     inList = false;
                     listHtml += '</ul>';
                 }
-                listHtml += line + '\n';
+                listHtml += line + '\\n';
             }
         }
         
@@ -1366,14 +1366,14 @@ CUSTOM_CSS = """
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
         // 7. Заменяем двойные переносы на параграфы
-        html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
+        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
         html = '<p class="markdown-p">' + html + '</p>';
         
         // 8. Убираем пустые параграфы
         html = html.replace(/<p class="markdown-p"><\/p>/g, '');
         
         // 9. Заменяем одиночные переносы на <br>
-        html = html.replace(/\n/g, '<br>');
+        html = html.replace(/\\n/g, '<br>');
         
         return html;
     }

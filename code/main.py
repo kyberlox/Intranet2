@@ -1207,84 +1207,165 @@ async def custom_swagger_ui_html():
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
 
-def markdown_to_html(text: str) -> str:
-    """Преобразует Markdown в HTML с улучшенным форматированием кода."""
-
+def markdown_to_html_safe(text: str) -> str:
+    """
+    Безопасное преобразование Markdown в HTML.
+    Обрабатывает вложенные теги <code> правильно.
+    """
+    
     try:
-        html = markdown2.markdown(
-            text,
-            extras=["fenced-code-blocks", "break-on-newline"]
-        )
-        # Это преобразует <pre><code>...</code></pre> в <pre><samp>...</samp></pre>
+        # Шаг 1: Защищаем существующие HTML теги (особенно <code>)
+        # Помечаем теги <code> чтобы markdown2 их не трогал
+        protected_pattern = r'<code\b[^>]*>.*?</code>'
+        protected_parts = []
         
-        # Ищем все блоки <pre><code>...</code></pre>
-        # Используем ленивый квантификатор, чтобы захватить до ближайшего закрывающего </code></pre>
-        pattern = r'<pre><code>(.*?)</code></pre>'
-        replacement = '<pre><samp>\\1</samp></pre>'
-        html = re.sub(pattern, replacement, html, flags=re.DOTALL)
-
+        def protect_code(match):
+            protected_parts.append(match.group(0))
+            return f'__PROTECTED_CODE_{len(protected_parts)-1}__'
+        
+        # Защищаем все теги <code> перед преобразованием Markdown
+        protected_text = re.sub(protected_pattern, protect_code, text, flags=re.DOTALL)
+        
+        # Шаг 2: Преобразуем Markdown в HTML
+        html = markdown2.markdown(
+            protected_text,
+            extras=[
+                "fenced-code-blocks",  # Блоки кода с ```
+                "code-friendly",       # Не портить подчеркивания
+                "break-on-newline",    # Разрывы строк
+                "cuddled-lists",       # Компактные списки
+            ]
+        )
+        
+        # Шаг 3: Восстанавливаем защищенные теги <code>
+        for i, code_content in enumerate(protected_parts):
+            html = html.replace(f'__PROTECTED_CODE_{i}__', code_content)
+        
+        # Шаг 4: Обрабатываем блоки кода (```code```)
+        # Находим блоки кода и оборачиваем их в <pre><code>
+        html = process_code_blocks(html)
+        
         return html.strip()
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")
         return text
 
-def process_description(obj: Any, context: str = "root") -> Any:
-    """
-    Рекурсивно обрабатывает объект OpenAPI схемы.
-    context: текущий контекст ('description', 'summary', 'title', 'model', 'field')
-    """
-    if isinstance(obj, dict):
-        result = {}
-        for key, value in obj.items():
-            # Определяем, нужно ли преобразовывать Markdown в HTML
-            should_convert_markdown = False
-            
-            # Обрабатываем описания, которые могут содержать Markdown
-            if key in ["description", "summary"]:
-                should_convert_markdown = True
-                new_context = key
-            # Заголовки тоже могут содержать Markdown
-            elif key == "title" and context in ["info", "tag", "schema"]:
-                should_convert_markdown = True
-                new_context = "title"
-            else:
-                new_context = key
-            
-            # Преобразуем только если нужно и значение - строка
-            if should_convert_markdown and isinstance(value, str):
-                result[key] = markdown_to_html(value)
-            else:
-                # Рекурсивно обрабатываем остальное
-                result[key] = process_description(value, new_context)
-        return result
-    elif isinstance(obj, list):
-        return [process_description(item, context) for item in obj]
-    else:
-        return obj
+def process_code_blocks(html: str) -> str:
+    """Обрабатывает блоки кода, заменяя стандартные теги."""
+    # Обрабатываем блоки кода из Markdown
+    # Они уже преобразованы markdown2 в <pre><code>...</code></pre>
+    
+    # Заменяем <code> внутри <pre> на кастомный тег
+    def replace_code_tag(match):
+        code_content = match.group(2)
+        # Очищаем HTML-сущности
+        from html import unescape
+        code_content = unescape(code_content)
+        
+        # Экранируем специальные символы
+        code_content = escape(code_content)
+        
+        # Определяем язык
+        language = detect_language_from_content(code_content)
+        
+        # Создаем новый блок кода
+        return f'''
+        <div class="code-block-container">
+            <div class="code-header">
+                <span class="language-badge">{language}</span>
+                <button class="copy-code-btn" onclick="copyCodeBlock(this)">
+                    <span class="copy-icon">📋</span>
+                    <span class="copy-text">Копировать</span>
+                </button>
+            </div>
+            <pre><code class="language-{language}">{code_content}</code></pre>
+        </div>
+        '''
+    
+    # Регулярное выражение для поиска <pre><code>...</code></pre>
+    pattern = r'<pre>\s*<code(?:\s+class="([^"]*)")?>(.*?)</code>\s*</pre>'
+    
+    return re.sub(pattern, replace_code_tag, html, flags=re.DOTALL)
+
+def detect_language_from_content(content: str) -> str:
+    """Определяет язык программирования по содержимому."""
+    first_line = content.strip().split('\n')[0].strip() if content.strip() else ""
+    
+    # HTTP запросы
+    http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
+    if any(method in first_line.upper() for method in http_methods):
+        return "http"
+    
+    # Bash команды
+    if first_line.startswith(('$', '#', 'curl', 'wget', 'ssh', 'git', 'docker')):
+        return "bash"
+    
+    # Python
+    python_keywords = ['import ', 'def ', 'class ', 'from ', 'print(', 'async ', 'await ']
+    if any(keyword in first_line for keyword in python_keywords):
+        return "python"
+    
+    # JSON
+    if first_line.startswith(('{', '[', '"')):
+        return "json"
+    
+    # SQL
+    sql_keywords = ['SELECT ', 'INSERT ', 'UPDATE ', 'DELETE ', 'CREATE ', 'DROP ']
+    if any(keyword in first_line.upper() for keyword in sql_keywords):
+        return "sql"
+    
+    # YAML
+    if first_line.startswith(('---', 'apiVersion:', 'version:', 'name:')):
+        return "yaml"
+    
+    return "text"
 
 def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
-    """Конвертирует Markdown только в description и summary полях."""
+    """
+    Конвертирует Markdown в HTML только в нужных местах.
+    Работает безопасно и не ломает структуру схемы.
+    """
     
-    print("🔄 Преобразую Markdown только в description/summary полях...")
+    print("🔧 Преобразую Markdown описания...")
     
     # Создаем глубокую копию
     import copy
     processed_schema = copy.deepcopy(schema)
     
-    # Рекурсивная функция для замены только description и summary
-    def replace_descriptions(obj):
+    # Рекурсивная функция для обработки
+    def process_dict(obj):
         if isinstance(obj, dict):
             for key, value in obj.items():
+                # Преобразуем только description и summary
                 if key in ["description", "summary"] and isinstance(value, str):
-                    obj[key] = markdown_to_html(value)
-                elif isinstance(value, (dict, list)):
-                    replace_descriptions(value)
-        elif isinstance(obj, list):
-            for item in obj:
-                if isinstance(item, (dict, list)):
-                    replace_descriptions(item)
+                    obj[key] = markdown_to_html_safe(value)
+                elif isinstance(value, dict):
+                    process_dict(value)
+                elif isinstance(value, list):
+                    process_list(value)
+        return obj
     
-    # Применяем только к нужным полям
-    replace_descriptions(processed_schema)
+    def process_list(items):
+        for i, item in enumerate(items):
+            if isinstance(item, dict):
+                process_dict(item)
+            elif isinstance(item, list):
+                process_list(item)
+        return items
+    
+    # Обрабатываем основные части схемы
+    if "info" in processed_schema:
+        process_dict(processed_schema["info"])
+    
+    if "paths" in processed_schema:
+        process_dict(processed_schema["paths"])
+    
+    if "components" in processed_schema and "schemas" in processed_schema["components"]:
+        for schema_name, schema_def in processed_schema["components"]["schemas"].items():
+            if isinstance(schema_def, dict):
+                process_dict(schema_def)
+    
+    if "tags" in processed_schema:
+        process_list(processed_schema["tags"])
     
     return processed_schema

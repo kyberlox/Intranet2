@@ -986,7 +986,16 @@ def custom_openapi():
     openapi_schema = get_openapi(
         title="Intranet2.0 API Docs",
         version="2.0.0",
-        description="...",
+        description="""
+        Добро пожаловать!
+            Добро пожаловать!
+        Тут проедставлена документация к ресурсам REST API, реализованного с помощью Python3 Fastapi, для внутреннего функционирования веб-сервиса Intranet2.0!
+
+        Особенности проекта:
+            - Модульная структура
+            - Аснхронность
+            - Взаимодействие 3х Баз Данных
+        """,
         routes=app.routes,
         openapi_version="3.0.3"  # Убедитесь, что тут 3.0.3!
     )

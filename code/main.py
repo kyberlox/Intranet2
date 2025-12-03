@@ -1057,15 +1057,8 @@ def custom_openapi():
             - Взаимодействие 3х Баз Данных
         """,
         routes=app.routes,
-        openapi_version="3.1.0"
+        openapi_version="3.0.3"  # <-- КРИТИЧНОЕ ИЗМЕНЕНИЕ: 3.1.0 -> 3.0.3
     )
-
-    # # Добавляем кастомную информацию
-    # openapi_schema["info"]["x-logo"] = {
-    #     "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNNTAgMTVMODUgNTBMNTAgODVMMTUgNTBMNTAgMTVaIiBmaWxsPSIjZmY2NjAwIi8+PHBhdGggZD0iTTUwIDI1TDc1IDUwTDUwIDc1TDI1IDUwTDUwIDI1WiIgZmlsbD0iI2ZmODUzMyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
-    #     "backgroundColor": "#000000",
-    #     "altText": "API Logo"
-    # }
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema

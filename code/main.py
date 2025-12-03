@@ -520,78 +520,6 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
-
-
-# 1. Создаем кастомную OpenAPI схему
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    
-    openapi_schema = get_openapi(
-        title="Intranet2.0 API Docs",
-        version="2.0.0",
-        description="API description",
-        routes=app.routes,
-        openapi_version="3.1.0"
-    )
-
-    # Добавляем кастомную информацию
-    openapi_schema["info"]["x-logo"] = {
-        "url": "https://img.icons8.com/color/96/000000/api.png",
-        "backgroundColor": "#000000",
-        "altText": "API Logo"
-    }
-    
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-app.openapi = custom_openapi
-
-# 2. Endpoint для получения OpenAPI схемы
-@app.get("/openapi.json", include_in_schema=False)
-async def get_openapi_endpoint():
-    return app.openapi()
-
-# 3. Endpoint для Swagger UI
-@app.get("/api/docs", include_in_schema=False)
-async def custom_swagger_ui_html():
-    return get_swagger_ui_html(
-        openapi_url="/openapi.json",
-        title="Intranet2.0 API Docs",
-        swagger_ui_parameters={
-            "defaultModelsExpandDepth": -1,
-            "defaultModelExpandDepth": 2,
-            "defaultModelRendering": "model",
-            "displayRequestDuration": True,
-            "docExpansion": "none",
-            "filter": True,
-            "maxDisplayedTags": None,
-            "operationsSorter": "alpha",
-            "tagsSorter": "alpha",
-            "showExtensions": True,
-            "showCommonExtensions": True,
-            "tryItOutEnabled": True,
-            "requestSnippetsEnabled": True,
-            "persistAuthorization": True,
-        }
-    ) + CUSTOM_STYLE  # добавляем кастомные стили
-
-    # return get_swagger_ui_html(
-    #     openapi_url="/openapi.json",  # ссылка на нашу схему
-    #     title="My API - Swagger UI",
-    #     oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-    #     swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
-    #     swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
-    #     swagger_ui_parameters={
-    #         "defaultModelsExpandDepth": -1,
-    #         "docExpansion": "none",
-    #         "filter": True,
-    #         "displayRequestDuration": True,
-    #         "tryItOutEnabled": True,
-    #     }
-    # )
-
-
 # Встроенный CSS стиль
 CUSTOM_STYLE = """
 <style>
@@ -680,4 +608,84 @@ CUSTOM_STYLE = """
 </style>
 """
 
+# 1. Создаем кастомную OpenAPI схему
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title="Intranet2.0 API Docs",
+        version="2.0.0",
+        description="API description",
+        routes=app.routes,
+        openapi_version="3.1.0"
+    )
 
+    # Добавляем кастомную информацию
+    openapi_schema["info"]["x-logo"] = {
+        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNNTAgMTVMODUgNTBMNTAgODVMMTUgNTBMNTAgMTVaIiBmaWxsPSIjZmY2NjAwIi8+PHBhdGggZD0iTTUwIDI1TDc1IDUwTDUwIDc1TDI1IDUwTDUwIDI1WiIgZmlsbD0iI2ZmODUzMyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+        "backgroundColor": "#000000",
+        "altText": "API Logo"
+    }
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
+# 2. Endpoint для получения OpenAPI схемы
+@app.get("/openapi.json", include_in_schema=False)
+async def get_openapi_endpoint():
+    return app.openapi()
+
+# 3. Endpoint для Swagger UI
+@app.get("/api/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    html = get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="🚀 Intranet2.0 API Docs",
+        swagger_ui_parameters={
+            "defaultModelsExpandDepth": 1,
+            "defaultModelExpandDepth": 2,
+            "defaultModelRendering": "model",
+            "displayRequestDuration": True,
+            "docExpansion": "list",
+            "filter": True,
+            "maxDisplayedTags": 20,
+            "operationsSorter": "alpha",
+            "tagsSorter": "alpha",
+            "showExtensions": True,
+            "showCommonExtensions": True,
+            "tryItOutEnabled": True,
+            "requestSnippetsEnabled": True,
+            "persistAuthorization": True,
+            "displayOperationId": False,
+            "deepLinking": True,
+            "syntaxHighlight": {
+                "theme": "monokai"
+            },
+            "theme": {
+                "swagger": "dark"
+            }
+        }
+    )
+
+    return html.replace(
+        '</head>',
+        CUSTOM_STYLE + '</head>'
+    )
+
+    # return get_swagger_ui_html(
+    #     openapi_url="/openapi.json",  # ссылка на нашу схему
+    #     title="My API - Swagger UI",
+    #     oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+    #     swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
+    #     swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+    #     swagger_ui_parameters={
+    #         "defaultModelsExpandDepth": -1,
+    #         "docExpansion": "none",
+    #         "filter": True,
+    #         "displayRequestDuration": True,
+    #         "tryItOutEnabled": True,
+    #     }
+    # )

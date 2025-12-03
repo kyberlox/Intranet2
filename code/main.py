@@ -1375,8 +1375,6 @@ def process_description(obj: Any, context: str = "root") -> Any:
 
 def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
     """Конвертирует Markdown только в description и summary полях."""
-    if not HAS_MARKDOWN2:
-        return schema
     
     print("🔄 Преобразую Markdown только в description/summary полях...")
     

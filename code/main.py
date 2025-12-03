@@ -1299,8 +1299,6 @@ async def custom_swagger_ui_html():
 
 def markdown_to_html(text: str) -> str:
     """Преобразует Markdown в HTML с поддержкой GitHub-стиля."""
-    if not text or not HAS_MARKDOWN2:
-        return text
     
     try:
         # Используем markdown2 с расширениями для GitHub-стиля

@@ -97,13 +97,13 @@ app.include_router(C_app, prefix="/api")
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
-#templates = Jinja2Templates(directory="./front_jinja") 
+templates = Jinja2Templates(directory="./src/services/templates") 
 
 # origins = [
 #     "http://localhost:8000",
 #     DOMAIN,
-#     #"http://intranet.emk.org.ru:8000",
-#     #"http://intranet.emk.org.ru"
+#     "https://intranet.emk.ru",
+#     "http://intranet.emk.ru"
 # ]
 
 
@@ -785,12 +785,12 @@ def custom_openapi():
         openapi_version="3.1.0"
     )
 
-    # Добавляем кастомную информацию
-    openapi_schema["info"]["x-logo"] = {
-        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNNTAgMTVMODUgNTBMNTAgODVMMTUgNTBMNTAgMTVaIiBmaWxsPSIjZmY2NjAwIi8+PHBhdGggZD0iTTUwIDI1TDc1IDUwTDUwIDc1TDI1IDUwTDUwIDI1WiIgZmlsbD0iI2ZmODUzMyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
-        "backgroundColor": "#000000",
-        "altText": "API Logo"
-    }
+    # # Добавляем кастомную информацию
+    # openapi_schema["info"]["x-logo"] = {
+    #     "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNNTAgMTVMODUgNTBMNTAgODVMMTUgNTBMNTAgMTVaIiBmaWxsPSIjZmY2NjAwIi8+PHBhdGggZD0iTTUwIDI1TDc1IDUwTDUwIDc1TDI1IDUwTDUwIDI1WiIgZmlsbD0iI2ZmODUzMyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+    #     "backgroundColor": "#000000",
+    #     "altText": "API Logo"
+    # }
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -802,63 +802,539 @@ app.openapi = custom_openapi
 async def get_openapi_endpoint():
     return app.openapi()
 
+# Кастомный HTML для Swagger UI с inline стилями
+SWAGGER_UI_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🚀 Intranet2.0 API Docs</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/index.css">
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/favicon-16x16.png" sizes="16x16">
+    <style>
+        :root {
+            --orange: #ff6600;
+            --black: #000000;
+            --dark-bg: #0a0a0a;
+            --white: #ffffff;
+            --gray: #333333;
+            --light-gray: #444444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
+            padding: 20px 40px;
+            border-bottom: 3px solid var(--orange);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: var(--orange);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--black);
+            box-shadow: 0 4px 8px rgba(255,102,0,0.3);
+        }
+        
+        .title-section h1 {
+            color: var(--orange);
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .title-section p {
+            color: #cccccc;
+            font-size: 16px;
+        }
+        
+        .version-badge {
+            background: var(--orange);
+            color: var(--black);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+        
+        /* Swagger UI Customizations */
+        #swagger-ui {
+            padding-top: 20px;
+        }
+        
+        .swagger-ui .information-container {
+            background: var(--black) !important;
+            border: 1px solid var(--gray) !important;
+            border-radius: 8px !important;
+            margin: 20px 0 !important;
+            padding: 25px !important;
+        }
+        
+        .swagger-ui .info .title {
+            color: var(--orange) !important;
+            font-size: 32px !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .swagger-ui .info .description {
+            color: #cccccc !important;
+            font-size: 16px !important;
+            line-height: 1.8 !important;
+        }
+        
+        .swagger-ui .opblock-tag {
+            color: var(--white) !important;
+            font-size: 22px !important;
+            border-bottom: 2px solid var(--orange) !important;
+            padding-bottom: 10px !important;
+            margin-top: 40px !important;
+            background: rgba(0,0,0,0.3) !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+        }
+        
+        .swagger-ui .opblock {
+            background: var(--black) !important;
+            border: 1px solid var(--gray) !important;
+            border-left: 5px solid var(--orange) !important;
+            border-radius: 8px !important;
+            margin-bottom: 20px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        }
+        
+        .swagger-ui .opblock:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
+        }
+        
+        .swagger-ui .opblock .opblock-summary-method {
+            background: var(--orange) !important;
+            color: var(--black) !important;
+            font-weight: bold !important;
+            border-radius: 4px !important;
+            min-width: 85px !important;
+            text-align: center !important;
+            padding: 6px 0 !important;
+            font-size: 14px !important;
+            border: none !important;
+        }
+        
+        .swagger-ui .opblock .opblock-summary-path {
+            color: var(--white) !important;
+            font-size: 16px !important;
+            font-family: monospace !important;
+        }
+        
+        .swagger-ui .opblock .opblock-summary-description {
+            color: #cccccc !important;
+            font-size: 14px !important;
+        }
+        
+        .swagger-ui .btn {
+            background: var(--orange) !important;
+            color: var(--black) !important;
+            border: none !important;
+            border-radius: 4px !important;
+            font-weight: bold !important;
+            padding: 10px 20px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .swagger-ui .btn:hover {
+            background: #ff8533 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(255,102,0,0.3) !important;
+        }
+        
+        .swagger-ui .btn.execute {
+            background: var(--orange) !important;
+            color: var(--black) !important;
+        }
+        
+        .swagger-ui .btn.cancel {
+            background: var(--light-gray) !important;
+            color: var(--white) !important;
+        }
+        
+        .swagger-ui input[type="text"],
+        .swagger-ui select,
+        .swagger-ui textarea {
+            background: rgba(0,0,0,0.5) !important;
+            color: var(--white) !important;
+            border: 1px solid var(--gray) !important;
+            border-radius: 4px !important;
+            padding: 10px !important;
+            font-size: 14px !important;
+        }
+        
+        .swagger-ui input[type="text"]:focus,
+        .swagger-ui select:focus,
+        .swagger-ui textarea:focus {
+            border-color: var(--orange) !important;
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(255,102,0,0.2) !important;
+        }
+        
+        .swagger-ui .parameters-col_name {
+            color: var(--white) !important;
+            font-weight: 500 !important;
+        }
+        
+        .swagger-ui .parameter__type {
+            color: var(--orange) !important;
+            font-weight: bold !important;
+        }
+        
+        .swagger-ui .response-col_status {
+            color: var(--orange) !important;
+            font-weight: bold !important;
+        }
+        
+        .swagger-ui .response-col_description {
+            color: #cccccc !important;
+        }
+        
+        .swagger-ui .tab {
+            border-bottom: 2px solid transparent !important;
+        }
+        
+        .swagger-ui .tab.active {
+            border-bottom-color: var(--orange) !important;
+        }
+        
+        .swagger-ui .tab-item.active h4 span {
+            color: var(--orange) !important;
+        }
+        
+        .swagger-ui .model-title {
+            color: var(--orange) !important;
+        }
+        
+        .swagger-ui .model-toggle::after {
+            background-color: var(--orange) !important;
+        }
+        
+        .swagger-ui .topbar {
+            display: none !important;
+        }
+        
+        .swagger-ui .scheme-container {
+            background: rgba(0,0,0,0.3) !important;
+            box-shadow: none !important;
+            border: 1px solid var(--gray) !important;
+            border-radius: 8px !important;
+            margin: 20px 0 !important;
+        }
+        
+        .swagger-ui .auth-btn-wrapper {
+            padding: 20px !important;
+        }
+        
+        .footer {
+            background: var(--black);
+            border-top: 1px solid var(--gray);
+            padding: 30px 40px;
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .footer a {
+            color: var(--orange);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--black);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--orange);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff8533;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-title">
+                <div class="logo">API</div>
+                <div class="title-section">
+                    <h1>🚀 Intranet2.0 API Documentation <span class="version-badge">v2.0.0</span></h1>
+                    <p>Interactive API documentation for Intranet2.0 services and endpoints</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main-container">
+        <div id="swagger-ui"></div>
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2024 Intranet2.0 API. All rights reserved.</p>
+            <p>For support contact: <a href="mailto:support@intranet.com">support@intranet.com</a></p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+    window.onload = function() {
+        // Swagger UI configuration
+        const ui = SwaggerUIBundle({
+            url: "/openapi.json",
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout",
+            docExpansion: 'list',
+            defaultModelsExpandDepth: 1,
+            defaultModelExpandDepth: 2,
+            defaultModelRendering: 'model',
+            displayRequestDuration: true,
+            filter: true,
+            operationsSorter: 'alpha',
+            tagsSorter: 'alpha',
+            showExtensions: true,
+            showCommonExtensions: true,
+            tryItOutEnabled: true,
+            requestSnippetsEnabled: true,
+            persistAuthorization: true,
+            displayOperationId: false,
+            syntaxHighlight: {
+                theme: 'monokai'
+            },
+            onComplete: function() {
+                // Custom initialization after Swagger UI loads
+                console.log('Intranet2.0 API Documentation loaded successfully!');
+                
+                // Add custom classes to enhance styling
+                setTimeout(() => {
+                    // Style the info container
+                    const infoContainer = document.querySelector('.information-container');
+                    if (infoContainer) {
+                        infoContainer.style.cssText += 'background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;';
+                    }
+                    
+                    // Style operation blocks
+                    const opblocks = document.querySelectorAll('.opblock');
+                    opblocks.forEach(opblock => {
+                        opblock.style.cssText += 'transition: all 0.3s ease !important;';
+                    });
+                    
+                    // Style buttons
+                    const buttons = document.querySelectorAll('.btn');
+                    buttons.forEach(btn => {
+                        if (!btn.classList.contains('execute')) {
+                            btn.style.cssText += 'background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%) !important;';
+                        }
+                    });
+                }, 100);
+            }
+        });
+        
+        // Make UI accessible globally
+        window.ui = ui;
+        
+        // Theme toggle functionality
+        const style = document.createElement('style');
+        style.textContent = `
+            .theme-toggle {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--orange);
+                color: var(--black);
+                border: none;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+            
+            .theme-toggle:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add theme toggle button
+        const themeToggle = document.createElement('button');
+        themeToggle.className = 'theme-toggle';
+        themeToggle.innerHTML = '🎨';
+        themeToggle.title = 'Toggle theme colors';
+        document.body.appendChild(themeToggle);
+        
+        let isDarkTheme = true;
+        themeToggle.addEventListener('click', function() {
+            const root = document.documentElement;
+            if (isDarkTheme) {
+                // Switch to light theme
+                root.style.setProperty('--dark-bg', '#f5f5f5');
+                root.style.setProperty('--black', '#ffffff');
+                root.style.setProperty('--white', '#333333');
+                root.style.setProperty('--gray', '#dddddd');
+                document.body.style.background = '#f5f5f5';
+                themeToggle.innerHTML = '🌙';
+            } else {
+                // Switch back to dark theme
+                root.style.setProperty('--dark-bg', '#0a0a0a');
+                root.style.setProperty('--black', '#000000');
+                root.style.setProperty('--white', '#ffffff');
+                root.style.setProperty('--gray', '#333333');
+                document.body.style.background = '#0a0a0a';
+                themeToggle.innerHTML = '🎨';
+            }
+            isDarkTheme = !isDarkTheme;
+        });
+    };
+    </script>
+</body>
+</html>
+"""
+
 # 3. Endpoint для Swagger UI
 @app.get("/api/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    html = get_swagger_ui_html(
-        openapi_url="/openapi.json",
-        title="🚀 Intranet2.0 API Docs",
-        swagger_ui_parameters={
-            "defaultModelsExpandDepth": 1,
-            "defaultModelExpandDepth": 2,
-            "defaultModelRendering": "model",
-            "displayRequestDuration": True,
-            "docExpansion": "list",
-            "filter": True,
-            "maxDisplayedTags": 20,
-            "operationsSorter": "alpha",
-            "tagsSorter": "alpha",
-            "showExtensions": True,
-            "showCommonExtensions": True,
-            "tryItOutEnabled": True,
-            "requestSnippetsEnabled": True,
-            "persistAuthorization": True,
-            "displayOperationId": False,
-            "deepLinking": True,
-            "syntaxHighlight": {
-                "theme": "monokai"
-            },
-            "tryItOutEnabled": True,
-            "displayRequestDuration": True,
-            "requestSnippetsEnabled": True,
-            # Убрана опция темы, так как она конфликтует с кастомными стилями
-        }
-    )
+    return HTMLResponse(content=SWAGGER_UI_HTML)
+    
+# async def custom_swagger_ui_html():
+#     html = get_swagger_ui_html(
+#         openapi_url="/openapi.json",
+#         title="🚀 Intranet2.0 API Docs",
+#         swagger_ui_parameters={
+#             "defaultModelsExpandDepth": 1,
+#             "defaultModelExpandDepth": 2,
+#             "defaultModelRendering": "model",
+#             "displayRequestDuration": True,
+#             "docExpansion": "list",
+#             "filter": True,
+#             "maxDisplayedTags": 20,
+#             "operationsSorter": "alpha",
+#             "tagsSorter": "alpha",
+#             "showExtensions": True,
+#             "showCommonExtensions": True,
+#             "tryItOutEnabled": True,
+#             "requestSnippetsEnabled": True,
+#             "persistAuthorization": True,
+#             "displayOperationId": False,
+#             "deepLinking": True,
+#             "syntaxHighlight": {
+#                 "theme": "monokai"
+#             },
+#             "tryItOutEnabled": True,
+#             "displayRequestDuration": True,
+#             "requestSnippetsEnabled": True,
+#             # Убрана опция темы, так как она конфликтует с кастомными стилями
+#         }
+#     )
 
-    # Добавляем кастомный HTML заголовок перед основным контентом
-    custom_header = """
-    <div style="
-        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-        padding: 20px;
-        margin-bottom: 30px;
-        border-radius: 8px;
-        border-left: 6px solid #ff6600;
-    ">
-        <h1 style="color: #ff6600; margin: 0 0 10px 0;">🚀 Intranet2.0 API Documentation</h1>
-        <p style="color: #ffffff; margin: 0; font-size: 16px;">
-            Welcome to the Intranet2.0 API documentation. Explore available endpoints, test requests, 
-            and integrate with our services.
-        </p>
-    </div>
-    """
+#     # Добавляем кастомный HTML заголовок перед основным контентом
+#     custom_header = """
+#     <div style="
+#         background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+#         padding: 20px;
+#         margin-bottom: 30px;
+#         border-radius: 8px;
+#         border-left: 6px solid #ff6600;
+#     ">
+#         <h1 style="color: #ff6600; margin: 0 0 10px 0;">🚀 Intranet2.0 API Documentation</h1>
+#         <p style="color: #ffffff; margin: 0; font-size: 16px;">
+#             Welcome to the Intranet2.0 API documentation. Explore available endpoints, test requests, 
+#             and integrate with our services.
+#         </p>
+#     </div>
+#     """
     
-    # Добавляем стили в head
-    html = html.replace('</head>', CUSTOM_STYLE + '</head>')
+#     # Добавляем стили в head
+#     html = html.replace('</head>', CUSTOM_STYLE + '</head>')
     
-    # Добавляем кастомный заголовок после открывающего тега body
-    html = html.replace('<body>', f'<body><div class="swagger-ui"><div class="wrapper">{custom_header}')
+#     # Добавляем кастомный заголовок после открывающего тега body
+#     html = html.replace('<body>', f'<body><div class="swagger-ui"><div class="wrapper">{custom_header}')
     
-    return HTMLResponse(content=html)
+#     return HTMLResponse(content=html)
 
     # return get_swagger_ui_html(
     #     openapi_url="/openapi.json",  # ссылка на нашу схему

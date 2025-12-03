@@ -1207,60 +1207,117 @@ async def custom_swagger_ui_html():
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
 
-def markdown_to_html_safe(text: str) -> str:
+def markdown_to_html_fixed(text: str) -> str:
     """
-    Безопасное преобразование Markdown в HTML.
-    Преобразует только блоки кода (```), а обычный текст оставляет как есть.
+    Преобразует Markdown в HTML БЕЗ лишнего экранирования.
+    Возвращает чистый HTML, который Swagger UI отобразит правильно.
     """
+    if not text or not HAS_MARKDOWN2:
+        return text
     
     try:
-        # Шаг 1: Защищаем блоки кода (```)
-        # Находим все блоки кода между ```
+        # Шаг 1: Обрабатываем блоки кода (```)
+        # Важно: экранируем только содержимое внутри блоков кода
+        
+        # Находим блоки кода
+        import re
+        
+        # Паттерн для блоков кода с ```язык\nкод\n```
         code_block_pattern = r'```(\w*)\n(.*?)```'
-        code_blocks = []
         
-        def protect_code_blocks(match):
-            language = match.group(1) or "text"
-            code_content = match.group(2)
-            code_blocks.append((language, code_content))
-            return f'__CODE_BLOCK_{len(code_blocks)-1}__'
+        # Список для хранения обработанных блоков кода
+        processed_blocks = []
         
-        # Заменяем блоки кода на плейсхолдеры
-        protected_text = re.sub(code_block_pattern, protect_code_blocks, text, flags=re.DOTALL)
-        
-        # Шаг 2: Преобразуем остальной Markdown (без блоков кода)
-        html = markdown2.markdown(
-            protected_text,
-            extras=[
-                "fenced-code-blocks",  # Это важно, чтобы markdown2 знал о блоках кода
-                "break-on-newline",
-                "cuddled-lists",
-                "code-friendly",
-            ]
-        )
-        
-        # Шаг 3: Восстанавливаем блоки кода с правильным оформлением
-        for i, (language, code_content) in enumerate(code_blocks):
-            # Очищаем и форматируем код
-            from html import escape
-            formatted_code = escape(code_content.strip())
+        def process_code_block(match):
+            language = match.group(1).strip()
+            code_content = match.group(2).strip()
+            
+            # Определяем язык (если не указан)
+            if not language:
+                # Простая проверка на HTTP
+                first_line = code_content.split('\n')[0] if '\n' in code_content else code_content
+                if any(method in first_line.upper() for method in ['GET ', 'POST ', 'PUT ', 'DELETE ', 'PATCH ']):
+                    language = 'http'
+                else:
+                    language = 'text'
             
             # Создаем HTML для блока кода
-            code_html = create_code_block(formatted_code, language)
+            code_html = f'''
+            <div class="code-block-container" data-language="{language}">
+                <div class="code-header">
+                    <span class="language-badge">{language.upper() if language != 'text' else 'CODE'}</span>
+                    <button class="copy-code-btn" onclick="copyCodeBlock(this)">
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Копировать</span>
+                    </button>
+                </div>
+                <pre><code class="language-{language}">{code_content}</code></pre>
+            </div>
+            '''
             
-            # Заменяем плейсхолдер
-            placeholder = f'__CODE_BLOCK_{i}__'
-            html = html.replace(placeholder, code_html)
+            processed_blocks.append(code_html)
+            return f'__CODE_BLOCK_{len(processed_blocks)-1}__'
+        
+        # Заменяем блоки кода на плейсхолдеры
+        text_with_placeholders = re.sub(
+            code_block_pattern, 
+            process_code_block, 
+            text, 
+            flags=re.DOTALL | re.MULTILINE
+        )
+        
+        # Шаг 2: Преобразуем остальной Markdown
+        # Используем markdown2 БЕЗ экранирования HTML
+        html = markdown2.markdown(
+            text_with_placeholders,
+            extras=["fenced-code-blocks", "break-on-newline", "cuddled-lists"],
+            safe_mode=False  # Важно: не экранировать HTML!
+        )
+        
+        # Шаг 3: Восстанавливаем блоки кода
+        for i, block_html in enumerate(processed_blocks):
+            html = html.replace(f'__CODE_BLOCK_{i}__', block_html)
         
         # Шаг 4: Обрабатываем inline код (`code`)
-        # markdown2 уже преобразовал `code` в <code>, это правильно
-        # Просто добавляем класс для inline кода
         html = html.replace('<code>', '<code class="inline-code">')
         
+        # Шаг 5: Добавляем подсветку для HTTP методов в уже созданных блоках
+        html = highlight_http_in_blocks(html)
+        
         return html.strip()
+        
     except Exception as e:
         print(f"⚠️  Ошибка преобразования Markdown: {e}")
+        import traceback
+        traceback.print_exc()
         return text
+
+def highlight_http_in_blocks(html: str) -> str:
+    """
+    Добавляет подсветку HTTP методов в уже созданных блоках кода.
+    """
+    import re
+    
+    # Ищем блоки кода с HTTP
+    def highlight_http(match):
+        code_content = match.group(1)
+        
+        # Подсвечиваем HTTP методы
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
+        for method in http_methods:
+            pattern = rf'\b({method})\b'
+            code_content = re.sub(
+                pattern, 
+                f'<span class="http-method-highlight">\\1</span>', 
+                code_content,
+                flags=re.IGNORECASE
+            )
+        
+        return f'<code class="language-http">{code_content}</code>'
+    
+    # Применяем подсветку ко всем code блокам с классом language-http
+    pattern = r'<code class="language-http">(.*?)</code>'
+    return re.sub(pattern, highlight_http, html, flags=re.DOTALL)
 
 def create_code_block(code_content: str, language: str = "text") -> str:
     """
@@ -1466,7 +1523,7 @@ def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
             for key, value in obj.items():
                 # Преобразуем только description и summary
                 if key in ["description", "summary"] and isinstance(value, str):
-                    obj[key] = markdown_to_html_safe(value)
+                    obj[key] = markdown_to_html_fixed(value)
                 elif isinstance(value, dict):
                     process_dict(value)
                 elif isinstance(value, list):

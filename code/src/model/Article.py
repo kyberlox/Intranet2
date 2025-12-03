@@ -1167,10 +1167,10 @@ class Article:
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
 
-        await self.upload_uniquely(session)
+        # await self.upload_uniquely(session)
         await self.upload_with_parameter(session)
-        await self.upload_many_to_many(session)
-        await self.upload_services(session)  # загрузили все без проблем
+        # await self.upload_many_to_many(session)
+        # await self.upload_services(session)  # загрузили все без проблем
 
         # Дамп данных в эластик
         await self.dump_articles_data_es(session=session)
@@ -1229,120 +1229,120 @@ class Article:
         }
 
         # Учебный центр (Проведённые тренинги)
-        self.section_id = "61"
-        sec_inf_title = await self.get_inf()
-        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
-            title_id = title_inf["ID"]
-            title_data = title_inf
+        # self.section_id = "61"
+        # sec_inf_title = await self.get_inf()
+        # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
+        #     title_id = title_inf["ID"]
+        #     title_data = title_inf
 
-            data = dict()
+        #     data = dict()
 
-            # добавить все данные статьи
-            for key in title_data:
-                data[key] = title_data[key]
+        #     # добавить все данные статьи
+        #     for key in title_data:
+        #         data[key] = title_data[key]
 
-            data["ID"] = title_data["ID"]
-            data["TITLE"] = title_data["NAME"]
-            # print(data["ID"], data)
-            data["reviews"] = []
+        #     data["ID"] = title_data["ID"]
+        #     data["TITLE"] = title_data["NAME"]
+        #     # print(data["ID"], data)
+        #     data["reviews"] = []
 
-            # пройти по инфоблоку тренингов
-            self.section_id = "83"
-            sec_inf_data = await self.get_inf()
-            for data_inf in sec_inf_data:
-                # если эта статья принадлежит иинфоблоку
-                if "PROPERTY_484" in data_inf and take_value(data_inf["PROPERTY_484"]) == title_id:
-                    # добавить отзывы
-                    data["reviews"].append(data_inf)
+        #     # пройти по инфоблоку тренингов
+        #     self.section_id = "83"
+        #     sec_inf_data = await self.get_inf()
+        #     for data_inf in sec_inf_data:
+        #         # если эта статья принадлежит иинфоблоку
+        #         if "PROPERTY_484" in data_inf and take_value(data_inf["PROPERTY_484"]) == title_id:
+        #             # добавить отзывы
+        #             data["reviews"].append(data_inf)
 
-            # загрузить данные в таблицу
-            data["section_id"] = 172
-            self.section_id = 172
-            if int(data["ID"]) == 10855:
-                print(data, 'тут пустышки')
-            artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
-            if await artDB.need_add(session=session):
-                await self.add(data, session)
-            elif await artDB.update(await self.make_valid_article(data, session), session):
-                pass
+        #     # загрузить данные в таблицу
+        #     data["section_id"] = 172
+        #     self.section_id = 172
+        #     if int(data["ID"]) == 10855:
+        #         print(data, 'тут пустышки')
+        #     artDB = ArticleModel(id=data["ID"], section_id=self.section_id)
+        #     if await artDB.need_add(session=session):
+        #         await self.add(data, session)
+        #     elif await artDB.update(await self.make_valid_article(data, session), session):
+        #         pass
 
-        # Блоги
-        # пройти по инфоблоку заголовков
-        self.section_id = "75"
-        sec_inf_title = await self.get_inf()
-        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 75, 77 "):
-            title_id = title_inf["ID"]
-            title_data = title_inf
+        # # Блоги
+        # # пройти по инфоблоку заголовков
+        # self.section_id = "75"
+        # sec_inf_title = await self.get_inf()
+        # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 75, 77 "):
+        #     title_id = title_inf["ID"]
+        #     title_data = title_inf
 
-            # пройти по инфоблоку статей блогов
-            self.section_id = "77"
-            sec_inf_data = await self.get_inf()
-            for data_inf in sec_inf_data:
-                data_title_id = list(data_inf["PROPERTY_1008"].values())[0]
-                # если эта статья принадлежит иинфоблоку
-                if data_title_id == title_id:
-                    data = dict()
+        #     # пройти по инфоблоку статей блогов
+        #     self.section_id = "77"
+        #     sec_inf_data = await self.get_inf()
+        #     for data_inf in sec_inf_data:
+        #         data_title_id = list(data_inf["PROPERTY_1008"].values())[0]
+        #         # если эта статья принадлежит иинфоблоку
+        #         if data_title_id == title_id:
+        #             data = dict()
 
-                    # добавить все данные заголовка
-                    for key in title_data:
-                        data[key] = title_data[key]
-                    # добавить все данные статьи
-                    for key in data_inf:
-                        data[key] = data_inf[key]
+        #             # добавить все данные заголовка
+        #             for key in title_data:
+        #                 data[key] = title_data[key]
+        #             # добавить все данные статьи
+        #             for key in data_inf:
+        #                 data[key] = data_inf[key]
 
-                    data["ID"] = data_inf["ID"]
-                    data["section_id"] = 15  # Блоги
-                    self.section_id = 15
-                    data["TITLE"] = title_inf["NAME"]
-                    if int(data["ID"]) == 10855:
-                        print(data, 'тут пустышки')
-                    # загрузить данные в таблицу
-                    artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
-                    if await artDB.need_add(session=session):
-                        await self.add(data, session)
-                    elif await artDB.update(await self.make_valid_article(data, session), session):
-                        pass
+        #             data["ID"] = data_inf["ID"]
+        #             data["section_id"] = 15  # Блоги
+        #             self.section_id = 15
+        #             data["TITLE"] = title_inf["NAME"]
+        #             if int(data["ID"]) == 10855:
+        #                 print(data, 'тут пустышки')
+        #             # загрузить данные в таблицу
+        #             artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
+        #             if await artDB.need_add(session=session):
+        #                 await self.add(data, session)
+        #             elif await artDB.update(await self.make_valid_article(data, session), session):
+        #                 pass
 
-        # Памятка
-        # пройти по инфоблоку заголовков
-        self.section_id = "82"
-        sec_inf_title = await self.get_inf()
-        for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):
-            title_id = title_inf["ID"]
-            title_data = title_inf
+        # # Памятка
+        # # пройти по инфоблоку заголовков
+        # self.section_id = "82"
+        # sec_inf_title = await self.get_inf()
+        # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):
+        #     title_id = title_inf["ID"]
+        #     title_data = title_inf
 
-            # пройти по инфоблоку статей блогов
-            self.section_id = "81"
-            sec_inf_data = await self.get_inf()
-            for data_inf in sec_inf_data:
-                if "PROPERTY_480" in data_inf:
-                    data_title_id = list(data_inf["PROPERTY_480"].values())[0]
-                else:
-                    self.logg.info_message(f'##################, {data_inf["ID"]}')
+        #     # пройти по инфоблоку статей блогов
+        #     self.section_id = "81"
+        #     sec_inf_data = await self.get_inf()
+        #     for data_inf in sec_inf_data:
+        #         if "PROPERTY_480" in data_inf:
+        #             data_title_id = list(data_inf["PROPERTY_480"].values())[0]
+        #         else:
+        #             self.logg.info_message(f'##################, {data_inf["ID"]}')
 
-                # если эта статья принадлежит инфоблоку
-                if data_title_id == title_id:
-                    data = dict()
+        #         # если эта статья принадлежит инфоблоку
+        #         if data_title_id == title_id:
+        #             data = dict()
 
-                    # добавить все данные заголовка
-                    for key in title_data:
-                        data[key] = title_data[key]
-                    # добавить все данные статьи
-                    for key in data_inf:
-                        data[key] = data_inf[key]
+        #             # добавить все данные заголовка
+        #             for key in title_data:
+        #                 data[key] = title_data[key]
+        #             # добавить все данные статьи
+        #             for key in data_inf:
+        #                 data[key] = data_inf[key]
 
-                    data["ID"] = data_inf["ID"]
-                    data["section_id"] = 18  # Памятка
-                    self.section_id = 18
-                    data["TITLE"] = title_inf["NAME"]
-                    if int(data["ID"]) == 6180:
-                        print(data, 'тут начинается')
-                    # загрузить данные в таблицу
-                    artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
-                    if await artDB.need_add(session=session):
-                        await self.add(data, session)
-                    elif await artDB.update(await self.make_valid_article(data, session), session):
-                        pass
+        #             data["ID"] = data_inf["ID"]
+        #             data["section_id"] = 18  # Памятка
+        #             self.section_id = 18
+        #             data["TITLE"] = title_inf["NAME"]
+        #             if int(data["ID"]) == 6180:
+        #                 print(data, 'тут начинается')
+        #             # загрузить данные в таблицу
+        #             artDB = ArticleModel(id=int(data["ID"]), section_id=self.section_id)
+        #             if await artDB.need_add(session=session):
+        #                 await self.add(data, session)
+        #             elif await artDB.update(await self.make_valid_article(data, session), session):
+        #                 pass
 
         # Гид по предприятиям
         # пройти по инфоблоку заголовков

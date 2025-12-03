@@ -69,7 +69,7 @@ async def upload_b24_tags(session: AsyncSession = Depends(get_async_db)):
 async def get_tags(session: AsyncSession = Depends(get_async_db)):
     result = await Tag().get_all_tags(session)
     print(result)
-    sorted_active_articles = sorted(result, key=lambda x: x.name, reverse=False)
+    # sorted_active_articles = sorted(result, key=lambda x: x.name, reverse=False)
     # return sorted_active_articles
     return result
 

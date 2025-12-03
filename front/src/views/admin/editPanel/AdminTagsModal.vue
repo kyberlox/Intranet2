@@ -2,7 +2,9 @@
 <SlotModal>
     <div class="tags-modal">
         <div class="tags-modal__header">
-            <h2 class="tags-modal__title">Управление тегами</h2>
+            <h2 class="tags-modal__title">
+                Управление тегами
+            </h2>
         </div>
 
         <div class="tags-modal__input-section">
@@ -20,7 +22,7 @@
 
         <div class="tags-modal__tags-list"
              v-if="!isLoading">
-            <div v-for="tag in tags"
+            <div v-for="tag in tags.sort((a, b) => Number(a.tag_name?.[0] || 0) - Number(b.tag_name?.[0] || 0))"
                  :key="tag.id"
                  class="tags-modal__tag-item">
                 <span class="tags-modal__tag-name">{{ tag.tag_name }}</span>

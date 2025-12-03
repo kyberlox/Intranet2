@@ -3,9 +3,9 @@
      :class="{ 'sidebar-lk--visible': visibleSidebar }">
     <div class="sidebar-lk__header">
         <h5 class="sidebar-lk__header__title">Личный кабинет</h5>
-        <button type="button"
-                class="btn-close"
-                @click="close"></button>
+        <div class="modal__overlay__close-button">
+            <CloseIcon @click="close" />
+        </div>
     </div>
     <div class="sidebar-lk__body">
         <div class="sidebar-lk__body__points">
@@ -30,8 +30,12 @@ import { points } from '@/assets/static/navLinks'
 import { useUserData } from '@/stores/userData'
 import { useRoute } from 'vue-router'
 import { uniqueRoutesHandle } from '@/router/uniqueRoutesHandle'
+import CloseIcon from '@/assets/icons/layout/CloseIcon.svg?component'
 
 export default defineComponent({
+    components: {
+        CloseIcon
+    },
     props: {
         visibleSidebar: {
             type: Boolean,

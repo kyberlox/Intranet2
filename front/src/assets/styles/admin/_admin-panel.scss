@@ -79,10 +79,15 @@
             }
 
             &--active {
-                background-color: #ffdec787;
-                // color: var(--emk-brand-color);
+                color: var(--emk-brand-color) !important;
                 border-left-color: var(--emk-brand-color);
                 font-weight: 500;
+                background-color: #e9ecef;
+
+                &>.admin-panel__nav-text {
+                    color: var(--emk-brand-color) !important;
+
+                }
 
                 &>.admin-panel__nav-icon>svg {
                     color: var(--emk-brand-color-dark);

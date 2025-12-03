@@ -7,7 +7,11 @@
     .idea__table__tr>td,
     .idea__table th,
     .modal__text__content,
-    .idea-new__form-container {
+    .idea-new__form-container,
+    .admin-panel__content,
+    .admin-panel__nav-link:hover,
+    .admin-panel__nav-link--active,
+    .tags-modal__tag-item {
         background: #1b1b1b;
 
         ul {
@@ -16,7 +20,9 @@
     }
 
     .idea__table th,
-    .idea__table__tr>td {
+    .idea__table__tr>td,
+    .personal__user__top,
+    .personal__user__property__items h3 {
         border-color: gray;
         color: #b2b0b0;
     }
@@ -42,7 +48,8 @@
 
     }
 
-    .navbar {
+    .navbar,
+    .sidebar-lk__body__points {
         color: #b2b0b0;
 
         &-nav {
@@ -64,13 +71,15 @@
 
     main,
     .birthday__slide__info,
-    .neuroChat-content__wrapper {
+    .neuroChat-content__wrapper,
+    .tags-modal__remove-btn {
         background: rgb(19, 19, 19);
     }
 
     .primary-button,
     button,
-    .calendar-year__event-btn {
+    .calendar-year__event-btn,
+    .tags-modal__remove-btn {
         color: #d2d2d2;
         background: rgb(32, 32, 32);
 
@@ -286,5 +295,34 @@
 
     .admin-element-inner__action-button--cancel {
         background: #212121 !important;
+    }
+
+    // ползунок
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--emk-brand-color) #212121;
+    }
+
+    *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: #4a5568;
+        border-radius: 5px;
+        border: 2px solid #2d3748;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+        background: #718096;
+    }
+
+    *::-webkit-scrollbar-thumb:active {
+        background: #63b3ed;
+    }
+
+    *::-webkit-scrollbar-corner {
+        background: #2d3748;
     }
 }

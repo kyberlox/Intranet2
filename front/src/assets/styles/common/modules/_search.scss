@@ -191,7 +191,7 @@
 
     &--active {
         color: black;
-        border-bottom: 1px solid var(--emk-brand-color);
+        border-bottom: 1px solid var(--emk-brand-color) !important;
     }
 }
 

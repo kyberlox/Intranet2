@@ -1,0 +1,28 @@
+    // ползунок
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--emk-brand-color) #bcbcbc;
+    }
+
+    *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: #bcbcbc;
+        border-radius: 5px;
+        border: 2px solid #646464;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+        background: #646464;
+    }
+
+    *::-webkit-scrollbar-thumb:active {
+        background: var(--emk-brand-color);
+    }
+
+    *::-webkit-scrollbar-corner {
+        background: #646464;
+    }

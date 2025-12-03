@@ -59,7 +59,14 @@ load_dotenv()
 
 DOMAIN = os.getenv('HOST')
 
-app = FastAPI(timeout=60*20)
+#app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ", docs_url="/api/docs") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
+app = FastAPI(
+    titile="Intranet2.0 API DOCS",
+    version="2.0.0",
+    docs_url=None,#"/api/docs",
+    redoc_url=None,
+    openapi_url="/api/openapi.json"
+)
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")
@@ -90,13 +97,13 @@ app.include_router(C_app, prefix="/api")
 
 #app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
 
-#templates = Jinja2Templates(directory="./front_jinja") 
+#templates = Jinja2Templates(directory="./src/services/templates") 
 
 # origins = [
 #     "http://localhost:8000",
 #     DOMAIN,
-#     #"http://intranet.emk.org.ru:8000",
-#     #"http://intranet.emk.org.ru"
+#     "https://intranet.emk.ru",
+#     "http://intranet.emk.ru"
 # ]
 
 
@@ -129,7 +136,7 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
 open_links = [
-    "/docs",
+    "/api/docs",
     "/api/users/update",
     "/api/users/update_user_info",
     "/openapi.json",
@@ -147,6 +154,7 @@ open_links = [
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
+
     # Внедряю свою отладку
     log = LogsMaker()
 
@@ -505,6 +513,629 @@ async def delete_tables(session: AsyncSession=Depends(get_async_db)):
         await session.rollback()
         print(f"❌ Ошибка при удалении таблиц: {e}")
         return False
-'''
-! Особенные запросы
-'''
+
+
+
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+import re
+
+
+
+# Встроенный CSS стиль
+# Кастомные стили
+CUSTOM_CSS = """
+<style>
+    /* Основные переменные */
+    :root {
+        --primary: #ff6600;
+        --primary-light: #ff8533;
+        --primary-dark: #cc5200;
+        --bg-dark: #0a0a0a;
+        --bg-darker: #050505;
+        --bg-black: #000000;
+        --text-white: #ffffff;
+        --text-gray: #cccccc;
+        --text-dark: #333333;
+        --border-color: #333333;
+        --border-light: #444444;
+        --success: #00cc66;
+        --warning: #ffaa00;
+        --error: #ff3333;
+        --info: #3399ff;
+    }
+
+    /* Общие стили */
+    body {
+        background-color: var(--bg-dark) !important;
+        color: var(--text-white) !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Заменяем стандартные стили Swagger */
+    .swagger-ui {
+        background-color: var(--bg-dark) !important;
+        font-family: inherit !important;
+    }
+
+    /* Верхняя панель */
+    .swagger-ui .topbar {
+        background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-darker) 100%) !important;
+        border-bottom: 3px solid var(--primary) !important;
+        padding: 15px 0 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .swagger-ui .topbar-wrapper {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+        padding: 0 20px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .swagger-ui .topbar-wrapper svg {
+        display: none !important;
+    }
+
+    .swagger-ui .topbar-wrapper .link {
+        color: var(--primary) !important;
+        font-size: 24px !important;
+        font-weight: bold !important;
+        text-decoration: none !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    .swagger-ui .topbar-wrapper .link::before {
+        content: "🚀";
+        font-size: 28px;
+    }
+
+    .swagger-ui .topbar-wrapper .link::after {
+        content: "Intranet2.0 API v2.0.0";
+    }
+
+    /* Заголовок */
+    .swagger-ui .info .title {
+        color: var(--primary) !important;
+        font-size: 36px !important;
+        font-weight: bold !important;
+        margin-bottom: 15px !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .swagger-ui .info .title::after {
+        content: " v2.0.0";
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: var(--bg-black);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 15px;
+        vertical-align: middle;
+    }
+
+    /* Теги (группы endpoints) */
+    .swagger-ui .opblock-tag {
+        color: var(--text-white) !important;
+        font-size: 24px !important;
+        font-weight: 600 !important;
+        border-bottom: 3px solid var(--primary) !important;
+        padding: 20px 0 15px 0 !important;
+        margin: 40px 0 20px 0 !important;
+        background: none !important;
+    }
+
+    .swagger-ui .opblock-tag:hover {
+        background: rgba(255, 102, 0, 0.1) !important;
+        cursor: pointer;
+    }
+
+    /* Блоки операций */
+    .swagger-ui .opblock {
+        background: var(--bg-black) !important;
+        border: 1px solid var(--border-color) !important;
+        border-left: 6px solid var(--primary) !important;
+        border-radius: 10px !important;
+        margin-bottom: 25px !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .swagger-ui .opblock:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+        border-color: var(--primary-light) !important;
+    }
+
+    /* Методы HTTP */
+    .swagger-ui .opblock .opblock-summary-method {
+        background: var(--primary) !important;
+        color: var(--bg-black) !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
+        min-width: 90px !important;
+        text-align: center !important;
+        padding: 8px 0 !important;
+        font-size: 14px !important;
+        text-transform: uppercase !important;
+        border: none !important;
+        box-shadow: 0 2px 4px rgba(255, 102, 0, 0.3) !important;
+    }
+
+    /* Цвета для разных методов */
+    .swagger-ui .opblock.opblock-get .opblock-summary-method {
+        background: var(--primary) !important;
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method {
+        background: var(--success) !important;
+    }
+
+    .swagger-ui .opblock.opblock-put .opblock-summary-method {
+        background: var(--warning) !important;
+    }
+
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method {
+        background: var(--error) !important;
+    }
+
+    .swagger-ui .opblock.opblock-patch .opblock-summary-method {
+        background: var(--info) !important;
+    }
+
+    /* Путь endpoint */
+    .swagger-ui .opblock .opblock-summary-path {
+        color: var(--text-white) !important;
+        font-size: 18px !important;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+        font-weight: 500 !important;
+        margin-left: 15px !important;
+    }
+
+    /* Описание endpoint */
+    .swagger-ui .opblock .opblock-summary-description {
+        color: var(--text-gray) !important;
+        font-size: 14px !important;
+        margin-top: 10px !important;
+    }
+
+    /* Кнопки */
+    .swagger-ui .btn {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+        color: var(--bg-black) !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: bold !important;
+        padding: 12px 24px !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3) !important;
+    }
+
+    .swagger-ui .btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(255, 102, 0, 0.4) !important;
+    }
+
+    .swagger-ui .btn.execute {
+        min-width: 100px !important;
+    }
+
+    /* Поля ввода */
+    .swagger-ui input[type="text"],
+    .swagger-ui input[type="password"],
+    .swagger-ui input[type="email"],
+    .swagger-ui input[type="number"],
+    .swagger-ui select,
+    .swagger-ui textarea {
+        background: rgba(0, 0, 0, 0.7) !important;
+        color: var(--text-white) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .swagger-ui input:focus,
+    .swagger-ui select:focus,
+    .swagger-ui textarea:focus {
+        border-color: var(--primary) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2) !important;
+    }
+
+    /* Параметры */
+    .swagger-ui .parameters-col_name {
+        color: var(--text-white) !important;
+        font-weight: 500 !important;
+    }
+
+    .swagger-ui .parameter__type {
+        color: var(--primary) !important;
+        font-weight: bold !important;
+    }
+
+    /* Ответы */
+    .swagger-ui .response-col_status {
+        color: var(--primary) !important;
+        font-weight: bold !important;
+    }
+
+    /* Модели */
+    .swagger-ui .model-title {
+        color: var(--primary) !important;
+        font-weight: bold !important;
+    }
+
+    /* Панель авторизации */
+    .swagger-ui .scheme-container {
+        background: rgba(0, 0, 0, 0.5) !important;
+        box-shadow: none !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 10px !important;
+        margin: 20px 0 !important;
+        padding: 20px !important;
+    }
+
+    /* Таблицы */
+    .swagger-ui table thead tr th,
+    .swagger-ui table thead tr td {
+        background: var(--bg-black) !important;
+        color: var(--text-white) !important;
+        border-bottom: 2px solid var(--primary) !important;
+    }
+
+    .swagger-ui table tbody tr td {
+        color: var(--text-gray) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    /* Вкладки */
+    .swagger-ui .tab {
+        border-bottom: 3px solid transparent !important;
+        padding: 10px 20px !important;
+    }
+
+    .swagger-ui .tab:hover {
+        background: rgba(255, 102, 0, 0.1) !important;
+    }
+
+    .swagger-ui .tab.active {
+        border-bottom-color: var(--primary) !important;
+        color: var(--primary) !important;
+        font-weight: bold !important;
+    }
+
+    /* Скрываем ненужные элементы */
+    .swagger-ui .download-url-wrapper {
+        display: none !important;
+    }
+
+    /* Кастомный скроллбар */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--bg-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-light);
+    }
+
+    /* Анимации */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .swagger-ui .opblock {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Кастомный заголовок */
+    .custom-header {
+        background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-darker) 100%);
+        padding: 30px;
+        margin: 0 0 30px 0;
+        border-radius: 12px;
+        border-left: 8px solid var(--primary);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.7s ease-out;
+    }
+
+    .custom-header h1 {
+        color: var(--primary);
+        font-size: 32px;
+        margin: 0 0 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .custom-header h1::before {
+        content: "🚀";
+        font-size: 36px;
+    }
+
+    .custom-header p {
+        color: var(--text-gray);
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Дополнительные улучшения */
+    .swagger-ui .info .description {
+        color: var(--text-gray) !important;
+        font-size: 16px !important;
+        line-height: 1.8 !important;
+    }
+
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3 {
+        color: var(--primary) !important;
+        margin: 20px 0 10px 0 !important;
+    }
+
+    /* Иконки для методов */
+    .swagger-ui .opblock-summary-method::before {
+        margin-right: 5px;
+    }
+
+    .swagger-ui .opblock.opblock-get .opblock-summary-method::before {
+        content: "📥 ";
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method::before {
+        content: "➕ ";
+    }
+
+    .swagger-ui .opblock.opblock-put .opblock-summary-method::before {
+        content: "✏️ ";
+    }
+
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method::before {
+        content: "🗑️ ";
+    }
+
+    .swagger-ui .opblock.opblock-patch .opblock-summary-method::before {
+        content: "🔄 ";
+    }
+</style>
+
+<script>
+    // Дополнительный JavaScript для улучшений
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем кнопку "Наверх"
+        const scrollToTopBtn = document.createElement('button');
+        scrollToTopBtn.innerHTML = '⬆';
+        scrollToTopBtn.title = 'Наверх';
+        scrollToTopBtn.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6600, #ff8533);
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+            transition: all 0.3s ease;
+        `;
+        
+        scrollToTopBtn.addEventListener('mouseover', () => {
+            scrollToTopBtn.style.transform = 'scale(1.1)';
+            scrollToTopBtn.style.boxShadow = '0 6px 16px rgba(255, 102, 0, 0.4)';
+        });
+        
+        scrollToTopBtn.addEventListener('mouseout', () => {
+            scrollToTopBtn.style.transform = 'scale(1)';
+            scrollToTopBtn.style.boxShadow = '0 4px 12px rgba(255, 102, 0, 0.3)';
+        });
+        
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        document.body.appendChild(scrollToTopBtn);
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.style.display = 'block';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        });
+        
+        // Уведомление о загрузке
+        setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #000, #333);
+                    color: #ff6600;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    border-left: 4px solid #ff6600;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    max-width: 300px;
+                    animation: slideIn 0.5s ease-out;
+                ">
+                    <strong>🎯 Документация загружена!</strong>
+                    <div style="margin-top: 5px; font-size: 12px; color: #ccc;">
+                        Используйте Try it out для тестирования API
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease-out';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }, 1000);
+        
+        // Добавляем стили для анимаций уведомлений
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+"""
+
+# 1. Создаем кастомную OpenAPI схему
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title="Intranet2.0 API Docs",
+        version="2.0.0",
+        description="""
+        Добро пожаловать!
+        Тут проедставлена документация к ресурсам REST API, реализованного с помощью Python3 Fastapi, для внутреннего функционирования веб-сервиса Intranet2.0!
+
+        Особенности проекта:
+            - Модульная структура
+            - Аснхронность
+            - Взаимодействие 3х Баз Данных
+        """,
+        routes=app.routes,
+        openapi_version="3.1.0"
+    )
+
+    # # Добавляем кастомную информацию
+    # openapi_schema["info"]["x-logo"] = {
+    #     "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMwMDAwMDAiLz48cGF0aCBkPSJNNTAgMTVMODUgNTBMNTAgODVMMTUgNTBMNTAgMTVaIiBmaWxsPSIjZmY2NjAwIi8+PHBhdGggZD0iTTUwIDI1TDc1IDUwTDUwIDc1TDI1IDUwTDUwIDI1WiIgZmlsbD0iI2ZmODUzMyIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+",
+    #     "backgroundColor": "#000000",
+    #     "altText": "API Logo"
+    # }
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
+# 2. Endpoint для получения OpenAPI схемы
+@app.get("/openapi.json", include_in_schema=False)
+async def get_openapi_endpoint():
+    return app.openapi()
+
+# 3. Endpoint для Swagger UI
+@app.get("/api/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    html = get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="🚀 Intranet2.0 API Docs",
+        swagger_ui_parameters={
+            "defaultModelsExpandDepth": 1,
+            "defaultModelExpandDepth": 2,
+            "defaultModelRendering": "model",
+            "displayRequestDuration": True,
+            "docExpansion": "list",
+            "filter": True,
+            "maxDisplayedTags": 20,
+            "operationsSorter": "alpha",
+            "tagsSorter": "alpha",
+            "showExtensions": True,
+            "showCommonExtensions": True,
+            "tryItOutEnabled": True,
+            "requestSnippetsEnabled": True,
+            "persistAuthorization": True,
+            "displayOperationId": False,
+            "deepLinking": True,
+            "syntaxHighlight": {
+                "theme": "monokai"
+            },
+            "tryItOutEnabled": True,
+            "displayRequestDuration": True,
+            "requestSnippetsEnabled": True,
+        }
+    )
+    
+    # Добавляем кастомный заголовок
+    custom_header = """
+    <div class="custom-header">
+        <h1>Intranet2.0 API Documentation</h1>
+        <p>
+            Welcome to the Intranet2.0 API documentation. This interactive documentation allows you to 
+            explore all available endpoints, test API requests directly from your browser, and understand 
+            how to integrate with our services. Use the <strong>Try it out</strong> buttons to test endpoints 
+            with real data.
+        </p>
+    </div>
+    """
+    
+    # Вставляем кастомный заголовок после wrapper
+    html = re.sub(
+        r'(<div class="swagger-ui"><div class="wrapper">)',
+        r'\1' + custom_header,
+        html
+    )
+    
+    # Заменяем стандартные CSS стили
+    html = html.replace(
+        '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">',
+        '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css">\n' + CUSTOM_CSS
+    )
+    
+    # Удаляем стандартную тему, если она есть
+    html = re.sub(r'"theme":\s*{[^}]*}', '', html)
+    
+    return HTMLResponse(content=html)

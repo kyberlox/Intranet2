@@ -67,7 +67,11 @@ async def upload_b24_tags(session: AsyncSession = Depends(get_async_db)):
 
 @tag_router.get("/get_tags")
 async def get_tags(session: AsyncSession = Depends(get_async_db)):
-    return await Tag().get_all_tags(session)
+    result = await Tag().get_all_tags(session)
+    print(result)
+    # sorted_active_articles = sorted(result, key=lambda x: x.name, reverse=False)
+    # return sorted_active_articles
+    return result
 
 
 @tag_router.put("/add_tag/{tag_name}")

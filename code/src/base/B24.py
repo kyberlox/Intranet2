@@ -172,7 +172,31 @@ class B24:
 
 
 
-@b24_router.get("/calendar/{date_from}/{date_to}")
+@b24_router.get("/calendar/{date_from}/{date_to}",
+description="""
+    ## Получение событий корпоративного календаря
+    
+    Этот эндпоинт позволяет получить события из корпоративного календаря 
+    за указанный период времени.
+    
+    ### Особенности:
+    - Подключается к внешнему API Битрикс24
+    - Возвращает события в формате JSON
+    - Поддерживает фильтрацию по датам
+    
+    ### Параметры:
+    - **date_from**: Начальная дата периода (формат: ГГГГ-ММ-ДД)
+    - **date_to**: Конечная дата периода (формат: ГГГГ-ММ-ДД)
+    - **type**: (опционально) Тип событий для фильтрации
+    - **owner_id**: (опционально) ID владельца событий
+    
+    ### Примеры использования:
+    ```
+    GET /calendar/2024-01-01/2024-01-31
+    GET /calendar/2024-01-01/2024-01-31?type=meeting&owner_id=123
+    ```
+    """,
+)
 def calendar_event(date_from, date_to):
     
     url = f"https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}"

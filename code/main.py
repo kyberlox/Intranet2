@@ -1374,42 +1374,30 @@ def process_description(obj: Any, context: str = "root") -> Any:
         return obj
 
 def convert_markdown_in_schema(schema: Dict[str, Any]) -> Dict[str, Any]:
-    """Конвертирует Markdown только в разрешенных местах."""
+    """Конвертирует Markdown только в description и summary полях."""
+    if not HAS_MARKDOWN2:
+        return schema
     
-    print("🔄 Преобразую Markdown описания в HTML (только в description/summary)...")
+    print("🔄 Преобразую Markdown только в description/summary полях...")
     
-    # Создаем копию схемы для обработки
-    processed_schema = schema.copy()
+    # Создаем глубокую копию
+    import copy
+    processed_schema = copy.deepcopy(schema)
     
-    # Обрабатываем info блок
-    if "info" in processed_schema:
-        processed_schema["info"] = process_description(processed_schema["info"], "info")
+    # Рекурсивная функция для замены только description и summary
+    def replace_descriptions(obj):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if key in ["description", "summary"] and isinstance(value, str):
+                    obj[key] = markdown_to_html(value)
+                elif isinstance(value, (dict, list)):
+                    replace_descriptions(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                if isinstance(item, (dict, list)):
+                    replace_descriptions(item)
     
-    # Обрабатываем пути (paths)
-    if "paths" in processed_schema:
-        processed_schema["paths"] = process_description(processed_schema["paths"], "paths")
-    
-    # Обрабатываем компоненты (components)
-    if "components" in processed_schema:
-        # Для схем в components нужно быть осторожнее
-        components = processed_schema["components"].copy()
-        
-        # Обрабатываем схемы
-        if "schemas" in components:
-            schemas = {}
-            for schema_name, schema_def in components["schemas"].items():
-                # В названиях схем НЕ должно быть HTML
-                # Но в описаниях схем - может быть
-                if isinstance(schema_def, dict):
-                    schemas[schema_name] = process_description(schema_def, "schema")
-                else:
-                    schemas[schema_name] = schema_def
-            components["schemas"] = schemas
-        
-        processed_schema["components"] = components
-    
-    # Обрабатываем теги
-    if "tags" in processed_schema:
-        processed_schema["tags"] = process_description(processed_schema["tags"], "tag")
+    # Применяем только к нужным полям
+    replace_descriptions(processed_schema)
     
     return processed_schema

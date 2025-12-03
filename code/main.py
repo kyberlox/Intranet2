@@ -1042,23 +1042,22 @@ CUSTOM_CSS = """
 # 1. Создаем кастомную OpenAPI схему
 def custom_openapi():
     if app.openapi_schema:
+        print("[DEBUG] Возвращаю закешированную схему.")
         return app.openapi_schema
     
+    print("[DEBUG] Генерирую новую кастомную OpenAPI схему...")
     openapi_schema = get_openapi(
         title="Intranet2.0 API Docs",
         version="2.0.0",
-        description="""
-            Добро пожаловать!
-        Тут проедставлена документация к ресурсам REST API, реализованного с помощью Python3 Fastapi, для внутреннего функционирования веб-сервиса Intranet2.0!
-
-        Особенности проекта:
-            - Модульная структура
-            - Аснхронность
-            - Взаимодействие 3х Баз Данных
-        """,
+        description="...",
         routes=app.routes,
-        openapi_version="3.0.3"  # <-- КРИТИЧНОЕ ИЗМЕНЕНИЕ: 3.1.0 -> 3.0.3
+        openapi_version="3.0.3"  # Убедитесь, что тут 3.0.3!
     )
+    
+    # ВАЖНО: Напечатайте начало схемы для проверки
+    import json
+    schema_preview = json.dumps(openapi_schema, indent=2, ensure_ascii=False)[:500]
+    print(f"[DEBUG] Первые 500 символов схемы:\n{schema_preview}")
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -1075,7 +1074,7 @@ async def get_openapi_endpoint():
 async def custom_swagger_ui_html():
     # 1. Получаем объект HTMLResponse от стандартной функции
     response_obj = get_swagger_ui_html(
-        openapi_url="/openapi.json",
+        openapi_url="/api/openapi.json",
         title="🚀 Intranet2.0 API Docs",
         swagger_ui_parameters={
             "defaultModelsExpandDepth": 1,

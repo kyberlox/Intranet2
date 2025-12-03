@@ -216,6 +216,8 @@ class RootsModel:
 
     async def get_editors_list(self, sec_id, session):
         from ..models.Section import Section
+        from src.model.File import File
+        from .App import DOMAIN
         result = []
         try:
             stmt = select(self.Roots).where(self.Roots.root_token.has_key("EditorModer"))
@@ -227,14 +229,17 @@ class RootsModel:
                     res = await session.execute(stmt)
                     section_name = res.scalar()
 
-                    stmt = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == moder.user_uuid)
+                    stmt = select(self.User.name, self.User.second_name, self.User.last_name, self.User.photo_file_id).where(self.User.id == moder.user_uuid)
                     res = await session.execute(stmt)
                     moder_fio = res.first()
+
+                    photo_inf = await File(id=moder_fio.photo_file_id).get_users_photo(session)
+                    url = photo_inf['URL']
+                    photo_file_url = f"{DOMAIN}{url}" if url else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                     moder_info = {
-                        'moder_id': moder.user_uuid,
-                        "moder_name": moder_fio.name,
-                        "moder_second_name": moder_fio.second_name,
-                        "moder_last_name": moder_fio.last_name,
+                        'id': moder.user_uuid,
+                        'name': f"{moder_fio.last_name} {moder_fio.name} {moder_fio.second_name}",
+                        'photo_file_url': photo_file_url,
                         'section_id': sec_id,
                         'section_name': section_name
                     }

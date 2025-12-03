@@ -116,7 +116,8 @@
     span,
     a,
     .book-nav__sidebar__burger,
-    .homeview__item__link {
+    .homeview__item__link,
+    .visibility-editor__user-fio {
         color: #e0dede;
     }
 
@@ -163,8 +164,17 @@
 
     .modal-body {
         background: rgb(81, 81, 81);
-
     }
+
+    .visibility-editor__area-user {
+        background: none;
+
+        &:hover {
+            background: rgb(81, 81, 81);
+
+        }
+    }
+
 
     .modal--fullscreen {
         background: rgb(81, 81, 81);
@@ -245,11 +255,9 @@
         border-color: #434343;
     }
 
-
     .neuroChat__message::after,
     .neuroChat__message::before {
         border-right-color: #272727;
-
     }
 
     .dropdown__item--active {

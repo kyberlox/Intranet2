@@ -122,9 +122,8 @@ export default defineComponent({
         };
 
         const handleRouteToCurrentMonth = () => {
-            router.push({ name: 'calendarMonth', params: { targetId: 10 } });
-            // setTimeout(() =>
-            //     router.push({ name: 'calendarMonth' }), 30)
+            const curMonth = new Date().getMonth() + 1;
+            router.push({ name: 'calendarMonth', params: { targetId: curMonth } });
         }
 
         return {

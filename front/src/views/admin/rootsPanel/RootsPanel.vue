@@ -4,7 +4,9 @@
         <div class="visibility-editor__wrapper">
             <AdminSidebar :needDefaultNav="false">
                 <div class="admin-panel__header">
-                    <h3 class="admin-panel__title">Настройка прав пользователей</h3>
+                    <h3 class="admin-panel__title">
+                        Настройка прав пользователей
+                    </h3>
                 </div>
                 <ul v-if="sections.length"
                     class="admin-panel__nav-list">
@@ -27,8 +29,9 @@
         </div>
     </div>
     <div v-if="activeSection"
-         class="admin-panel__content">
+         class="admin-panel__content admin-panel__content__add-user-btn">
         <AdminEditUserSearch @userPicked="addRootToUser" />
+        <AdminUsersList :users="activeSectionEditors" />
     </div>
 </div>
 </template>
@@ -40,32 +43,36 @@ import AdminSidebar from '../components/AdminSidebar.vue';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import Api from '@/utils/Api';
 import AdminEditUserSearch from '../components/inputFields/AdminEditUserSearch.vue';
+import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
 
 export default defineComponent({
     name: 'rootsEditPanel',
     components: {
         AdminSidebar,
         NavArrow,
-        AdminEditUserSearch
+        AdminEditUserSearch,
+        AdminUsersList
     },
     setup() {
         const sections = computed(() => useAdminData().getSections)
         const activeSection = ref();
+        const activeSectionEditors = ref([]);
 
         watch((activeSection), () => {
             if (!activeSection.value) return
             Api.get(`roots/get_editors_list/${activeSection.value.id}`)
-                .then((data) => console.log(data))
+                .then((data) => activeSectionEditors.value = data)
         }, { immediate: true, deep: true })
 
         const addRootToUser = (id: number) => {
-            Api.get(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
+            Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
                 .then((data) => console.log(data))
         }
 
         return {
             sections,
             activeSection,
+            activeSectionEditors,
             addRootToUser
         }
     }

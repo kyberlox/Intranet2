@@ -1335,8 +1335,6 @@ async def custom_swagger_ui_html():
 
 def markdown_to_html(text: str) -> str:
     """Преобразует Markdown в HTML с улучшенным форматированием кода."""
-    if not text or not HAS_MARKDOWN2:
-        return text
     
     try:
         # Преобразуем Markdown в HTML

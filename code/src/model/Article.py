@@ -684,26 +684,26 @@ class Article:
                     if tr["BP_PUBLISHED"] != "Y":
                         act = False
 
-                    photo_file_url = None
-                    print("photo_file_url - None", art_id)
                     if "PROPERTY_498" in tr:
                         photo = take_value(tr["PROPERTY_498"])
                         # скачать и вытащить ссылку
                         art_id = self.id
                         inf_id = "84"
                         is_preview = False
+                        # ЕСЛИ ФАЙЛЫ БЫЛИ СКАЧЕННЫ РАНЕЕЕ ТО ОН ПЕРЕЗАПИШЕТ НА NULL
                         file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview,
                                                                             need_all_method=True, inf_id=inf_id,
                                                                             session=session)
-                        print("скачиваем фото", art_id)
+                        
                         if file_data is None:
-                            print("не скачали фото")
                             photo_file_url = None
 
                         else:
-                            print('скачали фото', art_id)
                             url = file_data["file_url"]
                             photo_file_url = f"{DOMAIN}{url}"
+
+                        if tr["ID"] == "7442" or tr["ID"] == "7596":
+                            print(photo_file_url, photo)
 
                     t = {
                         "tourId": tr["ID"],
@@ -1229,8 +1229,8 @@ class Article:
             172: ["61", "83"]  # Учебный центр (Проведённые тренинги) ✔️
         }
 
-        # # Учебный центр (Проведённые тренинги)
-        # self.section_id = "61"
+        # # # Учебный центр (Проведённые тренинги)
+        # # self.section_id = "61"
         # sec_inf_title = await self.get_inf()
         # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
         #     title_id = title_inf["ID"]
@@ -1267,8 +1267,8 @@ class Article:
         #     elif await artDB.update(await self.make_valid_article(data, session), session):
         #         pass
 
-        # # Блоги
-        # # пройти по инфоблоку заголовков
+        # # # Блоги
+        # # # пройти по инфоблоку заголовков
         # self.section_id = "75"
         # sec_inf_title = await self.get_inf()
         # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 75, 77 "):
@@ -1304,8 +1304,8 @@ class Article:
         #             elif await artDB.update(await self.make_valid_article(data, session), session):
         #                 pass
 
-        # # # Памятка
-        # # # пройти по инфоблоку заголовков
+        # # # # Памятка
+        # # # # пройти по инфоблоку заголовков
         # self.section_id = "82"
         # sec_inf_title = await self.get_inf()
         # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):
@@ -1347,6 +1347,7 @@ class Article:
 
         # Гид по предприятиям
         # пройти по инфоблоку заголовков
+        # ПРОВЕРИТЬ НЕ СКАЧАНЫ ЛИ УЖЕ ФАЙЛЫ ПРЕВЬЮ ИНАЧЕ ПЕРЕЗАПИШЕТ НА NONE
         self.section_id = "78"
         sec_inf_title = await self.get_inf()
         for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 78, 98 и 84"):

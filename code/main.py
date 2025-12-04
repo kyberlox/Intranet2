@@ -1593,16 +1593,18 @@ CUSTOM_CSS = """
                 }
             }
         }, 500);
+
+            if(window.location.hash.includes('24')){
+        test = document.querySelectorAll('.opblock-tag-section')
+        test.forEach((e)=>{if(e.children[0].getAttribute('data-tag') !== 'Битрикс24'){e.style.display = 'none'}})
+    }
+
     });
 
     // Экспортируем функции для отладки
     window.processMarkdown = processAllMarkdown;
     window.convertMarkdown = convertMarkdownToHtml;
 
-    if(window.location.hash.includes('24')){
-        test = document.querySelectorAll('.opblock-tag-section')
-        test.forEach((e)=>{if(e.children[0].getAttribute('data-tag') !== 'Битрикс24'){e.style.display = 'none'}})
-    }
 
 </script>
 """

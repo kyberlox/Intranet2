@@ -347,6 +347,8 @@ class Article:
 
                 # отдельно вытащить превьюшки людей
                 user = await User(id=uuid).search_by_id_all(session)
+                if uuid == 690:
+                    print(user, 'федин')
                 photo = user["photo_file_url"]
                 # photo = photo.replace("user_files", "compress_image/user")
 
@@ -1162,9 +1164,6 @@ class Article:
         ❌ - ожидает работы
         '''
 
-        # создание индексов в Mongo
-        # File().index_files()
-
         '''
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
@@ -1175,7 +1174,7 @@ class Article:
         # await self.upload_services(session)  # загрузили все без проблем
 
         # Дамп данных в эластик
-        await self.dump_articles_data_es(session=session)
+        # await self.dump_articles_data_es(session=session)
 
         # await self.upload_likes(session)
         # await self.upload_views(session)

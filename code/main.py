@@ -962,6 +962,16 @@ CUSTOM_CSS = """
         font-family: sans-serif;
     }
 
+    .swagger-ui section h2 {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
+    .swagger-ui section h1 {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
     .swagger-ui .opblock-description-wrapper p {
         color: #ffffff;
         font-family: sans-serif;

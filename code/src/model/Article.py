@@ -685,6 +685,7 @@ class Article:
                         act = False
 
                     photo_file_url = None
+                    print("photo_file_url - None", art_id)
                     if "PROPERTY_498" in tr:
                         photo = take_value(tr["PROPERTY_498"])
                         # скачать и вытащить ссылку
@@ -694,11 +695,13 @@ class Article:
                         file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview,
                                                                             need_all_method=True, inf_id=inf_id,
                                                                             session=session)
-
+                        print("скачиваем фото", art_id)
                         if file_data is None:
+                            print("не скачали фото")
                             photo_file_url = None
 
                         else:
+                            print('скачали фото', art_id)
                             url = file_data["file_url"]
                             photo_file_url = f"{DOMAIN}{url}"
 

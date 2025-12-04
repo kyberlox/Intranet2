@@ -521,28 +521,44 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import re
+import markdown2
+from typing import Any, Dict, Optional
+from html import escape
+
+HAS_MARKDOWN2=True
 
 
 
-# Встроенный CSS стиль
 # Кастомные стили
 CUSTOM_CSS = """
 <style>
-    /* === ОСНОВНЫЕ ПЕРЕМЕННЫЕ И СБРОС === */
+    /* === ОБНОВЛЁННЫЕ ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ === */
     :root {
+        /* Акцентные цвета (оранжевые) */
         --accent: #f5821f;
         --accent-light: #ff9a42;
         --accent-dark: #d6690b;
-        --text-primary: #d3d3d3;
-        --text-secondary: #A5A5A5;
-        --bg-main: rgb(19, 19, 19);
-        --bg-block: #1b1b1b;
+        
+        /* Текст - ВСЕ БЕЛЫЙ для максимальной читаемости */
+        --text-primary: #ffffff;           /* Основной текст - чистый белый */
+        --text-secondary: #ffffff;         /* Вторичный текст - тоже белый */
+        --text-muted: #ffffff;             /* Приглушенный текст - белый с прозрачностью */
+        
+        /* Фоны */
+        --bg-main: rgb(35, 35, 35);        /* Ещё светлее основной фон */
+        --bg-block: #2d2d2d;               /* Более светлый фон блоков */
+        --bg-card: #363636;                /* Самый светлый фон для карточек */
+        
+        /* Границы */
         --border-color: #f5821f;
-        --border-light: #333333;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --error: #ef4444;
-        --info: #3b82f6;
+        --border-light: #505050;           /* Светлые границы */
+        --border-soft: #444444;
+        
+        /* Статусные цвета */
+        --success: #4caf50;
+        --warning: #ff9800;
+        --error: #f44336;
+        --info: #2196f3;
     }
 
     /* === ОСНОВНОЙ ФОН И ТЕКСТ === */
@@ -557,47 +573,125 @@ CUSTOM_CSS = """
     .swagger-ui {
         background-color: var(--bg-main) !important;
         font-family: inherit !important;
+        color: var(--text-primary) !important;
     }
 
     .swagger-ui .wrapper {
         max-width: 1400px !important;
         margin: 0 auto !important;
         padding: 20px !important;
+        background-color: var(--bg-main) !important;
     }
 
-    /* === ВЕРХНЯЯ ПАНЕЛЬ (TOP BAR) === */
+    /* === ВЕРХНЯЯ ПАНЕЛЬ === */
     .swagger-ui .topbar {
         background-color: var(--bg-block) !important;
         border-bottom: 2px solid var(--border-color) !important;
         padding: 15px 0 !important;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    .swagger-ui .topbar-wrapper {
-        max-width: 1400px !important;
-        margin: 0 auto !important;
-        padding: 0 20px !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .swagger-ui .topbar-wrapper svg {
-        display: none !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
     }
 
     .swagger-ui .topbar-wrapper .link {
         color: var(--accent) !important;
         font-size: 1.5em !important;
         font-weight: bold !important;
-        text-decoration: none !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
     }
 
-    .swagger-ui .topbar-wrapper .link::before {
-        content: "📚";
-        font-size: 1.3em;
+    /* === ОПИСАНИЯ В SWAGGER UI - ВСЁ БЕЛОЕ! === */
+    
+    /* Основные описания */
+    .swagger-ui .info .description *,
+    .swagger-ui .info .description,
+    .swagger-ui .opblock .opblock-summary-description *,
+    .swagger-ui .opblock .opblock-summary-description,
+    .swagger-ui .opblock .opblock-summary-description p,
+    .swagger-ui .opblock .opblock-summary-description li,
+    .swagger-ui .opblock .opblock-summary-description span,
+    .swagger-ui .opblock .opblock-summary-description div,
+    .swagger-ui .opblock .opblock-summary-description strong,
+    .swagger-ui .opblock .opblock-summary-description em {
+        color: var(--text-primary) !important;  /* БЕЛЫЙ! */
+    }
+
+    /* Параграфы в описаниях */
+    .swagger-ui .info .description p,
+    .swagger-ui .opblock .opblock-summary-description p {
+        color: var(--text-primary) !important;
+        margin: 1em 0 !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Списки в описаниях - КРИТИЧНО ВАЖНО! */
+    .swagger-ui .info .description ul,
+    .swagger-ui .info .description ol,
+    .swagger-ui .opblock .opblock-summary-description ul,
+    .swagger-ui .opblock .opblock-summary-description ol {
+        color: var(--text-primary) !important;
+        margin: 1em 0 1em 2em !important;
+    }
+
+    .swagger-ui .info .description li,
+    .swagger-ui .opblock .opblock-summary-description li {
+        color: var(--text-primary) !important;
+        margin: 0.5em 0 !important;
+        line-height: 1.5 !important;
+        list-style-type: disc !important;
+    }
+
+    /* Элементы списков (маркеры) */
+    .swagger-ui .info .description li::marker,
+    .swagger-ui .opblock .opblock-summary-description li::marker {
+        color: var(--accent) !important;
+    }
+
+    /* Заголовки в описаниях */
+    .swagger-ui .info .description h1,
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3,
+    .swagger-ui .info .description h4,
+    .swagger-ui .info .description h5,
+    .swagger-ui .info .description h6,
+    .swagger-ui .opblock .opblock-summary-description h1,
+    .swagger-ui .opblock .opblock-summary-description h2,
+    .swagger-ui .opblock .opblock-summary-description h3,
+    .swagger-ui .opblock .opblock-summary-description h4,
+    .swagger-ui .opblock .opblock-summary-description h5,
+    .swagger-ui .opblock .opblock-summary-description h6 {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        margin: 1.5em 0 0.8em 0 !important;
+        padding-bottom: 0.3em !important;
+        border-bottom: 1px solid var(--border-light) !important;
+    }
+
+    /* Жирный текст в описаниях */
+    .swagger-ui .info .description strong,
+    .swagger-ui .opblock .opblock-summary-description strong {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+    }
+
+    /* Курсив в описаниях */
+    .swagger-ui .info .description em,
+    .swagger-ui .opblock .opblock-summary-description em {
+        color: var(--text-primary) !important;
+        font-style: italic !important;
+        opacity: 0.9 !important;
+    }
+
+    /* Ссылки в описаниях */
+    .swagger-ui .info .description a,
+    .swagger-ui .opblock .opblock-summary-description a {
+        color: var(--accent-light) !important;
+        text-decoration: none !important;
+        border-bottom: 1px dotted var(--accent) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .swagger-ui .info .description a:hover,
+    .swagger-ui .opblock .opblock-summary-description a:hover {
+        border-bottom-style: solid !important;
+        color: var(--accent) !important;
     }
 
     /* === ЗАГОЛОВОК ИНФОРМАЦИОННОГО БЛОКА === */
@@ -608,32 +702,7 @@ CUSTOM_CSS = """
         margin-bottom: 10px !important;
         border-bottom: 2px solid var(--border-color) !important;
         padding-bottom: 15px !important;
-    }
-
-    .swagger-ui .info .title small {
-        background-color: var(--accent) !important;
-        color: var(--bg-main) !important;
-        padding: 3px 10px !important;
-        border-radius: 12px !important;
-        font-size: 0.6em !important;
-        margin-left: 15px !important;
-        vertical-align: middle !important;
-    }
-
-    .swagger-ui .info .description p,
-    .swagger-ui .info .description li {
-        color: var(--text-primary) !important;
-        line-height: 1.6 !important;
-    }
-
-    .swagger-ui .info .description h1,
-    .swagger-ui .info .description h2,
-    .swagger-ui .info .description h3,
-    .swagger-ui .info .description h4 {
-        color: var(--accent) !important;
-        margin-top: 1.5em !important;
-        border-left: 4px solid var(--accent) !important;
-        padding-left: 10px !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
     }
 
     /* === ТЕГИ (ГРУППЫ ЭНДПОИНТОВ) === */
@@ -647,13 +716,6 @@ CUSTOM_CSS = """
         border-radius: 8px !important;
         padding: 15px 20px !important;
         margin: 20px 0 !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .swagger-ui .opblock-tag:hover {
-        background-color: #222222 !important;
-        transform: translateX(5px) !important;
-        cursor: pointer !important;
     }
 
     /* === БЛОКИ ОПЕРАЦИЙ (ENDPOINTS) === */
@@ -664,20 +726,9 @@ CUSTOM_CSS = """
         border-radius: 8px !important;
         margin-bottom: 15px !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-        transition: all 0.3s ease !important;
     }
 
-    .swagger-ui .opblock:hover {
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important;
-        transform: translateY(-2px) !important;
-        border-left-color: var(--accent-light) !important;
-    }
-
-    .swagger-ui .opblock .opblock-summary {
-        padding: 15px !important;
-    }
-
-    /* === МЕТОДЫ HTTP (GET, POST, ETC) === */
+    /* Методы HTTP */
     .swagger-ui .opblock .opblock-summary-method {
         background-color: var(--accent) !important;
         color: var(--bg-main) !important;
@@ -690,24 +741,7 @@ CUSTOM_CSS = """
         border: none !important;
     }
 
-    /* Цвета для разных HTTP методов */
-    .swagger-ui .opblock.opblock-get .opblock-summary-method {
-        background-color: var(--accent) !important; /* GET - оранжевый */
-    }
-    .swagger-ui .opblock.opblock-post .opblock-summary-method {
-        background-color: var(--success) !important; /* POST - зеленый */
-    }
-    .swagger-ui .opblock.opblock-put .opblock-summary-method {
-        background-color: var(--warning) !important; /* PUT - желтый */
-    }
-    .swagger-ui .opblock.opblock-delete .opblock-summary-method {
-        background-color: var(--error) !important; /* DELETE - красный */
-    }
-    .swagger-ui .opblock.opblock-patch .opblock-summary-method {
-        background-color: var(--info) !important; /* PATCH - синий */
-    }
-
-    /* === ПУТЬ И ОПИСАНИЕ ЭНДПОИНТА === */
+    /* Путь и описание эндпоинта */
     .swagger-ui .opblock .opblock-summary-path {
         color: var(--text-primary) !important;
         font-size: 1.1em !important;
@@ -716,10 +750,18 @@ CUSTOM_CSS = """
         font-weight: 500 !important;
     }
 
+    /* Описание эндпоинта - теперь отдельный блок */
     .swagger-ui .opblock .opblock-summary-description {
-        color: var(--text-secondary) !important;
-        font-size: 0.9em !important;
-        margin-top: 5px !important;
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        padding: 15px !important;
+        margin-top: 10px !important;
+        font-size: 0.95em !important;
+        line-height: 1.6 !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     }
 
     /* === КНОПКИ === */
@@ -732,17 +774,6 @@ CUSTOM_CSS = """
         padding: 8px 16px !important;
         font-size: 0.9em !important;
         cursor: pointer !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .swagger-ui .btn:hover {
-        background-color: var(--accent-light) !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 4px 8px rgba(245, 130, 31, 0.2) !important;
-    }
-
-    .swagger-ui .btn.execute {
-        min-width: 80px !important;
     }
 
     /* === ПОЛЯ ВВОДА И СЕЛЕКТОРЫ === */
@@ -752,20 +783,12 @@ CUSTOM_CSS = """
     .swagger-ui input[type="number"],
     .swagger-ui select,
     .swagger-ui textarea {
-        background-color: var(--bg-block) !important;
+        background-color: var(--bg-card) !important;
         color: var(--text-primary) !important;
         border: 1px solid var(--border-light) !important;
         border-radius: 4px !important;
         padding: 10px !important;
         font-size: 0.95em !important;
-    }
-
-    .swagger-ui input:focus,
-    .swagger-ui select:focus,
-    .swagger-ui textarea:focus {
-        border-color: var(--accent) !important;
-        outline: none !important;
-        box-shadow: 0 0 0 2px rgba(245, 130, 31, 0.2) !important;
     }
 
     /* === ПАРАМЕТРЫ === */
@@ -836,143 +859,745 @@ CUSTOM_CSS = """
         padding: 15px !important;
     }
 
-    /* === СКРОЛЛБАР (CUSTOM) === */
+    /* === БЛОКИ КОДА (Markdown -> HTML) === */
+    /* Inline код */
+    .swagger-ui .info .description code:not(pre samp),
+    .swagger-ui .opblock .opblock-summary-description code:not(pre samp) {
+        background-color: rgba(245, 130, 31, 0.15) !important;
+        color: var(--accent-light) !important;
+        padding: 0.2em 0.4em !important;
+        border-radius: 3px !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+        font-size: 0.9em !important;
+        border: 1px solid rgba(245, 130, 31, 0.3) !important;
+    }
+
+    /* Блоки кода в <samp> тегах */
+    .swagger-ui .info .description pre,
+    .swagger-ui .opblock .opblock-summary-description pre {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 6px !important;
+        padding: 16px !important;
+        margin: 1.2em 0 !important;
+        overflow-x: auto !important;
+        position: relative !important;
+    }
+
+    /* Красивая левая полоска для блоков кода */
+    .swagger-ui .info .description pre::before,
+    .swagger-ui .opblock .opblock-summary-description pre::before {
+        content: '' !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 4px !important;
+        background: linear-gradient(to bottom, var(--accent), var(--accent-light)) !important;
+        border-radius: 6px 0 0 6px !important;
+    }
+
+    /* Сам текст кода внутри <samp> */
+    .swagger-ui .info .description pre samp,
+    .swagger-ui .opblock .opblock-summary-description pre samp {
+        display: block !important;
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
+        font-size: 0.9em !important;
+        line-height: 1.5 !important;
+        white-space: pre !important;
+        word-break: normal !important;
+        word-wrap: normal !important;
+        overflow-x: visible !important;
+    }
+
+    /* Стили для HTTP подсветки */
+    .http-method {
+        color: var(--accent-light) !important;
+        font-weight: bold !important;
+        text-shadow: 0 0 1px rgba(245, 130, 31, 0.5) !important;
+    }
+
+    .http-path {
+        color: var(--text-primary) !important;
+        font-weight: 500 !important;
+    }
+
+    .http-header {
+        color: #4caf50 !important;
+        font-style: italic !important;
+    }
+
+    .http-url {
+        color: #64b5f6 !important;
+        text-decoration: underline !important;
+        text-decoration-color: rgba(100, 181, 246, 0.4) !important;
+    }
+
+    /* === СКРОЛЛБАРЫ === */
     ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
     }
+
     ::-webkit-scrollbar-track {
-        background: var(--bg-main);
+        background: var(--bg-block);
     }
+
     ::-webkit-scrollbar-thumb {
         background: var(--accent);
         border-radius: 5px;
+        border: 2px solid var(--bg-main);
     }
+
     ::-webkit-scrollbar-thumb:hover {
         background: var(--accent-light);
     }
 
-    /* === ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ === */
-    .swagger-ui .info .description .markdown code,
-    .swagger-ui .opblock-description-wrapper .markdown code {
-        background-color: var(--bg-block) !important;
+    .swagger-ui section h3 {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
+    .swagger-ui section h2 {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
+    .swagger-ui section h1 {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
+    .swagger-ui .opblock-description-wrapper p {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
+    /* Специальный скроллбар для блоков кода */
+    .swagger-ui .info .description pre::-webkit-scrollbar,
+    .swagger-ui .opblock .opblock-summary-description pre::-webkit-scrollbar {
+        height: 8px !important;
+    }
+
+    .swagger-ui .info .description pre::-webkit-scrollbar-track,
+    .swagger-ui .opblock .opblock-summary-description pre::-webkit-scrollbar-track {
+        background: var(--bg-block) !important;
+        border-radius: 4px !important;
+        margin: 0 4px !important;
+    }
+
+    .swagger-ui .info .description pre::-webkit-scrollbar-thumb,
+    .swagger-ui .opblock .opblock-summary-description pre::-webkit-scrollbar-thumb {
+        background: linear-gradient(to right, var(--accent), var(--accent-light)) !important;
+        border-radius: 4px !important;
+        border: 2px solid var(--bg-card) !important;
+    }
+
+    /* === ТЕМНЫЕ ЭЛЕМЕНТЫ SWAGGER UI === */
+    /* Секции с деталями запроса */
+    .swagger-ui .opblock .opblock-section-header {
+        background-color: var(--bg-card) !important;
+        border-bottom: 1px solid var(--border-light) !important;
+    }
+
+    .swagger-ui .opblock .opblock-section-header h4 {
+        color: var(--text-primary) !important;
+    }
+
+    /* Вкладки (табы) */
+    .swagger-ui .tab {
+        color: var(--text-secondary) !important;
+        border-bottom: 2px solid transparent !important;
+    }
+
+    .swagger-ui .tab:hover {
+        background-color: rgba(245, 130, 31, 0.1) !important;
         color: var(--accent) !important;
+    }
+
+    .swagger-ui .tab.active {
+        border-bottom-color: var(--accent) !important;
+        color: var(--accent) !important;
+        font-weight: bold !important;
+    }
+
+    /* === ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ === */
+    
+    /* Делаем фон описаний API ещё светлее */
+    .swagger-ui .info {
+        background-color: var(--bg-block) !important;
         border: 1px solid var(--border-light) !important;
-        padding: 2px 5px !important;
+        border-radius: 10px !important;
+        padding: 25px !important;
+        margin: 20px 0 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* Выделяем маркеры списков акцентным цветом */
+    .swagger-ui .info .description ul li::before {
+        content: "•" !important;
+        color: var(--accent) !important;
+        font-size: 1.2em !important;
+        margin-right: 8px !important;
+        vertical-align: middle !important;
+    }
+
+    /* Разделители между пунктами в списках */
+    .swagger-ui .info .description li {
+        border-left: 2px solid rgba(245, 130, 31, 0.2) !important;
+        padding-left: 10px !important;
+        margin-left: -10px !important;
+    }
+
+    /* Особое выделение для блоков с примерами */
+    .swagger-ui .opblock .opblock-summary-description h3 {
+        background: linear-gradient(90deg, rgba(245, 130, 31, 0.1), transparent) !important;
+        padding: 8px 15px !important;
+        border-radius: 6px !important;
+        margin-top: 20px !important;
+    }
+    /* === СТИЛИ ДЛЯ ОБРАБОТАННОГО MARKDOWN === */
+
+    /* Заголовки в описаниях */
+    .swagger-ui .info .description h1,
+    .swagger-ui .info .description h2,
+    .swagger-ui .info .description h3,
+    .swagger-ui .info .description h4,
+    .swagger-ui .opblock .opblock-summary-description h1,
+    .swagger-ui .opblock .opblock-summary-description h2,
+    .swagger-ui .opblock .opblock-summary-description h3,
+    .swagger-ui .opblock .opblock-summary-description h4 {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+        margin: 1em 0 0.5em 0 !important;
+        padding-bottom: 0.3em !important;
+        border-bottom: 1px solid var(--border-light) !important;
+    }
+
+    /* Параграфы */
+    .swagger-ui .info .description p,
+    .swagger-ui .opblock .opblock-summary-description p {
+        color: var(--text-primary) !important;
+        margin: 0.8em 0 !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Списки */
+    .swagger-ui .info .description ul,
+    .swagger-ui .opblock .opblock-summary-description ul {
+        color: var(--text-primary) !important;
+        margin: 0.8em 0 0.8em 1.5em !important;
+        padding-left: 0 !important;
+    }
+
+    .swagger-ui .info .description li,
+    .swagger-ui .opblock .opblock-summary-description li {
+        color: var(--text-primary) !important;
+        margin: 0.4em 0 !important;
+        line-height: 1.5 !important;
+        list-style-type: disc !important;
+    }
+
+    /* Жирный текст */
+    .swagger-ui .info .description strong,
+    .swagger-ui .opblock .opblock-summary-description strong {
+        color: var(--accent) !important;
+        font-weight: 600 !important;
+    }
+
+    /* Курсив */
+    .swagger-ui .info .description em,
+    .swagger-ui .opblock .opblock-summary-description em {
+        font-style: italic !important;
+        opacity: 0.9 !important;
+    }
+
+    /* Inline код */
+    .swagger-ui .info .description code.inline-code,
+    .swagger-ui .opblock .opblock-summary-description code.inline-code {
+        background-color: rgba(245, 130, 31, 0.15) !important;
+        color: var(--accent-light) !important;
+        padding: 0.2em 0.4em !important;
         border-radius: 3px !important;
-        font-family: monospace !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+        font-size: 0.9em !important;
+        border: 1px solid rgba(245, 130, 31, 0.3) !important;
+    }
+
+    /* Блоки кода, созданные JavaScript */
+    .code-block-container {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-light) !important;
+        border-radius: 8px !important;
+        margin: 1em 0 !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .code-header {
+        background: linear-gradient(90deg, rgba(245, 130, 31, 0.1), rgba(245, 130, 31, 0.05)) !important;
+        border-bottom: 1px solid var(--border-light) !important;
+        padding: 10px 15px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .language-badge {
+        background-color: var(--accent) !important;
+        color: var(--bg-main) !important;
+        font-size: 0.75em !important;
+        font-weight: bold !important;
+        padding: 4px 10px !important;
+        border-radius: 12px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .copy-code-btn {
+        background-color: rgba(245, 130, 31, 0.2) !important;
+        color: var(--accent) !important;
+        border: 1px solid rgba(245, 130, 31, 0.3) !important;
+        border-radius: 6px !important;
+        padding: 6px 12px !important;
+        font-size: 0.8em !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .copy-code-btn:hover {
+        background-color: rgba(245, 130, 31, 0.3) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 8px rgba(245, 130, 31, 0.2) !important;
+    }
+
+    .code-block-container pre {
+        background-color: var(--bg-block) !important;
+        margin: 0 !important;
+        padding: 16px !important;
+        overflow-x: auto !important;
+    }
+
+    .code-block-container code {
+        display: block !important;
+        color: var(--text-primary) !important;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;
+        font-size: 0.9em !important;
+        line-height: 1.5 !important;
+        white-space: pre !important;
+    }
+
+    /* Подсветка HTTP */
+    .http-method-highlight {
+        color: var(--accent) !important;
+        font-weight: bold !important;
+    }
+
+    .http-path {
+        color: var(--text-primary) !important;
+        font-weight: 500 !important;
     }
 </style>
 
 <script>
-    // Дополнительный JavaScript для улучшений
-    document.addEventListener('DOMContentLoaded', function() {
-        // Добавляем кнопку "Наверх"
-        const scrollToTopBtn = document.createElement('button');
-        scrollToTopBtn.innerHTML = '⬆';
-        scrollToTopBtn.title = 'Наверх';
-        scrollToTopBtn.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ff6600, #ff8533);
-            color: #000;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 1000;
-            display: none;
-            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
-            transition: all 0.3s ease;
-        `;
+    // === ОСНОВНАЯ ФУНКЦИЯ ОБРАБОТКИ MARKDOWN ===
+
+    function initMarkdownProcessing() {
+        console.log("🚀 Инициализирую обработку Markdown...");
         
-        scrollToTopBtn.addEventListener('mouseover', () => {
-            scrollToTopBtn.style.transform = 'scale(1.1)';
-            scrollToTopBtn.style.boxShadow = '0 6px 16px rgba(255, 102, 0, 0.4)';
-        });
+        // Обрабатываем сразу при загрузке
+        processAllMarkdown();
         
-        scrollToTopBtn.addEventListener('mouseout', () => {
-            scrollToTopBtn.style.transform = 'scale(1)';
-            scrollToTopBtn.style.boxShadow = '0 4px 12px rgba(255, 102, 0, 0.3)';
-        });
+        // Наблюдатель за изменениями DOM
+        setupMutationObserver();
         
-        scrollToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        // Обработчик кликов
+        document.addEventListener('click', handleSwaggerClick);
+    }
+
+    function processAllMarkdown() {
+        console.log("🔍 Ищу элементы с Markdown...");
         
-        document.body.appendChild(scrollToTopBtn);
+        // 1. Основное описание API
+        const infoElement = document.querySelector('.swagger-ui .info .description');
+        if (infoElement) {
+            console.log("Найдено основное описание");
+            processElementMarkdown(infoElement);
+        }
         
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollToTopBtn.style.display = 'block';
-            } else {
-                scrollToTopBtn.style.display = 'none';
+        // 2. Описания всех эндпоинтов
+        const endpointDescriptions = document.querySelectorAll('.swagger-ui .opblock .opblock-summary-description');
+        console.log(`Найдено описаний эндпоинтов: ${endpointDescriptions.length}`);
+        
+        endpointDescriptions.forEach((desc, index) => {
+            if (desc.textContent && (desc.textContent.includes('[CODE_BLOCK') || desc.textContent.includes('###'))) {
+                console.log(`Обрабатываю описание ${index + 1}`);
+                processElementMarkdown(desc);
             }
         });
         
-        // Уведомление о загрузке
-        setTimeout(() => {
-            const notification = document.createElement('div');
-            notification.innerHTML = `
-                <div style="
-                    position: fixed;
-                    top: 80px;
-                    right: 20px;
-                    background: linear-gradient(135deg, #000, #333);
-                    color: #ff6600;
-                    padding: 15px 20px;
-                    border-radius: 8px;
-                    border-left: 4px solid #ff6600;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    z-index: 1000;
-                    max-width: 300px;
-                    animation: slideIn 0.5s ease-out;
-                ">
-                    <strong>🎯 Документация загружена!</strong>
-                    <div style="margin-top: 5px; font-size: 12px; color: #ccc;">
-                        Используйте Try it out для тестирования API
-                    </div>
+        // 3. Все элементы с классом markdown
+        const markdownElements = document.querySelectorAll('.swagger-ui .markdown, .swagger-ui .renderedMarkdown');
+        markdownElements.forEach(el => {
+            if (el.textContent && el.textContent.includes('[CODE_BLOCK')) {
+                processElementMarkdown(el);
+            }
+        });
+        
+        console.log("✅ Обработка завершена");
+    }
+
+    function processElementMarkdown(element) {
+        if (!element || !element.textContent) return;
+        
+        const originalText = element.textContent;
+        
+        // Проверяем, нужно ли обрабатывать
+        if (!originalText.includes('[CODE_BLOCK') && 
+            !originalText.includes('### ') && 
+            !originalText.includes('## ') && 
+            !originalText.includes('# ') &&
+            !originalText.includes('**')) {
+            return; // Нет Markdown разметки
+        }
+        
+        console.log("📝 Обрабатываю элемент:", originalText.substring(0, 100) + "...");
+        
+        const html = convertMarkdownToHtml(originalText);
+        element.innerHTML = html;
+        
+        // Инициализируем кнопки копирования в новых блоках кода
+        initCopyButtons();
+    }
+
+    function convertMarkdownToHtml(text) {
+        if (!text) return '';
+        
+        let html = text;
+        
+        // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
+        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
+        
+        html = html.replace(codeBlockRegex, function(match, language, codeContent) {
+            console.log(`Найден блок кода с языком: ${language}`);
+            
+            // Очищаем код
+            codeContent = codeContent.trim();
+            
+            // Определяем отображаемое имя языка
+            let langDisplay = language.toUpperCase();
+            if (language === 'text' || language === '') {
+                // Автоматически определяем HTTP
+                const firstLine = codeContent.split('\\n')[0];
+                const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+                const isHttp = httpMethods.some(method => 
+                    firstLine.toUpperCase().includes(method.toUpperCase())
+                );
+                
+                if (isHttp) {
+                    langDisplay = 'HTTP';
+                    language = 'http';
+                } else {
+                    langDisplay = 'CODE';
+                }
+            }
+            
+            // Экранируем HTML в коде
+            const escapedCode = codeContent
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+            
+            // Подсвечиваем HTTP методы если это HTTP
+            let highlightedCode = escapedCode;
+            if (language === 'http') {
+                highlightedCode = highlightHttpMethods(escapedCode);
+            }
+            
+            // Создаем уникальный ID для блока
+            const blockId = 'code-block-' + Math.random().toString(36).substr(2, 9);
+            
+            return `
+            <div id="${blockId}" class="code-block-container" data-language="${language}">
+                <div class="code-header">
+                    <span class="language-badge">${langDisplay}</span>
+                    <button class="copy-code-btn" data-target="${blockId}">
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Копировать</span>
+                    </button>
                 </div>
+                <pre><code class="language-${language}">${highlightedCode}</code></pre>
+            </div>
             `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.5s ease-out';
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
-        }, 1000);
+        });
         
-        // Добавляем стили для анимаций уведомлений
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
+        // 2. Обрабатываем заголовки
+        html = html.replace(/^###\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        
+        // 3. Обрабатываем жирный текст (**текст**)
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        
+        // 4. Обрабатываем курсив (*текст*)
+        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        
+        // 5. Обрабатываем списки (начинающиеся с -)
+        // Сначала находим все строки со списками
+        const lines = html.split('\\n');
+        let inList = false;
+        let listHtml = '';
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
             
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
+            if (line.startsWith('- ')) {
+                if (!inList) {
+                    inList = true;
+                    listHtml += '<ul class="markdown-list">';
                 }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
+                const itemText = line.substring(2);
+                listHtml += `<li class="markdown-list-item">${itemText}</li>`;
+            } else {
+                if (inList) {
+                    inList = false;
+                    listHtml += '</ul>';
+                }
+                listHtml += line + '\\n';
+            }
+        }
+        
+        if (inList) {
+            listHtml += '</ul>';
+        }
+        
+        html = listHtml;
+        
+        // 6. Обрабатываем inline код (`code`)
+        html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        
+        // 7. Заменяем двойные переносы на параграфы
+        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
+        html = '<p class="markdown-p">' + html + '</p>';
+        
+        // 8. Убираем пустые параграфы
+        html = html.replace(/<p class="markdown-p"><\/p>/g, '');
+        
+        // 9. Заменяем одиночные переносы на <br>
+        html = html.replace(/\\n/g, '<br>');
+        
+        return html;
+    }
+
+    function highlightHttpMethods(codeHtml) {
+        const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
+        let highlighted = codeHtml;
+        
+        httpMethods.forEach(method => {
+            const regex = new RegExp(`\\b(${method})\\b`, 'gi');
+            highlighted = highlighted.replace(regex, '<span class="http-method-highlight">$1</span>');
+        });
+        
+        // Подсвечиваем пути после HTTP методов
+        highlighted = highlighted.replace(
+            /(<span class="http-method-highlight">[^<]+<\/span>)\s+([^\s<]+)/g,
+            '$1 <span class="http-path">$2</span>'
+        );
+        
+        return highlighted;
+    }
+
+    // === ФУНКЦИИ ДЛЯ КНОПОК КОПИРОВАНИЯ ===
+
+    function initCopyButtons() {
+        document.querySelectorAll('.copy-code-btn').forEach(button => {
+            // Убираем старые обработчики
+            button.replaceWith(button.cloneNode(true));
+        });
+        
+        document.querySelectorAll('.copy-code-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const blockId = this.getAttribute('data-target');
+                const codeBlock = document.getElementById(blockId);
+                
+                if (!codeBlock) return;
+                
+                const codeElement = codeBlock.querySelector('code');
+                const text = codeElement ? codeElement.textContent : '';
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<span class="copy-icon">✓</span><span class="copy-text">Скопировано!</span>';
+                    this.style.background = 'rgba(76, 175, 80, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Ошибка копирования:', err);
+                    this.innerHTML = '<span class="copy-icon">❌</span><span class="copy-text">Ошибка</span>';
+                    this.style.background = 'rgba(244, 67, 54, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<span class="copy-icon">📋</span><span class="copy-text">Копировать</span>';
+                        this.style.background = '';
+                    }, 2000);
+                });
+            });
+        });
+    }
+
+    // === НАБЛЮДАТЕЛЬ И ОБРАБОТЧИКИ СОБЫТИЙ ===
+
+    function setupMutationObserver() {
+        const observer = new MutationObserver(function(mutations) {
+            let shouldProcess = false;
+            
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length > 0) {
+                    shouldProcess = true;
+                }
+            });
+            
+            if (shouldProcess) {
+                setTimeout(() => {
+                    processAllMarkdown();
+                }, 100);
+            }
+        });
+        
+        const swaggerContainer = document.querySelector('.swagger-ui');
+        if (swaggerContainer) {
+            observer.observe(swaggerContainer, {
+                childList: true,
+                subtree: true,
+                attributes: false,
+                characterData: false
+            });
+        }
+    }
+
+    function handleSwaggerClick(e) {
+        // Если кликнули на эндпоинт
+        if (e.target.closest('.opblock-tag') || 
+            e.target.closest('.opblock-summary') ||
+            e.target.closest('.expand-operation')) {
+            setTimeout(() => {
+                processAllMarkdown();
+            }, 300);
+        }
+    }
+
+    // === СТИЛИ ДЛЯ MARKDOWN ===
+    const markdownStyles = `
+        <style>
+            .markdown-h1 { color: #f5821f; font-size: 1.8em; margin: 1em 0 0.5em 0; font-weight: bold; }
+            .markdown-h2 { color: #f5821f; font-size: 1.5em; margin: 1em 0 0.5em 0; font-weight: bold; }
+            .markdown-h3 { color: #f5821f; font-size: 1.3em; margin: 1em 0 0.5em 0; font-weight: bold; }
+            .markdown-p { color: #ffffff; margin: 0.5em 0; line-height: 1.5; color: #ffffff; }
+            .markdown-list { margin: 0.5em 0 0.5em 1.5em; color: #ffffff; }
+            .markdown-list-item { margin: 0.3em 0; line-height: 1.4; color: #ffffff; }
+            .inline-code { background: rgba(245, 130, 31, 0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #ff9a42; }
+            strong { color: #f5821f; font-weight: bold; }
+            em { font-style: italic; opacity: 0.9; }
+            
+            .code-block-container { 
+                background: #2d2d2d; 
+                border: 1px solid #404040; 
+                border-radius: 8px; 
+                margin: 1em 0; 
+                overflow: hidden; 
+            }
+            .code-header { 
+                background: linear-gradient(90deg, rgba(245,130,31,0.1), rgba(245,130,31,0.05)); 
+                border-bottom: 1px solid #404040; 
+                padding: 8px 12px; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+            }
+            .language-badge { 
+                background: #f5821f; 
+                color: #000; 
+                font-size: 0.75em; 
+                font-weight: bold; 
+                padding: 3px 8px; 
+                border-radius: 4px; 
+                text-transform: uppercase; 
+            }
+            .copy-code-btn { 
+                background: rgba(245,130,31,0.2); 
+                color: #f5821f; 
+                border: 1px solid rgba(245,130,31,0.3); 
+                border-radius: 4px; 
+                padding: 4px 8px; 
+                font-size: 0.8em; 
+                cursor: pointer; 
+                display: flex; 
+                align-items: center; 
+                gap: 4px; 
+                transition: all 0.2s; 
+            }
+            .copy-code-btn:hover { 
+                background: rgba(245,130,31,0.3); 
+                transform: translateY(-1px); 
+            }
+            .code-block-container pre { 
+                margin: 0; 
+                padding: 12px; 
+                overflow-x: auto; 
+                background: #242424; 
+            }
+            .code-block-container code { 
+                display: block; 
+                color: #ffffff; 
+                font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; 
+                font-size: 0.9em; 
+                line-height: 1.4; 
+                white-space: pre; 
+            }
+            .http-method-highlight { color: #f5821f; font-weight: bold; }
+            .http-path { color: #ffffff; }
+        </style>
+    `;
+
+    // === ЗАПУСК ВСЕГО ПРИ ЗАГРУЗКЕ ===
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем стили
+        document.head.insertAdjacentHTML('beforeend', markdownStyles);
+        
+        // Запускаем обработку с небольшой задержкой для полной загрузки Swagger UI
+        setTimeout(initMarkdownProcessing, 1000);
+        
+        // Также пробуем каждые 500ms на случай если Swagger грузится медленно
+        let attempts = 0;
+        const checkInterval = setInterval(() => {
+            attempts++;
+            if (document.querySelector('.swagger-ui .info') || attempts > 10) {
+                clearInterval(checkInterval);
+                if (attempts <= 10) {
+                    initMarkdownProcessing();
                 }
             }
-        `;
-        document.head.appendChild(style);
+        }, 500);
     });
+
+    // Экспортируем функции для отладки
+    window.processMarkdown = processAllMarkdown;
+    window.convertMarkdown = convertMarkdownToHtml;
 </script>
 """
 
@@ -986,7 +1611,16 @@ def custom_openapi():
     openapi_schema = get_openapi(
         title="Intranet2.0 API Docs",
         version="2.0.0",
-        description="...",
+        description="""
+        Добро пожаловать!
+            Добро пожаловать!
+        Тут проедставлена документация к ресурсам REST API, реализованного с помощью Python3 Fastapi, для внутреннего функционирования веб-сервиса Intranet2.0!
+
+        Особенности проекта:
+            - Модульная структура
+            - Аснхронность
+            - Взаимодействие 3х Баз Данных
+        """,
         routes=app.routes,
         openapi_version="3.0.3"  # Убедитесь, что тут 3.0.3!
     )
@@ -995,6 +1629,9 @@ def custom_openapi():
     import json
     schema_preview = json.dumps(openapi_schema, indent=2, ensure_ascii=False)[:500]
     print(f"[DEBUG] Первые 500 символов схемы:\n{schema_preview}")
+
+    # Преобразуем Markdown описания в HTML
+    openapi_schema = convert_markdown_in_schema_safe(openapi_schema)
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -1076,3 +1713,71 @@ async def custom_swagger_ui_html():
     
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
+
+def markdown_to_plain(text: str) -> str:
+    """
+    Простое преобразование Markdown в текст БЕЗ HTML.
+    Блоки кода помечаем специальными метками.
+    """
+    if not text:
+        return text
+    
+    result = []
+    lines = text.split('\n')
+    i = 0
+    
+    while i < len(lines):
+        line = lines[i]
+        
+        # Блок кода ```
+        if line.strip().startswith('```'):
+            # Начало блока кода
+            language = line.strip()[3:].strip() or "text"
+            code_lines = []
+            
+            i += 1
+            while i < len(lines) and not lines[i].strip().startswith('```'):
+                code_lines.append(lines[i])
+                i += 1
+            
+            # Пропускаем закрывающий ```
+            i += 1
+            
+            # Собираем код
+            code_content = '\n'.join(code_lines).strip()
+            
+            # Определяем язык (особенно HTTP)
+            if language == "text":
+                first_line = code_content.split('\n')[0] if '\n' in code_content else code_content
+                if any(method.upper() in first_line.upper() for method in ['GET', 'POST', 'PUT', 'DELETE']):
+                    language = "http"
+            
+            # Добавляем специальную метку для JS
+            result.append(f'[CODE_BLOCK language="{language}"]{code_content}[/CODE_BLOCK]')
+            continue
+        
+        # Обычный текст
+        result.append(line)
+        i += 1
+    
+    return '\n'.join(result)
+
+def convert_markdown_in_schema_safe(schema: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Безопасное преобразование Markdown БЕЗ HTML.
+    """
+    import copy
+    
+    def process_value(value):
+        if isinstance(value, dict):
+            return {k: process_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [process_value(item) for item in value]
+        elif isinstance(value, str):
+            if value:  # Преобразуем только непустые строки
+                return markdown_to_plain(value)
+            return value
+        else:
+            return value
+    
+    return process_value(copy.deepcopy(schema))

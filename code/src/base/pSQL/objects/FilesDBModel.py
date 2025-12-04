@@ -1,13 +1,11 @@
 from ..models.FilesDB import FilesDB
-from .App import select, func, delete #get_db
+from .App import select, func, delete, update #get_db
 
 import os
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Файлов")
 
-# db_gen = get_db()
-# database = next(db_gen)
 
 STORAGE_PATH = "./files_db"
 
@@ -275,3 +273,38 @@ class FilesDBModel():
                 
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в generate_name при генерации имени файла для статьи {self.article_id}: {e}")
+    
+    async def change_prev(self, session):
+        """
+        Проверяет есть ли у статьи фотки.
+        Если есть фотки, то у всех is_preview ставит False.
+        Ставит is_preview=True на фотку с id = self.id
+        """
+        try:
+            files_exist = await self.find_by_id_all(session)
+            if files_exist:
+                stmt = update(FilesDB).where(
+                    (FilesDB.article_id == self.article_id) & 
+                    (FilesDB.is_preview == True)
+                ).values(
+                    is_preview=False,
+                )
+                turn_False = await session.execute(stmt)
+                
+                stmt = update(FilesDB).where(
+                    (FilesDB.id == self.id) & 
+                    (FilesDB.article_id == self.article_id)
+                ).values(
+                    is_preview=True,
+                )
+                turn_True = await session.execute(stmt)
+
+                await session.commit()
+                LogsMaker().info_message(f"Файл с id={self.id} успешно назначен на превью у статьи с id={self.article_id}")
+                return True
+            LogsMaker().warning_message(f"Отсутствуют файлы у статьи с id={self.article_id}, не удалось назнаичть превью")
+            return False 
+        except Exception as e:
+            await session.rollback()
+            LogsMaker().error_message(f"Произошла ошибка в функции change_prev, Файл с id={self.id} не назначен на превью у статьи с id={self.article_id}: {e}")
+            return False 

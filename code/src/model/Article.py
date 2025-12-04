@@ -345,6 +345,7 @@ class Article:
 
                 # отдельно вытащить превьюшки людей
                 user = await User(id=uuid).search_by_id_all(session)
+                
                 photo = user["photo_file_url"]
                 # photo = photo.replace("user_files", "compress_image/user")
 
@@ -702,7 +703,7 @@ class Article:
                             photo_file_url = f"{DOMAIN}{url}"
 
                     t = {
-                        "tr_id": tr["ID"],
+                        "tourId": tr["ID"],
                         "factory_id": self.id,
                         "name": tr["NAME"],
                         "active": act,
@@ -1160,9 +1161,6 @@ class Article:
         ❌ - ожидает работы
         '''
 
-        # создание индексов в Mongo
-        # File().index_files()
-
         '''
         ! Сопоставить section_id из Интранета и IBLOCK_ID из B24
         '''
@@ -1173,30 +1171,30 @@ class Article:
         # await self.upload_services(session)  # загрузили все без проблем
 
         # Дамп данных в эластик
-        await self.dump_articles_data_es(session=session)
+        # await self.dump_articles_data_es(session=session)
 
-        await self.upload_likes(session)
-        await self.upload_views(session)
+        # await self.upload_likes(session)
+        # await self.upload_views(session)
 
         return {'status': True}
 
     async def upload_uniquely(self, session):
         '''однозначно'''
         sec_inf = {
-            13: "149",  # Наши люди ✔️ DONE
+            # 13: "149",  # Наши люди ✔️ DONE
             14: "123",  # Доска почёта ✔️ DONE
-            16: "122",  # Видеоитервью ✔️ DONE
+            # 16: "122",  # Видеоитервью ✔️ DONE
 
-            32: "132",  # Новости организационного развития ✔️  DONE
-            53: "62",  # Афиша ✔️ DONE
-            54: "55",  # Предложения партнеров ✔️ DONE
-            55: "56",  # Благотворительные проекты ✔️  DONE
+            # 32: "132",  # Новости организационного развития ✔️  DONE
+            # 53: "62",  # Афиша ✔️ DONE
+            # 54: "55",  # Предложения партнеров ✔️ DONE
+            # 55: "56",  # Благотворительные проекты ✔️  DONE
 
-            25: "100",  # Референсы и опыт поставок ✔️DONE
-            175: "60",
+            # 25: "100",  # Референсы и опыт поставок ✔️DONE
+            # 175: "60",
             # Учебный центр (Литература) ✔️ DONE (но не скачались по вине битры 23038, 23041, 23044, 23134, 23137, 23141, 23149, 23151)
-            7: "66",  # Конкурсы (Главная) ✔️
-            71: "128",  # Конкурсы (Непосредственно)
+            # 7: "66",  # Конкурсы (Главная) ✔️
+            # 71: "128",  # Конкурсы (Непосредственно)
         }
 
         # проходимся по инфоблокам
@@ -1228,7 +1226,7 @@ class Article:
             172: ["61", "83"]  # Учебный центр (Проведённые тренинги) ✔️
         }
 
-        # Учебный центр (Проведённые тренинги)
+        # # Учебный центр (Проведённые тренинги)
         # self.section_id = "61"
         # sec_inf_title = await self.get_inf()
         # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 61, 83 "):
@@ -1303,8 +1301,8 @@ class Article:
         #             elif await artDB.update(await self.make_valid_article(data, session), session):
         #                 pass
 
-        # # Памятка
-        # # пройти по инфоблоку заголовков
+        # # # Памятка
+        # # # пройти по инфоблоку заголовков
         # self.section_id = "82"
         # sec_inf_title = await self.get_inf()
         # for title_inf in self.logg.progress(sec_inf_title, "Загрузка данных инфоблоков 82, 81 "):

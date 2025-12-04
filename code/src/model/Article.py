@@ -683,6 +683,10 @@ class Article:
                     act = True
                     if tr["BP_PUBLISHED"] != "Y":
                         act = False
+                    
+                    if tr["ID"] == "7442" or tr["ID"] == "7441":
+                        act = False
+                        photo_file_url = None
 
                     if "PROPERTY_498" in tr:
                         photo = take_value(tr["PROPERTY_498"])
@@ -690,20 +694,20 @@ class Article:
                         art_id = self.id
                         inf_id = "84"
                         is_preview = False
-                        # ЕСЛИ ФАЙЛЫ БЫЛИ СКАЧЕННЫ РАНЕЕЕ ТО ОН ПЕРЕЗАПИШЕТ НА NULL
-                        file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview,
-                                                                            need_all_method=True, inf_id=inf_id,
-                                                                            session=session)
+
                         
-                        if file_data is None:
-                            photo_file_url = None
+                        # ЕСЛИ ФАЙЛЫ БЫЛИ СКАЧЕННЫ РАНЕЕЕ ТО ОН ПЕРЕЗАПИШЕТ НА NULL
+                        if act:
+                            file_data = await File(b24_id=photo).upload_inf_art(art_id=art_id, is_preview=is_preview,
+                                                                                need_all_method=True, inf_id=inf_id,
+                                                                                session=session)
+                        
+                            if file_data:
+                                url = file_data["file_url"]
+                                photo_file_url = f"{DOMAIN}{url}"
 
-                        else:
-                            url = file_data["file_url"]
-                            photo_file_url = f"{DOMAIN}{url}"
-
-                        if tr["ID"] == "7442" or tr["ID"] == "7596":
-                            print(photo_file_url, photo)
+                        # if tr["ID"] == "7442" or tr["ID"] == "7596":
+                        #     print(photo_file_url, photo)
 
                     t = {
                         "tourId": tr["ID"],

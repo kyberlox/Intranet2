@@ -1175,8 +1175,8 @@ class Article:
         # Дамп данных в эластик
         await self.dump_articles_data_es(session=session)
 
-        await self.upload_likes(session)
-        await self.upload_views(session)
+        # await self.upload_likes(session)
+        # await self.upload_views(session)
 
         return {'status': True}
 

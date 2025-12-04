@@ -21,6 +21,7 @@ export interface IFactoryDataTours {
     active?: boolean;
     '3D_files_path'?: string;
     photo_file_url?: string;
+    tourId?: string
 }
 
 export interface IFactoryDataReports {

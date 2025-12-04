@@ -20,7 +20,7 @@ export const useFactoryGuidDataStore = defineStore('FactoryGuidData', {
         getAllFactories: (state) => state.allFactories,
         getCurrentFactory: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId),
         getFactoryReports: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.reports,
-        getFactoryTours: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.tours,
+        getFactoryTours: (state) => (factoryId: number) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.tours?.filter((e)=> e.active),
         getFactoryTour: (state) => (factoryId: number, tourId: string) => state.allFactories.find((e) => e.id == factoryId)?.indirect_data?.tours?.find((e) => e.tourId == tourId)
     }
 });

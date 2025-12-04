@@ -541,6 +541,9 @@ class File:
         except Exception as e:
             return LogsMaker().error_message(f'Ошибка при удалении файлов статьи с id = {self.art_id} delete_by_art_id File: {e}')
 
+    async def change_prev(self, session):
+        return await FilesDBModel(id=self.id, article_id=self.art_id).change_prev(session)
+
     #НЕ ИСПОЛЬЗУЕМАЯ ФУНКЦИЯ
     async def get_files_by_section_id(self, section_id, session):
         #беру список atr_id
@@ -964,3 +967,8 @@ async def add_user_photo(b24_url : str, uuid : str, session: AsyncSession=Depend
 @file_router.delete("/delete_user_photo/{file_id}")
 async def delete_user_photo(file_id: int, session: AsyncSession=Depends(get_async_db)):
     return await File(id=file_id).delete_user_img(session=session)
+
+
+@file_router.post("/change_prev/{art_id}/{file_id}")
+async def change_prev(file_id : int, art_id : int, session: AsyncSession=Depends(get_async_db)):
+    return await File(id=file_id, art_id=art_id).change_prev(session=session)

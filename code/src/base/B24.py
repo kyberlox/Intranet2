@@ -184,7 +184,7 @@ description="""
     - Возвращает события в формате JSON
     - Поддерживает фильтрацию по датам
 
-    - - -
+- - -
 
     ## Входные параметры:
     - **date_from**: Начальная дата периода (формат: ГГГГ-ММ-ДД)
@@ -211,8 +211,7 @@ description="""
     - "IS_MEETING": boolean,
     - "MEETING_STATUS": string,
     - "MEETING_HOST": string,
-    - "MEETING": {
-    - "NOTIFY": boolean,
+    - "MEETING": { - "NOTIFY": boolean,
     - -        "MEETING_CREATOR": number,
     -   -   "REINVITE": boolean,
     - -        "ALLOW_INVITE": boolean,
@@ -248,7 +247,7 @@ description="""
     ```
 
     ### Вывод
-    ```
+    ```json
     {
     "result": [
     {

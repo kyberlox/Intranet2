@@ -212,9 +212,9 @@ description="""
     - "MEETING_STATUS": string,
     - "MEETING_HOST": string,
     - "MEETING": {
-    >> "NOTIFY": boolean,
+    - "NOTIFY": boolean,
     - -        "MEETING_CREATOR": number,
-    - -        "REINVITE": boolean,
+    -   -   "REINVITE": boolean,
     - -        "ALLOW_INVITE": boolean,
     - -        "HIDE_GUESTS": boolean,
     - -        "HOST_NAME": string,

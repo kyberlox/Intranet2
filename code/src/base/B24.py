@@ -176,7 +176,7 @@ class B24:
 description="""
     # Получение событий корпоративного календаря
     
-    Этот эндпоинт позволяет получить события из корпоративного календаря Битрикс24
+        Этот эндпоинт позволяет получить события из корпоративного календаря Битрикс24
     за указанный период времени.
     
     ## Особенности:
@@ -211,8 +211,8 @@ description="""
     - "IS_MEETING": boolean,
     - "MEETING_STATUS": string,
     - "MEETING_HOST": string,
-    - "MEETING": { - "NOTIFY": boolean,
-    - -        "MEETING_CREATOR": number,
+    * "MEETING": { - "NOTIFY": boolean,
+        * "MEETING_CREATOR": number,
     -   -   "REINVITE": boolean,
     - -        "ALLOW_INVITE": boolean,
     - -        "HIDE_GUESTS": boolean,

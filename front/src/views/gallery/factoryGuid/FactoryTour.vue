@@ -31,6 +31,8 @@ export default defineComponent({
         }
     },
     setup(props) {
+        console.log(props);
+
         // loadScript('/src/utils/tour.js')
         const factoryGuid = useFactoryGuidDataStore();
         const currentTour = computed(() => factoryGuid.getFactoryTour(Number(props.factoryId), String(props.id)))

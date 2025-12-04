@@ -378,10 +378,10 @@ const router = createRouter({
       }
     },
     {
-      path: '/gallery/factories/tours/:id/:tourId',
+      path: '/gallery/factories/tours/:factory_id/:tourId',
       name: 'factoryTour',
       component: () => import('@/views/gallery/factoryGuid/FactoryTour.vue'),
-      props: (route) => ({ id: route.params.tourId, factoryId: route.params.id }),
+      props: (route) => ({ tourId: route.params.tourId, factory_id: route.params.id }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Гид по предприятиям', route: 'factories' }]
       }

@@ -12,6 +12,7 @@ import type { IUserSearch } from "@/interfaces/IEntities";
 export interface IUserList {
     fio: string
     id: number
+    name: string
     photo_file_url?: string
     position: string
 }
@@ -29,7 +30,7 @@ export default defineComponent({
         const formatUsers = (usersArr: IUserList[]) => {
             const formatUsers: IUserSearch[] = [];
             usersArr.map((e) => {
-                formatUsers.push({ name: e.fio, user_position: e.position, image: e.photo_file_url, id: e.id })
+                formatUsers.push({ name: e.fio ? e.fio : e.name, user_position: e.position, image: e.photo_file_url, id: e.id })
             })
             return formatUsers
         }

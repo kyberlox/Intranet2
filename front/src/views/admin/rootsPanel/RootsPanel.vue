@@ -28,10 +28,15 @@
             </AdminSidebar>
         </div>
     </div>
-    <div v-if="activeSection"
+    <div v-if="activeSection && !isLoading"
          class="admin-panel__content admin-panel__content__add-user-btn">
         <AdminEditUserSearch @userPicked="addRootToUser" />
-        <AdminUsersList :users="activeSectionEditors" />
+        <AdminUsersList :users="activeSectionEditors"
+                        @removeUser="(id: number) => removeUsersRoot(id)" />
+    </div>
+    <div class="admin-panel__content admin-panel__content__add-user-btn"
+         v-else>
+        <Loader class="contest__page__loader" />
     </div>
 </div>
 </template>
@@ -44,6 +49,7 @@ import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import Api from '@/utils/Api';
 import AdminEditUserSearch from '../components/inputFields/AdminEditUserSearch.vue';
 import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
+import Loader from '@/components/layout/Loader.vue';
 
 export default defineComponent({
     name: 'rootsEditPanel',
@@ -51,29 +57,44 @@ export default defineComponent({
         AdminSidebar,
         NavArrow,
         AdminEditUserSearch,
-        AdminUsersList
+        AdminUsersList,
+        Loader
     },
     setup() {
         const sections = computed(() => useAdminData().getSections)
         const activeSection = ref();
         const activeSectionEditors = ref([]);
+        const isLoading = ref(false);
 
         watch((activeSection), () => {
             if (!activeSection.value) return
+            editorsInit()
+        }, { immediate: true, deep: true })
+
+        const editorsInit = () => {
+            isLoading.value = true;
             Api.get(`roots/get_editors_list/${activeSection.value.id}`)
                 .then((data) => activeSectionEditors.value = data)
-        }, { immediate: true, deep: true })
+                .finally(() => isLoading.value = false)
+        }
 
         const addRootToUser = (id: number) => {
             Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
-                .then((data) => console.log(data))
+                .then(() => editorsInit())
+        }
+
+        const removeUsersRoot = (id: number) => {
+            Api.delete(`roots/delete_editor_moder/${id}/${activeSection.value.id}`)
+                .then(() => editorsInit())
         }
 
         return {
             sections,
             activeSection,
             activeSectionEditors,
-            addRootToUser
+            isLoading,
+            addRootToUser,
+            removeUsersRoot
         }
     }
 })

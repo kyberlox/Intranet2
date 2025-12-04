@@ -341,7 +341,10 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
 async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id).search_by_id(session)
 
-
+# Пользователя можно выгрузить
+@users_router.get("/find_by_id_all/{id}")
+async def find_by_id_all(id: int, session: AsyncSession = Depends(get_async_db)):
+    return await User(id).search_by_id_all(session)
 # @users_router.get("/test_update_photo")
 # def test_update_photo():
 #     return User().set_users_photo()

@@ -172,7 +172,7 @@ class User:
         try:
             res = await B24().getUser(self.id)
             usr_data = res[0]
-
+            print(res, 'user')
             # смотрим логи 
             await self.check_fields_to_update(session=session, b24_data=usr_data)
            

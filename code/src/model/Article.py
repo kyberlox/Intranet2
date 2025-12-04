@@ -240,6 +240,8 @@ class Article:
                 award = "Сотрудник года"
 
             user = await User(id=uuid).search_by_id_all(session)
+            if 1384 == user['id']:
+                print(user)
             if "photo_file_url" not in user or user["photo_file_url"] == None:
                 photo_replace = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
             else:

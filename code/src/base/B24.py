@@ -183,8 +183,6 @@ description="""
     - Подключается к внешнему веб-хуку Битрикс24
     - Возвращает события в формате JSON
     - Поддерживает фильтрацию по датам
-    
-    -----
 
     ## Входные параметры:
     - **date_from**: Начальная дата периода (формат: ГГГГ-ММ-ДД)
@@ -212,13 +210,13 @@ description="""
     - "MEETING_STATUS": string,
     - "MEETING_HOST": string,
     - "MEETING": {
-    --        "NOTIFY": boolean,
-    --        "MEETING_CREATOR": number,
-    --        "REINVITE": boolean,
-    --        "ALLOW_INVITE": boolean,
-    --        "HIDE_GUESTS": boolean,
-    --        "HOST_NAME": string,
-    --    },
+    -   - "NOTIFY": boolean,
+    - -        "MEETING_CREATOR": number,
+    - -        "REINVITE": boolean,
+    - -        "ALLOW_INVITE": boolean,
+    - -        "HIDE_GUESTS": boolean,
+    - -        "HOST_NAME": string,
+    - -    },
     - "LOCATION": string,
     - "COLOR": string,
     - "TEXT_COLOR": string,
@@ -237,7 +235,7 @@ description="""
     - "~DATE_FROM": string,
     - "~DATE_TO": string,
     
-    -----
+    
 
     ## Примеры использования:
 
@@ -360,7 +358,7 @@ description="""
     }
     }
     ```
-    
+
     """
 )
 def calendar_event(date_from, date_to):

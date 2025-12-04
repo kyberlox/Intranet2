@@ -962,6 +962,11 @@ CUSTOM_CSS = """
         font-family: sans-serif;
     }
 
+    .swagger-ui .opblock-description-wrapper p {
+        color: #ffffff;
+        font-family: sans-serif;
+    }
+
     /* Специальный скроллбар для блоков кода */
     .swagger-ui .info .description pre::-webkit-scrollbar,
     .swagger-ui .opblock .opblock-summary-description pre::-webkit-scrollbar {

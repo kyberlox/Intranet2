@@ -229,8 +229,7 @@ description="""
     -        "entryId": string,
     -        "status": string
     -    }[],
-    - "attendeesEntityList":
-    -    {
+    - "attendeesEntityList": {
     -        "entityId": string,
     -        "id": number
     -    }[],

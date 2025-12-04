@@ -292,8 +292,8 @@ class FilesDBModel():
                 turn_False = await session.execute(stmt)
                 
                 stmt = update(FilesDB).where(
-                    (FilesDB.id == file_id) & 
-                    (FilesDB.article_id == article_id)
+                    (FilesDB.id == self.id) & 
+                    (FilesDB.article_id == self.article_id)
                 ).values(
                     is_preview=True,
                 )

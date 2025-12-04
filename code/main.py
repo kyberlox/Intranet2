@@ -957,7 +957,7 @@ CUSTOM_CSS = """
         background: var(--accent-light);
     }
 
-    .swagger-ui section {
+    .swagger-ui section h3 {
         color: #ffffff;
         font-family: sans-serif;
     }

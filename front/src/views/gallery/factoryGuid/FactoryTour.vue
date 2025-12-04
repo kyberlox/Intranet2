@@ -22,11 +22,12 @@ export default defineComponent({
     components: {
         Loader
     },
+
     props: {
-        id: {
+        tourId: {
             type: String
         },
-        factoryId: {
+        factory_id: {
             type: String
         }
     },
@@ -35,7 +36,9 @@ export default defineComponent({
 
         // loadScript('/src/utils/tour.js')
         const factoryGuid = useFactoryGuidDataStore();
-        const currentTour = computed(() => factoryGuid.getFactoryTour(Number(props.factoryId), String(props.id)))
+        const currentTour = computed(() => factoryGuid.getFactoryTour(Number(props.factory_id), String(props.tourId)))
+        console.log(currentTour.value);
+
         const tourFrame = ref();
 
         watch((currentTour), () => {

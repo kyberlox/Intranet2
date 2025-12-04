@@ -176,7 +176,7 @@ class B24:
 description="""
     # Получение событий корпоративного календаря
     
-    Этот эндпоинт позволяет получить события из корпоративного календаря Битрикс24
+        Этот эндпоинт позволяет получить события из корпоративного календаря Битрикс24
     за указанный период времени.
     
     ## Особенности:
@@ -184,7 +184,7 @@ description="""
     - Возвращает события в формате JSON
     - Поддерживает фильтрацию по датам
 
-    - - -
+>>>
 
     ## Входные параметры:
     - **date_from**: Начальная дата периода (формат: ГГГГ-ММ-ДД)
@@ -211,9 +211,8 @@ description="""
     - "IS_MEETING": boolean,
     - "MEETING_STATUS": string,
     - "MEETING_HOST": string,
-    - "MEETING": {
-    - "NOTIFY": boolean,
-    - -        "MEETING_CREATOR": number,
+    + "MEETING": { - "NOTIFY": boolean,
+        + "MEETING_CREATOR": number,
     -   -   "REINVITE": boolean,
     - -        "ALLOW_INVITE": boolean,
     - -        "HIDE_GUESTS": boolean,
@@ -237,7 +236,7 @@ description="""
     - "~DATE_FROM": string,
     - "~DATE_TO": string,
     
-    
+>>>
 
     ## Примеры использования:
 
@@ -248,7 +247,7 @@ description="""
     ```
 
     ### Вывод
-    ```
+    ```json
     {
     "result": [
     {

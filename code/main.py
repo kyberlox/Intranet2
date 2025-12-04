@@ -1501,6 +1501,26 @@ CUSTOM_CSS = """
         }
     }
 
+    // === ФУНКЦИЯ ФИЛЬТРАЦИИ ПО ТЕГАМ ===
+    function filterTagsByHash() {
+        if (window.location.hash.includes('24')) {
+            const tagSections = document.querySelectorAll('.opblock-tag-section');
+            tagSections.forEach((section) => {
+                if (section.children[0] && section.children[0].getAttribute('data-tag') !== 'Битрикс24') {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+        } else {
+            // Показываем все разделы, если нет фильтрации
+            const tagSections = document.querySelectorAll('.opblock-tag-section');
+            tagSections.forEach((section) => {
+                section.style.display = 'block';
+            });
+        }
+    }
+
     // === СТИЛИ ДЛЯ MARKDOWN ===
     const markdownStyles = `
         <style>
@@ -1580,7 +1600,24 @@ CUSTOM_CSS = """
         document.head.insertAdjacentHTML('beforeend', markdownStyles);
         
         // Запускаем обработку с небольшой задержкой для полной загрузки Swagger UI
-        setTimeout(initMarkdownProcessing, 1000);
+        setTimeout(() => {
+            initMarkdownProcessing();
+            
+            // Применяем фильтрацию по хэшу при загрузке
+            filterTagsByHash();
+            
+            // Проверяем начальный хэш
+            if (window.location.hash.includes('24')) {
+                const test = document.querySelectorAll('.opblock-tag-section');
+                test.forEach((e) => {
+                    if (e.children[0] && e.children[0].getAttribute('data-tag') !== 'Битрикс24') {
+                        e.style.display = 'none';
+                    } else {
+                        e.style.display = 'block';
+                    }
+                });
+            }
+        }, 1000);
         
         // Также пробуем каждые 500ms на случай если Swagger грузится медленно
         let attempts = 0;
@@ -1590,39 +1627,26 @@ CUSTOM_CSS = """
                 clearInterval(checkInterval);
                 if (attempts <= 10) {
                     initMarkdownProcessing();
+                    
+                    // Применяем фильтрацию по хэшу
+                    filterTagsByHash();
                 }
             }
         }, 500);
+    });
 
-            if(window.location.hash.includes('24')){
-        test = document.querySelectorAll('.opblock-tag-section')
-        test.forEach((e)=>{if(e.children[0].getAttribute('data-tag') !== 'Битрикс24'){e.style.display = 'none'}})
-    }
-
+    // === ОБРАБОТЧИК ИЗМЕНЕНИЯ ХЭША ===
+    window.addEventListener('hashchange', () => {
+        filterTagsByHash();
+        
+        // Также повторная обработка markdown при изменении хэша
+        setTimeout(processAllMarkdown, 300);
     });
 
     // Экспортируем функции для отладки
     window.processMarkdown = processAllMarkdown;
     window.convertMarkdown = convertMarkdownToHtml;
-
-    // Экспортируем функции для отладки
-    window.processMarkdown = processAllMarkdown;
-    window.convertMarkdown = convertMarkdownToHtml;
-
-        window.addEventListener('hashchange', () => {
-        if(window.location.hash.includes('24')) {
-            const test = document.querySelectorAll('.opblock-tag-section');
-            test.forEach((e) => {
-                if(e.children[0].getAttribute('data-tag') !== 'Битрикс24') {
-                    e.style.display = 'none';
-                } else {
-                    e.style.display = 'block';
-                }
-            });
-        }
-    });
-
-
+    window.filterTagsByHash = filterTagsByHash;
 </script>
 """
 

@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, onMounted, defineComponent } from 'vue';
+import { computed, onMounted, defineComponent } from 'vue';
 import DayIcon from '@/assets/icons/layout/DayIcon.svg?component';
 import NightIcon from '@/assets/icons/layout/NightIcon.svg?component';
 import { useStyleModeStore } from '@/stores/styleMode';
@@ -20,22 +20,21 @@ export default defineComponent({
         NightIcon
     },
     setup() {
-        const theme = ref('light')
         const styleMode = useStyleModeStore();
+
         onMounted(() => {
-            const savedTheme = localStorage.getItem('theme')
-            if (!savedTheme) {
-                localStorage.setItem('darkMode', 'false')
+            const savedTheme = localStorage.getItem('darkMode');
+            if (!savedTheme || savedTheme == 'false') {
+                toggleDarkMode(false)
             }
             else {
-                styleMode.setDarkMode(Boolean(savedTheme == 'false'))
-                theme.value = savedTheme
+                toggleDarkMode(true)
             }
         })
 
         const toggleDarkMode = (value: boolean) => {
-            localStorage.setItem('darkMode', String(value))
-            styleMode.setDarkMode(value)
+            localStorage.setItem('darkMode', String(value));
+            styleMode.setDarkMode(value);
         }
         return {
             toggleDarkMode,

@@ -71,10 +71,9 @@ export default defineComponent({
         })
 
         onMounted(() => {
-            if (allNews.value.length) {
-                visibleNews.value = allNews.value
-            }
-            else
+            if (allNews.value.length && !props.tagId) {
+                visibleNews.value = allNews.value;
+            } else
                 Api.get(`article/find_by/${sectionTips['АктуальныеНовости']}`)
                     .then((res) => {
                         viewsData.setData(res, 'actualNewsData');

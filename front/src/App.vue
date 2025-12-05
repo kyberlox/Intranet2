@@ -67,7 +67,7 @@ export default defineComponent({
                 const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
                 const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
 
-                if (blogsRoutes.includes(String(route.name))) {
+                if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
                     prefetchSection('blogs')
                 } else if (factoryGuidRoutes.includes(String(route.name))) {
                     prefetchSection('factoryGuid')

@@ -63,14 +63,23 @@
                                 {{ event.NAME }}
                             </span>
                             <div class="calendar-year__square-mark"></div>
+                            <ExcelIcon v-if="ovkPass && 'ATTENDEE_LIST' in event && (event as ICalendar).ATTENDEE_LIST.length && (event as ICalendar).ATTENDEE_LIST.find(e => e.status == 'Y')"
+                                       @click="handleExcelDownload(event as ICalendar)"
+                                       class="calendar-year__event__excel-icon" />
+                            <!-- заглушка -->
+                            <div class="calendar-year__event__excel-icon"
+                                 v-else></div>
+                            <!--  -->
                             <a v-if="isCalendarEvent(event) && checkButtonStatus(event)"
                                class="calendar-year__event-btn"
                                :href="`https://portal.emk.ru/calendar/?EVENT_ID=${event.ID}EVENT_DATE=${event.DATE_FROM}`"
                                target="_blank">
                                 {{ checkButtonStatus(event) }}
                             </a>
+                            <!-- заглушка -->
                             <span class="calendar-year__event-btn calendar-year__event-btn--no-border"
                                   v-else></span>
+                            <!--  -->
                         </div>
                     </div>
                 </div>
@@ -84,6 +93,7 @@
 </div>
 </template>
 <script lang="ts">
+import download from 'downloadjs';
 import { computed, defineComponent, ref, watch, nextTick, type ComputedRef, type Ref } from 'vue';
 import { monthesInit } from '@/assets/static/monthes';
 import type { ICalendar } from '@/interfaces/IEntities';
@@ -91,12 +101,18 @@ import DatePicker from '@/components/tools/common/DatePicker.vue';
 import { getMonth, formatDateNoTime } from '@/utils/dateConvert';
 import Loader from '@/components/layout/Loader.vue';
 import { useViewsDataStore } from '@/stores/viewsData';
-import { useRouter } from 'vue-router';
+import ExcelIcon from '@/assets/icons/common/excelDoc.svg?component';
+import { useUserData } from '@/stores/userData';
+import Api from '@/utils/Api';
+import { handleApiError } from '@/utils/ApiResponseCheck';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
 
 export default defineComponent({
     components: {
         DatePicker,
-        Loader
+        Loader,
+        ExcelIcon
     },
     props: {
         targetId: {
@@ -110,18 +126,15 @@ export default defineComponent({
         const monthNodes = ref();
         const eventNodes = ref();
         const currentEvents: ComputedRef<ICalendar[]> = computed(() => useViewsDataStore().getData('calendarData') as ICalendar[]);
-
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const isCalendarEvent = (event: ICalendar | { NAME: string }): event is ICalendar => {
             return 'DATE_FROM' in event;
         };
 
         const checkButtonStatus = (event: ICalendar) => {
-            if (event.DATE_FROM && event.ID) {
-                return 'Подробнее'
-            }
-            else
-                return false
+            return event.DATE_FROM && event.ID ? 'Подробнее' : false
         }
 
         const scrollToNode = async (target: string, nodes: Ref<HTMLElement[]>, attrTitle: string) => {
@@ -158,6 +171,16 @@ export default defineComponent({
             })
         }
 
+        const handleExcelDownload = (event: ICalendar) => {
+            const reqBody = event.ATTENDEE_LIST.filter((e) => e.status == 'Y');
+            Api.post('article/make_event_users_excel', reqBody)
+                .then((data) => {
+                    handleApiError(data, toast);
+                    download(data, event.NAME + '.xlsx')
+                })
+                .catch((e) => handleApiError(e, toast));
+        }
+
         return {
             visibleMonthes,
             monthesInit,
@@ -165,13 +188,14 @@ export default defineComponent({
             date,
             monthNodes,
             eventNodes,
-            router: useRouter(),
             checkButtonStatus,
             getMonth,
             formatDateNoTime,
             getEventFromMonth,
             handleMonthChange,
-            isCalendarEvent
+            isCalendarEvent,
+            handleExcelDownload,
+            ovkPass: computed(() => useUserData().getUserRoots.EditorModer.includes(53) || useUserData().getUserRoots.EditorAdmin)
         };
     },
 });

@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { useUserData } from '@/stores/userData'
 import { computed } from 'vue'
-import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad } from '@/interfaces/IPostFetch'
+import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell } from '@/interfaces/IPostFetch'
 import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData'
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities'
 import type { IPostInner } from '@/components/tools/common/PostInner.vue'
@@ -51,7 +51,8 @@ export default class Api {
             | IPostCardMsg
             | IValidatePoints
             | INewActivityData
-            | IUsersLoad,
+            | IUsersLoad
+            | Array<IPostEventToExcell>
     ) {
         return (await api.post(url, data)).data
     }

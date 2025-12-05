@@ -144,6 +144,16 @@
             gap: 10px;
             justify-content: space-between;
 
+            &__excel-icon {
+                min-width: 35px;
+                width: 35px;
+                height: auto;
+                cursor: pointer;
+
+                &:hover {
+                    transform: scale(1.05);
+                }
+            }
 
             &__name {
                 flex-grow: 1;

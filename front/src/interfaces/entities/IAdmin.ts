@@ -36,6 +36,6 @@ export interface INewFileData {
 export interface IRoots{
     PeerAdmin:boolean,
     EditorAdmin:boolean,
-    EditorModer: number[] | false,
     VisionAdmin:boolean,
+    EditorModer: number[] 
 }

@@ -4,6 +4,7 @@
     <div class="news__list">
         <SampleGallery :gallery="news"
                        :needDate="true"
+                       :modifiers="['noLikes']"
                        :type="'interview'"
                        :routeTo="'corpNewsArticle'" />
     </div>

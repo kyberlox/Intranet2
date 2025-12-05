@@ -1,13 +1,13 @@
 <template>
-    <div class="admin-element-inner__field-content admin-element-inner__field-content--no-transition">
-        <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
-        <DatePicker class="admin-element-inner__date-picker"
-                    :disable-year-select="false"
-                    :calendarType="'full'"
-                    :defaultData="(item?.value as string)"
-                    @pickDate="(date: string) => { handleValuePick(useDateFormat(date, 'DD.MM.YYYY HH:mm:ss')) }"
-                    @clearValue="() => value = ''" />
-    </div>
+<div class="admin-element-inner__field-content admin-element-inner__field-content--no-transition">
+    <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
+    <DatePicker class="admin-element-inner__date-picker"
+                :disable-year-select="false"
+                :calendarType="'full'"
+                :defaultData="(item?.value as string)"
+                @pickDate="(date: string) => { handleValuePick(useDateFormat(date, 'DD.MM.YYYY HH:mm:ss')) }"
+                @clearValue="() => value = ''" />
+</div>
 </template>
 
 <script lang="ts">

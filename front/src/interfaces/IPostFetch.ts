@@ -21,3 +21,8 @@ export interface IUsersLoad {
     users_id: string[]
 }
 
+export interface IPostEventToExcell{
+    id: number;
+    entryId: string;
+    status: string;
+}

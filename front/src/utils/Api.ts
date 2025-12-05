@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
 import { useUserData } from '@/stores/userData'
 import { computed } from 'vue'
 import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell } from '@/interfaces/IPostFetch'
@@ -52,9 +52,11 @@ export default class Api {
             | IValidatePoints
             | INewActivityData
             | IUsersLoad
-            | Array<IPostEventToExcell>
+            | Array<IPostEventToExcell>,
+            config?: AxiosRequestConfig
     ) {
-        return (await api.post(url, data)).data
+    const req = api.post(url, data, config);
+    return config ? (await req) : (await req).data
     }
 
     static async put(

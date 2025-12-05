@@ -296,11 +296,12 @@ class UserSearchModel:
                     # data_row = dict()
                     for param in important_list:
                         if param in data.keys():
-                            if param == "photo_file_id" and data['photo_file_id'] is not None:
-
-                                file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
-
-                                data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                            if param == "photo_file_id":
+                                if data['photo_file_id'] is not None:
+                                    file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
+                                    data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                                else:
+                                    data_row[param] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                             else:
                                 data_row[param] = data[param]
                         else:
@@ -667,9 +668,12 @@ class UserSearchModel:
                     data_row = {"user_fio": fio}
                     for param in important_list:
                         if param in data.keys():
-                            if param == "photo_file_id" and data['photo_file_id'] is not None:
-                                file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
-                                data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                            if param == "photo_file_id":
+                                if data['photo_file_id'] is not None:
+                                    file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
+                                    data_row[param] = f"{DOMAIN}{file_inf['URL']}"
+                                else:
+                                    data_row[param] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                             else:
                                 data_row[param] = data[param]
                         else:

@@ -568,8 +568,9 @@ class Editor:
                 if need_field["field"] == "all_tags":
                     # получаешь список ВСЕХ доступных тэгов
                     tags_list = await Tag().get_all_tags(self.session)
+                    sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                     # записываешь в need_field["values"] и в need_field["values"]
-                    need_field["values"] = tags_list
+                    need_field["values"] = sorted_tags
 
                 if need_field["field"] == "tags":
                     need_field["values"] = await Tag(art_id=self.art_id).get_art_tags(self.session)
@@ -637,8 +638,9 @@ class Editor:
             elif field["field"] == "all_tags":
                 # получаешь список ВСЕХ доступных тэгов
                 tags_list = await Tag().get_all_tags(self.session)
+                sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                 # записываешь в need_field["values"] и в need_field["values"]
-                field["values"] = tags_list
+                field["values"] = sorted_tags
 
         # Вношу изменеения
         self.pattern["fields"] = fields

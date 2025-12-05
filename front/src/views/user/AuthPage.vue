@@ -39,7 +39,7 @@
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, ref } from 'vue';
-import { handleApiError } from '@/utils/ApiResponseCheck';
+import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { prefetchSection } from '@/composables/usePrefetchSection';

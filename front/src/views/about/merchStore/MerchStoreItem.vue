@@ -21,9 +21,9 @@
              v-if="currentItem">
             <div class="merch-store-item__info__category"
                  v-if="currentItem.indirect_data?.category">{{ currentItem.indirect_data?.category }}</div>
-            <div class="merch-store-item__info__title">
+            <h4 class="merch-store-item__info__title">
                 {{ currentItem.name }}
-            </div>
+            </h4>
             <div v-if="currentItem.content_text"
                  class="merch-store-item__info__description"
                  v-html="currentItem.content_text">
@@ -42,10 +42,10 @@
                 </div>
             </div>
 
-            <div class="merch-store-item__info__price">
+            <h3 class="merch-store-item__info__price">
                 <span class="merch-store-item__info__count-text"> {{ currentItem?.indirect_data?.price }}</span>
                 эмк-коинов
-            </div>
+            </h3>
 
             <div v-if="currentSize && false"
                  class="merch-store-item__info__count">
@@ -83,7 +83,7 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import Api from '@/utils/Api';
 import type { IMerchItem } from '@/interfaces/entities/IMerch';
-import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 
 export default defineComponent({
     components: {

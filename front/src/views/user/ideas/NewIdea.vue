@@ -83,7 +83,7 @@ import { useToast } from 'primevue/usetoast';
 
 import { useToastCompose } from '@/composables/useToastСompose';
 
-import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import Loader from '@/components/layout/Loader.vue';
 
 

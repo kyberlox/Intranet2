@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { makeSlashToBr } from "@/utils/StringUtils";
+import { makeSlashToBr } from "@/utils/stringUtils";
 import { defineComponent } from "vue";
 
 export default defineComponent({

@@ -128,8 +128,8 @@ import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component"
 
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
-import { handleApiResponse } from '@/utils/ApiResponseCheck';
-import { handleApiError } from '@/utils/ApiResponseCheck';
+import { handleApiResponse } from '@/utils/apiResponseCheck';
+import { handleApiError } from '@/utils/apiResponseCheck';
 import AdminTagsModal from './AdminTagsModal.vue';
 
 interface SectionItem {

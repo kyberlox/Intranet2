@@ -81,7 +81,7 @@
 </template>
 
 <script lang="ts">
-import { textAreaRowsToContent } from "@/utils/StringUtils.js";
+import { textAreaRowsToContent } from "@/utils/stringUtils.js";
 import { ref, defineComponent, onMounted, watch, computed, nextTick } from "vue";
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import Api from "@/utils/Api";

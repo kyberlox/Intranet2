@@ -50,7 +50,7 @@ import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.vue';
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import Api from '@/utils/Api';
-import { handleApiError } from '@/utils/ApiResponseCheck';
+import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import UsersSearchList from '@/components/tools/common/UsersSearchList.vue';

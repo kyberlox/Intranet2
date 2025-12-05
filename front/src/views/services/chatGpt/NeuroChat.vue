@@ -92,7 +92,7 @@ import { defineComponent, ref, watch } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import NeuroChatSidebar from './components/NeuroChatSidebar.vue';
 import Api from '@/utils/Api';
-import { handleApiError } from '@/utils/ApiResponseCheck';
+import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';

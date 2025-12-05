@@ -126,7 +126,7 @@ import { watch } from 'vue';
 import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
 import SendPoints from './userPointsComponents/SendPointsModalSlot.vue';
-import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';

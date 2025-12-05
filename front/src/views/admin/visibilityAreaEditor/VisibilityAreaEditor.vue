@@ -69,7 +69,7 @@ import type { IVisionUser, IChoice, IFormattedUserGroup, IDepartment, IUserSearc
 import Loader from '@/components/layout/Loader.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
-import { handleApiError } from '@/utils/ApiResponseCheck';
+import { handleApiError } from '@/utils/apiResponseCheck';
 import VisibilityAreaSlotLeftSidebar from './components/VisibilityAreaSlotLeftSidebar.vue';
 
 export default defineComponent({

@@ -104,7 +104,7 @@ import { useViewsDataStore } from '@/stores/viewsData';
 import ExcelIcon from '@/assets/icons/common/excelDoc.svg?component';
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
-import { handleApiError } from '@/utils/ApiResponseCheck';
+import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 

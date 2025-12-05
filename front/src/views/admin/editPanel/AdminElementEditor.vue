@@ -47,7 +47,7 @@ import { defineComponent, onMounted, ref, type Ref, computed, onUnmounted } from
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 
-import { handleApiError, handleApiResponse } from '@/utils/ApiResponseCheck';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { screenCheck } from '@/utils/screenCheck';

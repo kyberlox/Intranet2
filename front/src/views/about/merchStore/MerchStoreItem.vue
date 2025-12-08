@@ -16,6 +16,7 @@
                     </div>
                 </div>
             </div>
+            <HoverGallerySkeleton v-else />
         </div>
         <div class="merch-store-item__info"
              v-if="currentItem">
@@ -43,7 +44,9 @@
             </div>
 
             <h3 class="merch-store-item__info__price">
-                <span class="merch-store-item__info__count-text"> {{ currentItem?.indirect_data?.price }}</span>
+                <span class="merch-store-item__info__count-text">
+                    {{ currentItem?.indirect_data?.price }}
+                </span>
                 эмк-коинов
             </h3>
 
@@ -84,12 +87,14 @@ import { useToastCompose } from '@/composables/useToastСompose';
 import Api from '@/utils/Api';
 import type { IMerchItem } from '@/interfaces/entities/IMerch';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
+import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 
 export default defineComponent({
     components: {
         ZoomModal,
         ZoomInIcon,
-        AcceptBuyModal
+        AcceptBuyModal,
+        HoverGallerySkeleton
     },
     props: {
         id: {

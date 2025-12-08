@@ -19,13 +19,13 @@ export const chooseImgPlug = (card: IHomeViewSoloBlock | null = null): string =>
     // заглушка для ост баннеров
     else {
         const currentMonth = new Date().getMonth() + 1;
-        if (currentMonth in [12, 1, 2]) {
+        if ([12, 1, 2].includes(currentMonth)) {
             return winterPlug
         }
-        else if (currentMonth in [3, 4, 5]) {
+        else if ([3, 4, 5].includes(currentMonth)) {
             return springPlug
         }
-        else if (currentMonth in [6, 7, 8]) {
+        else if ([6, 7, 8].includes(currentMonth)) {
             return summerPlug
         }
         else

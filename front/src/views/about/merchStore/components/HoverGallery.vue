@@ -1,5 +1,6 @@
 <template>
-<div class="hover-gallery"
+<div v-if="images.length"
+     class="hover-gallery"
      @mousemove="handleMouseMove"
      @mouseleave="resetToFirstImage">
 
@@ -32,7 +33,7 @@
 
 <script lang="ts">
 import type { IBXFileType } from '@/interfaces/IEntities';
-import { defineComponent, ref, computed, type PropType } from 'vue'
+import { defineComponent, ref, computed, type PropType } from 'vue';
 
 export default defineComponent({
     name: 'HoverImageGallery',

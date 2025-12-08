@@ -2,7 +2,8 @@
 <div class="mt20">
     <div class="page__title">Магазин мерча</div>
     <div class="merch-store__grid__wrapper">
-        <div class="merch-store__grid">
+        <div class="merch-store__grid"
+             v-if="merchItems.length">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
                         v-for="item in merchItems"
@@ -23,6 +24,11 @@
                 </div>
             </RouterLink>
         </div>
+        <div class="merch-store__grid"
+             v-else>
+            <HoverGallerySkeleton v-for="i in 8"
+                                  :key="'merchplug' + i" />
+        </div>
     </div>
 </div>
 </template>
@@ -39,100 +45,14 @@ import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
 import type { IMerch } from '@/interfaces/entities/IMerch';
 import type { IBXFileType } from '@/interfaces/IEntities';
+import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 
 export default defineComponent({
     components: {
         HoverGallery,
+        HoverGallerySkeleton
     },
     setup() {
-        const storePlug = [
-            {
-                id: 9,
-                title: 'Подушка для самолета',
-                images: ['/imgs/merchStore/9pod.png', '/imgs/merchStore/10pod.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 10,
-                title: 'Футболка с резиной (черная)',
-                images: ['/imgs/merchStore/10futb.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 11,
-                title: 'Футболка с резиной (белая)',
-                images: ['/imgs/merchStore/11futb.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 12,
-                title: 'Худи (черный)',
-                images: ['/imgs/merchStore/12hoodie.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 6,
-                title: 'Бутылка для воды (пластик)',
-                images: ['/imgs/merchStore/6voda.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 4,
-                title: 'Панама',
-                images: ['/imgs/merchStore/4panama.png', '/imgs/merchStore/5panama.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 7,
-                title: 'Вечный карандаш',
-                images: ['/imgs/merchStore/7karandash.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 8,
-                title: 'Сумка',
-                images: ['/imgs/merchStore/8sumka.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 1,
-                title: 'Зонт складной (черный)',
-                images: ['/imgs/merchStore/1zont.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 2,
-                title: 'Внешний аккумулятор',
-                images: ['/imgs/merchStore/2zont.png'],
-                price: '1000',
-                count: '1'
-            },
-            {
-                id: 3,
-                title: 'Спортивная сумка',
-                images: ['/imgs/merchStore/3sumka.png'],
-                price: '1000',
-                count: '1'
-            },
-
-            {
-                id: 5,
-                title: 'Бутылка для воды (стекло)',
-                images: ['/imgs/merchStore/5voda.png'],
-                price: '1000',
-                count: '1'
-            },
-        ]
-
         const merchItems = ref<IMerch[]>([]);
 
         const sliderConfig = {
@@ -151,7 +71,6 @@ export default defineComponent({
         })
 
         return {
-            storePlug,
             sliderConfig,
             merchItems,
             swiperOn

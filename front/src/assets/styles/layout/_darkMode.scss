@@ -1,5 +1,6 @@
 .dark-mode {
 
+    /* Общее */
     .header,
     .sidebar-lk,
     .search-wrapper,
@@ -11,14 +12,70 @@
     .admin-panel__content,
     .admin-panel__nav-link:hover,
     .admin-panel__nav-link--active,
-    .tags-modal__tag-item {
+    .tags-modal__tag-item,
+    .search-result-block-info,
+    .task__block,
+    .vertical-card__item__subtitle__wrapper,
+    .neuroChat__input-textarea__wrapper,
+    .neuroChat__add-file,
+    .admin-block__page__wrapper,
+    .admin-panel__header,
+    .admin-block-inner__card,
+    .admin-element-inner__wrapper,
+    .refer-page,
+    .admin-block-inner__toolbar {
         background: #1b1b1b;
-
-        ul {
-            background: #1b1b1b;
-        }
     }
 
+    .search-result-block-info {
+        background: #1b1b1b;
+    }
+
+    .modal__wrapper,
+    main,
+    .birthday__slide__info,
+    .neuroChat-content__wrapper,
+    .tags-modal__remove-btn {
+        background: rgb(19, 19, 19);
+    }
+
+    .navbar,
+    .sidebar-lk__body__points,
+    .navbar-nav,
+    .nav-link,
+    .header__user__block,
+    .header__user__block__name,
+    .idea__table th,
+    .idea__table__tr>td,
+    .personal__user__top,
+    .personal__user__property__items h3,
+    .search-footer-block__title,
+    svg,
+    h3,
+    h2,
+    .tags__tag,
+    span,
+    a,
+    .book-nav__sidebar__burger,
+    .homeview__item__link,
+    .visibility-editor__user-fio,
+    .homeview__grid__card__title,
+    .homeview__grid__card__group-buttons__reaction-buttons,
+    .flexGallery__card__title--text-date>span:first-child,
+    p {
+        color: #b2b0b0;
+    }
+
+    h4,
+    h5,
+    h6,
+    .page__title,
+    .breadcrumb-item+.breadcrumb-item::before,
+    li {
+        color: #d3d3d3;
+    }
+
+    .search-footer-block__title,
     .idea__table th,
     .idea__table__tr>td,
     .personal__user__top,
@@ -27,55 +84,27 @@
         color: #b2b0b0;
     }
 
-    .idea__table__tr:hover {
-        &>td {
-            color: var(--emk-brand-color);
-        }
-    }
-
     .search-footer-block__title {
         border-color: #434343;
-        color: #b2b0b0;
 
         &:hover {
             color: #d2d2d2;
-
         }
     }
 
-    .search-result-block-info {
-        background: #1b1b1b;
-
+    .idea__table__tr:hover>td {
+        color: var(--emk-brand-color);
     }
 
-    .navbar,
-    .sidebar-lk__body__points {
-        color: #b2b0b0;
+    .homeview__grid__card__group-title {
+        color: var(--emk-brand-color);
 
-        &-nav {
-            color: #b2b0b0;
+        &:hover {
+            color: #d3d3d3 !important;
         }
     }
 
-    .nav-link {
-        color: #b2b0b0;
-    }
-
-    .header__user__block {
-        color: #b2b0b0;
-    }
-
-    .header__user__block__name {
-        color: #b2b0b0;
-    }
-
-    main,
-    .birthday__slide__info,
-    .neuroChat-content__wrapper,
-    .tags-modal__remove-btn {
-        background: rgb(19, 19, 19);
-    }
-
+    /* Кнопки */
     .primary-button,
     button,
     .calendar-year__event-btn,
@@ -89,80 +118,35 @@
         }
     }
 
-    .homeview__grid__card__title {
-        color: #d3d3d3;
+    /* Скелетоны */
+    .skeleton-grid__gallery-image,
+    .skeleton-flex__gallery-image {
+        background: #232323;
+        background-image: linear-gradient(90deg, #212121 25%, #252525 50%, #212121 75%) !important;
     }
 
-    .homeview__grid__card__group-title {
-        color: var(--emk-brand-color);
-
-        &:hover {
-            color: #d3d3d3 !important;
-        }
+    .skeleton-grid__gallery-title,
+    .skeleton-grid__gallery-title-text,
+    .skeleton-grid__gallery-date,
+    .skeleton-flex__gallery-title,
+    .skeleton-flex__gallery-title-text,
+    .skeleton-flex__gallery-date,
+    .skeleton-grid__gallery-reaction,
+    .skeleton-flex__gallery-reaction {
+        background-image: linear-gradient(90deg, #212121 25%, #252525 50%, #212121 75%) !important;
     }
 
-    .homeview__grid__card__group-buttons__reaction-buttons {
-        color: #e0dede;
-    }
-
-    .task__block {
-        background: #1b1b1b;
-    }
-
-    svg,
-    h3,
-    h2,
-    .tags__tag,
-    span,
-    a,
-    .book-nav__sidebar__burger,
-    .homeview__item__link,
-    .visibility-editor__user-fio {
-        color: #e0dede;
-    }
-
-    h4,
-    h5,
-    h6,
-    .page__title,
-    .breadcrumb-item+.breadcrumb-item::before,
-    li {
-        color: #d3d3d3;
-    }
-
-    p {
-        color: #d3d3d3;
-    }
-
-    .skeleton {
-        // flexGallery__card__img skeleton-grid__gallery-image
-
-        &-grid__gallery,
-        &-flex__gallery {
-            &-image {
-                background: #232323;
-                background-image: linear-gradient(90deg, #212121 25%, #252525 50%, #212121 75%) !important;
-            }
-
-            &-title,
-            &-title-text,
-            &-date {
-                background-image: linear-gradient(90deg, #212121 25%, #252525 50%, #212121 75%) !important;
-            }
-
-            &-reaction {
-                background-image: linear-gradient(90deg, #212121 25%, #252525 50%, #212121 75%) !important;
-            }
-
-        }
+    /* Модалки */
+    .modal__header,
+    .modal-body {
+        background: rgb(81, 81, 81);
     }
 
     .modal__header {
         border-color: #000000;
-        background: rgb(81, 81, 81);
     }
 
-    .modal-body {
+    .modal--fullscreen {
         background: rgb(81, 81, 81);
     }
 
@@ -171,78 +155,48 @@
 
         &:hover {
             background: rgb(81, 81, 81);
-
         }
     }
 
-
-    .modal--fullscreen {
-        background: rgb(81, 81, 81);
-    }
-
-    .modal__wrapper {
-        background: #131313;
-    }
-
-    .memo {
-        &__item__content {
-            ul {
-                background: none;
-            }
+    /* Памятка */
+    .memo__menu-dot__item {
+        &:nth-child(2n) {
+            background: #303030;
         }
 
-        &__menu-dot {
-            &__item:hover {
-                background: #444444;
-            }
-
-            &:nth-child(2n) {
-                background: #303030;
-            }
+        &:hover {
+            background: #444444;
         }
     }
 
-    .birthday {
-        &__slide__info {
-            border: 1px solid #1b1b1b;
-        }
-
-        &__chain-nav {
-            box-shadow: inset 0px -1px 0px #4c4c4c;
-        }
+    /* Дни рождения */
+    .birthday__slide__info {
+        border: 1px solid #1b1b1b;
     }
 
-    .vertical-card__item__subtitle__wrapper,
-    .neuroChat__input-textarea__wrapper,
-    .neuroChat__add-file {
+    .birthday__chain-nav {
+        box-shadow: inset 0px -1px 0px #4c4c4c;
+    }
+
+    /* чат жпт */
+    .neuroChat-sidebar__model-select select {
         background: #1b1b1b;
     }
 
-    .neuroChat-sidebar__model-select {
-        select {
-            background: #1b1b1b;
+    /* Календарь */
+    .calendar-year__title {
+        background: #1b1b1b;
+
+        &--target {
+            background-color: rgba(0, 123, 255, 0.1);
         }
     }
 
-    .calendar-year {
-        &__title {
-            background: #1b1b1b;
-
-            &--target {
-                background-color: rgba(0, 123, 255, 0.1);
-            }
-
-        }
-
-        &__item {
-            border-color: #2f2f2f;
-        }
+    .calendar-year__item {
+        border-color: #2f2f2f;
     }
 
-    .postcard__form-wrapper {
-        background-color: #2e2e2e;
-    }
-
+    /* Инпутс */
     input,
     textarea,
     select,
@@ -255,45 +209,35 @@
         border-color: #434343;
     }
 
-    .neuroChat__message::after,
-    .neuroChat__message::before {
-        border-right-color: #272727;
+    .postcard__form-wrapper {
+        background-color: #2e2e2e;
     }
 
-    .dropdown__item--active {
-        &:hover {
-            background: rgb(53, 53, 53);
+    .neuroChat__message {
+
+        &::after,
+        &::before {
+            border-right-color: #272727;
         }
     }
 
-    .flexGallery__card__title--text-date>span:first-child {
-        color: rgb(147, 146, 146);
+    /* Dropdown */
+    .dropdown__item--active:hover {
+        background: rgb(53, 53, 53);
     }
 
     strong {
         color: white;
     }
 
-    .refer-page,
-    .admin-block-inner__toolbar {
-        background-color: #212121;
-
-        &__jobs-link {
-            background-color: rgb(47, 47, 47);
-        }
-    }
-
-    .admin-block__page__wrapper,
-    .admin-panel__header,
-    .admin-block-inner__card,
-    .admin-element-inner__wrapper {
-        background-color: #1b1b1b;
-        border-color: #393939;
-    }
-
+    /* Админка */
     .admin-panel__sidebar,
     .admin-block-inner__main {
         border-color: #393939;
+        background-color: rgb(47, 47, 47);
+    }
+
+    .refer-page__jobs-link {
         background-color: rgb(47, 47, 47);
     }
 
@@ -305,6 +249,7 @@
         background: #212121 !important;
     }
 
+    /* Галереи */
     .merch-store-item__images__flex-gallery__card {
         background-color: #ffffff26 !important;
     }
@@ -317,7 +262,7 @@
         background: #3a3a3a;
     }
 
-    // ползунок
+    /* скролл */
     * {
         scrollbar-width: thin;
         scrollbar-color: var(--emk-brand-color) #212121;
@@ -332,17 +277,26 @@
         background: #4a5568;
         border-radius: 5px;
         border: 2px solid #2d3748;
-    }
 
-    *::-webkit-scrollbar-thumb:hover {
-        background: #718096;
-    }
+        &:hover {
+            background: #718096;
+        }
 
-    *::-webkit-scrollbar-thumb:active {
-        background: #63b3ed;
+        &:active {
+            background: #63b3ed;
+        }
     }
 
     *::-webkit-scrollbar-corner {
         background: #2d3748;
+    }
+
+    /*  списки */
+    ul {
+        background: #1b1b1b;
+    }
+
+    .memo__item__content ul {
+        background: none;
     }
 }

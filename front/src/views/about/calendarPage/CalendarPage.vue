@@ -173,10 +173,9 @@ export default defineComponent({
 
         const handleExcelDownload = (event: ICalendar) => {
             const reqBody = event.ATTENDEE_LIST.filter((e) => e.status == 'Y');
-            Api.post('article/make_event_users_excel', reqBody)
+            Api.post('article/make_event_users_excel', reqBody, { responseType: 'blob' })
                 .then((data) => {
-                    handleApiError(data, toast);
-                    download(data, event.NAME + '.xlsx')
+                    download(data.data, event.NAME + '.xlsx')
                 })
                 .catch((e) => handleApiError(e, toast));
         }

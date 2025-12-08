@@ -143,7 +143,6 @@ export default defineComponent({
                 .then((data) => currentItem.value = data)
         })
 
-
         return {
             activeImage,
             modalIsOpen,

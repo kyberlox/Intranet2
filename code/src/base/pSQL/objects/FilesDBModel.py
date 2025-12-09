@@ -266,8 +266,9 @@ class FilesDBModel():
                     # Извлекаем номер из имени файла
                     nums = lambda x :  [int(n.split('_')[-1].split('.')[0]) for n in x ]
                     next_num = max(nums(all_names)) + 1
-                import random
-                return f"{self.article_id}_{random.randint(10000, 99999)}_{next_num}.{file_format}"
+                #import random
+                #return f"{self.article_id}_{random.randint(10000, 99999)}_{next_num}.{file_format}"
+                return f"{self.article_id}_{next_num}.{file_format}"
             else:
                 return None
                 

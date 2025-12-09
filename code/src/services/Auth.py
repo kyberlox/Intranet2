@@ -434,7 +434,7 @@ def try_b24(login, password):
 
 @auth_router.get("/auth")
 async def authentication_b24(request: Request):
-    res = {"query_params": request.query_params._dict, "req": request}
+    res = {"query_params": request.query_params._dict}
     return res
 
 @auth_router.post("/auth")

@@ -450,6 +450,7 @@ def get_refresh_token():
 
 @auth_router.get("/auth")
 async def authentication_b24(request: Request):
+    # https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&scope=user
     data = request.query_params._dict
 
     client_id="local.6936c2c4e28141.22464163"

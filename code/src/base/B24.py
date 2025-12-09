@@ -17,7 +17,19 @@ class B24:
 
     def auth_b24(self):
         url = 'https://test-portal.emk.ru/intranet/rest/authuser.php?client_id=local.6936c2c4e28141.22464163&client_secret=jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9'
-        # url = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1765265567&scope=user'
+        # url = 'https://test-portal.emk.ru/oauth/authorize/?
+        # client_id=local.6936c2c4e28141.22464163&
+        # redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&
+        # response_type=code&
+        # state=test_1765265567&
+        # scope=user'
+        # url = 'https://test-portal.emk.ru/oauth/authorize/?
+        # login=yes&client_id=local.6936c2c4e28141.22464163&
+        # redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&
+        # response_type=code&
+        # state=test_1765268095&
+        # scope=user'
+
         result = requests.get(url)
         return result.text
 

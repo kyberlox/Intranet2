@@ -437,7 +437,6 @@ def try_b24(login, password):
 @auth_router.get("/auth")
 async def authentication_b24(request: Request):
     data = request.query_params._dict
-    print(data)
 
     client_id="local.6936c2c4e28141.22464163"
     client_secret="jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
@@ -446,6 +445,11 @@ async def authentication_b24(request: Request):
     url = f"https://oauth.bitrix24.tech/oauth/token/?grant_type=authorization_code&client_id={client_id}&client_secret={client_secret}&code={code}"
     res = requests.get(url)
     result = json.loads(res.text)
+
+    access_token = result["access_token"]
+    user_id = result["user_id"]
+    refresh_token = result["refresh_token"]
+
     return result
 
 @auth_router.post("/auth")

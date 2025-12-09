@@ -434,6 +434,20 @@ def try_b24(login, password):
         }
 
 
+def get_refresh_token():
+    client_id="local.6936c2c4e28141.22464163"
+    client_secret="jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
+    #refresh_token=#вытащить из redis
+
+    url = f"https://oauth.bitrix24.tech/oauth/token/?grant_type=refresh_token&client_id={client_id}&client_secret={client_secret}&refresh_token={refresh_token}"
+    res = requests.get(url)
+    result = json.loads(res.text)
+
+    access_token = result["access_token"] #новый и его надо перезаписать в redis
+
+    return result
+
+
 @auth_router.get("/auth")
 async def authentication_b24(request: Request):
     data = request.query_params._dict
@@ -446,11 +460,16 @@ async def authentication_b24(request: Request):
     res = requests.get(url)
     result = json.loads(res.text)
 
-    access_token = result["access_token"]
-    user_id = result["user_id"]
-    refresh_token = result["refresh_token"]
+    """
+    ВОТ ЭТО ВОТ НАДОВ ЗАПИСАТЬ В REDIS
+    """
+    access_token = result["access_token"] # живёт час
+    user_id = result["user_id"] # то, ради чего мы собрались
+    refresh_token = result["refresh_token"] # нужен, когда истёк час
 
     return result
+
+
 
 @auth_router.post("/auth")
 async def authentication(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):

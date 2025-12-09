@@ -18,7 +18,7 @@ class B24:
     def auth_b24(self):
         url = 'https://test-portal.emk.ru/intranet/rest/authuser.php?client_id=local.6936c2c4e28141.22464163&client_secret=jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9'
         result = requests.get(url)
-        return result.json()
+        return result.json
 
     def getUsers(self):
         result = self.bx24.callMethod('user.get')

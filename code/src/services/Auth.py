@@ -7,8 +7,6 @@ from typing import Optional, Dict, Any
 import uuid
 from pydantic import BaseModel
 
-import requests
-
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie  # , Header
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -16,6 +14,8 @@ from fastapi.security import OAuth2PasswordBearer
 from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 from ..model.User import User
+
+import requests
 
 import json
 
@@ -445,7 +445,8 @@ async def authentication_b24(request: Request):
 
     url = f"https://oauth.bitrix24.tech/oauth/token/?grant_type=authorization_code&client_id={client_id}&client_secret={client_secret}&code={code}"
     res = requests.get(url)
-    return [res.text, res.json]
+    result = json.loads(res.text)
+    return result
 
 @auth_router.post("/auth")
 async def authentication(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):

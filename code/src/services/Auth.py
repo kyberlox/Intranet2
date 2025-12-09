@@ -434,8 +434,8 @@ def try_b24(login, password):
 
 @auth_router.get("/auth")
 async def authentication_b24(request: Request):
-    print({"query_params": request.query_params._dict, "req": request})
-    return "a777aa777ru"
+    res = {"query_params": request.query_params._dict, "req": request}
+    return res
 
 @auth_router.post("/auth")
 async def authentication(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):

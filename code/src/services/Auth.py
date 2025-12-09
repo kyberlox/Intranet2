@@ -440,7 +440,7 @@ async def authentication(response: Response, data=Body(), sess: AsyncSession = D
     else:
         # return await LogsMaker().warning_message(message="Login or Password has missing")
         return LogsMaker().warning_message(message="Login or Password has missing")
-
+    print(data, 'че приходит')
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     '''
     check_email = try_mail(login, password)

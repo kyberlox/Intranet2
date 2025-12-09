@@ -436,7 +436,7 @@ def try_b24(login, password):
 
 @auth_router.get("/auth")
 async def authentication_b24(request: Request):
-    data = {"query_params": request.query_params._dict}
+    data = request.query_params._dict
     print(data)
 
     client_id="local.6936c2c4e28141.22464163"

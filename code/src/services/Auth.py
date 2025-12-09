@@ -432,6 +432,10 @@ def try_b24(login, password):
         }
 
 
+@auth_router.get("/auth")
+async def authentication_b24(request: Request):
+    return {"query_params": request.query_params, "req": request}
+
 @auth_router.post("/auth")
 async def authentication(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):
     if "login" in data and "password" in data:  # login : str, password : str,

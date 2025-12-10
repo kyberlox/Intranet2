@@ -33,7 +33,7 @@ class AuthService:
         # Конфигурация Bitrix24 OAuth
         self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.6936c2c4e28141.22464163")
         self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9")
-        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://your-domain.com/auth_router/callback")
+        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/callback")
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://test-portal.emk.ru")
         
         # Время жизни токенов и сессий
@@ -334,7 +334,7 @@ async def get_current_session(
     return session_data
 
 
-@auth_router.get("/auth")
+@auth_router.get("/login")
 async def login_to_bitrix24():
     """Перенаправление на страницу авторизации Bitrix24"""
     auth_service = AuthService()

@@ -342,7 +342,7 @@ async def login_to_bitrix24():
     return RedirectResponse(url=auth_url)
 
 
-@auth_router.get("/callback")
+@auth_router.get("/auth")
 async def bitrix24_callback(
     code: str,
     state: Optional[str] = None,

@@ -349,6 +349,7 @@ async def bitrix24_callback(
     error: Optional[str] = None,
     response: Response = None
 ):
+    print(code)
     """Callback endpoint для Bitrix24 OAuth"""
     if error:
         raise HTTPException(

@@ -60,7 +60,7 @@ class AuthService:
 
     async def exchange_code_for_tokens(self, code: str) -> Optional[Dict[str, Any]]:
         """Обмен кода авторизации на токены"""
-        token_url = f"{self.bitrix_domain}/oauth/token/"
+        token_url = "https://oauth.bitrix24.tech/oauth/token/"
         
         params = {
             "grant_type": "authorization_code",
@@ -349,7 +349,7 @@ async def bitrix24_callback(
     error: Optional[str] = None,
     response: Response = None
 ):
-    print(code)
+    
     """Callback endpoint для Bitrix24 OAuth"""
     if error:
         raise HTTPException(

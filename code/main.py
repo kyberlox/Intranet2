@@ -184,7 +184,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Проверяем авторизацию для всех остальных /api эндпоинтов
     if request.url.path.startswith("/api"):
         # Создаем экземпляр сервиса авторизации
-        auth_service = Bitrix24AuthService()
+        auth_service = AuthService()
         
         # Получаем session_id из куков или заголовков
         session_id = request.cookies.get("session_id")

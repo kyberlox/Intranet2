@@ -18,8 +18,8 @@ load_dotenv()
 
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизация"])
 
-
-class Bitrix24AuthService:
+ 
+class AuthService: AuthService
     def __init__(self):
         # Настройки Redis
         redis_host = "redis"
@@ -305,7 +305,7 @@ class Bitrix24AuthService:
 # Dependency для получения текущей сессии
 async def get_current_session(
     request: Request,
-    auth_service: Bitrix24AuthService = Depends(lambda: Bitrix24AuthService())
+    auth_service: AuthService = Depends(lambda: AuthService())
 ) -> Dict[str, Any]:
     """Получение текущей сессии пользователя"""
     # Ищем session_id в куках или заголовках
@@ -337,7 +337,7 @@ async def get_current_session(
 @auth_router.get("/login")
 async def login_to_bitrix24():
     """Перенаправление на страницу авторизации Bitrix24"""
-    auth_service = Bitrix24AuthService()
+    auth_service = AuthService()
     auth_url = await auth_service.get_auth_url()
     return RedirectResponse(url=auth_url)
 
@@ -362,7 +362,7 @@ async def bitrix24_callback(
             detail="Authorization code is missing"
         )
     
-    auth_service = Bitrix24AuthService()
+    auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
     if not session:
@@ -379,7 +379,7 @@ async def bitrix24_callback(
             httponly=True,
             secure=True,  # Использовать только с HTTPS
             samesite="lax",
-            max_age=int(Bitrix24AuthService().session_ttl.total_seconds())
+            max_age=int(AuthService().session_ttl.total_seconds())
         )
     
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
@@ -406,7 +406,7 @@ async def check_session(
 @auth_router.post("/refresh")
 async def refresh_session(
     request: Request,
-    auth_service: Bitrix24AuthService = Depends(lambda: Bitrix24AuthService())
+    auth_service: AuthService = Depends(lambda: AuthService())
 ):
     """Принудительное обновление сессии"""
     session_id = request.cookies.get("session_id")
@@ -441,7 +441,7 @@ async def refresh_session(
 async def logout(
     request: Request,
     response: Response,
-    auth_service: Bitrix24AuthService = Depends(lambda: Bitrix24AuthService())
+    auth_service: AuthService = Depends(lambda: AuthService())
 ):
     """Выход из системы"""
     session_id = request.cookies.get("session_id")
@@ -459,7 +459,7 @@ async def logout(
 # @app.middleware("http")
 # async def session_middleware(request: Request, call_next):
 #     """Middleware для обработки сессий"""
-#     auth_service = Bitrix24AuthService()
+#     auth_service = AuthService()
 #     session_id = request.cookies.get("session_id")
     
 #     if session_id:

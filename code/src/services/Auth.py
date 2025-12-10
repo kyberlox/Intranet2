@@ -1,3 +1,5 @@
+# services/Auth.py
+
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -6,28 +8,19 @@ import uuid
 import json
 import logging
 
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Response, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 import requests
 
 from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 
-# Загрузка переменных окружения
 load_dotenv()
 
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизация"])
 
- 
-class AuthService: 
+class Bitrix24AuthService:
     def __init__(self):
-        # Настройки Redis
-        redis_host = "redis"
-        redis_port = 6379
-        redis_db = 0
-        redis_username = os.getenv("user")
-        redis_password = os.getenv("pswd")
-
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
@@ -37,10 +30,10 @@ class AuthService:
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://test-portal.emk.ru")
         
         # Время жизни токенов и сессий
-        self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
-        self.refresh_token_ttl = timedelta(days=30)  # Время жизни refresh_token
-        self.session_ttl = timedelta(days=7)  # Время жизни сессии
-        self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
+        self.access_token_ttl = timedelta(hours=1)
+        self.refresh_token_ttl = timedelta(days=30)
+        self.session_ttl = timedelta(days=7)
+        self.session_sliding_window = timedelta(minutes=15)
 
     async def get_auth_url(self, state: str = None) -> str:
         """Генерация URL для авторизации в Bitrix24"""
@@ -71,9 +64,13 @@ class AuthService:
         }
         
         try:
-            response = requests.get(token_url, params=params)
+            response = requests.get(token_url, params=params, timeout=10)
             response.raise_for_status()
             tokens = response.json()
+            
+            if "error" in tokens:
+                LogsMaker().error_message(f"Token exchange error: {tokens.get('error_description', 'Unknown error')}")
+                return None
             
             # Добавляем время истечения токенов
             tokens["access_token_expires_at"] = (
@@ -88,10 +85,13 @@ class AuthService:
         except requests.RequestException as e:
             LogsMaker().error_message(f"Token exchange failed: {str(e)}")
             return None
+        except json.JSONDecodeError as e:
+            LogsMaker().error_message(f"Invalid JSON response: {str(e)}")
+            return None
 
     async def refresh_access_token(self, refresh_token: str) -> Optional[Dict[str, Any]]:
         """Обновление access_token с помощью refresh_token"""
-        token_url = f"{self.bitrix_domain}/oauth/token/"
+        token_url = "https://oauth.bitrix24.tech/oauth/token/"
         
         params = {
             "grant_type": "refresh_token",
@@ -101,9 +101,13 @@ class AuthService:
         }
         
         try:
-            response = requests.get(token_url, params=params)
+            response = requests.get(token_url, params=params, timeout=10)
             response.raise_for_status()
             tokens = response.json()
+            
+            if "error" in tokens:
+                LogsMaker().error_message(f"Token refresh error: {tokens.get('error_description', 'Unknown error')}")
+                return None
             
             # Обновляем время истечения
             tokens["access_token_expires_at"] = (
@@ -122,22 +126,27 @@ class AuthService:
             LogsMaker().error_message(f"Token refresh failed: {str(e)}")
             return None
 
-    async def get_user_info(self, access_token: str) -> Optional[Dict[str, Any]]:
+    async def get_user_info(self, access_token: str, domain: str = None) -> Optional[Dict[str, Any]]:
         """Получение информации о пользователе из Bitrix24"""
-        user_info_url = f"{self.bitrix_domain}/rest/user.current.json"
+        if not domain:
+            domain = self.bitrix_domain
+        
+        user_info_url = f"{domain}/rest/user.current.json"
         
         params = {
             "auth": access_token
         }
         
         try:
-            response = requests.get(user_info_url, params=params)
+            response = requests.get(user_info_url, params=params, timeout=10)
             response.raise_for_status()
             result = response.json()
             
             if "result" in result:
                 return result["result"]
-            return None
+            else:
+                LogsMaker().error_message(f"No user info in response: {result}")
+                return None
             
         except requests.RequestException as e:
             LogsMaker().error_message(f"Failed to get user info: {str(e)}")
@@ -150,11 +159,13 @@ class AuthService:
         
         session_data = {
             "session_id": session_id,
-            "user_id": tokens["user_id"],
-            "access_token": tokens["access_token"],
-            "refresh_token": tokens["refresh_token"],
-            "access_token_expires_at": tokens["access_token_expires_at"],
-            "refresh_token_expires_at": tokens["refresh_token_expires_at"],
+            "user_id": tokens.get("user_id"),
+            "member_id": tokens.get("member_id"),
+            "domain": tokens.get("domain", self.bitrix_domain),
+            "access_token": tokens.get("access_token"),
+            "refresh_token": tokens.get("refresh_token"),
+            "access_token_expires_at": tokens.get("access_token_expires_at"),
+            "refresh_token_expires_at": tokens.get("refresh_token_expires_at"),
             "session_expires_at": session_expires_at.isoformat(),
             "user_info": user_info,
             "last_activity": datetime.now().isoformat(),
@@ -163,14 +174,15 @@ class AuthService:
         
         # Сохраняем сессию в Redis
         self.redis.save_session(
-            session_id=session_id,
+            key=f"session:{session_id}",
             data=session_data,
             ttl=int(self.session_ttl.total_seconds())
         )
         
         # Также сохраняем связь user_id -> session_id для поиска
-        user_sessions_key = f"user_sessions:{tokens['user_id']}"
-        self.redis.add_to_set(user_sessions_key, session_id)
+        if tokens.get("user_id"):
+            user_sessions_key = f"user_sessions:{tokens['user_id']}"
+            self.redis.add_to_set(user_sessions_key, session_id)
         
         return {
             "session_id": session_id,
@@ -180,13 +192,13 @@ class AuthService:
 
     def validate_and_refresh_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Проверка и обновление сессии при необходимости"""
-        session_data = self.redis.get_session(session_id)
+        session_data = self.redis.get_session(f"session:{session_id}")
         
         if not session_data:
             return None
         
         now = datetime.now()
-        session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
+        session_expires_at = datetime.fromisoformat(session_data.get("session_expires_at", "2000-01-01T00:00:00"))
         
         # Проверяем истекла ли сессия
         if now > session_expires_at:
@@ -195,14 +207,18 @@ class AuthService:
         
         # Проверяем access_token
         access_token_expires_at = datetime.fromisoformat(
-            session_data["access_token_expires_at"]
+            session_data.get("access_token_expires_at", "2000-01-01T00:00:00")
         )
         
         # Если access_token истек или скоро истекает (менее 5 минут), обновляем его
         if now > access_token_expires_at - timedelta(minutes=5):
-            refreshed_tokens = self.refresh_access_token_sync(
-                session_data["refresh_token"]
-            )
+            refresh_token = session_data.get("refresh_token")
+            if not refresh_token:
+                self.delete_session(session_id)
+                return None
+            
+            # Синхронный вызов для обновления токена
+            refreshed_tokens = self._refresh_access_token_sync(refresh_token)
             
             if refreshed_tokens:
                 # Обновляем токены в сессии
@@ -215,8 +231,8 @@ class AuthService:
                 
                 # Обновляем сессию в Redis
                 self.redis.save_session(
-                    session_id=session_id,
-                    session_data=session_data,
+                    key=f"session:{session_id}",
+                    data=session_data,
                     ttl=int(self.session_ttl.total_seconds())
                 )
             else:
@@ -225,24 +241,23 @@ class AuthService:
                 return None
         
         # Применяем скользящее окно для сессии
-        last_activity = datetime.fromisoformat(session_data["last_activity"])
+        last_activity = datetime.fromisoformat(session_data.get("last_activity", "2000-01-01T00:00:00"))
         
         if now > last_activity + self.session_sliding_window:
-            # Обновляем время последней активности и продлеваем сессию
+            # Обновляем время последней активности
             session_data["last_activity"] = now.isoformat()
-            session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
             
             self.redis.save_session(
-                session_id=session_id,
-                session_data=session_data,
+                key=f"session:{session_id}",
+                data=session_data,
                 ttl=int(self.session_ttl.total_seconds())
             )
         
         return session_data
 
-    def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
+    def _refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
         """Синхронная версия обновления токена"""
-        token_url = f"{self.bitrix_domain}/oauth/token/"
+        token_url = "https://oauth.bitrix24.tech/oauth/token/"
         
         params = {
             "grant_type": "refresh_token",
@@ -252,9 +267,13 @@ class AuthService:
         }
         
         try:
-            response = requests.get(token_url, params=params)
+            response = requests.get(token_url, params=params, timeout=10)
             response.raise_for_status()
             tokens = response.json()
+            
+            if "error" in tokens:
+                LogsMaker().error_message(f"Token refresh error: {tokens.get('error_description', 'Unknown error')}")
+                return None
             
             tokens["access_token_expires_at"] = (
                 datetime.now() + self.access_token_ttl
@@ -273,14 +292,14 @@ class AuthService:
 
     def delete_session(self, session_id: str) -> None:
         """Удаление сессии"""
-        session_data = self.redis.get_session(session_id)
+        session_data = self.redis.get_session(f"session:{session_id}")
         
         if session_data and "user_id" in session_data:
             # Удаляем session_id из списка сессий пользователя
             user_sessions_key = f"user_sessions:{session_data['user_id']}"
             self.redis.remove_from_set(user_sessions_key, session_id)
         
-        self.redis.delete_session(session_id)
+        self.redis.delete_session(f"session:{session_id}")
 
     async def authenticate_user(self, code: str) -> Optional[Dict[str, Any]]:
         """Полная аутентификация пользователя через Bitrix24 OAuth"""
@@ -288,12 +307,17 @@ class AuthService:
         tokens = await self.exchange_code_for_tokens(code)
         
         if not tokens:
+            LogsMaker().error_message("Failed to exchange code for tokens")
             return None
         
         # Получаем информацию о пользователе
-        user_info = await self.get_user_info(tokens["access_token"])
+        user_info = await self.get_user_info(
+            tokens["access_token"],
+            tokens.get("domain", self.bitrix_domain)
+        )
         
         if not user_info:
+            LogsMaker().error_message("Failed to get user info")
             return None
         
         # Создаем сессию
@@ -305,9 +329,12 @@ class AuthService:
 # Dependency для получения текущей сессии
 async def get_current_session(
     request: Request,
-    auth_service: AuthService = Depends(lambda: AuthService())
+    auth_service: Bitrix24AuthService = None
 ) -> Dict[str, Any]:
     """Получение текущей сессии пользователя"""
+    if not auth_service:
+        auth_service = Bitrix24AuthService()
+    
     # Ищем session_id в куках или заголовках
     session_id = request.cookies.get("session_id")
     
@@ -337,59 +364,66 @@ async def get_current_session(
 @auth_router.get("/login")
 async def login_to_bitrix24():
     """Перенаправление на страницу авторизации Bitrix24"""
-    auth_service = AuthService()
+    auth_service = Bitrix24AuthService()
     auth_url = await auth_service.get_auth_url()
     return RedirectResponse(url=auth_url)
 
 
 @auth_router.get("/auth")
 async def bitrix24_callback(
-    code: str,
+    request: Request,
+    code: str = None,
     state: Optional[str] = None,
     error: Optional[str] = None,
-    response: Response = None
+    error_description: Optional[str] = None
 ):
-    
     """Callback endpoint для Bitrix24 OAuth"""
-    if error:
+    LogsMaker().info_message(f"Bitrix24 callback received: code={code}, error={error}, error_description={error_description}")
+    
+    if error or error_description:
+        error_msg = error_description or error or "Authorization failed"
+        LogsMaker().error_message(f"Bitrix24 auth error: {error_msg}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Authorization failed: {error}"
+            detail=f"Authorization failed: {error_msg}"
         )
     
     if not code:
+        LogsMaker().error_message("Authorization code is missing")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Authorization code is missing"
         )
     
-    auth_service = AuthService()
+    auth_service = Bitrix24AuthService()
     session = await auth_service.authenticate_user(code)
     
     if not session:
+        LogsMaker().error_message("Failed to authenticate with Bitrix24")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
     
-    # Устанавливаем session_id в куки
-    if response:
-        response.set_cookie(
-            key="session_id",
-            value=session["session_id"],
-            httponly=True,
-            secure=True,  # Использовать только с HTTPS
-            samesite="lax",
-            max_age=int(AuthService().session_ttl.total_seconds())
-        )
-    
-    # Для API возвращаем JSON, для веб-приложения можно сделать редирект
-    return JSONResponse(content={
+    # Создаем ответ
+    response = JSONResponse(content={
         "status": "success",
         "session_id": session["session_id"],
         "user": session["user"],
         "expires_at": session["session_expires_at"]
     })
+    
+    # Устанавливаем session_id в куки
+    response.set_cookie(
+        key="session_id",
+        value=session["session_id"],
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=int(Bitrix24AuthService().session_ttl.total_seconds())
+    )
+    
+    return response
 
 
 @auth_router.get("/check")
@@ -400,51 +434,18 @@ async def check_session(
     return {
         "authenticated": True,
         "user": session_data.get("user_info"),
-        "session_expires_at": session_data.get("session_expires_at")
-    }
-
-
-@auth_router.post("/refresh")
-async def refresh_session(
-    request: Request,
-    auth_service: AuthService = Depends(lambda: AuthService())
-):
-    """Принудительное обновление сессии"""
-    session_id = request.cookies.get("session_id")
-    
-    if not session_id:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_id = auth_header[7:]
-    
-    if not session_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated"
-        )
-    
-    session_data = auth_service.validate_and_refresh_session(session_id)
-    
-    if not session_data:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired session"
-        )
-    
-    return {
-        "status": "success",
-        "session_id": session_id,
-        "session_expires_at": session_data.get("session_expires_at")
+        "session_expires_at": session_data.get("session_expires_at"),
+        "access_token_expires_at": session_data.get("access_token_expires_at")
     }
 
 
 @auth_router.post("/logout")
 async def logout(
     request: Request,
-    response: Response,
-    auth_service: AuthService = Depends(lambda: AuthService())
+    response: Response
 ):
     """Выход из системы"""
+    auth_service = Bitrix24AuthService()
     session_id = request.cookies.get("session_id")
     
     if session_id:
@@ -454,35 +455,3 @@ async def logout(
     response.delete_cookie("session_id")
     
     return {"status": "success", "message": "Logged out successfully"}
-
-
-# # Middleware для автоматического обновления сессии
-# @app.middleware("http")
-# async def session_middleware(request: Request, call_next):
-#     """Middleware для обработки сессий"""
-#     auth_service = AuthService()
-#     session_id = request.cookies.get("session_id")
-    
-#     if session_id:
-#         # Проверяем и обновляем сессию
-#         session_data = auth_service.validate_and_refresh_session(session_id)
-        
-#         if session_data:
-#             # Если сессия была обновлена, устанавливаем новые куки
-#             response = await call_next(request)
-            
-#             # Проверяем, не нужно ли обновить куки (скользящее окно)
-#             last_activity = datetime.fromisoformat(session_data["last_activity"])
-#             if datetime.now() > last_activity + auth_service.session_sliding_window:
-#                 response.set_cookie(
-#                     key="session_id",
-#                     value=session_id,
-#                     httponly=True,
-#                     secure=True,
-#                     samesite="lax",
-#                     max_age=int(auth_service.session_ttl.total_seconds())
-#                 )
-            
-#             return response
-    
-#     return await call_next(request)

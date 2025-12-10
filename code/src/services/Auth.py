@@ -334,7 +334,7 @@ async def get_current_session(
     return session_data
 
 
-@auth_router.get("/login")
+@auth_router.get("/auth")
 async def login_to_bitrix24():
     """Перенаправление на страницу авторизации Bitrix24"""
     auth_service = AuthService()

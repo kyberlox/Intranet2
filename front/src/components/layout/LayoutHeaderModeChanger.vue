@@ -36,6 +36,7 @@ export default defineComponent({
             localStorage.setItem('darkMode', String(value));
             styleMode.setDarkMode(value);
         }
+        
         return {
             toggleDarkMode,
             theme: computed(() => styleMode.getDarkMode)

@@ -30,7 +30,8 @@
   </div>
 
   <div class="admin-element-inner__actions">
-    <button @click="router.push({ name: 'adminBlockInner', params: { id: id } })">
+    <button class="primary-button"
+            @click="router.push({ name: 'adminBlockInner', params: { id: id } })">
       <span class="admin-element-inner__action-text">Назад</span>
     </button>
     <button @click="applyNewData"
@@ -150,7 +151,6 @@ export default defineComponent({
               isCreateNew.value = false;
               newElementSkeleton.value = data.fields;
             }
-
             // для файлов
             newFileData.value = data.files;
             newData.value.videos_native = data.files.videos_native;
@@ -159,7 +159,6 @@ export default defineComponent({
             if (data.files?.images && data.files?.images[0]?.file_url) {
               newData.value.preview_file_url = data.files?.images[0]?.file_url
             }
-
             data.fields.map((e: INewDataElement) => {
               if (e.value && e.field) {
                 (newData.value as PostInnerWithDynamic)[e.field] = e.value;

@@ -21,7 +21,7 @@
 <div class="birthday__workers-grid">
     <div class="birthday__page-content">
         <div class="birthday__page__swiper__wrapper"
-             v-if="slidesForBirthday.length">
+             v-if="slidesForBirthday.length && !isLoading">
             <swiper class="birthday__page__swiper"
                     v-bind="sliderConfig"
                     @swiper="swiperOn">
@@ -35,6 +35,10 @@
                            :isEnd="isEnd"
                            @slideNext="slideNext"
                            @slidePrev="slidePrev" />
+        </div>
+        <div v-else
+             class="birthday__page__swiper__wrapper">
+            <Loader class="contest__page__loader" />
         </div>
         <div class="birthday__static__greetings">
             <img @click="openModal([birthdayPageImg])"
@@ -51,21 +55,19 @@
 </template>
 
 <script lang="ts">
-import { onMounted, ref, watch, nextTick, defineComponent } from "vue";
+import { ref, watch, nextTick, defineComponent } from "vue";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
-import { sectionTips } from "@/assets/static/sectionTips";
 import { useSwiperconf } from "@/composables/useSwiperConf";
-
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import "swiper/css/navigation";
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
 import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
-import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.jpg";
-
+import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.png";
+import Loader from "@/components/layout/Loader.vue";
 
 export default defineComponent({
     components: {
@@ -75,8 +77,10 @@ export default defineComponent({
         VerticalSliderSlide,
         SwiperButtons,
         ZoomModal,
+        Loader
     },
     setup() {
+        const isLoading = ref(false);
         const today = new Date();
         const yesterday = new Date(today);
         const tomorrow = new Date(today);
@@ -135,8 +139,10 @@ export default defineComponent({
 
         watch((searchValue), (newVal) => {
             if (!newVal) return;
+            isLoading.value = true;
             Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
                 .then((data) => slidesForBirthday.value = data)
+                .finally(() => isLoading.value = false)
         }, { immediate: true, deep: true })
 
         const dateFromDatepicker = ref();
@@ -151,6 +157,7 @@ export default defineComponent({
             fastDayNavigation,
             searchValue,
             dateFromDatepicker,
+            isLoading,
             nullifyDateInput,
             openModal,
             pickDate,

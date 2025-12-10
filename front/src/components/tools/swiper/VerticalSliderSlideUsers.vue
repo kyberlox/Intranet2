@@ -1,23 +1,23 @@
 <template>
-    <RouterLink :to="{ name: 'userPage', params: { id: slide?.id } }"
-                class="birthday__slide__grid">
-        <div class="birthday__slide__image"
-             :style="{ backgroundImage: `url('${slide?.image}')` }">
-            <BirthdayCake class="birthday__slide__image__icon"
-                          v-if="needCakeIcon" />
-        </div>
-        <div class="birthday__slide__info">
-            <div class="birthday__page__swiper__slide__title">{{ slide?.user_fio }}</div>
-            <div class="birthday__page__swiper__slide__subtitle">{{ slide?.position }}</div>
-            <div class="birthday__page__swiper__slide__departments">
-                <div class="birthday__page__swiper__slide__department"
-                     v-for="(dep, index) in slide?.department"
-                     :key="'dep' + index">
-                    {{ dep }}
-                </div>
+<RouterLink :to="{ name: 'userPage', params: { id: slide?.id } }"
+            class="birthday__slide__grid">
+    <div class="birthday__slide__image"
+         :style="{ backgroundImage: `url('${slide?.image}')` }">
+        <BirthdayCake class="birthday__slide__image__icon"
+                      v-if="needCakeIcon" />
+    </div>
+    <div class="birthday__slide__info">
+        <div class="birthday__page__swiper__slide__title">{{ slide?.user_fio }}</div>
+        <div class="birthday__page__swiper__slide__subtitle">{{ slide?.position }}</div>
+        <div class="birthday__page__swiper__slide__departments">
+            <div class="birthday__page__swiper__slide__department"
+                 v-for="(dep, index) in slide?.department"
+                 :key="'dep' + index">
+                {{ dep }}
             </div>
         </div>
-    </RouterLink>
+    </div>
+</RouterLink>
 </template>
 
 <script lang="ts">

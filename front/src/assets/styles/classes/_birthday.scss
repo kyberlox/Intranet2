@@ -95,7 +95,7 @@
             cursor: zoom-in;
             margin: auto;
             text-align: center;
-            background: #FAFAFA;
+            background: #f8d7c4;
 
             @include lg {
                 max-width: 100%;
@@ -116,6 +116,10 @@
             width: 100%;
             margin: 0;
             height: 100% !important;
+
+            @include sm {
+                aspect-ratio: 4/5 !important;
+            }
 
             &__wrapper {
                 flex: 1;
@@ -167,7 +171,7 @@
             display: grid;
             grid-template-rows: 1fr auto;
             height: 100%;
-            min-height: 492px;
+            // min-height: 492px;
             overflow: hidden;
             transition: 0.2s all;
             width: 100%;
@@ -190,6 +194,10 @@
             min-height: 300px;
             transition: 0.2s all;
             position: relative;
+
+            @include lg {
+                min-height: auto;
+            }
 
             &__icon {
                 position: absolute;

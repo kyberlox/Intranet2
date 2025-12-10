@@ -164,7 +164,7 @@ class AuthService:
         # Сохраняем сессию в Redis
         self.redis.save_session(
             session_id=session_id,
-            session_data=session_data,
+            data=session_data,
             ttl=int(self.session_ttl.total_seconds())
         )
         

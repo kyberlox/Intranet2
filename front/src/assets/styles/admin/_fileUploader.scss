@@ -53,7 +53,7 @@
     &__preview-list {
         margin-top: 10px;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 250px));
         gap: 20px;
 
         &--video {
@@ -72,11 +72,13 @@
         overflow: hidden;
         background: white;
         display: flex;
-        align-items: center;
+        // align-items: center;
+        object-fit: contain;
         justify-content: center;
         padding: 10px;
 
         &>img {
+            object-fit: contain;
             max-width: 100%;
             max-height: 350px;
         }

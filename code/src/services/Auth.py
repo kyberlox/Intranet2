@@ -19,7 +19,7 @@ load_dotenv()
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизация"])
 
  
-class AuthService: AuthService
+class AuthService: 
     def __init__(self):
         # Настройки Redis
         redis_host = "redis"

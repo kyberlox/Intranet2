@@ -15,7 +15,23 @@ class B24:
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
         # self.bx24 = Bitrix24("https://test-portal.emk.ru/rest/3830/0gtzqs1nai8ocqft/")
 
+    def auth_b24(self):
+        url = 'https://test-portal.emk.ru/intranet/rest/authuser.php?client_id=local.6936c2c4e28141.22464163&client_secret=jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9'
+        # url = 'https://test-portal.emk.ru/oauth/authorize/?
+        # client_id=local.6936c2c4e28141.22464163&
+        # redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&
+        # response_type=code&
+        # state=test_1765265567&
+        # scope=user'
+        # url = 'https://test-portal.emk.ru/oauth/authorize/?
+        # login=yes&client_id=local.6936c2c4e28141.22464163&
+        # redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&
+        # response_type=code&
+        # state=test_1765268095&
+        # scope=user'
 
+        result = requests.get(url)
+        return result.text
 
     def getUsers(self):
         result = self.bx24.callMethod('user.get')
@@ -170,6 +186,10 @@ class B24:
         return result
     '''
 
+@b24_router.get("/auth_b24")
+def auth_b24():
+    result = B24().auth_b24()
+    return result
 
 
 @b24_router.get("/calendar/{date_from}/{date_to}",

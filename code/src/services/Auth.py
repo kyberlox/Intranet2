@@ -15,6 +15,8 @@ from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 from ..model.User import User
 
+import requests
+
 import json
 
 import asyncio
@@ -432,6 +434,44 @@ def try_b24(login, password):
         }
 
 
+def get_refresh_token():
+    client_id="local.6936c2c4e28141.22464163"
+    client_secret="jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
+    #refresh_token=#вытащить из redis
+
+    url = f"https://oauth.bitrix24.tech/oauth/token/?grant_type=refresh_token&client_id={client_id}&client_secret={client_secret}&refresh_token={refresh_token}"
+    res = requests.get(url)
+    result = json.loads(res.text)
+
+    access_token = result["access_token"] #новый и его надо перезаписать в redis
+
+    return result
+
+
+@auth_router.get("/auth")
+async def authentication_b24(request: Request):
+    # https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&scope=user
+    data = request.query_params._dict
+
+    client_id="local.6936c2c4e28141.22464163"
+    client_secret="jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
+    code=data["code"]
+
+    url = f"https://oauth.bitrix24.tech/oauth/token/?grant_type=authorization_code&client_id={client_id}&client_secret={client_secret}&code={code}"
+    res = requests.get(url)
+    result = json.loads(res.text)
+
+    """
+    ВОТ ЭТО ВОТ НАДОВ ЗАПИСАТЬ В REDIS
+    """
+    access_token = result["access_token"] # живёт час
+    user_id = result["user_id"] # то, ради чего мы собрались
+    refresh_token = result["refresh_token"] # нужен, когда истёк час
+
+    return result
+
+
+
 @auth_router.post("/auth")
 async def authentication(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):
     if "login" in data and "password" in data:  # login : str, password : str,
@@ -440,7 +480,7 @@ async def authentication(response: Response, data=Body(), sess: AsyncSession = D
     else:
         # return await LogsMaker().warning_message(message="Login or Password has missing")
         return LogsMaker().warning_message(message="Login or Password has missing")
-
+    print(type(data), data, 'че приходит')
     # ВРЕМЕННО ПО ПОЧТЕ !!!!!!!!!!!!!!!!!!
     '''
     check_email = try_mail(login, password)

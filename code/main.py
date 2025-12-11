@@ -139,8 +139,9 @@ b24_docs_routs = [
 
 
 for route in app.routes:
-    print(route.path, route.methods)
+    
     if isinstance(route, APIRoute) and route.path in b24_docs_routs:
+        print(route.path)
         if hasattr(route, 'tags'):
             if "Битрикс24" not in route.tags:
                 route.tags.append("Битрикс24")

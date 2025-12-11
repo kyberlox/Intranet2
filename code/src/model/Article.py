@@ -2740,7 +2740,7 @@ async def get_article(ID: int, request: Request, session: AsyncSession = Depends
         user_id = token
     art = Article()
     art.id = ID
-    return await art.search_by_id(user_id: int = None, session=session)
+    return await art.search_by_id(user_id=user_id, session=session)
 
 
 # найти статьи раздела

@@ -385,6 +385,7 @@ async def bitrix24_callback(
             value=session["session_id"],
             max_age=int(AuthService().session_ttl.total_seconds())
         )
+        response.set_cookie(key="Authorization", value=session["session_id"])
     
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     return JSONResponse(content={

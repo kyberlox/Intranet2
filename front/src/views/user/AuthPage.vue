@@ -4,19 +4,21 @@
     <div class="portal__auth__content">
         <div class="portal__auth__message"> </div>
         <div class="portal__auth__form__auth">
-            <Loader class="pos-rel" />
+            <button class="btn btn-primary portal__auth__form__auth__submit"
+                    @click="tryLogin">
+                <span v-if="!isLoading"> Войти</span>
+                <Loader v-else-if="isLoading"
+                        class="pos-rel" />
+            </button>
         </div>
     </div>
 </div>
 </template>
+
 <script lang="ts">
-import { useUserData } from '@/stores/userData';
-import { defineComponent, onMounted, ref, watch, computed } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/composables/useToastСompose';
-import { prefetchSection } from '@/composables/usePrefetchSection';
+import { defineComponent, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     name: 'AuthPage',
@@ -24,25 +26,16 @@ export default defineComponent({
         Loader
     },
     setup() {
-        const toastInstance = useToast();
-        const toast = useToastCompose(toastInstance);
+        const router = useRouter();
         const isLoading = ref(false);
-        const route = useRoute();
-        const authKey = computed(() => useUserData().getAuthKey);
-
-        watch((authKey), (newVal) => {
-            console.log(newVal);
-            if (newVal) {
-                if (useUserData().getMyId !== 0) {
-                    useUserData().setLogin(true);
-                    // prefetchSection('user');
-                    isLoading.value = false;
-                }
-            }
-        }, { deep: true, immediate: true })
+        const tryLogin = () => {
+            isLoading.value = true
+            router.push({ name: 'oauthPage' })
+        }
 
         return {
             isLoading,
+            tryLogin
         };
     },
 })

@@ -14,14 +14,12 @@ export const useUserData = defineStore('userData', {
     actions: {
         setMyId(id: number) {
             this.myId = id;
-            localStorage.setItem('id', String(id));
         },
         setLogin(login: boolean) {
             this.isLogin = login;
         },
         setAuthKey(key: string) {
             this.authKey = key;
-            localStorage.setItem('key', key);
         },
         initKeyFromStorage() {
             const storedAuthKey = document?.cookie?.split(';')?.find((e)=> e.includes('session_id'))?.replace(' session_id=', '');
@@ -42,8 +40,9 @@ export const useUserData = defineStore('userData', {
             this.isLogin = false;
             this.user = {} as IUser;
             this.myId = 0;
-            localStorage.removeItem('authKey');
-            localStorage.removeItem('id');
+            document.cookie.split(';').forEach(function(c) {
+            document.cookie = c.trim().split('=')[0] + '=;' + 'expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+        });
         }
     },
 

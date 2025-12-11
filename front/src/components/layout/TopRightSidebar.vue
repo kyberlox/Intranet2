@@ -16,7 +16,9 @@
                 {{ point.name }}
             </RouterLink>
             <div class="sidebar-lk__body__points__point"
-                 @click="handleLogout">Выйти</div>
+                 @click="handleLogout">
+                Выйти
+            </div>
         </div>
     </div>
 </div>

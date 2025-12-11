@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from "vue";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/LayoutHeader.vue";
 import Sidebar from "./components/layout/RightSidebar.vue";
@@ -58,7 +58,6 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
-        const authKey = computed(() => useUserData().getAuthKey);
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
@@ -78,11 +77,7 @@ export default defineComponent({
 
         onMounted(() => {
             userData.initKeyFromStorage();
-            if (!userData.getAuthKey) {
-                console.log('нет ключа на главной');
-                useRouter().push({ name: 'oauthPage' })
-            } else {
-                console.log('Есть ключ на главной');
+            if (userData.getAuthKey) {
                 prefetchSection('user');
             }
         })

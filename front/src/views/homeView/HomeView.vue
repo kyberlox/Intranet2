@@ -56,7 +56,6 @@ export default defineComponent({
                 .then((data: MainPageCards) => {
                     const result = data;
                     if (!result) return;
-
                     useViewsData.setData(result, 'homeData');
                 })
         })

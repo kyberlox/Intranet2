@@ -566,25 +566,6 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
-    // роут с б24 авторизации
-  //   {
-  //     path: '/auth/:code/:member_id',
-  //     name: 'oauth',
-  //     component: () => import('@/views/homeView/HomeView.vue'),
-  //     beforeEnter: (to, from, next) => {
-  //       const { code, member_id } = to.params;        
-  //       Api.get(`/auth_router/auth?code=${code}&domain=https://test-portal.emk.ru&member_id=${member_id}`)
-  //       .then((data)=>{
-  //         console.log('oauth');
-  //         localStorage.setItem('id', data.user.ID);
-  //         useUserData().initKeyFromStorage();
-  //         // useUserData().setMyId(Number(data.user.ID))
-  //       })
-  //       .finally(()=>{
-  //         next();
-  //     })
-  //   }
-  // },
     // cтраница авторизации через б24
     {
       path: '/oauthRedir',

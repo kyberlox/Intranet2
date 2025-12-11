@@ -1068,20 +1068,17 @@ class Editor:
 
 
 async def get_uuid_from_request(request, session):
-    from .Auth import AuthService
-    session_id = ""
-    token = request.cookies.get("session_id")
+    # from .Auth import AuthService
+    user_id = None
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.headers.get("session_id")
+        token = request.headers.get("user_id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
 
-    user = await AuthService().get_user_info(session_id)
-
-    if user is not None:
-        user_id = user["ID"]
+    if user_id is not None:
 
         # получить и вывести его id
         usr = User()

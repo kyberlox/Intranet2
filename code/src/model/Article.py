@@ -1642,7 +1642,7 @@ class Article:
         # YandexGPT5 + Yandex ART ❌
         # Юбилей САЗ ❌
 
-    async def search_by_id(self, session, session_id=""):
+    async def search_by_id(self, session, user_id: int = None):
         art = await ArticleModel(id=self.id).find_by_id(session)
         files = await File(art_id=int(self.id)).get_files_by_art_id(session)
         art['images'] = []
@@ -1693,7 +1693,7 @@ class Article:
         null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 56, 7, 71, 34, 175]  # список секций где нет лайков
 
         if art['section_id'] not in null_list:
-            user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
             if user_id is not None:
                 await self.add_art_view(session)
                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
@@ -1703,7 +1703,7 @@ class Article:
         elif art['section_id'] == 71:
             # вызов количества лайков
             del art['indirect_data']['likes_from_b24']
-            user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
             if user_id is not None:
                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                 art['reactions'] = has_user_liked
@@ -1823,12 +1823,12 @@ class Article:
 
         return True
 
-    async def search_by_section_id(self, session, session_id=""):
+    async def search_by_section_id(self, session, user_id: int = None):
         if self.section_id == "0":
             main_page = [112, 19, 32, 4, 7, 31, 16, 33, 53, 51]  # 111
             page_view = []
 
-            user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
 
             for page in main_page:  # проходимся по каждой секции
                 sec = await self.main_page(page, user_id, session)
@@ -1891,7 +1891,7 @@ class Article:
             return sorted_active_articles
 
         elif self.section_id == "8":  # Есть Идея
-            ideas = await Idea().get_ideas(session_id=session_id, session=session)
+            ideas = await Idea().get_ideas(user_id=user_id, session=session)
             if ideas is not None:
                 sorted_active_articles = sorted(ideas, key=lambda x: x['number'], reverse=False)
                 return sorted_active_articles
@@ -1944,7 +1944,7 @@ class Article:
                         res['preview_file_url'] = f"{DOMAIN}{url}"
                     else:
                         res['preview_file_url'] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                    user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+                    # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
                     if user_id is not None:
                         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                         res['reactions'] = has_user_liked
@@ -1969,7 +1969,7 @@ class Article:
                             res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                             # сюда лайки и просмотры
                             # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                            user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+                            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
                             if user_id is not None:
                                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                                 res['reactions'] = has_user_liked
@@ -1992,7 +1992,7 @@ class Article:
 
                         # сюда лайки и просмотры
                         if int(self.section_id) not in null_list:  # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                            user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+                            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
                             if user_id is not None:
                                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                                 res['reactions'] = has_user_liked
@@ -2511,14 +2511,14 @@ class Article:
     # async def get_all_likes(self):
     #     return await LikesModel(art_id=self.id).get_likes_count()
 
-    async def add_like(self, session_id, session):
-        user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+    async def add_like(self, user_id, session):
+        # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
         if user_id is not None:
             return await LikesModel(user_id=user_id, art_id=self.id).add_or_remove_like(session=session)
         return {"err": "Auth Err"}
 
-    async def has_user_liked(self, session_id, session):
-        user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+    async def has_user_liked(self, user_id, session):
+        # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
         if user_id is not None:
             return await LikesModel(user_id=user_id, art_id=self.id).has_liked(session=session)
         return {"err": "Auth Err"}
@@ -2612,12 +2612,12 @@ class Article:
     async def get_recent_popular_articles(self, days, limit, session):
         return LikesModel().get_recent_popular_articles(days=days, limit=limit, session=session)
 
-    async def get_user_by_session_id(self, session_id, session):
+    async def get_user_by_session_id(self, user_id, session):
         from src.services.Auth import AuthService
-        user = await AuthService().get_user_info(session_id)
+        #user = await AuthService().get_user_info(session_id)
 
-        if user is not None:
-            user_id = user["ID"]
+        if user_id is not None:
+            #user_id = user["ID"]
 
             # получить и вывести его id
             usr = User()
@@ -2627,8 +2627,8 @@ class Article:
                 return user_inf["id"]
         return None
 
-    async def search_articles_by_tags(self, tag_id, session, session_id=''):
-        user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+    async def search_articles_by_tags(self, tag_id, session, user_id: int = None):
+        #user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
         result = await Tag(id=tag_id).get_articles_by_tag_id(self.section_id, session=session)
         if result != []:
             sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
@@ -2730,67 +2730,67 @@ async def upload_articles(session: AsyncSession = Depends(get_async_db)):
 # найти статью по id
 @article_router.get("/find_by_ID/{ID}")
 async def get_article(ID: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    session_id = ""
-    token = request.cookies.get("session_id")
+    user_id = ""
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.cookies.get("session_id")
+        token = request.cookies.get("user_id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
     art = Article()
     art.id = ID
-    return await art.search_by_id(session_id=session_id, session=session)
+    return await art.search_by_id(user_id: int = None, session=session)
 
 
 # найти статьи раздела
 @article_router.get("/find_by/{section_id}")
 async def get_articles(section_id, request: Request, session: AsyncSession = Depends(get_async_db)):
-    session_id = ""
-    token = request.cookies.get("session_id")
+    user_id = ""
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.cookies.get("session_id")
+        token = request.cookies.get("user_id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
 
-    if section_id == "undefind":
+    if user_id == "undefind":
         return {"err": "Undefined section_id!"}
     else:
         art = Article()
         art.section_id = section_id
-        return await art.search_by_section_id(session_id=session_id, session=session)
+        return await art.search_by_section_id(user_id=user_id, session=session)
 
 
 @article_router.put("/add_or_remove_like/{article_id}")
 async def add_or_remove_like(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
-    session_id = ""
-    token = request.cookies.get("session_id")
+    user_id = ""
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.cookies.get("session_id")
+        token = request.cookies.get("user-id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
     art = Article()
     art.id = article_id
-    return await art.add_like(session_id=session_id, session=session)
+    return await art.add_like(user_id=user_id, session=session)
 
 
 @article_router.get("/has_user_liked/{article_id}")
 async def has_user_liked(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
-    session_id = ""
-    token = request.cookies.get("session_id")
+    user_id = ""
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.cookies.get("session_id")
+        token = request.cookies.get("user-id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
     art = Article()
     art.id = article_id
-    return await art.has_user_liked(session_id=session_id, session=session)
+    return await art.has_user_liked(user_id=user_id, session=session)
 
 
 # поиск по статьям еластик
@@ -2831,17 +2831,17 @@ async def get_recent_popular_articles(days: int, limit: int, session: AsyncSessi
 @article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}")
 async def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request,
                                  session: AsyncSession = Depends(get_async_db)):
-    session_id = ""
-    token = request.cookies.get("session_id")
+    user_id = ""
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.cookies.get("session_id")
+        token = request.cookies.get("user-id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
     art = Article()
     art.section_id = section_id
-    return await art.search_articles_by_tags(tag_id=tag_id, session_id=session_id, session=session)
+    return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session)
 
 
 @article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}")
@@ -2856,17 +2856,17 @@ async def remove_tag_from_art_id(art_id: int, tag_id: int, session: AsyncSession
 
 @article_router.post("/make_event_users_excel", summary="Скачать Excel со всеми участниками мероприятия")
 async def make_users_excel_list(request: Request, data: list = Body(), session: AsyncSession = Depends(get_async_db)):
-    session_id = ""
-    token = request.cookies.get("session_id")
+    user_id = None
+    token = request.cookies.get("user_id")
     if token is None:
-        token = request.cookies.get("session_id")
+        token = request.cookies.get("user-id")
         if token is not None:
-            session_id = token
+            user_id = token
     else:
-        session_id = token
+        user_id = token
 
     art_class = Article()
-    user_id = await art_class.get_user_by_session_id(session_id=session_id, session=session)
+    # user_id = await art_class.get_user_by_session_id(user_id=user_id, session=session)
     roots_token = await art_class.get_token_by_uuid(session=session, user_id=user_id)
 
     if ("EditorAdmin" in roots_token.keys() and roots_token["EditorAdmin"] is True) or (

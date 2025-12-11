@@ -129,12 +129,12 @@ class AuthService:
         params = {
             "auth": access_token
         }
-        
+        print(access_token, 'access_token')
         try:
             response = requests.get(user_info_url, params=params)
             response.raise_for_status()
             result = response.json()
-            print(result)
+            
             if "result" in result:
                 return result["result"]
             return None
@@ -402,8 +402,8 @@ async def bitrix24_callback(
     # Устанавливаем session_id в куки
     response.set_cookie(
         key="user_id",
-        value=session["user"]['ID']
-        # max_age=int(AuthService().session_ttl.total_seconds())
+        value=session["user"]['ID'],
+        max_age=int(AuthService().session_ttl.total_seconds())
     )
 
     return response

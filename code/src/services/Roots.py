@@ -58,20 +58,11 @@ class Roots:
 
 
 async def get_uuid_from_request(request, session):
-    from .Auth import AuthService
-    session_id = ""
-    token = request.cookies.get("session_id")
-    if token is None:
-        token = request.headers.get("session_id")
-        if token is not None:
-            session_id = token
-    else:
-        session_id = token
-
-    user = await AuthService().get_user_info(session_id)
-
-    if user is not None:
-        user_id = user["ID"]
+    user_id = None
+    user_id = request.cookies.get("user_id")
+    
+    if user_id is not None:
+        # user_id = user["ID"]
 
         # получить и вывести его id
         usr = User()

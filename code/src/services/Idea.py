@@ -85,9 +85,9 @@ class Idea:
             ideas.append(cool_idea)
         self.ideas = ideas
 
-    async def get_user(self, session_id, session):
+    async def get_user(self, user_id, session):
         from src.services.Auth import AuthService
-        self.user = dict(AuthService().get_user_by_seesion_id(session_id))
+        self.user = User(id=user_id).find_by_id()
 
         if self.user is not None:
             self.user_uuid = self.user["user_uuid"]
@@ -98,9 +98,8 @@ class Idea:
             return user_inf["ID"]
         return None
         
-    async def get_ideas(self, session_id, session):
+    async def get_ideas(self, user_id, session):
         await self.validate_ideas()
-        user_id = await self.get_user(session_id=session_id, session=session)
         if user_id is not None:
             #print(user_id)
             result = []

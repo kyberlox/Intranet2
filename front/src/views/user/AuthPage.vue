@@ -35,17 +35,11 @@ export default defineComponent({
             if (newVal) {
                 if (useUserData().getMyId !== 0) {
                     useUserData().setLogin(true);
-                    prefetchSection('user');
+                    // prefetchSection('user');
                     isLoading.value = false;
                 }
             }
         }, { deep: true, immediate: true })
-
-        onMounted(() => {
-            if (!authKey.value) {
-                useRouter().push({ name: 'oauthPage' })
-            }
-        })
 
         return {
             isLoading,

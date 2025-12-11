@@ -567,33 +567,30 @@ const router = createRouter({
       }
     },
     // роут с б24 авторизации
-    {
-      path: '/auth/:code/:member_id',
-      name: 'oauth',
-      component: () => import('@/views/homeView/HomeView.vue'),
-      beforeEnter: (to, from, next) => {
-        const { code, member_id } = to.params;        
-        Api.get(`/auth_router/auth?code=${code}&domain=https://test-portal.emk.ru&member_id=${member_id}`)
-        .then((data)=>{
-          console.log('oauth');
-          localStorage.setItem('id', data.user.ID);
-          useUserData().initKeyFromStorage();
-          // useUserData().setMyId(Number(data.user.ID))
-        })
-        .finally(()=>{
-          if(useUserData().getAuthKey){
-            // next({name: 'home'})
-          }
-      })
-    }
-  },
+  //   {
+  //     path: '/auth/:code/:member_id',
+  //     name: 'oauth',
+  //     component: () => import('@/views/homeView/HomeView.vue'),
+  //     beforeEnter: (to, from, next) => {
+  //       const { code, member_id } = to.params;        
+  //       Api.get(`/auth_router/auth?code=${code}&domain=https://test-portal.emk.ru&member_id=${member_id}`)
+  //       .then((data)=>{
+  //         console.log('oauth');
+  //         localStorage.setItem('id', data.user.ID);
+  //         useUserData().initKeyFromStorage();
+  //         // useUserData().setMyId(Number(data.user.ID))
+  //       })
+  //       .finally(()=>{
+  //         next();
+  //     })
+  //   }
+  // },
     // cтраница авторизации через б24
     {
       path: '/oauthRedir',
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
         window.location.href = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&amp;redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user';
-        next(false)
       },
       redirect: '',
     },

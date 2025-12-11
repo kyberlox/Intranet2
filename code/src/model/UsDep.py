@@ -15,7 +15,7 @@ from ..base.pSQL.objects.App import get_async_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-usdep_router = APIRouter(prefix="/users_depart", tags=["Пользователь-Департамент"])
+usdep_router = APIRouter(prefix="/users_depart")
 
 
 # env = Environment(loader=FileSystemLoader("./front_jinja")) #/intranet_test/Intranet2/code/main.py
@@ -55,19 +55,19 @@ class UsDep:
 
 
 # Таблицу пользователей и департаментов можно обновить
-@usdep_router.put("")
+@usdep_router.put("", tags=["Пользователь-Департамент", "Битрикс24"])
 async def get_user(session: AsyncSession = Depends(get_async_db)):
     return await UsDep().get_usr_dep(session)
 
 
 # Пользователя и его департамент можно выгрузить
-@usdep_router.get("/find_by/{ID}")
+@usdep_router.get("/find_by/{ID}", tags=["Пользователь-Департамент"])
 async def get_usdepart(ID, session: AsyncSession = Depends(get_async_db)):
     return await UsDep(ID=ID).search_usdep_by_id(session)
 
 
 # поиск по id подразделения
-@usdep_router.get("/get_structure_by_dep_id/{parent_id}")
+@usdep_router.get("/get_structure_by_dep_id/{parent_id}", tags=["Пользователь-Департамент"])
 def get_structure_by_dep_id(parent_id: int):
     return StructureSearchModel().get_structure_by_parent_id(parent_id)
 

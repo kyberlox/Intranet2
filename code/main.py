@@ -133,16 +133,16 @@ app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 
-b24_docs_routs = [
-    "/api/users_depart"
-]
+# b24_docs_routs = [
+#     "/api/users_depart"
+# ]
 
 
-for route in app.routes:
-    if isinstance(route, APIRoute):# and route.path in b24_docs_routs:
-        if route.path in b24_docs_routs:
-            route.tags.append("Битрикс24")
-            print(route.tags, route.path)
+# for route in app.routes:
+#     if isinstance(route, APIRoute):# and route.path in b24_docs_routs:
+#         if route.path in b24_docs_routs:
+#             route.tags.append("Битрикс24")
+#             print(route.tags, route.path)
                 
 
 

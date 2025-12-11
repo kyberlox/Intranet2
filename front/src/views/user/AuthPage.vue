@@ -31,6 +31,8 @@ export default defineComponent({
         const authKey = computed(() => useUserData().getAuthKey);
 
         watch((authKey), (newVal) => {
+            console.log(newVal);
+
             if (newVal) {
                 if (useUserData().getMyId !== 0) {
                     useUserData().setLogin(true);
@@ -41,8 +43,6 @@ export default defineComponent({
         }, { deep: true, immediate: true })
 
         onMounted(() => {
-            console.log(authKey.value);
-
             if (!authKey.value) {
                 useRouter().push({ name: 'oauthPage' })
             }

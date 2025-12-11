@@ -254,8 +254,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                 
                 # Сохраняем обновленную сессию
                 auth_service.redis.save_session(
-                    session_id=session_id,
-                    session_data=session_data,
+                    key=session_id,
+                    data=session_data,
                     ttl=int(auth_service.session_ttl.total_seconds())
                 )
             
@@ -300,8 +300,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                     session_data["session_expires_at"] = (now + auth_service.session_ttl).isoformat()
                     
                     auth_service.redis.save_session(
-                        session_id=session_id,
-                        session_data=session_data,
+                        key=session_id,
+                        data=session_data,
                         ttl=int(auth_service.session_ttl.total_seconds())
                     )
                     

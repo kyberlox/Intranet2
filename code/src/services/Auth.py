@@ -352,7 +352,7 @@ async def login_to_bitrix24():
 async def bitrix24_callback(
     code: str,
     state: Optional[str] = None,
-    error: Optional[str] = None,
+    # error: Optional[str] = None,
     response: Response = None
 ):
     
@@ -363,11 +363,11 @@ async def bitrix24_callback(
             detail=f"Authorization failed: {error}"
         )
     
-    if not code:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Authorization code is missing"
-        )
+    # if not code:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail="Authorization code is missing"
+    #     )
     
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
@@ -379,14 +379,14 @@ async def bitrix24_callback(
         )
     
     # Устанавливаем session_id в куки
-    if response:
-        response.set_cookie(
-            key="session_id",
-            value=session["session_id"],
-            max_age=int(AuthService().session_ttl.total_seconds())
-        )
-        print("записываю куки", session["session_id"])
-        response.set_cookie(key="Authorization", value=session["session_id"])
+    response.set_cookie(
+        key="session_id",
+        value=session["session_id"],
+        max_age=int(AuthService().session_ttl.total_seconds())
+    )
+    
+    print("записываю куки", session["session_id"])
+    response.set_cookie(key="Authorization", value=session["session_id"])
     
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     return JSONResponse(content={

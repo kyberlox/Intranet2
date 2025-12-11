@@ -1,6 +1,8 @@
 <template>
 <div class="admin-element-inner__field-content admin-element-inner__field-content--no-transition">
-    <p class="admin-element-inner__field-title fs-l">{{ item?.name }}</p>
+    <p class="admin-element-inner__field-title fs-l">
+        {{ item?.name }}
+    </p>
     <DatePicker class="admin-element-inner__date-picker"
                 :disable-year-select="false"
                 :calendarType="'full'"

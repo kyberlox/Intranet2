@@ -1,3 +1,5 @@
+import { useUserData } from '@/stores/userData'
+import Api from '@/utils/Api'
 import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -563,6 +565,32 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
+    },
+    // роут с б24 авторизации
+    {
+      path: '/api/auth_router/auth',
+      name: 'oauth',
+      component: () => import('@/views/user/AuthPage.vue'),
+      beforeEnter: (to, from, next) => {
+        const { code, domain, member_id, state } = to.query;        
+        console.log('OAuth callback received:', { code, domain, member_id, state });
+        Api.get(`/auth_router/auth?code=${code}&domain=${domain}&member_id=${member_id}&state=${state}`)
+        .then((data)=>{
+          useUserData().setAuthKey(data.session_id)
+          useUserData().setMyId(Number(data.user.ID))
+        })   
+        .finally(()=>next('/'))
+      }
+    },
+    // cтраница авторизации через б24
+    {
+      path: '/oauth',
+      name: 'oauth',
+      beforeEnter: (to, from, next) => {
+        window.location.href = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&amp;redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user';
+        next(false)
+      },
+      redirect: '',
     },
   ],
   scrollBehavior() {

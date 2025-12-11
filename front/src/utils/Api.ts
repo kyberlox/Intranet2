@@ -20,7 +20,7 @@ const vendorApi = axios.create({
 
 // добавляю токен
 api.interceptors.request.use((config) => {
-    config.headers.Authorization = authKey.value
+    config.headers.session_id = authKey.value
     return config
 })
 

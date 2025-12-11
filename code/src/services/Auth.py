@@ -134,7 +134,7 @@ class AuthService:
             response = requests.get(user_info_url, params=params)
             response.raise_for_status()
             result = response.json()
-            
+            print(result)
             if "result" in result:
                 return result["result"]
             return None

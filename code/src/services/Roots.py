@@ -64,12 +64,16 @@ async def get_uuid_from_request(request, session):
     print(user_id, 'ВОЗЬМИСЬ!', type(user_id))
     if user_id is not None:
         # user_id = user["ID"]
-
+        print('*')
         # получить и вывести его id
         usr = User()
+        print('*')
         usr.id = int(user_id)
+        print('*')
         user_inf = await usr.search_by_id(session=session)
+        print('*')
         if user_inf is not None and "ID" in user_inf.keys():
+            print('12343254')
             return user_inf["id"]
     return None
 

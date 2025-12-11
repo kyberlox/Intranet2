@@ -32,7 +32,6 @@ export default defineComponent({
 
         watch((authKey), (newVal) => {
             console.log(newVal);
-
             if (newVal) {
                 if (useUserData().getMyId !== 0) {
                     useUserData().setLogin(true);

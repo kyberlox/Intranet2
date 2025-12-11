@@ -568,37 +568,24 @@ const router = createRouter({
     },
     // роут с б24 авторизации
     {
-  path: '/auth/:pathMatch(.*)*',
-  name: 'oauth',
-  component: () => import('@/views/user/AuthPage.vue'),
-  beforeEnter: (to, from, next) => {
-    const pathParts = to.params.pathMatch;
-    
-    if (!pathParts || !Array.isArray(pathParts) || pathParts.length < 3) {
-      return next({ name: 'home' });
+      path: '/auth/:code/:memberId',
+      name: 'oauth',
+      component: () => import('@/views/homeView/HomeView.vue'),
+      beforeEnter: (to, from, next) => {
+        const { code, member_id } = to.params;        
+        Api.get(`/auth_router/auth?code=${code}&domain=https://test-portal.emk.ru&member_id=${member_id}`)
+        .then((data)=>{
+          console.log('oauth');
+          const authCookie = document?.cookie?.split(';')?.find(()=> 'session_id')?.replace('session_id=', '')
+          useUserData().setAuthKey(authCookie || data.session_id)
+          // useUserData().setMyId(Number(data.user.ID))
+        })   
+        .finally(()=>{
+          if(useUserData().getAuthKey){
+            next({name: 'home'})
+          }
+      })
     }
-    
-    const code = pathParts[0];
-    const domainParts = pathParts.slice(1, -1);
-    const domain = domainParts.join('/');
-    
-    const member_id = pathParts[pathParts.length - 1];
-    
-    console.log('params:', { code, domain, member_id });
-    
-    Api.get(`/auth_router/auth?code=${code}&domain=${encodeURIComponent(domain)}&member_id=${member_id}`)
-      .then((data) => {
-        console.log('oauth success');
-        useUserData().setAuthKey(data.session_id);
-        useUserData().setMyId(Number(data.user.ID));
-      })
-      .catch((error) => {
-        console.error('OAuth error:', error);
-      })
-      .finally(() => {
-        next({ name: 'home' });
-      });
-  }
   },
     // cтраница авторизации через б24
     {

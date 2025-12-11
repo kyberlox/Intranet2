@@ -158,7 +158,8 @@ class AuthService:
             "session_expires_at": session_expires_at.isoformat(),
             "user_info": user_info,
             "last_activity": datetime.now().isoformat(),
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
+            "member_id": tokens["member_id"]
         }
         
         # Сохраняем сессию в Redis
@@ -318,7 +319,7 @@ async def get_current_session(
     session_id = request.cookies.get("session_id")
     
     if not session_id:
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get("session_id")
         if auth_header and auth_header.startswith("Bearer "):
             session_id = auth_header[7:]
     
@@ -379,6 +380,11 @@ async def bitrix24_callback(
             detail="Failed to authenticate with Bitrix24"
         )
     
+    redirect_url = f"https://intranet.emk.ru/auth/{code}/{self.bitrix_domain}/{session['member_id']}"
+    
+    # Создаем RedirectResponse
+    response = RedirectResponse(url=redirect_url, status_code=302)
+
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     response = JSONResponse(content={
         "status": "success",
@@ -418,7 +424,7 @@ async def refresh_session(
     session_id = request.cookies.get("session_id")
     
     if not session_id:
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get("session_id")
         if auth_header and auth_header.startswith("Bearer "):
             session_id = auth_header[7:]
     

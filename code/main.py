@@ -314,6 +314,15 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                         samesite="lax",
                         max_age=int(auth_service.session_ttl.total_seconds())
                     )
+                    # response.set_cookie(
+                    #     key="has",
+                    #     value=session_id,
+                    #     httponly=True,
+                    #     secure=True,  # Использовать только с HTTPS
+                    #     samesite="lax",
+                    #     max_age=int(auth_service.session_ttl.total_seconds())
+                    # )
+    
     
     return response
 

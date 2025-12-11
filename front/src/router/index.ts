@@ -568,7 +568,7 @@ const router = createRouter({
     },
     // роут с б24 авторизации
     {
-      path: '/auth/:code/:memberId',
+      path: '/auth/:code/:member_id',
       name: 'oauth',
       component: () => import('@/views/homeView/HomeView.vue'),
       beforeEnter: (to, from, next) => {
@@ -576,10 +576,10 @@ const router = createRouter({
         Api.get(`/auth_router/auth?code=${code}&domain=https://test-portal.emk.ru&member_id=${member_id}`)
         .then((data)=>{
           console.log('oauth');
-          const authCookie = document?.cookie?.split(';')?.find(()=> 'session_id')?.replace('session_id=', '')
-          useUserData().setAuthKey(authCookie || data.session_id)
+          const authCookie = document?.cookie?.split(';')?.find((e)=> e.includes('session_id'))?.replace(' session_id=', '');
+          useUserData().setAuthKey(authCookie || data.session_id);
           // useUserData().setMyId(Number(data.user.ID))
-        })   
+        })
         .finally(()=>{
           if(useUserData().getAuthKey){
             // next({name: 'home'})

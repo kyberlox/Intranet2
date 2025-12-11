@@ -585,7 +585,7 @@ const router = createRouter({
     },
     // cтраница авторизации через б24
     {
-      path: '/oauth',
+      path: '/oauthRedir',
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
           console.log('oauthPage');

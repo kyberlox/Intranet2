@@ -41,7 +41,9 @@ export default defineComponent({
         }, { deep: true, immediate: true })
 
         onMounted(() => {
-            if (!Object.keys(route.params).length && !authKey.value) {
+            console.log(authKey.value);
+
+            if (!authKey.value) {
                 useRouter().push({ name: 'oauthPage' })
             }
         })

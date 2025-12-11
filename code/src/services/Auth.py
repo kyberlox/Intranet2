@@ -356,18 +356,18 @@ async def bitrix24_callback(
     response: Response = None
 ):
     
-    """Callback endpoint для Bitrix24 OAuth"""
-    if error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Authorization failed: {error}"
-        )
-    
-    # if not code:
+    # """Callback endpoint для Bitrix24 OAuth"""
+    # if error:
     #     raise HTTPException(
     #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail="Authorization code is missing"
+    #         detail=f"Authorization failed: {error}"
     #     )
+    
+    if not code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Authorization code is missing"
+        )
     
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)

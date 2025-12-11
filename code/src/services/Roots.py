@@ -67,8 +67,7 @@ async def get_uuid_from_request(request, session):
     else:
         user_id = token
 
-    if user_id is not None:
-    
+   
     if user_id is not None:
         # user_id = user["ID"]
 

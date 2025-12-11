@@ -59,8 +59,8 @@ class Roots:
 
 async def get_uuid_from_request(request, session):
     user_id = None
-    print(request, "request")
     token = request.cookies.get("user_id")
+    print(request.cookies)
     if token is None:
         token = request.headers.get("user_id")
         if token is not None:
@@ -144,6 +144,6 @@ async def get_editors_list(sec_id: int, request: Request, session: AsyncSession 
 @roots_router.get("/get_root_token_by_uuid")
 async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = await get_uuid_from_request(request, session=session)
-    print(user_id, 'ПРИШЕЛ ЛИ АЙДИШНИК?')
+    print(user_id)
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
     return user_roots

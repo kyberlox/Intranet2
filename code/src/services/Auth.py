@@ -372,12 +372,21 @@ async def bitrix24_callback(
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
+    
     if not session:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
     
+    # Для API возвращаем JSON, для веб-приложения можно сделать редирект
+    response = JSONResponse(content={
+        "status": "success",
+        "session_id": session["session_id"],
+        "user": session["user"],
+        "expires_at": session["session_expires_at"]
+    })
+
     # Устанавливаем session_id в куки
     response.set_cookie(
         key="session_id",
@@ -387,14 +396,8 @@ async def bitrix24_callback(
     
     print("записываю куки", session["session_id"])
     response.set_cookie(key="Authorization", value=session["session_id"])
-    
-    # Для API возвращаем JSON, для веб-приложения можно сделать редирект
-    return JSONResponse(content={
-        "status": "success",
-        "session_id": session["session_id"],
-        "user": session["user"],
-        "expires_at": session["session_expires_at"]
-    })
+
+    return response
 
 
 @auth_router.get("/check")

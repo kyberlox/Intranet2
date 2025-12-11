@@ -160,9 +160,9 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
     
 
-    for open_link in open_links:
-        if open_link in request.url.path:
-            return await call_next(request)
+    # for open_link in open_links:
+    #     if open_link in request.url.path:
+    #         return await call_next(request)
 
             # try:
             #     #return call_next(request)
@@ -176,44 +176,146 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
 
 
 
+    # Проверяем, является ли текущий путь публичным
+    for open_link in open_links:
+        if open_link in request.url.path:
+            return await call_next(request)
+    
     # Проверяем авторизацию для всех остальных /api эндпоинтов
     if request.url.path.startswith("/api"):
-        token = request.cookies.get("Authorization")
-        if token is None:
-            token = request.headers.get("Authorization")
-            if token is None:
-                return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = log.warning_message(message="Authorization cookies or headers missing")
-                )
-                # raise HTTPException(
-                #     status_code=status.HTTP_401_UNAUTHORIZED,
-                #     detail="Authorization cookies missing",
-                # )
-
-        try:
-            session = AuthService().validate_session(token)
-            if not session:
-                return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = log.warning_message(message="Invalid token")
-                )
-                # raise HTTPException(
-                #     status_code=status.HTTP_401_UNAUTHORIZED,
-                #     detail="Invalid token",
-                # )
-
-        except IndexError:
+        # Создаем экземпляр сервиса авторизации
+        auth_service = AuthService()
+        
+        # Получаем session_id из куков или заголовков
+        session_id = request.cookies.get("session_id")
+        
+        if not session_id:
+            # Проверяем заголовок Authorization с префиксом Bearer
+            auth_header = request.headers.get("session_id")
+            if auth_header and auth_header.startswith("Bearer "):
+                session_id = auth_header[7:]
+        
+        if not session_id:
+            log.warning_message(message="Authorization cookies or headers missing")
             return JSONResponse(
-                    status_code = status.HTTP_401_UNAUTHORIZED,
-                    content = log.warning_message(message="Invalid authorization cookies or headers format")
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "status": "error",
+                    "message": "Authorization required. Please login first.",
+                    "auth_url": await auth_service.get_auth_url()
+                }
+            )
+        
+        try:
+            # Проверяем и обновляем сессию при необходимости
+            session_data = auth_service.validate_and_refresh_session(session_id)
+            
+            if not session_data:
+                log.warning_message(message="Invalid or expired session")
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={
+                        "status": "error",
+                        "message": "Session expired or invalid. Please login again.",
+                        "auth_url": await auth_service.get_auth_url()
+                    }
                 )
-            # raise HTTPException(
-            #     status_code=status.HTTP_401_UNAUTHORIZED,
-            #     detail="Invalid authorization cookies format",
-            # )
-
-    return await call_next(request)
+            
+            # Проверяем, что access_token еще валиден
+            access_token_expires_at = datetime.fromisoformat(
+                session_data.get("access_token_expires_at")
+            )
+            now = datetime.now()
+            
+            if now > access_token_expires_at:
+                # Попытка обновить токен
+                refreshed = await auth_service.refresh_access_token(
+                    session_data.get("refresh_token")
+                )
+                
+                if not refreshed:
+                    log.warning_message(message="Failed to refresh access token")
+                    return JSONResponse(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        content={
+                            "status": "error",
+                            "message": "Authentication failed. Please login again.",
+                            "auth_url": await auth_service.get_auth_url()
+                        }
+                    )
+                
+                # Обновляем данные сессии
+                session_data["access_token"] = refreshed["access_token"]
+                session_data["access_token_expires_at"] = refreshed["access_token_expires_at"]
+                
+                if "refresh_token" in refreshed:
+                    session_data["refresh_token"] = refreshed["refresh_token"]
+                    session_data["refresh_token_expires_at"] = refreshed["refresh_token_expires_at"]
+                
+                # Сохраняем обновленную сессию
+                auth_service.redis.save_session(
+                    key=session_id,
+                    data=session_data,
+                    ttl=int(auth_service.session_ttl.total_seconds())
+                )
+            
+            # Добавляем информацию о пользователе в request.state для использования в эндпоинтах
+            request.state.user_id = session_data.get("user_id")
+            request.state.user_info = session_data.get("user_info")
+            request.state.session_id = session_id
+            request.state.access_token = session_data.get("access_token")
+            
+            # Логируем успешную аутентификацию (опционально)
+            log.info_message(f"User {session_data.get('user_id')} accessed {request.url.path}")
+            
+        except Exception as e:
+            log.error_message(f"Authentication error: {str(e)}")
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "status": "error",
+                    "message": "Authentication error occurred.",
+                    "auth_url": await auth_service.get_auth_url()
+                }
+            )
+    
+    # Обрабатываем запрос
+    response = await call_next(request)
+    
+    # После обработки запроса можем обновить куки сессии, если нужно
+    if request.url.path.startswith("/api"):
+        # Проверяем, есть ли session_id в state (если пользователь авторизован)
+        if hasattr(request.state, 'session_id'):
+            # Обновляем время последней активности в Redis
+            session_id = request.state.session_id
+            session_data = auth_service.redis.get_session(session_id)
+            
+            if session_data:
+                now = datetime.now()
+                session_data["last_activity"] = now.isoformat()
+                
+                # Применяем скользящее окно: продлеваем сессию если с последней активности прошло больше N минут
+                last_activity = datetime.fromisoformat(session_data["last_activity"])
+                if now > last_activity + auth_service.session_sliding_window:
+                    session_data["session_expires_at"] = (now + auth_service.session_ttl).isoformat()
+                    
+                    auth_service.redis.save_session(
+                        key=session_id,
+                        data=session_data,
+                        ttl=int(auth_service.session_ttl.total_seconds())
+                    )
+                    
+                    # Обновляем куки у клиента
+                    response.set_cookie(
+                        key="session_id",
+                        value=session_id,
+                        httponly=True,
+                        secure=True,  # Использовать только с HTTPS
+                        samesite="lax",
+                        max_age=int(auth_service.session_ttl.total_seconds())
+                    )
+    
+    return response
 
 
 

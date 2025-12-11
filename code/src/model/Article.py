@@ -2614,7 +2614,7 @@ class Article:
 
     async def get_user_by_session_id(self, session_id, session):
         from src.services.Auth import AuthService
-        user = dict(AuthService().get_user_info(session_id))
+        user = await dict(AuthService().get_user_info(session_id))
 
         if user is not None:
             user_id = user["ID"]

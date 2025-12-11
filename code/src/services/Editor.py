@@ -1080,7 +1080,7 @@ async def get_uuid_from_request(request, session):
 
     user = dict(AuthService().get_user_info(session_id))
 
-     if user is not None:
+    if user is not None:
         user_id = user["ID"]
 
         # получить и вывести его id

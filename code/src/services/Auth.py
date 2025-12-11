@@ -147,7 +147,6 @@ class AuthService:
         """Создание новой сессии"""
         session_id = str(uuid.uuid4())
         session_expires_at = datetime.now() + self.session_ttl
-        
         session_data = {
             "session_id": session_id,
             "user_id": tokens["user_id"],
@@ -158,7 +157,8 @@ class AuthService:
             "session_expires_at": session_expires_at.isoformat(),
             "user_info": user_info,
             "last_activity": datetime.now().isoformat(),
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
+            "member_id": tokens["member_id"]
         }
         
         # Сохраняем сессию в Redis
@@ -175,7 +175,8 @@ class AuthService:
         return {
             "session_id": session_id,
             "session_expires_at": session_expires_at.isoformat(),
-            "user": user_info
+            "user": user_info,
+            "member_id": tokens["member_id"]
         }
 
     def get_user_by_seesion_id(self, session_id: str):
@@ -214,6 +215,7 @@ class AuthService:
                 # Обновляем токены в сессии
                 session_data["access_token"] = refreshed_tokens["access_token"]
                 session_data["access_token_expires_at"] = refreshed_tokens["access_token_expires_at"]
+                session_data["member_id"] = refreshed_tokens["member_id"]
                 
                 if "refresh_token" in refreshed_tokens:
                     session_data["refresh_token"] = refreshed_tokens["refresh_token"]
@@ -304,7 +306,6 @@ class AuthService:
         
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
-        
         return session
 
 
@@ -318,7 +319,7 @@ async def get_current_session(
     session_id = request.cookies.get("session_id")
     
     if not session_id:
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get("session_id")
         if auth_header and auth_header.startswith("Bearer "):
             session_id = auth_header[7:]
     
@@ -379,13 +380,18 @@ async def bitrix24_callback(
             detail="Failed to authenticate with Bitrix24"
         )
     
+    redirect_url = f"https://intranet.emk.ru/auth/{code}/{auth_service.bitrix_domain}/{session['member_id']}"
+    
+    # Создаем RedirectResponse
+    response = RedirectResponse(url=redirect_url, status_code=302)
+
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
-    response = JSONResponse(content={
-        "status": "success",
-        "session_id": session["session_id"],
-        "user": session["user"],
-        "expires_at": session["session_expires_at"]
-    })
+    # response = JSONResponse(content={
+    #     "status": "success",
+    #     "session_id": session["session_id"],
+    #     "user": session["user"],
+    #     "expires_at": session["session_expires_at"]
+    # })
 
     # Устанавливаем session_id в куки
     response.set_cookie(
@@ -418,7 +424,7 @@ async def refresh_session(
     session_id = request.cookies.get("session_id")
     
     if not session_id:
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get("session_id")
         if auth_header and auth_header.startswith("Bearer "):
             session_id = auth_header[7:]
     

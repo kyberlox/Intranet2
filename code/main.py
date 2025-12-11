@@ -247,6 +247,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                 # Обновляем данные сессии
                 session_data["access_token"] = refreshed["access_token"]
                 session_data["access_token_expires_at"] = refreshed["access_token_expires_at"]
+                session_data["member_id"] = refreshed["member_id"]
                 
                 if "refresh_token" in refreshed:
                     session_data["refresh_token"] = refreshed["refresh_token"]
@@ -314,6 +315,15 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                         samesite="lax",
                         max_age=int(auth_service.session_ttl.total_seconds())
                     )
+                    # response.set_cookie(
+                    #     key="has",
+                    #     value=session_id,
+                    #     httponly=True,
+                    #     secure=True,  # Использовать только с HTTPS
+                    #     samesite="lax",
+                    #     max_age=int(auth_service.session_ttl.total_seconds())
+                    # )
+    
     
     return response
 

@@ -159,23 +159,25 @@ class Visions:
 
 async def get_uuid_from_request(request, session):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.headers.get("session_id")
         if token is not None:
             session_id = token
     else:
         session_id = token
 
-    user = dict(AuthService().get_user_by_seesion_id(session_id))
+    user = dict(AuthService().get_user_info(session_id))
 
     if user is not None:
-        user_uuid = user["user_uuid"]
-        username = user["username"]
+        user_id = user["ID"]
 
         # получить и вывести его id
-        user_inf = await User(uuid=user_uuid).user_inf_by_uuid(session)
-        return user_inf["ID"]
+        usr = User()
+        usr.id = user_id
+        user_inf = await usr.search_by_id(session=session)
+        if user_inf is not None and "ID" in user_inf.keys():
+            return user_inf["id"]
     return None
 
 

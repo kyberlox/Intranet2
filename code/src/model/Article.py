@@ -2614,18 +2614,17 @@ class Article:
 
     async def get_user_by_session_id(self, session_id, session):
         from src.services.Auth import AuthService
-        user = dict(AuthService().get_user_by_seesion_id(session_id))
+        user = dict(AuthService().get_user_info(session_id))
 
         if user is not None:
-            user_uuid = user["user_uuid"]
-            username = user["username"]
+            user_id = user["ID"]
 
             # получить и вывести его id
             usr = User()
-            usr.uuid = user_uuid
-            user_inf = await usr.user_inf_by_uuid(session=session)
+            usr.id = user_id
+            user_inf = await usr.search_by_id(session=session)
             if user_inf is not None and "ID" in user_inf.keys():
-                return user_inf["ID"]
+                return user_inf["id"]
         return None
 
     async def search_articles_by_tags(self, tag_id, session, session_id=''):
@@ -2732,9 +2731,9 @@ async def upload_articles(session: AsyncSession = Depends(get_async_db)):
 @article_router.get("/find_by_ID/{ID}")
 async def get_article(ID: int, request: Request, session: AsyncSession = Depends(get_async_db)):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.cookies.get("session_id")
         if token is not None:
             session_id = token
     else:
@@ -2748,9 +2747,9 @@ async def get_article(ID: int, request: Request, session: AsyncSession = Depends
 @article_router.get("/find_by/{section_id}")
 async def get_articles(section_id, request: Request, session: AsyncSession = Depends(get_async_db)):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.cookies.get("session_id")
         if token is not None:
             session_id = token
     else:
@@ -2767,9 +2766,9 @@ async def get_articles(section_id, request: Request, session: AsyncSession = Dep
 @article_router.put("/add_or_remove_like/{article_id}")
 async def add_or_remove_like(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.cookies.get("session_id")
         if token is not None:
             session_id = token
     else:
@@ -2782,9 +2781,9 @@ async def add_or_remove_like(article_id, request: Request, session: AsyncSession
 @article_router.get("/has_user_liked/{article_id}")
 async def has_user_liked(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.cookies.get("session_id")
         if token is not None:
             session_id = token
     else:
@@ -2833,9 +2832,9 @@ async def get_recent_popular_articles(days: int, limit: int, session: AsyncSessi
 async def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request,
                                  session: AsyncSession = Depends(get_async_db)):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.cookies.get("session_id")
         if token is not None:
             session_id = token
     else:
@@ -2858,9 +2857,9 @@ async def remove_tag_from_art_id(art_id: int, tag_id: int, session: AsyncSession
 @article_router.post("/make_event_users_excel", summary="Скачать Excel со всеми участниками мероприятия")
 async def make_users_excel_list(request: Request, data: list = Body(), session: AsyncSession = Depends(get_async_db)):
     session_id = ""
-    token = request.cookies.get("Authorization")
+    token = request.cookies.get("session_id")
     if token is None:
-        token = request.headers.get("Authorization")
+        token = request.cookies.get("session_id")
         if token is not None:
             session_id = token
     else:

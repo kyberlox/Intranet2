@@ -139,7 +139,7 @@ b24_docs_routs = [
 
 
 for route in app.routes:
-    print(route, route.path)
+    print(route.path)
     if isinstance(route, APIRoute) and route.path in b24_docs_routs:
         print("SWDFGHJKL:", route)
         if hasattr(route, 'tags'):

@@ -140,10 +140,11 @@ b24_docs_routs = [
 
 for route in app.routes:
     if isinstance(route, APIRoute):# and route.path in b24_docs_routs:
+        print(route.tags, route.path)
         if route.path in b24_docs_routs:
             if "Битрикс24" not in route.tags:
                 route.tags.append("Битрикс24")
-                print(route.tags, route.path)
+                
 
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)

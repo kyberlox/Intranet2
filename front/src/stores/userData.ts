@@ -24,7 +24,7 @@ export const useUserData = defineStore('userData', {
             localStorage.setItem('key', key);
         },
         initKeyFromStorage() {
-            const storedAuthKey = localStorage.getItem('authKey');
+            const storedAuthKey = document?.cookie?.split(';')?.find((e)=> e.includes('session_id'))?.replace(' session_id=', '');
             const storedId = localStorage.getItem('id');
             if (!storedAuthKey) return
             this.authKey = String(storedAuthKey);

@@ -29,11 +29,6 @@ export default defineComponent({
         const isLoading = ref(false);
         const route = useRoute();
         const authKey = computed(() => useUserData().getAuthKey);
-        const authCookie = computed(() => document?.cookie?.split(';')?.find(() => 'session_id')?.replace('session_id=', ''))
-
-        watch((authCookie), () => {
-            console.log(authCookie.value)
-        }, { deep: true, immediate: true })
 
         watch((authKey), (newVal) => {
             console.log(newVal);
@@ -48,7 +43,7 @@ export default defineComponent({
 
         onMounted(() => {
             if (!authKey.value) {
-                // useRouter().push({ name: 'oauthPage' })
+                useRouter().push({ name: 'oauthPage' })
             }
         })
 

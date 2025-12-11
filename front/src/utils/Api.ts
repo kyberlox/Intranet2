@@ -9,7 +9,6 @@ import type { IPostInner } from '@/components/tools/common/PostInner.vue'
 const VITE_API_URL = import.meta.env.VITE_API_URL
 // const authKey = computed(() => useUserData().getAuthKey)
 
-const authCookie = computed(()=>document?.cookie?.split(';')?.find(()=> 'session_id')?.replace('session_id=', ''))
 
 const api = axios.create({
     baseURL: VITE_API_URL,
@@ -21,6 +20,7 @@ const vendorApi = axios.create({
 })
 
 // добавляю токен
+const authCookie = computed(()=>document?.cookie?.split(';')?.find((e)=> e.includes('session_id'))?.replace(' session_id=', ''))
 api.interceptors.request.use((config) => {
     config.headers.session_id = authCookie.value || ''
     return config

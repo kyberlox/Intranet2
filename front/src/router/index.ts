@@ -576,8 +576,8 @@ const router = createRouter({
         Api.get(`/auth_router/auth?code=${code}&domain=https://test-portal.emk.ru&member_id=${member_id}`)
         .then((data)=>{
           console.log('oauth');
-          const authCookie = document?.cookie?.split(';')?.find((e)=> e.includes('session_id'))?.replace(' session_id=', '');
-          useUserData().setAuthKey(authCookie || data.session_id);
+          localStorage.setItem('id', data.user.ID);
+          useUserData().initKeyFromStorage();
           // useUserData().setMyId(Number(data.user.ID))
         })
         .finally(()=>{
@@ -592,9 +592,8 @@ const router = createRouter({
       path: '/oauthRedir',
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
-          console.log('oauthPage');
         window.location.href = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&amp;redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user';
-        // next(false)
+        next(false)
       },
       redirect: '',
     },

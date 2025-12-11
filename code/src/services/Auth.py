@@ -214,6 +214,7 @@ class AuthService:
                 # Обновляем токены в сессии
                 session_data["access_token"] = refreshed_tokens["access_token"]
                 session_data["access_token_expires_at"] = refreshed_tokens["access_token_expires_at"]
+                session_data["member_id"] = refreshed_tokens["member_id"]
                 
                 if "refresh_token" in refreshed_tokens:
                     session_data["refresh_token"] = refreshed_tokens["refresh_token"]

@@ -28,9 +28,9 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
         const isLoading = ref(false);
         const route = useRoute();
-        const userLogin = computed(() => useUserData().getAuthKey);
+        const authKey = computed(() => useUserData().getAuthKey);
 
-        watch((userLogin), (newVal) => {
+        watch((authKey), (newVal) => {
             if (newVal) {
                 if (useUserData().getMyId !== 0) {
                     useUserData().setLogin(true);
@@ -41,8 +41,8 @@ export default defineComponent({
         }, { deep: true, immediate: true })
 
         onMounted(() => {
-            if (!Object.keys(route.params).length) {
-                useRouter().push('oauth')
+            if (!Object.keys(route.params).length && !authKey.value) {
+                useRouter().push({ name: 'oauthPage' })
             }
         })
 

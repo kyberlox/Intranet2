@@ -142,6 +142,7 @@ for route in app.routes:
         if hasattr(route, 'tags'):
             if "Битрикс24" not in route.tags:
                 route.tags.append("Битрикс24")
+                print(route.tags, route.path)
 
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)

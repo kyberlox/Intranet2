@@ -55,7 +55,7 @@ class UsDep:
 
 
 # Таблицу пользователей и департаментов можно обновить
-@usdep_router.put("")
+@usdep_router.put("", tags = ["Битрикс24"])
 async def get_user(session: AsyncSession = Depends(get_async_db)):
     return await UsDep().get_usr_dep(session)
 

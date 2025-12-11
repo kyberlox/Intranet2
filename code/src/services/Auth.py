@@ -305,7 +305,7 @@ class AuthService:
         
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
-        
+        print(session)
         return session
 
 

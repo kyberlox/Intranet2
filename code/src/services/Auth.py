@@ -178,6 +178,12 @@ class AuthService:
             "user": user_info
         }
 
+    def get_user_by_seesion_id(self, session_id: str):
+        session = AuthService().validate_and_refresh_session(session_id)
+        if not session:
+            return None
+        return session
+
     def validate_and_refresh_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Проверка и обновление сессии при необходимости"""
         session_data = self.redis.get_session(session_id)
@@ -377,9 +383,6 @@ async def bitrix24_callback(
         response.set_cookie(
             key="session_id",
             value=session["session_id"],
-            httponly=True,
-            secure=True,  # Использовать только с HTTPS
-            samesite="lax",
             max_age=int(AuthService().session_ttl.total_seconds())
         )
     

@@ -191,7 +191,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         
         if not session_id:
             # Проверяем заголовок Authorization с префиксом Bearer
-            auth_header = request.headers.get("Authorization")
+            auth_header = request.headers.get("session_id")
             if auth_header and auth_header.startswith("Bearer "):
                 session_id = auth_header[7:]
         

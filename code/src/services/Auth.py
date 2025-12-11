@@ -301,7 +301,7 @@ class AuthService:
         
         if not user_info:
             return None
-        print(tokens)
+        
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
         
@@ -378,7 +378,7 @@ async def bitrix24_callback(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
-
+    print(session)
     redirect_url = f"https://intranet.emk.ru/auth/{code}/{auth_service.bitrix_domain}/{session['member_id']}"
     
     # Создаем RedirectResponse

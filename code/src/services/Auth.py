@@ -393,9 +393,6 @@ async def bitrix24_callback(
         value=session["session_id"],
         max_age=int(AuthService().session_ttl.total_seconds())
     )
-    
-    print("записываю куки", session["session_id"])
-    response.set_cookie(key="Authorization", value=session["session_id"])
 
     return response
 

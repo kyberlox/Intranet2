@@ -137,8 +137,9 @@ b24_docs_routs = [
     "/api/users_depart"
 ]
 
-print("DSRFGHJKL:", app.routes)
+
 for route in app.routes:
+    print(route.path, route.APIRoute)
     if isinstance(route, APIRoute) and route.path in b24_docs_routs:
         if hasattr(route, 'tags'):
             if "Битрикс24" not in route.tags:

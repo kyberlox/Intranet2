@@ -61,8 +61,6 @@ async def get_uuid_from_request(request, session):
     # user_id = None
     user_id = request.cookies.get("user_id")
     if user_id is not None:
-        # user_id = user["ID"]
-        # получить и вывести его id
         usr = User()
         usr.id = int(user_id)
         user_inf = await usr.search_by_id(session=session)
@@ -134,6 +132,5 @@ async def get_editors_list(sec_id: int, request: Request, session: AsyncSession 
 @roots_router.get("/get_root_token_by_uuid")
 async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = await get_uuid_from_request(request, session=session)
-    print(user_id)
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
     return user_roots

@@ -582,7 +582,7 @@ const router = createRouter({
         })   
         .finally(()=>{
           if(useUserData().getAuthKey){
-            next({name: 'home'})
+            // next({name: 'home'})
           }
       })
     }
@@ -594,7 +594,7 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
           console.log('oauthPage');
         window.location.href = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&amp;redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user';
-        next(false)
+        // next(false)
       },
       redirect: '',
     },

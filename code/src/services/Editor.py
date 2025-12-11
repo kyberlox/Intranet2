@@ -1078,7 +1078,7 @@ async def get_uuid_from_request(request, session):
     else:
         session_id = token
 
-    user = await dict(AuthService().get_user_info(session_id))
+    user = await AuthService().get_user_info(session_id)
 
     if user is not None:
         user_id = user["ID"]

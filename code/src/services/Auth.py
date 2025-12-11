@@ -379,8 +379,8 @@ async def bitrix24_callback(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
-    
-    redirect_url = f"https://intranet.emk.ru/auth/{code}/{self.bitrix_domain}/{session['member_id']}"
+        
+    redirect_url = f"https://intranet.emk.ru/auth/{code}/{auth_service.bitrix_domain}/{session['member_id']}"
     
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)

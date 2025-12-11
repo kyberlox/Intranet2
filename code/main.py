@@ -133,7 +133,7 @@ app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 
 b24_docs_routs = [
-    "/api/users_depart""
+    "/api/users_depart"
 ]
 
 for route in app.routes:

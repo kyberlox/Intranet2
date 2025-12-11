@@ -163,7 +163,7 @@ class AuthService:
         
         # Сохраняем сессию в Redis
         self.redis.save_session(
-            session_id=session_id,
+            key=session_id,
             data=session_data,
             ttl=int(self.session_ttl.total_seconds())
         )
@@ -215,8 +215,8 @@ class AuthService:
                 
                 # Обновляем сессию в Redis
                 self.redis.save_session(
-                    session_id=session_id,
-                    session_data=session_data,
+                    key=session_id,
+                    data=session_data,
                     ttl=int(self.session_ttl.total_seconds())
                 )
             else:
@@ -233,8 +233,8 @@ class AuthService:
             session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
             
             self.redis.save_session(
-                session_id=session_id,
-                session_data=session_data,
+                key=session_id,
+                data=session_data,
                 ttl=int(self.session_ttl.total_seconds())
             )
         

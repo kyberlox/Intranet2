@@ -399,6 +399,12 @@ async def bitrix24_callback(
         value=session["session_id"],
         max_age=int(AuthService().session_ttl.total_seconds())
     )
+    # Устанавливаем session_id в куки
+    response.set_cookie(
+        key="user_id",
+        value=session["user"]['id']
+        # max_age=int(AuthService().session_ttl.total_seconds())
+    )
 
     return response
 

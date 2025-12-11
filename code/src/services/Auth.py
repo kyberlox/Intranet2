@@ -386,12 +386,12 @@ async def bitrix24_callback(
     response = RedirectResponse(url=redirect_url, status_code=302)
 
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
-    response = JSONResponse(content={
-        "status": "success",
-        "session_id": session["session_id"],
-        "user": session["user"],
-        "expires_at": session["session_expires_at"]
-    })
+    # response = JSONResponse(content={
+    #     "status": "success",
+    #     "session_id": session["session_id"],
+    #     "user": session["user"],
+    #     "expires_at": session["session_expires_at"]
+    # })
 
     # Устанавливаем session_id в куки
     response.set_cookie(

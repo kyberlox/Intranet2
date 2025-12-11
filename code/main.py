@@ -141,8 +141,9 @@ b24_docs_routs = [
 for route in app.routes:
     if isinstance(route, APIRoute):# and route.path in b24_docs_routs:
         if route.path in b24_docs_routs:
-            print(route.tags, route.path)
+            
             route.tags.append("Битрикс24")
+            print(route.tags, route.path)
                 
 
 

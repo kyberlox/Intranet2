@@ -1467,15 +1467,15 @@ CUSTOM_CSS = """
         });
         
         // 2. Обрабатываем заголовки
-        html = html.replace(/^###\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
-        html = html.replace(/^##\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
-        html = html.replace(/^#\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
         
         // 3. Обрабатываем жирный текст (**текст**)
-        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
         
         // 4. Обрабатываем курсив (*текст*)
-        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
         
         // 5. Обрабатываем списки (начинающиеся с -)
         // Сначала находим все строки со списками

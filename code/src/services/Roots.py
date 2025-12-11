@@ -61,7 +61,7 @@ async def get_uuid_from_request(request, session):
     # user_id = None
     user_id = request.cookies.get("user_id")
 
-   
+    print(user_id, 'ВОЗЬМИСЬ!', type(user_id))
     if user_id is not None:
         # user_id = user["ID"]
 

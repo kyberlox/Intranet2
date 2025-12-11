@@ -136,5 +136,7 @@ async def get_editors_list(sec_id: int, request: Request, session: AsyncSession 
 @roots_router.get("/get_root_token_by_uuid")
 async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = await get_uuid_from_request(request, session=session)
+    print(user_id, 'айдишник пришел?')
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
+    print(user_roots, 'права пришел?')
     return user_roots

@@ -568,11 +568,11 @@ const router = createRouter({
     },
     // роут с б24 авторизации
     {
-      path: '/api/auth_router/auth',
+      path: '/auth/:code/:domain/:memberId/:state',
       name: 'oauth',
       component: () => import('@/views/user/AuthPage.vue'),
       beforeEnter: (to, from, next) => {
-        const { code, domain, member_id, state } = to.query;        
+        const { code, domain, member_id, state } = to.params;        
         Api.get(`/auth_router/auth?code=${code}&domain=${domain}&member_id=${member_id}&state=${state}`)
         .then((data)=>{
           console.log('oauth');

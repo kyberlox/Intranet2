@@ -1535,7 +1535,7 @@ CUSTOM_CSS = """
         
         // Подсвечиваем пути после HTTP методов
         highlighted = highlighted.replace(
-            /(<span class="http-method-highlight">[^<]+<\/span>)\s+([^\s<]+)/g,
+            /(<span class="http-method-highlight">[^<]+<\\/span>)\\s+([^\\s<]+)/g,
             '$1 <span class="http-path">$2</span>'
         );
         

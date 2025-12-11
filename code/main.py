@@ -137,6 +137,7 @@ b24_docs_routs = [
     "/api/users_depart"
 ]
 
+print("DSRFGHJKL:", app.routes)
 for route in app.routes:
     if isinstance(route, APIRoute) and route.path in b24_docs_routs:
         if hasattr(route, 'tags'):

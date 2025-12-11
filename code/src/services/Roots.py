@@ -59,6 +59,7 @@ class Roots:
 
 async def get_uuid_from_request(request, session):
     user_id = None
+    print(request, "request")
     token = request.cookies.get("user_id")
     if token is None:
         token = request.headers.get("user_id")

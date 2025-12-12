@@ -2883,7 +2883,7 @@ async def elastic_search(keyword: str):
 
 # выгрузка данных по лайкам в Б24
 @article_router.put("/put_b24_likes", tags=["Статьи", "Битрикс24"], description="""
-## Метод `get_likes_views(art_id)`
+## Метод `getLikes.php`
 
 Получает информацию о лайках и просмотрах для конкретной статьи через специальный PHP endpoint портала Битрикс24.
 
@@ -2921,7 +2921,7 @@ async def put_b24_likes(session: AsyncSession = Depends(get_async_db)):
 
 
 @article_router.put("/put_b24_views", tags=["Статьи", "Битрикс24"], description="""
-## Метод `get_likes_views(art_id)`
+## Метод `getLikes.php`
 
 Получает информацию о просмотрах (и лайках) для конкретной статьи через специальный PHP endpoint портала Битрикс24.
 

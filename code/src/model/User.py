@@ -14,7 +14,7 @@ import asyncio
 
 # templates = Jinja2Templates(directory="./front_jinja")
 
-users_router = APIRouter(prefix="/users", tags=["Пользователь"])
+users_router = APIRouter(prefix="/users")
 
 
 class User:
@@ -326,12 +326,48 @@ class User:
 
 
 # Пользоваетелей можно обновить
-@users_router.put("/update")
+@users_router.put("/update", tags=["Пользователь", "Битрикс24"], description="""
+## Метод `user.get`
+
+Возвращает список всех пользователей из системы Битрикс24 через API метод `user.get`.
+
+### Входные параметры
+Метод не принимает параметров.
+
+### Возвращаемые данные
+Возвращает список словарей с полными данными пользователей. Каждый пользователь содержит следующие поля (среди прочих):
+- `ID` (int) — уникальный идентификатор пользователя
+- `NAME` (string) — имя пользователя
+- `LAST_NAME` (string) — фамилия пользователя
+- `EMAIL` (string) — email адрес
+- `PERSONAL_PHOTO` (string) — URL фотографии профиля
+- `UF_DEPARTMENT` (list) — список ID подразделений
+- `ACTIVE` (boolean) — статус активности
+- Другие стандартные поля Битрикс24
+
+---
+
+## Функция `fetch_users_data()`
+
+Асинхронная функция для полного обновления данных пользователей в системе. Выполняет синхронизацию данных из Битрикс24, включая фотографии профилей и индексацию в Elasticsearch.
+
+### Входные параметры
+| Параметр | Тип | Описание | Обязательный |
+|----------|-----|----------|--------------|
+| `session` | `AsyncSession` | Сессия базы данных для выполнения транзакций | Да |
+
+### Возвращаемые данные
+```json
+{
+    "status": true
+}
+"""
+)
 async def update_user(session: AsyncSession = Depends(get_async_db)):
     usr = User()
     return await usr.fetch_users_data(session)
 
-@users_router.put("/update_user_info/{user_id}")
+@users_router.put("/update_user_info/{user_id}", tags=["Пользователь"])
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id=user_id).update_inf_from_b24(session)
     # return await User(id=user_id).check_fields_to_update(session)
@@ -339,12 +375,12 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
 
 
 # Пользователя можно выгрузить
-@users_router.get("/find_by/{id}")
+@users_router.get("/find_by/{id}", tags=["Пользователь"])
 async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id).search_by_id(session)
 
 # Пользователя можно выгрузить
-@users_router.get("/find_by_id_all/{id}")
+@users_router.get("/find_by_id_all/{id}", tags=["Пользователь"])
 async def find_by_id_all(id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id).search_by_id_all(session)
 # @users_router.get("/test_update_photo")
@@ -352,38 +388,38 @@ async def find_by_id_all(id: int, session: AsyncSession = Depends(get_async_db))
 #     return User().set_users_photo()
 
 # поиск по статьям еластик
-@users_router.get("/search/full_search_users/{keyword}")
+@users_router.get("/search/full_search_users/{keyword}", tags=["Пользователь"])
 def elastic_search(keyword: str):
     from ..base.Elastic.UserSearchModel import UserSearchModel
     return UserSearchModel().elasticsearch_users(key_word=keyword)
 
 
 # поиск по статьям еластик
-@users_router.get("/search/full_search_users_for_editor/{keyword}/{size_res}")
+@users_router.get("/search/full_search_users_for_editor/{keyword}/{size_res}", tags=["Пользователь"])
 def elastic_search(keyword: str, size_res: int):
     from ..base.Elastic.UserSearchModel import UserSearchModel
     return UserSearchModel().elasticsearch_users(key_word=keyword, size_res=size_res)
 
 
-@users_router.get("/test_update_photo")
+@users_router.get("/test_update_photo", tags=["Пользователь"])
 async def test_update_photo(session: AsyncSession = Depends(get_async_db)):
     return await User().set_users_photo(session)
 
 
 # запрос для получения списка пользователей у кого в эту дату ДР
-@users_router.get("/get_birthday_celebrants/{day_month}")
+@users_router.get("/get_birthday_celebrants/{day_month}", tags=["Пользователь"])
 async def birthday_celebrants(day_month: str, session: AsyncSession = Depends(get_async_db)):
     return await User().get_birthday_celebrants(day_month, session=session)
 
 
-@users_router.post("/test_send_mail")
+@users_router.post("/test_send_mail", tags=["Пользователь"])
 def send_test_mail(data=Body(...)):
     # {"reciever" : str, "title": str, "text": str, "file_url": str}
     return SendEmail(data=data).send_congratulations()
 
 
 # лайки и просмотры для статистики
-@users_router.get("/get_user_likes")
+@users_router.get("/get_user_likes", tags=["Пользователь"])
 async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id=user_id).get_user_likes(session)
 

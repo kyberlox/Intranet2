@@ -61,7 +61,7 @@ async def get_user(session: AsyncSession = Depends(get_async_db)):
 
 
 # Пользователя и его департамент можно выгрузить
-@usdep_router.get("/find_by/{ID}", tags=["Пользователь-Департамент"])
+@usdep_router.get("/find_by/{ID}")
 async def get_usdepart(ID, session: AsyncSession = Depends(get_async_db)):
     return await UsDep(ID=ID).search_usdep_by_id(session)
 

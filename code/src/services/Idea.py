@@ -172,5 +172,7 @@ async def calendar_event(data = Body()):
             "result": "Результат запуска бизнес-процесса"
         }
     }
+    ```
+    
     """
     return await Idea().add(dict(data))

@@ -192,7 +192,7 @@ class B24:
 #     return result
 
 
-@b24_router.get("/calendar/{date_from}/{date_to}"):
+@b24_router.get("/calendar/{date_from}/{date_to}")
 def calendar_event(date_from, date_to):
     """
     # Получение событий корпоративного календаря

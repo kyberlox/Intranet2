@@ -32,7 +32,7 @@ load_dotenv()
 
 DOMAIN = os.getenv('HOST')
 
-article_router = APIRouter(prefix="/article", tags=["Статьи"])
+article_router = APIRouter(prefix="/article")
 
 
 def make_date_valid(date):
@@ -2716,7 +2716,7 @@ class Article:
 
 
 # Получить данные инфоблока из Б24
-@article_router.get("/infoblock/{ID}", tags=["Битрикс24"])
+@article_router.get("/infoblock/{ID}", tags=["Статьи", "Битрикс24"])
 async def test(ID):
     """
     ## Метод `lists.element.get`
@@ -2772,13 +2772,13 @@ async def test(ID):
 
 
 # загрузить статьи из иноблоков Битрикса
-@article_router.put("")
+@article_router.put("", tags=["Статьи"])
 async def upload_articles(session: AsyncSession = Depends(get_async_db)):
     return await Article().uplod(session)
 
 
 # найти статью по id
-@article_router.get("/find_by_ID/{ID}")
+@article_router.get("/find_by_ID/{ID}", tags=["Статьи"])
 async def get_article(ID: int, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = ""
     token = request.cookies.get("user_id")
@@ -2794,7 +2794,7 @@ async def get_article(ID: int, request: Request, session: AsyncSession = Depends
 
 
 # найти статьи раздела
-@article_router.get("/find_by/{section_id}")
+@article_router.get("/find_by/{section_id}", tags=["Статьи"])
 async def get_articles(section_id, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = ""
     token = request.cookies.get("user_id")
@@ -2813,7 +2813,7 @@ async def get_articles(section_id, request: Request, session: AsyncSession = Dep
         return await art.search_by_section_id(user_id=user_id, session=session)
 
 
-@article_router.put("/add_or_remove_like/{article_id}")
+@article_router.put("/add_or_remove_like/{article_id}", tags=["Статьи"])
 async def add_or_remove_like(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = ""
     token = request.cookies.get("user_id")
@@ -2828,7 +2828,7 @@ async def add_or_remove_like(article_id, request: Request, session: AsyncSession
     return await art.add_like(user_id=user_id, session=session)
 
 
-@article_router.get("/has_user_liked/{article_id}")
+@article_router.get("/has_user_liked/{article_id}", tags=["Статьи"])
 async def has_user_liked(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = ""
     token = request.cookies.get("user_id")
@@ -2844,41 +2844,41 @@ async def has_user_liked(article_id, request: Request, session: AsyncSession = D
 
 
 # поиск по статьям еластик
-@article_router.get("/search/full_search_art/{keyword}")
+@article_router.get("/search/full_search_art/{keyword}", tags=["Статьи"])
 async def elastic_search(keyword: str):
     return await ArticleSearchModel().elasticsearch_article(key_word=keyword)
 
 
 # выгрузка данных по лайкам в Б24
-@article_router.put("/put_b24_likes")
+@article_router.put("/put_b24_likes", tags=["Статьи"])
 async def put_b24_likes(session: AsyncSession = Depends(get_async_db)):
     return await Article().upload_likes(session)
 
 
-@article_router.put("/put_b24_views")
+@article_router.put("/put_b24_views", tags=["Статьи"])
 async def put_b24_views(session: AsyncSession = Depends(get_async_db)):
     return await Article().upload_views(session)
 
 
 # лайки и просмотры для статистики
-@article_router.get("/get_article_likers/{ID}")
+@article_router.get("/get_article_likers/{ID}", tags=["Статьи"])
 async def get_article_likers(ID: int, session: AsyncSession = Depends(get_async_db)):
     art = Article()
     art.id = ID
     return await art.get_article_likers(session)
 
 
-@article_router.get("/get_popular_articles/{limit}")
+@article_router.get("/get_popular_articles/{limit}", tags=["Статьи"])
 async def get_popular_articles(limit: int, session: AsyncSession = Depends(get_async_db)):
     return await Article().get_popular_articles(limit=limit, session=session)
 
 
-@article_router.get("/get_recent_popular_articles/{days}/{limit}")
+@article_router.get("/get_recent_popular_articles/{days}/{limit}", tags=["Статьи"])
 async def get_recent_popular_articles(days: int, limit: int, session: AsyncSession = Depends(get_async_db)):
     return await Article().get_recent_popular_articles(days=days, limit=limit, session=session)
 
 
-@article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}")
+@article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}", tags=["Статьи"])
 async def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request,
                                  session: AsyncSession = Depends(get_async_db)):
     user_id = ""
@@ -2894,17 +2894,17 @@ async def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request,
     return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session)
 
 
-@article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}")
+@article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}", tags=["Статьи"])
 async def set_tag_to_art_id(art_id: int, tag_id: int, session: AsyncSession = Depends(get_async_db)):
     return await Article(id=art_id).set_tag_to_art_id(tag_id=tag_id, session=session)
 
 
-@article_router.delete("/remove_tag_from_art_id/{tag_id}/{art_id}")
+@article_router.delete("/remove_tag_from_art_id/{tag_id}/{art_id}", tags=["Статьи"])
 async def remove_tag_from_art_id(art_id: int, tag_id: int, session: AsyncSession = Depends(get_async_db)):
     return await Article(id=art_id).remove_tag_from_art_id(tag_id=tag_id, session=session)
 
 
-@article_router.post("/make_event_users_excel", summary="Скачать Excel со всеми участниками мероприятия")
+@article_router.post("/make_event_users_excel", summary="Скачать Excel со всеми участниками мероприятия", tags=["Статьи"])
 async def make_users_excel_list(request: Request, data: list = Body(), session: AsyncSession = Depends(get_async_db)):
     user_id = None
     token = request.cookies.get("user_id")

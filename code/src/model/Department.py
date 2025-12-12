@@ -15,7 +15,7 @@ from ..base.pSQL.objects.App import get_async_db
 
 import asyncio
 
-depart_router = APIRouter(prefix="/departments", tags=["Департамент"])
+depart_router = APIRouter(prefix="/departments")
 
 class Department:
     def __init__(self, id=0, name="", father_id="", data=""): #убрать = после каждой переменной в будущем
@@ -53,7 +53,7 @@ class Department:
 
 
 # Департаменты можно обновить
-@depart_router.put("")
+@depart_router.put("", , tags=["Департамент", "Битрикс24"])
 async def get_department(session: AsyncSession=Depends(get_async_db)):
     """
     ## Метод `department.get`
@@ -104,12 +104,12 @@ async def get_department(session: AsyncSession=Depends(get_async_db)):
     return await depart.fetch_departments_data(session)
 
 # Департамент можно выгрузить
-@depart_router.get("/find_by/{id}")
+@depart_router.get("/find_by/{id}", , tags=["Департамент"])
 async def get_department(id: int, session: AsyncSession=Depends(get_async_db)):
     return await Department(id).search_dep_by_id(session)
 
 #загрузить дату в ES
-@depart_router.put("/elastic_data")
+@depart_router.put("/elastic_data", tags=["Департамент"])
 def upload_department_to_es(session: AsyncSession=Depends(get_async_db)):
     return StructureSearchModel().dump(session=session)
 

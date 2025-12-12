@@ -85,6 +85,7 @@ description="""
 Возвращает словарь со статусом выполнения:
 ```json
 {"status": true}
+```
 """)
 async def get_user(session: AsyncSession = Depends(get_async_db)):
     return await UsDep().get_usr_dep(session)

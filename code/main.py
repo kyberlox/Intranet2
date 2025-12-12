@@ -656,36 +656,36 @@ HAS_MARKDOWN2=True
 # Кастомные стили
 CUSTOM_CSS = """
 <style>
-    //* === ОБНОВЛЁННЫЕ ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ === *//
+    /* === ОБНОВЛЁННЫЕ ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ === */
     :root {
-        //* Акцентные цвета (оранжевые) *//
+        /* Акцентные цвета (оранжевые) */
         --accent: #f5821f;
         --accent-light: #ff9a42;
         --accent-dark: #d6690b;
         
-        //* Текст - ВСЕ БЕЛЫЙ для максимальной читаемости *//
-        --text-primary: #ffffff;           //* Основной текст - чистый белый *//
-        --text-secondary: #ffffff;         //* Вторичный текст - тоже белый *//
-        --text-muted: #ffffff;             //* Приглушенный текст - белый с прозрачностью *//
+        /* Текст - ВСЕ БЕЛЫЙ для максимальной читаемости */
+        --text-primary: #ffffff;           /* Основной текст - чистый белый */
+        --text-secondary: #ffffff;         /* Вторичный текст - тоже белый */
+        --text-muted: #ffffff;             /* Приглушенный текст - белый с прозрачностью */
         
-        //* Фоны *//
-        --bg-main: rgb(35, 35, 35);        //* Ещё светлее основной фон *//
-        --bg-block: #2d2d2d;               //* Более светлый фон блоков *//
-        --bg-card: #363636;                //* Самый светлый фон для карточек *//
+        /* Фоны */
+        --bg-main: rgb(35, 35, 35);        /* Ещё светлее основной фон */
+        --bg-block: #2d2d2d;               /* Более светлый фон блоков */
+        --bg-card: #363636;                /* Самый светлый фон для карточек */
         
-        //* Границы *//
+        /* Границы */
         --border-color: #f5821f;
-        --border-light: #505050;           //* Светлые границы *//
+        --border-light: #505050;           /* Светлые границы */
         --border-soft: #444444;
         
-        //* Статусные цвета *//
+        /* Статусные цвета */
         --success: #4caf50;
         --warning: #ff9800;
         --error: #f44336;
         --info: #2196f3;
     }
 
-    //* === ОСНОВНОЙ ФОН И ТЕКСТ === *//
+    /* === ОСНОВНОЙ ФОН И ТЕКСТ === */
     body {
         background-color: var(--bg-main) !important;
         color: var(--text-primary) !important;
@@ -693,7 +693,7 @@ CUSTOM_CSS = """
         margin: 0 !important;
     }
 
-    //* === КОНТЕЙНЕР SWAGGER UI === *//
+    /* === КОНТЕЙНЕР SWAGGER UI === */
     .swagger-ui {
         background-color: var(--bg-main) !important;
         font-family: inherit !important;
@@ -707,7 +707,7 @@ CUSTOM_CSS = """
         background-color: var(--bg-main) !important;
     }
 
-    //* === ВЕРХНЯЯ ПАНЕЛЬ === *//
+    /* === ВЕРХНЯЯ ПАНЕЛЬ === */
     .swagger-ui .topbar {
         background-color: var(--bg-block) !important;
         border-bottom: 2px solid var(--border-color) !important;
@@ -721,9 +721,9 @@ CUSTOM_CSS = """
         font-weight: bold !important;
     }
 
-    //* === ОПИСАНИЯ В SWAGGER UI - ВСЁ БЕЛОЕ! === *//
+    /* === ОПИСАНИЯ В SWAGGER UI - ВСЁ БЕЛОЕ! === */
     
-    //* Основные описания *//
+    /* Основные описания */
     .swagger-ui .info .description *,
     .swagger-ui .info .description,
     .swagger-ui .opblock .opblock-summary-description *,
@@ -734,10 +734,10 @@ CUSTOM_CSS = """
     .swagger-ui .opblock .opblock-summary-description div,
     .swagger-ui .opblock .opblock-summary-description strong,
     .swagger-ui .opblock .opblock-summary-description em {
-        color: var(--text-primary) !important;  //* БЕЛЫЙ! *//
+        color: var(--text-primary) !important;  /* БЕЛЫЙ! */
     }
 
-    //* Параграфы в описаниях *//
+    /* Параграфы в описаниях */
     .swagger-ui .info .description p,
     .swagger-ui .opblock .opblock-summary-description p {
         color: var(--text-primary) !important;
@@ -745,7 +745,7 @@ CUSTOM_CSS = """
         line-height: 1.6 !important;
     }
 
-    //* Списки в описаниях - КРИТИЧНО ВАЖНО! *//
+    /* Списки в описаниях - КРИТИЧНО ВАЖНО! */
     .swagger-ui .info .description ul,
     .swagger-ui .info .description ol,
     .swagger-ui .opblock .opblock-summary-description ul,
@@ -762,13 +762,13 @@ CUSTOM_CSS = """
         list-style-type: disc !important;
     }
 
-    //* Элементы списков (маркеры) *//
+    /* Элементы списков (маркеры) */
     .swagger-ui .info .description li::marker,
     .swagger-ui .opblock .opblock-summary-description li::marker {
         color: var(--accent) !important;
     }
 
-    //* Заголовки в описаниях *//
+    /* Заголовки в описаниях */
     .swagger-ui .info .description h1,
     .swagger-ui .info .description h2,
     .swagger-ui .info .description h3,
@@ -788,14 +788,14 @@ CUSTOM_CSS = """
         border-bottom: 1px solid var(--border-light) !important;
     }
 
-    //* Жирный текст в описаниях *//
+    /* Жирный текст в описаниях */
     .swagger-ui .info .description strong,
     .swagger-ui .opblock .opblock-summary-description strong {
         color: var(--accent) !important;
         font-weight: 600 !important;
     }
 
-    //* Курсив в описаниях *//
+    /* Курсив в описаниях */
     .swagger-ui .info .description em,
     .swagger-ui .opblock .opblock-summary-description em {
         color: var(--text-primary) !important;
@@ -803,7 +803,7 @@ CUSTOM_CSS = """
         opacity: 0.9 !important;
     }
 
-    //* Ссылки в описаниях *//
+    /* Ссылки в описаниях */
     .swagger-ui .info .description a,
     .swagger-ui .opblock .opblock-summary-description a {
         color: var(--accent-light) !important;
@@ -818,7 +818,7 @@ CUSTOM_CSS = """
         color: var(--accent) !important;
     }
 
-    //* === ЗАГОЛОВОК ИНФОРМАЦИОННОГО БЛОКА === *//
+    /* === ЗАГОЛОВОК ИНФОРМАЦИОННОГО БЛОКА === */
     .swagger-ui .info .title {
         color: var(--accent) !important;
         font-size: 2.5em !important;
@@ -829,7 +829,7 @@ CUSTOM_CSS = """
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
     }
 
-    //* === ТЕГИ (ГРУППЫ ЭНДПОИНТОВ) === *//
+    /* === ТЕГИ (ГРУППЫ ЭНДПОИНТОВ) === */
     .swagger-ui .opblock-tag {
         color: var(--accent) !important;
         font-size: 1.3em !important;
@@ -842,7 +842,7 @@ CUSTOM_CSS = """
         margin: 20px 0 !important;
     }
 
-    //* === БЛОКИ ОПЕРАЦИЙ (ENDPOINTS) === *//
+    /* === БЛОКИ ОПЕРАЦИЙ (ENDPOINTS) === */
     .swagger-ui .opblock {
         background-color: var(--bg-block) !important;
         border: 1px solid var(--border-light) !important;
@@ -852,7 +852,7 @@ CUSTOM_CSS = """
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
     }
 
-    //* Методы HTTP *//
+    /* Методы HTTP */
     .swagger-ui .opblock .opblock-summary-method {
         background-color: var(--accent) !important;
         color: var(--bg-main) !important;
@@ -865,7 +865,7 @@ CUSTOM_CSS = """
         border: none !important;
     }
 
-    //* Путь и описание эндпоинта *//
+    /* Путь и описание эндпоинта */
     .swagger-ui .opblock .opblock-summary-path {
         color: var(--text-primary) !important;
         font-size: 1.1em !important;
@@ -874,7 +874,7 @@ CUSTOM_CSS = """
         font-weight: 500 !important;
     }
 
-    //* Описание эндпоинта - теперь отдельный блок *//
+    /* Описание эндпоинта - теперь отдельный блок */
     .swagger-ui .opblock .opblock-summary-description {
         background-color: var(--bg-card) !important;
         border: 1px solid var(--border-light) !important;
@@ -888,7 +888,7 @@ CUSTOM_CSS = """
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
     }
 
-    //* === КНОПКИ === *//
+    /* === КНОПКИ === */
     .swagger-ui .btn {
         background-color: var(--accent) !important;
         color: var(--bg-main) !important;
@@ -900,7 +900,7 @@ CUSTOM_CSS = """
         cursor: pointer !important;
     }
 
-    //* === ПОЛЯ ВВОДА И СЕЛЕКТОРЫ === *//
+    /* === ПОЛЯ ВВОДА И СЕЛЕКТОРЫ === */
     .swagger-ui input[type="text"],
     .swagger-ui input[type="password"],
     .swagger-ui input[type="email"],
@@ -915,7 +915,7 @@ CUSTOM_CSS = """
         font-size: 0.95em !important;
     }
 
-    //* === ПАРАМЕТРЫ === *//
+    /* === ПАРАМЕТРЫ === */
     .swagger-ui .parameters-col_name {
         color: var(--text-primary) !important;
         font-weight: 500 !important;
@@ -930,7 +930,7 @@ CUSTOM_CSS = """
         color: var(--text-secondary) !important;
     }
 
-    //* === ОТВЕТЫ (RESPONSES) === *//
+    /* === ОТВЕТЫ (RESPONSES) === */
     .swagger-ui .response-col_status {
         color: var(--accent) !important;
         font-weight: bold !important;
@@ -940,7 +940,7 @@ CUSTOM_CSS = """
         color: var(--text-secondary) !important;
     }
 
-    //* === МОДЕЛИ ДАННЫХ === *//
+    /* === МОДЕЛИ ДАННЫХ === */
     .swagger-ui section.models {
         background-color: var(--bg-block) !important;
         border: 1px solid var(--border-light) !important;
@@ -956,7 +956,7 @@ CUSTOM_CSS = """
         color: var(--text-secondary) !important;
     }
 
-    //* === ТАБЛИЦЫ === *//
+    /* === ТАБЛИЦЫ === */
     .swagger-ui table thead tr th,
     .swagger-ui table thead tr td {
         background-color: var(--bg-block) !important;
@@ -973,7 +973,7 @@ CUSTOM_CSS = """
         border-bottom: 1px solid var(--border-light) !important;
     }
 
-    //* === ПАНЕЛЬ АВТОРИЗАЦИИ === *//
+    /* === ПАНЕЛЬ АВТОРИЗАЦИИ === */
     .swagger-ui .scheme-container {
         background-color: var(--bg-block) !important;
         border: 1px solid var(--border-light) !important;
@@ -983,8 +983,8 @@ CUSTOM_CSS = """
         padding: 15px !important;
     }
 
-    //* === БЛОКИ КОДА (Markdown -> HTML) === *//
-    //* Inline код *//
+    /* === БЛОКИ КОДА (Markdown -> HTML) === */
+    /* Inline код */
     .swagger-ui .info .description code:not(pre samp),
     .swagger-ui .opblock .opblock-summary-description code:not(pre samp) {
         background-color: rgba(245, 130, 31, 0.15) !important;
@@ -996,7 +996,7 @@ CUSTOM_CSS = """
         border: 1px solid rgba(245, 130, 31, 0.3) !important;
     }
 
-    //* Блоки кода в <samp> тегах *//
+    /* Блоки кода в <samp> тегах */
     .swagger-ui .info .description pre,
     .swagger-ui .opblock .opblock-summary-description pre {
         background-color: var(--bg-card) !important;
@@ -1008,7 +1008,7 @@ CUSTOM_CSS = """
         position: relative !important;
     }
 
-    //* Красивая левая полоска для блоков кода *//
+    /* Красивая левая полоска для блоков кода */
     .swagger-ui .info .description pre::before,
     .swagger-ui .opblock .opblock-summary-description pre::before {
         content: '' !important;
@@ -1021,7 +1021,7 @@ CUSTOM_CSS = """
         border-radius: 6px 0 0 6px !important;
     }
 
-    //* Сам текст кода внутри <samp> *//
+    /* Сам текст кода внутри <samp> */
     .swagger-ui .info .description pre samp,
     .swagger-ui .opblock .opblock-summary-description pre samp {
         display: block !important;
@@ -1038,7 +1038,7 @@ CUSTOM_CSS = """
         overflow-x: visible !important;
     }
 
-    //* Стили для HTTP подсветки *//
+    /* Стили для HTTP подсветки */
     .http-method {
         color: var(--accent-light) !important;
         font-weight: bold !important;
@@ -1061,7 +1061,7 @@ CUSTOM_CSS = """
         text-decoration-color: rgba(100, 181, 246, 0.4) !important;
     }
 
-    //* === СКРОЛЛБАРЫ === *//
+    /* === СКРОЛЛБАРЫ === */
     ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
@@ -1101,7 +1101,7 @@ CUSTOM_CSS = """
         font-family: sans-serif;
     }
 
-    //* Специальный скроллбар для блоков кода *//
+    /* Специальный скроллбар для блоков кода */
     .swagger-ui .info .description pre::-webkit-scrollbar,
     .swagger-ui .opblock .opblock-summary-description pre::-webkit-scrollbar {
         height: 8px !important;
@@ -1121,8 +1121,8 @@ CUSTOM_CSS = """
         border: 2px solid var(--bg-card) !important;
     }
 
-    //* === ТЕМНЫЕ ЭЛЕМЕНТЫ SWAGGER UI === *//
-    //* Секции с деталями запроса *//
+    /* === ТЕМНЫЕ ЭЛЕМЕНТЫ SWAGGER UI === */
+    /* Секции с деталями запроса */
     .swagger-ui .opblock .opblock-section-header {
         background-color: var(--bg-card) !important;
         border-bottom: 1px solid var(--border-light) !important;
@@ -1132,7 +1132,7 @@ CUSTOM_CSS = """
         color: var(--text-primary) !important;
     }
 
-    //* Вкладки (табы) *//
+    /* Вкладки (табы) */
     .swagger-ui .tab {
         color: var(--text-secondary) !important;
         border-bottom: 2px solid transparent !important;
@@ -1149,9 +1149,9 @@ CUSTOM_CSS = """
         font-weight: bold !important;
     }
 
-    //* === ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ === *//
+    /* === ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ === */
     
-    //* Делаем фон описаний API ещё светлее *//
+    /* Делаем фон описаний API ещё светлее */
     .swagger-ui .info {
         background-color: var(--bg-block) !important;
         border: 1px solid var(--border-light) !important;
@@ -1161,7 +1161,7 @@ CUSTOM_CSS = """
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
     }
 
-    //* Выделяем маркеры списков акцентным цветом *//
+    /* Выделяем маркеры списков акцентным цветом */
     .swagger-ui .info .description ul li::before {
         content: "•" !important;
         color: var(--accent) !important;
@@ -1170,23 +1170,23 @@ CUSTOM_CSS = """
         vertical-align: middle !important;
     }
 
-    //* Разделители между пунктами в списках *//
+    /* Разделители между пунктами в списках */
     .swagger-ui .info .description li {
         border-left: 2px solid rgba(245, 130, 31, 0.2) !important;
         padding-left: 10px !important;
         margin-left: -10px !important;
     }
 
-    //* Особое выделение для блоков с примерами *//
+    /* Особое выделение для блоков с примерами */
     .swagger-ui .opblock .opblock-summary-description h3 {
         background: linear-gradient(90deg, rgba(245, 130, 31, 0.1), transparent) !important;
         padding: 8px 15px !important;
         border-radius: 6px !important;
         margin-top: 20px !important;
     }
-    //* === СТИЛИ ДЛЯ ОБРАБОТАННОГО MARKDOWN === *//
+    /* === СТИЛИ ДЛЯ ОБРАБОТАННОГО MARKDOWN === */
 
-    //* Заголовки в описаниях *//
+    /* Заголовки в описаниях */
     .swagger-ui .info .description h1,
     .swagger-ui .info .description h2,
     .swagger-ui .info .description h3,
@@ -1202,7 +1202,7 @@ CUSTOM_CSS = """
         border-bottom: 1px solid var(--border-light) !important;
     }
 
-    //* Параграфы *//
+    /* Параграфы */
     .swagger-ui .info .description p,
     .swagger-ui .opblock .opblock-summary-description p {
         color: var(--text-primary) !important;
@@ -1210,7 +1210,7 @@ CUSTOM_CSS = """
         line-height: 1.6 !important;
     }
 
-    //* Списки *//
+    /* Списки */
     .swagger-ui .info .description ul,
     .swagger-ui .opblock .opblock-summary-description ul {
         color: var(--text-primary) !important;
@@ -1226,21 +1226,21 @@ CUSTOM_CSS = """
         list-style-type: disc !important;
     }
 
-    //* Жирный текст *//
+    /* Жирный текст */
     .swagger-ui .info .description strong,
     .swagger-ui .opblock .opblock-summary-description strong {
         color: var(--accent) !important;
         font-weight: 600 !important;
     }
 
-    //* Курсив *//
+    /* Курсив */
     .swagger-ui .info .description em,
     .swagger-ui .opblock .opblock-summary-description em {
         font-style: italic !important;
         opacity: 0.9 !important;
     }
 
-    //* Inline код *//
+    /* Inline код */
     .swagger-ui .info .description code.inline-code,
     .swagger-ui .opblock .opblock-summary-description code.inline-code {
         background-color: rgba(245, 130, 31, 0.15) !important;
@@ -1252,7 +1252,7 @@ CUSTOM_CSS = """
         border: 1px solid rgba(245, 130, 31, 0.3) !important;
     }
 
-    //* Блоки кода, созданные JavaScript *//
+    /* Блоки кода, созданные JavaScript */
     .code-block-container {
         background-color: var(--bg-card) !important;
         border: 1px solid var(--border-light) !important;
@@ -1318,7 +1318,7 @@ CUSTOM_CSS = """
         white-space: pre !important;
     }
 
-    //* Подсветка HTTP *//
+    /* Подсветка HTTP */
     .http-method-highlight {
         color: var(--accent) !important;
         font-weight: bold !important;
@@ -1328,35 +1328,35 @@ CUSTOM_CSS = """
         color: var(--text-primary) !important;
         font-weight: 500 !important;
     }
-<//style>
+</style>
 
 <script>
-    //// === ОСНОВНАЯ ФУНКЦИЯ ОБРАБОТКИ MARKDOWN ===
+    // === ОСНОВНАЯ ФУНКЦИЯ ОБРАБОТКИ MARKDOWN ===
 
     function initMarkdownProcessing() {
         console.log("🚀 Инициализирую обработку Markdown...");
         
-        //// Обрабатываем сразу при загрузке
+        // Обрабатываем сразу при загрузке
         processAllMarkdown();
         
-        //// Наблюдатель за изменениями DOM
+        // Наблюдатель за изменениями DOM
         setupMutationObserver();
         
-        //// Обработчик кликов
+        // Обработчик кликов
         document.addEventListener('click', handleSwaggerClick);
     }
 
     function processAllMarkdown() {
         console.log("🔍 Ищу элементы с Markdown...");
         
-        //// 1. Основное описание API
+        // 1. Основное описание API
         const infoElement = document.querySelector('.swagger-ui .info .description');
         if (infoElement) {
             console.log("Найдено основное описание");
             processElementMarkdown(infoElement);
         }
         
-        //// 2. Описания всех эндпоинтов
+        // 2. Описания всех эндпоинтов
         const endpointDescriptions = document.querySelectorAll('.swagger-ui .opblock .opblock-summary-description');
         console.log(`Найдено описаний эндпоинтов: ${endpointDescriptions.length}`);
         
@@ -1367,7 +1367,7 @@ CUSTOM_CSS = """
             }
         });
         
-        //// 3. Все элементы с классом markdown
+        // 3. Все элементы с классом markdown
         const markdownElements = document.querySelectorAll('.swagger-ui .markdown, .swagger-ui .renderedMarkdown');
         markdownElements.forEach(el => {
             if (el.textContent && el.textContent.includes('[CODE_BLOCK')) {
@@ -1383,13 +1383,13 @@ CUSTOM_CSS = """
         
         const originalText = element.textContent;
         
-        //// Проверяем, нужно ли обрабатывать
+        // Проверяем, нужно ли обрабатывать
         if (!originalText.includes('[CODE_BLOCK') && 
             !originalText.includes('### ') && 
             !originalText.includes('## ') && 
             !originalText.includes('# ') &&
             !originalText.includes('**')) {
-            return; //// Нет Markdown разметки
+            return; // Нет Markdown разметки
         }
         
         console.log("📝 Обрабатываю элемент:", originalText.substring(0, 100) + "...");
@@ -1397,7 +1397,7 @@ CUSTOM_CSS = """
         const html = convertMarkdownToHtml(originalText);
         element.innerHTML = html;
         
-        //// Инициализируем кнопки копирования в новых блоках кода
+        // Инициализируем кнопки копирования в новых блоках кода
         initCopyButtons();
     }
 
@@ -1406,19 +1406,19 @@ CUSTOM_CSS = """
         
         let html = text;
         
-        //// 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[//CODE_BLOCK]
-        const codeBlockRegex = //\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\//CODE_BLOCK\]//g;
+        // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
         
+        const codeBlockRegex = /\\[CODE_BLOCK\s+language="([^"]+)"\\]([\\s\S]*?)\[\\/CODE_BLOCK\\]/g;
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);
             
-            //// Очищаем код
+            // Очищаем код
             codeContent = codeContent.trim();
             
-            //// Определяем отображаемое имя языка
+            // Определяем отображаемое имя языка
             let langDisplay = language.toUpperCase();
             if (language === 'text' || language === '') {
-                //// Автоматически определяем HTTP
+                // Автоматически определяем HTTP
                 const firstLine = codeContent.split('\\n')[0];
                 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
                 const isHttp = httpMethods.some(method => 
@@ -1433,50 +1433,50 @@ CUSTOM_CSS = """
                 }
             }
             
-            //// Экранируем HTML в коде
+            // Экранируем HTML в коде
             const escapedCode = codeContent
-                .replace(//&//g, '&amp;')
-                .replace(//<//g, '&lt;')
-                .replace(//>//g, '&gt;')
-                .replace(//"//g, '&quot;')
-                .replace(//'//g, '&#39;');
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
             
-            //// Подсвечиваем HTTP методы если это HTTP
+            // Подсвечиваем HTTP методы если это HTTP
             let highlightedCode = escapedCode;
             if (language === 'http') {
                 highlightedCode = highlightHttpMethods(escapedCode);
             }
             
-            //// Создаем уникальный ID для блока
+            // Создаем уникальный ID для блока
             const blockId = 'code-block-' + Math.random().toString(36).substr(2, 9);
             
             return `
             <div id="${blockId}" class="code-block-container" data-language="${language}">
                 <div class="code-header">
-                    <span class="language-badge">${langDisplay}<//span>
+                    <span class="language-badge">${langDisplay}</span>
                     <button class="copy-code-btn" data-target="${blockId}">
-                        <span class="copy-icon">📋<//span>
-                        <span class="copy-text">Копировать<//span>
-                    <//button>
-                <//div>
-                <pre><code class="language-${language}">${highlightedCode}<//code><//pre>
-            <//div>
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Копировать</span>
+                    </button>
+                </div>
+                <pre><code class="language-${language}">${highlightedCode}</code></pre>
+            </div>
             `;
         });
         
-        //// 2. Обрабатываем заголовки
-        html = html.replace(//^###\s+(.*)$//gim, '<h3 class="markdown-h3">$1<//h3>');
-        html = html.replace(//^##\s+(.*)$//gim, '<h2 class="markdown-h2">$1<//h2>');
-        html = html.replace(//^#\s+(.*)$//gim, '<h1 class="markdown-h1">$1<//h1>');
+        // 2. Обрабатываем заголовки
+        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
         
-        //// 3. Обрабатываем жирный текст (**текст**)
-        html = html.replace(//\*\*([^*]+)\*\*//g, '<strong>$1<//strong>');
+        // 3. Обрабатываем жирный текст (**текст**)
+        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
         
-        //// 4. Обрабатываем курсив (*текст*)
-        html = html.replace(//\*([^*]+)\*//g, '<em>$1<//em>');
+        // 4. Обрабатываем курсив (*текст*)
+        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
         
-        //// 5. Обрабатываем списки (начинающиеся с -)
-        //// Сначала находим все строки со списками
+        // 5. Обрабатываем списки (начинающиеся с -)
+        // Сначала находим все строки со списками
         const lines = html.split('\\n');
         let inList = false;
         let listHtml = '';
@@ -1490,34 +1490,34 @@ CUSTOM_CSS = """
                     listHtml += '<ul class="markdown-list">';
                 }
                 const itemText = line.substring(2);
-                listHtml += `<li class="markdown-list-item">${itemText}<//li>`;
+                listHtml += `<li class="markdown-list-item">${itemText}</li>`;
             } else {
                 if (inList) {
                     inList = false;
-                    listHtml += '<//ul>';
+                    listHtml += '</ul>';
                 }
                 listHtml += line + '\\n';
             }
         }
         
         if (inList) {
-            listHtml += '<//ul>';
+            listHtml += '</ul>';
         }
         
         html = listHtml;
         
-        //// 6. Обрабатываем inline код (`code`)
-        html = html.replace(//`([^`]+)`//g, '<code class="inline-code">$1<//code>');
+        // 6. Обрабатываем inline код (`code`)
+        html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
-        //// 7. Заменяем двойные переносы на параграфы
-        html = html.replace(//\\n\\n//g, '<//p><p class="markdown-p">');
-        html = '<p class="markdown-p">' + html + '<//p>';
+        // 7. Заменяем двойные переносы на параграфы
+        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
+        html = '<p class="markdown-p">' + html + '</p>';
         
-        //// 8. Убираем пустые параграфы
-        html = html.replace(//<p class="markdown-p"><\//p>//g, '');
+        // 8. Убираем пустые параграфы
+        html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
         
-        //// 9. Заменяем одиночные переносы на <br>
-        html = html.replace(//\\n//g, '<br>');
+        // 9. Заменяем одиночные переносы на <br>
+        html = html.replace(/\\n/g, '<br>');
         
         return html;
     }
@@ -1528,23 +1528,23 @@ CUSTOM_CSS = """
         
         httpMethods.forEach(method => {
             const regex = new RegExp(`\\b(${method})\\b`, 'gi');
-            highlighted = highlighted.replace(regex, '<span class="http-method-highlight">$1<//span>');
+            highlighted = highlighted.replace(regex, '<span class="http-method-highlight">$1</span>');
         });
         
-        //// Подсвечиваем пути после HTTP методов
+        // Подсвечиваем пути после HTTP методов
         highlighted = highlighted.replace(
-            //(<span class="http-method-highlight">[^<]+<\//span>)\s+([^\s<]+)//g,
-            '$1 <span class="http-path">$2<//span>'
+            /(<span class="http-method-highlight">[^<]+<\\/span>)\\s+([^\\s<]+)/g,
+            '$1 <span class="http-path">$2</span>'
         );
         
         return highlighted;
     }
 
-    //// === ФУНКЦИИ ДЛЯ КНОПОК КОПИРОВАНИЯ ===
+    // === ФУНКЦИИ ДЛЯ КНОПОК КОПИРОВАНИЯ ===
 
     function initCopyButtons() {
         document.querySelectorAll('.copy-code-btn').forEach(button => {
-            //// Убираем старые обработчики
+            // Убираем старые обработчики
             button.replaceWith(button.cloneNode(true));
         });
         
@@ -1563,7 +1563,7 @@ CUSTOM_CSS = """
                 
                 navigator.clipboard.writeText(text).then(() => {
                     const originalHTML = this.innerHTML;
-                    this.innerHTML = '<span class="copy-icon">✓<//span><span class="copy-text">Скопировано!<//span>';
+                    this.innerHTML = '<span class="copy-icon">✓</span><span class="copy-text">Скопировано!</span>';
                     this.style.background = 'rgba(76, 175, 80, 0.3)';
                     
                     setTimeout(() => {
@@ -1572,11 +1572,11 @@ CUSTOM_CSS = """
                     }, 2000);
                 }).catch(err => {
                     console.error('Ошибка копирования:', err);
-                    this.innerHTML = '<span class="copy-icon">❌<//span><span class="copy-text">Ошибка<//span>';
+                    this.innerHTML = '<span class="copy-icon">❌</span><span class="copy-text">Ошибка</span>';
                     this.style.background = 'rgba(244, 67, 54, 0.3)';
                     
                     setTimeout(() => {
-                        this.innerHTML = '<span class="copy-icon">📋<//span><span class="copy-text">Копировать<//span>';
+                        this.innerHTML = '<span class="copy-icon">📋</span><span class="copy-text">Копировать</span>';
                         this.style.background = '';
                     }, 2000);
                 });
@@ -1584,7 +1584,7 @@ CUSTOM_CSS = """
         });
     }
 
-    //// === НАБЛЮДАТЕЛЬ И ОБРАБОТЧИКИ СОБЫТИЙ ===
+    // === НАБЛЮДАТЕЛЬ И ОБРАБОТЧИКИ СОБЫТИЙ ===
 
     function setupMutationObserver() {
         const observer = new MutationObserver(function(mutations) {
@@ -1615,7 +1615,7 @@ CUSTOM_CSS = """
     }
 
     function handleSwaggerClick(e) {
-        //// Если кликнули на эндпоинт
+        // Если кликнули на эндпоинт
         if (e.target.closest('.opblock-tag') || 
             e.target.closest('.opblock-summary') ||
             e.target.closest('.expand-operation')) {
@@ -1625,7 +1625,7 @@ CUSTOM_CSS = """
         }
     }
 
-    //// === ФУНКЦИЯ ФИЛЬТРАЦИИ ПО ТЕГАМ ===
+    // === ФУНКЦИЯ ФИЛЬТРАЦИИ ПО ТЕГАМ ===
     function filterTagsByHash() {
         if (window.location.hash.includes('24')) {
             const tagSections = document.querySelectorAll('.opblock-tag-section');
@@ -1637,7 +1637,7 @@ CUSTOM_CSS = """
                 }
             });
         } else {
-            //// Показываем все разделы, если нет фильтрации
+            // Показываем все разделы, если нет фильтрации
             const tagSections = document.querySelectorAll('.opblock-tag-section');
             tagSections.forEach((section) => {
                 section.style.display = 'block';
@@ -1645,7 +1645,7 @@ CUSTOM_CSS = """
         }
     }
 
-    //// === СТИЛИ ДЛЯ MARKDOWN ===
+    // === СТИЛИ ДЛЯ MARKDOWN ===
     const markdownStyles = `
         <style>
             .markdown-h1 { color: #f5821f; font-size: 1.8em; margin: 1em 0 0.5em 0; font-weight: bold; }
@@ -1715,22 +1715,22 @@ CUSTOM_CSS = """
             }
             .http-method-highlight { color: #f5821f; font-weight: bold; }
             .http-path { color: #ffffff; }
-        <//style>
+        </style>
     `;
 
-    //// === ЗАПУСК ВСЕГО ПРИ ЗАГРУЗКЕ ===
+    // === ЗАПУСК ВСЕГО ПРИ ЗАГРУЗКЕ ===
     document.addEventListener('DOMContentLoaded', function() {
-        //// Добавляем стили
+        // Добавляем стили
         document.head.insertAdjacentHTML('beforeend', markdownStyles);
         
-        //// Запускаем обработку с небольшой задержкой для полной загрузки Swagger UI
+        // Запускаем обработку с небольшой задержкой для полной загрузки Swagger UI
         setTimeout(() => {
             initMarkdownProcessing();
             
-            //// Применяем фильтрацию по хэшу при загрузке
+            // Применяем фильтрацию по хэшу при загрузке
             filterTagsByHash();
             
-            //// Проверяем начальный хэш
+            // Проверяем начальный хэш
             if (window.location.hash.includes('24')) {
                 const test = document.querySelectorAll('.opblock-tag-section');
                 test.forEach((e) => {
@@ -1743,7 +1743,7 @@ CUSTOM_CSS = """
             }
         }, 1000);
         
-        //// Также пробуем каждые 500ms на случай если Swagger грузится медленно
+        // Также пробуем каждые 500ms на случай если Swagger грузится медленно
         let attempts = 0;
         const checkInterval = setInterval(() => {
             attempts++;
@@ -1752,26 +1752,26 @@ CUSTOM_CSS = """
                 if (attempts <= 10) {
                     initMarkdownProcessing();
                     
-                    //// Применяем фильтрацию по хэшу
+                    // Применяем фильтрацию по хэшу
                     filterTagsByHash();
                 }
             }
         }, 500);
     });
 
-    //// === ОБРАБОТЧИК ИЗМЕНЕНИЯ ХЭША ===
+    // === ОБРАБОТЧИК ИЗМЕНЕНИЯ ХЭША ===
     window.addEventListener('hashchange', () => {
         filterTagsByHash();
         
-        //// Также повторная обработка markdown при изменении хэша
+        // Также повторная обработка markdown при изменении хэша
         setTimeout(processAllMarkdown, 300);
     });
 
-    //// Экспортируем функции для отладки
+    // Экспортируем функции для отладки
     window.processMarkdown = processAllMarkdown;
     window.convertMarkdown = convertMarkdownToHtml;
     window.filterTagsByHash = filterTagsByHash;
-<//script>
+</script>
 """
 
 # 1. Создаем кастомную OpenAPI схему

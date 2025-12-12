@@ -160,18 +160,6 @@ description="""
 | | | - `base` (string) — содержимое файла в base64 (опционально) | |
 | | | - `base_name` (string) — имя файла (опционально) | |
 
-### Возвращаемые данные
-Возвращает словарь с результатами двух операций:
-```json
-{
-    "create_idea": {
-        "result": "ID созданной идеи"
-    },
-    "create_bis_log": {
-        "result": "Результат запуска бизнес-процесса"
-    }
-}
-```
 """)
 async def calendar_event(data = Body()):
     return await Idea().add(dict(data))

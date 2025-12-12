@@ -53,7 +53,7 @@ class Department:
 
 
 # Департаменты можно обновить
-@depart_router.put("", , tags=["Департамент", "Битрикс24"])
+@depart_router.put("",tags=["Департамент", "Битрикс24"])
 async def get_department(session: AsyncSession=Depends(get_async_db)):
     """
     ## Метод `department.get`

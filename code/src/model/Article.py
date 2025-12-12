@@ -2881,12 +2881,72 @@ async def elastic_search(keyword: str):
 
 
 # выгрузка данных по лайкам в Б24
-@article_router.put("/put_b24_likes", tags=["Статьи"])
+@article_router.put("/put_b24_likes", tags=["Статьи", "Битрикс24"], description="""
+## Метод `get_likes_views(art_id)`
+
+Получает информацию о лайках и просмотрах для конкретной статьи через специальный PHP endpoint портала Битрикс24.
+
+### Входные параметры
+| Параметр | Тип | Описание | Обязательный |
+|----------|-----|----------|--------------|
+| `art_id` | integer/string | ID статьи в системе Битрикс24 | Да |
+
+### Возвращаемые данные
+Возвращает словарь с информацией о лайках и просмотрах статьи. Возможные форматы ответа:
+
+**Успешный ответ (статья найдена):**
+```json
+{
+    "VOTES": [
+        {
+            "ID": "123",
+            "USER_ID": "456",
+            "CREATED_": "2024-01-15 10:30:00",
+            "VOTE_VALUE": "1"
+        },
+        {
+            "ID": "124",
+            "USER_ID": "789",
+            "CREATED_": "2024-01-15 11:45:00",
+            "VOTE_VALUE": "1"
+        }
+    ],
+    "VIEWS": "150"
+}
+"""
+)
 async def put_b24_likes(session: AsyncSession = Depends(get_async_db)):
     return await Article().upload_likes(session)
 
 
-@article_router.put("/put_b24_views", tags=["Статьи"])
+@article_router.put("/put_b24_views", tags=["Статьи", "Битрикс24"], description="""
+## Метод `get_likes_views(art_id)`
+
+Получает информацию о просмотрах (и лайках) для конкретной статьи через специальный PHP endpoint портала Битрикс24.
+
+### Входные параметры
+| Параметр | Тип | Описание | Обязательный |
+|----------|-----|----------|--------------|
+| `art_id` | integer/string | ID статьи в системе Битрикс24 | Да |
+
+### Возвращаемые данные
+Возвращает словарь с информацией о просмотрах статьи. Возможные форматы ответа:
+
+**Успешный ответ (статья найдена):**
+```json
+{
+    "ID": "12345",
+    "VIEWS": "150",
+    "VOTES": [
+        {
+            "ID": "1",
+            "USER_ID": "456",
+            "CREATED_": "2024-01-15 10:30:00",
+            "VOTE_VALUE": "1"
+        }
+    ]
+}
+""")
 async def put_b24_views(session: AsyncSession = Depends(get_async_db)):
     return await Article().upload_views(session)
 

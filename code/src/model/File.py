@@ -81,7 +81,6 @@ class File:
                     LogsMaker().error_message(f"Ошибка загрузки в upload_by_URL: статус {response.status}")
                     return None
 
-
     async def upload_inf_art(self, session, art_id=None, is_preview = False, need_all_method = True, inf_id=None):
         try:
             # b24 = B24()

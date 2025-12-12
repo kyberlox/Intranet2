@@ -7,7 +7,7 @@ from .LogsMaker import LogsMaker
 
 import asyncio
 
-idea_router = APIRouter(prefix="/idea", tags=["Есть Идея!"])
+idea_router = APIRouter(prefix="/idea")
 
 
 
@@ -143,8 +143,47 @@ class Idea:
         return res
 
 
-@idea_router.post("/new/")
+@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"])
 async def calendar_event(data = Body()):
-    #print(data)
-    #return data
+    """
+    ## Метод `getInfoBlock(id)`
+
+    Получает элементы информационного блока (списка) из Битрикс24 по его ID через API метод `lists.element.get`.
+
+    ### Входные параметры
+    | Параметр | Тип | Описание | Обязательный |
+    |----------|-----|----------|--------------|
+    | `id` | integer | ID информационного блока (IBLOCK_ID) в Битрикс24 | Да |
+
+    ### Возвращаемые данные
+    Возвращает список элементов информационного блока. Каждый элемент содержит следующие поля:
+    - `ID` (string) — уникальный идентификатор элемента в Битрикс24
+    - `NAME` (string) — название идеи
+    - `CREATED_BY` (string) — ID создателя
+    - `CREATED_USER_NAME` (string) — имя создателя
+    - `DETAIL_TEXT` (string) — подробное описание идеи
+    - `DETAIL_TEXT_TYPE` (string) — тип текста (text/html)
+    - `DATE_CREATE` (string) — дата создания
+    - `PROPERTY_1049` (string) — номер идеи
+    - `PROPERTY_1117` (string) — код статуса идеи
+    - `PROPERTY_1027` (string) — ID связанного документа
+    - Другие пользовательские свойства
+
+    ### Пример ответа
+    ```json
+    [
+        {
+            "ID": "456",
+            "NAME": "Автоматизация отчетности",
+            "CREATED_BY": "123",
+            "CREATED_USER_NAME": "Иванов Иван",
+            "DETAIL_TEXT": "Предлагаю автоматизировать формирование еженедельных отчетов...",
+            "DETAIL_TEXT_TYPE": "html",
+            "DATE_CREATE": "2024-03-15T14:30:00+03:00",
+            "PROPERTY_1049": "15",
+            "PROPERTY_1117": "2151",
+            "PROPERTY_1027": "789"
+        }
+    ]
+    """
     return await Idea().add(dict(data))

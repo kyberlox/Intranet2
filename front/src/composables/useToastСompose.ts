@@ -24,7 +24,7 @@ const messages: messages = {
         EventExcellSuccess: ''
     },
     warn:{
-        merchBuyWarning: 'Покупка станет доступна после полноценного запуска',
+        merchBuyWarning: 'Покупка станет доступна чуть позже, пока только для ознакомления',
     }
 }
 

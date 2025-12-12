@@ -12,7 +12,7 @@ import requests
 import os
 
 
-vcard_app = APIRouter(prefix="/vcard", tags=["VCard"])
+vcard_app = APIRouter(prefix="/vcard")
 
 vcard_app.mount("/vcard_static", StaticFiles(directory="./vcard_db"), name="vcard_static")
 
@@ -128,11 +128,55 @@ class User_Vcard:
 
 
 
-@vcard_app.get("/by_uuid/{uuid}")
+@vcard_app.get("/by_uuid/{uuid}", tags=["VCard", "Битрикс24"])
 def root(uuid):
+    """
+    ## Метод `user.search`
+
+    Выполняет поиск пользователя в Битрикс24 по уникальному идентификатору (XML_ID) через API метод `user.search`.
+
+    ### Входные параметры
+    | Параметр | Тип | Описание | Обязательный |
+    |----------|-----|----------|--------------|
+    | `uuid` | string | Уникальный идентификатор пользователя (XML_ID в Битрикс24) | Да |
+
+    ### Возвращаемые данные
+    Возвращает список найденных пользователей. Каждый пользователь содержит следующие поля:
+    - `ID` (int) — внутренний ID пользователя в Битрикс24
+    - `XML_ID` (string) — уникальный идентификатор пользователя
+    - `NAME` (string) — имя пользователя
+    - `LAST_NAME` (string) — фамилия пользователя
+    - `EMAIL` (string) — email адрес
+    - `PERSONAL_PHOTO` (string) — URL фотографии профиля
+    - `WORK_POSITION` (string) — должность
+    - `WORK_PHONE` (string) — рабочий телефон
+    - `PERSONAL_MOBILE` (string) — мобильный телефон
+    - `UF_DEPARTMENT` (list) — список ID подразделений
+    - `UF_SKYPE` (string) — Skype
+    - `UF_TWITTER` (string) — Twitter
+    - `UF_FACEBOOK` (string) — Facebook
+    - `UF_LINKEDIN` (string) — LinkedIn
+    - `UF_SKILLS` (string) — навыки и компетенции
+
+    ### Пример ответа
+    ```json
+    [
+    {
+        "ID": "123",
+        "XML_ID": "employee_12345",
+        "NAME": "Иван",
+        "LAST_NAME": "Иванов",
+        "EMAIL": "ivanov@company.com",
+        "WORK_POSITION": "Senior Developer",
+        "PERSONAL_PHOTO": "https://bitrix24.com/upload/user/123/photo.jpg",
+        "WORK_PHONE": "+7 (495) 123-45-67",
+        "PERSONAL_MOBILE": "+7 (916) 123-45-67"
+    }
+    ]
+    """
     return User_Vcard(uuid).finfByUuid()
 
-@vcard_app.get("/{uuid}/qr")
+@vcard_app.get("/{uuid}/qr", tags=["VCard"])
 def dowload_file(uuid):
     current_file_path = f'./vcard_db/{uuid}.png'
     file_exist = os.path.isfile(current_file_path)
@@ -145,7 +189,7 @@ def dowload_file(uuid):
         file_path = f'./vcard_db/{filename}'
         return FileResponse(file_path, media_type="image/png")
 
-@vcard_app.get("/{uuid}/get")
+@vcard_app.get("/{uuid}/get", tags=["VCard"])
 def download_contact(uuid):
     content, filename = User_Vcard(uuid).create_vcs() 
     return Response(content=content, media_type="text/vcard",  headers={"Content-Disposition": f"attachment; filename={filename}"})

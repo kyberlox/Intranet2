@@ -1585,7 +1585,7 @@ CUSTOM_CSS = """
         let html = text;
         
         // 1. Обрабатываем стандартные Markdown блоки кода ```language ... ```
-        html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, codeContent) {
+        html = html.replace(/```(\\w+)?\n([\\s\\S]*?)```/g, function(match, language, codeContent) {
             console.log(`Найден стандартный блок кода с языком: ${language || 'text'}`);
             
             // Очищаем код

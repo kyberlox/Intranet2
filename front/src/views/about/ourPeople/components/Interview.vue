@@ -8,7 +8,11 @@
                     <div v-if="interviewInner.preview_file_url"
                          :style="{ backgroundImage: `url('${interviewInner.preview_file_url}')` }"
                          class="interview__img"></div>
-                    <div class="interview__img__caption">{{ interviewInner.name }}</div>
+                    <div class="interview__img__caption">
+                        <span>
+                            {{ interviewInner.name }}
+                        </span>
+                    </div>
                     <div class="news-like">
                         <Reactions v-if="interviewInner.reactions"
                                    :reactions="interviewInner.reactions"

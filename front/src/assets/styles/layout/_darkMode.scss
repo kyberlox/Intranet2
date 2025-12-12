@@ -40,7 +40,8 @@
     .primary-button,
     button,
     .calendar-year__event-btn,
-    .tags-modal__remove-btn {
+    .tags-modal__remove-btn,
+    .book-nav__li {
         color: #d2d2d2;
         background: rgb(32, 32, 32);
 
@@ -102,7 +103,7 @@
     }
 
     .full-width-slider--white-background>.swiper>.swiper-wrapper>.swiper-slide>.full-width-slider__slide__img {
-        background-color: #f5f5f500 !important;
+        background-color: #616161 !important;
     }
 
     .hover-gallery__image {
@@ -119,7 +120,11 @@
     .sidebar-lk__body__points,
     .nav-link,
     .header__user__block,
-    .header__user__block__name {
+    .header__user__block__name,
+    .staff__filter__link--active,
+    .modal__description,
+    .news__detail__discr,
+    label {
         color: #b2b0b0;
     }
 
@@ -224,8 +229,9 @@
     .neuroChat__add-file,
     .neuroChat__message,
     .search-input,
-    .ql-editor {
-        background-color: #272727 !important;
+    .ql-editor,
+    .neuroChat__file-item {
+        background-color: #272727;
         color: white;
         border-color: #434343;
     }

@@ -11,9 +11,9 @@
                :href="doc.file_url"
                target="_blank">
                 <div class="experience__table__row__leftside">
-                    <div class="experience__table__row__leftside__title conducted-training__list__item__title__one">
+                    <h3 class="experience__table__row__leftside__title conducted-training__list__item__title__one">
                         {{ doc.original_name }}
-                    </div>
+                    </h3>
                     <div class="experience__table__row__leftside__subtitle conducted-training__list__item__title__two">
                         {{ placeName }}
                     </div>

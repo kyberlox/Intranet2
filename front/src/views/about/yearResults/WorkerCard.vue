@@ -9,9 +9,9 @@
             <div class="img-fluid staff__item-img"
                  v-lazy-load="formatSpacesInImg(item.indirect_data.photo_file_url)">
             </div>
-            <div class="staff__item-name">
+            <h3 class="staff__item-name">
                 {{ item.name }}
-            </div>
+            </h3>
             <div class="staff__item-position">
                 {{ item.indirect_data.department }}
             </div>

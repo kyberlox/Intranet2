@@ -1616,7 +1616,7 @@ CUSTOM_CSS = """
         });
         
         // 2. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
-        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\S]*?)\\[\\/CODE_BLOCK\\]/g;
+        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)\\[\\/CODE_BLOCK\\]/g;
         
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);

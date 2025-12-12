@@ -2772,38 +2772,39 @@ async def test(ID):
 
 
 # загрузить статьи из иноблоков Битрикса
-@article_router.put("", tags=["Статьи", "Битрикс24"], description="""
-## Метод `get_file(id, inf_id)`
+@article_router.put("", tags=["Статьи"])
+# , description="""
+# ## Метод `get_file(id, inf_id)`
 
-Получает информацию о прикрепленном файле из диска Битрикс24 по его ID и ID сущности.
+# Получает информацию о прикрепленном файле из диска Битрикс24 по его ID и ID сущности.
 
-### Входные параметры
-| Параметр | Тип | Описание | Обязательный |
-|----------|-----|----------|--------------|
-| `id` | integer/string | ID прикрепленного файла в Битрикс24 | Да |
-| `inf_id` | integer/string | ID сущности (элемента инфоблока), к которой прикреплен файл | Да |
+# ### Входные параметры
+# | Параметр | Тип | Описание | Обязательный |
+# |----------|-----|----------|--------------|
+# | `id` | integer/string | ID прикрепленного файла в Битрикс24 | Да |
+# | `inf_id` | integer/string | ID сущности (элемента инфоблока), к которой прикреплен файл | Да |
 
-### Возвращаемые данные
-Возвращает словарь с информацией о файле. Ключевые поля:
-- `ID` (string) — уникальный идентификатор файла
-- `NAME` (string) — имя файла в системе
-- `FILE_NAME` (string) — оригинальное имя файла
-- `SIZE` (string) — размер файла в байтах
-- `DOWNLOAD_URL` (string) — URL для скачивания файла
-- `SRC` (string) — путь к файлу на сервере Битрикс24
+# ### Возвращаемые данные
+# Возвращает словарь с информацией о файле. Ключевые поля:
+# - `ID` (string) — уникальный идентификатор файла
+# - `NAME` (string) — имя файла в системе
+# - `FILE_NAME` (string) — оригинальное имя файла
+# - `SIZE` (string) — размер файла в байтах
+# - `DOWNLOAD_URL` (string) — URL для скачивания файла
+# - `SRC` (string) — путь к файлу на сервере Битрикс24
 
-### Пример ответа
-```json
-{
-    "ID": "789",
-    "NAME": "document.pdf",
-    "FILE_NAME": "technical_specification.pdf",
-    "SIZE": "1048576",
-    "DOWNLOAD_URL": "https://portal.emk.ru/download/789/",
-    "SRC": "/upload/iblock/document.pdf"
-}
-"""
-)
+# ### Пример ответа
+# ```json
+# {
+#     "ID": "789",
+#     "NAME": "document.pdf",
+#     "FILE_NAME": "technical_specification.pdf",
+#     "SIZE": "1048576",
+#     "DOWNLOAD_URL": "https://portal.emk.ru/download/789/",
+#     "SRC": "/upload/iblock/document.pdf"
+# }
+# """
+# )
 async def upload_articles(session: AsyncSession = Depends(get_async_db)):
     return await Article().uplod(session)
 

@@ -2247,7 +2247,7 @@ CUSTOM_CSS = """
                     result.push('<ol class="markdown-list">');
                     inOrderedList = true;
                 }
-                const content = trimmedLine.replace(/^\\d+\.\\s+/, '');
+                const content = trimmedLine.replace(/^\\d+\\.\\s+/, '');
                 result.push(`<li class="markdown-list-item">${content}</li>`);
             }
             // Если это не элемент списка

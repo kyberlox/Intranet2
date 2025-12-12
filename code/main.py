@@ -2349,6 +2349,8 @@ CUSTOM_CSS = """
         return result.join('\n');
     }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.52.0/swagger-ui-standalone-preset.js"></script>
+
 """
 
 # 1. Создаем кастомную OpenAPI схему

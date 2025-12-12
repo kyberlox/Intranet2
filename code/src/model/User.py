@@ -399,19 +399,21 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
     ### Пример ответа
     ```json
     [
-    {
-        "ID": "123",
-        "NAME": "Иван",
-        "LAST_NAME": "Иванов",
-        "EMAIL": "ivanov@company.com",
-        "PERSONAL_PHOTO": "https://portal.example.ru/upload/user/123/photo.jpg",
-        "ACTIVE": true,
-        "WORK_POSITION": "Senior Developer",
-        "WORK_PHONE": "+7 (495) 123-45-67",
-        "PERSONAL_MOBILE": "+7 (916) 123-45-67",
-        "UF_DEPARTMENT": [5, 12]
-    }
+        {
+            "ID": "123",
+            "NAME": "Иван",
+            "LAST_NAME": "Иванов",
+            "EMAIL": "ivanov@company.com",
+            "PERSONAL_PHOTO": "https://portal.example.ru/upload/user/123/photo.jpg",
+            "ACTIVE": true,
+            "WORK_POSITION": "Senior Developer",
+            "WORK_PHONE": "+7 (495) 123-45-67",
+            "PERSONAL_MOBILE": "+7 (916) 123-45-67",
+            "UF_DEPARTMENT": [5, 12]
+        }
     ]
+    ```
+
     """
     return await User(id=user_id).update_inf_from_b24(session)
     # return await User(id=user_id).check_fields_to_update(session)

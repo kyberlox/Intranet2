@@ -2379,9 +2379,6 @@ def custom_openapi():
     import json
     schema_preview = json.dumps(openapi_schema, indent=2, ensure_ascii=False)[:500]
     print(f"[DEBUG] Первые 500 символов схемы:\n{schema_preview}")
-
-    # Преобразуем Markdown описания в HTML
-    #openapi_schema = convert_markdown_in_schema_safe(openapi_schema)
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -2459,76 +2456,8 @@ async def custom_swagger_ui_html():
     # )
     
     # 5. Добавляем кастомные стили в head
-    #modified_html = modified_html.replace('</head>', CUSTOM_CSS + '</head>')
+    modified_html = modified_html.replace('</head>', CUSTOM_CSS + '</head>')
     
     
     # 6. Возвращаем новый объект HTMLResponse с модифицированным содержимым
     return HTMLResponse(content=modified_html)
-
-def markdown_to_plain(text: str) -> str:
-    """
-    Простое преобразование Markdown в текст БЕЗ HTML.
-    Блоки кода помечаем специальными метками.
-    """
-    if not text:
-        return text
-    
-    result = []
-    lines = text.split('\n')
-    i = 0
-    
-    while i < len(lines):
-        line = lines[i]
-        
-        # Блок кода ```
-        if line.strip().startswith('```'):
-            # Начало блока кода
-            language = line.strip()[3:].strip() or "text"
-            code_lines = []
-            
-            i += 1
-            while i < len(lines) and not lines[i].strip().startswith('```'):
-                code_lines.append(lines[i])
-                i += 1
-            
-            # Пропускаем закрывающий ```
-            i += 1
-            
-            # Собираем код
-            code_content = '\n'.join(code_lines).strip()
-            
-            # Определяем язык (особенно HTTP)
-            if language == "text":
-                first_line = code_content.split('\n')[0] if '\n' in code_content else code_content
-                if any(method.upper() in first_line.upper() for method in ['GET', 'POST', 'PUT', 'DELETE']):
-                    language = "http"
-            
-            # Добавляем специальную метку для JS
-            result.append(f'[CODE_BLOCK language="{language}"]{code_content}[/CODE_BLOCK]')
-            continue
-        
-        # Обычный текст
-        result.append(line)
-        i += 1
-    
-    return '\n'.join(result)
-
-def convert_markdown_in_schema_safe(schema: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Безопасное преобразование Markdown БЕЗ HTML.
-    """
-    import copy
-    
-    def process_value(value):
-        if isinstance(value, dict):
-            return {k: process_value(v) for k, v in value.items()}
-        elif isinstance(value, list):
-            return [process_value(item) for item in value]
-        elif isinstance(value, str):
-            if value:  # Преобразуем только непустые строки
-                return markdown_to_plain(value)
-            return value
-        else:
-            return value
-    
-    return process_value(copy.deepcopy(schema))

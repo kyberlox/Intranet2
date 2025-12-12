@@ -2242,7 +2242,7 @@ CUSTOM_CSS = """
                 result.push(`<li class="markdown-list-item">${content}</li>`);
             }
             // Проверяем упорядоченный список
-            else if (trimmedLine.match(/^\\d+\.\\s+/)) {
+            else if (trimmedLine.match(/^\\d+\\.\\s+/)) {
                 if (!inOrderedList) {
                     result.push('<ol class="markdown-list">');
                     inOrderedList = true;

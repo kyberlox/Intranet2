@@ -362,6 +362,7 @@ class User:
     "status": true
 }
 ```
+
 """
 )
 async def update_user(session: AsyncSession = Depends(get_async_db)):

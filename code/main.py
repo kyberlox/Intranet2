@@ -1576,7 +1576,7 @@ CUSTOM_CSS = """
         
         // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
         
-        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)\[\\/CODE_BLOCK\\]/g;
+        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)\\[\\/CODE_BLOCK\\]/g;
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);
             
@@ -2129,7 +2129,7 @@ CUSTOM_CSS = """
         let html = text;
         
         // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
-        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)\[\\/CODE_BLOCK\\]/g;
+        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);
             
@@ -2206,7 +2206,7 @@ CUSTOM_CSS = """
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
         // 8. Обрабатываем ссылки [текст](URL)
-        html = html.replace(/\\[([^\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
+        html = html.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
         
         // 9. Заменяем двойные переносы на параграфы
         html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
@@ -2242,12 +2242,12 @@ CUSTOM_CSS = """
                 result.push(`<li class="markdown-list-item">${content}</li>`);
             }
             // Проверяем упорядоченный список
-            else if (trimmedLine.match(/^\\d+\.\\s+/)) {
+            else if (trimmedLine.match(/^\\d+\\.\\s+/)) {
                 if (!inOrderedList) {
                     result.push('<ol class="markdown-list">');
                     inOrderedList = true;
                 }
-                const content = trimmedLine.replace(/^\\d+\.\\s+/, '');
+                const content = trimmedLine.replace(/^\\d+\\.\\s+/, '');
                 result.push(`<li class="markdown-list-item">${content}</li>`);
             }
             // Если это не элемент списка

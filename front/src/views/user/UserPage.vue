@@ -108,6 +108,9 @@
                 </div>
             </div>
         </div>
+        <div v-else>
+            <Loader class="contest__page__loader" />
+        </div>
     </div>
     <ZoomModal :image="[user.photo_file_url ?? 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg']"
                v-if="modalIsOpen == true"
@@ -131,6 +134,7 @@ import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';
 import { featureFlags } from '@/assets/static/featureFlags';
+import Loader from '@/components/layout/Loader.vue';
 
 export default defineComponent({
     props: {
@@ -140,7 +144,8 @@ export default defineComponent({
     },
     components: {
         ZoomModal,
-        SendPoints
+        SendPoints,
+        Loader
     },
     setup(props) {
         const userData = useUserData();
@@ -152,6 +157,7 @@ export default defineComponent({
 
         watch(props, (newVal) => {
             if (newVal) {
+                user.value = '';
                 Api.get(`users/find_by/${newVal.id}`)
                     .then((res: IUser) => {
                         user.value = res;

@@ -1616,7 +1616,7 @@ CUSTOM_CSS = """
         });
         
         // 2. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
-        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
+        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\S]*?)\\[\\/CODE_BLOCK\\]/g;
         
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);
@@ -1628,15 +1628,15 @@ CUSTOM_CSS = """
         });
         
         // 3. Обрабатываем заголовки
-        html = html.replace(/^###\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
-        html = html.replace(/^##\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
-        html = html.replace(/^#\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
         
         // 4. Обрабатываем жирный текст (**текст**)
-        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
         
         // 5. Обрабатываем курсив (*текст* или _текст_)
-        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
         html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
         
         // 6. Обрабатываем списки (начинающиеся с - или *)

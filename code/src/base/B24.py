@@ -192,8 +192,9 @@ class B24:
 #     return result
 
 
-@b24_router.get("/calendar/{date_from}/{date_to}",
-description="""
+@b24_router.get("/calendar/{date_from}/{date_to}"):
+def calendar_event(date_from, date_to):
+    """
     # Получение событий корпоративного календаря
     
         Этот эндпоинт позволяет получить события из корпоративного календаря Битрикс24
@@ -378,8 +379,6 @@ description="""
     ```
 
     """
-)
-def calendar_event(date_from, date_to):
     
     url = f"https://portal.emk.ru/rest/1/f5ij1aoyuw5f39nb/calendar.event.get.json?type=company_calendar&ownerId=0&from={date_from}&to={date_to}"
     response = requests.get(url)

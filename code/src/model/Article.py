@@ -2716,8 +2716,58 @@ class Article:
 
 
 # Получить данные инфоблока из Б24
-@article_router.get("/infoblock/{ID}")
+@article_router.get("/infoblock/{ID}", tags=["Битрикс24"])
 async def test(ID):
+    """
+    ## Метод `lists.element.get`
+
+    Получает элементы информационного блока (списка) из Битрикс24 по его ID через API метод `lists.element.get`.
+
+    ### Входные параметры
+    | Параметр | Тип | Описание | Обязательный |
+    |----------|-----|----------|--------------|
+    | `id` | integer/string | ID информационного блока (IBLOCK_ID) в Битрикс24 | Да |
+
+    ### Возвращаемые данные
+    Возвращает список элементов информационного блока. Каждый элемент содержит следующие поля:
+    - `ID` (int/string) — уникальный идентификатор элемента
+    - `NAME` (string) — название элемента
+    - `IBLOCK_ID` (int/string) — ID информационного блока
+    - `IBLOCK_SECTION_ID` (int/string) — ID раздела (если есть)
+    - `ACTIVE` (string) — активность элемента (Y/N)
+    - `DATE_CREATE` (string) — дата создания
+    - `CREATED_BY` (int/string) — ID создателя
+    - `PROPERTY_*` — пользовательские свойства информационного блока
+
+    ### Пример ответа
+    ```json
+    [
+    {
+        "ID": "123",
+        "NAME": "Статья о интеграции",
+        "IBLOCK_ID": "45",
+        "IBLOCK_SECTION_ID": null,
+        "ACTIVE": "Y",
+        "DATE_CREATE": "2024-01-15T10:30:00+03:00",
+        "CREATED_BY": "789",
+        "PROPERTY_TAGS": "интеграция, API, документация",
+        "PROPERTY_AUTHOR": "Иванов И.И.",
+        "PROPERTY_CONTENT": "Текст статьи..."
+    },
+    {
+        "ID": "124",
+        "NAME": "Руководство пользователя",
+        "IBLOCK_ID": "45",
+        "IBLOCK_SECTION_ID": "5",
+        "ACTIVE": "Y",
+        "DATE_CREATE": "2024-01-16T14:45:00+03:00",
+        "CREATED_BY": "456",
+        "PROPERTY_TAGS": "документация, руководство",
+        "PROPERTY_AUTHOR": "Петров П.П.",
+        "PROPERTY_CONTENT": "Руководство пользователя системы..."
+    }
+    ]
+    """
     return await Article(section_id=ID).get_inf()
 
 

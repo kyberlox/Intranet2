@@ -2420,7 +2420,7 @@ async def custom_swagger_ui_html():
             "tryItOutEnabled": True,
             "displayRequestDuration": True,
             "requestSnippetsEnabled": True,
-            "layout": "StandaloneLayout"
+            #"layout": "StandaloneLayout"
         }
     )
     

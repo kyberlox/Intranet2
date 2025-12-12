@@ -2206,7 +2206,7 @@ CUSTOM_CSS = """
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
         // 8. Обрабатываем ссылки [текст](URL)
-        html = html.replace(/\\[([^\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
+        html = html.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
         
         // 9. Заменяем двойные переносы на параграфы
         html = html.replace(/\n\n/g, '</p><p class="markdown-p">');

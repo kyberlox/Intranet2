@@ -1523,13 +1523,20 @@ CUSTOM_CSS = """
             console.log("Найдено основное описание");
             processElementMarkdown(infoElement);
         }
-        
+            
         // 2. Описания всех эндпоинтов
         const endpointDescriptions = document.querySelectorAll('.swagger-ui .opblock .opblock-summary-description');
         console.log(`Найдено описаний эндпоинтов: ${endpointDescriptions.length}`);
         
         endpointDescriptions.forEach((desc, index) => {
-            if (desc.textContent && (desc.textContent.includes('[CODE_BLOCK') || desc.textContent.includes('###'))) {
+            if (desc.textContent && (
+                desc.textContent.includes('[CODE_BLOCK') || 
+                desc.textContent.includes('```') ||
+                desc.textContent.includes('###') ||
+                desc.textContent.includes('**') ||
+                desc.textContent.includes('* ') ||
+                desc.textContent.includes('- ')
+            )) {
                 console.log(`Обрабатываю описание ${index + 1}`);
                 processElementMarkdown(desc);
             }
@@ -1538,7 +1545,7 @@ CUSTOM_CSS = """
         // 3. Все элементы с классом markdown
         const markdownElements = document.querySelectorAll('.swagger-ui .markdown, .swagger-ui .renderedMarkdown');
         markdownElements.forEach(el => {
-            if (el.textContent && el.textContent.includes('[CODE_BLOCK')) {
+            if (el.textContent && el.textContent.includes('[CODE_BLOCK') || el.textContent.includes('```')) {
                 processElementMarkdown(el);
             }
         });
@@ -1553,10 +1560,13 @@ CUSTOM_CSS = """
         
         // Проверяем, нужно ли обрабатывать
         if (!originalText.includes('[CODE_BLOCK') && 
+            !originalText.includes('```') &&
             !originalText.includes('### ') && 
             !originalText.includes('## ') && 
             !originalText.includes('# ') &&
-            !originalText.includes('**')) {
+            !originalText.includes('**') &&
+            !originalText.includes('* ') &&
+            !originalText.includes('- ')) {
             return; // Нет Markdown разметки
         }
         
@@ -1574,20 +1584,21 @@ CUSTOM_CSS = """
         
         let html = text;
         
-        // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
-        
-        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)\\[\\/CODE_BLOCK\\]/g;
-        html = html.replace(codeBlockRegex, function(match, language, codeContent) {
-            console.log(`Найден блок кода с языком: ${language}`);
+        // 1. Обрабатываем стандартные Markdown блоки кода ```language ... ```
+        html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, codeContent) {
+            console.log(`Найден стандартный блок кода с языком: ${language || 'text'}`);
             
             // Очищаем код
             codeContent = codeContent.trim();
             
+            // Определяем язык
+            let lang = language || 'text';
+            
             // Определяем отображаемое имя языка
-            let langDisplay = language.toUpperCase();
-            if (language === 'text' || language === '') {
+            let langDisplay = lang.toUpperCase();
+            if (lang === 'text' || lang === '') {
                 // Автоматически определяем HTTP
-                const firstLine = codeContent.split('\\n')[0];
+                const firstLine = codeContent.split('\n')[0];
                 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
                 const isHttp = httpMethods.some(method => 
                     firstLine.toUpperCase().includes(method.toUpperCase())
@@ -1595,99 +1606,115 @@ CUSTOM_CSS = """
                 
                 if (isHttp) {
                     langDisplay = 'HTTP';
-                    language = 'http';
+                    lang = 'http';
                 } else {
                     langDisplay = 'CODE';
                 }
             }
             
-            // Экранируем HTML в коде
-            const escapedCode = codeContent
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-            
-            // Подсвечиваем HTTP методы если это HTTP
-            let highlightedCode = escapedCode;
-            if (language === 'http') {
-                highlightedCode = highlightHttpMethods(escapedCode);
-            }
-            
-            // Создаем уникальный ID для блока
-            const blockId = 'code-block-' + Math.random().toString(36).substr(2, 9);
-            
-            return `
-            <div id="${blockId}" class="code-block-container" data-language="${language}">
-                <div class="code-header">
-                    <span class="language-badge">${langDisplay}</span>
-                    <button class="copy-code-btn" data-target="${blockId}">
-                        <span class="copy-icon">📋</span>
-                        <span class="copy-text">Копировать</span>
-                    </button>
-                </div>
-                <pre><code class="language-${language}">${highlightedCode}</code></pre>
-            </div>
-            `;
+            return createCodeBlock(lang, langDisplay, codeContent);
         });
         
-        // 2. Обрабатываем заголовки
-        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
-        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
-        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        // 2. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
+        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
         
-        // 3. Обрабатываем жирный текст (**текст**)
-        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
+        html = html.replace(codeBlockRegex, function(match, language, codeContent) {
+            console.log(`Найден блок кода с языком: ${language}`);
+            
+            // Очищаем код
+            codeContent = codeContent.trim();
+            
+            return createCodeBlock(language, language.toUpperCase(), codeContent);
+        });
         
-        // 4. Обрабатываем курсив (*текст*)
-        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
+        // 3. Обрабатываем заголовки
+        html = html.replace(/^###\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
         
-        // 5. Обрабатываем списки (начинающиеся с -)
-        // Сначала находим все строки со списками
-        const lines = html.split('\\n');
+        // 4. Обрабатываем жирный текст (**текст**)
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        
+        // 5. Обрабатываем курсив (*текст* или _текст_)
+        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+        
+        // 6. Обрабатываем списки (начинающиеся с - или *)
+        const lines = html.split('\n');
         let inList = false;
         let listHtml = '';
         
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             
-            if (line.startsWith('- ')) {
+            if (line.startsWith('- ') || line.startsWith('* ')) {
                 if (!inList) {
                     inList = true;
-                    listHtml += '<ul class="markdown-list">';
+                    listHtml += '<ul class="markdown-list">\n';
                 }
                 const itemText = line.substring(2);
-                listHtml += `<li class="markdown-list-item">${itemText}</li>`;
+                listHtml += `  <li class="markdown-list-item">${itemText}</li>\n`;
             } else {
                 if (inList) {
                     inList = false;
-                    listHtml += '</ul>';
+                    listHtml += '</ul>\n';
                 }
-                listHtml += line + '\\n';
+                listHtml += line + '\n';
             }
         }
         
         if (inList) {
-            listHtml += '</ul>';
+            listHtml += '</ul>\n';
         }
         
         html = listHtml;
         
-        // 6. Обрабатываем inline код (`code`)
+        // 7. Обрабатываем inline код (`code`)
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
-        // 7. Заменяем двойные переносы на параграфы
-        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
+        // 8. Заменяем двойные переносы на параграфы
+        html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
         html = '<p class="markdown-p">' + html + '</p>';
         
-        // 8. Убираем пустые параграфы
-        html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
+        // 9. Убираем пустые параграфы
+        html = html.replace(/<p class="markdown-p"><\/p>/g, '');
         
-        // 9. Заменяем одиночные переносы на <br>
-        html = html.replace(/\\n/g, '<br>');
+        // 10. Заменяем одиночные переносы на <br>
+        html = html.replace(/\n/g, '<br>');
         
         return html;
+    }
+
+    function createCodeBlock(language, langDisplay, codeContent) {
+        // Экранируем HTML в коде
+        const escapedCode = codeContent
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        
+        // Подсвечиваем HTTP методы если это HTTP
+        let highlightedCode = escapedCode;
+        if (language === 'http') {
+            highlightedCode = highlightHttpMethods(escapedCode);
+        }
+        
+        // Создаем уникальный ID для блока
+        const blockId = 'code-block-' + Math.random().toString(36).substr(2, 9);
+        
+        return `
+        <div id="${blockId}" class="code-block-container" data-language="${language}">
+            <div class="code-header">
+                <span class="language-badge">${langDisplay}</span>
+                <button class="copy-code-btn" data-target="${blockId}">
+                    <span class="copy-icon">📋</span>
+                    <span class="copy-text">Копировать</span>
+                </button>
+            </div>
+            <pre><code class="language-${language}">${highlightedCode}</code></pre>
+        </div>
+        `;
     }
 
     function highlightHttpMethods(codeHtml) {
@@ -1701,7 +1728,7 @@ CUSTOM_CSS = """
         
         // Подсвечиваем пути после HTTP методов
         highlighted = highlighted.replace(
-            /(<span class="http-method-highlight">[^<]+<\\/span>)\\s+([^\\s<]+)/g,
+            /(<span class="http-method-highlight">[^<]+<\/span>)\s+([^\s<]+)/g,
             '$1 <span class="http-path">$2</span>'
         );
         
@@ -1812,6 +1839,57 @@ CUSTOM_CSS = """
             });
         }
     }
+
+    // === ЗАПУСК ВСЕГО ПРИ ЗАГРУЗКЕ ===
+    document.addEventListener('DOMContentLoaded', function() {
+        // Запускаем обработку с небольшой задержкой для полной загрузки Swagger UI
+        setTimeout(() => {
+            initMarkdownProcessing();
+            
+            // Применяем фильтрацию по хэшу при загрузке
+            filterTagsByHash();
+            
+            // Проверяем начальный хэш
+            if (window.location.hash.includes('24')) {
+                const test = document.querySelectorAll('.opblock-tag-section');
+                test.forEach((e) => {
+                    if (e.children[0] && e.children[0].getAttribute('data-tag') !== 'Битрикс24') {
+                        e.style.display = 'none';
+                    } else {
+                        e.style.display = 'block';
+                    }
+                });
+            }
+        }, 1000);
+        
+        // Также пробуем каждые 500ms на случай если Swagger грузится медленно
+        let attempts = 0;
+        const checkInterval = setInterval(() => {
+            attempts++;
+            if (document.querySelector('.swagger-ui .info') || attempts > 10) {
+                clearInterval(checkInterval);
+                if (attempts <= 10) {
+                    initMarkdownProcessing();
+                    
+                    // Применяем фильтрацию по хэшу
+                    filterTagsByHash();
+                }
+            }
+        }, 500);
+    });
+
+    // === ОБРАБОТЧИК ИЗМЕНЕНИЯ ХЭША ===
+    window.addEventListener('hashchange', () => {
+        filterTagsByHash();
+        
+        // Также повторная обработка markdown при изменении хэша
+        setTimeout(processAllMarkdown, 300);
+    });
+
+    // Экспортируем функции для отладки
+    window.processMarkdown = processAllMarkdown;
+    window.convertMarkdown = convertMarkdownToHtml;
+    window.filterTagsByHash = filterTagsByHash;
 
     // === СТИЛИ ДЛЯ MARKDOWN ===
     const markdownStyles = `
@@ -2129,7 +2207,7 @@ CUSTOM_CSS = """
         let html = text;
         
         // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
-        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
+        const codeBlockRegex = /[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)[\\/CODE_BLOCK\\]/g;
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);
             

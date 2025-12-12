@@ -264,7 +264,7 @@ description="""
     ```
 
     ### Вывод
-    ```json
+    ```
     {
     "result": [
     {

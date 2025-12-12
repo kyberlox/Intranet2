@@ -1328,6 +1328,174 @@ CUSTOM_CSS = """
         color: var(--text-primary) !important;
         font-weight: 500 !important;
     }
+    /* === СТИЛИ ДЛЯ ТАБЛИЦ MARKDOWN === */
+
+    .markdown-table-container {
+        margin: 1.5em 0;
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        background-color: var(--bg-block);
+        border: 1px solid var(--border-light);
+    }
+
+    .markdown-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        background-color: var(--bg-block);
+        color: var(--text-primary);
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+
+    .markdown-table thead {
+        background-color: rgba(245, 130, 31, 0.15);
+        border-bottom: 2px solid var(--accent);
+    }
+
+    .markdown-table th {
+        padding: 16px 20px;
+        font-weight: 600;
+        color: var(--accent);
+        text-align: left;
+        border-right: 1px solid var(--border-soft);
+        font-size: 1em;
+        letter-spacing: 0.5px;
+        text-transform: none;
+    }
+
+    .markdown-table th:last-child {
+        border-right: none;
+    }
+
+    .markdown-table td {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border-soft);
+        border-right: 1px solid var(--border-soft);
+        vertical-align: top;
+        transition: background-color 0.2s ease;
+    }
+
+    .markdown-table td:last-child {
+        border-right: none;
+    }
+
+    .markdown-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .markdown-table tbody tr:hover {
+        background-color: rgba(245, 130, 31, 0.08);
+    }
+
+    .markdown-table tbody tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .markdown-table tbody tr:nth-child(even):hover {
+        background-color: rgba(245, 130, 31, 0.12);
+    }
+
+    /* Стили для контента внутри таблицы */
+    .markdown-table strong {
+        color: var(--accent);
+        font-weight: 600;
+    }
+
+    .markdown-table em {
+        font-style: italic;
+        opacity: 0.9;
+    }
+
+    .markdown-table .table-inline-code {
+        background-color: rgba(245, 130, 31, 0.15);
+        color: var(--accent-light);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        font-size: 0.9em;
+        border: 1px solid rgba(245, 130, 31, 0.3);
+    }
+
+    .markdown-table .table-link {
+        color: var(--accent-light);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--accent);
+        transition: all 0.2s ease;
+    }
+
+    .markdown-table .table-link:hover {
+        color: var(--accent);
+        border-bottom-style: solid;
+    }
+
+    /* Стили для выравнивания */
+    .markdown-table th[style*="center"],
+    .markdown-table td[style*="center"] {
+        text-align: center;
+    }
+
+    .markdown-table th[style*="right"],
+    .markdown-table td[style*="right"] {
+        text-align: right;
+    }
+
+    .markdown-table th[style*="left"],
+    .markdown-table td[style*="left"] {
+        text-align: left;
+    }
+
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 768px) {
+        .markdown-table-container {
+            margin: 1em -10px;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+        
+        .markdown-table th,
+        .markdown-table td {
+            padding: 12px 15px;
+            font-size: 0.9em;
+        }
+    }
+
+    /* Кастомные скроллбары для контейнера таблиц */
+    .markdown-table-container::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .markdown-table-container::-webkit-scrollbar-track {
+        background: var(--bg-block);
+        border-radius: 0 0 8px 8px;
+    }
+
+    .markdown-table-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(90deg, var(--accent), var(--accent-light));
+        border-radius: 8px;
+        border: 2px solid var(--bg-block);
+    }
+
+    .markdown-table-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(90deg, var(--accent-light), var(--accent));
+    }
+
+    /* === ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ ССЫЛОК === */
+    .markdown-link {
+        color: var(--accent-light);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--accent);
+        transition: all 0.2s ease;
+        padding: 0 1px;
+    }
+
+    .markdown-link:hover {
+        color: var(--accent);
+        border-bottom-style: solid;
+        background-color: rgba(245, 130, 31, 0.1);
+    }
 </style>
 
 <script>
@@ -1771,6 +1939,337 @@ CUSTOM_CSS = """
     window.processMarkdown = processAllMarkdown;
     window.convertMarkdown = convertMarkdownToHtml;
     window.filterTagsByHash = filterTagsByHash;
+    // === ДОБАВЛЕННЫЕ ФУНКЦИИ ДЛЯ ТАБЛИЦ ===
+
+    function processTablesInMarkdown(html) {
+        if (!html) return html;
+        
+        // Регулярное выражение для поиска таблиц в Markdown
+        // Формат таблицы:
+        // | Заголовок 1 | Заголовок 2 |
+        // |-------------|-------------|
+        // | Ячейка 1    | Ячейка 2    |
+        // | Ячейка 3    | Ячейка 4    |
+        
+        const tableRegex = /(\\|.*\\|(\\s*\\|\\s*[-:|]+.*\\|)*(\\s*\\|.*\\|)*)/gm;
+        const lines = html.split('\n');
+        let inTable = false;
+        let tableRows = [];
+        let result = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            // Проверяем, является ли строка строкой таблицы
+            if (line.match(/^\\|.*\\|$/)) {
+                if (!inTable) {
+                    inTable = true;
+                    tableRows = [];
+                }
+                tableRows.push(line);
+            } else {
+                if (inTable && tableRows.length > 0) {
+                    // Преобразуем накопленные строки таблицы в HTML
+                    const tableHtml = convertMarkdownTableToHtml(tableRows);
+                    result.push(tableHtml);
+                    inTable = false;
+                    tableRows = [];
+                }
+                result.push(lines[i]);
+            }
+        }
+        
+        // Обрабатываем таблицу в конце текста
+        if (inTable && tableRows.length > 0) {
+            const tableHtml = convertMarkdownTableToHtml(tableRows);
+            result.push(tableHtml);
+        }
+        
+        return result.join('\n');
+    }
+
+    function convertMarkdownTableToHtml(tableRows) {
+        if (tableRows.length < 2) return '';
+        
+        let html = '<div class="markdown-table-container">\n';
+        html += '<table class="markdown-table">\n';
+        
+        for (let i = 0; i < tableRows.length; i++) {
+            const row = tableRows[i];
+            const cells = parseTableRow(row);
+            
+            if (cells.length === 0) continue;
+            
+            // Определяем, является ли строка разделителем
+            const isSeparator = i === 1 && row.match(/^(\\|?\\s*[-:|]+\\s*)+\\|?$/);
+            
+            if (isSeparator) {
+                // Пропускаем разделитель в Markdown, так как в HTML он не нужен
+                continue;
+            }
+            
+            // Определяем тип строки (thead или tbody)
+            const isHeader = i === 0;
+            
+            if (isHeader) {
+                html += '  <thead>\n';
+            }
+            
+            html += '    <tr>\n';
+            
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j].trim();
+                const align = getColumnAlignment(tableRows, j);
+                
+                if (isHeader) {
+                    html += `      <th style="text-align: ${align}">${processTableCellContent(cell)}</th>\n`;
+                } else {
+                    html += `      <td style="text-align: ${align}">${processTableCellContent(cell)}</td>\n`;
+                }
+            }
+            
+            html += '    </tr>\n';
+            
+            if (isHeader) {
+                html += '  </thead>\n  <tbody>\n';
+            }
+        }
+        
+        html += '  </tbody>\n';
+        html += '</table>\n';
+        html += '</div>\n';
+        
+        return html;
+    }
+
+    function parseTableRow(row) {
+        // Убираем начальные и конечные |
+        const trimmedRow = row.replace(/^\\||\\|$/g, '').trim();
+        const cells = [];
+        let currentCell = '';
+        let inCodeBlock = false;
+        let inInlineCode = false;
+        
+        for (let i = 0; i < trimmedRow.length; i++) {
+            const char = trimmedRow[i];
+            const nextChar = trimmedRow[i + 1] || '';
+            
+            // Обработка inline кода
+            if (char === '`' && !inCodeBlock) {
+                inInlineCode = !inInlineCode;
+                currentCell += char;
+                continue;
+            }
+            
+            // Обработка разделителя ячеек (|), но не внутри кода
+            if (char === '|' && !inInlineCode && !inCodeBlock) {
+                cells.push(currentCell.trim());
+                currentCell = '';
+                continue;
+            }
+            
+            currentCell += char;
+        }
+        
+        // Добавляем последнюю ячейку
+        if (currentCell.trim()) {
+            cells.push(currentCell.trim());
+        }
+        
+        return cells;
+    }
+
+    function getColumnAlignment(tableRows, columnIndex) {
+        if (tableRows.length < 2) return 'left';
+        
+        const separatorRow = tableRows[1];
+        const separatorCells = parseTableRow(separatorRow);
+        
+        if (columnIndex >= separatorCells.length) return 'left';
+        
+        const cell = separatorCells[columnIndex].trim();
+        
+        // Определяем выравнивание по Markdown синтаксису
+        if (cell.startsWith(':') && cell.endsWith(':')) {
+            return 'center';
+        } else if (cell.endsWith(':')) {
+            return 'right';
+        } else if (cell.startsWith(':')) {
+            return 'left';
+        }
+        
+        return 'left'; // По умолчанию
+    }
+
+    function processTableCellContent(content) {
+        if (!content) return '';
+        
+        let processed = content;
+        
+        // Обрабатываем жирный текст
+        processed = processed.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
+        
+        // Обрабатываем курсив
+        processed = processed.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
+        
+        // Обрабатываем inline код
+        processed = processed.replace(/`([^`]+)`/g, '<code class="table-inline-code">$1</code>');
+        
+        // Обрабатываем ссылки [текст](URL)
+        processed = processed.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="table-link">$1</a>');
+        
+        return processed;
+    }
+
+    // === ОБНОВЛЕННАЯ ФУНКЦИЯ ОБРАБОТКИ MARKDOWN ===
+
+    function convertMarkdownToHtml(text) {
+        if (!text) return '';
+        
+        let html = text;
+        
+        // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
+        const codeBlockRegex = /\\[CODE_BLOCK\\s+language="([^"]+)"\\]([\\s\\S]*?)\[\\/CODE_BLOCK\\]/g;
+        html = html.replace(codeBlockRegex, function(match, language, codeContent) {
+            console.log(`Найден блок кода с языком: ${language}`);
+            
+            // Очищаем код
+            codeContent = codeContent.trim();
+            
+            // Определяем отображаемое имя языка
+            let langDisplay = language.toUpperCase();
+            if (language === 'text' || language === '') {
+                // Автоматически определяем HTTP
+                const firstLine = codeContent.split('\n')[0];
+                const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+                const isHttp = httpMethods.some(method => 
+                    firstLine.toUpperCase().includes(method.toUpperCase())
+                );
+                
+                if (isHttp) {
+                    langDisplay = 'HTTP';
+                    language = 'http';
+                } else {
+                    langDisplay = 'CODE';
+                }
+            }
+            
+            // Экранируем HTML в коде
+            const escapedCode = codeContent
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+            
+            // Подсвечиваем HTTP методы если это HTTP
+            let highlightedCode = escapedCode;
+            if (language === 'http') {
+                highlightedCode = highlightHttpMethods(escapedCode);
+            }
+            
+            // Создаем уникальный ID для блока
+            const blockId = 'code-block-' + Math.random().toString(36).substr(2, 9);
+            
+            return `
+            <div id="${blockId}" class="code-block-container" data-language="${language}">
+                <div class="code-header">
+                    <span class="language-badge">${langDisplay}</span>
+                    <button class="copy-code-btn" data-target="${blockId}">
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Копировать</span>
+                    </button>
+                </div>
+                <pre><code class="language-${language}">${highlightedCode}</code></pre>
+            </div>
+            `;
+        });
+        
+        // 2. Обрабатываем таблицы ДО обработки остальных элементов
+        html = processTablesInMarkdown(html);
+        
+        // 3. Обрабатываем заголовки
+        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        
+        // 4. Обрабатываем жирный текст (**текст**)
+        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
+        
+        // 5. Обрабатываем курсив (*текст*)
+        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
+        
+        // 6. Обрабатываем списки (начинающиеся с - или 1. 2. 3.)
+        html = processLists(html);
+        
+        // 7. Обрабатываем inline код (`code`)
+        html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        
+        // 8. Обрабатываем ссылки [текст](URL)
+        html = html.replace(/\\[([^\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
+        
+        // 9. Заменяем двойные переносы на параграфы
+        html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
+        html = '<p class="markdown-p">' + html + '</p>';
+        
+        // 10. Убираем пустые параграфы
+        html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
+        
+        // 11. Заменяем одиночные переносы на <br>
+        html = html.replace(/\n/g, '<br>');
+        
+        return html;
+    }
+
+    function processLists(text) {
+        const lines = text.split('\n');
+        let inUnorderedList = false;
+        let inOrderedList = false;
+        let listDepth = 0;
+        let result = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+            
+            // Проверяем неупорядоченный список
+            if (trimmedLine.match(/^[-*+]\\s+/)) {
+                if (!inUnorderedList) {
+                    result.push('<ul class="markdown-list">');
+                    inUnorderedList = true;
+                }
+                const content = trimmedLine.substring(2);
+                result.push(`<li class="markdown-list-item">${content}</li>`);
+            }
+            // Проверяем упорядоченный список
+            else if (trimmedLine.match(/^\\d+\.\\s+/)) {
+                if (!inOrderedList) {
+                    result.push('<ol class="markdown-list">');
+                    inOrderedList = true;
+                }
+                const content = trimmedLine.replace(/^\\d+\.\\s+/, '');
+                result.push(`<li class="markdown-list-item">${content}</li>`);
+            }
+            // Если это не элемент списка
+            else {
+                if (inUnorderedList) {
+                    result.push('</ul>');
+                    inUnorderedList = false;
+                }
+                if (inOrderedList) {
+                    result.push('</ol>');
+                    inOrderedList = false;
+                }
+                result.push(line);
+            }
+        }
+        
+        // Закрываем списки, если они остались открытыми
+        if (inUnorderedList) result.push('</ul>');
+        if (inOrderedList) result.push('</ol>');
+        
+        return result.join('\n');
+    }
 </script>
 """
 

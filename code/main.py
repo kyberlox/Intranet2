@@ -2381,7 +2381,7 @@ def custom_openapi():
     print(f"[DEBUG] Первые 500 символов схемы:\n{schema_preview}")
 
     # Преобразуем Markdown описания в HTML
-    openapi_schema = convert_markdown_in_schema_safe(openapi_schema)
+    #openapi_schema = convert_markdown_in_schema_safe(openapi_schema)
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema

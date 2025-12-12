@@ -19,7 +19,7 @@
 						id="you-player"
 						:src="currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed"
 						title="YouTube video player"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 						allowfullscreen></iframe>
 			</div>
 		</div>

@@ -143,9 +143,8 @@ class Idea:
         return res
 
 
-@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"])
-async def calendar_event(data = Body()):
-    """
+@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"],
+description="""
     ## Метод `send_idea(incr, fields)`
 
     Создает новую идею в информационном блоке Битрикс24 и запускает бизнес-процесс. Метод поддерживает два варианта: с прикрепленным файлом и без него.
@@ -173,6 +172,6 @@ async def calendar_event(data = Body()):
             }
         }
         ```
-
-    """
+""")
+async def calendar_event(data = Body()):
     return await Idea().add(dict(data))

@@ -1096,8 +1096,8 @@ CUSTOM_CSS = """
         font-family: sans-serif;
     }
 
-    .swagger-ui .opblock-description-wrapper p {
-        color: #ffffff;
+   .opblock-description-wrapper, .swagger-ui .opblock-description-wrapper p {
+        color: #ffffff !important;
         font-family: sans-serif;
     }
 
@@ -2418,6 +2418,7 @@ async def custom_swagger_ui_html():
             "tryItOutEnabled": True,
             "displayRequestDuration": True,
             "requestSnippetsEnabled": True,
+            "layout": "StandaloneLayout"
         }
     )
     

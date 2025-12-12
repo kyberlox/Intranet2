@@ -58,7 +58,6 @@ class File:
         self.art_id = art_id
         self.b24_id = b24_id
 
-
     async def download_by_URL(self, url, path, session):
         # if "https://portal.emk.ru" in url:
         #     response = requests.get(url)
@@ -560,27 +559,6 @@ class File:
         
         return files
 
-    # def need_update_link(self):
-    #     pass
-
-    # def get_link_as_file(self):
-    #     pass
-
-    # def update_data(self, data : dict):
-    #     #получить данные
-    #     file_data = FilesDBModel(id=self.id).find_by_id()
-    #     #file_data["id"] = str(file_data["_id"])
-    #     file_data.pop("_id")
-        
-    #     #заменить данные
-    #     for key in data.keys():
-    #         if key != "id":
-    #             file_data[key] = data[key]
-
-    #     #сохранить изменения
-    #     result = FilesDBModel(id=self.id).update_data(file_data)
-        
-    #     return result
 
 
     async def get_users_photo(self, session):
@@ -599,15 +577,7 @@ class File:
 
             return file_info
 
-    # async def dowload_user_photo(self, url, name, session):
-    #     # в будущем name исправить на айди фото ( photo_file_id )
-    #     img_path = f"{USER_STORAGE_PATH}/{name}"
 
-    #     with requests.get(url, stream=True) as r:
-    #         with open(img_path, "wb") as f:
-    #             f.write(r.content)
-        
-    #     return True
     
     async def dowload_user_photo(self, url, name):
         # в будущем name исправить на айди фото ( photo_file_id )
@@ -807,11 +777,6 @@ class File:
         pass
 
 
-        
-
-# @file_router.put("/create_indexes")
-# async def create_mongo_indexes():
-#     return FileModel().create_indexes()
 
 @file_router.post("/upload/{art_id}")
 async def upload_file(file: UploadFile, art_id : int, session: AsyncSession=Depends(get_async_db)):
@@ -902,22 +867,6 @@ async def get_file_article(section_id: int, session: AsyncSession=Depends(get_as
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# @file_router.get("/info/b24_id/{b24_id}")
-# async def get_file_by_b24(b24_id: str):
-#     try:
-#         file_data = FilesDBModel(id = b24_id).find_by_b24_id()
-
-#         if not file_data:
-#             raise HTTPException(status_code=404, detail="File not found")
-
-#         return {
-#             "id": file_data["id"],
-#             "url": file_data["file_url"],
-#             "original_name": file_data["original_name"],
-#             "content_type": file_data["content_type"]
-#         }
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
 
 @file_router.delete("/{file_id}")
 async def delete_file(file_id: str, session: AsyncSession=Depends(get_async_db)):
@@ -949,6 +898,7 @@ async def delete_file(file_id: str, session: AsyncSession=Depends(get_async_db))
 async def put_file(file_id : int, data = Body(), session: AsyncSession=Depends(get_async_db)):
     new_file_data = await FilesDBModel(id = file_id).update_data(data=data, session=session)
     return new_file_data
+
 
 
 @file_router.post("/get_user_photo/{uuid}")

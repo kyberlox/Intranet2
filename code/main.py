@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, HTTPException, status
+from fastapi.routing import APIRoute
 
 
 
@@ -132,6 +133,17 @@ app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 
+# b24_docs_routs = [
+#     "/api/users_depart"
+# ]
+
+
+# for route in app.routes:
+#     if isinstance(route, APIRoute):# and route.path in b24_docs_routs:
+#         if route.path in b24_docs_routs:
+#             route.tags.append("Битрикс24")
+#             print(route.tags, route.path)
+                
 
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
@@ -1395,7 +1407,7 @@ CUSTOM_CSS = """
         let html = text;
         
         // 1. Обрабатываем блоки кода [CODE_BLOCK language="..."]...[/CODE_BLOCK]
-        const codeBlockRegex = /\[CODE_BLOCK\s+language="([^"]+)"\]([\s\S]*?)\[\/CODE_BLOCK\]/g;
+        
         
         html = html.replace(codeBlockRegex, function(match, language, codeContent) {
             console.log(`Найден блок кода с языком: ${language}`);
@@ -1453,15 +1465,15 @@ CUSTOM_CSS = """
         });
         
         // 2. Обрабатываем заголовки
-        html = html.replace(/^###\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
-        html = html.replace(/^##\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
-        html = html.replace(/^#\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
         
         // 3. Обрабатываем жирный текст (**текст**)
-        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
         
         // 4. Обрабатываем курсив (*текст*)
-        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
         
         // 5. Обрабатываем списки (начинающиеся с -)
         // Сначала находим все строки со списками
@@ -1502,7 +1514,7 @@ CUSTOM_CSS = """
         html = '<p class="markdown-p">' + html + '</p>';
         
         // 8. Убираем пустые параграфы
-        html = html.replace(/<p class="markdown-p"><\/p>/g, '');
+        html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
         
         // 9. Заменяем одиночные переносы на <br>
         html = html.replace(/\\n/g, '<br>');
@@ -1521,7 +1533,7 @@ CUSTOM_CSS = """
         
         // Подсвечиваем пути после HTTP методов
         highlighted = highlighted.replace(
-            /(<span class="http-method-highlight">[^<]+<\/span>)\s+([^\s<]+)/g,
+            /(<span class="http-method-highlight">[^<]+<\\/span>)\\s+([^\\s<]+)/g,
             '$1 <span class="http-path">$2</span>'
         );
         

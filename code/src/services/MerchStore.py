@@ -36,9 +36,9 @@ async def get_uuid_from_request(request, session):
 
         # получить и вывести его id
         usr = User()
-        usr.id = user_id
+        usr.id = int(user_id)
         user_inf = await usr.search_by_id(session=session)
-        if user_inf is not None and "ID" in user_inf.keys():
+        if user_inf is not None and "id" in user_inf.keys():
             return user_inf["id"]
     return None
 

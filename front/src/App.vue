@@ -1,31 +1,33 @@
 <template>
-<div v-if="isLogin"
-     :class="{ 'dark-mode': isDarkMode }">
-    <LayoutHeader />
-    <main>
-        <div class="container-fluid"
-             :class="{ 'container-fluid--nopadding': !isLogin }">
-            <div class="row main-layout"
-                 :class="{ 'row--nomargin': !isLogin }">
-                <div class="main-content flex-grow">
-                    <Breadcrumbs />
-                    <RouterView />
-                </div>
-                <div v-if="isLogin"
-                     class="main-sidebar flex-shrink d-print-none">
-                    <Sidebar />
+<div :class="{ 'dark-mode': isDarkMode }">
+    <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
+    <div v-if="isLogin">
+        <LayoutHeader />
+        <main>
+            <div class="container-fluid"
+                 :class="{ 'container-fluid--nopadding': !isLogin }">
+                <div class="row main-layout"
+                     :class="{ 'row--nomargin': !isLogin }">
+                    <div class="main-content flex-grow">
+                        <Breadcrumbs />
+                        <RouterView />
+                    </div>
+                    <div v-if="isLogin"
+                         class="main-sidebar flex-shrink d-print-none">
+                        <Sidebar />
+                    </div>
                 </div>
             </div>
-        </div>
-        <PageScrollArrow />
-    </main>
+            <PageScrollArrow />
+        </main>
+    </div>
+    <div v-else>
+        <AuthPage />
+    </div>
+    <Toast :position="'bottom-right'" />
+    <YandexMetrika v-if="userId"
+                   :uid="userId" />
 </div>
-<div v-else>
-    <AuthPage />
-</div>
-<Toast :position="'bottom-right'" />
-<YandexMetrika v-if="userId"
-               :uid="userId" />
 </template>
 
 <script lang="ts">
@@ -41,6 +43,7 @@ import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./composables/usePrefetchSection";
 import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
+import SnowFlakes from "./components/layout/SnowFlakes.vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -52,7 +55,8 @@ export default defineComponent({
         Breadcrumbs,
         Toast,
         PageScrollArrow,
-        YandexMetrika
+        YandexMetrika,
+        SnowFlakes
     },
     setup() {
         const route = useRoute();

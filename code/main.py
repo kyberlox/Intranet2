@@ -1677,7 +1677,7 @@ CUSTOM_CSS = """
         html = '<p class="markdown-p">' + html + '</p>';
         
         // 9. Убираем пустые параграфы
-        html = html.replace(/<p class="markdown-p"><\/p>/g, '');
+        html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
         
         // 10. Заменяем одиночные переносы на <br>
         html = html.replace(/\n/g, '<br>');

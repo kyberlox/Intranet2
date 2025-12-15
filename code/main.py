@@ -1596,9 +1596,10 @@ CUSTOM_CSS = """
             
             // Определяем отображаемое имя языка
             let langDisplay = lang.toUpperCase();
+            /*
             if (lang === 'text' || lang === '') {
                 // Автоматически определяем HTTP
-                const firstLine = codeContent.split("\n")[0];
+                const firstLine = codeContent.split('\n')[0];
                 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
                 const isHttp = httpMethods.some(method => 
                     firstLine.toUpperCase().includes(method.toUpperCase())
@@ -1611,7 +1612,7 @@ CUSTOM_CSS = """
                     langDisplay = 'CODE';
                 }
             }
-            
+            */
             return createCodeBlock(lang, langDisplay, codeContent);
         });
         

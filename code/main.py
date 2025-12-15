@@ -1641,7 +1641,7 @@ CUSTOM_CSS = """
         html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
         
         // 6. Обрабатываем списки (начинающиеся с - или *)
-        const lines = html.split('\n');
+        //const lines = html.split('\n');
         let inList = false;
         let listHtml = '';
         

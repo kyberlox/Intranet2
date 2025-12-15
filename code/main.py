@@ -1641,7 +1641,8 @@ CUSTOM_CSS = """
         html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
         
         // 6. Обрабатываем списки (начинающиеся с - или *)
-        //const lines = html.split('\n');
+        /*
+        const lines = html.split('\n');
         let inList = false;
         let listHtml = '';
         
@@ -1669,6 +1670,7 @@ CUSTOM_CSS = """
         }
         
         html = listHtml;
+        */
         
         // 7. Обрабатываем inline код (`code`)
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');

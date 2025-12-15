@@ -33,7 +33,6 @@ services:
     networks:
       - app-network
 
-
   elasticsearch:
     image: elasticsearch:9.1.0
     container_name: elasticsearch_async

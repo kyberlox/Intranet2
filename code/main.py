@@ -2206,7 +2206,48 @@ CUSTOM_CSS = """
 
     // === ОБНОВЛЕННАЯ ФУНКЦИЯ ОБРАБОТКИ MARKDOWN ===
 
-    
+    function convertMarkdownToHtml(text) {
+        if (!text) return '';
+        
+        let html = text;
+        
+        
+        
+        // 2. Обрабатываем таблицы ДО обработки остальных элементов
+        html = processTablesInMarkdown(html);
+        
+        // 3. Обрабатываем заголовки
+        html = html.replace(/^###\\s+(.*)$/gim, '<h3 class="markdown-h3">$1</h3>');
+        html = html.replace(/^##\\s+(.*)$/gim, '<h2 class="markdown-h2">$1</h2>');
+        html = html.replace(/^#\\s+(.*)$/gim, '<h1 class="markdown-h1">$1</h1>');
+        
+        // 4. Обрабатываем жирный текст (**текст**)
+        html = html.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
+        
+        // 5. Обрабатываем курсив (*текст*)
+        html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
+        
+        // 6. Обрабатываем списки (начинающиеся с - или 1. 2. 3.)
+        html = processLists(html);
+        
+        // 7. Обрабатываем inline код (`code`)
+        html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        
+        // 8. Обрабатываем ссылки [текст](URL)
+        html = html.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
+        
+        // 9. Заменяем двойные переносы на параграфы
+        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
+        html = '<p class="markdown-p">' + html + '</p>';
+        
+        // 10. Убираем пустые параграфы
+        html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
+        
+        // 11. Заменяем одиночные переносы на <br>
+        html = html.replace(/\\n/g, '<br>');
+        
+        return html;
+    }
 
     function processLists(text) {
         const lines = text.split('\\n');

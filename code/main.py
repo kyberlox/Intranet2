@@ -1585,7 +1585,7 @@ CUSTOM_CSS = """
         let html = text;
         
         // 1. Обрабатываем стандартные Markdown блоки кода ```language ... ```
-        html = html.replace(```(\\w+)?\n([\\s\\S]*?)```/g, function(match, language, codeContent) {
+        html = html.replace(```(\\w+)?\\n([\\s\\S]*?)```/g, function(match, language, codeContent) {
             console.log(`Найден стандартный блок кода с языком: ${language || 'text'}`);
             
             // Очищаем код
@@ -1596,10 +1596,9 @@ CUSTOM_CSS = """
             
             // Определяем отображаемое имя языка
             let langDisplay = lang.toUpperCase();
-            /*
             if (lang === 'text' || lang === '') {
                 // Автоматически определяем HTTP
-                const firstLine = codeContent.split('\n')[0];
+                const firstLine = codeContent.split('\\n')[0];
                 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
                 const isHttp = httpMethods.some(method => 
                     firstLine.toUpperCase().includes(method.toUpperCase())
@@ -1612,7 +1611,6 @@ CUSTOM_CSS = """
                     langDisplay = 'CODE';
                 }
             }
-            */
             return createCodeBlock(lang, langDisplay, codeContent);
         });
         
@@ -1674,14 +1672,14 @@ CUSTOM_CSS = """
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         
         // 8. Заменяем двойные переносы на параграфы
-        html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
+        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
         html = '<p class="markdown-p">' + html + '</p>';
         
         // 9. Убираем пустые параграфы
         html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
         
         // 10. Заменяем одиночные переносы на <br>
-        html = html.replace(/\n/g, '<br>');
+        html = html.replace(/\\n/g, '<br>');
         
         return html;
     }
@@ -2037,7 +2035,7 @@ CUSTOM_CSS = """
         // | Ячейка 3    | Ячейка 4    |
         
         const tableRegex = /(\\|.*\\|(\\s*\\|\\s*[-:|]+.*\\|)*(\\s*\\|.*\\|)*)/gm;
-        const lines = html.split('\n');
+        const lines = html.split('\\n');
         let inTable = false;
         let tableRows = [];
         let result = [];
@@ -2070,14 +2068,14 @@ CUSTOM_CSS = """
             result.push(tableHtml);
         }
         
-        return result.join('\n');
+        return result.join('\\n');
     }
 
     function convertMarkdownTableToHtml(tableRows) {
         if (tableRows.length < 2) return '';
         
-        let html = '<div class="markdown-table-container">\n';
-        html += '<table class="markdown-table">\n';
+        let html = '<div class="markdown-table-container">\\n';
+        html += '<table class="markdown-table">\\n';
         
         for (let i = 0; i < tableRows.length; i++) {
             const row = tableRows[i];
@@ -2097,32 +2095,32 @@ CUSTOM_CSS = """
             const isHeader = i === 0;
             
             if (isHeader) {
-                html += '  <thead>\n';
+                html += '  <thead>\\n';
             }
             
-            html += '    <tr>\n';
+            html += '    <tr>\\n';
             
             for (let j = 0; j < cells.length; j++) {
                 const cell = cells[j].trim();
                 const align = getColumnAlignment(tableRows, j);
                 
                 if (isHeader) {
-                    html += `      <th style="text-align: ${align}">${processTableCellContent(cell)}</th>\n`;
+                    html += `      <th style="text-align: ${align}">${processTableCellContent(cell)}</th>\\n`;
                 } else {
-                    html += `      <td style="text-align: ${align}">${processTableCellContent(cell)}</td>\n`;
+                    html += `      <td style="text-align: ${align}">${processTableCellContent(cell)}</td>\\n`;
                 }
             }
             
-            html += '    </tr>\n';
+            html += '    </tr>\\n';
             
             if (isHeader) {
-                html += '  </thead>\n  <tbody>\n';
+                html += '  </thead>\\n  <tbody>\\n';
             }
         }
         
-        html += '  </tbody>\n';
-        html += '</table>\n';
-        html += '</div>\n';
+        html += '  </tbody>\\n';
+        html += '</table>\\n';
+        html += '</div>\\n';
         
         return html;
     }
@@ -2225,7 +2223,7 @@ CUSTOM_CSS = """
             let langDisplay = language.toUpperCase();
             if (language === 'text' || language === '') {
                 // Автоматически определяем HTTP
-                const firstLine = codeContent.split('\n')[0];
+                const firstLine = codeContent.split('\\n')[0];
                 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
                 const isHttp = httpMethods.some(method => 
                     firstLine.toUpperCase().includes(method.toUpperCase())
@@ -2294,20 +2292,20 @@ CUSTOM_CSS = """
         html = html.replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="markdown-link">$1</a>');
         
         // 9. Заменяем двойные переносы на параграфы
-        html = html.replace(/\n\n/g, '</p><p class="markdown-p">');
+        html = html.replace(/\\n\\n/g, '</p><p class="markdown-p">');
         html = '<p class="markdown-p">' + html + '</p>';
         
         // 10. Убираем пустые параграфы
         html = html.replace(/<p class="markdown-p"><\\/p>/g, '');
         
         // 11. Заменяем одиночные переносы на <br>
-        html = html.replace(/\n/g, '<br>');
+        html = html.replace(/\\n/g, '<br>');
         
         return html;
     }
 
     function processLists(text) {
-        const lines = text.split('\n');
+        const lines = text.split('\\n');
         let inUnorderedList = false;
         let inOrderedList = false;
         let listDepth = 0;
@@ -2353,7 +2351,7 @@ CUSTOM_CSS = """
         if (inUnorderedList) result.push('</ul>');
         if (inOrderedList) result.push('</ol>');
         
-        return result.join('\n');
+        return result.join('\\n');
     }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.52.0/swagger-ui-standalone-preset.js"></script>

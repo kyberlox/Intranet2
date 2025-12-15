@@ -54,8 +54,10 @@
                                         </div>
                                     </ul>
                                 </li>
-                                <SearchIcon class="navbar-nav__search-icon"
-                                            @click="visibleSearchModal = true" />
+                                <div>
+                                    <SearchIcon class="navbar-nav__search-icon"
+                                                @click="visibleSearchModal = true" />
+                                </div>
                                 <SearchModal :visibleModal=visibleSearchModal
                                              @closeSearchModal="visibleSearchModal = false" />
                                 <LayoutHeaderModeChanger />

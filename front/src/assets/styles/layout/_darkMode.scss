@@ -29,6 +29,16 @@
         }
     }
 
+    @include sm {
+        .portal__auth__content {
+            background: none;
+        }
+
+        .portal__auth__form__auth {
+            background: #1b1b1b96;
+        }
+    }
+
     main,
     .birthday__slide__info,
     .neuroChat-content__wrapper,

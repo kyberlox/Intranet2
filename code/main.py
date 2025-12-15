@@ -1822,7 +1822,11 @@ CUSTOM_CSS = """
 
     // === ФУНКЦИЯ ФИЛЬТРАЦИИ ПО ТЕГАМ ===
     function filterTagsByHash() {
+        console.log('hashchanged-func');
+
         if (window.location.hash.includes('24')) {
+        console.log('hashchanged-func-1');
+
             const tagSections = document.querySelectorAll('.opblock-tag-section');
             tagSections.forEach((section) => {
                 if (section.children[0] && section.children[0].getAttribute('data-tag') !== 'Битрикс24') {
@@ -1832,6 +1836,7 @@ CUSTOM_CSS = """
                 }
             });
         } else {
+        console.log('hashchanged-func-2');
             // Показываем все разделы, если нет фильтрации
             const tagSections = document.querySelectorAll('.opblock-tag-section');
             tagSections.forEach((section) => {
@@ -2007,6 +2012,7 @@ CUSTOM_CSS = """
 
     // === ОБРАБОТЧИК ИЗМЕНЕНИЯ ХЭША ===
     window.addEventListener('hashchange', () => {
+        console.log('hashchanged-event');
         filterTagsByHash();
         
         // Также повторная обработка markdown при изменении хэша

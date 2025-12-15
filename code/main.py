@@ -2227,7 +2227,8 @@ CUSTOM_CSS = """
         // 5. Обрабатываем курсив (*текст*)
         html = html.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
         
-        
+        // 6. Обрабатываем списки (начинающиеся с - или 1. 2. 3.)
+        html = processLists(html);
         
         // 7. Обрабатываем inline код (`code`)
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');

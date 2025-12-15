@@ -1641,8 +1641,7 @@ CUSTOM_CSS = """
         html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
         
         // 6. Обрабатываем списки (начинающиеся с - или *)
-        /*
-        const lines = html.split('\n');
+        const lines = html.split('\\n');
         let inList = false;
         let listHtml = '';
         
@@ -1652,26 +1651,25 @@ CUSTOM_CSS = """
             if (line.startsWith('- ') || line.startsWith('* ')) {
                 if (!inList) {
                     inList = true;
-                    listHtml += '<ul class="markdown-list">\n';
+                    listHtml += '<ul class="markdown-list">\\n';
                 }
                 const itemText = line.substring(2);
-                listHtml += `  <li class="markdown-list-item">${itemText}</li>\n`;
+                listHtml += `  <li class="markdown-list-item">${itemText}</li>\\n`;
             } else {
                 if (inList) {
                     inList = false;
-                    listHtml += '</ul>\n';
+                    listHtml += '</ul>\\n';
                 }
-                listHtml += line + '\n';
+                listHtml += line + '\\n';
             }
         }
         
         if (inList) {
-            listHtml += '</ul>\n';
+            listHtml += '</ul>\\n';
         }
         
         html = listHtml;
-        */
-        
+
         // 7. Обрабатываем inline код (`code`)
         html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
         

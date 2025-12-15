@@ -1903,7 +1903,7 @@ CUSTOM_CSS = """
             .markdown-h3 { color: #f5821f; font-size: 1.3em; margin: 1em 0 0.5em 0; font-weight: bold; }
             .markdown-p { color: #ffffff; margin: 0.5em 0; line-height: 1.5; color: #ffffff; }
             .markdown-list { margin: 0.5em 0 0.5em 1.5em; color: #ffffff; }
-            .markdown-list-item { margin: 0.3em 0; line-height: 1.4; color: #ffffff; }
+            .markdown-list-item { margin: 0.3em 0; line-height: 1.4; color: #ffffff; list-style-type: none !important;}
             .inline-code { background: rgba(245, 130, 31, 0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #ff9a42; }
             strong { color: #f5821f; font-weight: bold; }
             em { font-style: italic; opacity: 0.9; }

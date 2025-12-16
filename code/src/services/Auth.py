@@ -535,7 +535,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
 ---
 
 ## Методы
-    - `{self.bitrix_domain}/oauth/authorize/` -- для авторизации через Битрикс24 по логину и паролю, 
+    - `/oauth/authorize/` -- для авторизации через Битрикс24 по логину и паролю, 
     - `oauth.bitrix24.tech` -- для обмена кода авторизации на токены,
     - `user.current.json` -- для полученя данных авторизованного в Битрикс24 пользователя
 

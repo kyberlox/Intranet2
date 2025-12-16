@@ -338,8 +338,19 @@ class AuthService:
         session_data.pop("ID")
         session_data["user_id"] = user_id
 
-        now = datetime.now()
-        session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
+        session_expires_at = datetime.now() + self.session_ttl
+        refresh_token_expires_at = None
+        session_data = {
+            "session_id": session_id,
+            "user_id": user_id,
+            "access_token_expires_at": session_expires_at,
+            "refresh_token_expires_at": refresh_token_expires_at,
+            "session_expires_at": session_expires_at.isoformat(),
+            "user_info": user_info,
+            "last_activity": datetime.now().isoformat(),
+            "created_at": datetime.now().isoformat(),
+            "member_id": tokens["member_id"]
+        }
         
         # Проверяем истекла ли сессия
         if now > session_expires_at:

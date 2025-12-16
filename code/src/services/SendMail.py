@@ -86,7 +86,7 @@ class SendEmail:
             </html>
             '''
             """
-            print(data, 'send-service')
+            print(self.data, 'send-service')
             msg.attach(MIMEText(content, "html"))
             file_id = self.file_url.split('/') #/intranet/Intranet2/code/files_db
             self.file_url = file_id[-1]

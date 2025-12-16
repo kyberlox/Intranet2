@@ -279,7 +279,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             request.state.access_token = session_data.get("access_token")
             
             # Логируем успешную аутентификацию (опционально)
-            log.info_message(f"User {session_data.get('user_id')} accessed {request.url.path}")
+            # log.info_message(f"User {session_data.get('user_id')} accessed {request.url.path}")
             
         except Exception as e:
             log.error_message(f"Authentication error: {str(e)}")

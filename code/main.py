@@ -207,8 +207,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             auth_header = request.headers.get("session_id")
             #print(request.headers)
 
-            if auth_header and auth_header.startswith("Bearer "):
-                session_id = auth_header[7:]
+            if auth_header:# and auth_header.startswith("Bearer "):
+                session_id = auth_header#[7:]
         
         if not session_id:
             log.warning_message(message="Authorization cookies or headers missing")

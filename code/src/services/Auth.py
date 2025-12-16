@@ -455,8 +455,8 @@ async def get_current_session(
     
     if not session_id:
         auth_header = request.headers.get("session_id")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_id = auth_header[7:]
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
     
     if not session_id:
         raise HTTPException(
@@ -601,8 +601,8 @@ async def refresh_session(request: Request, auth_service: AuthService = Depends(
     
     if not session_id:
         auth_header = request.headers.get("session_id")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_id = auth_header[7:]
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
     
     if not session_id:
         raise HTTPException(

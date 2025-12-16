@@ -661,3 +661,58 @@ async def logout(request: Request, response: Response, auth_service: AuthService
     return {"status": "success", "message": "Logged out successfully"}
 
 
+@auth_router.get("/regconf")
+async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
+    #проверка на авторизацию
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to authenticate with Bitrix24"
+        )
+    # получаю данные пользователя
+    user_info = {
+        'uuid': session_data['user_info']['XML_ID'][3:],
+        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+        'department': session_data['user_info']['UF_USR_1696592324977']
+    }
+
+    
+    token = requests.post(url='https://regconf.emk.ru/api/auth', json=user_info)
+    return token
+    
+    # # Создаем RedirectResponse
+    # response = RedirectResponse(url=redirect_url, status_code=302)
+    
+    # # собираю словарь 
+    # # если словарь собрался
+    # redirect_url = f"https://regconf.emk.ru/" # auth/{code}/{session['member_id']}
+    # # Устанавливаем session_id в куки
+    # response.set_cookie(
+    #     key="session_id",
+    #     value=session["session_id"],
+    #     max_age=int(AuthService().session_ttl.total_seconds())
+    # )
+    # # Устанавливаем session_id в куки
+    # response.set_cookie(
+    #     key="user_info",
+    #     value=user_info,
+    #     max_age=int(AuthService().session_ttl.total_seconds())
+    # )
+
+
+
+# $json = json_encode([
+#     'uuid' => $uuid,
+#     'fio' => $fio,
+#     'department' => $dep_name
+# ]);
+
+# if ($json) {
+#     $httpClient = new HttpClient();
+#     $httpClient->setHeader('Content-Type', 'application/json', true);
+#     $req = $httpClient->post('https://regconf.emk.ru/api/auth', $json);
+
+#     $token = json_decode($req)->token;
+
+#     LocalRedirect("https://regconf.emk.ru/" . $token, true);
+# }

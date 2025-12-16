@@ -527,41 +527,39 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
         return session
 
 
-@auth_router.get("/auth", tags=["Авторизация, Битрикс24"])
+@auth_router.get("/auth", tags=["Авторизация, Битрикс24"], description = """
+## OAuth 2.0 Аутентификация через Битрикс24
+
+Система аутентификации пользователей через OAuth 2.0 протокол Битрикс24. Обеспечивает безопасный вход и управление сессиями.
+
+---
+
+## Метод `exchange_code_for_tokens(code)`
+
+Выполняет обмен кода авторизации на access и refresh токены через OAuth 2.0 endpoint Битрикс24.
+
+### Входные параметры
+| Параметр | Тип | Описание | Обязательный |
+|----------|-----|----------|--------------|
+| `code` | string | Временный код авторизации, полученный от Битрикс24 после редиректа | Да |
+
+### Возвращаемые данные
+При успехе возвращает словарь с токенами и метаданными:
+```json
+{
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ...",
+    "refresh_token": "def50200f3a8d7b7e8f9a6c5d4e3f2a1b0c9d8e7f...",
+    "expires_in": 3600,
+    "token_type": "Bearer",
+    "scope": "user,bizproc,calendar",
+    "user_id": "123",
+    "member_id": "portal.emk.ru",
+    "domain": "portal.emk.ru",
+    "access_token_expires_at": "2024-01-15T11:30:00+03:00",
+    "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
+}
+""")
 async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
-    
-    """
-    ## OAuth 2.0 Аутентификация через Битрикс24
-
-    Система аутентификации пользователей через OAuth 2.0 протокол Битрикс24. Обеспечивает безопасный вход и управление сессиями.
-
-    ---
-
-    ## Метод `exchange_code_for_tokens(code)`
-
-    Выполняет обмен кода авторизации на access и refresh токены через OAuth 2.0 endpoint Битрикс24.
-
-    ### Входные параметры
-    | Параметр | Тип | Описание | Обязательный |
-    |----------|-----|----------|--------------|
-    | `code` | string | Временный код авторизации, полученный от Битрикс24 после редиректа | Да |
-
-    ### Возвращаемые данные
-    При успехе возвращает словарь с токенами и метаданными:
-    ```json
-    {
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ...",
-        "refresh_token": "def50200f3a8d7b7e8f9a6c5d4e3f2a1b0c9d8e7f...",
-        "expires_in": 3600,
-        "token_type": "Bearer",
-        "scope": "user,bizproc,calendar",
-        "user_id": "123",
-        "member_id": "portal.emk.ru",
-        "domain": "portal.emk.ru",
-        "access_token_expires_at": "2024-01-15T11:30:00+03:00",
-        "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
-    }
-    """
     
     if not code:
         raise HTTPException(

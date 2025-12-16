@@ -675,7 +675,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
         'department': session_data['user_info']['UF_USR_1696592324977']
     }
-
+    print(user_info)
     
     token = requests.post(url='https://regconf.emk.ru/api/auth', json=json.dumps(user_info))
     return token

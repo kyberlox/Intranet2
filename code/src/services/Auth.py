@@ -316,7 +316,7 @@ class AuthService:
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)
-        print("b24_ans", b24_ans)
+        
         if b24_ans['status'] == 'success':
             user_id = b24_ans['data']['USER_ID']
             
@@ -336,11 +336,11 @@ class AuthService:
 
 
         session_expires_at = datetime.now() + self.session_ttl
-        #refresh_token_expires_at = None
+       
         session_data = {
             "session_id": session_id,
             "user_id": user_id,
-            "access_token_expires_at": session_expires_at,
+            "access_token_expires_at": session_expires_at.isoformat(),
             "refresh_token_expires_at": None,
             "session_expires_at": session_expires_at.isoformat(),
             #"user_info": user_data_string,

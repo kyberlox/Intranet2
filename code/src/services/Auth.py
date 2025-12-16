@@ -337,7 +337,7 @@ class AuthService:
         dt = datetime.now() + self.session_ttl
 
         session_data = {
-            "ID": user_data.get("ID", ""),
+            "ID": user_data.get("id", ""),
             "user_id" : user_id,
             "user_uuid": user_uuid,
             "username": username,

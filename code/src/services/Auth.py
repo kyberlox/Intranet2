@@ -332,12 +332,12 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await self.get_user_info(session_id)
-
+        print(user_data)
         
         dt = datetime.now() + self.session_ttl
 
         session_data = user_data
-        session_data["user_id"] = user_id
+        #session_data["user_id"] = user_id
 
         # print(session_data)
 

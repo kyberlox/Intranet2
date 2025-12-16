@@ -314,10 +314,10 @@ class AuthService:
 
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
-        print(type(sess))
         b24_ans = try_b24(login=username, password=password)
         if b24_ans['status'] == 'success':
             user_id = b24_ans['data']['USER_ID']
+
             user_uuid = await self.get_user_uuid(sess=sess, user_id=user_id)
             print(type(sess))
         else:
@@ -325,6 +325,33 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await self.get_user_data(user_uuid, sess)
+
+        session_id = str(uuid.uuid4())
+        dt = datetime.now() + self.session_ttl
+
+        session_data = {
+            "ID": user_data.get("ID", ""),
+            "user_id" : user_id,
+            "user_uuid": user_uuid,
+            "username": username,
+            "email": user_data.get("email", ""),
+            "full_name": user_data.get("full_name", ""),
+            "expires_at": dt.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        # print(session_data)
+
+        # если пользователь валидный проверяем, нет ли его сессии в Rdis
+        ses_find = self.redis.find_session_id(user_uuid, username)
+        if ses_find is None:
+            self.redis.save_session(session_id, session_data)
+        else:
+            session_id = ses_find[8:]
+        return {
+            "session_id": session_id,
+            "user_id" : user_id,
+            "user": session_data
+        }
 
 #ROOT
 def try_b24(login, password):

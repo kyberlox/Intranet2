@@ -331,7 +331,7 @@ class AuthService:
         session_id = str(uuid.uuid4())
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        user_data = await User(uuid=user_uuid).user_inf_by_uuid(session)
+        user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
         print(user_data)
         
         dt = datetime.now() + self.session_ttl

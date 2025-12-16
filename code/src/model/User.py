@@ -301,13 +301,13 @@ class User:
     async def get_user_qr(self, user_uuid):
         import os
         from ..services.VCard import User_Vcard
-        current_file_path = f'./vcard_db/{uuid}.png'
+        current_file_path = f'./vcard_db/{user_uuid}.png'
         file_exist = os.path.isfile(current_file_path)
         
         if file_exist:
             return current_file_path
         else:
-            filename = User_Vcard(uuid).create_qr()
+            filename = User_Vcard(user_uuid).create_qr()
             file_path = f'./vcard_db/{filename}'
             return file_path
 

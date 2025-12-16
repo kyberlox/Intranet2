@@ -21,7 +21,7 @@ from ..base.pSQL.objects.App import get_async_db
 # Загрузка переменных окружения
 load_dotenv()
 
-auth_router = APIRouter(prefix="/auth_router", tags=["Авторизация"])
+auth_router = APIRouter(prefix="/auth_router")
 
 
 
@@ -445,10 +445,7 @@ def try_b24(login, password):
 
 
 # Dependency для получения текущей сессии
-async def get_current_session(
-    request: Request,
-    auth_service: AuthService = Depends(lambda: AuthService())
-) -> Dict[str, Any]:
+async def get_current_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())) -> Dict[str, Any]:
     """Получение текущей сессии пользователя"""
     # Ищем session_id в куках или заголовках
     session_id = request.cookies.get("session_id")
@@ -476,7 +473,8 @@ async def get_current_session(
     return session_data
 
 
-@auth_router.get("/login")
+
+@auth_router.get("/login", tags=["Авторизация"])
 async def login_to_bitrix24():
     """Перенаправление на страницу авторизации Bitrix24"""
     auth_service = AuthService()
@@ -484,7 +482,7 @@ async def login_to_bitrix24():
     return RedirectResponse(url=auth_url)
 
 #ROOT
-@auth_router.post("/root_auth")
+@auth_router.post("/root_auth", tags=["Авторизация"])
 async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):
     if "login" in data and "password" in data:  # login : str, password : str,
         login = data["login"]
@@ -529,15 +527,41 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
         return session
 
 
-@auth_router.get("/auth")
+@auth_router.get("/auth", tags=["Авторизация, Битрикс24"])
 async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
     
-    # """Callback endpoint для Bitrix24 OAuth"""
-    # if error:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail=f"Authorization failed: {error}"
-    #     )
+    """
+    ## OAuth 2.0 Аутентификация через Битрикс24
+
+    Система аутентификации пользователей через OAuth 2.0 протокол Битрикс24. Обеспечивает безопасный вход и управление сессиями.
+
+    ---
+
+    ## Метод `exchange_code_for_tokens(code)`
+
+    Выполняет обмен кода авторизации на access и refresh токены через OAuth 2.0 endpoint Битрикс24.
+
+    ### Входные параметры
+    | Параметр | Тип | Описание | Обязательный |
+    |----------|-----|----------|--------------|
+    | `code` | string | Временный код авторизации, полученный от Битрикс24 после редиректа | Да |
+
+    ### Возвращаемые данные
+    При успехе возвращает словарь с токенами и метаданными:
+    ```json
+    {
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ...",
+        "refresh_token": "def50200f3a8d7b7e8f9a6c5d4e3f2a1b0c9d8e7f...",
+        "expires_in": 3600,
+        "token_type": "Bearer",
+        "scope": "user,bizproc,calendar",
+        "user_id": "123",
+        "member_id": "portal.emk.ru",
+        "domain": "portal.emk.ru",
+        "access_token_expires_at": "2024-01-15T11:30:00+03:00",
+        "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
+    }
+    """
     
     if not code:
         raise HTTPException(
@@ -584,7 +608,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, response: Re
     return response
 
 
-@auth_router.get("/check")
+@auth_router.get("/check", tags=["Авторизация"])
 async def check_session(session_data: Dict[str, Any] = Depends(get_current_session)):
     """Проверка валидности сессии"""
     return {
@@ -594,7 +618,7 @@ async def check_session(session_data: Dict[str, Any] = Depends(get_current_sessi
     }
 
 
-@auth_router.post("/refresh")
+@auth_router.post("/refresh", tags=["Авторизация"])
 async def refresh_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())):
     """Принудительное обновление сессии"""
     session_id = request.cookies.get("session_id")
@@ -625,7 +649,7 @@ async def refresh_session(request: Request, auth_service: AuthService = Depends(
     }
 
 
-@auth_router.post("/logout")
+@auth_router.post("/logout", tags=["Авторизация"])
 async def logout(request: Request, response: Response, auth_service: AuthService = Depends(lambda: AuthService())):
     """Выход из системы"""
     session_id = request.cookies.get("session_id")

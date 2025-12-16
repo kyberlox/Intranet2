@@ -320,7 +320,7 @@ class AuthService:
         if b24_ans['status'] == 'success':
             user_id = b24_ans['data']['USER_ID']
 
-            user_uuid = await get_user_uuid(sess=sess, user_id=user_id)
+            user_uuid = await self.get_user_uuid(sess=sess, user_id=user_id)
 
         else:
             return LogsMaker().error_message("Auth error! Invalid login or password!")
@@ -355,10 +355,10 @@ class AuthService:
             "user": session_data
         }
 
-#ROOT
-async def get_user_uuid(self, user_id, sess):
-    res = await User(id=user_id).search_by_id(session=sess)
-    return res["uuid"]
+    #ROOT
+    async def get_user_uuid(self, user_id, sess):
+        res = await User(id=user_id).search_by_id(session=sess)
+        return res["uuid"]
 
 #ROOT
 def extract_auth_data(html_content):

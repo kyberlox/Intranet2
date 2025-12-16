@@ -332,7 +332,7 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        
+        print(user_data)
 
 
         session_expires_at = datetime.now() + self.session_ttl

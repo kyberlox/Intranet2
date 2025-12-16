@@ -348,11 +348,6 @@ class AuthService:
             "created_at": datetime.now().isoformat(),
             "member_id": None
         }
-        
-        # Проверяем истекла ли сессия
-        if now > session_expires_at:
-            self.delete_session(session_id)
-            return None
         # print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis

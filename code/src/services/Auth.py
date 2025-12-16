@@ -678,45 +678,28 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
         'department': session_data['user_info']['UF_USR_1696592324977']
     }
-    print(user_info)
     
-    token = requests.post(url='https://regconf.emk.ru/api/auth', json=user_info)
-    print(token.json())
-    return True
+    res = requests.post(url='https://regconf.emk.ru/api/auth', json=user_info)
+    token = res.json()
+
+    redirect_url = f"https://regconf.emk.ru/"
+     # Создаем RedirectResponse
+    response = RedirectResponse(url=redirect_url, status_code=302)
+
+    # Для API возвращаем JSON, для веб-приложения можно сделать редирект
+    # response = JSONResponse(content={
+    #     "status": "success",
+    #     "session_id": session["session_id"],
+    #     "user": session["user"],
+    #     "expires_at": session["session_expires_at"]
+    # })
+
+    # Устанавливаем session_id в куки
+    response.set_cookie(
+        key="session_id",
+        value=token["token"],
+        max_age=int(AuthService().session_ttl.total_seconds())
+    )
+
+    return response
     
-    # # Создаем RedirectResponse
-    # response = RedirectResponse(url=redirect_url, status_code=302)
-    
-    # # собираю словарь 
-    # # если словарь собрался
-    # redirect_url = f"https://regconf.emk.ru/" # auth/{code}/{session['member_id']}
-    # # Устанавливаем session_id в куки
-    # response.set_cookie(
-    #     key="session_id",
-    #     value=session["session_id"],
-    #     max_age=int(AuthService().session_ttl.total_seconds())
-    # )
-    # # Устанавливаем session_id в куки
-    # response.set_cookie(
-    #     key="user_info",
-    #     value=user_info,
-    #     max_age=int(AuthService().session_ttl.total_seconds())
-    # )
-
-
-
-# $json = json_encode([
-#     'uuid' => $uuid,
-#     'fio' => $fio,
-#     'department' => $dep_name
-# ]);
-
-# if ($json) {
-#     $httpClient = new HttpClient();
-#     $httpClient->setHeader('Content-Type', 'application/json', true);
-#     $req = $httpClient->post('https://regconf.emk.ru/api/auth', $json);
-
-#     $token = json_decode($req)->token;
-
-#     LocalRedirect("https://regconf.emk.ru/" . $token, true);
-# }

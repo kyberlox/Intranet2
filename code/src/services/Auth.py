@@ -315,6 +315,11 @@ class AuthService:
         return session
 
     #ROOT
+    async def get_user_uuid(self, user_id, sess):
+        res = await User(id=user_id).search_by_id(session=sess)
+        return res["uuid"]
+        
+    #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)
         print(b24_ans)
@@ -355,11 +360,6 @@ class AuthService:
             "user_id" : user_id,
             "user": session_data
         }
-
-    #ROOT
-    async def get_user_uuid(self, user_id, sess):
-        res = await User(id=user_id).search_by_id(session=sess)
-        return res["uuid"]
 
 #ROOT
 def extract_auth_data(html_content):

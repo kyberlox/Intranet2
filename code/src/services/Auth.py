@@ -349,16 +349,12 @@ class AuthService:
             "created_at": datetime.now().isoformat(),
             "member_id": None
         }
-        # print(session_data)
+        print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.get_session(session_id)
         if ses_find is None:
-            self.redis.save_session(
-                key=session_id,
-                data=session_data,
-                ttl=int(self.session_ttl.total_seconds())
-            )
+            self.redis.save_session(key=session_id, data=session_data, ttl=int(self.session_ttl.total_seconds()))
         
         else:
             session_id = ses_find[8:]

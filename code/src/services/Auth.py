@@ -166,7 +166,6 @@ class AuthService:
             "created_at": datetime.now().isoformat(),
             "member_id": tokens["member_id"]
         }
-        print(f'session_id={session_id}, data={session_data}, ttl={self.session_ttl.total_seconds()}')
         # Сохраняем сессию в Redis
         self.redis.save_session(
             key=session_id,

@@ -356,6 +356,11 @@ class AuthService:
         }
 
 #ROOT
+async def get_user_uuid(self, user_id, sess):
+    res = await User(id=user_id).search_by_id(session=sess)
+    return res["uuid"]
+
+#ROOT
 def extract_auth_data(html_content):
     """
     Извлекает USER_ID и bitrix_sessid из HTML

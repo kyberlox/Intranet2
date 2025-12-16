@@ -332,11 +332,8 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        print("user_data", user_data)
+        
 
-        session_data = user_data
-        session_data.pop("ID")
-        session_data["user_id"] = user_id
 
         session_expires_at = datetime.now() + self.session_ttl
         refresh_token_expires_at = None
@@ -346,7 +343,7 @@ class AuthService:
             "access_token_expires_at": session_expires_at,
             "refresh_token_expires_at": refresh_token_expires_at,
             "session_expires_at": session_expires_at.isoformat(),
-            "user_info": user_info,
+            "user_info": user_data,
             "last_activity": datetime.now().isoformat(),
             "created_at": datetime.now().isoformat(),
             "member_id": tokens["member_id"]

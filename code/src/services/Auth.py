@@ -314,17 +314,13 @@ class AuthService:
 
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
-        if user_uuid == False:
+        print(type(sess))
+        b24_ans = try_b24(login=username, password=password)
+        if b24_ans['status'] == 'success':
+            user_id = b24_ans['data']['USER_ID']
+            user_uuid = await self.get_user_uuid(sess=sess, user_id=user_id)
             print(type(sess))
-            b24_ans = try_b24(login=username, password=password)
-            if b24_ans['status'] == 'success':
-                user_id = b24_ans['data']['USER_ID']
-                user_uuid = await self.get_user_uuid(sess=sess, user_id=user_id)
-                print(type(sess))
-            else:
-                return LogsMaker().error_message("Auth error! Invalid login or password!")
-
-        elif user_uuid is None:
+        else:
             return LogsMaker().error_message("Auth error! Invalid login or password!")
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)

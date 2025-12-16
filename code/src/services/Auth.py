@@ -314,7 +314,7 @@ class AuthService:
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         if user_uuid == False:
-            print(sess)
+            print(type(sess))
             b24_ans = try_b24(login=username, password=password)
             if b24_ans['status'] == 'success':
                 user_id = b24_ans['data']['USER_ID']

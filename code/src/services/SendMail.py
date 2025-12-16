@@ -114,3 +114,59 @@ class SendEmail:
             return {'status': True}
         except SMTPException as e:
             return LogsMaker().error_message(e)
+
+    def send_error(self):
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = self.sender
+            msg["To"] = 'it.dpm@emk.ru'
+            msg['Subject'] = "баг репорт/интранет"
+
+            content = self.html_content#['html_content']
+            
+            
+            """
+            html_content = '''
+            <html>
+                <body>
+                    <p>Здравствуйте!</p>
+                    <p>
+                        <img src="cid:file_logo" alt="Будущая открытка">
+                    </p>
+                    <p>Это тестовое письмо с логотипом компании в подписи.</p>
+                    <p>
+                        <img src="cid:company_logo" alt="Логотип компании" width="200">
+                    </p>
+                    <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>
+                </body>
+            </html>
+            '''
+            """
+            
+            msg.attach(MIMEText(content, "html"))
+            file_id = self.file_url.split('/') #/intranet/Intranet2/code/files_db
+            self.file_url = file_id[-1]
+            file_path = os.path.join(STORAGE_PATH, self.file_url)
+            with open(file_path, "rb") as img_file: 
+                logo = MIMEImage(img_file.read())
+                logo.add_header("Content-ID", "<file_logo>")  
+                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+                msg.attach(logo)
+
+            # Загружаем логотип и добавляем его как встроенное изображение
+            with open("./src/services/mail_logo.png", "rb") as img_file: 
+                logo = MIMEImage(img_file.read())
+                logo.add_header("Content-ID", "<company_logo>")  
+                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+                msg.attach(logo)
+
+           
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(server_mail_login, server_mail_pswd)
+            server.send_message(msg)
+            server.quit()
+            self.send_sucsesfell()
+            return {'status': True}
+        except SMTPException as e:
+            return LogsMaker().error_message(e)

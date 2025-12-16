@@ -208,6 +208,7 @@ class UserModel:
             indirect_data = user.indirect_data
             list_departs = []
             list_departs_id = []
+            print(user.__dict__, 'где тут булл')
             if len(indirect_data['uf_department']) != 0:
                 for dep in indirect_data['uf_department']:
 

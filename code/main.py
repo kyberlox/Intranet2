@@ -132,6 +132,7 @@ os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
+app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
 
 # b24_docs_routs = [
 #     "/api/users_depart"

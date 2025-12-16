@@ -356,6 +356,24 @@ class AuthService:
         }
 
 #ROOT
+def extract_auth_data(html_content):
+    """
+    Извлекает USER_ID и bitrix_sessid из HTML
+    """
+    # Ищем USER_ID
+    user_id_match = re.search(r'"USER_ID":"(\d+)"', html_content)
+    # Ищем bitrix_sessid
+    sessid_match = re.search(r'"bitrix_sessid":"([a-f0-9]+)"', html_content)
+
+    user_id = user_id_match.group(1) if user_id_match else None
+    bitrix_sessid = sessid_match.group(1) if sessid_match else None
+
+    return {
+        "USER_ID": user_id,
+        "bitrix_sessid": bitrix_sessid
+    }
+
+#ROOT
 def try_b24(login, password):
     # URL для авторизации
     auth_url = "https://portal.emk.ru/?login=yes"

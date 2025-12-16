@@ -315,11 +315,12 @@ class AuthService:
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)
+        print(b24_ans)
         if b24_ans['status'] == 'success':
             user_id = b24_ans['data']['USER_ID']
 
             user_uuid = await self.get_user_uuid(sess=sess, user_id=user_id)
-            print(type(sess))
+
         else:
             return LogsMaker().error_message("Auth error! Invalid login or password!")
 

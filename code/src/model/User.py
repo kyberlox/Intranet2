@@ -463,6 +463,10 @@ def send_test_mail(data=Body(...)):
     # {"reciever" : str, "title": str, "text": str, "file_url": str}
     return SendEmail(data=data).send_congratulations()
 
+@users_router.post("/send_error", tags=["Пользователь"])
+def send_error(data=Body(...)):
+    # {"reciever" : str, "title": str, "text": str, "file_url": str}
+    return SendEmail(data=data).send_error()
 
 # лайки и просмотры для статистики
 @users_router.get("/get_user_likes", tags=["Пользователь"])

@@ -22,7 +22,7 @@ class SendEmail:
         self.sender = data['sender']
         self.reciever = data['reciever']
         self.title = data['title']
-        self.file_url = data['file_url']
+        self.file_url = data['file_url'] 
         self.html_content = data['text']
         self.data = data
 
@@ -86,7 +86,7 @@ class SendEmail:
             </html>
             '''
             """
-            print(self.data, 'send-service')
+            # print(self.data, 'send-service')
             msg.attach(MIMEText(content, "html"))
             file_id = self.file_url.split('/') #/intranet/Intranet2/code/files_db
             self.file_url = file_id[-1]
@@ -144,14 +144,14 @@ class SendEmail:
             """
             
             msg.attach(MIMEText(content, "html"))
-            file_id = self.file_url.split('/') #/intranet/Intranet2/code/files_db
-            self.file_url = file_id[-1]
-            file_path = os.path.join(STORAGE_PATH, self.file_url)
-            with open(file_path, "rb") as img_file: 
-                logo = MIMEImage(img_file.read())
-                logo.add_header("Content-ID", "<file_logo>")  
-                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
-                msg.attach(logo)
+            # file_id = self.file_url.split('/') #/intranet/Intranet2/code/files_db
+            # self.file_url = file_id[-1]
+            # file_path = os.path.join(STORAGE_PATH, self.file_url)
+            # with open(file_path, "rb") as img_file: 
+            #     logo = MIMEImage(img_file.read())
+            #     logo.add_header("Content-ID", "<file_logo>")  
+            #     logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+            #     msg.attach(logo)
 
             # Загружаем логотип и добавляем его как встроенное изображение
             with open("./src/services/mail_logo.png", "rb") as img_file: 

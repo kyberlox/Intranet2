@@ -333,12 +333,18 @@ class AuthService:
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
         print("user_data", user_data)
-        
-        dt = datetime.now() + self.session_ttl
 
         session_data = user_data
         session_data.pop("ID")
         session_data["user_id"] = user_id
+
+        now = datetime.now()
+        session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
+        
+        # Проверяем истекла ли сессия
+        if now > session_expires_at:
+            self.delete_session(session_id)
+            return None
         # print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis

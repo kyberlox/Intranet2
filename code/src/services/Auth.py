@@ -340,8 +340,7 @@ class AuthService:
             "user_id" : user_id,
             "user_uuid": user_uuid,
             "username": username,
-            "email": user_data.get("email", ""),
-            "full_name": user_data.get("full_name", ""),
+            "email": user_data["email"],
             "expires_at": dt.strftime('%Y-%m-%d %H:%M:%S')
         }
 

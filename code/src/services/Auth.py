@@ -430,9 +430,15 @@ async def login_to_bitrix24():
 
 #ROOT
 @auth_router.post("/root_auth")
-async def root_auth(login : str, password : str, response: Response, sess: AsyncSession = Depends(get_async_db)):
-    session = await AuthService().root_authenticate(login, password, sess)
+async def root_auth(data=Body(), response: Response, sess: AsyncSession = Depends(get_async_db)):
+    if "login" in data and "password" in data:  # login : str, password : str,
+        login = data["login"]
+        password = data["password"]
+    else:
+        # return await LogsMaker().warning_message(message="Login or Password has missing")
+        return LogsMaker().warning_message(message="Login or Password has missing")
 
+    session = await AuthService().root_authenticate(login, password, sess)
     
     if not session:
         # return await LogsMaker().warning_message(message="Invalid credentials")

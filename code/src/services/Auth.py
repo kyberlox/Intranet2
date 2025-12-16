@@ -336,13 +336,8 @@ class AuthService:
         
         dt = datetime.now() + self.session_ttl
 
-        session_data = {
-            "user_id" : user_id,
-            "user_uuid": user_uuid,
-            "username": username,
-            "email": user_data["email"],
-            "expires_at": dt.strftime('%Y-%m-%d %H:%M:%S')
-        }
+        session_data = user_data
+        session_data["user_id"] = user_id
 
         # print(session_data)
 

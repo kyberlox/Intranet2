@@ -327,11 +327,13 @@ class AuthService:
 
         else:
             return LogsMaker().error_message("Auth error! Invalid login or password!")
+        
+        session_id = str(uuid.uuid4())
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        user_data = await self.get_user_info(user_uuid, sess)
+        user_data = await self.get_user_info(session_id)
 
-        session_id = str(uuid.uuid4())
+        
         dt = datetime.now() + self.session_ttl
 
         session_data = {

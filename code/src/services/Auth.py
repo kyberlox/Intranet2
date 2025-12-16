@@ -332,7 +332,7 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        user_data_string = json.dumps(user_data)
+        user_data_string = json.dump(user_data)
         print(user_data_string)
 
 

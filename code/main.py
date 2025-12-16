@@ -156,6 +156,7 @@ open_links = [
     "/api/auth_router",
     "/api/total_update",
     "/api/files",
+    "/api/vcard_files",
     "/api/tours",
     "/api/compress_image", "compress_image",
     "/api/user_files",

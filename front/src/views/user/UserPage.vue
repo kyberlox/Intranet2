@@ -106,6 +106,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="personal__user__vcard__section">
+                    <div class="grid__content-1">
+                        <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
+                        <div class="personal__user__vcard"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <div v-else>
@@ -154,6 +160,7 @@ export default defineComponent({
         const isPointsModalOpen = ref(false);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
+        const vcard = ref();
 
         watch(props, (newVal) => {
             if (newVal) {
@@ -165,6 +172,7 @@ export default defineComponent({
                             user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
                         }
                     })
+                
             }
         }, { immediate: true, deep: true })
 

@@ -5,6 +5,7 @@ import EmkLogo from "@/assets/icons/layout/sidebar/socLinks/EmkLogo.svg";
 import DocsIcon from "@/assets/icons/layout/sidebar/socLinks/DocsIcon.svg";
 import MotiwIcon from "@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg";
 import BitrixIcon from "@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg";
+import BugIcon from '@/assets/icons/layout/sidebar/socLinks/Bug.svg';
 
 import type { MainMenuPoints, WorkLink, SupportLink } from "@/interfaces/ILayout";
 
@@ -254,7 +255,7 @@ export const supportLinks: SupportLink[] = [
         title: "5182",
         href: "tel:#5182",
         description: "Тех. поддержка сайта",
-        icon: PhoneIcon,
+        icon: BugIcon,
     },
     {
         title: "Мы в VK",

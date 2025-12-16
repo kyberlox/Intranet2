@@ -61,6 +61,7 @@ export default defineComponent({
     setup() {
         const route = useRoute();
         const userData = useUserData();
+        // const isLogin = computed(() => userData.getIsLogin);
         const isLogin = computed(() => userData.getIsLogin);
 
         // предзагрузка данных в стор

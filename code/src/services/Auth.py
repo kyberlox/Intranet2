@@ -14,6 +14,7 @@ from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
 #ROOT
 import re
+from ..model.User import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..base.pSQL.objects.App import get_async_db
 

@@ -434,7 +434,7 @@ async def login_to_bitrix24():
 #ROOT
 @auth_router.post("/root_auth")
 async def root_auth(login : str, password : str, response: Response, sess: AsyncSession = Depends(get_async_db)):
-     session = await AuthService().root_authenticate(login, password, sess)
+    session = await AuthService().root_authenticate(login, password, sess)
 
     
     if not session:

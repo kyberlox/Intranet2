@@ -317,7 +317,7 @@ class AuthService:
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)
-        print(b24_ans)
+        print("b24_ans", b24_ans)
         if b24_ans['status'] == 'success':
             user_id = b24_ans['data']['USER_ID']
             
@@ -332,7 +332,7 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        print(user_data)
+        print("user_data", user_data)
         
         dt = datetime.now() + self.session_ttl
 

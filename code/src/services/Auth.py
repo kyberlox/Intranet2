@@ -331,7 +331,7 @@ class AuthService:
         session_id = str(uuid.uuid4())
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        user_data = await self.get_user_info(session_id)
+        user_data = await User(uuid=user_uuid).user_inf_by_uuid(session)
         print(user_data)
         
         dt = datetime.now() + self.session_ttl
@@ -341,7 +341,7 @@ class AuthService:
         # print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
-        ses_find = self.redis.find_session_id(user_uuid, username)
+        ses_find = self.redis.find_session_id(user_uuid, username) 
         if ses_find is None:
             self.redis.save_session(session_id, session_data)
         else:

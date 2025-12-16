@@ -527,7 +527,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
         return session
 
 
-@auth_router.get("/auth", tags=["Авторизация, Битрикс24"], description = """
+@auth_router.get("/auth", tags=["Авторизация", "Битрикс24"], description = """
 ## OAuth 2.0 Аутентификация через Битрикс24
 
 Система аутентификации пользователей через OAuth 2.0 протокол Битрикс24. Обеспечивает безопасный вход и управление сессиями.

@@ -436,7 +436,7 @@ async def login_to_bitrix24():
 async def root_auth(login : str, password : str, response: Response, sess: AsyncSession = Depends(get_async_db)):
      session = await AuthService().root_authenticate(login, password, sess)
 
-    print(session)
+    
     if not session:
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")

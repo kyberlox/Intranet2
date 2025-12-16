@@ -201,6 +201,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         # Получаем session_id из куков или заголовков
         session_id = request.cookies.get("session_id")
         
+        
         if not session_id:
             # Проверяем заголовок Authorization с префиксом Bearer
             auth_header = request.headers.get("session_id")

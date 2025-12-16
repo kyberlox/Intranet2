@@ -55,6 +55,9 @@ class User:
     async def search_by_id(self, session):
         self.UserModel.id = self.id
         res = await self.UserModel.find_by_id(session)
+        if res['uuid']:
+            vcard_file_url = await self.get_user_qr(user_uuid=res['uuid'])
+            res['vcard_file_url'] = vcard_file_url
         return res
 
     async def search_by_id_all(self, session):
@@ -294,6 +297,20 @@ class User:
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')
+
+    async def get_user_qr(self, user_uuid):
+        import os
+        from ..services.VCard import User_Vcard
+        current_file_path = f'https://intranet.emk.ru/api/vcard_files/{user_uuid}.png'
+        file_exist = os.path.isfile(current_file_path)
+        
+        if file_exist:
+            return current_file_path
+        else:
+            filename = User_Vcard(user_uuid).create_qr()
+            file_path = f'https://intranet.emk.ru/api/vcard_files/{filename}'
+            return file_path
+
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -463,6 +480,10 @@ def send_test_mail(data=Body(...)):
     # {"reciever" : str, "title": str, "text": str, "file_url": str}
     return SendEmail(data=data).send_congratulations()
 
+@users_router.post("/send_error", tags=["Пользователь"])
+def send_error(data=Body(...)):
+    # {"reciever" : str, "title": str, "text": str, "file_url": str}
+    return SendEmail(data=data).send_error()
 
 # лайки и просмотры для статистики
 @users_router.get("/get_user_likes", tags=["Пользователь"])

@@ -132,6 +132,7 @@ os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
+app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
 
 # b24_docs_routs = [
 #     "/api/users_depart"
@@ -200,12 +201,17 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         
         # Получаем session_id из куков или заголовков
         session_id = request.cookies.get("session_id")
-        
+
+        print(session_id)
         if not session_id:
             # Проверяем заголовок Authorization с префиксом Bearer
             auth_header = request.headers.get("session_id")
+            print(request.headers)
+            print(auth_header)
             if auth_header and auth_header.startswith("Bearer "):
                 session_id = auth_header[7:]
+        
+        print(session_id)
         
         if not session_id:
             log.warning_message(message="Authorization cookies or headers missing")
@@ -279,7 +285,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             request.state.access_token = session_data.get("access_token")
             
             # Логируем успешную аутентификацию (опционально)
-            log.info_message(f"User {session_data.get('user_id')} accessed {request.url.path}")
+            # log.info_message(f"User {session_data.get('user_id')} accessed {request.url.path}")
             
         except Exception as e:
             log.error_message(f"Authentication error: {str(e)}")

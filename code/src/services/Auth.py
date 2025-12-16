@@ -12,13 +12,19 @@ import requests
 
 from ..base.RedisStorage import RedisStorage
 from src.services.LogsMaker import LogsMaker
+#ROOT
+import re
+from ..model.User import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from ..base.pSQL.objects.App import get_async_db
 
 # Загрузка переменных окружения
 load_dotenv()
 
 auth_router = APIRouter(prefix="/auth_router", tags=["Авторизация"])
 
- 
+
+
 class AuthService: 
     def __init__(self):
         # Настройки Redis
@@ -307,6 +313,125 @@ class AuthService:
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
         return session
+        
+    #ROOT
+    async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
+        b24_ans = try_b24(login=username, password=password)
+        print(b24_ans)
+        if b24_ans['status'] == 'success':
+            user_id = b24_ans['data']['USER_ID']
+            
+            res = await User(id=user_id).search_by_id(session=sess)
+        
+            user_uuid = res["uuid"]
+
+        else:
+            return LogsMaker().error_message("Auth error! Invalid login or password!")
+        
+        session_id = str(uuid.uuid4())
+
+        # Получаем дополнительные данные пользователя (замените на ваш метод)
+        user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
+        print(user_data)
+        
+        dt = datetime.now() + self.session_ttl
+
+        session_data = user_data
+        session_data.pop("ID")
+        session_data["user_id"] = user_id
+        # print(session_data)
+
+        # если пользователь валидный проверяем, нет ли его сессии в Rdis
+        ses_find = self.redis.get_session(session_id)
+        if ses_find is None:
+            self.redis.save_session(session_id, session_data)
+        else:
+            session_id = ses_find[8:]
+        return {
+            "session_id": session_id,
+            "user_id" : user_id,
+            "user": session_data
+        }
+
+#ROOT
+def extract_auth_data(html_content):
+    """
+    Извлекает USER_ID и bitrix_sessid из HTML
+    """
+    # Ищем USER_ID
+    user_id_match = re.search(r'"USER_ID":"(\d+)"', html_content)
+    # Ищем bitrix_sessid
+    sessid_match = re.search(r'"bitrix_sessid":"([a-f0-9]+)"', html_content)
+
+    user_id = user_id_match.group(1) if user_id_match else None
+    bitrix_sessid = sessid_match.group(1) if sessid_match else None
+
+    return {
+        "USER_ID": user_id,
+        "bitrix_sessid": bitrix_sessid
+    }
+
+#ROOT
+def try_b24(login, password):
+    # URL для авторизации
+    auth_url = "https://portal.emk.ru/?login=yes"
+
+    # Данные формы
+    form_data = {
+        "AUTH_FORM": "Y",
+        "TYPE": "AUTH",
+        "backurl": "/",
+        "Login": "Войти",
+        "USER_LOGIN": login,
+        "USER_PASSWORD": password
+    }
+
+    # Заголовки
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+
+    try:
+        # Отправляем POST запрос
+        response = requests.post(auth_url, data=form_data, headers=headers)
+        response.raise_for_status()
+
+        # Проверяем заголовок страницы с помощью регулярного выражения
+        title_match = re.search(r'<title>\s*(.*?)\s*</title>', response.text, re.IGNORECASE)
+        title_text = title_match.group(1) if title_match else ""
+
+        # Если в title есть "Авторизация" - неудачная авторизация
+        if "Авторизация" in title_text:
+            return {
+                "status": "failed",
+                "message": "Неверный логин или пароль"
+            }
+
+        # Если авторизация успешна - извлекаем данные
+        auth_data = extract_auth_data(response.text)
+
+        if auth_data["USER_ID"] and auth_data["bitrix_sessid"]:
+            return {
+                "status": "success",
+                "data": auth_data
+            }
+        else:
+            return {
+                "status": "failed",
+                "message": "Авторизация прошла, но не удалось извлечь данные пользователя"
+            }
+
+    except requests.RequestException as e:
+        return {
+            "status": "error",
+            "message": f"Ошибка сети: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Ошибка: {str(e)}"
+        }
 
 
 # Dependency для получения текущей сессии
@@ -348,14 +473,54 @@ async def login_to_bitrix24():
     auth_url = await auth_service.get_auth_url()
     return RedirectResponse(url=auth_url)
 
+#ROOT
+@auth_router.post("/root_auth")
+async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):
+    if "login" in data and "password" in data:  # login : str, password : str,
+        login = data["login"]
+        password = data["password"]
+    else:
+        # return await LogsMaker().warning_message(message="Login or Password has missing")
+        return LogsMaker().warning_message(message="Login or Password has missing")
+
+    session = await AuthService().root_authenticate(login, password, sess)
+    
+    if not session:
+        # return await LogsMaker().warning_message(message="Invalid credentials")
+        return LogsMaker().warning_message(message="Invalid credentials")
+    elif "err" in session.keys() or "error" in session.keys():
+        # return await LogsMaker().warning_message(message=session["err"])
+
+        return LogsMaker().warning_message(message=session)
+
+    if "session_id" in session:
+
+        session_id = session["session_id"]
+        user_id = session["user_id"]
+        
+        # Устанавливаем session_id в куки
+        response.set_cookie(
+            key="session_id",
+            value=session_id,
+            max_age=int(AuthService().session_ttl.total_seconds())
+        )
+
+        # Устанавливаем session_id в куки
+        response.set_cookie(
+            key="user_id",
+            value=user_id,
+            max_age=int(AuthService().session_ttl.total_seconds())
+        )
+
+        # return JSONResponse(content=session, headers=response.headers)
+        return session
+    else:
+
+        return session
+
 
 @auth_router.get("/auth")
-async def bitrix24_callback(
-    code: str,
-    state: Optional[str] = None,
-    # error: Optional[str] = None,
-    response: Response = None
-):
+async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
     
     # """Callback endpoint для Bitrix24 OAuth"""
     # if error:
@@ -410,9 +575,7 @@ async def bitrix24_callback(
 
 
 @auth_router.get("/check")
-async def check_session(
-    session_data: Dict[str, Any] = Depends(get_current_session)
-):
+async def check_session(session_data: Dict[str, Any] = Depends(get_current_session)):
     """Проверка валидности сессии"""
     return {
         "authenticated": True,
@@ -422,10 +585,7 @@ async def check_session(
 
 
 @auth_router.post("/refresh")
-async def refresh_session(
-    request: Request,
-    auth_service: AuthService = Depends(lambda: AuthService())
-):
+async def refresh_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())):
     """Принудительное обновление сессии"""
     session_id = request.cookies.get("session_id")
     
@@ -456,11 +616,7 @@ async def refresh_session(
 
 
 @auth_router.post("/logout")
-async def logout(
-    request: Request,
-    response: Response,
-    auth_service: AuthService = Depends(lambda: AuthService())
-):
+async def logout(request: Request, response: Response, auth_service: AuthService = Depends(lambda: AuthService())):
     """Выход из системы"""
     session_id = request.cookies.get("session_id")
     
@@ -473,33 +629,3 @@ async def logout(
     return {"status": "success", "message": "Logged out successfully"}
 
 
-# # Middleware для автоматического обновления сессии
-# @app.middleware("http")
-# async def session_middleware(request: Request, call_next):
-#     """Middleware для обработки сессий"""
-#     auth_service = AuthService()
-#     session_id = request.cookies.get("session_id")
-    
-#     if session_id:
-#         # Проверяем и обновляем сессию
-#         session_data = auth_service.validate_and_refresh_session(session_id)
-        
-#         if session_data:
-#             # Если сессия была обновлена, устанавливаем новые куки
-#             response = await call_next(request)
-            
-#             # Проверяем, не нужно ли обновить куки (скользящее окно)
-#             last_activity = datetime.fromisoformat(session_data["last_activity"])
-#             if datetime.now() > last_activity + auth_service.session_sliding_window:
-#                 response.set_cookie(
-#                     key="session_id",
-#                     value=session_id,
-#                     httponly=True,
-#                     secure=True,
-#                     samesite="lax",
-#                     max_age=int(auth_service.session_ttl.total_seconds())
-#                 )
-            
-#             return response
-    
-#     return await call_next(request)

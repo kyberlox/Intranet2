@@ -337,7 +337,6 @@ class AuthService:
         dt = datetime.now() + self.session_ttl
 
         session_data = user_data
-        #session_data["user_id"] = user_id
 
         # print(session_data)
 

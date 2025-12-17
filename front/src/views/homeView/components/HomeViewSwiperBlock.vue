@@ -22,13 +22,13 @@
                                 homeview__grid__card__bg-image"
                    :href="slide.href"
                    target="_blank"
-                   v-lazy-load="slide.image"></a>
-
+                   :style="{ backgroundImage: `url(${slide.image})` }">
+                </a>
                 <RouterLink v-else-if="slide.image"
                             class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
                             :to="{ name: card.id == 7 ? 'home' : card.href ?? slide.href }"
-                            v-lazy-load="slide.image" />
+                            :style="{ backgroundImage: `url(${slide.image})` }" />
 
                 <RouterLink v-else
                             :to="{ name: card.href ?? slide.href }"

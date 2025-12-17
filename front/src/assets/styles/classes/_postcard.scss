@@ -53,6 +53,15 @@
                 outline: var(--emk-brand-color);
             }
         }
+
+        &__submit-button {
+            display: flex !important;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
     }
 
     &__preview {

@@ -72,7 +72,11 @@
                 </div>
 
                 <div class="postcard__form-group">
-                    <button class="submit-button">Отправить</button>
+                    <button class="submit-button postcard__form-group__submit-button">
+                        <Loader v-if="isLoading"
+                                class="neuroChat__send-button__loader" />
+                        Отправить
+                    </button>
                 </div>
             </VForm>
         </div>
@@ -90,6 +94,10 @@ import { type IPostCard } from "@/interfaces/IEntities";
 import { useUserData } from "@/stores/userData";
 import { createMail } from "@/utils/createMail";
 import { Field, Form as VForm, ErrorMessage } from 'vee-validate';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
+import Loader from "@/components/layout/Loader.vue";
 
 export default defineComponent({
     name: "PostCard",
@@ -97,7 +105,8 @@ export default defineComponent({
         SwiperBlank,
         Field,
         VForm,
-        ErrorMessage
+        ErrorMessage,
+        Loader
     },
     setup() {
         const greetingsText = ref("");
@@ -112,6 +121,9 @@ export default defineComponent({
         const msgTheme = ref<string>();
         const msgReciever = ref<string>();
         const msgText = ref<string>();
+        const isLoading = ref(false);
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['открытки']}`)
@@ -138,6 +150,7 @@ export default defineComponent({
         }
 
         const sendMsg = () => {
+            isLoading.value = true;
             if (!msgSender.value || !msgReciever.value || !imageInMsg.value) return;
             const mailText = msgText.value ? createMail(msgText.value, signature.value) : '';
             const mailTheme = msgTheme.value ? msgTheme.value : '';
@@ -149,6 +162,9 @@ export default defineComponent({
                 "file_url": imageInMsg.value.replace('http://intranet.emk.org.ru/api/files/', '')
             }
             Api.post('/users/test_send_mail', body)
+                .then((data) => handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess'))
+                .catch((e) => handleApiError(e, toast))
+                .finally(() => isLoading.value = false)
         }
         const validateEmail = (value: unknown): boolean | string => {
             if (typeof value !== 'string' || value.trim() === '') {
@@ -173,6 +189,7 @@ export default defineComponent({
             msgTheme,
             msgReciever,
             msgText,
+            isLoading,
             sendMsg,
             changeMsgCardIndex,
             changeActiveHoliday,

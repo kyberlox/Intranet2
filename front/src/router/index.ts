@@ -1,5 +1,3 @@
-import { useUserData } from '@/stores/userData'
-import Api from '@/utils/Api'
 import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -261,7 +259,7 @@ const router = createRouter({
       path: '/services/selectionReg',
       name: 'selectionReg',
       beforeEnter: (to, from, next) => {
-        window.open('https://regconf.emk.ru', '_blank')
+        window.open('https://intranet.emk.ru/api/auth_router/regconf', '_blank')
         next(false)
       },
       redirect: '',
@@ -574,6 +572,16 @@ const router = createRouter({
         window.location.href = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&amp;redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user';
       },
       redirect: '',
+    },
+    // VCARD
+    {
+      path: '/vcard/:id',
+      name: 'vcard',
+      component: () => import('@/views/vcard/VCard.vue'),
+      props: (route) => ({ id: route.params.id}),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      }
     },
   ],
   scrollBehavior() {

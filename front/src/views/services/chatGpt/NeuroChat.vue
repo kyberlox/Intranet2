@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref, watch, shallowRef } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import NeuroChatSidebar from './components/NeuroChatSidebar.vue';
 import Api from '@/utils/Api';
@@ -98,6 +98,7 @@ import { useToastCompose } from '@/composables/useToastСompose';
 import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
 import type { INeuroChat } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
+import { useBase64 } from '@vueuse/core'
 
 export type IChatType = "textChat" | "createImg";
 
@@ -120,6 +121,9 @@ export default defineComponent({
         const chatHistory = ref();
         const firstMessage = ref();
         const analyzeMessage = ref(false);
+
+        const generatedImage = shallowRef<File>();
+        const { base64: fileBase64 } = useBase64(generatedImage);
 
         const neuroModels: { name: string, type: IChatType }[] = [{
             name: 'Чат',
@@ -251,9 +255,10 @@ export default defineComponent({
                 })
                 await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
                     .then((data) => {
+                        fileBase64.value = data.image_url.split(',')[1];
                         chatDataToSend.value.push({
                             role: 'assistant',
-                            content: data.image_url,
+                            content: fileBase64.value,
                             type: 'img'
                         })
                     })

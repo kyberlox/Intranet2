@@ -1,5 +1,6 @@
 <template>
-<div :class="{ 'dark-mode': isDarkMode }">
+<div v-if="route.name !== 'vcard'"
+     :class="{ 'dark-mode': isDarkMode }">
     <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
     <div v-if="isLogin">
         <LayoutHeader />
@@ -24,10 +25,11 @@
     <div v-else>
         <AuthPage />
     </div>
-    <Toast :position="'bottom-right'" />
-    <YandexMetrika v-if="userId"
-                   :uid="userId" />
 </div>
+<VCard v-else />
+<Toast :position="'bottom-right'" />
+<YandexMetrika v-if="userId"
+               :uid="userId" />
 </template>
 
 <script lang="ts">
@@ -44,6 +46,7 @@ import { prefetchSection } from "./composables/usePrefetchSection";
 import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
+import VCard from "./views/vcard/VCard.vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -56,12 +59,12 @@ export default defineComponent({
         Toast,
         PageScrollArrow,
         YandexMetrika,
-        SnowFlakes
+        SnowFlakes,
+        VCard
     },
     setup() {
         const route = useRoute();
         const userData = useUserData();
-        // const isLogin = computed(() => userData.getIsLogin);
         const isLogin = computed(() => userData.getIsLogin);
 
         // предзагрузка данных в стор
@@ -69,6 +72,9 @@ export default defineComponent({
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');
+                if (userData.getAuthKey) {
+                    prefetchSection('user');
+                }
                 const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
                 const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
 
@@ -82,15 +88,13 @@ export default defineComponent({
 
         onMounted(() => {
             userData.initKeyFromStorage();
-            if (userData.getAuthKey) {
-                prefetchSection('user');
-            }
         })
 
         return {
             isLogin,
             userId: computed(() => useUserData().getMyId),
-            isDarkMode: computed(() => useStyleModeStore().getDarkMode)
+            isDarkMode: computed(() => useStyleModeStore().getDarkMode),
+            route
         }
     }
 })

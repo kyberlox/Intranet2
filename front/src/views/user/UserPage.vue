@@ -98,18 +98,15 @@
                                 <h3>Рабочий телефон</h3>
                                 <span>{{ user.indirect_data.work_phone }}</span>
                             </div>
-                            <!-- <h3>Профиль</h3>
-                                <span>
-                                    <a href="https://vcard.emk.ru/5bdbf37e-ad97-452a-ae80-cc666fa6f8e6"><img
-                                             src="https://vcard.emk.ru/5bdbf37e-ad97-452a-ae80-cc666fa6f8e6/qr"
-                                             style="width: 128px; height: 128px;"></a></span> -->
+                            <div>
+                                <h3 @click="console.log(user)"
+                                    class="personal__user__top__title">Электронная визитная карточка</h3>
+                                <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
+                                            class="personal__user__vcard"
+                                            :style="{ 'background-image': `url(https://yastatic.net/naydex/yandex-search/H6E6HFC01/4b29519nCLO2/wVavXJZEk-acmhY1xHiuP22DWFoHTihgZ6HYoKpJ6Xkp2Em0GyEUaZGwMQ_E1VzQAOOl2wi29mpo_fsaFu0n9SU3PY5QtlGEWoikt1aqHiudg0lPc99Yd0QA)` }">
+                                </RouterLink>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="personal__user__vcard__section">
-                    <div class="grid__content-1">
-                        <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
-                        <div class="personal__user__vcard"></div>
                     </div>
                 </div>
             </div>
@@ -160,7 +157,6 @@ export default defineComponent({
         const isPointsModalOpen = ref(false);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
-        const vcard = ref();
 
         watch(props, (newVal) => {
             if (newVal) {
@@ -172,7 +168,7 @@ export default defineComponent({
                             user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
                         }
                     })
-                
+
             }
         }, { immediate: true, deep: true })
 

@@ -235,6 +235,7 @@
                 color: blue !important;
                 text-decoration: underline;
                 transition: 0.2s;
+                cursor: pointer;
 
                 &:hover {
                     color: var(--emk-brand-color) !important;

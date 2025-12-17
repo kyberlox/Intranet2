@@ -13,7 +13,7 @@ export const useUserData = defineStore('userData', {
 
     actions: {
         setMyId(id: number) {
-            this.myId = id;
+             this.myId = id;
         },
         setLogin(login: boolean) {
             this.isLogin = login;
@@ -56,11 +56,10 @@ export const useUserData = defineStore('userData', {
         getPhoto: (state) => state.user.photo_file_url,
         getFio: (state) => state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name,
         getSignature: (state) => (`С уважением,
-${state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name}
+${(state.user.last_name ?? '') + ' ' + (state.user.name ?? '') + ' ' + (state.user.second_name ?? '')}
 --
 АО «НПО «ЭМК»
-Тел.: ${state.user.uf_phone_inner}
-Моб.: ${state.user.personal_mobile}
-Эл. почта: ${state.user.email} `)
-    }
+${(state.user.uf_phone_inner ? "Тел.:" + state.user.uf_phone_inner : '')}
+${(state.user.personal_mobile ? "Моб.:" + state.user.personal_mobile : '')}
+${(state.user.email ? "Эл. почта:" + state.user.email : '')}`)}
 });

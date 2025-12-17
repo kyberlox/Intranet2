@@ -141,5 +141,18 @@
         &__section {
             margin-top: 20px;
         }
+
+        &__vcard {
+            width: 128px;
+            height: 128px;
+            background-size: contain;
+            transition: 0.2ms;
+            cursor: pointer;
+            display: block;
+
+            &:hover {
+                transform: scale(1.02);
+            }
+        }
     }
 }

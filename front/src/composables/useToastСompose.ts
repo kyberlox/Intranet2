@@ -21,10 +21,12 @@ const messages: messages = {
         pointsSendSuccess: 'Баллы успешно отправлены',
         ideaSendSuccess: 'Идея успешно отправлена! Спасибо!',
         merchBuySuccess: 'Ваш запрос успешно отправлен! Скоро с вами свяжутся для уточнения',
-        EventExcellSuccess: ''
+        EventExcellSuccess: '',
+        sendPostCardSuccess: 'Открытка успешна отправлена!'
     },
     warn:{
         merchBuyWarning: 'Покупка станет доступна чуть позже, пока только для ознакомления',
+        noUserVCard: 'Сотрудник не найден'
     }
 }
 

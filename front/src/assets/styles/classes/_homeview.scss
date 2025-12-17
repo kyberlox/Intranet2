@@ -279,7 +279,6 @@
                 line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
-                min-height: 2em;
                 color: var(--emk-brand-color);
                 font-weight: 600;
                 font-size: 18px;
@@ -287,9 +286,18 @@
                 text-wrap-mode: wrap;
                 padding-bottom: 5px;
                 transition: 0.2s;
+                min-height: 2em;
 
                 &:hover {
                     color: rgba(0, 0, 0, 0.55);
+                }
+
+                @include xxl {
+                    min-height: 2.5em;
+                }
+
+                @include xl {
+                    min-height: 2em;
                 }
 
                 &--mixed {

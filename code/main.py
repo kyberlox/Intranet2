@@ -156,12 +156,14 @@ open_links = [
     "/api/auth_router",
     "/api/total_update",
     "/api/files",
+    "/api/vcard_files",
     "/api/tours",
     "/api/compress_image", "compress_image",
     "/api/user_files",
     "test", "dump", "get_file", "get_all_files",
     "/api/total_background_task_update",
-    "/ws/progress"
+    "/ws/progress",
+    "/api/vcard/by_uuid/", "/api/vcard/get/"
 ]
 
 #Проверка авторизации для ВСЕХ запросов
@@ -205,10 +207,10 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         if not session_id:
             # Проверяем заголовок Authorization с префиксом Bearer
             auth_header = request.headers.get("session_id")
-            print(request.headers)
+            #print(request.headers)
 
-            if auth_header and auth_header.startswith("Bearer "):
-                session_id = auth_header[7:]
+            if auth_header:# and auth_header.startswith("Bearer "):
+                session_id = auth_header#[7:]
         
         if not session_id:
             log.warning_message(message="Authorization cookies or headers missing")

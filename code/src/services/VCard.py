@@ -29,24 +29,26 @@ class User_Vcard:
     def finfByUuid(self):
         titles_to_change = {'UF_USR_1696592324977' : 'Direction', 'UF_USR_1705744824758' : 'Division', 'UF_USR_1707225966581' : 'Combination'}
         search = B24().getUsersByUuid(f"ad|{self.uuid}")
-        for title, new_title in titles_to_change.items():
-            if title in search[0].keys():
-                value = search[0].pop(title)
-                search[0][new_title] = value
+        if search:
+            for title, new_title in titles_to_change.items():
+                if title in search[0].keys():
+                    value = search[0].pop(title)
+                    search[0][new_title] = value
 
-        departments_id = search[0]["UF_DEPARTMENT"]
-        num_to_word = []
-        for department in departments_id:
-            depart = self.findByIDdepart(department)
-            name = depart[0]["NAME"]
-            num_to_word.append(name)
-        search[0]["UF_DEPARTMENT"] = num_to_word
-        return search[0]
+            departments_id = search[0]["UF_DEPARTMENT"]
+            num_to_word = []
+            for department in departments_id:
+                depart = self.findByIDdepart(department)
+                name = depart[0]["NAME"]
+                num_to_word.append(name)
+            search[0]["UF_DEPARTMENT"] = num_to_word
+            return search[0]
+        return None
 
     
 
     def create_qr(self):
-        data = f'https://vcard.emk.ru/{self.uuid}'
+        data = f'https://intranet.emk.ru/api/vcard/by_uuid/{self.uuid}'
         filename = f'{self.uuid}.png'
         img = qrcode.make(data)
         img.save(f'./vcard_db/{filename}')
@@ -189,7 +191,7 @@ def dowload_file(uuid):
         file_path = f'./vcard_db/{filename}'
         return FileResponse(file_path, media_type="image/png")
 
-@vcard_app.get("/{uuid}/get", tags=["VCard"])
+@vcard_app.post("/get/{uuid}", tags=["VCard"])
 def download_contact(uuid):
     content, filename = User_Vcard(uuid).create_vcs() 
     return Response(content=content, media_type="text/vcard",  headers={"Content-Disposition": f"attachment; filename={filename}"})

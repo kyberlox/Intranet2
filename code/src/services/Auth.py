@@ -21,7 +21,7 @@ from ..base.pSQL.objects.App import get_async_db
 # Загрузка переменных окружения
 load_dotenv()
 
-auth_router = APIRouter(prefix="/auth_router", tags=["Авторизация"])
+auth_router = APIRouter(prefix="/auth_router")
 
 
 
@@ -166,7 +166,6 @@ class AuthService:
             "created_at": datetime.now().isoformat(),
             "member_id": tokens["member_id"]
         }
-        
         # Сохраняем сессию в Redis
         self.redis.save_session(
             key=session_id,
@@ -317,7 +316,7 @@ class AuthService:
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)
-        print(b24_ans)
+        
         if b24_ans['status'] == 'success':
             user_id = b24_ans['data']['USER_ID']
             
@@ -331,20 +330,31 @@ class AuthService:
         session_id = str(uuid.uuid4())
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        print(user_data)
-        
-        dt = datetime.now() + self.session_ttl
+        # user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
+        # user_data_string = json.dump(user_data)
+        # print(user_data_string)
 
-        session_data = user_data
-        session_data.pop("ID")
-        session_data["user_id"] = user_id
-        # print(session_data)
+
+        session_expires_at = datetime.now() + self.session_ttl
+       
+        session_data = {
+            "session_id": session_id,
+            "user_id": user_id,
+            "access_token_expires_at": session_expires_at.isoformat(),
+            "refresh_token_expires_at": None,
+            "session_expires_at": session_expires_at.isoformat(),
+            #"user_info": user_data_string,
+            "last_activity": datetime.now().isoformat(),
+            "created_at": datetime.now().isoformat(),
+            "member_id": None
+        }
+        print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.get_session(session_id)
         if ses_find is None:
-            self.redis.save_session(session_id, session_data)
+            self.redis.save_session(key=session_id, data=session_data, ttl=int(self.session_ttl.total_seconds()))
+        
         else:
             session_id = ses_find[8:]
         return {
@@ -435,18 +445,15 @@ def try_b24(login, password):
 
 
 # Dependency для получения текущей сессии
-async def get_current_session(
-    request: Request,
-    auth_service: AuthService = Depends(lambda: AuthService())
-) -> Dict[str, Any]:
+async def get_current_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())) -> Dict[str, Any]:
     """Получение текущей сессии пользователя"""
     # Ищем session_id в куках или заголовках
     session_id = request.cookies.get("session_id")
     
     if not session_id:
         auth_header = request.headers.get("session_id")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_id = auth_header[7:]
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
     
     if not session_id:
         raise HTTPException(
@@ -466,7 +473,8 @@ async def get_current_session(
     return session_data
 
 
-@auth_router.get("/login")
+
+@auth_router.get("/login", tags=["Авторизация"])
 async def login_to_bitrix24():
     """Перенаправление на страницу авторизации Bitrix24"""
     auth_service = AuthService()
@@ -474,7 +482,7 @@ async def login_to_bitrix24():
     return RedirectResponse(url=auth_url)
 
 #ROOT
-@auth_router.post("/root_auth")
+@auth_router.post("/root_auth", tags=["Авторизация"])
 async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depends(get_async_db)):
     if "login" in data and "password" in data:  # login : str, password : str,
         login = data["login"]
@@ -519,15 +527,42 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
         return session
 
 
-@auth_router.get("/auth")
+@auth_router.get("/auth", tags=["Авторизация", "Битрикс24"], description = """
+## OAuth 2.0 Аутентификация через Битрикс24
+
+Система аутентификации пользователей через OAuth 2.0 протокол Битрикс24. Обеспечивает безопасный вход и управление сессиями.
+
+---
+
+## Методы
+    - /oauth/authorize/ - для авторизации через Битрикс24 по логину и паролю, 
+    - oauth.bitrix24.tech - для обмена кода авторизации на токены,
+    - user.current.json - для полученя данных авторизованного в Битрикс24 пользователя
+
+Выполняет обмен кода авторизации на access и refresh токены через OAuth 2.0 endpoint Битрикс24.
+
+### Входные параметры
+| Параметр | Тип | Описание | Обязательный |
+|----------|-----|----------|--------------|
+| `code` | string | Временный код авторизации, полученный от Битрикс24 после редиректа | Да |
+
+### Возвращаемые данные
+При успехе возвращает словарь с токенами и метаданными:
+```json
+{
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ...",
+    "refresh_token": "def50200f3a8d7b7e8f9a6c5d4e3f2a1b0c9d8e7f...",
+    "expires_in": 3600,
+    "token_type": "Bearer",
+    "scope": "user,bizproc,calendar",
+    "user_id": "123",
+    "member_id": "portal.emk.ru",
+    "domain": "portal.emk.ru",
+    "access_token_expires_at": "2024-01-15T11:30:00+03:00",
+    "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
+}
+""")
 async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
-    
-    # """Callback endpoint для Bitrix24 OAuth"""
-    # if error:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail=f"Authorization failed: {error}"
-    #     )
     
     if not code:
         raise HTTPException(
@@ -574,7 +609,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, response: Re
     return response
 
 
-@auth_router.get("/check")
+@auth_router.get("/check", tags=["Авторизация"])
 async def check_session(session_data: Dict[str, Any] = Depends(get_current_session)):
     """Проверка валидности сессии"""
     return {
@@ -584,15 +619,15 @@ async def check_session(session_data: Dict[str, Any] = Depends(get_current_sessi
     }
 
 
-@auth_router.post("/refresh")
+@auth_router.post("/refresh", tags=["Авторизация"])
 async def refresh_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())):
     """Принудительное обновление сессии"""
     session_id = request.cookies.get("session_id")
     
     if not session_id:
         auth_header = request.headers.get("session_id")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_id = auth_header[7:]
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
     
     if not session_id:
         raise HTTPException(
@@ -615,7 +650,7 @@ async def refresh_session(request: Request, auth_service: AuthService = Depends(
     }
 
 
-@auth_router.post("/logout")
+@auth_router.post("/logout", tags=["Авторизация"])
 async def logout(request: Request, response: Response, auth_service: AuthService = Depends(lambda: AuthService())):
     """Выход из системы"""
     session_id = request.cookies.get("session_id")
@@ -629,3 +664,64 @@ async def logout(request: Request, response: Response, auth_service: AuthService
     return {"status": "success", "message": "Logged out successfully"}
 
 
+@auth_router.get("/regconf", tags=["Авторизация"])
+async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
+    #проверка на авторизацию
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to authenticate with Bitrix24"
+        )
+    # получаю данные пользователя
+    user_info = {
+        'uuid': session_data['user_info']['XML_ID'][3:],
+        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+        'department': session_data['user_info']['UF_USR_1696592324977']
+    }
+    
+    res = requests.post(url='https://regconf.emk.ru/api/auth', json=user_info)
+    token = res.json()
+
+    redirect_url = f"https://regconf.emk.ru/"
+     # Создаем RedirectResponse
+    response = RedirectResponse(url=redirect_url, status_code=302)
+
+    # Устанавливаем session_id в куки
+    response.set_cookie(
+        key="session_id",
+        value=token["token"],
+        max_age=int(AuthService().session_ttl.total_seconds())
+    )
+
+    return response
+    
+@auth_router.get("/tepconf", tags=["Авторизация"])
+async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
+    #проверка на авторизацию
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to authenticate with Bitrix24"
+        )
+    # получаю данные пользователя
+    user_info = {
+        'uuid': session_data['user_info']['XML_ID'][3:],
+        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+        'department': session_data['user_info']['UF_USR_1696592324977']
+    }
+    
+    res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
+    token = res.json()
+
+    redirect_url = f"https://tepconf.emk.ru/{token}"
+     # Создаем RedirectResponse
+    response = RedirectResponse(url=redirect_url, status_code=302)
+
+    # Устанавливаем session_id в куки
+    response.set_cookie(
+        key="session_id",
+        value=token["token"],
+        max_age=int(AuthService().session_ttl.total_seconds())
+    )
+
+    return response

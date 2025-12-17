@@ -301,11 +301,11 @@ class User:
     async def get_user_qr(self, user_uuid):
         import os
         from ..services.VCard import User_Vcard
-        current_file_path = f'https://intranet.emk.ru/api/vcard_files/{user_uuid}.png'
+        current_file_path = f'./vcard_db/{user_uuid}.png'
         file_exist = os.path.isfile(current_file_path)
         
         if file_exist:
-            return current_file_path
+            return f'https://intranet.emk.ru/api/vcard_files/{user_uuid}.png'
         else:
             filename = User_Vcard(user_uuid).create_qr()
             file_path = f'https://intranet.emk.ru/api/vcard_files/{filename}'
@@ -347,6 +347,8 @@ class User:
 async def update_user(session: AsyncSession = Depends(get_async_db)):
     """
     ## Метод `user.get`
+
+    > Метода вызывается один раз, в момент запуска сервиса для загрузки данных с прошлой версии сайта
 
     Возвращает список всех пользователей из системы Битрикс24 через API метод `user.get`.
 

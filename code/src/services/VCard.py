@@ -191,7 +191,7 @@ def dowload_file(uuid):
         file_path = f'./vcard_db/{filename}'
         return FileResponse(file_path, media_type="image/png")
 
-@vcard_app.get("/get/{uuid}", tags=["VCard"])
+@vcard_app.post("/get/{uuid}", tags=["VCard"])
 def download_contact(uuid):
     content, filename = User_Vcard(uuid).create_vcs() 
     return Response(content=content, media_type="text/vcard",  headers={"Content-Disposition": f"attachment; filename={filename}"})

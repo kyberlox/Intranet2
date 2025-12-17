@@ -713,7 +713,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
     token = res.json()
 
-    redirect_url = f"https://regconf.emk.ru/{token}"
+    redirect_url = f"https://tepconf.emk.ru/{token}"
      # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 

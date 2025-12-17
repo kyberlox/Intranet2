@@ -29,6 +29,7 @@ class User_Vcard:
     def finfByUuid(self):
         titles_to_change = {'UF_USR_1696592324977' : 'Direction', 'UF_USR_1705744824758' : 'Division', 'UF_USR_1707225966581' : 'Combination'}
         search = B24().getUsersByUuid(f"ad|{self.uuid}")
+        print(search, 'search')
         for title, new_title in titles_to_change.items():
             if title in search[0].keys():
                 value = search[0].pop(title)

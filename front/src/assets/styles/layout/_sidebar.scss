@@ -120,6 +120,10 @@
     align-items: center;
     gap: 15px;
 
+    &--bug-report {
+        cursor: pointer;
+    }
+
     &:hover {
 
         .support__block__title,

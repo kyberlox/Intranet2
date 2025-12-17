@@ -1,8 +1,9 @@
 <template>
-    <div class="announces__training__page mt20">
-        <div class="page__title">Анонс учебных программ</div>
-        <!-- <TrainingTable :page="'announces'" /> -->
-    </div>
+<div class="announces__training__page mt20">
+    <div class="page__title">Анонс учебных программ</div>
+    <h4></h4>
+    <!-- <TrainingTable :page="'announces'" /> -->
+</div>
 </template>
 
 <script lang="ts">

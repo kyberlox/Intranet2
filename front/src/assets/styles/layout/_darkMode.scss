@@ -23,7 +23,8 @@
     .neuroChat__add-file,
     .calendar-year__title,
     .file-uploader__preview-item,
-    .portal__auth__content {
+    .portal__auth__content,
+    .one-c-memo-card {
         background: #1b1b1b;
 
         ul {
@@ -158,7 +159,8 @@
         }
     }
 
-    .homeview__grid__card__title {
+    .homeview__grid__card__title,
+    .blog {
         color: #d3d3d3;
     }
 
@@ -237,6 +239,10 @@
         }
     }
 
+    .conducted-training__list__item:nth-child(2n) {
+        background: #252525;
+    }
+
     // форма
     input,
     textarea,
@@ -245,10 +251,23 @@
     .neuroChat__message,
     .search-input,
     .ql-editor,
-    .neuroChat__file-item {
+    .neuroChat__file-item,
+    .one-c-memo-sidebar,
+    .memo__menu-dot {
         background-color: #272727;
-        color: white;
+        color: rgb(196, 195, 195) !important;
         border-color: #434343;
+    }
+
+    .one-c-memo-nav-item:hover,
+    .one-c-memo-nav-item--active {
+        background-color: #313131;
+    }
+
+    .one-c-memo-card__text,
+    .one-c-memo-card__text>p,
+    .one-c-memo-nav-item {
+        color: rgb(167, 167, 167);
     }
 
     .neuroChat__message::after,

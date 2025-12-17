@@ -34,7 +34,18 @@
 
 
     <div class="support__blocks">
-        <a v-for="(link, index) in supportLinks.filter((e) => needAdminLink ? e : e.href !== 'admin')"
+        <a v-for="(link, index) in supportLinks.filter((e) => e.href == 'bugReport')"
+           :key="'bug' + index"
+           class="support__block support__block--bug-report"
+           @click="callBugReportModal(true)">
+            <Component :is="link.icon"
+                       class="support__block__icon" />
+            <div class="support__block__link__item">
+                <div class="support__block__phone">{{ link.title }}</div>
+                <div class="support__block__link">{{ link.description }}</div>
+            </div>
+        </a>
+        <a v-for="(link, index) in supportLinks.filter((e) => needAdminLink ? e : e.href !== 'admin' && e.href !== 'bugReport')"
            :href="link.href"
            target="_blank"
            class="support__block"
@@ -48,22 +59,33 @@
         </a>
     </div>
 </div>
+<RightSidebarBugModalVue v-if="bugModalIsVisible"
+                         @closeModal="callBugReportModal(false)" />
 </template>
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { workLinks, supportLinks } from "@/assets/static/navLinks";
 import Calendar from "./RightSidebarCalendar.vue";
 import { useUserData } from "@/stores/userData";
+import RightSidebarBugModalVue from "./RightSidebarBugModal.vue";
 
 export default defineComponent({
     components: {
-        Calendar
+        Calendar,
+        RightSidebarBugModalVue
     },
     setup() {
+        const bugModalIsVisible = ref(false);
+
+        const callBugReportModal = (val: boolean) => {
+            bugModalIsVisible.value = val;
+        }
         return {
             workLinks,
             supportLinks,
-            needAdminLink: computed(() => useUserData().getNeedAdminLink)
+            bugModalIsVisible,
+            needAdminLink: computed(() => useUserData().getNeedAdminLink),
+            callBugReportModal
         };
     },
 });

@@ -256,9 +256,9 @@ export const workLinks: WorkLink[] = [
 
 export const supportLinks: SupportLink[] = [
     {
-        title: "5182",
-        href: "tel:#5182",
-        description: "Тех. поддержка сайта",
+        title: "Тех поддержка",
+        href: "bugReport",
+        description: "Сообщить о проблеме",
         icon: BugIcon,
     },
     {

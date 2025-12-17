@@ -1,12 +1,12 @@
 <template>
 <SlotModal @close="$emit('closeModal')">
     <div class="merch-store__accept-buy-modal__wrapper">
-        <div class="merch-store__accept-buy-modal__content">
+        <div class="merch-store__accept-buy-modal__content bug-modal__content">
             <p class="merch-store__accept-buy-modal__title">
-                Опишите проблему с которой вы столкнулись, по скрепке можно
-                приложить скриншот
+                В форме ниже можете описать проблему с которой вы столкнулись или позвонить по номеру: 5182/5185
             </p>
-
+            <textarea class="modal__input__text__input"
+                      v-model="bugreport"></textarea>
         </div>
         <button @click="sendReport"
                 class="primary-button">Подтвердить</button>
@@ -14,7 +14,7 @@
 </SlotModal>
 </template>
 <script lang='ts'>
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import SlotModal from '../tools/modal/SlotModal.vue';
 
 export default defineComponent({
@@ -23,14 +23,22 @@ export default defineComponent({
     },
     props: {},
     setup() {
+        const bugreport = ref<string>('');
+
         const sendReport = () => {
-            console.log('Отправка')
+            console.log(bugreport)
         }
         return {
+            bugreport,
             sendReport
         }
-
     }
 });
 </script>
-<style langs='scss'></style>
+
+<style lang="scss">
+.bug-modal__content {
+    display: flex;
+    flex-direction: column;
+}
+</style>

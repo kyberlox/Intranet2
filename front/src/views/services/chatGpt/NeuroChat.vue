@@ -132,9 +132,6 @@ export default defineComponent({
         {
             name: 'Генерация изображений',
             type: 'createImg'
-        },{
-            name: 'Анализ файлов',
-            type: ''
         }]
 
         const isLoading = ref(false);

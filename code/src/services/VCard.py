@@ -46,7 +46,7 @@ class User_Vcard:
     
 
     def create_qr(self):
-        data = f'https://vcard.emk.ru/{self.uuid}'
+        data = f'https://intranet.emk.ru/api/vcard/by_uuid/{self.uuid}'
         filename = f'{self.uuid}.png'
         img = qrcode.make(data)
         img.save(f'./vcard_db/{filename}')
@@ -189,7 +189,7 @@ def dowload_file(uuid):
         file_path = f'./vcard_db/{filename}'
         return FileResponse(file_path, media_type="image/png")
 
-@vcard_app.get("/{uuid}/get", tags=["VCard"])
+@vcard_app.get("/get/{uuid}", tags=["VCard"])
 def download_contact(uuid):
     content, filename = User_Vcard(uuid).create_vcs() 
     return Response(content=content, media_type="text/vcard",  headers={"Content-Disposition": f"attachment; filename={filename}"})

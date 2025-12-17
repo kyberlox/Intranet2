@@ -162,7 +162,8 @@ open_links = [
     "/api/user_files",
     "test", "dump", "get_file", "get_all_files",
     "/api/total_background_task_update",
-    "/ws/progress"
+    "/ws/progress",
+    "/api/vcard/by_uuid/", "/api/vcard/get/"
 ]
 
 #Проверка авторизации для ВСЕХ запросов

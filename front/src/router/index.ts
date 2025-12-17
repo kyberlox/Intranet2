@@ -250,7 +250,7 @@ const router = createRouter({
       path: '/services/selectionTep',
       name: 'selectionTep',
       beforeEnter: (to, from, next) => {
-        window.open('https://tepconf.emk.ru', '_blank')
+        window.open('https://intranet.emk.ru/api/auth_router/tepconf', '_blank')
         next(false)
       },
       redirect: '',
@@ -273,6 +273,15 @@ const router = createRouter({
       path: '/services/chatgpt',
       name: 'chatgpt',
       component: () => import('@/views/services/chatGpt/NeuroChat.vue')
+    },
+    {
+      path: '/services/deepseek',
+      name: 'deepseek',
+      beforeEnter: (to, from, next) => {
+      window.open('https://webui1-a66.imp.int/', '_blank')
+      next(false)
+      },
+      redirect: '',
     },
     {
       path: '/services/cert',

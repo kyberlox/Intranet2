@@ -1,4 +1,3 @@
-import PhoneIcon from "@/assets/icons/layout/sidebar/socLinks/PhoneIcon.svg";
 import VkIcon from "@/assets/icons/layout/sidebar/socLinks/VkIcon.svg";
 import TelegramIcon from "@/assets/icons/layout/sidebar/socLinks/TelegramIcon.svg";
 import EmkLogo from "@/assets/icons/layout/sidebar/socLinks/EmkLogo.svg";
@@ -110,6 +109,11 @@ export const mainMenuPoints: MainMenuPoints = [
             },
             {
                 id: 2.5,
+                name: "DeepSeek",
+                href: "deepseek",
+            },
+            {
+                id: 2.6,
                 name: "Разрешительная документация и сертификаты",
                 href: "cert",
             },
@@ -119,12 +123,12 @@ export const mainMenuPoints: MainMenuPoints = [
             //     href: "udocs",
             // },
             {
-                id: 2.6,
+                id: 2.7,
                 name: "Референсы и опыт поставок",
                 href: "experience",
             },
             {
-                id: 2.7,
+                id: 2.8,
                 name: 'Информационное письмо о компании ЭМК',
                 href: 'https://intranet.emk.ru/api/files/Информационное_письмо_НПО_ЭМК.docx',
             }

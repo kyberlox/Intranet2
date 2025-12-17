@@ -132,7 +132,10 @@ export default defineComponent({
         {
             name: 'Генерация изображений',
             type: 'createImg'
-        },]
+        },{
+            name: 'Анализ файлов',
+            type: ''
+        }]
 
         const isLoading = ref(false);
         const userInput = ref('');
@@ -255,10 +258,9 @@ export default defineComponent({
                 })
                 await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
                     .then((data) => {
-                        fileBase64.value = data.image_url.split(',')[1];
                         chatDataToSend.value.push({
                             role: 'assistant',
-                            content: fileBase64.value,
+                            content: 'data:image/jpeg;base64,' + data.image_b64,
                             type: 'img'
                         })
                     })
@@ -296,6 +298,7 @@ export default defineComponent({
             filesToUpload,
             chatDataToSend,
             chatType,
+            fileBase64,
             firstMessage,
             handleChatTypeChange,
             parseMarkdown,

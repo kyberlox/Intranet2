@@ -759,4 +759,4 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     max_age=int(AuthService().session_ttl.total_seconds())
     # )
 
-    return res
+    return res.json

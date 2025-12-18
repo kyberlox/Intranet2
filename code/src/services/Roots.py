@@ -134,7 +134,7 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
     user_id = await get_uuid_from_request(request, session=session)
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
     print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В ROOTS')
-    if int(user_id) == 2366:
+    if user_id is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
         user_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True}
     return user_roots

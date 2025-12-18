@@ -1104,9 +1104,9 @@ async def get_editor_roots(user_uuid, session):
     all_roots = await roots_model.get_token_by_uuid(session)
     editor_roots = await roots_model.token_processing_for_editor(all_roots)
     print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В EDITOR')
-    if int(user_uuid) == 2366:
+    if user_uuid is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'user_id': user_uuid, 'EditorAdmin': True}
+        editor_roots = {'user_id': 2366, 'EditorAdmin': True}
         print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     return editor_roots
 

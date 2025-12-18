@@ -4,6 +4,8 @@
 interface ImportMetaEnv {
     readonly VITE_API_URL: string;
     readonly VITE_TEST_MODE: string;
+    readonly VITE_OAUTH_CLIENT_ID: string;
+    readonly VITE_OAUTH_DOMEN: string;
 }
 
 interface ImportMeta {
@@ -11,4 +13,6 @@ interface ImportMeta {
 }
 declare const VITE_API_URL: string;
 declare const VITE_TEST_MODE: string;
+declare const VITE_OAUTH_CLIENT_ID: string;
+declare const VITE_OAUTH_DOMEN: string;
 

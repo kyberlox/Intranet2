@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
+const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: 'router-link-active',
@@ -578,7 +581,7 @@ const router = createRouter({
       path: '/oauthRedir',
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
-        window.location.href = 'https://test-portal.emk.ru/oauth/authorize/?client_id=local.6936c2c4e28141.22464163&amp;redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user';
+        window.location.href = `https://test-portal.emk.ru/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user`;
       },
       redirect: '',
     },

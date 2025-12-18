@@ -66,7 +66,7 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
-
+        console.log(import.meta.env)
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (isLogin.value) {

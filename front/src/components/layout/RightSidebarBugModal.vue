@@ -1,15 +1,24 @@
 <template>
 <SlotModal @close="$emit('closeModal')">
     <div class="merch-store__accept-buy-modal__wrapper">
-        <div class="merch-store__accept-buy-modal__content bug-modal__content">
+        <div class="bug-modal__content">
             <p class="merch-store__accept-buy-modal__title">
-                В форме ниже можете описать проблему с которой вы столкнулись или позвонить по номеру: 5182/5185
+                Заполните форму ниже или позвоните по телефону 5182/5185.
             </p>
             <textarea class="modal__input__text__input"
+                      placeholder="Опишите проблему"
                       v-model="bugreport"></textarea>
         </div>
-        <button @click="sendReport"
-                class="primary-button">Подтвердить</button>
+        <div>
+            <button @click="sendReport"
+                    class="primary-button">
+                <Loader class="bug-modal__content__loader"
+                        v-if="isLoading" />
+                <span v-else>Подтвердить</span>
+
+            </button>
+        </div>
+
     </div>
 </SlotModal>
 </template>
@@ -22,10 +31,12 @@ import { useUserData } from '@/stores/userData';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
+import Loader from './Loader.vue';
 
 export default defineComponent({
     components: {
         SlotModal,
+        Loader
     },
     props: {},
     setup() {
@@ -54,6 +65,7 @@ export default defineComponent({
 
         return {
             bugreport,
+            isLoading,
             sendReport
         }
     }

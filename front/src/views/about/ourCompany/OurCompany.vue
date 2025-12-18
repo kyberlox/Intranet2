@@ -101,7 +101,7 @@ export default defineComponent({
             },
         ];
 
-        const newUrl = repairVideoUrl('https://rutube.ru/video/private/8cbe65313eff0038fc5a0a0584e815e4/?r=wd&p=onSEbtVeNjePZ66dNGRiPQ')
+        const newUrl = repairVideoUrl('https://rutube.ru/video/private/2b54cbc3984de31be7c945e3695641d2/?r=wd&p=pmeQ532zCsbTqmMED-YnpA')
         return {
             achievments,
             ourPleasures,

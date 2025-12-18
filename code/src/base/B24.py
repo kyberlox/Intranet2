@@ -38,6 +38,8 @@ class B24:
         return result
     
     def getUser(self, ID):
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/04yfgm2xsnj4sk4a/")
+        
         result = self.bx24.callMethod(f'user.get?ID={ID}')
         return result
 

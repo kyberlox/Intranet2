@@ -40,7 +40,8 @@
                                         @mouseleave="handleDropdown('close', point.id)">
                                         <div v-for="subpoint in point.subPoints"
                                              :key="'subpoint' + point.name + subpoint.id">
-                                            <li v-if="subpoint.name == 'Информационное письмо'"
+                                            <!-- id письма -->
+                                            <li v-if="subpoint.id == 2.8"
                                                 class="dropdown__item">
                                                 <a :href=subpoint.href
                                                    download>{{ subpoint.name }}</a>

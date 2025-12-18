@@ -99,8 +99,7 @@
                                 <span>{{ user.indirect_data.work_phone }}</span>
                             </div>
                             <div>
-                                <h3 @click="console.log(user)"
-                                    class="personal__user__top__title">Электронная визитная карточка</h3>
+                                <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
                                 <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
                                             class="personal__user__vcard"
                                             :style="{ 'background-image': `url(https://yastatic.net/naydex/yandex-search/H6E6HFC01/4b29519nCLO2/wVavXJZEk-acmhY1xHiuP22DWFoHTihgZ6HYoKpJ6Xkp2Em0GyEUaZGwMQ_E1VzQAOOl2wi29mpo_fsaFu0n9SU3PY5QtlGEWoikt1aqHiudg0lPc99Yd0QA)` }">

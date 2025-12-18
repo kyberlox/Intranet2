@@ -8,9 +8,7 @@ import { useUserData } from "@/stores/userData";
 import { useUserScore } from "@/stores/userScoreData";
 import { usePointsData } from "@/stores/pointsData";
 
-export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {
-    console.log(dataType, useUserData().isLogin);
-    
+export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {    
     if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {

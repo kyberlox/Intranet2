@@ -9,9 +9,7 @@ export const useFactoryGuidDataStore = defineStore('FactoryGuidData', {
     }),
 
     actions: {
-        setAllFactories(data: IFactoryGuidSlides[]) {
-            console.log(data);
-            
+        setAllFactories(data: IFactoryGuidSlides[]) {            
             this.allFactories = data;
         },
     },

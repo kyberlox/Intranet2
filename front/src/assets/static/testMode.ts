@@ -1,1 +1,1 @@
-export const testMode = Boolean(import.meta.env.VITE_TEST_MODE == 'true');
+export const testMode = import.meta.env.DEV;

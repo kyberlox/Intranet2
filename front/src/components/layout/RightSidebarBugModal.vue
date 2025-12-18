@@ -14,8 +14,14 @@
 </SlotModal>
 </template>
 <script lang='ts'>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import SlotModal from '../tools/modal/SlotModal.vue';
+import Api from '@/utils/Api';
+import { createMail } from "@/utils/createMail";
+import { useUserData } from '@/stores/userData';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
+import { useToast } from 'primevue/usetoast';
+import { useToastCompose } from '@/composables/useToastСompose';
 
 export default defineComponent({
     components: {
@@ -24,10 +30,28 @@ export default defineComponent({
     props: {},
     setup() {
         const bugreport = ref<string>('');
+        const isLoading = ref(false);
+        const email = computed(() => useUserData().getUser.email);
+        const toastInstance = useToast();
+        const toast = useToastCompose(toastInstance);
 
         const sendReport = () => {
-            console.log(bugreport)
+            isLoading.value = true;
+            if (!email.value || !bugreport.value) return;
+            const mailText = createMail(bugreport.value, '');
+            const body = {
+                "sender": email.value,
+                "reciever": '',
+                "title": '',
+                "text": mailText,
+                "file_url": ''
+            }
+            Api.post('users/send_error', body)
+                .then((data) => handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess'))
+                .catch((e) => handleApiError(e, toast))
+                .finally(() => isLoading.value = false)
         }
+
         return {
             bugreport,
             sendReport
@@ -35,10 +59,3 @@ export default defineComponent({
     }
 });
 </script>
-
-<style lang="scss">
-.bug-modal__content {
-    display: flex;
-    flex-direction: column;
-}
-</style>

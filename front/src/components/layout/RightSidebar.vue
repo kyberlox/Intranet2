@@ -45,7 +45,7 @@
                 <div class="support__block__link">{{ link.description }}</div>
             </div>
         </a>
-        <a v-for="(link, index) in supportLinks.filter((e) => needAdminLink ? e : e.href !== 'admin' && e.href !== 'bugReport')"
+        <a v-for="(link, index) in supportLinks.filter((e) => e.href !== 'bugReport').filter((e) => needAdminLink ? e : e.href !== 'admin')"
            :href="link.href"
            target="_blank"
            class="support__block"

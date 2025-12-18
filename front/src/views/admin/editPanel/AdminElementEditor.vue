@@ -11,7 +11,7 @@
                                      :newFileData="newFileData"
                                      @handleUserPick="handleUserPick"
                                      @handleEmitValueChange="handleEmitValueChange"
-                                     @reportageChanged="(e) => newData.reportages = e"
+                                     @reportageChanged="(e) => { newData.reports = e }"
                                      @tagsChanged="(e: number[]) => newData.tags = e"
                                      @reloadElementData="(e: boolean) => reloadElementData(e)"
                                      @handleUpload="handleUpload" />
@@ -129,8 +129,7 @@ export default defineComponent({
               newData.value.section_id = findValInObject(data, 'section_id');
             }
             // newData.value.date_publiction = findValInObject(data, 'date_publiction');
-
-            usersList.value = data.users
+            usersList.value = data.users;
             newData.value.section_id = Number(props.id);
             // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;

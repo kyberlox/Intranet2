@@ -1,6 +1,6 @@
 <template>
 <div class="row">
-    <div class="col-sm-6 d-flex align-items-stretch">
+    <div class="col-sm-8 d-flex align-items-stretch">
         <div class="m-sm-5 company__mission d-flex g-5 mt20">
             <h2 class="page__title">Миссия компании</h2>
             <p>
@@ -27,11 +27,10 @@
                 и свои команды, и развиваем организационную культуру Взаимного Уважения и Доверия.</p>
         </div>
     </div>
-    <div class="col-sm-6 d-flex align-items-center">
+    <div class="col-sm-4 d-flex align-items-center">
         <iframe width="100%"
                 height="400"
-                src="https://www.youtube.com/embed/4XdwmMun-Mc"
-                title="YouTube video player"
+                :src=String(newUrl)
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen></iframe>
     </div>
@@ -62,6 +61,8 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { repairVideoUrl } from '@/utils/embedVideoUtil';
+
 export default defineComponent({
     setup() {
 
@@ -99,9 +100,12 @@ export default defineComponent({
                 plusDesc: "Продукции на складе",
             },
         ];
+
+        const newUrl = repairVideoUrl('https://rutube.ru/video/private/8cbe65313eff0038fc5a0a0584e815e4/?r=wd&p=onSEbtVeNjePZ66dNGRiPQ')
         return {
             achievments,
-            ourPleasures
+            ourPleasures,
+            newUrl
         };
     },
 })

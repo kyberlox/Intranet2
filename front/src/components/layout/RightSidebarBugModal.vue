@@ -58,7 +58,7 @@ export default defineComponent({
                 "file_url": ''
             }
             Api.post('users/send_error', body)
-                .then((data) => handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess'))
+                .then((data) => handleApiResponse(data, toast, 'trySupportError', 'bugReportSuccess'))
                 .catch((e) => handleApiError(e, toast))
                 .finally(() => isLoading.value = false)
         }

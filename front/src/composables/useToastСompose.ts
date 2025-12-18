@@ -22,7 +22,8 @@ const messages: messages = {
         ideaSendSuccess: 'Идея успешно отправлена! Спасибо!',
         merchBuySuccess: 'Ваш запрос успешно отправлен! Скоро с вами свяжутся для уточнения',
         EventExcellSuccess: '',
-        sendPostCardSuccess: 'Открытка успешна отправлена!'
+        sendPostCardSuccess: 'Открытка успешна отправлена!',
+        bugReportSuccess: 'Уведомление об ошибке отправлено!',
     },
     warn:{
         merchBuyWarning: 'Покупка станет доступна чуть позже, пока только для ознакомления',

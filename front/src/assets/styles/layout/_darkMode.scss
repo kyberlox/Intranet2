@@ -313,6 +313,11 @@
         }
     }
 
+    .idea-new__error-message,
+    .idea-new__input:focus {
+        background: #414141;
+    }
+
     // лоадеры
     .skeleton {
 

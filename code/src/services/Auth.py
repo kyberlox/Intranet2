@@ -735,6 +735,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             detail="Failed to authenticate with Bitrix24"
         )
     # получаю данные пользователя
+    print(session_data['user_info'])
     user_info = {
         'uuid': session_data['user_info']['XML_ID'][3:],
         'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],

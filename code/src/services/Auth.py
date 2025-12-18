@@ -331,6 +331,8 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
+        print(user_data)
+        user_data["uuid"] = user_uuid
         # user_data_string = json.dump(user_data)
         # print(user_data_string)
 
@@ -744,6 +746,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         }
     else:
         user_info = session_data['user_info']
+
     
     cookies = { 'session_id': session_data["session_id"]}
     res = requests.post(url='https://gpt.emk.ru/login', json=user_info, cookies=cookies)

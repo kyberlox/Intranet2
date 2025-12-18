@@ -133,4 +133,8 @@ async def get_editors_list(sec_id: int, request: Request, session: AsyncSession 
 async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = await get_uuid_from_request(request, session=session)
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
+    print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В ROOTS')
+    if user_id is None:
+        print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+        user_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True}
     return user_roots

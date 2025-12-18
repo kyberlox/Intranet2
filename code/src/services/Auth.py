@@ -37,10 +37,10 @@ class AuthService:
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
-        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.6936c2c4e28141.22464163")
-        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9")
+        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.6942c425a760a9.02715487")
+        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "IbJibGiElhqSaem40Z6DWA6TJOI5KYsvYG9O9xnYJxC5EOuY4T")
         self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
-        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://test-portal.emk.ru")
+        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
         
         # Время жизни токенов и сессий
         self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
@@ -330,7 +330,7 @@ class AuthService:
         session_id = str(uuid.uuid4())
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
-        # user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
+        user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
         # user_data_string = json.dump(user_data)
         # print(user_data_string)
 
@@ -343,7 +343,7 @@ class AuthService:
             "access_token_expires_at": session_expires_at.isoformat(),
             "refresh_token_expires_at": None,
             "session_expires_at": session_expires_at.isoformat(),
-            #"user_info": user_data_string,
+            "user_info": user_data,
             "last_activity": datetime.now().isoformat(),
             "created_at": datetime.now().isoformat(),
             "member_id": None
@@ -714,6 +714,41 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     token = res.json()
 
     redirect_url = f"https://tepconf.emk.ru/{token}"
+     # Создаем RedirectResponse
+    response = RedirectResponse(url=redirect_url, status_code=302)
+
+    # Устанавливаем session_id в куки
+    response.set_cookie(
+        key="session_id",
+        value=token["token"],
+        max_age=int(AuthService().session_ttl.total_seconds())
+    )
+
+    return response
+
+@auth_router.get("/gpt", tags=["Авторизация"])
+async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
+    #проверка на авторизацию
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to authenticate with Bitrix24"
+        )
+    # получаю данные пользователя
+    print(session_data['user_info'])
+    if 'XML_ID' in session_data['user_info']:
+        user_info = {
+            'uuid': session_data['user_info']['XML_ID'][3:],
+            'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+            'department': session_data['user_info']['UF_USR_1696592324977']
+        }
+    else:
+        user_info = session_data['user_info']
+    
+    res = requests.post(url='https://gpt.emk.ru/login', json=user_info)
+    token = res.json()
+
+    redirect_url = f"https://gpt.emk.ru/{token}"
      # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 

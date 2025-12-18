@@ -753,10 +753,10 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # response = RedirectResponse(url=redirect_url, status_code=302)
 
     # Устанавливаем session_id в куки
-    response.set_cookie(
-        key="session_id",
-        value=session_id,
-        max_age=int(AuthService().session_ttl.total_seconds())
-    )
+    # response.set_cookie(
+    #     key="session_id",
+    #     value=session_id,
+    #     max_age=int(AuthService().session_ttl.total_seconds())
+    # )
 
-    return response
+    return res

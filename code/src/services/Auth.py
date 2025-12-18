@@ -745,17 +745,18 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     else:
         user_info = session_data['user_info']
     
-    res = requests.post(url='https://gpt.emk.ru/login', json=user_info)
-    token = res.json()
+    session_id = session_data["session_id"]
 
-    redirect_url = f"https://gpt.emk.ru/{token}"
-     # Создаем RedirectResponse
-    response = RedirectResponse(url=redirect_url, status_code=302)
+    res = requests.post(url='https://gpt.emk.ru/login', json=user_info, cookies={"cookies = {'session_id': '123456789'}"})
+
+    # redirect_url = f"https://gpt.emk.ru/{token}"
+    #  # Создаем RedirectResponse
+    # response = RedirectResponse(url=redirect_url, status_code=302)
 
     # Устанавливаем session_id в куки
     response.set_cookie(
         key="session_id",
-        value=token["token"],
+        value=session_id,
         max_age=int(AuthService().session_ttl.total_seconds())
     )
 

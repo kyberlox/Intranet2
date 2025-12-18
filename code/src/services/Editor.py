@@ -38,14 +38,23 @@ editor_router = APIRouter(prefix="/editor", tags=["Редактор"])
 def make_date_valid(date):
     if date is not None:
         if isinstance(date, str):
-            if '-' in date:  
-                try:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                except:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d')
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
             elif '.' in date:
                 try:
                     return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
@@ -54,15 +63,6 @@ def make_date_valid(date):
                     # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                     return datetime.datetime.strptime(date, '%d.%m.%Y')
                     # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-            elif 'T' in date:
-                try:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
-                except:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d')
-
 
 def get_type(value):
     tp = str(type(value)).split('\'')[1]

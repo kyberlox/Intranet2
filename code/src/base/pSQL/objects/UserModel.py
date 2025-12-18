@@ -423,7 +423,7 @@ class UserModel:
                 return {
                     "ID": user.id,
                     "email" : user.email,
-                    "full_name" : f"{user.second_name} {user.name} {user.last_name}"
+                    "full_name" : f"{user.second_name} {user.name} {user.last_name}",
                     "department" : user.indirect_data['UF_USR_1696592324977']
                 }
             else:

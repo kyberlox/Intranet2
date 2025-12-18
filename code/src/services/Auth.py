@@ -343,7 +343,7 @@ class AuthService:
             "access_token_expires_at": session_expires_at.isoformat(),
             "refresh_token_expires_at": None,
             "session_expires_at": session_expires_at.isoformat(),
-            "user_info": user_data_string,
+            "user_info": user_data,
             "last_activity": datetime.now().isoformat(),
             "created_at": datetime.now().isoformat(),
             "member_id": None

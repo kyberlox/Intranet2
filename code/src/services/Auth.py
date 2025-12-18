@@ -736,11 +736,14 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         )
     # получаю данные пользователя
     print(session_data['user_info'])
-    user_info = {
-        'uuid': session_data['user_info']['XML_ID'][3:],
-        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
-        'department': session_data['user_info']['UF_USR_1696592324977']
-    }
+    if 'XML_ID' in session_data['user_info']:
+        user_info = {
+            'uuid': session_data['user_info']['XML_ID'][3:],
+            'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+            'department': session_data['user_info']['UF_USR_1696592324977']
+        }
+    else:
+        user_info = session_data['user_info']
     
     res = requests.post(url='https://gpt.emk.ru/login', json=user_info)
     token = res.json()

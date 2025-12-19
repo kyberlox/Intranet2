@@ -45,7 +45,7 @@ class B24:
         return result
 
     def getDeps(self):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/1yvqz73i0vq0yqfz/")
         result = self.bx24.callMethod('department.get')
         return result
 
@@ -89,7 +89,7 @@ class B24:
         return result
 
     def getDepartByID(self, id):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/1yvqz73i0vq0yqfz/")
         result = self.bx24.callMethod('department.get', ID=id)
         return result
 

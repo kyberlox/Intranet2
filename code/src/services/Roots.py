@@ -51,15 +51,20 @@ class Roots:
         res = await  self.RootsModel.get_token_by_uuid(session=session)
         return res
 
+    async def get_token_by_id(self, session):
+        self.RootsModel.user_uuid = self.user_uuid
+        res = await self.RootsModel.get_token_by_id(session=session)
+        return res
+
     async def token_processing_for_editor(self, roots):
         self.RootsModel.user_uuid = self.user_uuid
-        res = await  self.RootsModel.token_processing_for_editor(roots)
+        res = await self.RootsModel.token_processing_for_editor(roots)
         return res
 
 
 async def get_uuid_from_request(request, session):
     # user_id = None
-    user_id = request.cookies.get("user_id")
+    user_id = request.cookies.get("user_id") or request.headers.get("user_id")
     if user_id is not None:
         usr = User()
         usr.id = int(user_id)
@@ -132,8 +137,9 @@ async def get_editors_list(sec_id: int, request: Request, session: AsyncSession 
 @roots_router.get("/get_root_token_by_uuid")
 async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = await get_uuid_from_request(request, session=session)
+    
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
-    print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В ROOTS')
+    # print(user_id, user_roots)
     if user_id is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
         user_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True}

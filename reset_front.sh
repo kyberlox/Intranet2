@@ -1,7 +1,7 @@
 #!/bin/sh
 
-docker-compose down
 git pull origin main
-docker images
-docker rmi intranet_frontend
-docker-compose up --build -d
+
+docker-compose stop frontend
+docker-compose rm frontend
+docker-compose up -d --build frontend # если требуется установка библиотек

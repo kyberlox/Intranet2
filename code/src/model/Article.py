@@ -3018,15 +3018,15 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
     art_class = Article()
     # user_id = await art_class.get_user_by_session_id(user_id=user_id, session=session)
     roots_token = await art_class.get_token_by_uuid(session=session, user_id=user_id)
+    if roots_token:
+        if ("EditorAdmin" in roots_token.keys() and roots_token["EditorAdmin"] is True) or (
+                "EditorModer" in roots_token.keys() and 53 in roots_token["EditorModer"]):
+            excel_buffer = await art_class.make_event_users_excel(session=session, data=data)
+            return StreamingResponse(excel_buffer,
+                                    media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                    headers={"Content-Disposition": "attachment; filename=participants.xlsx"})
 
-    if ("EditorAdmin" in roots_token.keys() and roots_token["EditorAdmin"] is True) or (
-            "EditorModer" in roots_token.keys() and 53 in roots_token["EditorModer"]):
-        excel_buffer = await art_class.make_event_users_excel(session=session, data=data)
-        return StreamingResponse(excel_buffer,
-                                 media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                 headers={"Content-Disposition": "attachment; filename=participants.xlsx"})
-
-    return LogsMaker().warning_message(f"Недостаточно прав для добавления куратора")
+    return LogsMaker().warning_message(f"Недостаточно прав для скачивания Экселя")
 
 
 # #найти статьи раздела по названию

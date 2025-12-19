@@ -648,7 +648,8 @@ async def refresh_session(request: Request, auth_service: AuthService = Depends(
     return {
         "status": "success",
         "session_id": session_id,
-        "session_expires_at": session_data.get("session_expires_at")
+        "session_expires_at": session_data.get("session_expires_at"),
+        
     }
 
 

@@ -172,7 +172,7 @@ class B24:
             
 
         else:
-            url = f"https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+            url = f"https://portal.emk.ru/rest/3830/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
             response = requests.post(url)
         
         ID = response.json()['result']

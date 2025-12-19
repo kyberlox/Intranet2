@@ -4,7 +4,7 @@
     width: 100%;
     max-width: 100%;
     height: auto;
-    
+
 
     &-slide {
         height: auto !important;
@@ -15,6 +15,7 @@
         // aspect-ratio: 16/9;
         background: #b1b1b137;
         aspect-ratio: 16/9;
+
         &:not(.homeview__grid__card__bg-image--plug) {
             // border: 1px solid rgba(128, 128, 128, 0.333);
         }

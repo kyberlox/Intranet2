@@ -34,8 +34,8 @@
         <AdminUsersList :users="activeSectionEditors"
                         @removeUser="(id: number) => removeUsersRoot(id)" />
     </div>
-    <div class="admin-panel__content admin-panel__content__add-user-btn"
-         v-else>
+    <div v-else-if="!activeSection && isLoading"
+         class="admin-panel__content admin-panel__content__add-user-btn">
         <Loader class="contest__page__loader" />
     </div>
 </div>

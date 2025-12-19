@@ -1100,8 +1100,8 @@ async def get_uuid_from_request(request, session):
 async def get_editor_roots(user_uuid, session):
     from ..base.pSQL.objects.RootsModel import RootsModel
     roots_model = RootsModel()
-    roots_model.id = user_uuid
-    all_roots = await roots_model.get_token_by_id(session)
+    roots_model.user_uuid = user_uuid
+    all_roots = await roots_model.get_token_by_uuid(session)
     editor_roots = await roots_model.token_processing_for_editor(all_roots)
     print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В EDITOR')
     if user_uuid is None:

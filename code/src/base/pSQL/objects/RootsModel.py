@@ -23,7 +23,7 @@ class RootsModel:
 
     async def get_token_by_uuid(self, session):
         try:
-            res = await session.execute(select(self.Roots.root_token).where(self.Roots.user_uuid == self.user_uuid))
+            res = await session.execute(select(self.Roots.root_token).where(self.Roots.user_uuid == int(self.user_uuid)))
             result = res.scalar()
             return result
         except Exception as e:

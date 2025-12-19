@@ -3026,7 +3026,7 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
                                     media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                                     headers={"Content-Disposition": "attachment; filename=participants.xlsx"})
 
-    return LogsMaker().warning_message(f"Недостаточно прав для добавления куратора")
+    return LogsMaker().warning_message(f"Недостаточно прав для скачивания Экселя")
 
 
 # #найти статьи раздела по названию

@@ -51,6 +51,11 @@ class Roots:
         res = await  self.RootsModel.get_token_by_uuid(session=session)
         return res
 
+    async def get_token_by_id(self, session):
+        self.RootsModel.id = self.user_uuid
+        res = await  self.RootsModel.get_token_by_id(session=session)
+        return res
+
     async def token_processing_for_editor(self, roots):
         self.RootsModel.user_uuid = self.user_uuid
         res = await  self.RootsModel.token_processing_for_editor(roots)

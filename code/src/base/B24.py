@@ -12,8 +12,8 @@ b24_router = APIRouter(prefix="/b24", tags=["Битрикс24"])
 
 class B24:
     def __init__(self):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
-        # self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/04yfgm2xsnj4sk4a/")
+        # self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/")
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/04yfgm2xsnj4sk4a/")
         # self.bx24 = Bitrix24("https://test-portal.emk.ru/rest/3830/0gtzqs1nai8ocqft/")
 
     # def auth_b24(self):
@@ -45,12 +45,13 @@ class B24:
         return result
 
     def getDeps(self):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/1yvqz73i0vq0yqfz/")
         result = self.bx24.callMethod('department.get')
         return result
 
     def getInfoBlock(self, id):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+        #self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/2f48iwx848fymuw2/")
         result = self.bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
         return result
 
@@ -88,7 +89,7 @@ class B24:
         return result
 
     def getDepartByID(self, id):
-        self.bx24 = Bitrix24("https://portal.emk.ru/rest/2158/wk7uewb9l4xjo0xc/")
+        self.bx24 = Bitrix24("https://portal.emk.ru/rest/3830/1yvqz73i0vq0yqfz/")
         result = self.bx24.callMethod('department.get', ID=id)
         return result
 
@@ -138,7 +139,7 @@ class B24:
             '''
             base = fields["base"]
             base_name = fields["base_name"]
-            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
+            url = f"https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
             headers = {
                 'Content-Type': "Multipart/form-data"
             }
@@ -146,7 +147,7 @@ class B24:
             response = requests.post(url)
             '''
 
-            api_url = "https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add"
+            api_url = "https://portal.emk.ru/rest/3830/2f48iwx848fymuw2/lists.element.add"
             base = fields["base"]
             base_name = fields["base_name"]
             data = {
@@ -171,7 +172,7 @@ class B24:
             
 
         else:
-            url = f"https://portal.emk.ru/rest/1/aj7d42rcogl2f51b/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+            url = f"https://portal.emk.ru/rest/3830/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
             response = requests.post(url)
         
         ID = response.json()['result']

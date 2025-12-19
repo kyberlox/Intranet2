@@ -147,7 +147,7 @@ class B24:
             response = requests.post(url)
             '''
 
-            api_url = "https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add"
+            api_url = "https://portal.emk.ru/rest/3830/2f48iwx848fymuw2/lists.element.add"
             base = fields["base"]
             base_name = fields["base_name"]
             data = {

@@ -17,7 +17,7 @@ class RootsModel:
 
 
     async def get_token_by_id(self, session):
-        res = await session.execute(select(self.Roots.root_token).where(self.Roots.id == self.id))
+        res = await session.execute(select(self.Roots.root_token).where(self.Roots.id == int(self.id)))
         result = res.scalar_one_or_none()
         return result
 

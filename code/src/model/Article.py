@@ -2667,7 +2667,7 @@ class Article:
 
     async def get_token_by_uuid(self, session, user_id):
         from src.services.Roots import Roots
-        roots_token = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
+        roots_token = await Roots(user_uuid=user_id).get_token_by_id(session=session)
         return roots_token
 
     async def make_event_users_excel(self, session, data):
@@ -3017,7 +3017,7 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
 
     art_class = Article()
     # user_id = await art_class.get_user_by_session_id(user_id=user_id, session=session)
-    roots_token = await art_class.get_token_by_uuid(session=session, user_id=user_id)
+    roots_token = await art_class.get_token_by_id(session=session, user_id=user_id)
 
     if ("EditorAdmin" in roots_token.keys() and roots_token["EditorAdmin"] is True) or (
             "EditorModer" in roots_token.keys() and 53 in roots_token["EditorModer"]):

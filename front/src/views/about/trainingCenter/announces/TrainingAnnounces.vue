@@ -3,16 +3,18 @@
     <div class="page__title">
         Анонс учебных программ
     </div>
-    <h5>Новых анонсов пока нет, следите за обновлениями</h5>
+    <EmptyPagePlug />
     <!-- <TrainingTable :page="'announces'" /> -->
 </div>
 </template>
 
 <script lang="ts">
 // import TrainingTable from "../components/TrainingTable.vue";
+import EmptyPagePlug from "@/components/layout/EmptyPagePlug.vue";
 import { defineComponent } from "vue";
 export default defineComponent({
     components: {
+        EmptyPagePlug,
         // TrainingTable,
     },
     setup() {

@@ -1,0 +1,42 @@
+.empty-page-plug__wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-page-plug__title {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: large;
+    font-weight: 600;
+    color: #0000009e;
+}
+
+.empty-page-plug__img {
+    max-width: 630px;
+    border-radius: 8px;
+    height: 100%;
+    /* max-height: 350px; */
+}
+
+.empty-page-plug__img__wrapper {
+    /* padding: 50px; */
+    border: 1px solid rgb(209, 209, 209);
+    border-radius: 8px;
+    object-fit: cover;
+    max-height: 250px;
+    /* background: white; */
+}
+
+.empty-page-plug__img__mark {
+    display: block;
+    text-align: left;
+    margin-top: 2px;
+    font-size: small;
+    font-family: sans-serif;
+    font-weight: bold;
+    /* color: #0000009e; */
+}

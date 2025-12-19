@@ -22,9 +22,10 @@
                     :modifiers="['likes', 'noViews']"
                     :contest="true"
                     @callModal="callModal" />
-    <div v-else-if="!isLoading">
+    <!-- <div v-else-if="!isLoading">
         <h5>Сейчас нет актуальных конкурсов</h5>
-    </div>
+    </div> -->
+    <EmptyPagePlug v-else-if="!isLoading" />
     <div class="contest__page__loader__wrapper"
          v-else-if="isLoading">
         <Loader class="contest__page__loader" />
@@ -48,12 +49,14 @@ import { type IContentGallerySlide } from '@/components/tools/gallery/ContentGal
 // import thirdPlaceMedal from '@/assets/imgs/3placeMedal.png'
 import type { IContest } from '@/interfaces/entities/IContest';
 import Loader from '@/components/layout/Loader.vue';
+import EmptyPagePlug from '@/components/layout/EmptyPagePlug.vue';
 
 export default defineComponent({
     components: {
         ContentGallery,
         ZoomModal,
-        Loader
+        Loader,
+        EmptyPagePlug
     },
     setup() {
         const slides = ref<IContentGallerySlide>({ name: '', images: [] });

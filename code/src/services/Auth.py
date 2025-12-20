@@ -211,7 +211,7 @@ class AuthService:
         )
         
         # Если access_token истек или скоро истекает (менее 5 минут), обновляем его
-        if now > access_token_expires_at - timedelta(minutes=5):
+        if now >= access_token_expires_at - timedelta(minutes=5):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]
             )
@@ -240,7 +240,7 @@ class AuthService:
         # Применяем скользящее окно для сессии
         last_activity = datetime.fromisoformat(session_data["last_activity"])
         
-        if now > last_activity + self.session_sliding_window:
+        if now >= last_activity + self.session_sliding_window:
             # Обновляем время последней активности и продлеваем сессию
             session_data["last_activity"] = now.isoformat()
             session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
@@ -250,7 +250,7 @@ class AuthService:
                 data=session_data,
                 ttl=int(self.session_ttl.total_seconds())
             )
-        
+        print(session_data, 'дата, че получаем?')
         return session_data
 
     def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:

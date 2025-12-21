@@ -43,12 +43,12 @@ class AuthService:
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
         
         # Время жизни токенов и сессий
-        # self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
-        self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
+        self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
+        # self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
         self.refresh_token_ttl = timedelta(days=30)  # Время жизни refresh_token
         self.session_ttl = timedelta(days=7)  # Время жизни сессии
-        # self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
-        self.session_sliding_window = timedelta(minutes=1)  # Интервал для скользящего обновления сессии
+        self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
+        # self.session_sliding_window = timedelta(minutes=1)  # Интервал для скользящего обновления сессии
 
     async def get_auth_url(self, state: str = None) -> str:
         """Генерация URL для авторизации в Bitrix24"""
@@ -240,8 +240,8 @@ class AuthService:
         )
         
         # Если access_token истек или скоро истекает (менее 5 минут), обновляем его
-        # if now >= access_token_expires_at - timedelta(minutes=5):
-        if now >= access_token_expires_at - timedelta(minutes=1):
+        if now >= access_token_expires_at - timedelta(minutes=5):
+        # if now >= access_token_expires_at - timedelta(minutes=1):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]
             )
@@ -318,7 +318,7 @@ class AuthService:
     def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
         """Синхронная версия обновления токена"""
         token_url = f"{self.bitrix_domain}/oauth/token/"
-        print(refresh_token)
+        # print(refresh_token)
         params = {
             "client_id": self.client_id,
             "grant_type": "refresh_token",

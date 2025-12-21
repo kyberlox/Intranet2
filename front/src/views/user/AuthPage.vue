@@ -1,14 +1,14 @@
 <template>
-<div class="portal__auth">
-    <div class="portal__auth__bg"></div>
+<div class="portal__auth"
+     @keyup.enter="tryLogin"
+     tabindex="0">
+    <div class="portal__auth__bg"></div>]
     <div class="portal__auth__content">
-        <div class="portal__auth__message"> </div>
         <div class="portal__auth__form__auth">
-            <button class="btn btn-primary portal__auth__form__auth__submit"
-                    @keyup.enter="tryLogin"
-                    @click="tryLogin">
+            <button @click="tryLogin"
+                    class="btn btn-primary portal__auth__form__auth__submit">
                 <span v-if="!isLoading"> Войти</span>
-                <Loader v-else-if="isLoading"
+                <Loader v-else
                         class="pos-rel" />
             </button>
         </div>

@@ -1,3 +1,5 @@
+@use '/src/assets/styles/mixins' as *;
+
 .company {
     &__mission {
         display: flex;
@@ -10,6 +12,10 @@
 
         ul {
             background: none !important;
+        }
+
+        @include sm {
+            margin: 0;
         }
     }
 

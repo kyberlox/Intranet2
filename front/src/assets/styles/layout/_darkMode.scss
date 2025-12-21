@@ -1,6 +1,11 @@
 @use '/src/assets/styles/mixins' as *;
 
 .dark-mode {
+    .navbar {
+        --bs-navbar-color: #ff0000;
+        color: #ff0000;
+        /* На всякий случай */
+    }
 
     // фоновые цвета
     .header,
@@ -57,7 +62,8 @@
     button,
     .calendar-year__event-btn,
     .tags-modal__remove-btn,
-    .book-nav__li {
+    .book-nav__li,
+    .dropdown__item {
         color: #d2d2d2;
         background: rgb(32, 32, 32);
 
@@ -65,6 +71,10 @@
             background: rgb(57, 57, 57);
             color: #d2d2d2;
         }
+    }
+
+    .navbar-toggler {
+        background-color: #3c3c3c;
     }
 
 
@@ -160,7 +170,8 @@
     }
 
     .homeview__grid__card__title,
-    .blog {
+    .blog,
+    .blog__content {
         color: #d3d3d3;
     }
 
@@ -175,6 +186,10 @@
     li,
     p {
         color: #d3d3d3;
+    }
+
+    b {
+        color: white;
     }
 
     svg,

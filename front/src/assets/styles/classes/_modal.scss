@@ -97,6 +97,11 @@
             height: 100%;
             max-width: 70%;
             overflow-y: auto;
+
+            &>.modal__header {
+                overflow-x: auto;
+                min-width: 300px;
+            }
         }
 
         &--review {

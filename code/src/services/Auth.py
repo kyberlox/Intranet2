@@ -200,6 +200,8 @@ class AuthService:
             return None
         # 1. Определяем тип авторизации
         auth_type = session_data.get("auth_type", "bitrix24_oauth")
+
+        now = datetime.now()
         
         # 2. Для ROOT-авторизации - упрощенная проверка
         if auth_type == "root_auth" or session_data.get("refresh_token") is None:
@@ -224,7 +226,7 @@ class AuthService:
             
             return session_data
 
-        now = datetime.now()
+        
         session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
         
         # Проверяем истекла ли сессия

@@ -174,7 +174,7 @@ class AuthService:
             data=session_data,
             ttl=int(self.session_ttl.total_seconds())
         )
-        
+        print(session_data['refresh_token'], 'мой refresh токен')
         # Также сохраняем связь user_id -> session_id для поиска
         user_sessions_key = f"user_sessions:{tokens['user_id']}"
         self.redis.add_to_set(user_sessions_key, session_id)

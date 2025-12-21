@@ -209,7 +209,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             # Проверяем заголовок Authorization с префиксом Bearer
             auth_header = request.headers.get("session_id")
             #print(request.headers)
-
+            print('тут получает ошибку?3', auth_header)
             if auth_header:# and auth_header.startswith("Bearer "):
                 print('тут получает ошибку?3', auth_header)
                 session_id = auth_header#[7:]

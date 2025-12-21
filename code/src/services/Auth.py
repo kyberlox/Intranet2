@@ -840,11 +840,11 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 @auth_router.get("/gpt", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
     #проверка на авторизацию
-    # if not session_data:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Failed to authenticate with Bitrix24"
-    #     )
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to authenticate with Bitrix24"
+        )
     # # получаю данные пользователя
     # print(session_data['user_info'])
     # if 'XML_ID' in session_data['user_info']:

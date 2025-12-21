@@ -331,7 +331,7 @@ class AuthService:
             LogsMaker().info_message(f"Refreshing token, URL: {token_url}")
             LogsMaker().info_message(f"Using refresh_token: {refresh_token[:20]}...")
             
-            response = requests.post(token_url, params=params, timeout=30)
+            response = requests.get(token_url, params=params, timeout=30)
             
             # ДЕБАГ: Что вернул сервер?
             LogsMaker().info_message(f"Response status: {response.status_code}")

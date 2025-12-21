@@ -198,7 +198,32 @@ class AuthService:
         
         if not session_data:
             return None
+        # 1. Определяем тип авторизации
+        auth_type = session_data.get("auth_type", "bitrix24_oauth")
         
+        # 2. Для ROOT-авторизации - упрощенная проверка
+        if auth_type == "root_auth" or session_data.get("refresh_token") is None:
+            # Проверяем только срок сессии
+            session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
+            
+            if now > session_expires_at:
+                self.delete_session(session_id)
+                return None
+            
+            # Обновляем активность
+            last_activity = datetime.fromisoformat(session_data["last_activity"])
+            if now > last_activity + self.session_sliding_window:
+                session_data["last_activity"] = now.isoformat()
+                session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
+                
+                self.redis.save_session(
+                    key=session_id,
+                    data=session_data,
+                    ttl=int(self.session_ttl.total_seconds())
+                )
+            
+            return session_data
+
         now = datetime.now()
         session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
         

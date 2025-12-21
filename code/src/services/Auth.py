@@ -43,12 +43,12 @@ class AuthService:
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
         
         # Время жизни токенов и сессий
-        self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
-        # self.access_token_ttl = timedelta(minutes=5)  # Время жизни access_token в Bitrix24
+        # self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
+        self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
         self.refresh_token_ttl = timedelta(days=30)  # Время жизни refresh_token
         self.session_ttl = timedelta(days=7)  # Время жизни сессии
-        self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
-        # self.session_sliding_window = timedelta(minutes=1)  # Интервал для скользящего обновления сессии
+        # self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
+        self.session_sliding_window = timedelta(minutes=1)  # Интервал для скользящего обновления сессии
 
     async def get_auth_url(self, state: str = None) -> str:
         """Генерация URL для авторизации в Bitrix24"""
@@ -102,8 +102,8 @@ class AuthService:
         token_url = f"{self.bitrix_domain}/oauth/token/"
         
         params = {
-            "grant_type": "refresh_token",
             "client_id": self.client_id,
+            "grant_type": "refresh_token",
             "client_secret": self.client_secret,
             "refresh_token": refresh_token
         }
@@ -199,32 +199,32 @@ class AuthService:
         if not session_data:
             return None
         # 1. Определяем тип авторизации
-        auth_type = session_data.get("auth_type", "bitrix24_oauth")
+        # auth_type = session_data.get("auth_type", "bitrix24_oauth")
 
         now = datetime.now()
         
-        # 2. Для ROOT-авторизации - упрощенная проверка
-        if auth_type == "root_auth" or session_data.get("refresh_token") is None:
-            # Проверяем только срок сессии
-            session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
+        # # 2. Для ROOT-авторизации - упрощенная проверка
+        # if auth_type == "root_auth" or session_data.get("refresh_token") is None:
+        #     # Проверяем только срок сессии
+        #     session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
             
-            if now > session_expires_at:
-                self.delete_session(session_id)
-                return None
+        #     if now > session_expires_at:
+        #         self.delete_session(session_id)
+        #         return None
             
-            # Обновляем активность
-            last_activity = datetime.fromisoformat(session_data["last_activity"])
-            if now > last_activity + self.session_sliding_window:
-                session_data["last_activity"] = now.isoformat()
-                session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
+        #     # Обновляем активность
+        #     last_activity = datetime.fromisoformat(session_data["last_activity"])
+        #     if now > last_activity + self.session_sliding_window:
+        #         session_data["last_activity"] = now.isoformat()
+        #         session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
                 
-                self.redis.save_session(
-                    key=session_id,
-                    data=session_data,
-                    ttl=int(self.session_ttl.total_seconds())
-                )
+        #         self.redis.save_session(
+        #             key=session_id,
+        #             data=session_data,
+        #             ttl=int(self.session_ttl.total_seconds())
+        #         )
             
-            return session_data
+        #     return session_data
 
         
         session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
@@ -240,8 +240,8 @@ class AuthService:
         )
         
         # Если access_token истек или скоро истекает (менее 5 минут), обновляем его
-        if now > access_token_expires_at - timedelta(minutes=5):
-        # if now >= access_token_expires_at - timedelta(minutes=1):
+        # if now >= access_token_expires_at - timedelta(minutes=5):
+        if now >= access_token_expires_at - timedelta(minutes=1):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]
             )
@@ -270,7 +270,7 @@ class AuthService:
         # Применяем скользящее окно для сессии
         last_activity = datetime.fromisoformat(session_data["last_activity"])
         
-        if now > last_activity + self.session_sliding_window:
+        if now >= last_activity + self.session_sliding_window:
             # Обновляем время последней активности и продлеваем сессию
             session_data["last_activity"] = now.isoformat()
             session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
@@ -288,9 +288,10 @@ class AuthService:
         token_url = f"{self.bitrix_domain}/oauth/token/"
         
         params = {
-            "grant_type": "refresh_token",
             "client_id": self.client_id,
+            "grant_type": "refresh_token",
             "client_secret": self.client_secret,
+            "redirect_uri": "https://intranet.emk.ru/",
             "refresh_token": refresh_token
         }
         

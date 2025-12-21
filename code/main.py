@@ -205,17 +205,13 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         session_id = request.cookies.get("session_id")
 
         if not session_id:
-            print('тут получает ошибку?2', session_id)
             # Проверяем заголовок Authorization с префиксом Bearer
             auth_header = request.headers.get("session_id")
             #print(request.headers)
-            print('тут получает ошибку?3', auth_header)
             if auth_header:# and auth_header.startswith("Bearer "):
-                print('тут получает ошибку?3', auth_header)
                 session_id = auth_header#[7:]
         
         if not session_id:
-            print('тут получает ошибку?1')
             log.warning_message(message="Authorization cookies or headers missing")
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,

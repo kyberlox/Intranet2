@@ -539,7 +539,7 @@ class UserModel:
         result = res.fetchall()
         users = []
         for res in result:
-            
+            print(res, 'че приходит')
             user = list(res)
             # if isinstance(user[6]['uf_department'], list) is False and 112 in user[6]['uf_department']:
             if type(user[6]['uf_department']) != type(bool()) and 112 in user[6]['uf_department']:

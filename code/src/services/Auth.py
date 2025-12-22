@@ -99,7 +99,7 @@ class AuthService:
 
     async def refresh_access_token(self, refresh_token: str) -> Optional[Dict[str, Any]]:
         """Обновление access_token с помощью refresh_token"""
-        token_url = f"{self.bitrix_domain}/oauth/token/"
+        token_url = f"https://oauth.bitrix24.tech/oauth/token/"
         
         params = {
             "client_id": self.client_id,

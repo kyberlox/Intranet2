@@ -2715,6 +2715,37 @@ class Article:
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel make_event_users_excel: {e}')
 
+    async def delete_duplicate_video(self, session, user_id):
+        VID_SEC = [31, 33, 42, 51, 52] # СПИСОК СЕКЦИЙ ГДЕ ЕСТЬ ВИДОСЫ
+        # ПРОЙТИСЬ ПО СПИСКУ СЕКЦИЙ
+        # ПРОЙТИСЬ ПО КАЖДОЙ СТАТЬЕ И СДЕЛАТЬ ЗАПРОС НА ФАЙЛЫ СТАТЬИ
+        # ЕСЛИ ЕСТЬ LINK ТО ОСТАВИТЬ ОДИН 
+        try:
+            for sec in VID_SEC:
+                self.section_id = sec
+                articles = self.search_by_section_id(session=session, user_id=user_id)
+                for art in articles:
+                    art_id = art['id']
+                    files = await File(art_id=int(art_id)).get_files_by_art_id(session)
+                    videos_embed = []
+                    if files:
+                        for file in files:
+                            # файлы делятся по категориям
+                            if "link" in file["content_type"]:
+                                videos_embed.append(file)
+                    if videos_embed:
+                        seen_url = []
+                        for vid in videos_embed:
+                            if vid['b24_url'] in seen_url:
+                                #удаляем
+                                File(id=vid['id']).editor_del_file(session)
+                            else:
+                                seen_url.append(vid['b24_url'])
+            return True
+        except Exception as e:
+            return {"error": str(e)}
+
+                    
     async def get_all(self, session):
         articles_info = await ArticleModel().all(session=session)
         return articles_info

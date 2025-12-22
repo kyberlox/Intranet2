@@ -722,6 +722,7 @@ class Editor:
         return res
 
     async def update(self, data: dict):
+        print(data)
         from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
         await self.validate()
         if self.art_id is None:

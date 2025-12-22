@@ -1762,6 +1762,7 @@ class Article:
 
                     #без компрессии
                     elif self.section_id in ["55", "54", "41", "32", "13", 13]:
+                        print(f"{DOMAIN}{url}")
                         return f"{DOMAIN}{url}"
 
                     else:

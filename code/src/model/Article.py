@@ -1747,7 +1747,6 @@ class Article:
             return LogsMaker().error_message(f"Возникла ошибка при удалении статьи с id = {self.id}: {e}")
 
     async def get_preview(self, session):
-        print(self.section_id)
         files = await File(art_id=int(self.id)).get_files_by_art_id(session=session)
         if files:
             for file in files:
@@ -1755,7 +1754,7 @@ class Article:
                     url = file["file_url"]
 
                     # внедряю компрессию
-                    if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
+                    if str(self.section_id) == "18":  # отдельный алгоритм для памятки новому сотруднику
                         preview_link = url.split("/")
                         preview_link[-2] = "compress_image/yowai_mo"
                         url = '/'.join(preview_link)
@@ -1785,7 +1784,7 @@ class Article:
                     # if 1 == current_num:
                     url = file["file_url"]
                     # внедряю компрессию
-                    if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
+                    if str(self.section_id) == "18":  # отдельный алгоритм для памятки новому сотруднику
                         preview_link = url.split("/")
                         preview_link[-2] = "compress_image/yowai_mo"
                         url = '/'.join(preview_link)

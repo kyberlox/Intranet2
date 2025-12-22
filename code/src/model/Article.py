@@ -1653,8 +1653,7 @@ class Article:
         if files:
             for file in files:
                 # файлы делятся по категориям
-                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
-                    "original_name"] or "png" in file["original_name"]:
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
                     url = file["file_url"]
                     if art['section_id'] in [42, 51, 52]:
                         preview_link = url.split("/")
@@ -1871,19 +1870,23 @@ class Article:
                     if files:
                         for file in files:
 
-                            url = file["file_url"]
-                            file["file_url"] = f"{DOMAIN}{url}"
+                            
 
                             # файлы делятся по категориям
                             if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file[
                                 "original_name"] or "png" in file["original_name"]:
+                                url = file["file_url"]
+                                file["file_url"] = f"{DOMAIN}{url}"
                                 res['images'].append(file)
                             elif "video" in file["content_type"]:
+                                url = file["file_url"]
+                                file["file_url"] = f"{DOMAIN}{url}"
                                 res['videos_native'].append(file)
                             elif "link" in file["content_type"]:
                                 res['videos_embed'].append(file)
                             else:
-
+                                url = file["file_url"]
+                                file["file_url"] = f"{DOMAIN}{url}"
                                 res['documentation'].append(file)
 
                     active_articles.append(res)

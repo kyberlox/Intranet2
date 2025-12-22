@@ -1229,6 +1229,14 @@ async def render(art_id: int):
     return await Editor(art_id=art_id).get_files()
 
 
+# @editor_router.post("/set_link")
+# async def new_link(data=Body(), session: AsyncSession = Depends(get_async_db)):
+#     art_id = data["art_id"]
+#     file_id = 
+#     return 
+
+
+
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")
 async def create_file(file: UploadFile, art_id: int,

@@ -224,19 +224,8 @@ class File:
 
     async def add_link(self, link, art_id, session):
         unique_name = await FilesDBModel(article_id=art_id).generate_name(file_name=link, session=session)
-        # filename = link.split("/")[-2]
-        # data = {
-        #     "original_name": link,
-        #     "stored_name": filename,
-        #     "content_type": "link",
-        #     "article_id": art_id,
-        #     "b24_id": self.b24_id,
-        #     "is_archive": False,
-        #     "is_preview": False,
-        #     "file_url": link  # Прямой URL
-        # }
             
-        #записать в mongodb
+        #записать
         inserted_id = await FilesDBModel(
             article_id=art_id,
             name=unique_name,
@@ -430,6 +419,9 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
+
+                    if fl["type"] == "video_embed":
+                        return new_url
                     
                     return f"{DOMAIN}{new_url}"
 
@@ -437,7 +429,6 @@ class File:
     async def save_by_URL(self, url, art_id, b24_id = None, is_preview = False):
         pass
     
-
     async def need_update_file(self,  art_id, files_id, session):
         """
         Принимает список айдишников файлов статьи

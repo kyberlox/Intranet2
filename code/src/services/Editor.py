@@ -763,7 +763,6 @@ class Editor:
 
                 # если это часть indirect_data
                 else:
-                    print("тут")
                     if "indirect_data" in art and art["indirect_data"] is not None:
                         if key == "tags":
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

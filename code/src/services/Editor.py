@@ -793,17 +793,17 @@ class Editor:
 
             # файлы делятся по категориям
             if "image" in file["content_type"]:
-                url = file_info["file_url"]
+                url = file["file_url"]
                 file_info["type"] = "image"
                 file_info["file_url"] = f"{DOMAIN}{url}"
             elif "video" in file["content_type"]:
-                url = file_info["file_url"]
+                url = file["file_url"]
                 file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "video"
             elif "link" in file["content_type"]:
                 file_info["type"] = "video_embed"
             else:
-                
+                url = file["file_url"]
                 file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "documentation"
 

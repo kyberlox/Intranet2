@@ -801,6 +801,7 @@ class Editor:
                 file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "video"
             elif "link" in file["content_type"]:
+                file_info["file_url"] = file["file_url"]
                 file_info["type"] = "video_embed"
             else:
                 url = file["file_url"]

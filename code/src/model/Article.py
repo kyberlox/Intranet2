@@ -2716,7 +2716,6 @@ class Article:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel make_event_users_excel: {e}')
 
     async def get_all(self, session):
-        from src.pSQL.objects.ArticleModel import ArticleModel
         articles_info = await ArticleModel().all(session=session)
         return articles_info
 

@@ -80,6 +80,7 @@ export default defineComponent({
     setup(props) {
         const myId = computed(() => useUserData().getMyId);
         const sections = computed(() => useAdminData().getSections);
+        const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
 
         const fullNavigation = ref<NavGroup[]>(
             staticAdminSections.map((g) => ({
@@ -98,6 +99,9 @@ export default defineComponent({
             };
             if (props.needDefaultNav) {
                 fullNavigation.value[0].nav.push(...sections.value)
+                if (!adminRoot.value) {
+                    fullNavigation.value = fullNavigation.value.filter((e) => e.id !== 4)
+                }
             } else fullNavigation.value = fullNavigation.value.filter((e) => e.id == 0);
         }, { immediate: true, deep: true })
 

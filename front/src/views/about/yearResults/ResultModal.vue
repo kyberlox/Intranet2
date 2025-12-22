@@ -15,7 +15,7 @@
                 <div class="modal__grid modal__grid--fixedHeight">
                     <div class="modal__left">
                         <div class="modal__image img-fluid staff__item-img modal__image--staff"
-                             v-lazy-load="worker.indirect_data.photo_file_url"
+                             v-lazy-load="worker.indirect_data.photo_file_url.replace('compress_image/user', 'user_files')"
                              alt="фото сотрудника">
                         </div>
                         <span class="modal__name">{{ worker.name }}</span>

@@ -37,11 +37,15 @@
                         <span class="score-stars__count">({{ training.indirect_data?.reviews?.length || 0 }})</span>
                     </div>
                     <div v-if="page !== 'literature'"
-                         class="conducted-training__list__item__date col-12 col-md-12 col-lg-2 col-xl-2">{{
-                            training.date ?? training.indirect_data?.event_date }}</div>
+                         class="conducted-training__list__item__date col-12 col-md-12 col-lg-2 col-xl-2">
+                        <span>{{
+                            training.date ?? training.indirect_data?.event_date }}
+                        </span>
+                    </div>
 
-                    <div class="conducted-training__list__item__date conducted-training__list__item__date--content col-12 col-md-12 col-lg-2 col-xl-2"
-                         v-html="training.content_text">
+                    <div
+                         class="conducted-training__list__item__date conducted-training__list__item__date--content col-12 col-md-12 col-lg-2 col-xl-2">
+                        <span v-html="training.content_text"></span>
                     </div>
                     <div v-if="page == 'literature'"
                          class="conducted-training__list__item__download col-12 col-md-12 col-lg-3 col-xl-3">

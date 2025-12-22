@@ -16,7 +16,6 @@
             </div> -->
         <div class="dp__wrapper">
             <DatePicker month-picker
-                        disable-year-select
                         :calendarType="'month'"
                         @clearValue="visibleMonthes = monthesInit"
                         @pickDate="handleMonthChange" />
@@ -194,7 +193,7 @@ export default defineComponent({
             handleMonthChange,
             isCalendarEvent,
             handleExcelDownload,
-            ovkPass: computed(() => useUserData().getUserRoots.EditorModer.includes(53) || useUserData().getUserRoots.EditorAdmin)
+            ovkPass: computed(() => useUserData().getUserRoots.EditorModer?.includes(53) || useUserData().getUserRoots.EditorAdmin)
         };
     },
 });

@@ -1,10 +1,10 @@
 @use '/src/assets/styles/mixins' as *;
 
 .dark-mode {
+
+    // бургер
     .navbar {
-        --bs-navbar-color: #ff0000;
-        color: #ff0000;
-        /* На всякий случай */
+        --bs-navbar-color: #9b9b9b;
     }
 
     // фоновые цвета
@@ -29,7 +29,9 @@
     .calendar-year__title,
     .file-uploader__preview-item,
     .portal__auth__content,
-    .one-c-memo-card {
+    .one-c-memo-card,
+
+    .training-feedback__wrapper {
         background: #1b1b1b;
 
         ul {
@@ -89,7 +91,8 @@
     }
 
 
-    .modal__wrapper {
+    .modal__wrapper,
+    .training-feedback {
         background: #131313;
     }
 
@@ -150,7 +153,8 @@
     .staff__filter__link--active,
     .modal__description,
     .news__detail__discr,
-    label {
+    label,
+    figcaption {
         color: #b2b0b0;
     }
 

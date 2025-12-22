@@ -34,13 +34,11 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 getBlogAuthorsToStore();
             break;
         case 'calendar':            
-
                 const currentYear = new Date().getFullYear();
                 Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
                     .then((data) => {
                         useViewsDataStore().setData(data.result, 'calendarData');
-                    });
-         
+                    });  
             break;
         case 'score':
             const scoreRoutes = [{

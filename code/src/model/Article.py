@@ -1791,7 +1791,7 @@ class Article:
                         url = '/'.join(preview_link)
                     # Для баготворительных проектов компрессия не требуется
                     # и для гида по предприятиям
-                    elif self.section_id in ["55", "54", "41", "32", "13"]:
+                    elif str(self.section_id) in ["55", "54", "41", "32", "13"]:
                         print(f"{DOMAIN}{url}")
                         return f"{DOMAIN}{url}"
                     else:

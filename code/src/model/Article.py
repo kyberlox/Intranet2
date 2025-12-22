@@ -1761,8 +1761,9 @@ class Article:
                     # и для гида по предприятиям
 
                     #без компрессии
-                    elif self.section_id in ["55", "54", "41", "32", "13"]:
+                    elif self.section_id in ["55", "54", "41", "32", "13", 13]:
                         return f"{DOMAIN}{url}"
+
                     else:
                         preview_link = url.split("/")
                         preview_link[-2] = "compress_image"

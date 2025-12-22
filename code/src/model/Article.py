@@ -1673,7 +1673,7 @@ class Article:
                     file["file_url"] = f"{DOMAIN}{url}"
                     art['documentation'].append(file)
 
-        print("Я ТУТ")
+        
         prev = await self.get_preview(session)
         art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
         # art["preview_file_url"] = await self.get_preview(session)
@@ -1747,6 +1747,7 @@ class Article:
             return LogsMaker().error_message(f"Возникла ошибка при удалении статьи с id = {self.id}: {e}")
 
     async def get_preview(self, session):
+        print(self.section_id)
         files = await File(art_id=int(self.id)).get_files_by_art_id(session=session)
         if files:
             for file in files:

@@ -30,15 +30,15 @@
     </div>
     <div class="vertical-card__item__subtitle__wrapper">
         <div class="vertical-card__item__subtitle vertical-title">
-            {{ card.subtitle ?? card.name }}
+            <span> {{ card.subtitle ?? card.name }}</span>
         </div>
         <div v-if="card.description"
              class="vertical-card__item__subtitle vertical-subtitle">
-            {{ card.description }}
+            <span> {{ card.description }}</span>
         </div>
         <div v-if="card.indirect_data?.organizer"
              class="vertical-card__item__subtitle vertical-subtitle">
-            {{ 'Организатор: ' + card.indirect_data?.organizer }}
+            <span> {{ 'Организатор: ' + card.indirect_data?.organizer }}</span>
         </div>
     </div>
 </div>

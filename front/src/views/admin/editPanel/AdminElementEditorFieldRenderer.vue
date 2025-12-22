@@ -17,9 +17,9 @@
                         :users="(item.value as IUserList[])"
                         @removeUser="(id: number) => $emit('handleUsersPick', String(id), 'remove')" />
 
-        <AdminEditReportage v-else-if="item.field == 'reports'"
-                            :item="(item.value as IReportage[])"
-                            @pick="(val) => $emit('reportageChanged', val)" />
+        <AdminEditInputMulti v-else-if="item.field == 'reports'"
+                             :item="(item.value as IReportage[])"
+                             @pick="(val) => $emit('reportageChanged', val)" />
 
         <AdminEditTags v-if="item.field == 'all_tags'"
                        :currentTags="(newElementSkeleton.find((e) => e.field == 'tags')?.value as number[])"
@@ -38,9 +38,15 @@
     </div>
 
     <div class="admin-element-inner__field mt10">
-        <AdminEditInput v-if="newFileData?.videos_embed"
+        <!-- <AdminEditInput v-if="newFileData?.videos_embed"
                         :item="{ name: 'Видео с источников', field: 'videos_embed', values: [{ name: '', id: '' }] }"
-                        @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)" />
+                        @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)" /> -->
+
+        <AdminEditInputMulti v-if="newFileData?.videos_embed"
+                             :title="'Видео с источников'"
+                             :item="newFileData?.videos_embed"
+                             @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)" />
+
     </div>
     <AdminUploadingSection class="mt10"
                            :newFileData="newFileData"
@@ -68,7 +74,7 @@ import AdminEditDatePicker from '@/views/admin/components/inputFields/AdminEditD
 import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.vue';
 import AdminUploadingSection from "./elementInnerLayout/AdminUploadingSection.vue";
 import AdminEditUserSearch from "../components/inputFields/AdminEditUserSearch.vue";
-import AdminEditReportage from "../components/inputFields/AdminEditReportage.vue";
+import AdminEditInputMulti from "../components/inputFields/AdminEditInputMulti.vue";
 import FileUploader from "@/components/tools/common/FileUploader.vue";
 import AdminUsersList from "../components/inputFields/AdminUsersList.vue";
 import AdminEditTags from "../components/inputFields/AdminEditTags.vue";
@@ -82,7 +88,7 @@ export default defineComponent({
         AdminEditDatePicker,
         AdminEditInput,
         Loader,
-        AdminEditReportage,
+        AdminEditInputMulti,
         AdminEditUserSearch,
         FileUploader,
         AdminUploadingSection,

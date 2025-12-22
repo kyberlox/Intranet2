@@ -185,15 +185,20 @@ export default defineComponent({
         })
     }
 
-    const handleUpload = (e: IFileToUpload) => {
+    const handleUpload = (e: IFileToUpload, embed: boolean = false) => {
       const idToUpload = isCreateNew.value ? newId.value : props.elementId
       if (!e || !e.file) return
+      if (!embed) {
+        const formData = new FormData()
+        formData.append('file', e.file)
 
-      const formData = new FormData()
-      formData.append('file', e.file)
-
-      Api.post(`/editor/upload_file/${idToUpload}`, formData)
-        .finally(() => reloadElementData(true))
+        Api.post(`/editor/upload_file/${idToUpload}`, formData)
+          .finally(() => reloadElementData(true))
+      }
+      else {
+        Api.post(`/editor/upload_file/${idToUpload}`, e)
+          .finally(() => reloadElementData(true))
+      }
     }
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {

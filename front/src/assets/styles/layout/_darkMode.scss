@@ -274,6 +274,10 @@
         border-color: #434343;
     }
 
+    & {
+        --p-editor-content-background: #272727;
+    }
+
     .one-c-memo-nav-item:hover,
     .one-c-memo-nav-item--active {
         background-color: #313131;

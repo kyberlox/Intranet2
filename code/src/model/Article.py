@@ -1673,9 +1673,9 @@ class Article:
                     file["file_url"] = f"{DOMAIN}{url}"
                     art['documentation'].append(file)
 
+        self.section_id = art['section_id']
         prev = await self.get_preview(session)
-        art[
-            "preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+        art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
         # art["preview_file_url"] = await self.get_preview(session)
 
         if art['section_id'] == 31 or art['section_id'] == 33:
@@ -1754,15 +1754,17 @@ class Article:
                     url = file["file_url"]
 
                     # внедряю компрессию
-                    if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
+                    if str(self.section_id) == "18":  # отдельный алгоритм для памятки новому сотруднику
                         preview_link = url.split("/")
                         preview_link[-2] = "compress_image/yowai_mo"
                         url = '/'.join(preview_link)
                     # Для баготворительных проектов компрессия не требуется
                     # и для гида по предприятиям
 
-                    elif self.section_id in ["55", "41", "32"]:
+                    #без компрессии
+                    elif str(self.section_id) in ["55", "54", "41", "32", "13"]:
                         return f"{DOMAIN}{url}"
+
                     else:
                         preview_link = url.split("/")
                         preview_link[-2] = "compress_image"
@@ -1782,13 +1784,14 @@ class Article:
                     # if 1 == current_num:
                     url = file["file_url"]
                     # внедряю компрессию
-                    if self.section_id == "18":  # отдельный алгоритм для памятки новому сотруднику
+                    if str(self.section_id) == "18":  # отдельный алгоритм для памятки новому сотруднику
                         preview_link = url.split("/")
                         preview_link[-2] = "compress_image/yowai_mo"
                         url = '/'.join(preview_link)
                     # Для баготворительных проектов компрессия не требуется
                     # и для гида по предприятиям
-                    elif self.section_id in ["55", "41", "32"]:
+                    elif str(self.section_id) in ["55", "54", "41", "32", "13"]:
+                        print(f"{DOMAIN}{url}")
                         return f"{DOMAIN}{url}"
                     else:
                         preview_link = url.split("/")
@@ -2715,6 +2718,42 @@ class Article:
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel make_event_users_excel: {e}')
 
+    async def delete_duplicate_video(self, session, user_id):
+        VID_SEC = [31, 33, 42, 51, 52] # СПИСОК СЕКЦИЙ ГДЕ ЕСТЬ ВИДОСЫ
+        # ПРОЙТИСЬ ПО СПИСКУ СЕКЦИЙ
+        # ПРОЙТИСЬ ПО КАЖДОЙ СТАТЬЕ И СДЕЛАТЬ ЗАПРОС НА ФАЙЛЫ СТАТЬИ
+        # ЕСЛИ ЕСТЬ LINK ТО ОСТАВИТЬ ОДИН 
+        try:
+            for sec in VID_SEC:
+                self.section_id = sec
+                articles = await self.search_by_section_id(session=session, user_id=user_id)
+                for art in articles:
+                    art_id = art['id']
+                    files = await File(art_id=int(art_id)).get_files_by_art_id(session)
+                    videos_embed = []
+                    if files:
+                        for file in files:
+                            # файлы делятся по категориям
+                            if "link" in file["content_type"]:
+                                videos_embed.append(file)
+                    if videos_embed:
+                        seen_url = []
+                        for vid in videos_embed:
+                            if vid['b24_url'] in seen_url:
+                                #удаляем
+                                await File(id=vid['id']).editor_del_file(session)
+                            else:
+                                seen_url.append(vid['b24_url'])
+            return True
+        except Exception as e:
+            return {"error": str(e)}
+
+                    
+    async def get_all(self, session):
+        articles_info = await ArticleModel().all(session=session)
+        return articles_info
+
+
 
 # Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}", tags=["Статьи", "Битрикс24"])
@@ -3028,6 +3067,33 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
 
     return LogsMaker().warning_message(f"Недостаточно прав для скачивания Экселя")
 
+# загрузить дату в эластик
+@article_router.put("/elastic_data")
+async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
+    return await ArticleSearchModel().dump(session)
+
+@article_router.get("/give_double")
+async def dubli(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_id = ""
+    token = request.cookies.get("user_id")
+    if token is None:
+        token = request.cookies.get("user_id")
+        if token is not None:
+            user_id = token
+    else:
+        user_id = token
+
+    if user_id == "undefind":
+        return {"err": "Undefined section_id!"}
+    art_class = await Article().delete_duplicate_video(session=session, user_id=user_id)
+    #по всем сатьями
+    return art_class
+    #где есть videos_embed
+    #если есть повтор 
+    #показать
+    #удалить пока они не кончаться
+
+
 
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
@@ -3044,12 +3110,6 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
 # async def search_articles_by_text(text): # data = Body()
 #     return ArticleSearchModel().search_by_text(text)
 
-
-# загрузить дату в эластик
-@article_router.put("/elastic_data")
-async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
-    return await ArticleSearchModel().dump(session)
-
 # лайки и просмотры для статистики
 # @article_router.get("/get_all_likes/{ID}")
 # async def get_all_likes(ID: int):
@@ -3058,3 +3118,4 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
 # @article_router.get("/get_viewers/{ID}")
 # async def get_viewers(ID: int):
 #     return Article(id = ID).get_art_views()
+

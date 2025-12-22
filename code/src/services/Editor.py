@@ -722,6 +722,8 @@ class Editor:
         return res
 
     async def update(self, data: dict):
+        print(data)
+
         from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
         await self.validate()
         if self.art_id is None:
@@ -761,6 +763,7 @@ class Editor:
 
                 # если это часть indirect_data
                 else:
+                    print("тут")
                     if "indirect_data" in art and art["indirect_data"] is not None:
                         if key == "tags":
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -807,8 +807,6 @@ class Editor:
 
             print(file)
 
-            if file
-
             file_info["file_url"] = f"{DOMAIN}{url}"
 
             file_info["active"] = file["active"]

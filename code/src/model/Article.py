@@ -3043,7 +3043,7 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
 
 @article_router.get("/give_double")
 async def dubli(session: AsyncSession = Depends(get_async_db)):
-    art_class = await Article().get_all()
+    art_class = await Article().get_all(session)
     #по всем сатьями
     return art_class
     #где есть videos_embed

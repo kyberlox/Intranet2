@@ -3070,8 +3070,19 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
     return await ArticleSearchModel().dump(session)
 
 @article_router.get("/give_double")
-async def dubli(session: AsyncSession = Depends(get_async_db)):
-    art_class = await Article().get_all(session)
+async def dubli(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_id = ""
+    token = request.cookies.get("user_id")
+    if token is None:
+        token = request.cookies.get("user_id")
+        if token is not None:
+            user_id = token
+    else:
+        user_id = token
+
+    if user_id == "undefind":
+        return {"err": "Undefined section_id!"}
+    art_class = await Article().delete_duplicate_video(session=session, user_id=user_id)
     #по всем сатьями
     return art_class
     #где есть videos_embed

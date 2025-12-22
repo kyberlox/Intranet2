@@ -283,10 +283,42 @@ class AuthService:
         # print(session_data, 'дата, че получаем?')
         return session_data
 
+    def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
+        """Синхронная версия обновления токена"""
+        token_url = f"{self.bitrix_domain}/oauth/token/"
+        
+        params = {
+            "client_id": self.client_id,
+            "grant_type": "refresh_token",
+            "client_secret": self.client_secret,
+            # "redirect_uri": "https://intranet.emk.ru/",
+            "refresh_token": refresh_token
+        }
+        
+        try:
+            response = requests.get(token_url, params=params)
+            response.raise_for_status()
+            tokens = response.json()
+            
+            tokens["access_token_expires_at"] = (
+                datetime.now() + self.access_token_ttl
+            ).isoformat()
+            
+            if "refresh_token" in tokens:
+                tokens["refresh_token_expires_at"] = (
+                    datetime.now() + self.refresh_token_ttl
+                ).isoformat()
+            
+            return tokens
+            
+        except requests.RequestException as e:
+            LogsMaker().error_message(f"Token refresh failed: {str(e)}")
+            return None
+
     # def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
     #     """Синхронная версия обновления токена"""
     #     token_url = f"{self.bitrix_domain}/oauth/token/"
-        
+    #     # print(refresh_token)
     #     params = {
     #         "client_id": self.client_id,
     #         "grant_type": "refresh_token",
@@ -296,101 +328,69 @@ class AuthService:
     #     }
         
     #     try:
-    #         response = requests.get(token_url, params=params)
-    #         response.raise_for_status()
-    #         tokens = response.json()
+    #         LogsMaker().info_message(f"Refreshing token, URL: {token_url}")
+    #         LogsMaker().info_message(f"Using refresh_token: {refresh_token[:20]}...")
             
+    #         response = requests.get(token_url, params=params, timeout=30)
+            
+    #         # ДЕБАГ: Что вернул сервер?
+    #         LogsMaker().info_message(f"Response status: {response.status_code}")
+    #         LogsMaker().info_message(f"Response headers: {dict(response.headers)}")
+    #         LogsMaker().info_message(f"Response text (first 500 chars): {response.text[:500]}")
+            
+    #         # Проверяем статус
+    #         if response.status_code != 200:
+    #             LogsMaker().error_message(f"Bad status code: {response.status_code}")
+    #             return None
+            
+    #         # Проверяем, что ответ не пустой
+    #         if not response.text.strip():
+    #             LogsMaker().error_message("Empty response from Bitrix24")
+    #             return None
+            
+    #         # Пробуем распарсить JSON
+    #         try:
+    #             tokens = response.json()
+    #         except json.JSONDecodeError as e:
+    #             LogsMaker().error_message(f"JSON decode error: {e}, Response: {response.text[:200]}")
+    #             return None
+            
+    #         # Проверяем наличие ошибок в ответе Bitrix24
+    #         if "error" in tokens:
+    #             error_msg = tokens.get('error_description', tokens.get('error', 'Unknown error'))
+    #             LogsMaker().error_message(f"Bitrix24 refresh error: {error_msg}")
+    #             return None
+            
+    #         # Проверяем обязательные поля
+    #         if "access_token" not in tokens:
+    #             LogsMaker().error_message(f"No access_token in response: {tokens}")
+    #             return None
+            
+    #         # Логируем успех
+    #         LogsMaker().info_message(f"Token refresh successful, got new access_token: {tokens['access_token'][:20]}...")
+            
+    #         # Обновляем время истечения
+    #         # Bitrix24 возвращает expires_in в секундах, используем его
+    #         expires_in = tokens.get("expires_in", 3600)  # По умолчанию 1 час
     #         tokens["access_token_expires_at"] = (
-    #             datetime.now() + self.access_token_ttl
+    #             datetime.now() + timedelta(seconds=expires_in)
     #         ).isoformat()
             
+    #         # Если пришел новый refresh_token, обновляем его время
     #         if "refresh_token" in tokens:
+    #             # refresh_token обычно живет 30 дней
     #             tokens["refresh_token_expires_at"] = (
-    #                 datetime.now() + self.refresh_token_ttl
+    #                 datetime.now() + timedelta(days=30)
     #             ).isoformat()
             
     #         return tokens
             
     #     except requests.RequestException as e:
-    #         LogsMaker().error_message(f"Token refresh failed: {str(e)}")
+    #         LogsMaker().error_message(f"Request error during token refresh: {str(e)}")
     #         return None
-
-    def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
-        """Синхронная версия обновления токена"""
-        token_url = f"{self.bitrix_domain}/oauth/token/"
-        # print(refresh_token)
-        params = {
-            "client_id": self.client_id,
-            "grant_type": "refresh_token",
-            "client_secret": self.client_secret,
-            "redirect_uri": "https://intranet.emk.ru/",
-            "refresh_token": refresh_token
-        }
-        
-        try:
-            LogsMaker().info_message(f"Refreshing token, URL: {token_url}")
-            LogsMaker().info_message(f"Using refresh_token: {refresh_token[:20]}...")
-            
-            response = requests.get(token_url, params=params, timeout=30)
-            
-            # ДЕБАГ: Что вернул сервер?
-            LogsMaker().info_message(f"Response status: {response.status_code}")
-            LogsMaker().info_message(f"Response headers: {dict(response.headers)}")
-            LogsMaker().info_message(f"Response text (first 500 chars): {response.text[:500]}")
-            
-            # Проверяем статус
-            if response.status_code != 200:
-                LogsMaker().error_message(f"Bad status code: {response.status_code}")
-                return None
-            
-            # Проверяем, что ответ не пустой
-            if not response.text.strip():
-                LogsMaker().error_message("Empty response from Bitrix24")
-                return None
-            
-            # Пробуем распарсить JSON
-            try:
-                tokens = response.json()
-            except json.JSONDecodeError as e:
-                LogsMaker().error_message(f"JSON decode error: {e}, Response: {response.text[:200]}")
-                return None
-            
-            # Проверяем наличие ошибок в ответе Bitrix24
-            if "error" in tokens:
-                error_msg = tokens.get('error_description', tokens.get('error', 'Unknown error'))
-                LogsMaker().error_message(f"Bitrix24 refresh error: {error_msg}")
-                return None
-            
-            # Проверяем обязательные поля
-            if "access_token" not in tokens:
-                LogsMaker().error_message(f"No access_token in response: {tokens}")
-                return None
-            
-            # Логируем успех
-            LogsMaker().info_message(f"Token refresh successful, got new access_token: {tokens['access_token'][:20]}...")
-            
-            # Обновляем время истечения
-            # Bitrix24 возвращает expires_in в секундах, используем его
-            expires_in = tokens.get("expires_in", 3600)  # По умолчанию 1 час
-            tokens["access_token_expires_at"] = (
-                datetime.now() + timedelta(seconds=expires_in)
-            ).isoformat()
-            
-            # Если пришел новый refresh_token, обновляем его время
-            if "refresh_token" in tokens:
-                # refresh_token обычно живет 30 дней
-                tokens["refresh_token_expires_at"] = (
-                    datetime.now() + timedelta(days=30)
-                ).isoformat()
-            
-            return tokens
-            
-        except requests.RequestException as e:
-            LogsMaker().error_message(f"Request error during token refresh: {str(e)}")
-            return None
-        except Exception as e:
-            LogsMaker().error_message(f"Unexpected error in refresh_access_token_sync: {str(e)}")
-            return None
+    #     except Exception as e:
+    #         LogsMaker().error_message(f"Unexpected error in refresh_access_token_sync: {str(e)}")
+    #         return None
 
     def delete_session(self, session_id: str) -> None:
         """Удаление сессии"""

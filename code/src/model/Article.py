@@ -2715,6 +2715,12 @@ class Article:
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel make_event_users_excel: {e}')
 
+    async def get_all(self, session):
+        from src.pSQL.objects.ArticleModel import ArticleModel
+        articles_info = await ArticleModel().all(session=session)
+        return articles_info
+
+
 
 # Получить данные инфоблока из Б24
 @article_router.get("/infoblock/{ID}", tags=["Статьи", "Битрикс24"])
@@ -3058,3 +3064,13 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
 # @article_router.get("/get_viewers/{ID}")
 # async def get_viewers(ID: int):
 #     return Article(id = ID).get_art_views()
+
+@article_router.get("give_double")
+async def dubli(session: AsyncSession = Depends(get_async_db)):
+    art_class = await Article().articles_info()
+    #по всем сатьями
+    return art_class
+    #где есть videos_embed
+    #если есть повтор 
+    #показать
+    #удалить пока они не кончаться

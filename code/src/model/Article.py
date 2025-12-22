@@ -3034,6 +3034,24 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
 
     return LogsMaker().warning_message(f"Недостаточно прав для скачивания Экселя")
 
+# загрузить дату в эластик
+@article_router.put("/elastic_data")
+async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
+    return await ArticleSearchModel().dump(session)
+
+
+
+@article_router.get("/give_double")
+async def dubli(session: AsyncSession = Depends(get_async_db)):
+    art_class = await Article().articles_info()
+    #по всем сатьями
+    return art_class
+    #где есть videos_embed
+    #если есть повтор 
+    #показать
+    #удалить пока они не кончаться
+
+
 
 # #найти статьи раздела по названию
 # @article_router.post("/search/title/{title}")
@@ -3050,12 +3068,6 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
 # async def search_articles_by_text(text): # data = Body()
 #     return ArticleSearchModel().search_by_text(text)
 
-
-# загрузить дату в эластик
-@article_router.put("/elastic_data")
-async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
-    return await ArticleSearchModel().dump(session)
-
 # лайки и просмотры для статистики
 # @article_router.get("/get_all_likes/{ID}")
 # async def get_all_likes(ID: int):
@@ -3065,12 +3077,3 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
 # async def get_viewers(ID: int):
 #     return Article(id = ID).get_art_views()
 
-@article_router.get("/give_double")
-async def dubli(session: AsyncSession = Depends(get_async_db)):
-    art_class = await Article().articles_info()
-    #по всем сатьями
-    return art_class
-    #где есть videos_embed
-    #если есть повтор 
-    #показать
-    #удалить пока они не кончаться

@@ -2737,7 +2737,7 @@ class Article:
                         for vid in videos_embed:
                             if vid['b24_url'] in seen_url:
                                 #удаляем
-                                File(id=vid['id']).editor_del_file(session)
+                                await File(id=vid['id']).editor_del_file(session)
                             else:
                                 seen_url.append(vid['b24_url'])
             return True

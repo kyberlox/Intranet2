@@ -794,21 +794,18 @@ class Editor:
             # файлы делятся по категориям
             if "image" in file["content_type"]:
                 file_info["type"] = "image"
+                file_info["file_url"] = f"{DOMAIN}{url}"
             elif "video" in file["content_type"]:
+                file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "video"
             elif "link" in file["content_type"]:
                 file_info["type"] = "video_embed"
             else:
+                file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "documentation"
 
             file_info["article_id"] = file["article_id"]
             file_info["b24_url"] = file["b24_url"]
-            url = file["file_url"]
-            print("тут?")
-            if 'content_type' == 'link':
-                file_info["file_url"] = url
-            else:
-                file_info["file_url"] = f"{DOMAIN}{url}"
 
             print(file_info["file_url"] )
 

@@ -145,7 +145,7 @@ class AuthService:
             response.raise_for_status()
             result = response.json()
 
-            print(result['LAST_NAME'], result['NAME'], result['SECOND_NAME'])
+            print(result)
             
             if "result" in result:
                 return result["result"]

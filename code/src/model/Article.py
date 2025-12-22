@@ -3038,8 +3038,6 @@ async def make_users_excel_list(request: Request, data: list = Body(), session: 
 async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
     return await ArticleSearchModel().dump(session)
 
-
-
 @article_router.get("/give_double")
 async def dubli(session: AsyncSession = Depends(get_async_db)):
     art_class = await Article().get_all(session)

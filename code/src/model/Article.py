@@ -3065,7 +3065,7 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
 # async def get_viewers(ID: int):
 #     return Article(id = ID).get_art_views()
 
-@article_router.get("give_double")
+@article_router.get("/give_double")
 async def dubli(session: AsyncSession = Depends(get_async_db)):
     art_class = await Article().articles_info()
     #по всем сатьями

@@ -810,6 +810,8 @@ class Editor:
             else:
                 file_info["file_url"] = f"{DOMAIN}{url}"
 
+            print(file_info["file_url"] )
+
             file_info["active"] = file["active"]
             file_info["is_preview"] = file["is_preview"]
 

@@ -1760,7 +1760,7 @@ class Article:
                     # Для баготворительных проектов компрессия не требуется
                     # и для гида по предприятиям
 
-                    elif self.section_id in ["55", "41", "32"]:
+                    elif self.section_id in ["55", "41", "32", "13"]:
                         return f"{DOMAIN}{url}"
                     else:
                         preview_link = url.split("/")

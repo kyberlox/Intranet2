@@ -133,6 +133,8 @@ class AuthService:
     async def get_user_info(self, access_token: str) -> Optional[Dict[str, Any]]:
         """Получение информации о пользователе из Bitrix24"""
         user_info_url = f"{self.bitrix_domain}/rest/user.current.json"
+
+        
         
         params = {
             "auth": access_token
@@ -142,6 +144,8 @@ class AuthService:
             response = requests.get(user_info_url, params=params)
             response.raise_for_status()
             result = response.json()
+
+            print(result['LAST_NAME'], result['NAME'], result['SECOND_NAME']])
             
             if "result" in result:
                 return result["result"]

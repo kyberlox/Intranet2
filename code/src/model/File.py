@@ -909,3 +909,21 @@ async def delete_user_photo(file_id: int, session: AsyncSession=Depends(get_asyn
 @file_router.post("/change_prev/{art_id}/{file_id}")
 async def change_prev(file_id : int, art_id : int, session: AsyncSession=Depends(get_async_db)):
     return await File(id=file_id, art_id=art_id).change_prev(session=session)
+
+
+
+@file_router.post("/upload_link")
+async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)):
+    if "art_id" in data:
+        art_id = data["art_id"]
+    else:
+        return LogsMaker().warning_message(f"Укажите номер статьи")
+
+    if "link" in data:
+        link = data["link"]
+    else:
+        return LogsMaker().warning_message(f"Укажите ссылку")
+
+    f_res = await File(b24_id=None).add_link(link=link, art_id=art_id, session=session)
+
+    return f_res

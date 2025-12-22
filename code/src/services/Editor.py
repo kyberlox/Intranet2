@@ -1236,21 +1236,7 @@ async def render(art_id: int):
 
 
 
-@editor_router.post("/upload_link")
-async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)):
-    if "art_id" in data:
-        art_id = data["art_id"]
-    else:
-        return LogsMaker().warning_message(f"Укажите номер статьи")
 
-    if "link" in data:
-        link = data["link"]
-    else:
-        return LogsMaker().warning_message(f"Укажите ссылку")
-
-    f_res = await File(b24_id=None).add_link(link=link, art_id=art_id, session=session)
-
-    return f_res
 
 ### тестирую работу с файлами
 @editor_router.post("/upload_file/{art_id}")

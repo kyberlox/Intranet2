@@ -1763,7 +1763,8 @@ class Article:
                     # и для гида по предприятиям
 
                     #без компрессии
-                    elif self.section_id in ["55", "54", "41", "32", "13", 13]:
+                    elif str(self.section_id) in ["55", "54", "41", "32", "13"]:
+                        print("Я ТУТ")
                         print(f"{DOMAIN}{url}")
                         return f"{DOMAIN}{url}"
 

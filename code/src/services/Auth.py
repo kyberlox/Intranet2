@@ -133,6 +133,8 @@ class AuthService:
     async def get_user_info(self, access_token: str) -> Optional[Dict[str, Any]]:
         """Получение информации о пользователе из Bitrix24"""
         user_info_url = f"{self.bitrix_domain}/rest/user.current.json"
+
+        
         
         params = {
             "auth": access_token

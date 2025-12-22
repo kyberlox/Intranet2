@@ -763,7 +763,6 @@ class Editor:
 
                 # если это часть indirect_data
                 else:
-                    print("тут")
                     if "indirect_data" in art and art["indirect_data"] is not None:
                         if key == "tags":
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1049,7 +1048,7 @@ class Editor:
             result["department"] = res_dep
 
         # получаю статью
-        art = await Article(id=self.art_id).find_by_id()
+        art = await Article(id=self.art_id).find_by_id(self.session)
 
         if self.section_id == 14:
             art["name"] = result["fio"]
@@ -1227,6 +1226,14 @@ async def del_art(art_id: int, session: AsyncSession = Depends(get_async_db)):
 @editor_router.get("/rendering/files/{art_id}")
 async def render(art_id: int):
     return await Editor(art_id=art_id).get_files()
+
+
+# @editor_router.post("/set_link")
+# async def new_link(data=Body(), session: AsyncSession = Depends(get_async_db)):
+#     art_id = data["art_id"]
+#     file_id = 
+#     return 
+
 
 
 ### тестирую работу с файлами

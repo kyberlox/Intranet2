@@ -804,7 +804,7 @@ class Editor:
             file_info["article_id"] = file["article_id"]
             file_info["b24_url"] = file["b24_url"]
             url = file["file_url"]
-
+            print("тут?")
             if 'content_type' == 'link':
                 file_info["file_url"] = url
             else:

@@ -2722,7 +2722,7 @@ class Article:
         try:
             for sec in VID_SEC:
                 self.section_id = sec
-                articles = self.search_by_section_id(session=session, user_id=user_id)
+                articles = await self.search_by_section_id(session=session, user_id=user_id)
                 for art in articles:
                     art_id = art['id']
                     files = await File(art_id=int(art_id)).get_files_by_art_id(session)

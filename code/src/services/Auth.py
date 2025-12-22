@@ -286,7 +286,7 @@ class AuthService:
     def refresh_access_token_sync(self, refresh_token: str) -> Optional[Dict[str, Any]]:
         """Синхронная версия обновления токена"""
         token_url = f"{self.bitrix_domain}/oauth/token/"
-        
+        print(refresh_token, 'мой рефреш')
         params = {
             "client_id": self.client_id,
             "grant_type": "refresh_token",

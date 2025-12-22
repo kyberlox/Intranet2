@@ -1749,7 +1749,6 @@ class Article:
     async def get_preview(self, session):
         print(self.section_id)
         files = await File(art_id=int(self.id)).get_files_by_art_id(session=session)
-        print(files)
         if files:
             for file in files:
                 if file["is_preview"]:
@@ -1765,8 +1764,6 @@ class Article:
 
                     #без компрессии
                     elif str(self.section_id) in ["55", "54", "41", "32", "13"]:
-                        print("Я ТУТ")
-                        print(f"{DOMAIN}{url}")
                         return f"{DOMAIN}{url}"
 
                     else:
@@ -1794,7 +1791,8 @@ class Article:
                         url = '/'.join(preview_link)
                     # Для баготворительных проектов компрессия не требуется
                     # и для гида по предприятиям
-                    elif self.section_id in ["55", "41", "32"]:
+                    elif self.section_id in ["55", "54", "41", "32", "13"]:
+                        print(f"{DOMAIN}{url}")
                         return f"{DOMAIN}{url}"
                     else:
                         preview_link = url.split("/")

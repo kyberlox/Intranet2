@@ -1236,7 +1236,7 @@ async def render(art_id: int):
 
 
 
-@editor_router.get("/upload_link")
+@editor_router.post("/upload_link")
 async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)):
     if "art_id" in data:
         art_id = data["art_id"]

@@ -1749,6 +1749,7 @@ class Article:
     async def get_preview(self, session):
         print(self.section_id)
         files = await File(art_id=int(self.id)).get_files_by_art_id(session=session)
+        print(files)
         if files:
             for file in files:
                 if file["is_preview"]:

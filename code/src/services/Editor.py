@@ -1049,7 +1049,7 @@ class Editor:
             result["department"] = res_dep
 
         # получаю статью
-        art = await Article(id=self.art_id).find_by_id()
+        art = await Article(id=self.art_id).find_by_id(self.session)
 
         if self.section_id == 14:
             art["name"] = result["fio"]

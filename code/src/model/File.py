@@ -419,9 +419,6 @@ class File:
                         file.write(response.content)
                     
                     new_url = fl["file_url"]
-
-                    if fl["type"] == "video_embed":
-                        return new_url
                     
                     return f"{DOMAIN}{new_url}"
 

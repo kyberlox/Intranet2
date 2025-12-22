@@ -805,9 +805,10 @@ class Editor:
             file_info["b24_url"] = file["b24_url"]
             url = file["file_url"]
 
-            print(file)
-
-            file_info["file_url"] = f"{DOMAIN}{url}"
+            if 'content_type' == 'link':
+                file_info["file_url"] = url
+            else:
+                file_info["file_url"] = f"{DOMAIN}{url}"
 
             file_info["active"] = file["active"]
             file_info["is_preview"] = file["is_preview"]

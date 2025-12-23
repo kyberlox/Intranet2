@@ -140,30 +140,31 @@ class FilesDBModel():
                 # Удаляем физический файл
                 unique_name = file_data['name']
                 file_path = os.path.join(STORAGE_PATH, unique_name)
+                print("тут")
                 if file_data["content_type"] != "link" and os.path.exists(file_path):
                     os.remove(file_path)
                 else:
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {file_path} не найден")
                 
-                # Удаляем запись из базы
-                stmt = select(FilesDB).where(FilesDB.id == int(self.id))
-                result = await session.execute(stmt)
-                file_record = result.scalar_one_or_none()
+        #         # Удаляем запись из базы
+        #         stmt = select(FilesDB).where(FilesDB.id == int(self.id))
+        #         result = await session.execute(stmt)
+        #         file_record = result.scalar_one_or_none()
                 
-                if file_record:
-                    await session.delete(file_record)
-                    await session.commit()
-                    LogsMaker().ready_status_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален!")
-                    return True
-                else:
-                    LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален из папки files, но не найден в БД")
-                    return True
-            else:
-                return LogsMaker().warning_message(f"Файл {self.id} не найден")
+        #         if file_record:
+        #             await session.delete(file_record)
+        #             await session.commit()
+        #             LogsMaker().ready_status_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален!")
+        #             return True
+        #         else:
+        #             LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален из папки files, но не найден в БД")
+        #             return True
+        #     else:
+        #         return LogsMaker().warning_message(f"Файл {self.id} не найден")
                 
-        except Exception as e:
-            await session.rollback()
-            return LogsMaker().error_message(f"Ошибка в remove FilesDBModel при удалении файла {self.id}: {e}")
+        # except Exception as e:
+        #     await session.rollback()
+        #     return LogsMaker().error_message(f"Ошибка в remove FilesDBModel при удалении файла {self.id}: {e}")
 
     async def need_update(self, session):
         try:

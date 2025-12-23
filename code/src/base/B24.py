@@ -57,7 +57,6 @@ class B24:
 
 
 
-
     async def get_file(self, id, inf_id):
         self.bx24 = Bitrix24("https://portal.emk.ru/rest/1/j6122m0ystded5ag/")
         result = await self.bx24.callMethod(f'disk.attachedObject.get?ENTITY_ID={inf_id}&id={id}')
@@ -73,7 +72,6 @@ class B24:
                     return result
                 else:
                     return None
-        
         
         # response = requests.get(url)
         # result = response.json()

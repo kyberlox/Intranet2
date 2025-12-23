@@ -919,11 +919,14 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
     else:
         return LogsMaker().warning_message(f"Укажите номер статьи")
 
-    if "link" in data:
-        link = data["link"]
+    if "links" in data:
+        links = data["links"]
     else:
         return LogsMaker().warning_message(f"Укажите ссылку")
 
-    f_res = await File(b24_id=None).add_link(link=link, art_id=art_id, session=session)
+    f_res = []
+    for link in links:
+        res = await File(b24_id=None).add_link(link=link, art_id=art_id, session=session)
+        f_res.append(res)
 
     return f_res

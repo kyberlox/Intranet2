@@ -113,6 +113,7 @@ class Idea:
                             file_info = B24().get_file(id=file_id, inf_id=121)
                         except:
                             file_info = B24().get_all_files(id=file_id)
+                        print(file_info)
                         file_url = "https://portal.emk.ru" + file_info["SRC"]
                         idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
                     else:

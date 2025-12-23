@@ -140,7 +140,7 @@ class FilesDBModel():
                 # Удаляем физический файл
                 unique_name = file_data['name']
                 file_path = os.path.join(STORAGE_PATH, unique_name)
-                if file_data["content_type"] and os.path.exists(file_path):
+                if file_data["content_type"] != "link" and os.path.exists(file_path):
                     os.remove(file_path)
                 else:
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {file_path} не найден")

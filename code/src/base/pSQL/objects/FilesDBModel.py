@@ -139,9 +139,9 @@ class FilesDBModel():
                 # Удаляем физический файл
                 unique_name = file_data['name']
                 file_path = os.path.join(STORAGE_PATH, unique_name)
-                if os.path.exists(file_path):
+                if file_data["content_type"] != "link" and os.path.exists(file_path):
                     os.remove(file_path)
-                else:  
+                else:
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {file_path} не найден")
                 
                 # Удаляем запись из базы
@@ -152,7 +152,7 @@ class FilesDBModel():
                 if file_record:
                     await session.delete(file_record)
                     await session.commit()
-                    LogsMaker().ready_status_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален!")
+                    LogsMaker().ready_status_message(f"Файл успешно {self.id} удален!")
                     return True
                 else:
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален из папки files, но не найден в БД")

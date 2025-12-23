@@ -793,19 +793,25 @@ class Editor:
 
             # файлы делятся по категориям
             if "image" in file["content_type"]:
+                url = file["file_url"]
                 file_info["type"] = "image"
+                file_info["file_url"] = f"{DOMAIN}{url}"
             elif "video" in file["content_type"]:
+                url = file["file_url"]
+                file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "video"
             elif "link" in file["content_type"]:
+                file_info["file_url"] = file["file_url"]
                 file_info["type"] = "video_embed"
             else:
+                url = file["file_url"]
+                file_info["file_url"] = f"{DOMAIN}{url}"
                 file_info["type"] = "documentation"
 
             file_info["article_id"] = file["article_id"]
             file_info["b24_url"] = file["b24_url"]
-            url = file["file_url"]
 
-            file_info["file_url"] = f"{DOMAIN}{url}"
+            print(file_info["file_url"] )
 
             file_info["active"] = file["active"]
             file_info["is_preview"] = file["is_preview"]
@@ -1233,6 +1239,8 @@ async def render(art_id: int):
 #     art_id = data["art_id"]
 #     file_id = 
 #     return 
+
+
 
 
 

@@ -19,6 +19,7 @@
 
         <AdminEditInputMulti v-else-if="item.field == 'reports'"
                              :item="(item.value as IReportage[])"
+                             :sectionId="newData?.id"
                              @pick="(val) => $emit('reportageChanged', val)" />
 
         <AdminEditTags v-if="item.field == 'all_tags'"
@@ -45,6 +46,8 @@
         <AdminEditInputMulti v-if="newFileData?.videos_embed"
                              :title="'Видео с источников'"
                              :item="newFileData?.videos_embed"
+                             :articleId="newData?.id"
+                             @saveEmbed="(value: string[]) => $emit('saveEmbed', value)"
                              @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)" />
 
     </div>
@@ -95,7 +98,7 @@ export default defineComponent({
         AdminUsersList,
         AdminEditTags,
     },
-    emits: ['handleUserPick', 'handleUsersPick', 'reportageChanged', 'tagschanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload'],
+    emits: ['handleUserPick', 'handleUsersPick', 'reportageChanged', 'tagschanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
     props: {
         isMobileScreen: {
             type: Boolean

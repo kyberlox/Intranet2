@@ -20,22 +20,22 @@
                 <div v-if="user"
                      class="vcard__employee__info"
                      :class="{ 'vcard__employee__info--big': user.Division && user.UF_DEPARTMENT && user.Direction && user.Combination && user.Combination.length }">
-                    <div v-if="user.UF_DEPARTMENT"
+                    <div v-if="user.Direction"
                          class="vcard__employee__info__item">
                         <div>
                             Дирекция:
                         </div>
-                        <div v-for="(dep, index) in user.UF_DEPARTMENT"
+                        <div v-for="(dep, index) in user.Direction"
                              :key="dep + '' + index">
                             {{ dep }}
                         </div>
                     </div>
-                    <div v-if="user.Direction"
+                    <div v-if="user.UF_DEPARTMENT"
                          class="vcard__employee__info__item">
                         <div>
                             Подразделение:
                         </div>
-                        <div v-for="(dep, index) in user.Direction"
+                        <div v-for="(dep, index) in user.UF_DEPARTMENT"
                              :key="dep + '' + index">
                             {{ dep }}
                         </div>

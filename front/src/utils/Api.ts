@@ -52,6 +52,8 @@ export default class Api {
             | INewActivityData
             | IUsersLoad
             | Array<IPostEventToExcell>
+            | Array<string>
+            |{ art_id: string | null | undefined; links: string[]; }
             | null,
             config?: AxiosRequestConfig
     ) {

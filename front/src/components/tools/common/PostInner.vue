@@ -50,7 +50,7 @@
                     <br />
                     {{ currentPost.indirect_data?.phone_number }}
                 </div>
-                <div v-if="currentPost.content_text"
+                <div v-if="currentPost.content_text && !String(currentPost.content_text).includes('undefined')"
                      class="news__detail__discr"
                      v-html="currentPost.content_text"></div>
                 <div v-if="currentPost.documentation"

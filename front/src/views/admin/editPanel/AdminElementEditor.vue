@@ -14,7 +14,8 @@
                                      @reportageChanged="(e) => { newData.reports = e }"
                                      @tagsChanged="(e: number[]) => newData.tags = e"
                                      @reloadElementData="(e: boolean) => reloadElementData(e)"
-                                     @handleUpload="handleUpload" />
+                                     @handleUpload="handleUpload"
+                                     @saveEmbed="(e: string[]) => handleUpload(e, true)" />
 
     <AdminPostPreview :previewFullWidth="previewFullWidth"
                       :isMobileScreen="isMobileScreen"
@@ -113,6 +114,7 @@ export default defineComponent({
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
     const usersList = ref<IUserList[]>([]);
+    const newEmbedList = ref<string[]>([]);
 
     onMounted(() => {
       if (props.type == 'new') {
@@ -172,6 +174,11 @@ export default defineComponent({
       needToBeDeleted.value = false;
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
+
+      if (newEmbedList.value.length) {
+        await Api.post('file/upload_link', { art_id: isCreateNew.value ? newId.value : props.elementId, links: newEmbedList.value })
+      }
+
       await Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
         .then((data) => {
           handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
@@ -185,19 +192,21 @@ export default defineComponent({
         })
     }
 
-    const handleUpload = (e: IFileToUpload, embed: boolean = false) => {
+    const handleUpload = (e: IFileToUpload | string[], embed: boolean = false) => {
       const idToUpload = isCreateNew.value ? newId.value : props.elementId
-      if (!e || !e.file) return
-      if (!embed) {
-        const formData = new FormData()
-        formData.append('file', e.file)
 
-        Api.post(`/editor/upload_file/${idToUpload}`, formData)
-          .finally(() => reloadElementData(true))
+      if (embed) {
+        newEmbedList.value = (e as string[]);
+        console.log(newEmbedList.value)
       }
       else {
-        Api.post(`/editor/upload_file/${idToUpload}`, e)
-          .finally(() => reloadElementData(true))
+        if (!e) return
+        if (!embed && 'file' in e) {
+          const formData = new FormData()
+          formData.append('file', e.file);
+          Api.post(`/editor/upload_file/${idToUpload}`, formData)
+            .finally(() => reloadElementData(true))
+        }
       }
     }
 

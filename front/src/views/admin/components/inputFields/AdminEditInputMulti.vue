@@ -39,6 +39,9 @@ export default defineComponent({
         title: {
             type: String,
             default: () => 'Репортажи'
+        },
+        articleId: {
+            type: Number
         }
     },
     components: {
@@ -46,24 +49,44 @@ export default defineComponent({
         PlusIcon,
         MinusIcon
     },
-    emits: ['pick'],
+    emits: ['pick', 'saveEmbed'],
     setup(props, { emit }) {
         const reportages = ref(props.item);
-        const formattedReportages: Ref<{ name: string, value: string }[]> = ref([]);
+        const isReportages = Boolean(props.title == 'Репортажи');
+
+        const formattedReportages: Ref<{ name?: string, value: string }[]> = ref([]);
 
         onMounted(() => {
-            if (!reportages.value) return;
-            reportages.value.map((e) => {
-                formattedReportages.value.push({ name: 'Название', value: String('name' in e ? e.name : e.original_name) }, { name: 'Ссылка', value: String('link' in e ? e.link : e.file_url) })
-            })
+            if (reportages.value?.length) {
+                reportages.value.map((e) => {
+                    if (isReportages) {
+                        formattedReportages.value.push(
+                            { name: 'Название', value: String('name' in e ? e.name : e.original_name) },
+                            { name: 'Ссылка', value: String('link' in e ? e.link : e.file_url) })
+                    } else {
+                        formattedReportages.value.push(
+                            { name: 'Ссылка', value: String('link' in e ? e.link : e.file_url) })
+                    }
+                })
+            }
+
         })
 
         const addNewReportRow = () => {
-            formattedReportages.value.push({ name: 'Название', value: '' }, { name: 'Ссылка', value: '' })
+            if (isReportages) {
+                formattedReportages.value.push({ name: 'Название', value: '' }, { name: 'Ссылка', value: '' })
+            } else {
+                formattedReportages.value.push({ name: 'Ссылка', value: '' })
+            }
         }
 
         const RemoveReportRow = () => {
-            formattedReportages.value.splice(-2, 2);
+            if (isReportages) {
+                formattedReportages.value.splice(-2, 2);
+            }
+            else {
+                formattedReportages.value.splice(-1, 1);
+            }
         }
 
         const changeReport = (index: number, newVal: string) => {
@@ -76,9 +99,18 @@ export default defineComponent({
             const chunkSize = 2;
             for (let i = 0; i < formattedReportages.value.length; i += chunkSize) {
                 const chunk = formattedReportages.value.slice(i, i + chunkSize);
-                prevFormat.push({ name: chunk[0].value, link: chunk[1].value })
+                if (isReportages) {
+                    prevFormat.push({ name: chunk[0].value, link: chunk[1].value })
+                }
+                else {
+                    formattedReportages.value.forEach((e) => prevFormat.push(e.value))
+                }
             }
-            emit('pick', prevFormat)
+            if (isReportages) {
+                emit('pick', prevFormat)
+            }
+            else
+                emit('saveEmbed', prevFormat)
         }
 
         return {

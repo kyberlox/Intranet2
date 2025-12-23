@@ -15,11 +15,11 @@
             <template v-if="card.href == 'eventAnnounces'">
                 <swiper-slide v-for="slide in duplicateIfImageIsArray(card.images)"
                               :key="'slide' + slide">
-                    <a class="homeview__grid__card__link
+                    <RouterLink class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
-                       :href="card.href"
-                       target="_blank"
-                       v-lazy-load="slide.image"></a>
+                                :to="{ name: card.href }"
+                                target="_blank"
+                                v-lazy-load="slide.image"></RouterLink>
                 </swiper-slide>
             </template>
 

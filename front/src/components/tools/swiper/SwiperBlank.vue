@@ -19,7 +19,7 @@
                 height="500px"
                 :title="'Видеоконтент'"
                 :src="String(repairVideoUrl(video?.file_url))"
-                allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen>
         </iframe>
     </swiper-slide>
@@ -32,7 +32,7 @@
                 height="500px"
                 :title="'Видеоконтент'"
                 :src="String((video.file_url))"
-                allow="accelerometer;  clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen>
         </iframe>
     </swiper-slide>

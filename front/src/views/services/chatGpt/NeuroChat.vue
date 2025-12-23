@@ -253,7 +253,7 @@ export default defineComponent({
                     role: 'user',
                     content: createImageChatData.value.prompt,
                 })
-                await Api.postVendor('https://gpt.emk.ru/generate-image', createImageChatData.value)
+                await Api.postVendor('https://gpt.emk.ru/generate-images', createImageChatData.value)
                     .then((data) => {
                         chatDataToSend.value.push({
                             role: 'assistant',

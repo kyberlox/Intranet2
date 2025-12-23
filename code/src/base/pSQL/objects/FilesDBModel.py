@@ -162,9 +162,9 @@ class FilesDBModel():
         #     else:
         #         return LogsMaker().warning_message(f"Файл {self.id} не найден")
                 
-        # except Exception as e:
-        #     await session.rollback()
-        #     return LogsMaker().error_message(f"Ошибка в remove FilesDBModel при удалении файла {self.id}: {e}")
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в remove FilesDBModel при удалении файла {self.id}: {e}")
 
     async def need_update(self, session):
         try:

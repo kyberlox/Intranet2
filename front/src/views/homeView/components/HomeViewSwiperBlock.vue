@@ -7,9 +7,11 @@
     <div class="homeview__grid__card__image">
         <swiper v-bind="sliderConfig"
                 @swiper="swiperOn">
-            <swiper-slide v-if="!card.images.length"
-                          :style="{ backgroundImage: `url(${card.href !== 'corpNews' ? chooseImgPlug() : orgBanner})` }"
-                          class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug">
+            <swiper-slide v-if="!card.images.length">
+                <RouterLink class="homeview__grid__card__bg-image homeview__grid__card__bg-image--plug"
+                            :style="{ backgroundImage: `url(${card.href !== 'corpNews' ? chooseImgPlug() : orgBanner})` }"
+                            :to="card.href == 'corpNews' ? { name: 'corpNews' } : ''">
+                </RouterLink>
             </swiper-slide>
 
             <template v-if="card.href == 'eventAnnounces'">

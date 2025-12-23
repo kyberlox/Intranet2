@@ -17,9 +17,16 @@ const vendorApi = axios.create({
 })
 
 // добавляю токен
-const authCookie = computed(()=> useUserData().getAuthKey);;
+const authCookie = computed(()=> useUserData().getAuthKey);
+const id = computed(()=>useUserData().getMyId);
+
 api.interceptors.request.use((config) => {
-    config.headers.session_id = authCookie.value || ''
+    config.headers.session_id = authCookie.value || '';
+    return config
+})
+vendorApi.interceptors.request.use((config)=> {
+    config.headers.session_id  = authCookie.value || '';
+    config.headers.user_id = id.value;
     return config
 })
 

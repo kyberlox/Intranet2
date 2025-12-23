@@ -152,7 +152,7 @@ class FilesDBModel():
                 if file_record:
                     await session.delete(file_record)
                     await session.commit()
-                    LogsMaker().ready_status_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален!")
+                    LogsMaker().ready_status_message(f"Файл успешно {self.id} удален!")
                     return True
                 else:
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {self.id} удален из папки files, но не найден в БД")

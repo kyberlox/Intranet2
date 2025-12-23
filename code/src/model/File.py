@@ -920,6 +920,7 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
         return LogsMaker().warning_message(f"Укажите номер статьи")
 
     # тяну все линки статьи
+    current_links = []
 
     #тяну все, какие должны быть линки 
     if "links" in data:

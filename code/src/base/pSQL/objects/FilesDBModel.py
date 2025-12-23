@@ -136,12 +136,13 @@ class FilesDBModel():
         try:
             file_data = await self.find_by_id_all(session)
             if file_data is not None:
+                print(file_data)
                 # Удаляем физический файл
                 unique_name = file_data['name']
                 file_path = os.path.join(STORAGE_PATH, unique_name)
                 if os.path.exists(file_path):
                     os.remove(file_path)
-                else:  
+                else:
                     LogsMaker().warning_message(f"Ошибка в find_by_id FilesDBModel: Файл {file_path} не найден")
                 
                 # Удаляем запись из базы

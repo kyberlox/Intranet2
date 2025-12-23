@@ -919,10 +919,17 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
     else:
         return LogsMaker().warning_message(f"Укажите номер статьи")
 
+    # тяну все линки статьи
+
+    #тяну все, какие должны быть линки 
     if "links" in data:
         links = data["links"]
     else:
         return LogsMaker().warning_message(f"Укажите ссылку")
+
+    #сравниваю
+    #если не было - добавить
+    #если стало меньше - убрать лишнее
 
     f_res = []
     for link in links:

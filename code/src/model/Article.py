@@ -1965,9 +1965,6 @@ class Article:
             result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session)
             current_datetime = datetime.datetime.now()
             for res in result:
-                
-                if res["id"] == 342069:
-                    print(res["date_publiction"], current_datetime, res["date_publiction"] <= current_datetime)
 
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:

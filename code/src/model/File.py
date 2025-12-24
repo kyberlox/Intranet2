@@ -648,7 +648,6 @@ class File:
         # file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         # unique_name = str(ObjectId()) + file_ext
         unique_name = await FilesDBModel(article_id=self.art_id).generate_name(file_name=file.filename, session=session)
-        print(unique_name, 'СМОТРИМ ПОЛУЧАЕМ ЛИ УНИК ИМЯ', file.filename)
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Инициализируем upload_id и прогресс
@@ -710,7 +709,7 @@ class File:
             #     "is_preview" : False,
             #     "file_url": f"/api/files/{unique_name}"
             # }
-
+            print(123)
             #записать в pSQL
             inserted_id = await FilesDBModel(
                 article_id=int(self.art_id),
@@ -722,7 +721,7 @@ class File:
                 content_type = str(file.content_type),
                 file_url = f"/api/files/{unique_name}"
             ).add(session)
-
+            print(123)
             file_info = await FilesDBModel(id = inserted_id).find_file_by_id(session)
             return file_info
         

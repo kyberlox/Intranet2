@@ -239,10 +239,8 @@ class FilesDBModel():
                 file_format = 'link'
             else:
                 file_format = file_name.split(".")[-1]
-            print(123, self.article_id)
             # Проверим есть к чему крепить файл
             if self.article_id is not None:
-                print(123)
                 # stmt_exists = select(FilesDB).where(FilesDB.article_id == self.article_id)
                 # result_exists = await session.execute(stmt_exists)
                 # article_exists = result_exists.scalar_one_or_none()
@@ -267,9 +265,7 @@ class FilesDBModel():
                     # Извлекаем номер из имени файла
                     nums = lambda x :  [int(n.split('_')[-1].split('.')[0]) for n in x ]
                     next_num = max(nums(all_names)) + 1
-                print(next_num, 'получаем порядковый номер')
                 import random
-                print(f"{self.article_id}_{random.randint(10000, 99999)}_{next_num}.{file_format}")
                 return f"{self.article_id}_{random.randint(10000, 99999)}_{next_num}.{file_format}"
                 # return f"{self.article_id}_{next_num}.{file_format}"
             else:

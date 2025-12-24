@@ -6,8 +6,8 @@
          v-for="(item, index) in companyInfo"
          :key="'ci' + index">
         {{ item.name }}:
-        <a v-if="item.href"
-           :href="item.href">{{ item.value }}
+        <a v-if=item.href
+           :href="item.href?.includes('www') ? `https://${item.href}` : item.href">{{ item.value }}
         </a>
         <div v-else>
             {{ item.value }}

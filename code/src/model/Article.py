@@ -1967,7 +1967,7 @@ class Article:
             for res in result:
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
-                        print(res["date_publiction"], current_datetime, 'ДАТЫ')
+                        print(type(res["date_publiction"]), type(current_datetime), 'ДАТЫ')
                         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
 
                             self.id = res["id"]

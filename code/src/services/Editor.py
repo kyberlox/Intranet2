@@ -1268,8 +1268,7 @@ async def create_upload_files(request: Request, art_id, files: List[UploadFile] 
             # Здесь можно сохранить файл или обработать его содержимое
             f_inf = await storeFile(art_id=art_id).editor_add_file(file=fl, session=session)
             file_infos.append(f_inf)
-        print(file_infos, 'общий')
-        return JSONResponse(file_infos)
+        return file_infos
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

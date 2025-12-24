@@ -1966,6 +1966,9 @@ class Article:
             current_datetime = datetime.datetime.now()
             for res in result:
                 
+                if res["date_publiction"]:
+                    print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
+
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
                         # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])

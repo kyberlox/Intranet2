@@ -158,7 +158,6 @@ export default defineComponent({
                 emit('upload', target, props.uploadType);
             } else {
                 uploadedFiles.value = processResult as IFileToUpload[];
-                console.log(uploadedFiles.value);
                 emit('uploadMany', uploadedFiles.value, props.uploadType);
                 // (processResult as IFileToUpload[]).forEach(file => {
                 //     emit('upload', file, props.uploadType);

@@ -203,7 +203,7 @@ export default defineComponent({
         if (!e) return
         if (!embed && 'file' in e) {
           const formData = new FormData()
-          formData.append('files', e.file);
+          formData.append('file', e.file);
           Api.post(`/editor/upload_file/${idToUpload}`, formData)
             .finally(() => reloadElementData(true))
         }
@@ -211,12 +211,10 @@ export default defineComponent({
     }
 
     const uploadMany = (e: IFileToUpload[]) => {
-      console.log(e);
-
       const idToUpload = isCreateNew.value ? newId.value : props.elementId;
       const formData = new FormData()
       e.forEach((e) => {
-        formData.append('file', e.file);
+        formData.append('files', e.file);
       })
 
       Api.post(`/editor/upload_files/${idToUpload}`, formData)

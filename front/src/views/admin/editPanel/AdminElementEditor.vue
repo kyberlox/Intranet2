@@ -203,7 +203,7 @@ export default defineComponent({
         if (!e) return
         if (!embed && 'file' in e) {
           const formData = new FormData()
-          formData.append('file', e.file);
+          formData.append('files', e.file);
           Api.post(`/editor/upload_file/${idToUpload}`, formData)
             .finally(() => reloadElementData(true))
         }

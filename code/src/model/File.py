@@ -648,7 +648,7 @@ class File:
         # file_ext = '.' + filename_parts[-1] if len(filename_parts) > 1 else ''
         # unique_name = str(ObjectId()) + file_ext
         unique_name = await FilesDBModel(article_id=self.art_id).generate_name(file_name=file.filename, session=session)
-
+        print(unique_name, 'СМОТРИМ ПОЛУЧАЕМ ЛИ УНИК ИМЯ')
         file_path = os.path.join(STORAGE_PATH, unique_name)
 
         # Инициализируем upload_id и прогресс

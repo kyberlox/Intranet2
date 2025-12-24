@@ -1964,7 +1964,6 @@ class Article:
             active_articles = []
             result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session)
             current_datetime = datetime.datetime.now()
-            print(current_datetime, 'текущее время в контейнере')
             for res in result:
 
                 if res['active']:

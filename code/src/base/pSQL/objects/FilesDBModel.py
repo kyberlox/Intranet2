@@ -239,10 +239,10 @@ class FilesDBModel():
                 file_format = 'link'
             else:
                 file_format = file_name.split(".")[-1]
-            print(123)
+            print(123, self.article_id)
             # Проверим есть к чему крепить файл
             if self.article_id is not None:
-
+                print(123)
                 # stmt_exists = select(FilesDB).where(FilesDB.article_id == self.article_id)
                 # result_exists = await session.execute(stmt_exists)
                 # article_exists = result_exists.scalar_one_or_none()

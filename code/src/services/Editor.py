@@ -1259,7 +1259,7 @@ async def del_file(file_id: str, session: AsyncSession = Depends(get_async_db)):
 
 
 @editor_router.post("/upload_files/{art_id}")
-async def create_upload_files(art_id, files: List[UploadFile]):
+async def create_upload_files(art_id, files: List[UploadFile] = File(...)):
     try:
         # Обработка каждого файла
         file_infos = []

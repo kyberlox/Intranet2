@@ -1266,7 +1266,7 @@ async def create_upload_files(request: Request, art_id, files: List[UploadFile] 
         file_infos = []
         for fl in files:
             # Здесь можно сохранить файл или обработать его содержимое
-            f_inf = await storeFile(art_id).editor_add_file(file=fl, session=session)
+            f_inf = await storeFile(art_id=art_id).editor_add_file(file=fl, session=session)
             file_infos.append(f_inf)
 
         return JSONResponse(file_infos)

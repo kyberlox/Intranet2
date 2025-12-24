@@ -1967,7 +1967,7 @@ class Article:
             for res in result:
                 
                 if res["id"] == 342069:
-                    print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
+                    # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
                     print(res["date_publiction"], current_datetime, 'ДАТЫ', res["id"])
 
                 if res['active']:

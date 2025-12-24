@@ -133,6 +133,7 @@ export default defineComponent({
             // newData.value.date_publiction = findValInObject(data, 'date_publiction');
             usersList.value = data.users;
             newData.value.section_id = Number(props.id);
+
             // newData.value.images = data.files.images;
             newData.value.videos_native = data.files.videos_native;
             newData.value.documentation = data.files.documentation;
@@ -165,7 +166,6 @@ export default defineComponent({
                 (newData.value as PostInnerWithDynamic)[e.field] = e.value;
               }
             })
-
           }
         })
     }
@@ -197,7 +197,6 @@ export default defineComponent({
 
       if (embed) {
         newEmbedList.value = (e as string[]);
-        console.log(newEmbedList.value)
       }
       else {
         if (!e) return

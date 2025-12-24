@@ -97,12 +97,13 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            handleDate(dateInput.value);
             if (props.defaultData) {
                 dateInput.value = new Date(props.defaultData);
             }
-            else
+            else {
                 dateInput.value = new Date();
+            }
+            handleDate(dateInput.value);
         })
 
         return {

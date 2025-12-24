@@ -511,7 +511,8 @@ class UserModel:
                     if user['second_name'] == '' or user['second_name'] is None:
                         if user['name'] == '' or user['name'] is None:
                             user_info['user_fio'] = f'{user["last_name"]}'
-                        user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
+                        else:
+                            user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
                     else:
                         user_info['user_fio'] = f'{user["last_name"]} {user["name"]} {user["second_name"]}'
                     user_info['position'] = indirect_data['work_position']

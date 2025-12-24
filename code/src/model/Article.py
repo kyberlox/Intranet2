@@ -1965,10 +1965,16 @@ class Article:
             result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session)
             current_datetime = datetime.datetime.now()
             for res in result:
+                
+                # if res["id"] == 342069:
+                #     # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
+                #     print(res["date_publiction"], current_datetime, 'ДАТЫ', res["id"])
+
                 if res['active']:
                     if int(self.section_id) in [31, 16, 33]:
-                        if res["date_publiction"] is None or (
-                                "date_publiction" in res and res["date_publiction"] <= current_datetime):
+                        # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
+                        if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
+
                             self.id = res["id"]
 
                             # res["preview_file_url"] = await self.get_preview(session)

@@ -721,8 +721,9 @@ class File:
                 content_type = str(file.content_type),
                 file_url = f"/api/files/{unique_name}"
             ).add(session)
-            print(123)
+            print(123, inserted_id)
             file_info = await FilesDBModel(id = inserted_id).find_file_by_id(session)
+            print(123, file_info)
             return file_info
         
         except Exception as e:

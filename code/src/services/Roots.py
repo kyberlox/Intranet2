@@ -158,8 +158,9 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
     return user_roots
 
 
-@roots_router.post("/give_gpt_gen_license")
-async def give_gpt_gen_license(request: Request, users_list=Body(), session: AsyncSession = Depends(get_async_db)):
+@roots_router.put("/give_gpt_gen_license")
+async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends(get_async_db)):
+    users_list=request.json()
     user_id = await get_uuid_from_request(request, session=session)
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:

@@ -547,8 +547,6 @@ class File:
         
         return files
 
-
-
     async def get_users_photo(self, session):
         #переделать с учетом is_archive
         file_data = await UserFilesModel(id=self.id).find_user_photo_by_id(session)
@@ -565,8 +563,6 @@ class File:
 
             return file_info
 
-
-    
     async def dowload_user_photo(self, url, name):
         # в будущем name исправить на айди фото ( photo_file_id )
         img_path = f"{USER_STORAGE_PATH}/{name}"
@@ -905,7 +901,6 @@ async def add_user_photo(b24_url : str, uuid : str, session: AsyncSession=Depend
 async def delete_user_photo(file_id: int, session: AsyncSession=Depends(get_async_db)):
     return await File(id=file_id).delete_user_img(session=session)
 
-
 @file_router.post("/change_prev/{art_id}/{file_id}")
 async def change_prev(file_id : int, art_id : int, session: AsyncSession=Depends(get_async_db)):
     return await File(id=file_id, art_id=art_id).change_prev(session=session)
@@ -920,7 +915,11 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
         return LogsMaker().warning_message(f"Укажите номер статьи")
 
     # тяну все линки статьи
-    current_links = []
+    current_links = dict()
+    all_files = await File(art_id=art_id).get_files_by_art_id()
+    for fl in all_files:
+        if fl["type"] == "video_embed":
+            current_links[fl["id"]] = fl["file_url"]
 
     #тяну все, какие должны быть линки 
     if "links" in data:
@@ -929,12 +928,28 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
         return LogsMaker().warning_message(f"Укажите ссылку")
 
     #сравниваю
+
+    # Множества для удобства сравнения
+    new_links_set = set(links)
+    current_links_set = set(current_links.values())
+    links_to_add = new_links_set - current_links_set
+    links_to_remove = current_links_set - new_links_set
+    ids_to_remove = [
+        link_id for link_id, link in current_links.items() 
+        if link in links_to_remove
+    ]
+
+    status = "nothing"
     #если не было - добавить
+    if links_to_add:
+        for link in links_to_add:
+            await File(b24_id=None).add_link(link=link, art_id=art_id, session=session)
+        status = "added"
+
     #если стало меньше - убрать лишнее
-
-    f_res = []
-    for link in links:
-        res = await File(b24_id=None).add_link(link=link, art_id=art_id, session=session)
-        f_res.append(res)
-
-    return f_res
+    if ids_to_remove:
+        for file_id in ids_to_remove:
+            await FilesDBModel(id = file_id).remove(session=session)
+        status = "deleted"
+        
+    return {"status": status, "result" : links}

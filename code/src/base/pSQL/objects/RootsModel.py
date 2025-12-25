@@ -329,7 +329,7 @@ class RootsModel:
                 else:
                     photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
                 user_info = {
-                    'id': moder.user_uuid,
+                    'id': user.user_uuid,
                     'name': f"{user_fio.last_name} {user_fio.name} {user_fio.second_name}",
                     'photo_file_url': photo_file_url
                 }

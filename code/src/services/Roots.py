@@ -61,6 +61,18 @@ class Roots:
         res = await self.RootsModel.token_processing_for_editor(roots)
         return res
 
+    async def give_gpt_gen_license(self, session):
+        self.RootsModel.user_uuid = self.user_uuid
+        res = await self.RootsModel.give_gpt_gen_license(session)
+        return res
+    
+    async def stop_gpt_gen_license(self, session):
+        self.RootsModel.user_uuid = self.user_uuid
+        res = await self.RootsModel.stop_gpt_gen_license(session)
+        return res
+
+
+
 
 async def get_uuid_from_request(request, session):
     # user_id = None
@@ -144,3 +156,21 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
         user_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True}
     return user_roots
+
+
+@roots_router.put("/give_gpt_gen_license")
+async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends(get_async_db), users_list=Body()):
+    user_id = await get_uuid_from_request(request, session=session)
+    editor_roots = await get_editor_roots(user_id, session=session)
+    if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
+        for user in users_list:
+            return await Roots(user_uuid=int(user)).give_gpt_gen_license(session=session)
+    return LogsMaker().warning_message(f"Недостаточно прав")
+
+@roots_router.delete("/stop_gpt_gen_license/{user_uuid}")
+async def stop_gpt_gen_license(request: Request, user_uuid: int, session: AsyncSession = Depends(get_async_db)):
+    user_id = await get_uuid_from_request(request, session=session)
+    editor_roots = await get_editor_roots(user_id, session=session)
+    if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
+        return await Roots(user_uuid=user_uuid).stop_gpt_gen_license(session=session)
+    return LogsMaker().warning_message(f"Недостаточно прав")

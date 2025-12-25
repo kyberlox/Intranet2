@@ -92,7 +92,8 @@ class RootsModel:
                     new_moder.root_token={
                         "PeerAdmin": True,
                         "VisionAdmin": True,
-                        "EditorAdmin": True
+                        "EditorAdmin": True,
+                        "GPT_gen_access": True
                     }
 
                     session.add(new_moder)
@@ -251,3 +252,60 @@ class RootsModel:
             return result
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка вывода кураторов: {e}")
+
+
+    async def give_gpt_gen_license(self, session):
+        try:
+            stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
+            res = await session.execute(stmt)
+            existing_access = res.scalar_one_or_none()
+            if existing_access:
+                if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
+                    return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} уже является администратором радакторки")
+                elif "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == False:
+                    existing_access.root_token["GPT_gen_access"] = True
+                    flag_modified(existing_access, 'root_token')
+
+                    await session.commit()
+                    return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} назначен администратором радакторки")
+                else:
+                    existing_access.root_token["GPT_gen_access"] = True
+                    flag_modified(existing_access, 'root_token')
+
+                    await session.commit()
+                    return LogsMaker().info_message(f"Пользователь с id = {self.user_uuid} назначен администратором радакторки")
+            else:
+                stmt = select(func.max(self.Roots.id))
+                result = await session.execute(stmt)
+                max_id = result.scalar() or 0
+                new_id = max_id + 1
+                new_admin = self.Roots(
+                    id=new_id,
+                    user_uuid=int(self.user_uuid),
+                    root_token={"GPT_gen_access": True}
+                )
+                # self.Roots.user_uuid=int(self.uuid)
+                # self.Roots.root_token={"PeerAdmin": True}
+
+                session.add(new_admin)
+                await session.commit()
+                return LogsMaker().info_message(f"Пользователю с id = {self.user_uuid} выданы права для генерации картинок в ChatGpt")
+                
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при выдаче прав пользователю с id = {self.user_uuid} для генерации картинок в ChatGpt: {e}")
+
+    async def stop_gpt_gen_license(self, session):
+        try:
+            stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
+            res = await session.execute(stmt)
+            existing_access = res.scalar_one_or_none()
+            if existing_access:
+                if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
+                    existing_access.root_token["GPT_gen_access"] = False
+                    flag_modified(existing_access, 'root_token')
+
+                    await session.commit()
+                    return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} больше нет прав для генерации картинок в ChatGpt")
+            return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} не было прав для генерации картинок в ChatGpt")
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка при удалении прав для генерации картинок в ChatGpt у пользователя с id = {self.user_uuid}: {e}")

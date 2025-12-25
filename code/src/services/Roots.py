@@ -166,7 +166,8 @@ async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         for user in users_list:
-            return await Roots(user_uuid=int(user)).give_gpt_gen_license(session=session)
+            await Roots(user_uuid=int(user)).give_gpt_gen_license(session=session)
+        return True
     return LogsMaker().warning_message(f"Недостаточно прав")
 
 @roots_router.delete("/stop_gpt_gen_license/{user_uuid}")

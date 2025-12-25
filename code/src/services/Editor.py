@@ -1264,6 +1264,7 @@ async def create_upload_files(art_id, files: List[UploadFile]):
         # Обработка каждого файла
         file_infos = []
         for file in files:
+            print(file.filename)
             # Здесь можно сохранить файл или обработать его содержимое
             f_inf = await storeFile(art_id).editor_add_file(file=file)
             file_infos.append(f_inf)

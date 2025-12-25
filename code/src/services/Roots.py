@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Body
 from .LogsMaker import LogsMaker
 from ..model.User import User
 from fastapi import Depends
@@ -159,8 +159,8 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
 
 
 @roots_router.put("/give_gpt_gen_license")
-async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends(get_async_db)):
-    users_list=request.json()
+async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends(get_async_db), users_list: list = Body()):
+    # users_list=request.json()
     print(users_list)
     user_id = await get_uuid_from_request(request, session=session)
     editor_roots = await get_editor_roots(user_id, session=session)

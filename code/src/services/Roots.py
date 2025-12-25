@@ -70,6 +70,10 @@ class Roots:
         self.RootsModel.user_uuid = self.user_uuid
         res = await self.RootsModel.stop_gpt_gen_license(session)
         return res
+    
+    async def get_gpt_gen_licenses(self, session):
+        res = await self.RootsModel.get_gpt_gen_licenses(session)
+        return res
 
 
 
@@ -160,8 +164,6 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
 
 @roots_router.put("/give_gpt_gen_license")
 async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends(get_async_db), users_list: list = Body()):
-    # users_list=request.json()
-    print(users_list)
     user_id = await get_uuid_from_request(request, session=session)
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
@@ -176,4 +178,12 @@ async def stop_gpt_gen_license(request: Request, user_uuid: int, session: AsyncS
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots(user_uuid=user_uuid).stop_gpt_gen_license(session=session)
+    return LogsMaker().warning_message(f"Недостаточно прав")
+
+@roots_router.get("/get_gpt_gen_licenses")
+async def get_gpt_gen_licenses(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_id = await get_uuid_from_request(request, session=session)
+    editor_roots = await get_editor_roots(user_id, session=session)
+    if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
+        return await Roots().get_gpt_gen_licenses(session=session)
     return LogsMaker().warning_message(f"Недостаточно прав")

@@ -15,6 +15,7 @@
                                      @tagsChanged="(e: number[]) => newData.tags = e"
                                      @reloadElementData="(e: boolean) => reloadElementData(e)"
                                      @handleUpload="handleUpload"
+                                     @uploadMany="(e) => uploadMany(e)"
                                      @saveEmbed="(e: string[]) => handleUpload(e, true)" />
 
     <AdminPostPreview :previewFullWidth="previewFullWidth"
@@ -193,7 +194,7 @@ export default defineComponent({
     }
 
     const handleUpload = (e: IFileToUpload | string[], embed: boolean = false) => {
-      const idToUpload = isCreateNew.value ? newId.value : props.elementId
+      const idToUpload = isCreateNew.value ? newId.value : props.elementId;
 
       if (embed) {
         newEmbedList.value = (e as string[]);
@@ -207,6 +208,17 @@ export default defineComponent({
             .finally(() => reloadElementData(true))
         }
       }
+    }
+
+    const uploadMany = (e: IFileToUpload[]) => {
+      const idToUpload = isCreateNew.value ? newId.value : props.elementId;
+      const formData = new FormData()
+      e.forEach((e) => {
+        formData.append('files', e.file);
+      })
+
+      Api.post(`/editor/upload_files/${idToUpload}`, formData)
+        .finally(() => reloadElementData(true))
     }
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
@@ -274,6 +286,7 @@ export default defineComponent({
       applyNewData,
       handleEmitValueChange,
       handleUpload,
+      uploadMany,
       reloadElementData,
     };
   }

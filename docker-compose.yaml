@@ -79,6 +79,8 @@ services:
       - ./app_logs/fastapi:/data/app/logs  # Добавляем том для логов FastAPI
     env_file:
       - .env
+    environment:
+      - TZ=Europe/Saratov
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:

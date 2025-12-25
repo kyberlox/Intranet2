@@ -116,7 +116,7 @@ export default defineComponent({
         DocIcon,
         Loader
     },
-    emits: ['upload', 'remove', 'reloadData'],
+    emits: ['upload', 'remove', 'reloadData', 'uploadMany'],
     setup(props, { emit }) {
         const fileInput = ref<HTMLInputElement>();
         const uploadedFiles = ref<IFileToUpload[]>([]);
@@ -158,9 +158,10 @@ export default defineComponent({
                 emit('upload', target, props.uploadType);
             } else {
                 uploadedFiles.value = processResult as IFileToUpload[];
-                (processResult as IFileToUpload[]).forEach(file => {
-                    emit('upload', file, props.uploadType);
-                });
+                emit('uploadMany', uploadedFiles.value, props.uploadType);
+                // (processResult as IFileToUpload[]).forEach(file => {
+                //     emit('upload', file, props.uploadType);
+                // });
             }
 
             startWatchForUpload();
@@ -183,7 +184,6 @@ export default defineComponent({
 
         const startWatchForUpload = () => {
             const existFilesState = props.existFiles?.length;
-
             watch(() => props.existFiles, (newFiles) => {
                 if (newFiles?.length !== existFilesState) {
                     isUploading.value = false;

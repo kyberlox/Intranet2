@@ -55,6 +55,7 @@
                            :newFileData="newFileData"
                            :newData="newData"
                            @reloadData="$emit('reloadElementData', true)"
+                           @uploadMany="(e: IFileToUpload[]) => $emit('uploadMany', e)"
                            @handleUpload="(e: IFileToUpload) => $emit('handleUpload', e)" />
 </div>
 
@@ -98,7 +99,7 @@ export default defineComponent({
         AdminUsersList,
         AdminEditTags,
     },
-    emits: ['handleUserPick', 'handleUsersPick', 'reportageChanged', 'tagschanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
+    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagschanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
     props: {
         isMobileScreen: {
             type: Boolean

@@ -916,7 +916,7 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
 
     # тяну все линки статьи
     current_links = dict()
-    all_files = await File(art_id=art_id).get_files_by_art_id()
+    all_files = await File(art_id=art_id).get_files_by_art_id(session)
     for fl in all_files:
         if fl["type"] == "video_embed":
             current_links[fl["id"]] = fl["file_url"]
@@ -951,5 +951,5 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
         for file_id in ids_to_remove:
             await FilesDBModel(id = file_id).remove(session=session)
         status = "deleted"
-        
+
     return {"status": status, "result" : links}

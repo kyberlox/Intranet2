@@ -299,18 +299,19 @@ class RootsModel:
             stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
             res = await session.execute(stmt)
             existing_access = res.scalar_one_or_none()
+            print(existing_access)
             if existing_access:
                 if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
                     existing_access.root_token["GPT_gen_access"] = False
                     flag_modified(existing_access, 'root_token')
-
+                    print("tyt")
                     await session.commit()
                     return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} больше нет прав для генерации картинок в ChatGpt")
             return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} не было прав для генерации картинок в ChatGpt")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении прав для генерации картинок в ChatGpt у пользователя с id = {self.user_uuid}: {e}")
     
-    async def get_gpt_gen_licenses(self, session):
+    async def gpt_gen_lic(self, session):
         from src.model.File import File
         from .App import DOMAIN
         result = []

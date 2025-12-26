@@ -44,7 +44,6 @@ import { useblogDataStore } from '@/stores/blogData';
 
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { INewFileData } from '@/interfaces/IEntities';
-import { preview } from 'vite';
 
 export default defineComponent({
     name: 'AdminPostPreview',

@@ -131,7 +131,7 @@ export default defineComponent({
             if (!('section_id' in newData.value)) {
               newData.value.section_id = findValInObject(data, 'section_id');
             }
-            // newData.value.date_publiction = findValInObject(data, 'date_publiction');
+            newData.value.date_publiction = findValInObject(data, 'date_publiction');
             usersList.value = data.users;
             newData.value.section_id = Number(props.id);
 
@@ -163,7 +163,7 @@ export default defineComponent({
               newData.value.preview_file_url = data.files?.images[0]?.file_url
             }
             data.fields.map((e: INewDataElement) => {
-              if (e.value && e.field) {
+              if ('value' in e && e.value && e.field && e.field in newData.value && (newData.value as PostInnerWithDynamic)[e.field]) {
                 (newData.value as PostInnerWithDynamic)[e.field] = e.value;
               }
             })

@@ -44,6 +44,7 @@ import { useblogDataStore } from '@/stores/blogData';
 
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { INewFileData } from '@/interfaces/IEntities';
+import { preview } from 'vite';
 
 export default defineComponent({
     name: 'AdminPostPreview',
@@ -101,13 +102,15 @@ export default defineComponent({
         })
 
         watch((props), () => {
+            previewImages.value.length = 0;
+
             if (props.newFileData?.images?.length) {
                 props.newFileData?.images?.map((e) => {
                     if (!e.file_url) return
                     previewImages.value.push(e.file_url)
                 })
             }
-        }, { once: true })
+        }, { deep: true, immediate: true })
 
         return {
             PreviewTypes,

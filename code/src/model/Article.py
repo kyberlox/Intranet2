@@ -2707,10 +2707,10 @@ class Article:
                 if "uf_phone_inner" in user_inf: ws[f'D{i}'] = f'{user_inf["uf_phone_inner"]}'
                 if "work_position" in indirect_data:
                     ws[f'E{i}'] = f'{indirect_data["work_position"]}'
-                if "uf_department" in indirect_data and "uf_usr_1696592324977" in indirect_data:
+                if ("uf_department" in indirect_data and isinstance(indirect_data["uf_department"], list)) and ("uf_usr_1696592324977" in indirect_data and isinstance(indirect_data["uf_usr_1696592324977"], list)):
                     ws[f'F{i}'] = ", ".join(indirect_data["uf_usr_1696592324977"]) + "/" + ", ".join(
                         indirect_data["uf_department"])
-                if "uf_usr_1705744824758" in indirect_data:
+                if "uf_usr_1705744824758" in indirect_data and isinstance(indirect_data["uf_usr_1705744824758"], list):
                     ws[f'G{i}'] = " ".join(indirect_data["uf_usr_1705744824758"])
                 if "personal_city" in user_inf: ws[f'H{i}'] = f'{user_inf["personal_city"]}'
 

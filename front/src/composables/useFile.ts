@@ -6,8 +6,6 @@ export const useFileUtil = (uploadType: 'images' | 'documentation' | 'videos_nat
     const allowedType: Ref<string[]> = ref(allowedTypes[uploadType]);
 
     const validateFile = (allowedType: Ref<string[]>, file: File) => {
-        console.log(file);
-        
         if (!allowedType.value.includes(file.type)) {
             alert('Неподдерживаемый формат файла');
             return false;

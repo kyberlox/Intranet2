@@ -15,6 +15,7 @@
             </p>
             <div>
                 <FileUploader @upload="(e) => $emit('handleUpload', e)"
+                              @uploadMany="(e) => $emit('uploadMany', e)"
                               @reloadData="$emit('reloadData')"
                               :uploadType="(itemKey as keyof IKeyToWord)"
                               :existFiles="(newFileData[itemKey as keyof IKeyToWord])" />

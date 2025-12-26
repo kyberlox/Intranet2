@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start
 }
 
 .empty-page-plug__title {
@@ -20,14 +20,15 @@
     border-radius: 8px;
     height: 100%;
     /* max-height: 350px; */
+    border: 1px solid rgb(209, 209, 209);
+
 }
 
 .empty-page-plug__img__wrapper {
     /* padding: 50px; */
-    border: 1px solid rgb(209, 209, 209);
     border-radius: 8px;
     object-fit: cover;
-    max-height: 250px;
+    max-height: 80%;
     /* background: white; */
 }
 

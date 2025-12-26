@@ -1,6 +1,8 @@
 <template>
 <div class="page__title mt20">Афиша</div>
-<EmptyPagePlug v-if="!isLoading && !afisha.length" />
+<ContentPlug v-if="!isLoading && !afisha.length"
+             :needGptMark="true"
+             :plugText="emptyPageHtml" />
 <ComplexGallery v-else
                 class="mt20"
                 :page=page
@@ -14,12 +16,14 @@ import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import type { IAfishaItem } from "@/interfaces/IEntities";
-import EmptyPagePlug from "@/components/layout/EmptyPagePlug.vue";
+
+import ContentPlug from '@/components/layout/ContentPlug.vue';
+import { emptyPageHtml } from '@/assets/static/contentPlugs';
 
 export default defineComponent({
     components: {
         ComplexGallery,
-        EmptyPagePlug
+        ContentPlug
     },
     setup() {
         const afisha: ComputedRef<IAfishaItem[]> = computed(() => useViewsDataStore().getData('afishaData') as IAfishaItem[]);
@@ -36,7 +40,8 @@ export default defineComponent({
         return {
             afisha,
             isLoading,
-            page: 'officialEvents'
+            page: 'officialEvents',
+            emptyPageHtml
         };
     },
 });

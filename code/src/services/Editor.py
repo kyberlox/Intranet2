@@ -1259,17 +1259,17 @@ async def del_file(file_id: str, session: AsyncSession = Depends(get_async_db)):
 
 
 @editor_router.post("/upload_files/{art_id}")
-async def create_upload_files(art_id, files: List[UploadFile]):
+async def create_upload_files(request: Request, art_id, files: List[UploadFile] = File(...), session: AsyncSession = Depends(get_async_db)):
     try:
+        # headers_from = request.headers
         # Обработка каждого файла
         file_infos = []
         for file in files:
             print(file.filename)
             # Здесь можно сохранить файл или обработать его содержимое
-            f_inf = await storeFile(art_id).editor_add_file(file=file)
+            f_inf = await storeFile(art_id=art_id).editor_add_file(file=fl, session=session)
             file_infos.append(f_inf)
-
-        return JSONResponse(file_infos)
+        return file_infos
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -915,9 +915,10 @@ async def create_link(data=Body(), session: AsyncSession = Depends(get_async_db)
     # тяну все линки статьи
     current_links = dict()
     all_files = await File(art_id=art_id).get_files_by_art_id(session)
-    for fl in all_files:
-        if fl["type"] == "video_embed":
-            current_links[fl["id"]] = fl["file_url"]
+    if all_files:
+        for fl in all_files:
+            if fl["type"] == "video_embed":
+                current_links[fl["id"]] = fl["file_url"]
 
     #тяну все, какие должны быть линки 
     if "links" in data:

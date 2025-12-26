@@ -300,14 +300,9 @@ class RootsModel:
             res = await session.execute(stmt)
             existing_access = res.scalar_one_or_none()
             if existing_access:
-                print(existing_access.root_token.keys())
-                print(existing_access.root_token["GPT_gen_access"])
                 if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
-                    print("Условие", "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True)
                     existing_access.root_token["GPT_gen_access"] = False
-                    print("tyt")
                     flag_modified(existing_access, 'root_token')
-                    print("tyta")
                     await session.commit()
                     return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} больше нет прав для генерации картинок в ChatGpt")
             return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} не было прав для генерации картинок в ChatGpt")
@@ -321,8 +316,10 @@ class RootsModel:
         try:
             stmt = select(self.Roots).where(self.Roots.root_token.has_key("GPT_gen_access"))
             res = await session.execute(stmt)
+            
             users = res.scalars().all()
             for user in users:
+                print(user.id)
                 stmt = select(self.User.name, self.User.second_name, self.User.last_name, self.User.photo_file_id).where(self.User.id == user.user_uuid)
                 res = await session.execute(stmt)
                 user_fio = res.first()

@@ -82,7 +82,6 @@ export default defineComponent({
 
         const editorsInit = () => {
             isLoading.value = true;
-
             if (activeSection.value.id == 'gpt') {
                 Api.get('roots/get_gpt_gen_licenses')
                     .then((data) => activeSectionEditors.value = data)

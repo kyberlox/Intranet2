@@ -116,7 +116,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Api from '@/utils/Api';
 import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
@@ -186,6 +186,7 @@ export default defineComponent({
       items.value.length = 0;
       isLoading.value = true;
       sectionId.value = route.params.id;
+      if (sectionId.value == 'gpt') return
       Api.get(`/editor/section_rendering/${sectionId.value}`)
         .then((data) => items.value = data)
         .finally(() => isLoading.value = false)

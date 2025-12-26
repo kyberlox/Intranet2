@@ -339,6 +339,6 @@ class RootsModel:
                     'photo_file_url': photo_file_url
                 }
                 result.append(user_info)
-        return result
+            return result
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе пользователей с правами на генерацию картинок в ChatGpt: {e}")

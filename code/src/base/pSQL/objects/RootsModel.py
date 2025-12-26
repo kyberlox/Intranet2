@@ -303,9 +303,11 @@ class RootsModel:
                 print(existing_access.root_token.keys())
                 print(existing_access.root_token["GPT_gen_access"])
                 if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
+                    print("Условие", "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True)
                     existing_access.root_token["GPT_gen_access"] = False
-                    flag_modified(existing_access, 'root_token')
                     print("tyt")
+                    flag_modified(existing_access, 'root_token')
+                    print("tyta")
                     await session.commit()
                     return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} больше нет прав для генерации картинок в ChatGpt")
             return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} не было прав для генерации картинок в ChatGpt")

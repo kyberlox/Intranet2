@@ -100,6 +100,9 @@ export default defineComponent({
             if (props.defaultData) {
                 dateInput.value = new Date(props.defaultData);
             }
+            else if (props.calendarType !== 'month') {
+                dateInput.value = new Date();
+            }
             handleDate(dateInput.value);
         })
 

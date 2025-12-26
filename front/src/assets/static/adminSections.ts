@@ -26,6 +26,6 @@ export const staticAdminSections: IAdminSections[] = [
     {
         id: 4,
         title: 'Настройка прав',
-        nav: [{ name: 'Права на разделы', id: 'roots' },]
+        nav: [{ name: 'Права на разделы', id: 'roots' }]
     }
 ]

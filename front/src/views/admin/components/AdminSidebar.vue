@@ -71,6 +71,9 @@ export default defineComponent({
         },
         activeId: {
             type: Number
+        },
+        type: {
+            type: String
         }
     },
     emits: ['areaClicked', 'addNewArea', 'deleteArea'],

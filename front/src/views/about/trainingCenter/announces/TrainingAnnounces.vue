@@ -3,22 +3,27 @@
     <div class="page__title">
         Анонс учебных программ
     </div>
-    <EmptyPagePlug />
+    <ContentPlug :needGptMark="true"
+                 :plugText="emptyPageHtml" />
     <!-- <TrainingTable :page="'announces'" /> -->
 </div>
 </template>
 
 <script lang="ts">
 // import TrainingTable from "../components/TrainingTable.vue";
-import EmptyPagePlug from "@/components/layout/EmptyPagePlug.vue";
+import { emptyPageHtml } from '@/assets/static/contentPlugs';
+import ContentPlug from '@/components/layout/ContentPlug.vue';
+
 import { defineComponent } from "vue";
 export default defineComponent({
     components: {
-        EmptyPagePlug,
+        ContentPlug,
         // TrainingTable,
     },
     setup() {
-        return {};
+        return {
+            emptyPageHtml
+        };
     },
 });
 </script>

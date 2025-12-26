@@ -25,7 +25,9 @@
     <!-- <div v-else-if="!isLoading">
         <h5>Сейчас нет актуальных конкурсов</h5>
     </div> -->
-    <EmptyPagePlug v-else-if="!isLoading" />
+    <ContentPlug :needGptMark="true"
+                 :plugText="emptyPageHtml"
+                 v-else-if="!isLoading" />
     <div class="contest__page__loader__wrapper"
          v-else-if="isLoading">
         <Loader class="contest__page__loader" />
@@ -49,14 +51,15 @@ import { type IContentGallerySlide } from '@/components/tools/gallery/ContentGal
 // import thirdPlaceMedal from '@/assets/imgs/3placeMedal.png'
 import type { IContest } from '@/interfaces/entities/IContest';
 import Loader from '@/components/layout/Loader.vue';
-import EmptyPagePlug from '@/components/layout/EmptyPagePlug.vue';
+import ContentPlug from '@/components/layout/ContentPlug.vue';
+import { emptyPageHtml } from '@/assets/static/contentPlugs';
 
 export default defineComponent({
     components: {
         ContentGallery,
         ZoomModal,
         Loader,
-        EmptyPagePlug
+        ContentPlug
     },
     setup() {
         const slides = ref<IContentGallerySlide>({ name: '', images: [] });
@@ -99,6 +102,7 @@ export default defineComponent({
             activeIndex,
             isLoading,
             activeNav,
+            emptyPageHtml,
             callModal,
             pickSection
         };

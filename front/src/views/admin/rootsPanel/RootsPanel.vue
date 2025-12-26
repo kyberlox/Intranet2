@@ -8,9 +8,9 @@
                         Настройка прав пользователей
                     </h3>
                 </div>
-                <ul v-if="sections.length"
+                <ul v-if="newSections.length"
                     class="admin-panel__nav-list">
-                    <li v-for="(section, index) in sections"
+                    <li v-for="(section, index) in newSections"
                         :key="'section' + index"
                         class="admin-panel__nav-item"
                         @click="activeSection = section">
@@ -50,6 +50,7 @@ import Api from '@/utils/Api';
 import AdminEditUserSearch from '../components/inputFields/AdminEditUserSearch.vue';
 import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
 import Loader from '@/components/layout/Loader.vue';
+import { useUserData } from '@/stores/userData';
 
 export default defineComponent({
     name: 'rootsEditPanel',
@@ -65,6 +66,14 @@ export default defineComponent({
         const activeSection = ref();
         const activeSectionEditors = ref([]);
         const isLoading = ref(false);
+        const gptRoot = computed(() => useUserData().getUserRoots.GPT_gen_access || useUserData().getUserRoots.EditorAdmin);
+        const newSections = ref(sections.value);
+
+        watch((gptRoot), () => {
+            if (gptRoot.value) {
+                newSections.value.push({ id: 'gpt', name: 'Доступ к gpt' })
+            }
+        }, { immediate: true, deep: true })
 
         watch((activeSection), () => {
             if (!activeSection.value) return
@@ -73,9 +82,16 @@ export default defineComponent({
 
         const editorsInit = () => {
             isLoading.value = true;
-            Api.get(`roots/get_editors_list/${activeSection.value.id}`)
-                .then((data) => activeSectionEditors.value = data)
-                .finally(() => isLoading.value = false)
+
+            if (activeSection.value.id == 'gpt') {
+                Api.get('roots/get_gpt_gen_licenses')
+                    .then((data) => activeSectionEditors.value = data)
+                    .finally(() => isLoading.value = false)
+            }
+            else
+                Api.get(`roots/get_editors_list/${activeSection.value.id}`)
+                    .then((data) => activeSectionEditors.value = data)
+                    .finally(() => isLoading.value = false)
         }
 
         const addRootToUser = (id: number) => {
@@ -89,7 +105,7 @@ export default defineComponent({
         }
 
         return {
-            sections,
+            newSections,
             activeSection,
             activeSectionEditors,
             isLoading,

@@ -6,7 +6,11 @@
                           @typeChanged="handleChatTypeChange" />
         <div class="neuroChat-content__wrapper">
             <div class="neuroChat-content">
-                <div v-if="chatDataToSend.length">
+                <div v-if="chatType == 'createImg' && !imageGenerationOn"
+                     class="neuroChat__image-gen__plug">
+                    <ImageGenerationOffPlug />
+                </div>
+                <div v-else-if="chatDataToSend.length">
                     <div class="neuroChat__messages__wrapper"
                          v-for="(chat, index) in chatDataToSend"
                          :key="'chat' + index">
@@ -99,7 +103,7 @@ import AddFileIcon from '@/assets/icons/AddFileIcon.svg?component';
 import type { INeuroChat } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
 import { useBase64 } from '@vueuse/core'
-
+import ImageGenerationOffPlug from '@/components/layout/ImageGenerationOffPlug.vue';
 export type IChatType = "textChat" | "createImg";
 
 interface IUploadFile {
@@ -112,9 +116,11 @@ export default defineComponent({
     components: {
         NeuroChatSidebar,
         Loader,
+        ImageGenerationOffPlug,
         AddFileIcon
     },
     setup() {
+        const imageGenerationOn = false;
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const filesToUpload = ref<IUploadFile[]>([]);
@@ -296,6 +302,7 @@ export default defineComponent({
             chatDataToSend,
             chatType,
             fileBase64,
+            imageGenerationOn,
             firstMessage,
             handleChatTypeChange,
             parseMarkdown,

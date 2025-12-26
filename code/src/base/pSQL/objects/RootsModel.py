@@ -303,37 +303,42 @@ class RootsModel:
                 if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
                     existing_access.root_token["GPT_gen_access"] = False
                     flag_modified(existing_access, 'root_token')
-
                     await session.commit()
                     return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} больше нет прав для генерации картинок в ChatGpt")
             return LogsMaker().info_message(f"У пользователя с id = {self.user_uuid} не было прав для генерации картинок в ChatGpt")
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при удалении прав для генерации картинок в ChatGpt у пользователя с id = {self.user_uuid}: {e}")
     
-    async def get_gpt_gen_licenses(self, session):
+    async def gpt_gen_lic(self, session):
         from src.model.File import File
         from .App import DOMAIN
         result = []
         try:
             stmt = select(self.Roots).where(self.Roots.root_token.has_key("GPT_gen_access"))
             res = await session.execute(stmt)
+            
             users = res.scalars().all()
             for user in users:
-                stmt = select(self.User.name, self.User.second_name, self.User.last_name, self.User.photo_file_id).where(self.User.id == user.user_uuid)
+                stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
                 res = await session.execute(stmt)
-                user_fio = res.first()
-                if user_fio.photo_file_id:
-                    photo_inf = await File(id=user_fio.photo_file_id).get_users_photo(session)
-                    url = photo_inf['URL']
-                    photo_file_url = f"{DOMAIN}{url}" 
-                else:
-                    photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                user_info = {
-                    'id': user.user_uuid,
-                    'name': f"{user_fio.last_name} {user_fio.name} {user_fio.second_name}",
-                    'photo_file_url': photo_file_url
-                }
-                result.append(user_info)
+                existing_access = res.scalar_one_or_none()
+                if existing_access:# and "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
+                    print(user.id)
+                    stmt = select(self.User.name, self.User.second_name, self.User.last_name, self.User.photo_file_id).where(self.User.id == user.user_uuid)
+                    res = await session.execute(stmt)
+                    user_fio = res.first()
+                    if user_fio.photo_file_id:
+                        photo_inf = await File(id=user_fio.photo_file_id).get_users_photo(session)
+                        url = photo_inf['URL']
+                        photo_file_url = f"{DOMAIN}{url}" 
+                    else:
+                        photo_file_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                    user_info = {
+                        'id': user.user_uuid,
+                        'name': f"{user_fio.last_name} {user_fio.name} {user_fio.second_name}",
+                        'photo_file_url': photo_file_url
+                    }
+                    result.append(user_info)
             return result
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка при выводе пользователей с правами на генерацию картинок в ChatGpt: {e}")

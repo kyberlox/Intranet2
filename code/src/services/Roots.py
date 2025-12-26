@@ -72,7 +72,7 @@ class Roots:
         return res
     
     async def get_gpt_gen_licenses(self, session):
-        res = await self.RootsModel.get_gpt_gen_licenses(session)
+        res = await self.RootsModel.gpt_gen_lic(session)
         return res
 
 
@@ -184,7 +184,7 @@ async def stop_gpt_gen_license(request: Request, user_uuid: int, session: AsyncS
     return LogsMaker().warning_message(f"Недостаточно прав")
 
 @roots_router.get("/get_gpt_gen_licenses")
-async def get_gpt_gen_licenses(request: Request, session: AsyncSession = Depends(get_async_db)):
+async def gpt_gen_licenses(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_id = await get_uuid_from_request(request, session=session)
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:

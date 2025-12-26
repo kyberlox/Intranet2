@@ -145,9 +145,8 @@ export default defineComponent({
             isUploading.value = true;
 
             const processResult = useFile.processFiles(files);
-
-            if (typeof processResult === 'string') {
-                error.value = processResult;
+            if (typeof processResult === 'string' || (processResult as IFileToUpload[]).length == 0) {
+                error.value = processResult as string;
                 isUploading.value = false;
                 return;
             }

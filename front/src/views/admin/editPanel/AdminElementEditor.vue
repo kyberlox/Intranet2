@@ -157,6 +157,7 @@ export default defineComponent({
             // для файлов
             newFileData.value = data.files;
             newData.value.videos_native = data.files.videos_native;
+            newData.value.videos_embed = data.files.videos_embed;
             newData.value.documentation = data.files.documentation;
             // для превьюх
             if (data.files?.images && data.files?.images[0]?.file_url) {

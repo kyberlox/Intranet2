@@ -2696,9 +2696,9 @@ class Article:
 
             for i, user in enumerate(data, start=2):
                 user_inf = await User(id=user['id']).search_by_id_all(session)
-
+                if not user_inf:
+                    continue
                 indirect_data = user_inf.get("indirect_data", {})
-                print(user_inf)
                 if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: ws[
                     f'A{i}'] = f'{user_inf["name"]} {user_inf["last_name"]} {user_inf["second_name"]}'
 

@@ -299,8 +299,9 @@ class RootsModel:
             stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
             res = await session.execute(stmt)
             existing_access = res.scalar_one_or_none()
-            print(existing_access)
             if existing_access:
+                print(existing_access.root_token.keys())
+                print(existing_access.root_token["GPT_gen_access"])
                 if "GPT_gen_access" in existing_access.root_token.keys() and existing_access.root_token["GPT_gen_access"] == True:
                     existing_access.root_token["GPT_gen_access"] = False
                     flag_modified(existing_access, 'root_token')

@@ -100,9 +100,6 @@ export default defineComponent({
             if (props.defaultData) {
                 dateInput.value = new Date(props.defaultData);
             }
-            else {
-                dateInput.value = new Date();
-            }
             handleDate(dateInput.value);
         })
 

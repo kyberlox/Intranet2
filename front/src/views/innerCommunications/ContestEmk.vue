@@ -27,7 +27,9 @@
     </div> -->
     <ContentPlug :needGptMark="true"
                  :plugText="emptyPageHtml"
+                 :plugImg="emptyPlug"
                  v-else-if="!isLoading" />
+
     <div class="contest__page__loader__wrapper"
          v-else-if="isLoading">
         <Loader class="contest__page__loader" />
@@ -53,6 +55,7 @@ import type { IContest } from '@/interfaces/entities/IContest';
 import Loader from '@/components/layout/Loader.vue';
 import ContentPlug from '@/components/layout/ContentPlug.vue';
 import { emptyPageHtml } from '@/assets/static/contentPlugs';
+import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
 
 export default defineComponent({
     components: {
@@ -103,6 +106,7 @@ export default defineComponent({
             isLoading,
             activeNav,
             emptyPageHtml,
+            emptyPlug,
             callModal,
             pickSection
         };

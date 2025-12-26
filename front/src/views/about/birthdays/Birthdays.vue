@@ -36,10 +36,13 @@
                            @slideNext="slideNext"
                            @slidePrev="slidePrev" />
         </div>
-        <div v-else
+        <div v-else-if="isLoading"
              class="birthday__page__swiper__wrapper">
             <Loader class="contest__page__loader" />
         </div>
+        <ContentPlug :plugText="noBirthdays"
+                     :plugImg="noBirthImage"
+                     v-else />
         <div class="birthday__static__greetings">
             <img @click="openModal([birthdayPageImg])"
                  :src=birthdayPageImg
@@ -68,6 +71,9 @@ import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUs
 import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.png";
 import Loader from "@/components/layout/Loader.vue";
+import { noBirthdays } from "@/assets/static/contentPlugs";
+import ContentPlug from "@/components/layout/ContentPlug.vue";
+import noBirthImage from "@/assets/imgs/plugs/contentPlugBirthdays.jpg";
 
 export default defineComponent({
     components: {
@@ -77,7 +83,8 @@ export default defineComponent({
         VerticalSliderSlide,
         SwiperButtons,
         ZoomModal,
-        Loader
+        Loader,
+        ContentPlug
     },
     setup() {
         const isLoading = ref(false);
@@ -169,6 +176,8 @@ export default defineComponent({
             swiperOn: swiperConf.swiperOn,
             slideNext: swiperConf.slideNext,
             slidePrev: swiperConf.slidePrev,
+            noBirthdays,
+            noBirthImage,
         };
     },
 });

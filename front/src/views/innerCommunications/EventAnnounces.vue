@@ -2,6 +2,7 @@
 <div class="page__title mt20">Афиша</div>
 <ContentPlug v-if="!isLoading && !afisha.length"
              :needGptMark="true"
+             :plugImg="emptyPlug"
              :plugText="emptyPageHtml" />
 <ComplexGallery v-else
                 class="mt20"
@@ -19,6 +20,7 @@ import type { IAfishaItem } from "@/interfaces/IEntities";
 
 import ContentPlug from '@/components/layout/ContentPlug.vue';
 import { emptyPageHtml } from '@/assets/static/contentPlugs';
+import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
 
 export default defineComponent({
     components: {
@@ -41,7 +43,8 @@ export default defineComponent({
             afisha,
             isLoading,
             page: 'officialEvents',
-            emptyPageHtml
+            emptyPageHtml,
+            emptyPlug
         };
     },
 });

@@ -1,12 +1,5 @@
 <template>
 <div class="book-nav__sidebar">
-    <div class="book-nav__sidebar__burger"
-         @click="rollSidebar">
-        <div class="book-nav__sidebar__burger__switch-icon"
-             id="burgerMenuOpen">
-            <ListSidebar />
-        </div>
-    </div>
     <ul class="book-nav__level-1">
         <div class="book-nav__wrapper"
              v-for="(point, index) in bookNavigation"
@@ -60,7 +53,6 @@ export default defineComponent({
             required: true,
         },
     },
-    emits: ["rollSidebar"],
     setup(props, { emit }) {
         const openThisPageBlocks = ref<(number | string)[]>([]);
 
@@ -97,7 +89,6 @@ export default defineComponent({
             openThisPageBlocks,
             handlePointClick,
             bookNavigation,
-            rollSidebar: () => emit("rollSidebar"),
         };
     },
 });

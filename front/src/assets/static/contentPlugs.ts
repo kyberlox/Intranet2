@@ -9,3 +9,13 @@
             <br />
             <span>
                 Следите за обновлениями.</span >`;
+
+    export const noWorkers = `
+              <span class="orange">  Новых сотрудников </span><span> пока нет</span>
+            <br />
+            <span>
+                Следите за обновлениями.</span >`;
+
+    export const noBirthdays = `<span>
+                В этот день дней рождений нет. </span>
+            <br />`;

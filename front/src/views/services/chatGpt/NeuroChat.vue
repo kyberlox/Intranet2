@@ -8,7 +8,9 @@
             <div class="neuroChat-content">
                 <div v-if="chatType == 'createImg' && !imageGenerationOn"
                      class="neuroChat__image-gen__plug">
-                    <ContentPlug />
+                    <ContentPlug :plugImg="genOffPlug"
+                                 :plugText="imageGenerationOff"
+                                 :needGptMark="false" />
                 </div>
                 <div v-else-if="chatDataToSend.length">
                     <div class="neuroChat__messages__wrapper"
@@ -104,6 +106,8 @@ import type { INeuroChat } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
 import { useBase64 } from '@vueuse/core'
 import ContentPlug from '@/components/layout/ContentPlug.vue';
+import genOffPlug from '@/assets/imgs/plugs/contentPlugGenOff.jpg';
+import { imageGenerationOff } from '@/assets/static/contentPlugs';
 export type IChatType = "textChat" | "createImg";
 
 interface IUploadFile {
@@ -304,6 +308,8 @@ export default defineComponent({
             fileBase64,
             imageGenerationOn,
             firstMessage,
+            genOffPlug,
+            imageGenerationOff,
             handleChatTypeChange,
             parseMarkdown,
             sendMsg,

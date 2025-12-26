@@ -6,7 +6,7 @@
     </div>
     <div class="empty-page-plug__img__wrapper">
         <img class="empty-page-plug__img"
-             :src=plugImage>
+             :src=plugImg>
         <span class="empty-page-plug__img__mark"
               v-if="needGptMark">
             *изображение сгенерировано сервисом
@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import plugImage from '@/assets/imgs/plugs/empty.jpg'
 
 export default defineComponent({
     props: {
@@ -27,13 +26,16 @@ export default defineComponent({
         },
         plugText: {
             type: String,
+        },
+        plugImg: {
+            type: String,
+            required: true
         }
     },
     setup(props) {
         const currentPlug = ref(props.plugText);
 
         return {
-            plugImage,
             currentPlug
         }
     }

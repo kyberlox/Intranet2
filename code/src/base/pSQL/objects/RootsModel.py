@@ -322,7 +322,7 @@ class RootsModel:
                 # stmt = select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_uuid)
                 # res = await session.execute(stmt)
                 # existing_access = res.scalar_one_or_none()
-                if existing_access.root_token["GPT_gen_access"] == False:
+                if user.root_token["GPT_gen_access"] == False:
                     continue
                 stmt = select(self.User.name, self.User.second_name, self.User.last_name, self.User.photo_file_id).where(self.User.id == user.user_uuid)
                 res = await session.execute(stmt)

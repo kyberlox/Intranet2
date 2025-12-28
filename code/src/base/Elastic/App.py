@@ -516,6 +516,7 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                     art_info['coincident'] = res_info['highlight']
                 if "preview_photo" in res_info and res_info["preview_photo"]:
                     art_info['image'] = res_info["preview_photo"]
+                    
                 articles.append(art_info)
 
     # Формируем результат

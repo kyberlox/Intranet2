@@ -2285,7 +2285,7 @@ class Article:
 
                     # data_list.append(data_value) # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(data_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(data_list, key=lambda x: x[3], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -2476,7 +2476,7 @@ class Article:
                         values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
                     date_list.append(date_value)  # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[0], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
 
             corpevents = {
                 'id': 51,

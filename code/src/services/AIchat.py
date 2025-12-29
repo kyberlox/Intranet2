@@ -14,8 +14,8 @@ import requests
 
 import httpx
 
-app = FastAPI()
-#ai_router = APIRouter(prefix="/ai", tags=["GPT"])
+
+ai_router = APIRouter(prefix="/ai", tags=["GPT"])
 
 # Базовый URL целевого сервера
 TARGET_BASE_URL = "https://gpt.emk.ru"
@@ -71,7 +71,7 @@ async def get_current_user(request: Request):
     return {"id": user_id, "session_id": session_id}
 
 
-@app.api_route("/proxy/{path:path}", methods=["POST", "GET", "PATCH"])
+@ai_router("/proxy/{path:path}", methods=["POST", "GET", "PATCH"])
 async def proxy_request(
     path: str,
     request: Request,

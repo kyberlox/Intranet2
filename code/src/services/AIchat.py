@@ -107,7 +107,6 @@ async def proxy_request(
             value=current_user["user_id"],
             max_age=int(AuthService().session_ttl.total_seconds())
         )
-        # headers["Authorization"] = f"Bearer {target_token}"
         
         # Определяем Content-Type
         content_type = request.headers.get("content-type", "")

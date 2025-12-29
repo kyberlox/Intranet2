@@ -14,7 +14,7 @@ import requests
 
 import httpx
 
-ai_router = APIRouter(prefix="/ai", tags=["AI"])
+ai_router = APIRouter(prefix="/ai", tags=["чат GPT"])
 
 # Базовый URL целевого сервера
 TARGET_BASE_URL = "https://gpt.emk.ru"

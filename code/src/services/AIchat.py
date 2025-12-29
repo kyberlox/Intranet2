@@ -71,7 +71,7 @@ async def get_current_user(request: Request):
     return {"id": user_id, "session_id": session_id}
 
 
-@app.api_route("/api/gpt/{path:path}", methods=["POST", "GET", "PATCH"])
+@ai_router.api_route("/api/gpt/{path:path}", methods=["POST", "GET", "PATCH"])
 async def proxy_request(
     path: str,
     request: Request,

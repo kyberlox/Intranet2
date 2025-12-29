@@ -7,7 +7,7 @@
          :key="gazette.id">
         <figure>
             <div class="gazette-image img-fluid img-thumbnail"
-                 :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
+                 :style="{ 'background-image': `url(${gazette.indirect_data.preview_file_url})` }"></div>
         </figure>
         <div>{{ gazette.name }}</div>
     </div>
@@ -34,7 +34,7 @@ interface IGazette {
     indirect_data: {
         pdf: string,
         year: string,
-        photo_file_url: string,
+        preview_file_url: string,
     },
 }
 

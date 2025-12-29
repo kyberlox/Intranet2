@@ -17,5 +17,5 @@
                 Следите за обновлениями.</span >`;
 
     export const noBirthdays = `<span>
-                В этот день дней рождений нет. </span>
+           В этот день именинников нет.</span><br/> <span class="orange">Посмотрите другие дни!</span>
             <br />`;

@@ -95,7 +95,18 @@ async def proxy_request(
         
         # Добавляем заголовки авторизации для целевого сервера
         # Здесь можно добавить токен или другую авторизацию
-        headers["X-User-Id"] = current_user["id"]
+        response.set_cookie(
+            key="session_id",
+            value=current_user["session_id"],
+            max_age=int(AuthService().session_ttl.total_seconds())
+        )
+
+        # Устанавливаем session_id в куки
+        response.set_cookie(
+            key="user_id",
+            value=current_user["user_id"],
+            max_age=int(AuthService().session_ttl.total_seconds())
+        )
         # headers["Authorization"] = f"Bearer {target_token}"
         
         # Определяем Content-Type

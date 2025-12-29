@@ -37,8 +37,8 @@ class AuthService:
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
-        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.6942c425a760a9.02715487")
-        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "IbJibGiElhqSaem40Z6DWA6TJOI5KYsvYG9O9xnYJxC5EOuY4T")
+        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
+        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
         self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
         
@@ -63,7 +63,8 @@ class AuthService:
             "state": state
         }
         
-        auth_url = f"{self.bitrix_domain}/oauth/authorize/"
+        #auth_url = f"{self.bitrix_domain}/oauth/authorize/"
+        autt_url = f"{self.bitrix_domain}/intranet/rest/authuser.php"
         return f"{auth_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
 
     async def exchange_code_for_tokens(self, code: str) -> Optional[Dict[str, Any]]:

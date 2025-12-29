@@ -36,5 +36,7 @@ class GPT:
     def __init__(self ):
         self.token = "0WnS5hZAYRDpVP7NMTl^n8@XRxYEO4lR"
     
-    def send_msg(self, messages):
+    def send_to_gpt(self, messages):
+        #проверить доступ
+        #проксировать запросы
         pass

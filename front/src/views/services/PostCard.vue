@@ -120,7 +120,7 @@ export default defineComponent({
         const msgSender = computed(() => userData.getUser.email)
         const msgTheme = ref<string>();
         const msgReciever = ref<string>();
-        const msgText = ref<string>();
+        const msgText = ref<string>('');
         const isLoading = ref(false);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
@@ -152,7 +152,7 @@ export default defineComponent({
         const sendMsg = () => {
             isLoading.value = true;
             if (!msgSender.value || !msgReciever.value || !imageInMsg.value) return;
-            const mailText = msgText.value ? createMail(msgText.value, signature.value) : '';
+            const mailText = createMail(msgText.value, signature.value);
             const mailTheme = msgTheme.value ? msgTheme.value : '';
             const body = {
                 "sender": user.value.email,

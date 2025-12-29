@@ -41,7 +41,8 @@
                     {{ firstMessage }}
                 </div>
             </div>
-            <div class="neuroChat__input-textarea__wrapper">
+            <div v-if="imageGenerationOn || chatType == 'textChat'"
+                 class="neuroChat__input-textarea__wrapper">
                 <div class="neuroChat__input-textarea">
                     <label>Введите сообщение</label>
                     <div class="neuroChat__input-container">
@@ -94,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, shallowRef } from 'vue';
+import { defineComponent, ref, watch, shallowRef, computed } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import NeuroChatSidebar from './components/NeuroChatSidebar.vue';
 import Api from '@/utils/Api';
@@ -108,6 +109,7 @@ import { useBase64 } from '@vueuse/core'
 import ContentPlug from '@/components/layout/ContentPlug.vue';
 import genOffPlug from '@/assets/imgs/plugs/contentPlugGenOff.jpg';
 import { imageGenerationOff } from '@/assets/static/contentPlugs';
+import { useUserData } from '@/stores/userData';
 export type IChatType = "textChat" | "createImg";
 
 interface IUploadFile {
@@ -124,7 +126,13 @@ export default defineComponent({
         AddFileIcon
     },
     setup() {
-        const imageGenerationOn = false;
+        const userGptRoots = computed(() => useUserData().getGptRoot);
+        const imageGenerationOn = ref(true);
+
+        watch((userGptRoots), (newVal) => {
+            imageGenerationOn.value = newVal;
+        }, { immediate: true, deep: true })
+
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const filesToUpload = ref<IUploadFile[]>([]);

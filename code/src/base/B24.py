@@ -30,7 +30,6 @@ class B24:
     #     # response_type=code&
     #     # state=test_1765268095&
     #     # scope=user'
-
     #     result = requests.get(url)
     #     return result.text
 

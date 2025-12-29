@@ -64,7 +64,8 @@ class SendEmail:
             msg = MIMEMultipart()
             msg["From"] = self.sender
             msg["To"] = self.reciever
-            msg['Subject'] = self.title
+            if self.title != '':
+                msg['Subject'] = self.title
 
             content = self.html_content#['html_content']
             

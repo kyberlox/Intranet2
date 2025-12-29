@@ -35,7 +35,7 @@ from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
 from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
-from src.services.AIchat import ai_router
+#from src.services.AIchat import ai_router
 
 from src.services.LogsMaker import LogsMaker
 
@@ -87,7 +87,7 @@ app.include_router(b24_router, prefix="/api")
 app.include_router(idea_router, prefix="/api")
 app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
-app.include_router(ai_router, prefix="/api")
+#app.include_router(ai_router, prefix="/api")
 
 app.include_router(peer_router, prefix="/api")
 app.include_router(roots_router, prefix="/api")

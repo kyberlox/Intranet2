@@ -152,8 +152,6 @@ export default defineComponent({
 
         const sendMsg = () => {
             isLoading.value = true;
-            console.log(!msgSender.value || !msgReciever.value || !imageInMsg.value);
-
             if (!msgSender.value || !msgReciever.value || !imageInMsg.value) return;
             const mailText = msgText.value ? createMail(msgText.value, signature.value) : '';
             const mailTheme = msgTheme.value ? msgTheme.value : '';

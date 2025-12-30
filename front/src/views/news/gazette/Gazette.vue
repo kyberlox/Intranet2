@@ -27,6 +27,7 @@ import { ref, defineComponent, onMounted, type Ref } from "vue";
 import PdfViewerModal from "@/components/tools/modal/PdfViewerModal.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
+import type { IBXFileType } from "@/interfaces/IEntities";
 
 interface IGazette {
     id: number,
@@ -35,6 +36,7 @@ interface IGazette {
         pdf: string,
         year: string,
         photo_file_url: string,
+        documentation: IBXFileType[]
     },
 }
 

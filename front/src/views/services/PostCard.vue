@@ -16,8 +16,7 @@
                 </select>
             </div>
 
-            <VForm @submit="sendMsg"
-                   class="postcard__form">
+            <VForm class="postcard__form">
                 <div class="postcard__form-group">
                     <label>От</label>
                     <input type="email"
@@ -72,7 +71,8 @@
                 </div>
 
                 <div class="postcard__form-group">
-                    <button class="submit-button postcard__form-group__submit-button">
+                    <button @click="sendMsg"
+                            class="submit-button postcard__form-group__submit-button">
                         <Loader v-if="isLoading"
                                 class="neuroChat__send-button__loader" />
                         Отправить

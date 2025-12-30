@@ -14,7 +14,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <object :data='activeGazete.indirect_data.pdf'></object>
+                <object :data='activeGazete.indirect_data?.documentation[0]?.file_url'></object>
             </div>
             <div class="modal-footer">
             </div>

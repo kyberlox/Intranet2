@@ -16,7 +16,8 @@
                 </select>
             </div>
 
-            <VForm class="postcard__form">
+            <VForm @submit="''"
+                   class="postcard__form">
                 <div class="postcard__form-group">
                     <label>От</label>
                     <input type="email"
@@ -69,16 +70,16 @@
                               :rows="textAreaRowsToContent(signature)"
                               class="postcard__signature"></textarea>
                 </div>
-
-                <div class="postcard__form-group">
-                    <button @click="sendMsg"
-                            class="submit-button postcard__form-group__submit-button">
-                        <Loader v-if="isLoading"
-                                class="neuroChat__send-button__loader" />
-                        Отправить
-                    </button>
-                </div>
             </VForm>
+
+            <div class="postcard__form-group">
+                <button @click="sendMsg"
+                        class="submit-button postcard__form-group__submit-button">
+                    <Loader v-if="isLoading"
+                            class="neuroChat__send-button__loader" />
+                    Отправить
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -151,6 +152,8 @@ export default defineComponent({
 
         const sendMsg = () => {
             isLoading.value = true;
+            console.log(!msgSender.value || !msgReciever.value || !imageInMsg.value);
+
             if (!msgSender.value || !msgReciever.value || !imageInMsg.value) return;
             const mailText = msgText.value ? createMail(msgText.value, signature.value) : '';
             const mailTheme = msgTheme.value ? msgTheme.value : '';

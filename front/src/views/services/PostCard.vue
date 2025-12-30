@@ -147,7 +147,9 @@ export default defineComponent({
 
         const changeMsgCardIndex = async (newIndex: number) => {
             await nextTick()
-            imageInMsg.value = currentSlides.value[newIndex].file_url
+            console.log(currentSlides.value);
+
+            imageInMsg.value = currentSlides.value[newIndex]?.file_url
         }
 
         const sendMsg = () => {

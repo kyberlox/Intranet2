@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 interface IAdminSections {
-    id: number,
+    id: number | string,
     name: string,
 }
 

@@ -514,8 +514,7 @@ def search_everywhere(key_word):  # , size_res: Optional[int] = 40
                 # Добавляем highlight если есть
                 if "highlight" in res_info:
                     art_info['coincident'] = res_info['highlight']
-                if "preview_photo" in res_info and res_info["preview_photo"]:
-                    art_info['image'] = res_info["preview_photo"]
+                art_info['image'] = res_info["_source"]["preview_photo"] if "preview_photo" in res_info["_source"].keys() else None
                     
                 articles.append(art_info)
 

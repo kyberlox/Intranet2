@@ -7,9 +7,9 @@
          :key="gazette.id">
         <figure>
             <div class="gazette-image img-fluid img-thumbnail"
-                 :style="{ 'background-image': `url(${gazette.indirect_data.preview_file_url})` }"></div>
+                 :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
         </figure>
-        <div>{{ gazette.name }}</div>
+        <div><span>{{ gazette.name }}</span></div>
     </div>
 </div>
 <Transition name="modal">
@@ -27,6 +27,7 @@ import { ref, defineComponent, onMounted, type Ref } from "vue";
 import PdfViewerModal from "@/components/tools/modal/PdfViewerModal.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
+import type { IBXFileType } from "@/interfaces/IEntities";
 
 interface IGazette {
     id: number,
@@ -34,7 +35,8 @@ interface IGazette {
     indirect_data: {
         pdf: string,
         year: string,
-        preview_file_url: string,
+        photo_file_url: string,
+        documentation: IBXFileType[]
     },
 }
 

@@ -804,6 +804,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     response.set_cookie(
         key="token",
         value=session_data["session_id"],
+        domain=".emk.ru",
         max_age=int(AuthService().session_ttl.total_seconds())
     )
 

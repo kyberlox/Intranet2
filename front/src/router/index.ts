@@ -262,7 +262,7 @@ const router = createRouter({
       path: '/services/selectionReg',
       name: 'selectionReg',
       beforeEnter: (to, from, next) => {
-        window.open('https://intranet.emk.ru/api/auth_router/regconf', '_blank')
+        window.open('http://intranet.emk.org.ru/api/auth_router/regconf', '_blank')
         next(false)
       },
       redirect: '',

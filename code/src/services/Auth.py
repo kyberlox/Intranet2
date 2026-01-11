@@ -802,7 +802,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     # Устанавливаем session_id в куки
     response.set_cookie(
-        key="session_id",
+        key="token",
         value=session_data["session_id"],
         max_age=int(AuthService().session_ttl.total_seconds())
     )

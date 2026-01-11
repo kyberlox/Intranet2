@@ -731,6 +731,7 @@ async def check_session(session_data: Dict[str, Any] = Depends(get_current_sessi
     }
 
 
+
 @auth_router.post("/refresh", tags=["Авторизация"])
 async def refresh_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())):
     """Принудительное обновление сессии"""

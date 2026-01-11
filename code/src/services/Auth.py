@@ -791,8 +791,9 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
     #     'department': session_data['user_info']['UF_USR_1696592324977']
     # }
-    
-    res = requests.post(url='https://regconf.emk.ru/api/auth', data=session_data["session_id"], headers={'Content-Type': 'text/plain'})
+    cookies = { 'session_id': session_data["session_id"]}
+    # res = requests.post(url='https://regconf.emk.ru/api/auth', data=session_data["session_id"], headers={'Content-Type': 'text/plain'})
+    res = requests.post(url='https://regconf.emk.ru/api/auth', cookies=cookies)
     token = res.json()
     print(token, 'токен который получаем от конфигуратора')
     redirect_url = f"https://regconf.emk.ru/"

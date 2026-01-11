@@ -16,7 +16,7 @@
                 </select>
             </div>
 
-            <VForm @submit="sendMsg"
+            <VForm @submit="''"
                    class="postcard__form">
                 <div class="postcard__form-group">
                     <label>От</label>
@@ -70,15 +70,16 @@
                               :rows="textAreaRowsToContent(signature)"
                               class="postcard__signature"></textarea>
                 </div>
-
-                <div class="postcard__form-group">
-                    <button class="submit-button postcard__form-group__submit-button">
-                        <Loader v-if="isLoading"
-                                class="neuroChat__send-button__loader" />
-                        Отправить
-                    </button>
-                </div>
             </VForm>
+
+            <div class="postcard__form-group">
+                <button @click="sendMsg"
+                        class="submit-button postcard__form-group__submit-button">
+                    <Loader v-if="isLoading"
+                            class="neuroChat__send-button__loader" />
+                    Отправить
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -146,7 +147,7 @@ export default defineComponent({
 
         const changeMsgCardIndex = async (newIndex: number) => {
             await nextTick()
-            imageInMsg.value = currentSlides.value[newIndex].file_url
+            imageInMsg.value = currentSlides.value[newIndex]?.file_url
         }
 
         const sendMsg = () => {

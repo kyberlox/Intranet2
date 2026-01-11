@@ -20,6 +20,10 @@
                        @slideNext="slideNext"
                        @slidePrev="slidePrev" />
     </div>
+    <ContentPlug :needGptMark="true"
+                 :plugText="noWorkers"
+                 :plugImg="workersPlug"
+                 v-else />
 </div>
 </template>
 
@@ -31,8 +35,11 @@ import { useSwiperconf } from '@/composables/useSwiperConf';
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
 import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
+import { noWorkers } from '@/assets/static/contentPlugs';
 import "swiper/css";
 import "swiper/css/navigation";
+import ContentPlug from '@/components/layout/ContentPlug.vue';
+import workersPlug from '@/assets/imgs/plugs/contentPlugWorkers.jpg';
 
 export default defineComponent({
     name: "newWorkers",
@@ -40,7 +47,8 @@ export default defineComponent({
         SwiperButtons,
         VerticalSliderSlide,
         Swiper,
-        SwiperSlide
+        SwiperSlide,
+        ContentPlug
     },
     setup() {
         const newWorkers = ref([]);
@@ -61,6 +69,8 @@ export default defineComponent({
             sliderConfig: swiperConf.sliderConfig,
             swiperInstance: swiperConf.swiperInstance,
             isBeginning: swiperConf.isBeginning,
+            noWorkers,
+            workersPlug
         }
     }
 })

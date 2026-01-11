@@ -1,9 +1,7 @@
 <template>
 <div class="row flex-nowrap book-pages__wrapper mt20">
-    <div class="col-sm-3 book-pages"
-         :class="{ 'book-pages_rolled': rollSidebar }">
-        <SideBarNavigation :id="Number(currentPage)"
-                           @rollSidebar="rollSidebar = !rollSidebar" />
+    <div class="col-sm-3 book-pages">
+        <SideBarNavigation :id="Number(currentPage)" />
     </div>
     <div class="col-sm-9 book-content"
          v-if="Object.keys(pages).length">
@@ -49,7 +47,6 @@ export default defineComponent({
         const router = useRouter();
 
         const currentPage = ref(props.id ?? 0);
-        const rollSidebar = ref(false);
         const pages = shallowRef<PagesRecord>({});
 
         for (let index = 0; index < 21; index++) {
@@ -68,7 +65,6 @@ export default defineComponent({
 
         return {
             navigate,
-            rollSidebar,
             pages,
             currentPage,
         };

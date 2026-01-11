@@ -37,8 +37,8 @@ class AuthService:
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
-        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.6942c425a760a9.02715487")
-        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "IbJibGiElhqSaem40Z6DWA6TJOI5KYsvYG9O9xnYJxC5EOuY4T")
+        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
+        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
         self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
         
@@ -63,7 +63,8 @@ class AuthService:
             "state": state
         }
         
-        auth_url = f"{self.bitrix_domain}/oauth/authorize/"
+        #auth_url = f"{self.bitrix_domain}/oauth/authorize/"
+        autt_url = f"{self.bitrix_domain}/intranet/rest/authuser.php"
         return f"{auth_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
 
     async def exchange_code_for_tokens(self, code: str) -> Optional[Dict[str, Any]]:
@@ -730,6 +731,7 @@ async def check_session(session_data: Dict[str, Any] = Depends(get_current_sessi
     }
 
 
+
 @auth_router.post("/refresh", tags=["Авторизация"])
 async def refresh_session(request: Request, auth_service: AuthService = Depends(lambda: AuthService())):
     """Принудительное обновление сессии"""
@@ -784,24 +786,26 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
-    # получаю данные пользователя
-    user_info = {
-        'uuid': session_data['user_info']['XML_ID'][3:],
-        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
-        'department': session_data['user_info']['UF_USR_1696592324977']
-    }
-    
-    res = requests.post(url='https://regconf.emk.ru/api/auth', json=user_info)
-    token = res.json()
-
+    # # получаю данные пользователя
+    # user_info = {
+    #     'uuid': session_data['user_info']['XML_ID'][3:],
+    #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+    #     'department': session_data['user_info']['UF_USR_1696592324977']
+    # }
+    cookies = { 'session_id': session_data["session_id"]}
+    # res = requests.post(url='https://regconf.emk.ru/api/auth', data=session_data["session_id"], headers={'Content-Type': 'text/plain'})
+    res = requests.post(url='https://regconf.emk.ru/api/auth', cookies=cookies)
+    # token = res.json()
+    # print(token, 'токен который получаем от конфигуратора')
     redirect_url = f"https://regconf.emk.ru/"
      # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 
     # Устанавливаем session_id в куки
     response.set_cookie(
-        key="session_id",
-        value=token["token"],
+        key="token",
+        value=session_data["session_id"],
+        domain=".emk.ru",
         max_age=int(AuthService().session_ttl.total_seconds())
     )
 

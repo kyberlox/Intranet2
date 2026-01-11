@@ -82,7 +82,6 @@ export default defineComponent({
 
         const editorsInit = () => {
             isLoading.value = true;
-
             if (activeSection.value.id == 'gpt') {
                 Api.get('roots/get_gpt_gen_licenses')
                     .then((data) => activeSectionEditors.value = data)
@@ -95,13 +94,24 @@ export default defineComponent({
         }
 
         const addRootToUser = (id: number) => {
-            Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
-                .then(() => editorsInit())
+            if (activeSection.value.id == 'gpt') {
+                Api.put('roots/give_gpt_gen_license', [id])
+                    .then(() => editorsInit())
+                    .finally(() => isLoading.value = false)
+            }
+            else
+                Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
+                    .then(() => editorsInit())
         }
 
         const removeUsersRoot = (id: number) => {
-            Api.delete(`roots/delete_editor_moder/${id}/${activeSection.value.id}`)
-                .then(() => editorsInit())
+            if (activeSection.value.id == 'gpt') {
+                Api.delete(`/roots/stop_gpt_gen_license/${id}`)
+                    .finally(() => editorsInit())
+            }
+            else
+                Api.delete(`roots/delete_editor_moder/${id}/${activeSection.value.id}`)
+                    .then(() => editorsInit())
         }
 
         return {

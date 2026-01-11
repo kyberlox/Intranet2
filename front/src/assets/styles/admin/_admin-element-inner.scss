@@ -350,3 +350,7 @@
         }
     }
 }
+
+body:has(.modal__overlay) .main-sidebar {
+    z-index: -1;
+}

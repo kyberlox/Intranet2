@@ -4,7 +4,9 @@
     <div class="flexGallery__card__img-wrapper"
          :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
         <div class="flexGallery__card__img"
-             v-lazy-load="slide.preview_file_url ?? slide.photo_file_url">
+             :key="`${slide.id}-${isDark}`"
+             @mouseenter="console.log(getPreview(slide))"
+             v-lazy-load="getPreview(slide)">
         </div>
     </div>
     <div v-if="slide.name"
@@ -25,9 +27,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, type PropType } from "vue";
+import { defineComponent, type PropType, computed } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IFactoryDataTours, IFactoryDataReports, IBaseEntity } from "@/interfaces/IEntities";
+import { useStyleModeStore } from "@/stores/styleMode";
 
 interface IComplexGalleryCardBasic extends IBaseEntity {
     indirect_data?: {
@@ -55,7 +58,8 @@ export default defineComponent({
             default: undefined
         },
     },
-    setup(props) {
+    setup() {
+        const isDark = computed(() => useStyleModeStore().getDarkMode);
         const checkCardDate = (slide: IComplexGalleryCardBasic) => {
             if (!slide.indirect_data?.date_from) return;
             if (slide.indirect_data.date_to && slide.indirect_data.date_to !== slide.indirect_data.date_from) {
@@ -64,10 +68,23 @@ export default defineComponent({
             else return slide.indirect_data.date_from
         }
 
+        const getPreview = (slide: IComplexGalleryCardBasic) => {
+            if ((slide.id == 6178 || slide.id == 6179) && isDark.value) {
+                console.log(slide.preview_file_url?.replace('.png', '_dark.png'));
+
+                return slide.preview_file_url?.replace('.png', '_dark.png')
+            }
+            else {
+                console.log(slide.preview_file_url);
+                return slide.preview_file_url ?? slide.photo_file_url
+            }
+        }
+
         return {
-            imageUrl: computed(() => props.slide.preview_file_url ?? props.slide.photo_file_url),
             uniqueRoutesHandle,
             checkCardDate,
+            getPreview,
+            isDark
         }
     }
 })

@@ -4,12 +4,15 @@
 /mongodb/data
 /elasticsearch/data
 /redis_data
+/code/vcard_db/
 /code/files_db
 /code/logs
+/nginx
 
 **/__pycache__/
 .env
 .idea
+.gigaide
 *.suo
 *.ntvs*
 *.njsproj
@@ -25,4 +28,3 @@
 
 # dev.ignore
 *.sh
->>>>>>> 546017b8cc6d6efe7b25a43f63f862ece8960d44

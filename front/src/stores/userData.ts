@@ -57,6 +57,7 @@ export const useUserData = defineStore('userData', {
         getIsLogin: (state) => state.isLogin,
         getAuthKey: (state) => state.authKey,
         getUserRoots: (state)=> state.roots,
+        getGptRoot: (state)=> state.roots.GPT_gen_access || state.roots.EditorAdmin ,
         getNeedAdminLink: (state) => Boolean(state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin || (state.roots.EditorModer && state.roots.EditorModer.length)),
         getUser: (state) => state.user,
         getPhoto: (state) => state.user.photo_file_url,

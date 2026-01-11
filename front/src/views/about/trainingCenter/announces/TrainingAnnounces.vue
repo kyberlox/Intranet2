@@ -4,7 +4,8 @@
         Анонс учебных программ
     </div>
     <ContentPlug :needGptMark="true"
-                 :plugText="emptyPageHtml" />
+                 :plugText="emptyPageHtml"
+                 :plugImg="emptyPlug" />
     <!-- <TrainingTable :page="'announces'" /> -->
 </div>
 </template>
@@ -13,6 +14,7 @@
 // import TrainingTable from "../components/TrainingTable.vue";
 import { emptyPageHtml } from '@/assets/static/contentPlugs';
 import ContentPlug from '@/components/layout/ContentPlug.vue';
+import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
 
 import { defineComponent } from "vue";
 export default defineComponent({
@@ -22,7 +24,8 @@ export default defineComponent({
     },
     setup() {
         return {
-            emptyPageHtml
+            emptyPageHtml,
+            emptyPlug
         };
     },
 });

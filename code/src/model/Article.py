@@ -2696,9 +2696,9 @@ class Article:
 
             for i, user in enumerate(data, start=2):
                 user_inf = await User(id=user['id']).search_by_id_all(session)
-
+                if not user_inf:
+                    continue
                 indirect_data = user_inf.get("indirect_data", {})
-
                 if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: ws[
                     f'A{i}'] = f'{user_inf["name"]} {user_inf["last_name"]} {user_inf["second_name"]}'
 
@@ -2707,10 +2707,10 @@ class Article:
                 if "uf_phone_inner" in user_inf: ws[f'D{i}'] = f'{user_inf["uf_phone_inner"]}'
                 if "work_position" in indirect_data:
                     ws[f'E{i}'] = f'{indirect_data["work_position"]}'
-                if "uf_department" in indirect_data and "uf_usr_1696592324977" in indirect_data:
+                if ("uf_department" in indirect_data and isinstance(indirect_data["uf_department"], list)) and ("uf_usr_1696592324977" in indirect_data and isinstance(indirect_data["uf_usr_1696592324977"], list)):
                     ws[f'F{i}'] = ", ".join(indirect_data["uf_usr_1696592324977"]) + "/" + ", ".join(
                         indirect_data["uf_department"])
-                if "uf_usr_1705744824758" in indirect_data:
+                if "uf_usr_1705744824758" in indirect_data and isinstance(indirect_data["uf_usr_1705744824758"], list):
                     ws[f'G{i}'] = " ".join(indirect_data["uf_usr_1705744824758"])
                 if "personal_city" in user_inf: ws[f'H{i}'] = f'{user_inf["personal_city"]}'
 

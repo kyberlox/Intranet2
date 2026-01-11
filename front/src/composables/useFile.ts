@@ -7,28 +7,30 @@ export const useFileUtil = (uploadType: 'images' | 'documentation' | 'videos_nat
 
     const validateFile = (allowedType: Ref<string[]>, file: File) => {
         if (!allowedType.value.includes(file.type)) {
-            return alert('Неподдерживаемый формат файла');
+            alert('Неподдерживаемый формат файла');
+            return false;
         }
-        return true;
+        else if(file.size > 2500000){
+             alert('Размер файла не должен превышать 2.5гб'); 
+             return false;
+        }
+        else
+         return true;
     }
 
     const handleFileSelect = (event: Event) => {
-
         const target = event.target as HTMLInputElement;
         if (target.files) {
             return processFiles(target.files);
         }
     };
 
-    const processFiles = (files: FileList | File[]): string | IFileToUpload[] | IFileToUpload => {
-
+    const processFiles = (files: FileList | File[]): string | IFileToUpload[] | IFileToUpload => {        
         const fileArray = Array.from(files);
         const fileResult: IFileToUpload[] = [];
         fileArray.forEach(file => {
             const validateResult = validateFile(allowedType, file);
-
             if (validateResult == true) {
-
                 const newFile: IFileToUpload = {
                     name: file.name,
                     size: file.size,

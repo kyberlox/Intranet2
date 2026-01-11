@@ -547,8 +547,6 @@ class File:
         
         return files
 
-
-
     async def get_users_photo(self, session):
         #переделать с учетом is_archive
         file_data = await UserFilesModel(id=self.id).find_user_photo_by_id(session)
@@ -565,8 +563,6 @@ class File:
 
             return file_info
 
-
-    
     async def dowload_user_photo(self, url, name):
         # в будущем name исправить на айди фото ( photo_file_id )
         img_path = f"{USER_STORAGE_PATH}/{name}"
@@ -902,7 +898,6 @@ async def add_user_photo(b24_url : str, uuid : str, session: AsyncSession=Depend
 @file_router.delete("/delete_user_photo/{file_id}")
 async def delete_user_photo(file_id: int, session: AsyncSession=Depends(get_async_db)):
     return await File(id=file_id).delete_user_img(session=session)
-
 
 @file_router.post("/change_prev/{art_id}/{file_id}")
 async def change_prev(file_id : int, art_id : int, session: AsyncSession=Depends(get_async_db)):

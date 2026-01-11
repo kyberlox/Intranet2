@@ -785,14 +785,14 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
-    # получаю данные пользователя
-    user_info = {
-        'uuid': session_data['user_info']['XML_ID'][3:],
-        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
-        'department': session_data['user_info']['UF_USR_1696592324977']
-    }
+    # # получаю данные пользователя
+    # user_info = {
+    #     'uuid': session_data['user_info']['XML_ID'][3:],
+    #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+    #     'department': session_data['user_info']['UF_USR_1696592324977']
+    # }
     
-    res = requests.post(url='https://regconf.emk.ru/api/auth', json=user_info)
+    res = requests.post(url='https://regconf.emk.ru/api/auth', data=session_data["session_id"], headers={'Content-Type': 'text/plain'})
     token = res.json()
 
     redirect_url = f"https://regconf.emk.ru/"
@@ -802,7 +802,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # Устанавливаем session_id в куки
     response.set_cookie(
         key="session_id",
-        value=token["token"],
+        value=session_data["session_id"],
         max_age=int(AuthService().session_ttl.total_seconds())
     )
 

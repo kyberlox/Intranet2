@@ -59,7 +59,7 @@ export default defineComponent({
         const currentYear = ref(dateYear - 1);
         const isLoading = ref(false);
         const workersLocations = ref<string[]>([]);
-        const activeLocation = ref<string>('Центральный офис');
+        const activeLocation = ref<string>('ЭМК');
 
         const allTimeAwards: Ref<IWorkerOfTheYear[]> = ref([]);
         const chosenYearAwards: Ref<IWorkerOfTheYear[]> = ref([]);

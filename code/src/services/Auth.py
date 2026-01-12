@@ -64,7 +64,7 @@ class AuthService:
         }
         
         #auth_url = f"{self.bitrix_domain}/oauth/authorize/"
-        autt_url = f"{self.bitrix_domain}/intranet/rest/authuser.php"
+        auth_url = f"{self.bitrix_domain}/intranet/rest/authuser.php"
         return f"{auth_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
 
     async def exchange_code_for_tokens(self, code: str) -> Optional[Dict[str, Any]]:
@@ -777,7 +777,6 @@ async def logout(request: Request, response: Response, auth_service: AuthService
     
     return {"status": "success", "message": "Logged out successfully"}
 
-
 @auth_router.get("/regconf", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
     #проверка на авторизацию
@@ -792,25 +791,28 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
     #     'department': session_data['user_info']['UF_USR_1696592324977']
     # }
-    cookies = { 'session_id': session_data["session_id"]}
-    # res = requests.post(url='https://regconf.emk.ru/api/auth', data=session_data["session_id"], headers={'Content-Type': 'text/plain'})
-    res = requests.post(url='https://regconf.emk.ru/api/auth', cookies=cookies)
-    # token = res.json()
+    # cookies = { 'session_id': session_data["session_id"]}
+    # # res = requests.post(url='https://regconf.emk.ru/api/auth', data=session_data["session_id"], headers={'Content-Type': 'text/plain'})
+    # res = requests.post(url='https://regconf.emk.ru/api/auth', cookies=cookies)
+    # # token = res.json()
     # print(token, 'токен который получаем от конфигуратора')
-    redirect_url = f"https://regconf.emk.ru/"
+    redirect_url = f"https://regconf.emk.ru/{session_data["session_id"]}"
      # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 
     # Устанавливаем session_id в куки
-    response.set_cookie(
-        key="token",
-        value=session_data["session_id"],
-        domain=".emk.ru",
-        max_age=int(AuthService().session_ttl.total_seconds())
-    )
+    # response.set_cookie(
+    #     key="token",
+    #     value=session_data["session_id"],
+    #     domain=".emk.ru",
+    #     max_age=int(AuthService().session_ttl.total_seconds())
+    # )
+    # response.headers['token'] = session_data["session_id"]
 
     return response
-    
+
+
+
 @auth_router.get("/tepconf", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
     #проверка на авторизацию
@@ -841,6 +843,8 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     )
 
     return response
+
+
 
 @auth_router.get("/gpt", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):

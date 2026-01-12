@@ -22,29 +22,30 @@
                     </div>
 
                     <div class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
-                        <div class="navbar-collapse collapse"
-                             :class="{ 'show': isMobileMenuOpen && isMobileScreen }">
+                        <div class="navbar-collapse"
+                             :class="{ 'collapse': isMobileMenuOpen }">
                             <ul class="navbar-nav m-auto">
                                 <li class="nav-item dropdown"
-                                    @mouseleave="handleDropdown('close', point.id)"
-                                    :class="[{ 'dropdown--opened': point.id == activeDrop || isMobileScreen },
+                                    @mouseleave="isMobileScreen ? '' : handleDropdown('close', point.id)"
+                                    @click="isMobileScreen ? handleDropdown(activeDrop == point.id ? 'close' : 'open', point.id) : ''"
+                                    :class="[{ 'dropdown--opened': point.id == activeDrop },
                                     { 'dropdown--mobile': isMobileScreen }]"
                                     v-for="point in mainMenuPoints"
                                     :key="'point' + point.id">
                                     <div class="nav-link nav-link--main-points dropdown-toggle"
                                          :to="{ name: point.href }"
-                                         @mouseenter="handleDropdown('open', point.id)">
+                                         @mouseenter="isMobileScreen ? '' : handleDropdown('open', point.id)">
                                         {{ point.name }}
                                     </div>
-                                    <ul class="dropdown-menu"
-                                        @mouseleave="handleDropdown('close', point.id)">
+                                    <ul class="dropdown-menu">
                                         <div v-for="subpoint in point.subPoints"
                                              :key="'subpoint' + point.name + subpoint.id">
                                             <!-- id письма -->
                                             <li v-if="subpoint.id == 2.8"
                                                 class="dropdown__item">
                                                 <a :href=subpoint.href
-                                                   download>{{ subpoint.name }}</a>
+                                                   download>
+                                                    {{ subpoint.name }}</a>
                                             </li>
                                             <li v-else
                                                 class="dropdown__item"
@@ -55,13 +56,15 @@
                                         </div>
                                     </ul>
                                 </li>
-                                <div>
-                                    <SearchIcon class="navbar-nav__search-icon"
-                                                @click="visibleSearchModal = true" />
+                                <div class="navbar-nav__icon__wrapper">
+                                    <div>
+                                        <SearchIcon class="navbar-nav__search-icon"
+                                                    @click="visibleSearchModal = true" />
+                                    </div>
+                                    <SearchModal :visibleModal=visibleSearchModal
+                                                 @closeSearchModal="visibleSearchModal = false" />
+                                    <LayoutHeaderModeChanger />
                                 </div>
-                                <SearchModal :visibleModal=visibleSearchModal
-                                             @closeSearchModal="visibleSearchModal = false" />
-                                <LayoutHeaderModeChanger />
                             </ul>
                         </div>
                     </div>

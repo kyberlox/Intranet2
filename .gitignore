@@ -7,7 +7,7 @@
 /code/vcard_db/
 /code/files_db
 /code/logs
-#/nginx
+/nginx
 
 **/__pycache__/
 .env

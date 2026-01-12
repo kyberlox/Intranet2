@@ -777,7 +777,6 @@ async def logout(request: Request, response: Response, auth_service: AuthService
     
     return {"status": "success", "message": "Logged out successfully"}
 
-
 @auth_router.get("/regconf", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
     #проверка на авторизацию
@@ -811,7 +810,9 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     response.headers['token'] = session_data["session_id"]
 
     return response
-    
+
+
+
 @auth_router.get("/tepconf", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
     #проверка на авторизацию
@@ -842,6 +843,8 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     )
 
     return response
+
+
 
 @auth_router.get("/gpt", tags=["Авторизация"])
 async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):

@@ -9,18 +9,17 @@
             <div class="img-fluid staff__item-img"
                  v-lazy-load="formatSpacesInImg(item.indirect_data.photo_file_url)">
             </div>
-            <h3 class="staff__item-name">
+            <h3 v-if="item.name"
+                class="staff__item-name">
                 {{ item.name }}
             </h3>
-            <div class="staff__item-position">
+            <div v-if="item.indirect_data.department"
+                 class="staff__item-position">
                 {{ item.indirect_data.department }}
             </div>
-            <div class="staff__item-organisation">
-                {{ item.indirect_data.position }}
-            </div>
-            <div v-if="item.indirect_data.location"
+            <div v-if="item.indirect_data.position"
                  class="staff__item-organisation">
-                {{ item.indirect_data.location }}
+                {{ item.indirect_data.position }}
             </div>
         </div>
     </div>

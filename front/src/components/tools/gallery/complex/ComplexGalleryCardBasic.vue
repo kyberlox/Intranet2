@@ -5,7 +5,6 @@
          :class="{ 'flexGallery__card__img-wrapper--noFullWidthImg': modifiers.includes('noFullWidthImg') }">
         <div class="flexGallery__card__img"
              :key="`${slide.id}-${isDark}`"
-             @mouseenter="console.log(getPreview(slide))"
              v-lazy-load="getPreview(slide)">
         </div>
     </div>
@@ -70,12 +69,9 @@ export default defineComponent({
 
         const getPreview = (slide: IComplexGalleryCardBasic) => {
             if ((slide.id == 6178 || slide.id == 6179) && isDark.value) {
-                console.log(slide.preview_file_url?.replace('.png', '_dark.png'));
-
                 return slide.preview_file_url?.replace('.png', '_dark.png')
             }
             else {
-                console.log(slide.preview_file_url);
                 return slide.preview_file_url ?? slide.photo_file_url
             }
         }

@@ -102,8 +102,6 @@ export default defineComponent({
         })
 
         watch((sections), () => {
-            console.log(sections.value);
-
             if (!sections.value.length) {
                 Api.get(`editor/get_sections_list`)
                     .then((res) => {

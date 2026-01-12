@@ -70,7 +70,7 @@ export default defineComponent({
         const newSections = ref(sections.value);
 
         watch((gptRoot), () => {
-            if (gptRoot.value && activeSection.value) {
+            if (gptRoot.value) {
                 newSections.value.push({ id: 'gpt', name: 'Доступ к gpt' })
             }
         }, { immediate: true, deep: true })

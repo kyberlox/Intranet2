@@ -7,10 +7,12 @@
 /code/vcard_db/
 /code/files_db
 /code/logs
+/nginx
 
 **/__pycache__/
 .env
 .idea
+.gigaide
 *.suo
 *.ntvs*
 *.njsproj

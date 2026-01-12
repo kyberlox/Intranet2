@@ -1167,11 +1167,12 @@ async def get_sections_list(request: Request, session: AsyncSession = Depends(ge
     # user_uuid = 261
     editor_roots = await get_editor_roots(user_uuid, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
-
+    print(editor_roots, 'мои права')
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
+        print('я одмин')
         return await Editor(session=session).get_sections_list()
     elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
-
+        print('я не одмин')
         sections = await Editor(session=session).get_sections_list()
         result = [section for section in sections if section['id'] in editor_roots["EditorModer"]]
         return result

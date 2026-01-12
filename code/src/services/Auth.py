@@ -797,7 +797,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     res = requests.post(url='https://regconf.emk.ru/api/auth', cookies=cookies)
     # token = res.json()
     # print(token, 'токен который получаем от конфигуратора')
-    redirect_url = f"https://regconf.emk.ru/{session_data["session_id"]}"
+    redirect_url = f"https://regconf.emk.ru/"
      # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 
@@ -808,6 +808,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         domain=".emk.ru",
         max_age=int(AuthService().session_ttl.total_seconds())
     )
+    response.headers['token'] = session_data["session_id"]
 
     return response
     

@@ -86,7 +86,7 @@ export default defineComponent({
         const sections = computed(() => useAdminData().getSections);
         const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
 
-        const fullNavigation = ref<NavGroup[]>(
+        const baseNavigation = ref<NavGroup[]>(
             staticAdminSections.map((g) => ({
                 id: g.id,
                 title: g.title,
@@ -97,8 +97,9 @@ export default defineComponent({
         // Проверка на наличие настройки прав по gpt в общем списке
         watch((adminRoot), () => {
             if (!adminRoot.value) {
-                fullNavigation.value = fullNavigation.value.filter((e) => e.id !== 4)
+                fullNavigation.value = baseNavigation.value.filter((e) => e.id !== 4)
             }
+            else fullNavigation.value = baseNavigation.value
         })
 
         watch((sections), () => {

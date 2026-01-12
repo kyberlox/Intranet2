@@ -64,7 +64,7 @@ class AuthService:
         }
         
         #auth_url = f"{self.bitrix_domain}/oauth/authorize/"
-        autt_url = f"{self.bitrix_domain}/intranet/rest/authuser.php"
+        auth_url = f"{self.bitrix_domain}/intranet/rest/authuser.php"
         return f"{auth_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
 
     async def exchange_code_for_tokens(self, code: str) -> Optional[Dict[str, Any]]:

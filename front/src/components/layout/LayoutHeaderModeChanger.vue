@@ -1,12 +1,10 @@
 <template>
-<div>
-    <NightIcon v-if="!theme"
-               class="navbar-nav__search-icon"
-               @click="toggleDarkMode(true)" />
-    <DayIcon v-else
-             class="navbar-nav__search-icon"
-             @click="toggleDarkMode(false)" />
-</div>
+<NightIcon v-if="!theme"
+           class="navbar-nav__search-icon"
+           @click="toggleDarkMode(true)" />
+<DayIcon v-else
+         class="navbar-nav__search-icon"
+         @click="toggleDarkMode(false)" />
 </template>
 
 <script lang="ts">
@@ -36,7 +34,7 @@ export default defineComponent({
             localStorage.setItem('darkMode', String(value));
             styleMode.setDarkMode(value);
         }
-        
+
         return {
             toggleDarkMode,
             theme: computed(() => styleMode.getDarkMode)

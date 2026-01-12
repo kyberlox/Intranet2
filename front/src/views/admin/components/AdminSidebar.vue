@@ -1,142 +1,117 @@
 <template>
 <div class="admin-panel">
     <div class="admin-panel__sidebar">
-        <div v-if="needDefaultNav"
-             class="admin-panel__header">
-            <h3 class="admin-panel__title">Панель редактора</h3>
-        </div>
-
-        <nav v-for="(item, index) in filterNavigationByFeatureFlags(fullNavigation)"
-             :key="'nav' + index"
-             class="admin-panel__nav">
-            <h6 class="admin-panel__nav-title">
-                {{ item.title }}
-            </h6>
-            <ul v-if="item.nav.length"
-                class="admin-panel__nav-list"
-                :key="sections.length">
-                <li v-for="(section, index) in item.nav"
-                    :key="'section' + index"
-                    class="admin-panel__nav-item">
-                    <RouterLink :to="defineRoute(item.id, section)"
-                                class="admin-panel__nav-link"
-                                active-class="admin-panel__nav-link--active">
-                        <div class="admin-panel__nav-icon">
-                            <NavArrow />
+        <div class="visibility-editor__wrapper">
+            <AdminSidebar :needDefaultNav="false">
+                <div class="admin-panel__header">
+                    <h3 class="admin-panel__title">
+                        Настройка прав пользователей
+                    </h3>
+                </div>
+                <ul v-if="newSections.length"
+                    class="admin-panel__nav-list">
+                    <li v-for="(section, index) in newSections"
+                        :key="'section' + index"
+                        class="admin-panel__nav-item"
+                        @click="activeSection = section">
+                        <div class="admin-panel__nav-link"
+                             :class="{ 'admin-panel__nav-link--active': (activeSection && 'name' in activeSection && section.name == activeSection.name) }">
+                            <div class="admin-panel__nav-icon">
+                                <NavArrow />
+                            </div>
+                            <span class="admin-panel__nav-text">
+                                {{ section.name }}
+                            </span>
                         </div>
-                        <span class="admin-panel__nav-text">
-                            {{ section.name }}
-                        </span>
-                    </RouterLink>
-                </li>
-            </ul>
-        </nav>
-
-        <slot>
-        </slot>
+                    </li>
+                </ul>
+            </AdminSidebar>
+        </div>
     </div>
-    <div class="admin-panel__content ">
-        <!-- <RouterView /> -->
+    <div v-if="activeSection && !isLoading"
+         class="admin-panel__content admin-panel__content__add-user-btn">
+        <AdminEditUserSearch @userPicked="addRootToUser" />
+        <AdminUsersList :users="activeSectionEditors"
+                        @removeUser="(id: number) => removeUsersRoot(id)" />
+    </div>
+    <div v-else-if="!activeSection && isLoading"
+         class="admin-panel__content admin-panel__content__add-user-btn">
+        <Loader class="contest__page__loader" />
     </div>
 </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
-import { useUserData } from '@/stores/userData';
-import { staticAdminSections } from '@/assets/static/adminSections';
-import Api from '@/utils/Api';
-import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
+import { defineComponent, computed, ref, watch } from 'vue';
 import { useAdminData } from '@/stores/adminData';
-import { featureFlags } from '@/assets/static/featureFlags';
-
-type AdminSection = {
-    name: string;
-    id: string | number;
-    parent_id?: number;
-    sectionHref?: string;
-};
-
-type NavGroup = {
-    id: number;
-    title: string;
-    nav: AdminSection[];
-};
+import AdminSidebar from '../components/AdminSidebar.vue';
+import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
+import Api from '@/utils/Api';
+import AdminEditUserSearch from '../components/inputFields/AdminEditUserSearch.vue';
+import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
+import Loader from '@/components/layout/Loader.vue';
+import { useUserData } from '@/stores/userData';
 
 export default defineComponent({
-    name: 'AdminSideBar',
-    props: {
-        needDefaultNav: {
-            type: Boolean,
-            default: () => true,
-        },
-        activeId: {
-            type: Number
-        },
-        type: {
-            type: String
-        }
-    },
-    emits: ['areaClicked', 'addNewArea', 'deleteArea'],
+    name: 'rootsEditPanel',
     components: {
-        NavArrow
+        AdminSidebar,
+        NavArrow,
+        AdminEditUserSearch,
+        AdminUsersList,
+        Loader
     },
-    setup(props) {
-        const myId = computed(() => useUserData().getMyId);
-        const sections = computed(() => useAdminData().getSections);
-        const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
-        const fullNavigation = ref([]);
+    setup() {
+        const sections = computed(() => useAdminData().getSections)
+        const activeSection = ref();
+        const activeSectionEditors = ref([]);
+        const isLoading = ref(false);
+        const gptRoot = computed(() => useUserData().getUserRoots.GPT_gen_access || useUserData().getUserRoots.EditorAdmin);
+        const newSections = ref(sections.value);
 
-        const baseNavigation = ref<NavGroup[]>(
-            staticAdminSections.map((g) => ({
-                id: g.id,
-                title: g.title,
-                nav: [...g.nav] as AdminSection[],
-            }))
-        );
-
-        // Проверка на наличие настройки прав по gpt в общем списке
-        watch((adminRoot), () => {
-            if (!adminRoot.value) {
-                fullNavigation.value = baseNavigation.value.filter((e) => e.id !== 4)
+        watch((gptRoot), () => {
+            if (gptRoot.value && activeSection.value) {
+                newSections.value.push({ id: 'gpt', name: 'Доступ к gpt' })
             }
-            else fullNavigation.value = baseNavigation.value
-        })
-
-        watch((sections), () => {
-            if (!sections.value.length) {
-                Api.get(`editor/get_sections_list`)
-                    .then((res) => {
-                        useAdminData().setSections(res);
-                    })
-            };
-            if (props.needDefaultNav) {
-                fullNavigation.value[0].nav.push(...sections.value)
-
-            } else fullNavigation.value = fullNavigation.value.filter((e) => e.id == 0);
+            else newSections.value = sections.value;
         }, { immediate: true, deep: true })
 
-        const defineRoute = (typeId: number, section: { id: string | number, name: string }) => {
-            if (typeId == 1) {
-                return {
-                    name: 'adminBlockInner', params: { id: String(section.id) }
-                }
-            } else
-                return {
-                    name: String(section.id)
-                }
+        watch((activeSection), () => {
+            if (!activeSection.value) return
+            editorsInit()
+        }, { immediate: true, deep: true })
+
+        const editorsInit = () => {
+            isLoading.value = true;
+
+            if (activeSection.value.id == 'gpt') {
+                Api.get('roots/get_gpt_gen_licenses')
+                    .then((data) => activeSectionEditors.value = data)
+                    .finally(() => isLoading.value = false)
+            }
+            else
+                Api.get(`roots/get_editors_list/${activeSection.value.id}`)
+                    .then((data) => activeSectionEditors.value = data)
+                    .finally(() => isLoading.value = false)
         }
 
-        const filterNavigationByFeatureFlags = (fullNavigation: NavGroup[]) => {
-            return fullNavigation.filter((e: NavGroup) => (featureFlags.visibleArea == (e.title == 'Администрирование')) && (featureFlags.pointsSystem == (e.title == 'Бальная система')))
+        const addRootToUser = (id: number) => {
+            Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
+                .then(() => editorsInit())
+        }
+
+        const removeUsersRoot = (id: number) => {
+            Api.delete(`roots/delete_editor_moder/${id}/${activeSection.value.id}`)
+                .then(() => editorsInit())
         }
 
         return {
-            myId,
-            sections,
-            fullNavigation,
-            defineRoute,
-            filterNavigationByFeatureFlags
+            newSections,
+            activeSection,
+            activeSectionEditors,
+            isLoading,
+            addRootToUser,
+            removeUsersRoot
         }
     }
 })

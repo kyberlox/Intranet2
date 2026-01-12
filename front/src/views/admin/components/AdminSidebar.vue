@@ -85,7 +85,7 @@ export default defineComponent({
         const myId = computed(() => useUserData().getMyId);
         const sections = computed(() => useAdminData().getSections);
         const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
-        const fullNavigation.value = ref([]);
+        const fullNavigation = ref([]);
 
         const baseNavigation = ref<NavGroup[]>(
             staticAdminSections.map((g) => ({

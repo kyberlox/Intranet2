@@ -814,33 +814,50 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
 
 @auth_router.get("/tepconf", tags=["Авторизация"])
-async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None):
+async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
     #проверка на авторизацию
     if not session_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
+    
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    user_deps = await User(id=int(user_id)).search_by_id(session=sess)
     # получаю данные пользователя
+    # user_info = {
+    #     'uuid': session_data['user_info']['XML_ID'][3:],
+    #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+    #     'department': user_deps['indirect_data']['uf_department'],
+    #     'session_id': session_data["session_id"]
+    # }
+    fio = session_data['user_info']['full_name'].split()
     user_info = {
-        'uuid': session_data['user_info']['XML_ID'][3:],
-        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
-        'department': session_data['user_info']['UF_USR_1696592324977']
+        'uuid': session_data['user_info']['uuid'],
+        'fio': [fio[0], fio[1], fio[2]],
+        'department': session_data['user_info']['department'],
+        'session_id': session_data["session_id"]
     }
     
+
     res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
-    token = res.json()
+    # token = res.json()
 
-    redirect_url = f"https://tepconf.emk.ru/{token}"
+    redirect_url = f"https://tepconf.emk.ru/{session_data["session_id"]}"
      # Создаем RedirectResponse
-    response = RedirectResponse(url=redirect_url, status_code=302)
+    response = RedirectResponse(url=redirect_url) #, status_code=302
 
-    # Устанавливаем session_id в куки
-    response.set_cookie(
-        key="session_id",
-        value=token["token"],
-        max_age=int(AuthService().session_ttl.total_seconds())
-    )
+    # # Устанавливаем session_id в куки
+    # response.set_cookie(
+    #     key="session_id",
+    #     value=token["token"],
+    #     max_age=int(AuthService().session_ttl.total_seconds())
+    # )
 
     return response
 

@@ -253,7 +253,7 @@ const router = createRouter({
       path: '/services/selectionTep',
       name: 'selectionTep',
       beforeEnter: (to, from, next) => {
-        window.open('http://intranet.emk.org.ru/api/auth_router/tepconf', '_blank')
+        window.open('https://intranet.emk.ru/api/auth_router/tepconf', '_blank')
         next(false)
       },
       redirect: '',

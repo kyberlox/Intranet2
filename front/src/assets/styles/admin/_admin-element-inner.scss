@@ -351,6 +351,6 @@
     }
 }
 
-body:has(.modal__overlay) .main-sidebar {
+body:has(.modal__overlay):not(:has(.bug-modal__content)) .main-sidebar {
     z-index: -1;
 }

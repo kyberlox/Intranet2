@@ -846,7 +846,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     
 
     res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
-    token = res.json()
+    # token = res.json()
 
     redirect_url = f"https://tepconf.emk.ru/{session_data["session_id"]}"
      # Создаем RedirectResponse

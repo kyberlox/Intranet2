@@ -94,6 +94,7 @@
         font-size: 0.9rem;
         align-items: center;
         height: 100%;
+        user-select: none;
 
         @include lg {
             column-gap: 0px;
@@ -107,6 +108,12 @@
             &:hover {
                 color: var(--emk-brand-color);
             }
+        }
+
+        &__icon__wrapper {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
         }
     }
 }
@@ -164,7 +171,7 @@
 
         &>a:hover,
         &:hover {
-            color: var(--emk-brand-color);
+            color: var(--emk-brand-color) !important;
         }
 
         &--active {

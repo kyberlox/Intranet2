@@ -27,7 +27,8 @@
         </div>
     </div>
     <div class="row mb-5 mt20">
-        <h2 class="page__title">Сотрудник года ЭМК
+        <h2 class="page__title">
+            Сотрудник года {{ activeLocation }}
             <span v-if="currentYear"
                   class="year">/ {{ currentYear }}</span>
         </h2>

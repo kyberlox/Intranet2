@@ -48,7 +48,7 @@ class User_Vcard:
     
 
     def create_qr(self):
-        data = f'https://intranet.emk.ru/api/vcard/by_uuid/{self.uuid}'
+        data = f'https://intranet.emk.ru/vcard/{self.uuid}'
         filename = f'{self.uuid}.png'
         img = qrcode.make(data)
         img.save(f'./vcard_db/{filename}')

@@ -830,10 +830,17 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         )
     user_deps = await User(id=int(user_id)).search_by_id(session=sess)
     # получаю данные пользователя
+    # user_info = {
+    #     'uuid': session_data['user_info']['XML_ID'][3:],
+    #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+    #     'department': user_deps['indirect_data']['uf_department'],
+    #     'session_id': session_data["session_id"]
+    # }
+
     user_info = {
-        'uuid': session_data['user_info']['XML_ID'][3:],
-        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
-        'department': user_deps['indirect_data']['uf_department'],
+        'uuid': session_data['user_info']['uuid'],
+        'fio': session_data['user_info']['full_name'],
+        'department': user_deps['department'],
         'session_id': session_data["session_id"]
     }
     

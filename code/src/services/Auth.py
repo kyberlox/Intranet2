@@ -840,7 +840,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     user_info = {
         'uuid': session_data['user_info']['uuid'],
         'fio': session_data['user_info']['full_name'],
-        'department': user_deps['department'],
+        'department': session_data['user_info']['department'],
         'session_id': session_data["session_id"]
     }
     

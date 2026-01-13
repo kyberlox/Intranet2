@@ -25,7 +25,7 @@
         <AdminEditTags v-if="item.field == 'all_tags'"
                        :currentTags="(newElementSkeleton.find((e) => e.field == 'tags')?.value as number[])"
                        :allTags="(item.values as ITag[])"
-                       @tagsChanged="(e: number[]) => $emit('tagschanged', e)" />
+                       @tagsChanged="(e: number[]) => $emit('tagsChanged', e)" />
 
         <Component v-else
                    :is="inputComponentChecker(item)"
@@ -35,7 +35,6 @@
 
         <img v-if="item.field == 'photo_file_url'"
              :src="(item.value as string)" />
-
     </div>
 
     <div class="admin-element-inner__field mt10">
@@ -99,7 +98,7 @@ export default defineComponent({
         AdminUsersList,
         AdminEditTags,
     },
-    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagschanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
+    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagsChanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
     props: {
         isMobileScreen: {
             type: Boolean

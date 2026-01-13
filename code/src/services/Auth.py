@@ -848,9 +848,9 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
     token = res.json()
 
-    redirect_url = f"https://tepconf.emk.ru/{token}"
+    redirect_url = f"https://tepconf.emk.ru/{session_data["session_id"]}"
      # Создаем RedirectResponse
-    response = RedirectResponse(url=redirect_url, status_code=302)
+    response = RedirectResponse(url=redirect_url) #, status_code=302
 
     # # Устанавливаем session_id в куки
     # response.set_cookie(

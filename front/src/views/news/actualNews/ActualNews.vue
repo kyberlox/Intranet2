@@ -1,10 +1,10 @@
 <template>
-<div class="page__title mt20">Актуальные новости</div>
+<h1 class="page__title mt20">Актуальные новости</h1>
 <div class="tags__page__filter">
     <div>
         <button @click="showFilter = !showFilter"
-                class="btn  dropdown-toggle tagDateNavBar__dropdown-toggle">
-            Год публикации
+                class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
+            {{ currentYear || 'Год публикации' }}
         </button>
         <DateFilter v-if="showFilter"
                     :params="filterYears"
@@ -19,8 +19,8 @@
                    :gallery="visibleNews"
                    :type="'postPreview'"
                    :routeTo="'actualArticle'" />
-    <p class="mt20"
-       v-else>Нет новостей в этой категории</p>
+    <p v-else
+       class="mt20">Нет новостей в этой категории</p>
 </div>
 </template>
 <script lang="ts">

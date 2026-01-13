@@ -1676,8 +1676,8 @@ class Article:
         prev = await self.get_preview(session)
         art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
         # art["preview_file_url"] = await self.get_preview(session)
-
-        if art['section_id'] == 31 or art['section_id'] == 33:
+        sections_with_tags = [31, 33, 51]
+        if art['section_id'] in sections_with_tags:
             if 'tags' in art['indirect_data']:
                 tags = []
                 for tag_id in art['indirect_data']['tags']:

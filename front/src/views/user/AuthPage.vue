@@ -23,7 +23,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { testMode } from '@/assets/static/testMode';
 import Api from '@/utils/Api';
 import { useUserData } from '@/stores/userData';
@@ -35,6 +35,7 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const route = useRoute();
         const isLoading = ref(false);
         const login = ref();
         const pass = ref();
@@ -45,7 +46,7 @@ export default defineComponent({
                 testLogin()
             }
             else {
-                router.push({ name: 'oauthPage' })
+                router.push({ name: 'oauthPage', params: { referrer: import.meta.env.VITE_API_URL + route.fullPath } })
             }
             isLoading.value = false
         }

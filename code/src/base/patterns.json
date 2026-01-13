@@ -955,6 +955,18 @@
         "field": "date_creation",
         "data_type": "str",
         "disabled": true
+      },
+      {
+        "name" : "Список доступных тэгов",
+        "field" : "all_tags",
+        "data_type" : "tag",
+        "values": []
+      },
+      {
+        "name": "Тэги",
+        "field": "tags",
+        "data_type": "list",
+        "values": []
       }
     ],
     "files": {

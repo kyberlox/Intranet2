@@ -19,7 +19,8 @@
             </RouterLink>
           </div>
 
-          <div v-if="id == '31' || id == '33'"
+          <!-- редактирование тегов сверху перед 31(актуальными новостями), 33(видеорепортажи) и 51(корп события) -->
+          <div v-if="id == '31' || id == '33' || id == '51'"
                class="admin-block-inner__toolbar-left">
             <button @click="showTagsModal = true"
                     class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">

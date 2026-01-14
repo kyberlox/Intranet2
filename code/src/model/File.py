@@ -765,7 +765,7 @@ class File:
             result = dict()
             # files_path = "./files_db/"
             # Получаем файлы статьи
-            files_info = self.get_files_by_art_id(session)
+            files_info = await self.get_files_by_art_id(session)
             # ./files_db/ + название файла
             for file_inf in files_info:
                 file_path = os.path.join(STORAGE_PATH, file_inf['name'])

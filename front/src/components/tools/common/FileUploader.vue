@@ -74,13 +74,20 @@
                 </div>
                 <div class="file-uploader__uploading-overlay"
                      v-if="isUploading">
-                    <Loader />
+                    <Loader>
+                        <span v-if="uploadProgress && uploadProgress > 0"
+                              class="file-uploader__uploading-overlay__upload-progress"> {{ uploadProgress + '%'
+                            }}</span>
+                    </Loader>
                 </div>
             </div>
 
             <div class="file-uploader__preview-item"
                  v-if="isUploading && !uploadedFiles.length">
-                <Loader />
+                <Loader>
+                    <span v-if="uploadProgress && uploadProgress > 0"
+                          class="file-uploader__uploading-overlay__upload-progress"> {{ uploadProgress + '%' }}</span>
+                </Loader>
             </div>
         </div>
     </div>
@@ -109,6 +116,9 @@ export default defineComponent({
         quantity: {
             type: String as PropType<('one' | 'many')>,
             default: () => 'many'
+        },
+        uploadProgress: {
+            type: Number
         }
     },
     components: {

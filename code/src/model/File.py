@@ -651,20 +651,6 @@ class File:
         UPLOAD_PROGRESS[upload_id] = 0
 
         try:
-            print('Записываю в БД')
-            inserted_id = await FilesDBModel(
-                article_id=int(self.art_id),
-                name=unique_name,
-                original_name = file.filename,
-                b24_url=None,
-                active=True,
-                is_preview = False,
-                content_type = str(file.content_type),
-                file_url = f"/api/files/{unique_name}"
-            ).add(session)
-            print('Записал в БД', inserted_id)
-            file_info = await FilesDBModel(id = inserted_id).find_file_by_id(session)
-
             # Получаем размер файла для расчета прогресса
             file.file.seek(0, 2)  # Перемещаемся в конец файла
             file_size = file.file.tell()  # Получаем размер
@@ -721,7 +707,17 @@ class File:
             # }
             print(123)
             #записать в pSQL
-            
+            inserted_id = await FilesDBModel(
+                article_id=int(self.art_id),
+                name=unique_name,
+                original_name = file.filename,
+                b24_url=None,
+                active=True,
+                is_preview = False,
+                content_type = str(file.content_type),
+                file_url = f"/api/files/{unique_name}"
+            ).add(session) 
+            file_info = await FilesDBModel(id = inserted_id).find_file_by_id(session)
             return file_info
         
         except Exception as e:
@@ -762,27 +758,6 @@ class File:
         #найти файл сделать его превью
         pass
 
-    async def check_load_proccess(self, session):
-        try:
-            result = dict()
-            # files_path = "./files_db/"
-            # Получаем файлы статьи
-            files_info = await self.get_files_by_art_id(session)
-            # ./files_db/ + название файла
-            for file_inf in files_info:
-                file_path = os.path.join(STORAGE_PATH, file_inf['name'])
-                # file_path = files_path + file_inf['name']
-                file_size = os.path.getsize(file_path)
-                result[file_inf['original_name']] = file_size
-            return result
-        except Exception as e:
-            return LogsMaker().error_message(f'Произошла ошибка в функции check_load_proccess: {e}')
-
-
-@file_router.get("/check_load_proccess/{art_id}")
-async def check_load_proccess(art_id : int, session: AsyncSession=Depends(get_async_db)):
-    res = await File(art_id=art_id).check_load_proccess(session=session)
-    return res
 
 @file_router.post("/upload/{art_id}")
 async def upload_file(file: UploadFile, art_id : int, session: AsyncSession=Depends(get_async_db)):

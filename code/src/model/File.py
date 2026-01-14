@@ -779,7 +779,7 @@ class File:
 
 @file_router.get("/check_load_proccess/{art_id}")
 async def check_load_proccess(art_id : int, session: AsyncSession=Depends(get_async_db)):
-    res = await File(art_id=article_id).check_load_proccess(session=session)
+    res = await File(art_id=art_id).check_load_proccess(session=session)
     return res
 
 @file_router.post("/upload/{art_id}")

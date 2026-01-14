@@ -600,7 +600,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
 }
 """)
 async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
-    
+    # user_url: str, 
     if not code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -740,6 +740,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
 @auth_router.get("/tepconf", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
+    import httpx
     #проверка на авторизацию
     if not session_data:
         raise HTTPException(
@@ -761,6 +762,8 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     'department': user_deps['indirect_data']['uf_department'],
     #     'session_id': session_data["session_id"]
     # }
+
+    
     fio = session_data['user_info']['full_name'].split()
     user_info = {
         'uuid': session_data['user_info']['uuid'],
@@ -769,8 +772,19 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         'session_id': session_data["session_id"]
     }
     
-
-    res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        res = await client.post(
+            url='https://tepconf.emk.ru/login',
+            json=user_info
+        )
+        
+        # Проверьте ответ
+        if res.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST ,
+                detail=f"Ошибка перехода на конфигуратор ТЕП: {res.text}"
+            )
+    # res = requests.post(url='https://tepconf.emk.ru/login', json=user_info)
     # token = res.json()
 
     redirect_url = f"https://tepconf.emk.ru/{session_data["session_id"]}"

@@ -600,7 +600,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
 }
 """)
 async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
-    
+    # user_url: str, 
     if not code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

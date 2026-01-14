@@ -18,6 +18,7 @@
                               @uploadMany="(e) => $emit('uploadMany', e)"
                               @reloadData="$emit('reloadData')"
                               :uploadType="(itemKey as keyof IKeyToWord)"
+                              :uploadProgress="uploadProgress"
                               :existFiles="(newFileData[itemKey as keyof IKeyToWord])" />
             </div>
         </div>
@@ -51,6 +52,9 @@ export default defineComponent({
         newData: {
             type: Object as PropType<IPostInner>
         },
+        uploadProgress: {
+            type: Number
+        }
     },
     setup() {
         const keyToWord = {

@@ -1,6 +1,7 @@
 <template>
-    <div class="loader">
-    </div>
+<div class="loader">
+</div>
+<slot></slot>
 </template>
 
 <script lang="ts">

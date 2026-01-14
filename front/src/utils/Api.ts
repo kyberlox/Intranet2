@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, type AxiosProgressEvent, type AxiosRequestConfig } from 'axios'
 import { useUserData } from '@/stores/userData'
 import { computed } from 'vue'
 import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell } from '@/interfaces/IPostFetch'
@@ -62,7 +62,9 @@ export default class Api {
             | Array<string>
             |{ art_id: string | null | undefined; links: string[]; }
             | null,
-            config?: AxiosRequestConfig
+            config?: AxiosRequestConfig & {
+        onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
+    }
     ) {
     const req = api.post(url, data, config);
     return config ? (await req) : (await req).data

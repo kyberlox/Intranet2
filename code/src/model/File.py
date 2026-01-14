@@ -651,6 +651,7 @@ class File:
         UPLOAD_PROGRESS[upload_id] = 0
 
         try:
+            print('Записываю в БД')
             inserted_id = await FilesDBModel(
                 article_id=int(self.art_id),
                 name=unique_name,
@@ -661,6 +662,7 @@ class File:
                 content_type = str(file.content_type),
                 file_url = f"/api/files/{unique_name}"
             ).add(session)
+            print('Записал в БД', inserted_id)
             file_info = await FilesDBModel(id = inserted_id).find_file_by_id(session)
 
             # Получаем размер файла для расчета прогресса
@@ -677,7 +679,7 @@ class File:
             #     contents = file.file.read()
             #     async with aiofiles.open(file_path, "wb") as f:
             #         await f.write(contents)
-
+            print('скачиваю файл')
             # Асинхронная загрузка с мониторингом прогресса
             async with aiofiles.open(file_path, "wb") as f:
                 while True:

@@ -53,6 +53,7 @@
     <AdminUploadingSection class="mt10"
                            :newFileData="newFileData"
                            :newData="newData"
+                           :uploadProgress="uploadProgress"
                            @reloadData="$emit('reloadElementData', true)"
                            @uploadMany="(e: IFileToUpload[]) => $emit('uploadMany', e)"
                            @handleUpload="(e: IFileToUpload) => $emit('handleUpload', e)" />
@@ -117,6 +118,9 @@ export default defineComponent({
         },
         newFileData: {
             type: Object as PropType<INewFileData>
+        },
+        uploadProgress: {
+            type: Number
         }
     },
     setup() {

@@ -192,6 +192,11 @@
         align-items: center;
         justify-content: center;
         max-height: 150px;
+
+        &__upload-progress {
+            position: absolute;
+            color: gray;
+        }
     }
 
     &__preview-item {

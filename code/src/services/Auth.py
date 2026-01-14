@@ -600,7 +600,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
 }
 """)
 async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
-    
+    # user_url: str, 
     if not code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -756,6 +756,15 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         )
     user_deps = await User(id=int(user_id)).search_by_id(session=sess)
     # получаю данные пользователя
+    # user_info = {
+    #     'uuid': session_data['user_info']['XML_ID'][3:],
+    #     'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+    #     'department': user_deps['indirect_data']['uf_department'],
+    #     'session_id': session_data["session_id"]
+    # }
+
+    
+    fio = session_data['user_info']['full_name'].split()
     user_info = {
         'uuid': session_data['user_info']['XML_ID'][3:],
         'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],

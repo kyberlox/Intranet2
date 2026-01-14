@@ -665,7 +665,7 @@ class File:
             #     contents = file.file.read()
             #     async with aiofiles.open(file_path, "wb") as f:
             #         await f.write(contents)
-
+            print('скачиваю файл')
             # Асинхронная загрузка с мониторингом прогресса
             async with aiofiles.open(file_path, "wb") as f:
                 while True:
@@ -716,7 +716,7 @@ class File:
                 is_preview = False,
                 content_type = str(file.content_type),
                 file_url = f"/api/files/{unique_name}"
-            ).add(session)
+            ).add(session) 
             file_info = await FilesDBModel(id = inserted_id).find_file_by_id(session)
             return file_info
         
@@ -757,7 +757,6 @@ class File:
         #заменить, если есть
         #найти файл сделать его превью
         pass
-
 
 
 @file_router.post("/upload/{art_id}")

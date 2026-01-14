@@ -16,7 +16,8 @@
                                      @reloadElementData="(e: boolean) => reloadElementData(e)"
                                      @handleUpload="handleUpload"
                                      @uploadMany="(e) => uploadMany(e)"
-                                     @saveEmbed="(e: string[]) => handleUpload(e, true)" />
+                                     @saveEmbed="(e: string[]) => handleUpload(e, true)"
+                                     :uploadProgress="uploadProgress" />
 
     <AdminPostPreview :previewFullWidth="previewFullWidth"
                       :isMobileScreen="isMobileScreen"
@@ -63,6 +64,7 @@ import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
 import type { IUserList } from '../components/inputFields/AdminUsersList.vue';
 import type { IUsersLoad } from '@/interfaces/IPostFetch';
+import type { AxiosProgressEvent } from 'axios';
 
 type AdminElementValue = string | IBXFileType | number | string[] | number[] | boolean | undefined | Array<{ link: string; name: string } | IUserList>;
 
@@ -116,6 +118,7 @@ export default defineComponent({
     const toast = useToastCompose(toastInstance);
     const usersList = ref<IUserList[]>([]);
     const newEmbedList = ref<string[]>([]);
+    const uploadProgress = ref<number>(0);
 
     onMounted(() => {
       if (props.type == 'new') {
@@ -211,6 +214,14 @@ export default defineComponent({
       }
     }
 
+    const checkUploadProgress = (progressEvent: AxiosProgressEvent) => {
+      if (progressEvent.lengthComputable && progressEvent.total && progressEvent.total > 0) {
+        uploadProgress.value = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+      }
+    }
+
     const uploadMany = (e: IFileToUpload[]) => {
       const idToUpload = isCreateNew.value ? newId.value : props.elementId;
       const formData = new FormData()
@@ -218,9 +229,13 @@ export default defineComponent({
         formData.append('files', e.file);
       })
 
-      Api.post(`/editor/upload_files/${idToUpload}`, formData)
-        .finally(() => reloadElementData(true))
+      Api.post(`/editor/upload_files/${idToUpload}`, formData, { onUploadProgress: checkUploadProgress })
+        .finally(() => {
+          uploadProgress.value = 0;
+          reloadElementData(true);
+        })
     }
+
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
       if (item.field) {
@@ -282,6 +297,7 @@ export default defineComponent({
       isMobileScreen,
       newId,
       inputKey,
+      uploadProgress,
       handleUsersPick,
       handleUserPick,
       applyNewData,

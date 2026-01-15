@@ -6,9 +6,10 @@
     <DatePicker class="admin-element-inner__date-picker"
                 :disable-year-select="false"
                 :calendarType="'full'"
-                :defaultData="(item?.value as string)"
-                @pickDate="(date: string) => { handleValuePick(useDateFormat(date, item?.field?.includes('date') ? 'DD.MM.YYYY' : 'DD.MM.YYYY HH:mm:ss')) }"
-                @clearValue="() => value = ''" />
+                :defaultData="(value as string)"
+                :item="item"
+                @pickDate="(date: string) => handleValuePick(date)"
+                @clearValue="() => handleValuePick(null)" />
 </div>
 </template>
 
@@ -16,7 +17,6 @@
 import { defineComponent, type PropType, ref } from 'vue';
 import { useDateFormat } from '@vueuse/core';
 import DatePicker from '@/components/tools/common/DatePicker.vue';
-import { type UseDateFormatReturn } from '@vueuse/core';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
@@ -31,9 +31,22 @@ export default defineComponent({
     setup(props, { emit }) {
         const value = ref(props.item?.value);
 
+        const handleValuePick = (date: string | null) => {
+            if (date == null) {
+                emit('pick', date)
+            }
+            else
+                if (props.item?.field?.includes('from') || props.item?.field?.includes('to')) {
+                    emit('pick', date)
+                }
+                else {
+                    emit('pick', useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss'))
+                }
+        }
+
         return {
             value,
-            handleValuePick: (date: UseDateFormatReturn) => emit('pick', date),
+            handleValuePick,
             useDateFormat
         }
     }

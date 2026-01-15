@@ -13,8 +13,7 @@
                 {{ item.title }}
             </h6>
             <ul v-if="item.nav.length"
-                class="admin-panel__nav-list"
-                :key="sections.length">
+                class="admin-panel__nav-list">
                 <li v-for="(section, index) in item.nav"
                     :key="'section' + index"
                     class="admin-panel__nav-item">
@@ -94,13 +93,6 @@ export default defineComponent({
             }))
         );
 
-        // Проверка на наличие настройки прав по gpt в общем списке
-        watch((adminRoot), () => {
-            if (!adminRoot.value) {
-                fullNavigation.value = fullNavigation.value.filter((e) => e.id !== 4)
-            }
-        })
-
         watch((sections), () => {
             if (!sections.value.length) {
                 Api.get(`editor/get_sections_list`)
@@ -110,7 +102,9 @@ export default defineComponent({
             };
             if (props.needDefaultNav) {
                 fullNavigation.value[0].nav.push(...sections.value)
-
+                if (!adminRoot.value) {
+                    fullNavigation.value = fullNavigation.value.filter((e) => e.id !== 4)
+                }
             } else fullNavigation.value = fullNavigation.value.filter((e) => e.id == 0);
         }, { immediate: true, deep: true })
 

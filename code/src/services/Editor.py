@@ -785,10 +785,12 @@ class Editor:
                             art["indirect_data"]["tags"] = tags_id
                         # отдельно проверяю дату начала для афиши
                         if "date_from" == key and data[key] is not None:
+                            print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
                             art["indirect_data"][key] = make_date_valid(data[key])
                         
                         # отдельно проверяю дату конца для афиши
                         elif "date_to" == key and data[key] is not None:
+                            print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
                             art["indirect_data"][key] = make_date_valid(data[key])
                         art["indirect_data"][key] = data[key]
 

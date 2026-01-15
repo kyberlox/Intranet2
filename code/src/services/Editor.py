@@ -754,6 +754,7 @@ class Editor:
                 # если это один из основных параметрова
                 if key in self.fundamental:
                     if key == 'date_publiction':
+                        print(f'меняю дату date_publiction с {data[key]} на {make_date_valid(data[key])}')
                         art[key] = make_date_valid(data[key])
                     else:
                         # фиксирую
@@ -790,7 +791,7 @@ class Editor:
                         
                         # отдельно проверяю дату конца для афиши
                         elif "date_to" == key and data[key] is not None:
-                            print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
+                            print(f'меняю дату date_to с {data[key]} на {make_date_valid(data[key])}')
                             art["indirect_data"][key] = make_date_valid(data[key])
                         else:
                             art["indirect_data"][key] = data[key]

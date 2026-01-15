@@ -61,7 +61,9 @@
 
 <div v-else
      class="admin-element-inner__editor">
-    <Loader class="admin-element-inner__editor__loader loader" />
+    <div class="admin-element-inner__editor__loader loader">
+        <Loader />
+    </div>
 </div>
 </template>
 

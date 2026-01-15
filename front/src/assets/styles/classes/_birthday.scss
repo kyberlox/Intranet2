@@ -171,7 +171,7 @@
             display: grid;
             grid-template-rows: 1fr auto;
             height: 100%;
-            // min-height: 492px;
+            min-height: max-content;
             overflow: hidden;
             transition: 0.2s all;
             width: 100%;
@@ -195,7 +195,7 @@
             transition: 0.2s all;
             position: relative;
 
-            @include lg {
+            @include sm {
                 min-height: auto;
             }
 

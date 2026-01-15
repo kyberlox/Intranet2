@@ -50,7 +50,6 @@ export const useViewsDataStore = defineStore('viewsData', {
             if (this[dataType]) {
                 (this[dataType] as DataState[T]) = fetchedData;
             }
-            else console.error(`uknown ${dataType}`);
         }
     },
 

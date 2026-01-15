@@ -1,10 +1,10 @@
 <template>
-    <Editor :modules="editorModules"
-            editorStyle="height: 350px">
-        <template v-slot:toolbar>
-            <span class="ql-formats"></span>
-        </template>
-    </Editor>
+<Editor :modules="editorModules"
+        editorStyle="height: 350px">
+    <template v-slot:toolbar>
+        <span class="ql-formats"></span>
+    </template>
+</Editor>
 </template>
 
 

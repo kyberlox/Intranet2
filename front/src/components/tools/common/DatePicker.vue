@@ -60,10 +60,6 @@ export default defineComponent({
 
         const searchValue = ref("");
 
-        const pickDate = (date: string) => {
-            searchValue.value = date;
-        };
-
         const openDatePicker = () => {
             if (!dateInput.value) return;
             dateInput.value.showPicker();
@@ -93,25 +89,28 @@ export default defineComponent({
 
         const handleDate = (date: Date) => {
             if (!date) return;
-            emit('pickDate', date)
+            emit('pickDate', date, false)
         }
 
         onMounted(() => {
-            if (props.defaultData) {
-                dateInput.value = new Date(props.defaultData);
-            }
-            else if (props.calendarType !== 'month') {
+            if (props.calendarType !== 'month' && !props.defaultData) {
                 dateInput.value = new Date();
+                handleDate(dateInput.value);
             }
-            handleDate(dateInput.value);
         })
+
+        watch((props), (newProps) => {
+            if (newProps.defaultData) {
+                dateInput.value = new Date(newProps.defaultData);
+                handleDate(dateInput.value);
+            }
+        }, { immediate: true, deep: true })
 
         return {
             dateInput,
             imageInModal,
             searchValue,
             date,
-            pickDate,
             openDatePicker,
             format,
             handleDate,

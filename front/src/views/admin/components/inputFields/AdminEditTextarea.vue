@@ -13,7 +13,7 @@ import { defineComponent, type PropType, ref, watch } from 'vue';
 import TextEditor from '@/components/tools/common/TextEditor.vue';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
-
+import sanitize from 'sanitize-html';
 export default defineComponent({
     components: {
         TextEditor
@@ -31,13 +31,14 @@ export default defineComponent({
 
         watch((props), () => {
             if (!props.item?.value) return
-            value.value = String(props.item?.value)
+            value.value = sanitize(String(props.item?.value))
         }, { immediate: true, deep: true })
 
         return {
             value,
             handleValuePick: () => emit('pick', (value.value as string)?.replaceAll('&nbsp;', ' ')),
-            parseMarkdown
+            parseMarkdown,
+            sanitize,
         }
     }
 })

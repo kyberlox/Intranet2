@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git pull origin dev
+git pull origin main
 #docker-compose down fastapi
 #docker-compose up -d fastapi
 

@@ -7,7 +7,7 @@
                 :disable-year-select="false"
                 :calendarType="'full'"
                 :defaultData="(item?.value as string)"
-                @pickDate="(date: string) => { handleValuePick(useDateFormat(date, 'DD.MM.YYYY HH:mm:ss')) }"
+                @pickDate="(date: string) => { handleValuePick(useDateFormat(date, item?.field?.includes('date') ? 'DD.MM.YYYY' : 'DD.MM.YYYY HH:mm:ss')) }"
                 @clearValue="() => value = ''" />
 </div>
 </template>

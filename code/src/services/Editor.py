@@ -681,7 +681,7 @@ class Editor:
                     if "date_from" == key and data[key] is not None:
                         indirect_data[key] = make_date_valid(data[key])
                     
-                    # отдельно проверяю дату начала для афиши
+                    # отдельно проверяю дату конца для афиши
                     elif "date_to" == key and data[key] is not None:
                         indirect_data[key] = make_date_valid(data[key])
                     
@@ -783,6 +783,13 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
+                        # отдельно проверяю дату начала для афиши
+                        if "date_from" == key and data[key] is not None:
+                            art["indirect_data"][key] = make_date_valid(data[key])
+                        
+                        # отдельно проверяю дату конца для афиши
+                        elif "date_to" == key and data[key] is not None:
+                            art["indirect_data"][key] = make_date_valid(data[key])
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы

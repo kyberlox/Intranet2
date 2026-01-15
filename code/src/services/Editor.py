@@ -798,6 +798,7 @@ class Editor:
 
         # перезаписать файлы
         # сохранить
+        print(f'Итог = {art}')
         res = await ArticleModel(id=self.art_id).update(art, self.session)
         return res
 

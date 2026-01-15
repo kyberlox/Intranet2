@@ -754,6 +754,7 @@ class Editor:
                 # если это один из основных параметрова
                 if key in self.fundamental:
                     if key == 'date_publiction':
+                        print(f'меняю дату date_publiction с {data[key]} на {make_date_valid(data[key])}')
                         art[key] = make_date_valid(data[key])
                     else:
                         # фиксирую

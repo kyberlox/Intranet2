@@ -677,7 +677,16 @@ class Editor:
 
                     # если это часть indirect_data
                 else:
-                    indirect_data[key] = data[key]
+                    # отдельно проверяю дату начала для афиши
+                    if "date_from" == key and data[key] is not None:
+                        indirect_data[key] = make_date_valid(data[key])
+                    
+                    # отдельно проверяю дату начала для афиши
+                    elif "date_to" == key and data[key] is not None:
+                        indirect_data[key] = make_date_valid(data[key])
+                    
+                    else:
+                        indirect_data[key] = data[key]
 
             # найти человека по uuid
             if key == "uuid" or key == "author_uuid":
@@ -702,6 +711,8 @@ class Editor:
         if "date_publiction" in art and art["date_publiction"] is not None:
             print(art["date_publiction"])
             art["date_publiction"] = make_date_valid(art["date_publiction"])
+        
+        
 
         # отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):

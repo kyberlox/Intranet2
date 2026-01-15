@@ -678,15 +678,15 @@ class Editor:
                     # если это часть indirect_data
                 else:
                     # отдельно проверяю дату начала для афиши
-                    if "date_from" == key and data[key] is not None:
-                        indirect_data[key] = make_date_valid(data[key])
+                    # if "date_from" == key and data[key] is not None:
+                    #     indirect_data[key] = make_date_valid(data[key])
                     
-                    # отдельно проверяю дату конца для афиши
-                    elif "date_to" == key and data[key] is not None:
-                        indirect_data[key] = make_date_valid(data[key])
+                    # # отдельно проверяю дату конца для афиши
+                    # elif "date_to" == key and data[key] is not None:
+                    #     indirect_data[key] = make_date_valid(data[key])
                     
-                    else:
-                        indirect_data[key] = data[key]
+                    # else:
+                    indirect_data[key] = data[key]
 
             # найти человека по uuid
             if key == "uuid" or key == "author_uuid":
@@ -784,17 +784,17 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
-                        # отдельно проверяю дату начала для афиши
-                        elif "date_from" == key and data[key] is not None:
-                            print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
-                            art["indirect_data"][key] = make_date_valid(data[key])
+                        # # отдельно проверяю дату начала для афиши
+                        # elif "date_from" == key and data[key] is not None:
+                        #     print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
+                        #     art["indirect_data"][key] = make_date_valid(data[key])
                         
-                        # отдельно проверяю дату конца для афиши
-                        elif "date_to" == key and data[key] is not None:
-                            print(f'меняю дату date_to с {data[key]} на {make_date_valid(data[key])}')
-                            art["indirect_data"][key] = make_date_valid(data[key])
-                        else:
-                            art["indirect_data"][key] = data[key]
+                        # # отдельно проверяю дату конца для афиши
+                        # elif "date_to" == key and data[key] is not None:
+                        #     print(f'меняю дату date_to с {data[key]} на {make_date_valid(data[key])}')
+                        #     art["indirect_data"][key] = make_date_valid(data[key])
+                        # else:
+                        art["indirect_data"][key] = data[key]
 
         # перезаписать файлы
         # сохранить

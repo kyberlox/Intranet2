@@ -61,7 +61,7 @@ class ActivitiesModel:
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 stmt = select(self.Activities).where(
-                    self.Activities.id == self.id, 
+                    self.Activities.id == int(self.id), 
                     self.Activities.active == True
                 )
                 result = await session.execute(stmt)

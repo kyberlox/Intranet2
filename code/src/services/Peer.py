@@ -220,7 +220,7 @@ class Peer:
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = uuid
-        return await self.PeerUserModel.delete_admin(self.roots)
+        return await self.PeerUserModel.delete_admin(session=session, roots=self.roots)
 
     async def get_moders_list(self, session):
         from ..base.pSQL.objects.RootsModel import RootsModel

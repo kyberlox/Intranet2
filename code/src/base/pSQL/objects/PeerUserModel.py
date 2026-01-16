@@ -277,7 +277,7 @@ class PeerUserModel:
             needs = result_needs.scalars().all()
 
             if activities_id in needs:
-                likes_left = 10 - likes_count
+                likes_left = 5 - likes_count
                 if likes_left < 0:
                     return LogsMaker().warning_message(f"У пользователя с id = {uuid_from} закончились баллы для активности {activities_id}")
                 elif uuid_from == uuid_to:

@@ -236,7 +236,7 @@ class PeerUserModel:
                         if 'PeerCurator' in user.root_token.keys() and self.activities_id in user.root_token['PeerCurator']:
                             user.root_token['PeerCurator'].remove(self.activities_id)
                             flag_modified(user, 'root_token')
-                            await session.commit()
+                            # await session.commit()
 
                     return LogsMaker().info_message(f"У активности с id = {self.activities_id} больше нет кураторов")
                 else:
@@ -261,7 +261,7 @@ class PeerUserModel:
                 if user:
                     user.root_token['PeerCurator'].remove(self.activities_id)
                     flag_modified(user, 'root_token')
-                    await session.commit()
+                    # await session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} больше не является куратором активности {self.activities_id}")
                 else:
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} не курировал активность {self.activities_id}")

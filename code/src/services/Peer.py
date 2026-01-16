@@ -342,7 +342,9 @@ async def post_edit_activity(request: Request, session: AsyncSession = Depends(g
 @peer_router.delete("/remove_activity/{id}")
 async def del_remove_activity(request: Request, id: str, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
-    return await Peer(id=id, user_uuid=uuid).remove_activity(session)
+    res = await Peer(id=id, user_uuid=uuid).remove_activity(session)
+    await session.commit()
+    return res
 
 
 """"""
@@ -380,7 +382,9 @@ async def add_curator(uuid: int, request: Request, activities_id: int, session: 
 async def delete_curator(uuid: int, request: Request, activities_id: int,
                          session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
-    return await Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(user_id=uuid, session=session)
+    res = await Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(user_id=uuid, session=session)
+    await session.commit()
+    return res
 
 
 @peer_router.put("/new_activity")

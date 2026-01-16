@@ -177,24 +177,16 @@ async def recreate_tables(session: AsyncSession=Depends(get_async_db)):
     from src.base.pSQL.models.PeerHistory import PeerHistory
     from src.base.pSQL.models.App import async_engine
     try:
-        # Начинаем транзакцию
-        async with session.begin():
-            # 1. Отключаем foreign key constraints (если нужно)
-            await session.execute(text("SET CONSTRAINTS ALL DEFERRED"))
             
-            # 2. Удаляем таблицы в правильном порядке (сначала зависимые, если есть)
-            # Если ActiveUsers имеет связи - удаляем первым
-            await session.execute(text('DROP TABLE IF EXISTS "PeerHistory" CASCADE'))
-            await session.execute(text('DROP TABLE IF EXISTS "ActiveUsers" CASCADE'))
-            
-            # 3. Фиксируем удаление
-            await session.commit()
+        # 2. Удаляем таблицы в правильном порядке (сначала зависимые, если есть)
+        # Если ActiveUsers имеет связи - удаляем первым
+        await session.execute(text("DROP TABLE IF EXISTS users CASCADE"))
+        await session.execute(text("DROP TABLE IF EXISTS userfiles CASCADE"))
+        await session.commit()
         
-        # 4. Создаем новые таблицы
-        async with async_engine.begin() as conn:
-            # Создаем ActiveUsers первым, если PeerHistory ссылается на него
-            await conn.run_sync(ActiveUsers.__table__.create)
-            await conn.run_sync(PeerHistory.__table__.create)
+        # 3. Фиксируем удаление
+        await session.commit()
+    
         
         return {
             "success": True,

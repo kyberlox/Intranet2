@@ -48,12 +48,18 @@
         background: white;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
+        &>.loader {
+            width: 32px !important;
+            min-width: 32px !important;
+            height: 32px !important;
+        }
+
         &__icon {
             width: 35px;
 
             &__loader {
-                width: 35px;
-                height: auto;
+                width: 32px;
+                height: 32px;
             }
         }
 

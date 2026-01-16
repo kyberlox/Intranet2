@@ -132,8 +132,6 @@ export default defineComponent({
                         return true
                 }
             }
-            console.log(fullNavigation);
-
             return fullNavigation = fullNavigation.filter((e) => checkByFlags(e))
         }
 

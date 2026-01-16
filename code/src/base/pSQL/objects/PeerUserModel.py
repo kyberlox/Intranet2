@@ -247,9 +247,9 @@ class PeerUserModel:
         try:
             from .MerchStoreModel import MerchStoreModel
             
-            uuid_from = str(roots['user_id'])
-            uuid_to = data["uuid_to"]
-            activities_id = data["activities_id"]
+            uuid_from = int(roots['user_id'])
+            uuid_to = int(data["uuid_to"])
+            activities_id = int(data["activities_id"])
             description = data["description"]
             
             # Проверяем существование пользователя

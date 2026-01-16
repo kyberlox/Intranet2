@@ -124,11 +124,10 @@ class PeerUserModel:
                     stmt = select(self.ActiveUsers.description, self.ActiveUsers.uuid_to).where(self.ActiveUsers.id == action_id)
                     result = await session.execute(stmt)
                     ActiveUsers_info = result.first()
-                    print(ActiveUsers_info)
                     add_history = self.PeerHistory(
                         user_uuid=int(self.uuid),
-                        user_to=int(uuid_to),
-                        active_info=f"Отказано в получении баллов пользователю: {description}",
+                        user_to=int(ActiveUsers_info[1]),
+                        active_info=f"Отказано в получении баллов пользователю: {ActiveUsers_info[0]}",
                         active_coast=active_info.coast,
                         info_type='activity',
                         date_time=datetime.now()

@@ -17,4 +17,5 @@ class ActiveUsers(Base):
     activities_id = Column(Integer, ForeignKey("activities.id", ondelete="CASCADE"), nullable=False)
 
     activities = relationship("Activities", back_populates="activeusers")
+    peerhistory = relationship("PeerHistory", back_populates="activeusers")
 

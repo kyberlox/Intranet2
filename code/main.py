@@ -465,6 +465,9 @@ def get_info_message():
 def get_test_elastic(word: str):
     return StructureSearchModel().get_structure_by_name(word)
 
+@app.get("/get_test_req")
+def get_test_req():
+    return {"msg": "hellow world"}
 
 @app.put("/create_tables")
 async def create_tables():

@@ -168,7 +168,7 @@ open_links = [
 ]
 
 @app.post("/recreate-tables")
-async def recreate_tables(session: AsyncSession = Depends(get_session)):
+async def recreate_tables(session: AsyncSession=Depends(get_async_db)):
     """
     Удаляет и заново создает таблицы PeerHistory и ActiveUsers.
     Используйте ТОЛЬКО для разработки и тестирования!

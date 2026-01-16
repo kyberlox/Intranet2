@@ -219,7 +219,7 @@ class Peer:
         roots = await root_init.token_processing_for_peer(roots_uuid)
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
-        self.PeerUserModel.uuid = uuid #str(uuid)
+        self.PeerUserModel.uuid = str(uuid)
         return await self.PeerUserModel.delete_admin(session=session, roots=roots)
 
     async def get_moders_list(self, session):

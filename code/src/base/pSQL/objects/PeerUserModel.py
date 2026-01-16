@@ -547,7 +547,7 @@ class PeerUserModel:
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
                 stmt_history = select(self.PeerHistory).where(
-                    self.PeerHistory.user_uuid == roots['user_id'],
+                    self.PeerHistory.user_uuid == int(roots['user_id']),
                     self.PeerHistory.info_type == 'activity'
                 )
                 result_history = await session.execute(stmt_history)

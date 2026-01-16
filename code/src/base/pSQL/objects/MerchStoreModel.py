@@ -41,7 +41,7 @@ class MerchStoreModel:
                 )
 
                 session.add(new_user_sum)
-                await session.commit()
+                # await session.commit()
                 
             return LogsMaker().info_message(f"Вы успешно начислили баллы пользователю с id = {int(self.user_id)}")
             

@@ -180,8 +180,8 @@ async def recreate_tables(session: AsyncSession=Depends(get_async_db)):
             
         # 2. Удаляем таблицы в правильном порядке (сначала зависимые, если есть)
         # Если ActiveUsers имеет связи - удаляем первым
-        await session.execute(text("DROP TABLE IF EXISTS users CASCADE"))
-        await session.execute(text("DROP TABLE IF EXISTS userfiles CASCADE"))
+        await session.execute(text("DROP TABLE IF EXISTS PeerHistory CASCADE"))
+        await session.execute(text("DROP TABLE IF EXISTS activeusers CASCADE"))
         await session.commit()
         
         # 3. Фиксируем удаление

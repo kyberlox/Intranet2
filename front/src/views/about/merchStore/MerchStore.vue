@@ -3,7 +3,7 @@
     <div class="page__title">Магазин мерча</div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
-             v-if="merchItems.length">
+             v-if="merchItems.length && isLoading">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
                         v-for="item in merchItems"
@@ -25,10 +25,11 @@
             </RouterLink>
         </div>
         <div class="merch-store__grid"
-             v-else>
+             v-else-if="isLoading">
             <HoverGallerySkeleton v-for="i in 8"
                                   :key="'merchplug' + i" />
         </div>
+        <div v-else-if="!isLoading"><span>Тут пока пусто, следите за обновлениями</span></div>
     </div>
 </div>
 </template>
@@ -54,7 +55,7 @@ export default defineComponent({
     },
     setup() {
         const merchItems = ref<IMerch[]>([]);
-
+        const isLoading = ref<boolean>(false);
         const sliderConfig = {
             modules: [Pagination],
             slidesPerView: 1,
@@ -66,13 +67,16 @@ export default defineComponent({
         }
 
         onMounted(() => {
+            isLoading.value = true;
             Api.get(`article/find_by/${sectionTips['МагазинМерча']}`)
                 .then((data) => merchItems.value = data)
+                .finally(() => isLoading.value = false)
         })
 
         return {
             sliderConfig,
             merchItems,
+            isLoading,
             swiperOn
         }
     }

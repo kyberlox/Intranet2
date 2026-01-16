@@ -133,7 +133,6 @@ class Peer:
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.activities_id = self.activities_id
-        print(user_id, self.user_uuid)
         self.PeerUserModel.uuid = user_id
         return await self.PeerUserModel.add_curator(session=session, roots=roots)
 

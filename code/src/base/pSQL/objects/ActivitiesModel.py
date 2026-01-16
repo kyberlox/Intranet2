@@ -114,6 +114,7 @@ class ActivitiesModel:
                 else:
                     uuid = data['uuid']
                     from .PeerUserModel import PeerUserModel
+                    print(uuid, roots['user_id'])
                     peer_user_model = PeerUserModel(activities_id=new_id, uuid=uuid)
                     curator_status = await peer_user_model.add_curator(session, roots)
                     

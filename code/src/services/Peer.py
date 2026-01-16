@@ -133,7 +133,6 @@ class Peer:
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.activities_id = self.activities_id
-        print(user_id, self.user_uuid)
         self.PeerUserModel.uuid = user_id
         return await self.PeerUserModel.add_curator(session=session, roots=roots)
 
@@ -151,11 +150,11 @@ class Peer:
 
     async def new_activity(self, data, session):
         from ..base.pSQL.objects.RootsModel import RootsModel
-        data["uuid"] = self.user_uuid
+        # data["uuid"] = self.user_uuid
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
-        if self.user_uuid is None:
+        if roots_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.ActivitiesModel.new_activity(data=data, roots=roots, session=session)
 
@@ -391,8 +390,7 @@ async def delete_curator(uuid: int, request: Request, activities_id: int,
 @peer_router.put("/new_activity")
 async def put_new_activity(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
-    return await Peer(user_uuid=uuid).new_activity(data=data,
-                                                   session=session)  # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
+    return await Peer(user_uuid=uuid).new_activity(data=data,session=session)  # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
 
 
 """"""

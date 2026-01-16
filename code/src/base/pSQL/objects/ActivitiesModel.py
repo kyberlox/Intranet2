@@ -75,7 +75,7 @@ class ActivitiesModel:
                     
                     # Деактивируем активность
                     existing_activity.active = False
-                    await session.commit()
+                    # await session.commit()
                     
                     return LogsMaker().info_message(f"Удаление активности id = {self.id}, name = '{existing_activity.name}' завершено успешно")
                 else:

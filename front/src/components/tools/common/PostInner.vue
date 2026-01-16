@@ -52,7 +52,7 @@
                 </div>
                 <div v-if="currentPost.content_text && !String(currentPost.content_text).includes('undefined')"
                      class="news__detail__discr"
-                     v-html="currentPost.content_text"></div>
+                     v-html="currentPost.content_text.replaceAll('&nbsp;', ' ')"></div>
                 <div v-if="currentPost.documentation"
                      class="news__detail__documents">
                     <div class="news__detail__document"

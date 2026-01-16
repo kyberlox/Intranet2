@@ -120,7 +120,19 @@ export default defineComponent({
         }
 
         const filterNavigationByFeatureFlags = (fullNavigation: NavGroup[]) => {
-            return fullNavigation.filter((e: NavGroup) => (featureFlags.visibleArea == (e.title == 'Администрирование')) && (featureFlags.pointsSystem == (e.title == 'Бальная система')))
+            const checkByFlags = (e: NavGroup) => {
+                switch (true) {
+                    // id == 2 у настройки прав
+                    case !featureFlags.visibleArea && e.id == 2:
+                        return false
+                    // id == 3 у бальной системы
+                    case !featureFlags.pointsSystem && e.id == 3:
+                        return false
+                    default:
+                        return true
+                }
+            }
+            return fullNavigation = fullNavigation.filter((e) => checkByFlags(e))
         }
 
         return {

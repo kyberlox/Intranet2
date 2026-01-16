@@ -9,6 +9,7 @@
                                      :newElementSkeleton="newElementSkeleton"
                                      :newData="newData"
                                      :newFileData="newFileData"
+                                     :uploadProgress="uploadProgress"
                                      @handleUserPick="handleUserPick"
                                      @handleEmitValueChange="handleEmitValueChange"
                                      @reportageChanged="(e) => { newData.reports = e }"
@@ -16,8 +17,7 @@
                                      @reloadElementData="(e: boolean) => reloadElementData(e)"
                                      @handleUpload="handleUpload"
                                      @uploadMany="(e) => uploadMany(e)"
-                                     @saveEmbed="(e: string[]) => handleUpload(e, true)"
-                                     :uploadProgress="uploadProgress" />
+                                     @saveEmbed="(e: string[]) => handleUpload(e, true)" />
 
     <AdminPostPreview :previewFullWidth="previewFullWidth"
                       :isMobileScreen="isMobileScreen"
@@ -166,8 +166,8 @@ export default defineComponent({
             if (data.files?.images && data.files?.images[0]?.file_url) {
               newData.value.preview_file_url = data.files?.images[0]?.file_url
             }
-            data.fields.map((e: INewDataElement) => {
-              if ('value' in e && e.value && e.field && e.field in newData.value && (newData.value as PostInnerWithDynamic)[e.field]) {
+            data.fields.forEach((e: INewDataElement) => {
+              if ('value' in e && e.value && e.field) {
                 (newData.value as PostInnerWithDynamic)[e.field] = e.value;
               }
             })
@@ -238,6 +238,7 @@ export default defineComponent({
 
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
+      console.log(value)
       if (item.field) {
         newData.value = {
           ...newData.value,

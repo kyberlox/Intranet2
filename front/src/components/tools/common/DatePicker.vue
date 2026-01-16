@@ -27,9 +27,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch, computed } from 'vue';
+import { defineComponent, onMounted, ref, watch, computed, type PropType } from 'vue';
 import { type ICalendarMarker } from '@/components/layout/RightSidebarCalendar.vue';
 import { useStyleModeStore } from '@/stores/styleMode';
+import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'DatePicker',
@@ -47,6 +48,9 @@ export default defineComponent({
         },
         defaultData: {
             type: String
+        },
+        item: {
+            type: Object as PropType<IAdminListItem>,
         }
     },
     setup(props, { emit }) {
@@ -101,7 +105,12 @@ export default defineComponent({
                 dateInput.value = new Date(props.defaultData);
             }
             else if (props.calendarType !== 'month') {
-                dateInput.value = new Date();
+                if (props.item?.field?.includes('publiction')) {
+                    console.log(props.item);
+
+                    dateInput.value = new Date();
+                }
+                else dateInput.value = null
             }
             handleDate(dateInput.value);
         })

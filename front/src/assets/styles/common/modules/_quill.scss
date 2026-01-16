@@ -1,0 +1,50 @@
+.ql-editor {
+
+    li[data-list="bullet"].ql-indent-1:before,
+    li[data-list="bullet"].ql-indent-2:before,
+    li[data-list="bullet"].ql-indent-3:before,
+    li[data-list="bullet"].ql-indent-4:before,
+    li[data-list="bullet"].ql-indent-5:before,
+    li[data-list="bullet"].ql-indent-6:before,
+    li[data-list="bullet"].ql-indent-7:before,
+    li[data-list="bullet"].ql-indent-8:before,
+    li[data-list="bullet"].ql-indent-9:before {
+        content: '' !important;
+    }
+
+    li[data-list="bullet"].ql-indent-1,
+    li[data-list="bullet"].ql-indent-2,
+    li[data-list="bullet"].ql-indent-3,
+    li[data-list="bullet"].ql-indent-4,
+    li[data-list="bullet"].ql-indent-5,
+    li[data-list="bullet"].ql-indent-6,
+    li[data-list="bullet"].ql-indent-7,
+    li[data-list="bullet"].ql-indent-8,
+    li[data-list="bullet"].ql-indent-9 {
+        list-style-type: disc;
+    }
+
+    li[data-list="ordered"].ql-indent-1:before,
+    li[data-list="ordered"].ql-indent-2:before,
+    li[data-list="ordered"].ql-indent-3:before,
+    li[data-list="ordered"].ql-indent-4:before,
+    li[data-list="ordered"].ql-indent-5:before,
+    li[data-list="ordered"].ql-indent-6:before,
+    li[data-list="ordered"].ql-indent-7:before,
+    li[data-list="ordered"].ql-indent-8:before,
+    li[data-list="ordered"].ql-indent-9:before {
+        content: '' !important;
+    }
+
+    li[data-list="ordered"].ql-indent-1,
+    li[data-list="ordered"].ql-indent-2,
+    li[data-list="ordered"].ql-indent-3,
+    li[data-list="ordered"].ql-indent-4,
+    li[data-list="ordered"].ql-indent-5,
+    li[data-list="ordered"].ql-indent-6,
+    li[data-list="ordered"].ql-indent-7,
+    li[data-list="ordered"].ql-indent-8,
+    li[data-list="ordered"].ql-indent-9 {
+        list-style-type: decimal;
+    }
+}

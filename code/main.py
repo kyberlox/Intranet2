@@ -466,7 +466,7 @@ def get_test_elastic(word: str):
     return StructureSearchModel().get_structure_by_name(word)
 
 
-@app.put("/create_tables")
+@app.put("/api/create_tables")
 async def create_tables():
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()

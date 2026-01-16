@@ -110,8 +110,9 @@
                 </div>
             </div>
         </div>
-        <div v-else>
-            <Loader class="contest__page__loader" />
+        <div v-else
+             class="contest__page__loader">
+            <Loader />
         </div>
     </div>
     <ZoomModal :image="[user.photo_file_url ?? 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg']"

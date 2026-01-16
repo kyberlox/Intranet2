@@ -13,6 +13,7 @@ import { defineComponent, type PropType, ref, watch } from 'vue';
 import TextEditor from '@/components/tools/common/TextEditor.vue';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
+import sanitize from 'sanitize-html';
 
 export default defineComponent({
     components: {
@@ -32,6 +33,10 @@ export default defineComponent({
         watch((props), () => {
             if (!props.item?.value) return
             value.value = String(props.item?.value)
+        }, { immediate: true, deep: true })
+
+        watch((value), () => {
+            value.value = sanitize(value.value as string).replaceAll('&nbsp;', ' ')
         }, { immediate: true, deep: true })
 
         return {

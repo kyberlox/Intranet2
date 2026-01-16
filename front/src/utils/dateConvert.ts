@@ -2,7 +2,7 @@ export const dateConvert = (dateString: string, convertType: 'toStringType' | 't
     if (convertType == 'toDateType') {
         const [day, month, year] = dateString.split('.');
 
-        const date = new Date(Number(year), Number(month) - 1, Number(day), 11, 35, 26);
+        const date = new Date(Number(year), Number(month) - 1, Number(day), 11, 35, 26);        
 
         return date.toString();
     }

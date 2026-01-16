@@ -27,9 +27,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch, computed } from 'vue';
+import { defineComponent, onMounted, ref, watch, computed, type PropType } from 'vue';
 import { type ICalendarMarker } from '@/components/layout/RightSidebarCalendar.vue';
 import { useStyleModeStore } from '@/stores/styleMode';
+import type { IAdminListItem } from '@/interfaces/IEntities';
 
 export default defineComponent({
     name: 'DatePicker',
@@ -47,6 +48,9 @@ export default defineComponent({
         },
         defaultData: {
             type: String
+        },
+        item: {
+            type: Object as PropType<IAdminListItem>,
         }
     },
     setup(props, { emit }) {
@@ -59,6 +63,10 @@ export default defineComponent({
         }, { deep: true, immediate: true })
 
         const searchValue = ref("");
+
+        const pickDate = (date: string) => {
+            searchValue.value = date;
+        };
 
         const openDatePicker = () => {
             if (!dateInput.value) return;
@@ -89,28 +97,30 @@ export default defineComponent({
 
         const handleDate = (date: Date) => {
             if (!date) return;
-            emit('pickDate', date, false)
+            emit('pickDate', date)
         }
 
         onMounted(() => {
-            if (props.calendarType !== 'month' && !props.defaultData) {
-                dateInput.value = new Date();
-                handleDate(dateInput.value);
+            if (props.defaultData) {
+                dateInput.value = new Date(props.defaultData);
             }
-        })
+            else if (props.calendarType !== 'month') {
+                if (props.item?.field?.includes('publiction')) {
+                    console.log(props.item);
 
-        watch((props), (newProps) => {
-            if (newProps.defaultData) {
-                dateInput.value = new Date(newProps.defaultData);
-                handleDate(dateInput.value);
+                    dateInput.value = new Date();
+                }
+                else dateInput.value = null
             }
-        }, { immediate: true, deep: true })
+            handleDate(dateInput.value);
+        })
 
         return {
             dateInput,
             imageInModal,
             searchValue,
             date,
+            pickDate,
             openDatePicker,
             format,
             handleDate,

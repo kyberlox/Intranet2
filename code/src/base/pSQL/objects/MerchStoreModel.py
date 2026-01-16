@@ -32,7 +32,7 @@ class MerchStoreModel:
                     user.user_points += value
                 else:
                     user.user_points = value
-                await session.commit()
+                # await session.commit()
             else:
                 new_user_sum = Roots(
                     user_uuid=int(self.user_id),
@@ -41,7 +41,7 @@ class MerchStoreModel:
                 )
 
                 session.add(new_user_sum)
-                await session.commit()
+                # await session.commit()
                 
             return LogsMaker().info_message(f"Вы успешно начислили баллы пользователю с id = {int(self.user_id)}")
             

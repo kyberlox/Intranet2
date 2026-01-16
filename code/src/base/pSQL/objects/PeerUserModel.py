@@ -81,7 +81,21 @@ class PeerUserModel:
                     from .MerchStoreModel import MerchStoreModel
                     merch_model = MerchStoreModel(uuid_to)
                     await merch_model.upload_user_sum(session, active_info.coast)
-                    
+
+                    stmt = select(self.ActiveUsers.description).where(self.ActiveUsers.id == action_id)
+                    result = await session.execute(stmt)
+                    description = result.scalar_one_or_none()
+
+                    add_history = self.PeerHistory(
+                        user_uuid=int(self.uuid),
+                        user_to=int(uuid_to),
+                        active_info=f"Одобрено назанчение баллов пользователю: {description}",
+                        active_coast=active_info.coast,
+                        info_type='activity',
+                        date_time=datetime.now()
+                    )
+
+                    session.add(add_history)
                     await session.commit()
                     return True
                 else:
@@ -106,6 +120,20 @@ class PeerUserModel:
                 if active_info and active_info.need_valid == True:
                     stmt_update = update(self.ActiveUsers).where(self.ActiveUsers.id == action_id).values(valid=2)
                     await session.execute(stmt_update)
+
+                    stmt = select(self.ActiveUsers.description, self.ActiveUsers.uuid_to).where(self.ActiveUsers.id == action_id)
+                    result = await session.execute(stmt)
+                    ActiveUsers_info = result.first()
+                    add_history = self.PeerHistory(
+                        user_uuid=int(self.uuid),
+                        user_to=int(ActiveUsers_info[1]),
+                        active_info=f"Отказано в получении баллов пользователю: {ActiveUsers_info[0]}",
+                        active_coast=active_info.coast,
+                        info_type='activity',
+                        date_time=datetime.now()
+                    )
+
+                    session.add(add_history)
                     await session.commit()
                     return True
                 else:
@@ -208,7 +236,7 @@ class PeerUserModel:
                         if 'PeerCurator' in user.root_token.keys() and self.activities_id in user.root_token['PeerCurator']:
                             user.root_token['PeerCurator'].remove(self.activities_id)
                             flag_modified(user, 'root_token')
-                            await session.commit()
+                            # await session.commit()
 
                     return LogsMaker().info_message(f"У активности с id = {self.activities_id} больше нет кураторов")
                 else:
@@ -233,7 +261,7 @@ class PeerUserModel:
                 if user:
                     user.root_token['PeerCurator'].remove(self.activities_id)
                     flag_modified(user, 'root_token')
-                    await session.commit()
+                    # await session.commit()
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} больше не является куратором активности {self.activities_id}")
                 else:
                     return LogsMaker().info_message(f"Пользователь с id = {self.uuid} не курировал активность {self.activities_id}")
@@ -247,9 +275,9 @@ class PeerUserModel:
         try:
             from .MerchStoreModel import MerchStoreModel
             
-            uuid_from = str(roots['user_id'])
-            uuid_to = data["uuid_to"]
-            activities_id = data["activities_id"]
+            uuid_from = int(roots['user_id'])
+            uuid_to = int(data["uuid_to"])
+            activities_id = int(data["activities_id"])
             description = data["description"]
             
             # Проверяем существование пользователя
@@ -277,7 +305,7 @@ class PeerUserModel:
             needs = result_needs.scalars().all()
 
             if activities_id in needs:
-                likes_left = 10 - likes_count
+                likes_left = 5 - likes_count
                 if likes_left < 0:
                     return LogsMaker().warning_message(f"У пользователя с id = {uuid_from} закончились баллы для активности {activities_id}")
                 elif uuid_from == uuid_to:
@@ -435,7 +463,7 @@ class PeerUserModel:
     async def delete_admin(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                stmt = select(self.Roots).where(self.Roots.user_uuid == self.uuid)
+                stmt = select(self.Roots).where(self.Roots.user_uuid == int(self.uuid))
                 result = await session.execute(stmt)
                 existing_admin = result.scalar_one_or_none()
 
@@ -546,15 +574,16 @@ class PeerUserModel:
     async def get_curators_history(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
+                print(roots)
                 stmt_history = select(self.PeerHistory).where(
-                    self.PeerHistory.user_uuid == roots['user_id'],
+                    self.PeerHistory.user_uuid == int(roots['user_id']),
                     self.PeerHistory.info_type == 'activity'
                 )
                 result_history = await session.execute(stmt_history)
                 user_history = result_history.scalars().all()
-                
                 activity_history = []
                 for active in user_history:
+                    print(active.__dict__)
                     stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == active.user_to)
                     result_user = await session.execute(stmt_user)
                     user_info = result_user.first()
@@ -566,7 +595,7 @@ class PeerUserModel:
                     stmt_activity = select(self.Activities.name).join(
                         self.ActiveUsers, 
                         self.ActiveUsers.activities_id == self.Activities.id
-                    ).where(self.ActiveUsers.id == active.id)
+                    ).where(self.ActiveUsers.uuid_from == active.user_uuid, self.ActiveUsers.uuid_to == active.user_to)
                     
                     result_activity = await session.execute(stmt_activity)
                     active_name = result_activity.scalar_one_or_none()

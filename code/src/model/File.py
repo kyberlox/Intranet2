@@ -705,7 +705,6 @@ class File:
             #     "is_preview" : False,
             #     "file_url": f"/api/files/{unique_name}"
             # }
-            print(123)
             #записать в pSQL
             inserted_id = await FilesDBModel(
                 article_id=int(self.art_id),

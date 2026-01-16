@@ -123,7 +123,7 @@ class PeerUserModel:
 
                     stmt = select(self.ActiveUsers.description, self.ActiveUsers.uuid_to).where(self.ActiveUsers.id == action_id)
                     result = await session.execute(stmt)
-                    ActiveUsers_info = result.scalar_one_or_none()
+                    ActiveUsers_info = result.scalar()
                     print(ActiveUsers_info)
                     add_history = self.PeerHistory(
                         user_uuid=int(self.uuid),

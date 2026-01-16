@@ -32,7 +32,7 @@ class MerchStoreModel:
                     user.user_points += value
                 else:
                     user.user_points = value
-                await session.commit()
+                # await session.commit()
             else:
                 new_user_sum = Roots(
                     user_uuid=int(self.user_id),

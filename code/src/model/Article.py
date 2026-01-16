@@ -1678,7 +1678,7 @@ class Article:
         # art["preview_file_url"] = await self.get_preview(session)
         sections_with_tags = [31, 33, 51]
         if art['section_id'] in sections_with_tags:
-            if 'tags' in art['indirect_data']:
+            if art['indirect_data'] and 'tags' in art['indirect_data']:
                 tags = []
                 for tag_id in art['indirect_data']['tags']:
                     tag = {}

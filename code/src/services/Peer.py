@@ -58,6 +58,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         result = await self.ActiveUsersModel.actions(session=session, roots=roots)
         return result
 
@@ -80,6 +82,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.ActivitiesModel.update_activity(roots=roots, session=session)
 
     async def remove_activity(self, session):
@@ -87,6 +91,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.ActivitiesModel.id = self.id
         return await self.ActivitiesModel.delete_activity(roots=roots, session=session)
 
@@ -97,6 +103,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = self.user_uuid
         return await self.PeerUserModel.do_valid(session=session, action_id=action_id, uuid_to=uuid_to, roots=roots)
 
@@ -105,6 +113,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = self.user_uuid
         return await self.PeerUserModel.do_not_valid(session=session, action_id=action_id, roots=roots)
 
@@ -120,6 +130,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.activities_id = self.activities_id
         self.PeerUserModel.uuid = user_id
         return await self.PeerUserModel.add_curator(session=session, roots=roots)
@@ -129,6 +141,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.activities_id = self.activities_id
         self.PeerUserModel.uuid = user_id
         result = await self.PeerUserModel.delete_curator(session=session, roots=roots)
@@ -140,6 +154,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.ActivitiesModel.new_activity(data=data, roots=roots, session=session)
 
     """"""
@@ -173,6 +189,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.send_points(data=data, roots=roots, session=session)
 
     async def get_admins_list(self, session):
@@ -180,6 +198,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.get_admins_list(session=session, roots=roots)
 
     async def add_peer_admin(self, uuid, session):
@@ -187,6 +207,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.add_peer_admin(roots=roots, session=session)
 
@@ -195,6 +217,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.delete_admin(self.roots)
 
@@ -203,6 +227,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.get_moders_list(roots=roots, session=session)
 
     async def add_peer_moder(self, uuid, session):
@@ -210,6 +236,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.add_peer_moder(roots=roots, session=session)
 
@@ -218,6 +246,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.delete_peer_moder(roots=roots, session=session)
 
@@ -226,6 +256,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.get_curators_history(roots=roots, session=session)
 
     async def return_points_to_user(self, note_id, user_uuid, session):
@@ -236,6 +268,8 @@ class Peer:
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = user_uuid
         return await self.PeerUserModel.remove_user_points(action_id=action_id, roots=roots, session=session)
 

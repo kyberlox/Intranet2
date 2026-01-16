@@ -81,7 +81,21 @@ class PeerUserModel:
                     from .MerchStoreModel import MerchStoreModel
                     merch_model = MerchStoreModel(uuid_to)
                     await merch_model.upload_user_sum(session, active_info.coast)
-                    
+
+                    stmt = select(self.ActiveUsers.description).where(self.ActiveUsers.id == action_id)
+                    result = await session.execute(stmt)
+                    description = result.scalar_one_or_none()
+
+                    add_history = self.PeerHistory(
+                        user_uuid=int(self.uuid),
+                        user_to=int(uuid_to),
+                        active_info=f"Одобрено назанчение баллов пользователю: {description}",
+                        active_coast=active_info.coast,
+                        info_type='activity',
+                        date_time=datetime.now()
+                    )
+
+                    session.add(add_history)
                     await session.commit()
                     return True
                 else:
@@ -106,6 +120,21 @@ class PeerUserModel:
                 if active_info and active_info.need_valid == True:
                     stmt_update = update(self.ActiveUsers).where(self.ActiveUsers.id == action_id).values(valid=2)
                     await session.execute(stmt_update)
+
+                    stmt = select(self.ActiveUsers.description).where(self.ActiveUsers.id == action_id)
+                    result = await session.execute(stmt)
+                    description = result.scalar_one_or_none()
+
+                    add_history = self.PeerHistory(
+                        user_uuid=int(self.uuid),
+                        user_to=int(uuid_to),
+                        active_info=f"Отказано в получении баллов пользователю: {description}",
+                        active_coast=active_info.coast,
+                        info_type='activity',
+                        date_time=datetime.now()
+                    )
+
+                    session.add(add_history)
                     await session.commit()
                     return True
                 else:

@@ -552,7 +552,7 @@ class PeerUserModel:
                 )
                 result_history = await session.execute(stmt_history)
                 user_history = result_history.scalars().all()
-                
+                print(user_history, 'история')
                 activity_history = []
                 for active in user_history:
                     stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == active.user_to)

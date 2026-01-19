@@ -8,9 +8,11 @@ export const useUserData = defineStore('userData', {
         authKey: '',
         user: {} as IUser,
         roots: {
-            PeerAdmin: false, 
+            PeerAdmin: false,
+            PeerModer: false, 
             EditorAdmin: false, 
             VisionAdmin: false,
+            peerCurator: [],
             EditorModer: [],
             GPT_gen_access: false
         } as IRoots,

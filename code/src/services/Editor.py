@@ -766,7 +766,7 @@ class Editor:
                                 art_data = data.copy()
                                 await ArticleSearchModel().update_art_el_index(article_data=art_data,
                                                                                session=self.session,
-                                                                               section_id=art['section_id'])
+                                                                               section_id=art_data['section_id'])
 
                             else:
                                 await ArticleSearchModel().delete_art_from_el_index(art_id=self.art_id)

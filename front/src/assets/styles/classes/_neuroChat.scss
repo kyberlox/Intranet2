@@ -417,6 +417,9 @@
         &__loader {
             width: 20px;
             height: 20px;
+            display: flex;
+            align-content: center;
+            align-items: center;
         }
     }
 

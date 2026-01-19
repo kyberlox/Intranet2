@@ -315,7 +315,7 @@ async def get_uuid_from_request(request, session):
 @peer_router.get("/sum")
 async def sum(request: Request, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
-
+    print(uuid, 'че там насчет игоря')
     return await Peer(user_uuid=uuid).sum(session)
 
 

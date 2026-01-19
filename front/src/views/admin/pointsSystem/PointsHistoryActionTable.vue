@@ -10,27 +10,39 @@
                     <tr class="moderator-panel__row">
                         <th class="moderator-panel__head"
                             v-if="item.date_time">
-                            Дата
+                            <span>
+                                Дата
+                            </span>
                         </th>
                         <th v-if="'activity_name' in item"
                             class="moderator-panel__head">
-                            Активность
+                            <span>
+                                Активность
+                            </span>
                         </th>
                         <th class="moderator-panel__head"
                             v-if="('name' in (item))">
-                            Параметр
+                            <span>
+                                Параметр
+                            </span>
                         </th>
                         <th class="moderator-panel__head"
                             v-if="'uuid_from' in item">
-                            От кого
+                            <span>
+                                От кого
+                            </span>
                         </th>
                         <th class="moderator-panel__head"
                             v-if="'uuid_to_fio' in item || 'uuid_to' in item">
-                            Куда
+                            <span>
+                                Куда
+                            </span>
                         </th>
                         <th class="moderator-panel__head"
                             v-if="item.description">
-                            Комментарий
+                            <span>
+                                Комментарий
+                            </span>
                         </th>
                         <th class="moderator-panel__head">
                             <CancelIcon v-if="!onlyHistory"
@@ -43,31 +55,45 @@
                     <tr class="moderator-panel__row">
                         <td v-if="item.date_time"
                             class="moderator-panel__cell moderator-panel__cell--date">
-                            {{ dateConvert(item.date_time, 'toStringType') }}
+                            <span>
+                                {{ dateConvert(item.date_time, 'toStringType') }}
+                            </span>
                         </td>
                         <td v-if="'activity_name' in item"
                             class="moderator-panel__cell moderator-panel__cell--parameter">
-                            {{ item.activity_name }}
+                            <span>
+                                {{ item.activity_name }}
+                            </span>
                         </td>
 
                         <td v-if="'name' in item"
                             class="moderator-panel__cell moderator-panel__cell--parameter">
-                            {{ item.name }}
+                            <span>
+                                {{ item.name }}
+                            </span>
                         </td>
                         <td v-if="'uuid_from' in item"
                             class="moderator-panel__cell moderator-panel__cell--from">
-                            {{ item.uuid_from }}
+                            <span>
+                                {{ item.uuid_from }}
+                            </span>
                         </td>
                         <td v-if="'uuid_to_fio' in item"
                             class="moderator-panel__cell moderator-panel__cell--to">
-                            {{ item.uuid_to_fio }}
+                            <span>
+                                {{ item.uuid_to_fio }}
+                            </span>
                         </td>
                         <td v-else-if="item.uuid_to"
                             class="moderator-panel__cell moderator-panel__cell--to">
-                            {{ item.uuid_to }}
+                            <span>
+                                {{ item.uuid_to }}
+                            </span>
                         </td>
                         <td class="moderator-panel__cell moderator-panel__cell--comment">
-                            {{ item.description }}
+                            <span>
+                                {{ item.description }}
+                            </span>
                         </td>
                         <td class="moderator-panel__cell moderator-panel__cell--actions">
                             <CheckIcon v-if="!onlyHistory"
@@ -81,8 +107,9 @@
         </div>
     </div>
 </div>
-<div v-else>
-    {{ onlyHistory ? 'У вас нет истории отправленных баллов' : 'Нет активностей на подтвержение' }}
+<div class="admin-block-inner"
+     v-else>
+    {{ onlyHistory ? 'У вас нет истории отправленных баллов' : 'Нет активностей на подтверждение' }}
 </div>
 </template>
 

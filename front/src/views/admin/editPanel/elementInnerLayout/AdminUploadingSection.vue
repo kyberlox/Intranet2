@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, computed, ref } from 'vue';
+import { defineComponent, type PropType, computed } from 'vue';
 import type { INewFileData } from '@/interfaces/IEntities';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import FileUploader from '@/components/tools/common/FileUploader.vue';

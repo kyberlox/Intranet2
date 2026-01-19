@@ -213,7 +213,7 @@ async def calendar_event(request: Request, session: AsyncSession = Depends(get_a
             "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
             "description": f"Баллы за предложение по улучшению сервиса: {data['NAME']}"
         }
-        send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data)
+        send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
         return send_idea
     else:
         return LogsMaker().error_message("Произошла ошибка с получением айдишника пользоватля из сессии и заголовков")

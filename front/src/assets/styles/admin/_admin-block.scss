@@ -79,7 +79,15 @@
         &__loader {
             display: flex;
             justify-content: center;
+            justify-items: center;
             align-items: center;
+            width: 100%;
+            height: 64px;
+
+            &>.loader {
+                width: 64px;
+                height: 64px;
+            }
         }
 
         &__content {

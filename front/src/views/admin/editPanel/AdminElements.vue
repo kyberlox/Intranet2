@@ -103,8 +103,8 @@
               В этом разделе пока нет элементов или они не соответствуют критериям поиска
             </p>
           </div>
-          <div class="admin-block-inner__loader"
-               v-else>
+          <div v-else
+               class="admin-block-inner__loader">
             <Loader />
           </div>
         </div>

@@ -106,7 +106,6 @@ export default defineComponent({
             }
             else if (props.calendarType !== 'month') {
                 if (props.item?.field?.includes('publiction')) {
-                    console.log(props.item);
 
                     dateInput.value = new Date();
                 }

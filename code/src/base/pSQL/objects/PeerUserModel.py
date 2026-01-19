@@ -599,7 +599,7 @@ class PeerUserModel:
                     stmt_activity = select(self.Activities.name).join(
                         self.ActiveUsers, 
                         self.ActiveUsers.activities_id == self.Activities.id
-                    ).where(self.ActiveUsers.uuid_from == active.user_uuid, self.ActiveUsers.uuid_to == active.user_to)
+                    ).where(self.ActiveUsers.id == active.active_id)
                     
                     result_activity = await session.execute(stmt_activity)
                     active_name = result_activity.scalar_one_or_none()

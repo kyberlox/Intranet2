@@ -75,8 +75,10 @@
             <div class="postcard__form-group">
                 <button @click="sendMsg"
                         class="submit-button postcard__form-group__submit-button">
-                    <Loader v-if="isLoading"
-                            class="neuroChat__send-button__loader" />
+                    <div class="neuroChat__send-button__loader"
+                         v-if="isLoading">
+                        <Loader />
+                    </div>
                     Отправить
                 </button>
             </div>

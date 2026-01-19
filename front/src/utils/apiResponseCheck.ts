@@ -6,7 +6,7 @@ interface IToastMethods {
 }
 
 export const handleApiResponse = (data: AxiosResponse, toast: IToastMethods, errorName: string, successName: string) => {
-    if (!data || (typeof data == 'object' && 'data' in data && Boolean(data.data) == false)) {
+    if (!data || (typeof data == 'object' && 'data' in data && Boolean(data.data) == false) || 'error' in data) {
         toast.showError(errorName);
     }
     else

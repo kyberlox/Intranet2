@@ -38,5 +38,7 @@ export interface IRoots{
     EditorAdmin:boolean,
     VisionAdmin:boolean,
     GPT_gen_access: boolean,
-    EditorModer: number[] 
+    PeerModer: boolean,
+    EditorModer: number[], 
+    peerCurator: boolean[]
 }

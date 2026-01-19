@@ -12,7 +12,7 @@
     </div>
     <div class="row mb-5 idea__table__wrapper">
         <div class="contest__page__loader"
-             v-if="!isLoading">
+             v-if="isLoading">
             <Loader />
         </div>
         <table class="table idea__table"

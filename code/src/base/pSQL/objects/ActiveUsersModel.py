@@ -97,7 +97,7 @@ class ActiveUsersModel:
                         part = {"value": activity_info.id, "name": activity_info.name}
                         activities_list.append(part)
                 
-                return {"activities": activities_list}
+                # return {"activities": activities_list}
             
             # Для обычных пользователей
             for activity in actions_for_all:

@@ -528,7 +528,7 @@ class PeerUserModel:
     async def delete_peer_moder(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                stmt = select(self.Roots).where(self.Roots.user_uuid == self.uuid)
+                stmt = select(self.Roots).where(self.Roots.user_uuid == int(self.uuid))
                 result = await session.execute(stmt)
                 existing_moder = result.scalar_one_or_none()
                 

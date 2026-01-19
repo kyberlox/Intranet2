@@ -35,8 +35,8 @@
                         @removeUser="(id: number) => removeUsersRoot(id)" />
     </div>
     <div v-else-if="!activeSection && isLoading"
-         class="admin-panel__content admin-panel__content__add-user-btn">
-        <Loader class="contest__page__loader" />
+         class="admin-panel__content admin-panel__content__add-user-btn contest__page__loader">
+        <Loader />
     </div>
 </div>
 </template>

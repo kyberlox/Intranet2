@@ -99,11 +99,6 @@ export default defineComponent({
             }
         }
 
-        const checkByRoots = () => {
-            console.log(1);
-
-        }
-
         const fullNavigation = ref<NavGroup[]>(
             staticAdminSections.map((g) => ({
                 id: g.id,
@@ -112,10 +107,6 @@ export default defineComponent({
             }))
                 .filter((e) => checkByFlags(e))
         );
-
-        watchEffect(() => {
-            console.log(fullNavigation.value)
-        })
 
 
         watch((sections), () => {

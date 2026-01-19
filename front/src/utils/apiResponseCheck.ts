@@ -6,17 +6,18 @@ interface IToastMethods {
 }
 
 export const handleApiResponse = (data: AxiosResponse, toast: IToastMethods, errorName: string, successName: string) => {
-    if (!data || (typeof data == 'object' && 'data' in data && Boolean(data.data) == false) || 'error' in data) {
-        toast.showError(errorName);
+    if (!data || ((typeof data == 'object' && 'data' in data && Boolean(data.data) == false) || typeof data == 'object' && 'error' in data)) {
+        toast.showError(errorName);        
     }
     else
         toast.showSuccess(successName);
 }
 
-export const handleApiError = (error: AxiosError, toast: IToastMethods) => {
+export const handleApiError = (error: AxiosError, toast: IToastMethods) => {    
     if (error.response?.status === 401) {
         toast.showError('authorizatonError');
     }
-    else
+    else{        
         toast.showError('serverError');
-}
+    }
+    }

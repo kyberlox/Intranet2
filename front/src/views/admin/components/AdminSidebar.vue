@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch, watchEffect } from 'vue';
 import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
@@ -84,14 +84,39 @@ export default defineComponent({
         const myId = computed(() => useUserData().getMyId);
         const sections = computed(() => useAdminData().getSections);
         const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
+        const PeerModer = computed(() => useUserData().getUserRoots.PeerModer);
+
+        const checkByFlags = (e: NavGroup) => {
+            switch (true) {
+                // id == 2 у настройки прав
+                case !featureFlags.visibleArea && e.id == 2:
+                    return false
+                // id == 3 у бальной системы
+                case !featureFlags.pointsSystem && e.id == 3:
+                    return false
+                default:
+                    return true
+            }
+        }
+
+        const checkByRoots = () => {
+            console.log(1);
+
+        }
 
         const fullNavigation = ref<NavGroup[]>(
             staticAdminSections.map((g) => ({
                 id: g.id,
                 title: g.title,
-                nav: [...g.nav] as AdminSection[],
+                nav: [...g.nav],
             }))
+                .filter((e) => checkByFlags(e))
         );
+
+        watchEffect(() => {
+            console.log(fullNavigation.value)
+        })
+
 
         watch((sections), () => {
             if (!sections.value.length) {
@@ -128,6 +153,13 @@ export default defineComponent({
                     // id == 3 у бальной системы
                     case !featureFlags.pointsSystem && e.id == 3:
                         return false
+                    case !PeerModer.value:
+                        e.nav.forEach(el => {
+                            if (el.id == 'pointsModeration') {
+                                return false
+                            }
+                            else return true
+                        });
                     default:
                         return true
                 }

@@ -29,35 +29,38 @@ class PeerUserModel:
         from ..models.PeerHistory import PeerHistory
         self.PeerHistory = PeerHistory
 
-    async def points_to_confirm(self, session):
+    async def points_to_confirm(self, session, roots):
         try:
-            stmt = select(self.ActiveUsers, self.Activities).join(
-                self.Activities, 
-                self.Activities.id == self.ActiveUsers.activities_id
-            ).where(
-                self.ActiveUsers.activities_id == self.Activities.id,
-                self.ActiveUsers.valid == 0,
-                self.Activities.id == self.activities_id
-            )
-            
-            result = await session.execute(stmt)
-            res = result.all()
-            
-            confirm_list = []
-            if res:
-                for activities in res:
-                    data = {
-                        "id": activities[0].id,
-                        "name": activities[1].name,
-                        "uuid_from": activities[0].uuid_from,
-                        "uuid_to": activities[0].uuid_to,
-                        "description": activities[0].description,
-                        "date_time": activities[0].date_time,
-                        "coast": activities[1].coast,
-                        "need_valid": activities[1].need_valid
-                    }
-                    confirm_list.append(data)
-            return confirm_list
+            if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                stmt = select(self.ActiveUsers, self.Activities).join(
+                    self.Activities, 
+                    self.Activities.id == self.ActiveUsers.activities_id
+                ).where(
+                    self.ActiveUsers.activities_id == self.Activities.id,
+                    self.ActiveUsers.valid == 0,
+                    self.Activities.id == self.activities_id
+                )
+                
+                result = await session.execute(stmt)
+                res = result.all()
+                
+                confirm_list = []
+                if res:
+                    for activities in res:
+                        data = {
+                            "id": activities[0].id,
+                            "name": activities[1].name,
+                            "uuid_from": activities[0].uuid_from,
+                            "uuid_to": activities[0].uuid_to,
+                            "description": activities[0].description,
+                            "date_time": activities[0].date_time,
+                            "coast": activities[1].coast,
+                            "need_valid": activities[1].need_valid
+                        }
+                        confirm_list.append(data)
+                return confirm_list
+            else:
+                return LogsMaker().warning_message(f"Недостаточно прав для получения списка модерируемых активностей")
             
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в points_to_confirm при получении активностей для подтверждения activities_id = {self.activities_id}: {e}")
@@ -91,6 +94,7 @@ class PeerUserModel:
                         user_to=int(uuid_to),
                         active_info=f"Одобрено назанчение баллов пользователю: {description}",
                         active_coast=active_info.coast,
+                        active_id=action_id,
                         info_type='activity',
                         date_time=datetime.now()
                     )
@@ -129,6 +133,7 @@ class PeerUserModel:
                         user_to=int(ActiveUsers_info[1]),
                         active_info=f"Отказано в получении баллов пользователю: {ActiveUsers_info[0]}",
                         active_coast=active_info.coast,
+                        active_id=action_id,
                         info_type='activity',
                         date_time=datetime.now()
                     )
@@ -380,6 +385,7 @@ class PeerUserModel:
                         user_to=uuid_to,
                         active_info=description,
                         active_coast=value,
+                        active_id=new_id,
                         info_type='activity',
                         date_time=datetime.now()
                     )
@@ -574,7 +580,6 @@ class PeerUserModel:
     async def get_curators_history(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
-                print(roots)
                 stmt_history = select(self.PeerHistory).where(
                     self.PeerHistory.user_uuid == int(roots['user_id']),
                     self.PeerHistory.info_type == 'activity'
@@ -583,7 +588,6 @@ class PeerUserModel:
                 user_history = result_history.scalars().all()
                 activity_history = []
                 for active in user_history:
-                    print(active.__dict__)
                     stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == active.user_to)
                     result_user = await session.execute(stmt_user)
                     user_info = result_user.first()

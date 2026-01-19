@@ -60,8 +60,10 @@
                                     <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"
                                           fill="currentColor" />
                                 </svg>
-                                <Loader v-else
-                                        class="neuroChat__send-button__loader" />
+                                <div v-else
+                                     class="neuroChat__send-button__loader">
+                                    <Loader />
+                                </div>
                             </button>
                         </div>
                         <div class="neuroChat__file-upload"

@@ -167,39 +167,6 @@ open_links = [
     "/api/vcard/by_uuid/", "/api/vcard/get/"
 ]
 
-@app.post("/recreate-tables")
-async def recreate_tables(session: AsyncSession=Depends(get_async_db)):
-    """
-    Удаляет и заново создает таблицы PeerHistory и ActiveUsers.
-    Используйте ТОЛЬКО для разработки и тестирования!
-    """
-    from src.base.pSQL.models.ActiveUsers import ActiveUsers
-    from src.base.pSQL.models.PeerHistory import PeerHistory
-    from src.base.pSQL.models.App import async_engine
-    try:
-            
-        # 2. Удаляем таблицы в правильном порядке (сначала зависимые, если есть)
-        # Если ActiveUsers имеет связи - удаляем первым
-        await session.execute(text("DROP TABLE IF EXISTS PeerHistory CASCADE"))
-        await session.execute(text("DROP TABLE IF EXISTS activeusers CASCADE"))
-        await session.commit()
-        
-        # 3. Фиксируем удаление
-        await session.commit()
-    
-        
-        return {
-            "success": True,
-            "message": "Таблицы успешно пересозданы",
-            "tables": ["ActiveUsers", "PeerHistory"]
-        }
-        
-    except Exception as e:
-        await session.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Ошибка при пересоздании таблиц: {str(e)}"
-        )
 
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")

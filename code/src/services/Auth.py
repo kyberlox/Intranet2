@@ -764,7 +764,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # }
 
     
-    fio = session_data['user_info']['full_name'].split()
+    # fio = session_data['user_info']['full_name'].split()
     user_info = {
         'uuid': session_data['user_info']['XML_ID'][3:],
         'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],

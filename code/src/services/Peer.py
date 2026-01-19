@@ -119,8 +119,14 @@ class Peer:
         return await self.PeerUserModel.do_not_valid(session=session, action_id=action_id, roots=roots)
 
     async def points_to_confirm(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.activities_id = self.activities_id
-        return await self.PeerUserModel.points_to_confirm(session=session)
+        return await self.PeerUserModel.points_to_confirm(session=session, roots=roots)
 
     async def get_curators(self, session):
         return await self.PeerUserModel.get_curators(session=session)
@@ -363,8 +369,9 @@ async def post_do_not_valid(request: Request, action_id: int, session: AsyncSess
 
 
 @peer_router.get("/points_to_confirm/{activities_id}")
-async def get_points_to_confirm(activities_id: int, session: AsyncSession = Depends(get_async_db)):
-    return await Peer(activities_id=activities_id).points_to_confirm(session)
+async def get_points_to_confirm(request: Request, activities_id: int, session: AsyncSession = Depends(get_async_db)):
+    uuid = await get_uuid_from_request(request, session)
+    return await Peer(activities_id=activities_id, user_uuid=uuid).points_to_confirm(session)
 
 
 @peer_router.get("/get_curators")

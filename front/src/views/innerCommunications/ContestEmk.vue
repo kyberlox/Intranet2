@@ -30,9 +30,9 @@
                  :plugImg="emptyPlug"
                  v-else-if="!isLoading" />
 
-    <div class="contest__page__loader__wrapper"
+    <div class="contest__page__loader"
          v-else-if="isLoading">
-        <Loader class="contest__page__loader" />
+        <Loader />
     </div>
 </div>
 <ZoomModal v-if="slides && slides.images?.length && modalIsOpen == true"

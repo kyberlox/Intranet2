@@ -87,8 +87,8 @@
     </div>
 </div>
 <div v-else
-     class="contest__page__loader__wrapper">
-    <Loader class="contest__page__loader" />
+     class="contest__page__loader">
+    <Loader />
 </div>
 </template>
 <script lang="ts">

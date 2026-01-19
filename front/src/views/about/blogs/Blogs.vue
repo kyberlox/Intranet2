@@ -1,7 +1,7 @@
 <template>
 <div v-if="!authors.length"
-     class="contest__page__loader__wrapper">
-    <Loader class="contest__page__loader" />
+     class="contest__page__loader">
+    <Loader />
 </div>
 <div v-if="authors.length"
      class="blogs-page mt20">

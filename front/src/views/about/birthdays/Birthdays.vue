@@ -37,8 +37,8 @@
                            @slidePrev="slidePrev" />
         </div>
         <div v-else-if="isLoading"
-             class="birthday__page__swiper__wrapper">
-            <Loader class="contest__page__loader" />
+             class="contest__page__loader">
+            <Loader />
         </div>
         <ContentPlug :plugText="noBirthdays"
                      :plugImg="noBirthImage"

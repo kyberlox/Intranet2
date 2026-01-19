@@ -11,9 +11,9 @@
         </div>
     </div>
     <div class="row mb-5 idea__table__wrapper">
-        <div class="contest__page__loader__wrapper"
-             v-if="isLoading">
-            <Loader class="contest__page__loader" />
+        <div class="contest__page__loader"
+             v-if="!isLoading">
+            <Loader />
         </div>
         <table class="table idea__table"
                v-else-if="ideas">

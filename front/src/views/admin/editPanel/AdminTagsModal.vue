@@ -38,8 +38,8 @@
             </div>
         </div>
         <div v-else
-             class="">
-            <Loader class="contest__page__loader" />
+             class="contest__page__loader">
+            <Loader />
         </div>
     </div>
 </SlotModal>

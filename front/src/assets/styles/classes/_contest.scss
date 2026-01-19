@@ -9,6 +9,11 @@
                 display: flex;
                 min-height: 50vh;
             }
+
+            &>.loader {
+                width: 64px;
+                height: 64px;
+            }
         }
     }
 }

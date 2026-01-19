@@ -338,8 +338,6 @@ async def get_actions(request: Request, session: AsyncSession = Depends(get_asyn
 
 @peer_router.get("/get_all_activities")
 async def get_activities(session: AsyncSession = Depends(get_async_db)):
-    if uuid is None:
-        uuid = 2366
     return await Peer().get_all_activities(session)
 
 

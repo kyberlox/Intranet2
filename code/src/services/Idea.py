@@ -7,6 +7,11 @@ from .LogsMaker import LogsMaker
 
 import asyncio
 
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from ..base.pSQL.objects.App import get_async_db
+
+
 idea_router = APIRouter(prefix="/idea")
 
 
@@ -142,6 +147,26 @@ class Idea:
         res = B24().send_idea(incr, fields)
         return res
 
+async def get_uuid_from_request(request, session):
+    # from .Auth import AuthService
+    user_id = None
+    token = request.cookies.get("user_id")
+    if token is None:
+        token = request.headers.get("user_id")
+        if token is not None:
+            user_id = token
+    else:
+        user_id = token
+
+    if user_id is not None:
+
+        # получить и вывести его id
+        usr = User()
+        usr.id = int(user_id)
+        user_inf = await usr.search_by_id(session=session)
+        if user_inf is not None and "id" in user_inf.keys():
+            return user_inf["id"]
+    return None
 
 @idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"],
 description="""
@@ -161,9 +186,16 @@ description="""
 | | | - `base_name` (string) — имя файла (опционально) | |
 
 """)
-async def calendar_event(data = Body()):
+async def calendar_event(request: Request, session: AsyncSession = Depends(get_async_db), data = Body()):
+    user_id = None
+    token = request.cookies.get("user_id")
+    if token is None:
+        token = request.headers.get("user_id")
+        if token is not None:
+            user_id = token
+
     send_idea =  await Idea().add(dict(data))
-    if send_idea:
+    if send_idea and user_id:
         """
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         В будущем поставить сюда айдишник той активности, 
@@ -172,5 +204,14 @@ async def calendar_event(data = Body()):
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         """
         # id = 8
-        pass
-    return send_idea
+        send_data = {
+            "uuid_from" = 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+            "uuid_to" = int(user_id),
+            "activities_id" = 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "description" = f"Баллы за предложение по улучшению сервиса: {data['NAME']}"
+        }
+        send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data)
+        return send_idea
+    else:
+        return LogsMaker().error_message("Произошла ошибка с получением айдишника пользоватля из сессии и заголовков")
+    

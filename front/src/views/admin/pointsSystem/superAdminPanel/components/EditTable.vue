@@ -7,7 +7,7 @@
                     <th class="activity-edit__cell activity-edit__cell--head"
                         v-for="(head, index) in currentEntity?.keys"
                         :key="'head' + index">
-                        {{ head }}
+                        <span> {{ head }}</span>
                     </th>
                 </tr>
             </thead>

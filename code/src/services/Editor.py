@@ -677,6 +677,15 @@ class Editor:
 
                     # если это часть indirect_data
                 else:
+                    # отдельно проверяю дату начала для афиши
+                    # if "date_from" == key and data[key] is not None:
+                    #     indirect_data[key] = make_date_valid(data[key])
+                    
+                    # # отдельно проверяю дату конца для афиши
+                    # elif "date_to" == key and data[key] is not None:
+                    #     indirect_data[key] = make_date_valid(data[key])
+                    
+                    # else:
                     indirect_data[key] = data[key]
 
             # найти человека по uuid
@@ -702,6 +711,8 @@ class Editor:
         if "date_publiction" in art and art["date_publiction"] is not None:
             print(art["date_publiction"])
             art["date_publiction"] = make_date_valid(art["date_publiction"])
+        
+        
 
         # отдельно перевожу стоку в булевое значение для active
         if type(art["active"]) == type(str()):
@@ -743,6 +754,7 @@ class Editor:
                 # если это один из основных параметрова
                 if key in self.fundamental:
                     if key == 'date_publiction':
+                        print(f'меняю дату date_publiction с {data[key]} на {make_date_valid(data[key])}')
                         art[key] = make_date_valid(data[key])
                     else:
                         # фиксирую
@@ -772,6 +784,16 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
+                        # # отдельно проверяю дату начала для афиши
+                        # elif "date_from" == key and data[key] is not None:
+                        #     print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
+                        #     art["indirect_data"][key] = make_date_valid(data[key])
+                        
+                        # # отдельно проверяю дату конца для афиши
+                        # elif "date_to" == key and data[key] is not None:
+                        #     print(f'меняю дату date_to с {data[key]} на {make_date_valid(data[key])}')
+                        #     art["indirect_data"][key] = make_date_valid(data[key])
+                        # else:
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы
@@ -1115,7 +1137,7 @@ async def get_editor_roots(user_uuid, session):
 
     if user_uuid is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'user_id': 2366, 'EditorAdmin': True}
+        editor_roots = {'PeerAdmin': False, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [], 'PeerCurator': [7], 'VisionAdmin': True, 'GPT_gen_access': True}
         print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     return editor_roots
 

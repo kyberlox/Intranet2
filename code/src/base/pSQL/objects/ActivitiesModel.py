@@ -61,7 +61,7 @@ class ActivitiesModel:
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 stmt = select(self.Activities).where(
-                    self.Activities.id == self.id, 
+                    self.Activities.id == int(self.id), 
                     self.Activities.active == True
                 )
                 result = await session.execute(stmt)
@@ -75,7 +75,7 @@ class ActivitiesModel:
                     
                     # Деактивируем активность
                     existing_activity.active = False
-                    await session.commit()
+                    # await session.commit()
                     
                     return LogsMaker().info_message(f"Удаление активности id = {self.id}, name = '{existing_activity.name}' завершено успешно")
                 else:

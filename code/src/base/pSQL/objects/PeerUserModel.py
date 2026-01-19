@@ -91,6 +91,7 @@ class PeerUserModel:
                         user_to=int(uuid_to),
                         active_info=f"Одобрено назанчение баллов пользователю: {description}",
                         active_coast=active_info.coast,
+                        active_id=action_id,
                         info_type='activity',
                         date_time=datetime.now()
                     )
@@ -129,6 +130,7 @@ class PeerUserModel:
                         user_to=int(ActiveUsers_info[1]),
                         active_info=f"Отказано в получении баллов пользователю: {ActiveUsers_info[0]}",
                         active_coast=active_info.coast,
+                        active_id=action_id,
                         info_type='activity',
                         date_time=datetime.now()
                     )
@@ -380,6 +382,7 @@ class PeerUserModel:
                         user_to=uuid_to,
                         active_info=description,
                         active_coast=value,
+                        active_id=new_id,
                         info_type='activity',
                         date_time=datetime.now()
                     )

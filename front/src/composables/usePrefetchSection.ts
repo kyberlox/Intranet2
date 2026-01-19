@@ -7,6 +7,7 @@ import { useViewsDataStore } from "@/stores/viewsData";
 import { useUserData } from "@/stores/userData";
 import { useUserScore } from "@/stores/userScoreData";
 import { usePointsData } from "@/stores/pointsData";
+import { featureFlags } from "@/assets/static/featureFlags";
 
 export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {    
     if (!useUserData().isLogin) return;
@@ -41,6 +42,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                     });  
             break;
         case 'score':
+        if(featureFlags.pointsSystem){     
             const scoreRoutes = [{
                 route: '/peer/sum',
                 functionName: useUserScore().setCurrentScore
@@ -58,12 +60,14 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 functionName: usePointsData().setAllActivities
             }
             ]
+ 
             scoreRoutes.map((e) => {
                 Api.get(e.route)
                     .then((data) => {                        
                         e.functionName(data);
                     });
             })
+            }
             break;
     }
 }

@@ -187,6 +187,7 @@ description="""
 
 """)
 async def calendar_event(request: Request, session: AsyncSession = Depends(get_async_db), data = Body()):
+    from .Peer import Peer
     user_id = None
     token = request.cookies.get("user_id")
     if token is None:

@@ -451,6 +451,8 @@ class PeerUserModel:
             # Проверяем что разница между датой текущей и датой регистрации больше или равно единицы
             today = datetime.today().date() # 2026-01-20 00:00:00
             # convert_today = datetime.strptime(today, '%Y-%m-%d')
+            if "T" in date_register:
+                date_register = date_register.split("T")[0]
             convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
             if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                 year_diff = abs(datetime.today().year - convert_date_reg.year)

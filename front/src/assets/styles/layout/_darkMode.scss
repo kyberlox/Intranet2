@@ -33,7 +33,8 @@
     .book-nav__li,
     .training-feedback__wrapper,
     .points-admin-panel__wrapper,
-    .points-admin-panel__navigation__wrapper {
+    .points-admin-panel__navigation__wrapper,
+    .point-info__table thead {
         background: #1b1b1b;
 
         ul {
@@ -88,7 +89,8 @@
     }
 
     .modal__header,
-    .point-info__table thead th {
+    .point-info__table thead th,
+    .point-info__table tbody tr {
         border-color: #000000;
     }
 

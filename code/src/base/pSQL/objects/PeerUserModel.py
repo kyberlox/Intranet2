@@ -411,8 +411,9 @@ class PeerUserModel:
         # from datetime import date
         try:
             # today = date.today()
-            today = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-            stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, self.ActiveUsers.date_time == today)
+            # today = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+            today = datetime.today().date()
+            stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, func.date(self.ActiveUsers.date_time) == today)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()
             LogsMaker().warning_message(f"Получили ли запись: {exist_node}, {today}")

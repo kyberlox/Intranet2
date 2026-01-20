@@ -4,8 +4,10 @@
         flex-direction: column;
 
         &__loader {
-            width: 15px !important;
-            height: 15px !important;
+            &>.loader {
+                width: 20px !important;
+                height: 20px !important;
+            }
         }
     }
 }

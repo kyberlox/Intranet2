@@ -17,8 +17,7 @@
                              @click.stop.prevent>
                             <div class="search-wrapper">
                                 <div class="search-input">
-                                    <Loader v-if="isLoading"
-                                            class="search-input__icon__loader" />
+                                    <Loader v-if="isLoading" />
                                     <SearchIcon v-else
                                                 class="search-input__icon" />
                                     <input :autofocus="true"

@@ -175,26 +175,23 @@ export default defineComponent({
         })
     }
 
-    const applyNewData = async () => {
+    const applyNewData = () => {
       needToBeDeleted.value = false;
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
 
-      if (newEmbedList.value.length) {
-        await Api.post('file/upload_link', { art_id: isCreateNew.value ? newId.value : props.elementId, links: newEmbedList.value })
-      }
-
-      await Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
-        .then((data) => {
-          handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
-          router.push({ name: 'adminBlockInner', params: { id: props.id } })
-        })
-        .catch((error) => {
-          handleApiError(error, toast)
-        })
-        .finally(() => {
-          buttonIsDisabled.value = false;
-        })
+      Api.post('file/upload_link', { art_id: isCreateNew.value ? newId.value : props.elementId, links: newEmbedList.value })
+        .then(() => Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
+          .then((data) => {
+            handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
+            router.push({ name: 'adminBlockInner', params: { id: props.id } })
+          })
+          .catch((error) => {
+            handleApiError(error, toast)
+          })
+          .finally(() => {
+            buttonIsDisabled.value = false;
+          }))
     }
 
     const handleUpload = (e: IFileToUpload | string[], embed: boolean = false) => {

@@ -11,14 +11,15 @@
         </div>
         <div>
             <button @click="sendReport"
-                    class="primary-button">
-                <Loader class="bug-modal__content__loader"
-                        v-if="isLoading" />
+                    class="primary-button bug-modal__content__loader">
+                <Loader v-if="isLoading" />
                 <span v-else>Подтвердить</span>
-
             </button>
+            <span class="red-text absolute"
+                  v-if="emptyInput">
+                Заполните форму
+            </span>
         </div>
-
     </div>
 </SlotModal>
 </template>
@@ -45,10 +46,11 @@ export default defineComponent({
         const email = computed(() => useUserData().getUser.email);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
+        const emptyInput = ref(false);
 
         const sendReport = () => {
+            if (!email.value || !bugreport.value) return emptyInput.value = true;;
             isLoading.value = true;
-            if (!email.value || !bugreport.value) return;
             const mailText = createMail(bugreport.value, '');
             const body = {
                 "sender": email.value,
@@ -66,6 +68,7 @@ export default defineComponent({
         return {
             bugreport,
             isLoading,
+            emptyInput,
             sendReport
         }
     }

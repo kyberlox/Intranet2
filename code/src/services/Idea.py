@@ -196,7 +196,6 @@ async def calendar_event(request: Request, session: AsyncSession = Depends(get_a
             user_id = token
     else:
         user_id = token
-    print(user_id, 'Получили ли из заголовков')
     send_idea =  await Idea().add(dict(data))
     if send_idea and user_id:
         """
@@ -211,7 +210,7 @@ async def calendar_event(request: Request, session: AsyncSession = Depends(get_a
             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
             "uuid_to": int(user_id),
             "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-            "description": f"Баллы за предложение по улучшению сервиса: {data['NAME']}"
+            "description": f"Баллы за предложение по улучшению сервиса: {data['NAME']}. Описание: {data['DETAIL_TEXT']}"
         }
         send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
         return send_idea

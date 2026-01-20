@@ -206,7 +206,7 @@ class Peer:
         roots = await root_init.token_processing_for_peer(roots_uuid)
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
-        return await self.PeerUserModel.send_points(data=data, roots=roots, session=session)
+        return await self.PeerUserModel.send_auto_points(data=data, roots=roots, session=session)
 
 
     async def get_admins_list(self, session):

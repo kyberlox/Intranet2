@@ -408,8 +408,9 @@ class PeerUserModel:
         """
         #Функция проверяет получал ли пользователь баллы за день рождения сегодня
         # Возвращает False если запись уже есть и новую не надо
+        from datetime import date
         try:
-            today = datetime.date.today()
+            today = date.today()
             stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, self.ActiveUsers.date_time == today)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()

@@ -450,10 +450,10 @@ class PeerUserModel:
         try:
             # Проверяем что разница между датой текущей и датой регистрации больше или равно единицы
             today = datetime.today().date() # 2026-01-20 00:00:00
-            convert_today = datetime.strptime(today, '%Y-%m-%d')
+            # convert_today = datetime.strptime(today, '%Y-%m-%d')
             convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
-            if convert_today.day == convert_date_reg.day and convert_today.month == convert_date_reg.month:
-                year_diff = abs(convert_today.year - convert_date_reg.year)
+            if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+                year_diff = abs(datetime.today().year - convert_date_reg.year)
                 if year_diff >= 1:
                     #проверяем была ли запись у пользователя в этом году 
                     stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, extract("year", self.ActiveUsers.date_time) == datetime.today().year)

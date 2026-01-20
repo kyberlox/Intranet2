@@ -410,15 +410,12 @@ class PeerUserModel:
         # Возвращает False если запись уже есть и новую не надо
         # from datetime import date
         try:
-            # today = date.today()
-            # today = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
             today = datetime.today().date()
             stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, func.date(self.ActiveUsers.date_time) == today)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()
             LogsMaker().warning_message(f"Получили ли запись: {exist_node}, {today}")
             if exist_node:
-                print("ЗАПИСЬ ЕСТЬ")
                 return False
             return True
         except Exception as e:
@@ -442,6 +439,39 @@ class PeerUserModel:
             return True
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_birthday_points: {e}")
+
+    async def check_anniversary_in_company(self, session, uuid_to, activities_id, date_register):
+        """
+        Функция проверяет прошел ли год с момента последней годовщины работы в компании.
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        from sqlalchemy import extract
+        try:
+            # Проверяем что разница между датой текущей и датой регистрации больше или равно единицы
+            today = datetime.today().date() # 2026-01-20 00:00:00
+            convert_today = datetime.strptime(today, '%Y-%m-%d')
+            convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
+            if convert_today.day == convert_date_reg.day and convert_today.month == convert_date_reg.month:
+                year_diff = abs(convert_today.year - convert_date_reg.year) extract("year", self.ActiveUsers.date_time)
+                if year_diff >= 1:
+                    #проверяем была ли запись у пользователя в этом году 
+                    stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, extract("year", self.ActiveUsers.date_time) == datetime.today().year)
+                    res = await session.execute(stmt) 
+                    exist_node = res.scalar_one_or_none()
+                    if exist_node:
+                        return False
+                    else:
+                        return True
+                else:
+                    LogsMaker().info_message(f"Разница в годах меньше единицы: {convert_today.year}, {convert_date_reg.year}")
+                    return False
+            else:
+                LogsMaker().info_message(f"День и месяц не совпадают: {convert_today.day}, {convert_date_reg.day}, {convert_today.month}, {convert_date_reg.month}")
+                return False
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")
+
 
     async def send_auto_points(self, session, data: dict, roots: dict):
         try:
@@ -467,6 +497,9 @@ class PeerUserModel:
             elif int(activities_id) == 15:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
+            elif int(activities_id) == 16:
+                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
 
             
             if check_info is True:

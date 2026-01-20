@@ -75,6 +75,7 @@ export default defineComponent({
         }
 
         const addTag = () => {
+            if (!newTagName.value) return
             Api.put(`tags/add_tag/${newTagName.value}`)
                 .then(() => { tagsInit(); newTagName.value = ''; })
                 .finally(() => isLoading.value = false)

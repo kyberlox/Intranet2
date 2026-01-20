@@ -11,11 +11,12 @@
                     :params="filterYears"
                     @pickFilter="(year: string) => currentYear = year" />
     </div>
-    <TagsFilter @pickTag="(tag: string) => currentTag = tag" />
+    <TagsFilter @pickTag="(tag: string) => currentTag = tag"
+                :tagId="tagId" />
 </div>
 <div class="row">
-    <SampleGallery v-if="visibleEvents && !emptyTag"
-                   :gallery="visibleEvents"
+    <SampleGallery v-if="!emptyTag"
+                   :gallery="(visibleEvents as INews[])"
                    :routeTo="'corpEvent'" />
     <p v-else
        class="mt20">Нет новостей в этой категории</p>
@@ -44,51 +45,39 @@ export default defineComponent({
     },
     setup(props) {
         const allEvents: ComputedRef<INews[]> = computed(() => useViewsDataStore().getData('corpEventsData') as INews[]);
-        const visibleEvents = ref<INews[]>();
+        const visibleEvents = ref<INews[]>([]);
         const buttonText: Ref<string> = ref('Год публикации');
-        const showFilter = ref(false);
-        const currentTag: Ref<string> = ref(props.tagId ? props.tagId : '');
+        const currentTag: Ref<string> = ref('');
         const emptyTag: Ref<boolean> = ref(false);
         const filterYears: Ref<string[]> = ref([]);
         const currentYear: Ref<string> = ref('');
+        const showFilter = ref(false);
 
         watch(([currentTag, currentYear]), async () => {
-            if (currentTag.value || currentYear.value) {
-                const { newVisibleNews, newEmptyTag, newFilterYears } =
-                    await useNewsFilterWatch(currentTag, currentYear, allEvents, sectionTips['КорпоративныеСобытия']);
-                console.log(newVisibleNews.value);
+            const { newVisibleNews, newEmptyTag, newFilterYears } =
+                await useNewsFilterWatch(currentTag, currentYear, allEvents, sectionTips['КорпоративныеСобытия']);
 
-                visibleEvents.value = newVisibleNews.value;
-                emptyTag.value = newEmptyTag.value;
-                filterYears.value = newFilterYears.value;
-                showFilter.value = false;
-            }
-        }, { immediate: true, deep: true })
+            visibleEvents.value = newVisibleNews.value;
+            emptyTag.value = newEmptyTag.value;
+            filterYears.value = newFilterYears.value;
+            showFilter.value = false;
+        })
 
         onMounted(() => {
-            if (!allEvents.value.length && !currentTag.value) {
+            if (allEvents.value.length && !props.tagId) {
+                visibleEvents.value = allEvents.value;
+                filterYears.value = extractYears(allEvents.value);
+            }
+            else
                 Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                     .then(res => {
                         useViewsDataStore().setData(res, 'corpEventsData');
-                        visibleEvents.value = res;
-                        filterYears.value = extractYears(allEvents.value);
+                        if (!props.tagId) {
+                            visibleEvents.value = res;
+                        }
                     })
-            }
+                    .finally(() => filterYears.value = extractYears(visibleEvents.value as INews[]))
         })
-
-        const filterYear = (year: string) => {
-            if (!year) {
-                visibleEvents.value = allEvents.value;
-                buttonText.value = 'Год публикации';
-            }
-            else {
-                buttonText.value = year;
-                visibleEvents.value = showEventsByYear(allEvents.value, year);
-            }
-            showFilter.value = false;
-            console.log(visibleEvents.value);
-
-        }
 
         return {
             visibleEvents,
@@ -101,7 +90,6 @@ export default defineComponent({
             currentYear,
             extractYears,
             showEventsByYear,
-            filterYear
         };
     },
 });

@@ -38,10 +38,15 @@ export default defineComponent({
         const router = useRouter();
 
         const pickTag = (id: string) => {
+            console.log(props);
+
             if (props.pageTitle == 'Актуальные новости') {
                 router.push({ name: 'actualNewsByTag', params: { tagId: id } })
             } else if (props.pageTitle == 'Видеорепортажи') {
                 router.push({ name: 'videoReportsByTag', params: { tagId: id } })
+            }
+            else if (props.pageTitle == 'Корпоративные события') {
+                router.push({ name: 'corpEventsByTag', params: { tagId: id } })
             }
         }
         return {

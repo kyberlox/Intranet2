@@ -414,6 +414,7 @@ class PeerUserModel:
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()
             if exist_node:
+                print("ЗАПИСЬ ЕСТЬ")
                 return False
             return True
         except Exception as e:
@@ -457,6 +458,7 @@ class PeerUserModel:
             check_info = False
 
             if int(activities_id) == 14:
+                print("МЫ ВООБЩЕ СЮДА ИДЕМ???")
                 check_info = await self.check_birthday_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за ДР: check_info = {check_info} ")
             elif int(activities_id) == 15:
@@ -464,7 +466,7 @@ class PeerUserModel:
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
 
 
-            if check_info is False:
+            if check_info is True:
                 if "PeerCurator" in roots.keys():
                     stmt_max = select(func.max(self.ActiveUsers.id))
                     result_max = await session.execute(stmt_max)

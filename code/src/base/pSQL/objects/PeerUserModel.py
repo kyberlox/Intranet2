@@ -466,10 +466,10 @@ class PeerUserModel:
                     else:
                         return True
                 else:
-                    LogsMaker().info_message(f"Разница в годах меньше единицы: {convert_today.year}, {convert_date_reg.year}")
+                    LogsMaker().info_message(f"Разница в годах меньше единицы: {datetime.today().year}, {convert_date_reg.year}")
                     return False
             else:
-                LogsMaker().info_message(f"День и месяц не совпадают: {convert_today.day}, {convert_date_reg.day}, {convert_today.month}, {convert_date_reg.month}")
+                LogsMaker().info_message(f"День и месяц не совпадают: {datetime.today().day}, {convert_date_reg.day}, {datetime.today().month}, {convert_date_reg.month}")
                 return False
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")

@@ -190,7 +190,7 @@ class User:
             "uuid_to": 2366,
             "activities_id": 16, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
             "description": f"+ год вы с нами!", 
-            "date_register": "2025-03-11T04:00:00+04:00"
+            "date_register": "2026-01-20T04:00:00+04:00"
         }
         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
         return send_point

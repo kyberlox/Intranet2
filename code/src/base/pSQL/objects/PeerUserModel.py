@@ -456,7 +456,8 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует, не удалось автоматически отправить баллы")
 
             check_info = False
-
+            
+            print("ТУТ ЧЕТ ДЕЛАЕМ ВООБЩЕ??")
             if int(activities_id) == 14:
                 print("МЫ ВООБЩЕ СЮДА ИДЕМ???")
                 check_info = await self.check_birthday_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
@@ -465,7 +466,7 @@ class PeerUserModel:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
 
-
+            print("ТУТ ЧЕТ ДЕЛАЕМ ВООБЩЕ??")
             if check_info is True:
                 if "PeerCurator" in roots.keys():
                     stmt_max = select(func.max(self.ActiveUsers.id))

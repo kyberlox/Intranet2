@@ -409,7 +409,7 @@ class PeerUserModel:
         #Функция проверяет получал ли пользователь баллы за день рождения сегодня
         # Возвращает False если запись уже есть и новую не надо
         try:
-            today = datetime.date()
+            today = datetime.date.today()
             stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, self.ActiveUsers.date_time == today)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()
@@ -456,7 +456,7 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует, не удалось автоматически отправить баллы")
 
             check_info = False
-            
+
             print("ТУТ ЧЕТ ДЕЛАЕМ ВООБЩЕ??")
             if int(activities_id) == 14:
                 print("МЫ ВООБЩЕ СЮДА ИДЕМ???")

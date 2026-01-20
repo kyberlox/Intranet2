@@ -125,19 +125,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
 import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
 import SendPoints from './userPointsComponents/SendPointsModalSlot.vue';
-import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
+import { handleApiError, handleApiResponse, handleApiResponse2 } from '@/utils/apiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';
 import { featureFlags } from '@/assets/static/featureFlags';
 import Loader from '@/components/layout/Loader.vue';
+import { useUserScore } from '@/stores/userScoreData';
 
 export default defineComponent({
     props: {
@@ -202,7 +203,11 @@ export default defineComponent({
                 .then((data) => {
                     handleApiResponse(data, toast, 'trySupportError', 'pointsSendSuccess');
                 })
-                .finally(() => isPointsModalOpen.value = false)
+                .finally(() => {
+                    isPointsModalOpen.value = false
+                    Api.get('peer/actions')
+                        .then((data) => useUserScore().setActions(data))
+                })
         }
 
         return {

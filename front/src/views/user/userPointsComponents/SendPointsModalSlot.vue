@@ -17,7 +17,7 @@
                 <CancelIcon />
             </div>
             <div class="primary-button send-points-form__button send-points-form__button--accept"
-                 :class="{ 'send-points-form__button--disabled': !pointsComment }"
+                 :class="{ 'send-points-form__button--disabled': !pointsComment || !chosenActivity }"
                  @click="handlePointsSend">
                 <CheckIcon />
             </div>

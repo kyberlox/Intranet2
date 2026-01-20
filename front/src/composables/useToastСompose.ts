@@ -33,8 +33,11 @@ const messages: messages = {
 
 export const useToastCompose = (toastInstance: ToastServiceMethods) => {
 
-    const showToast = (type: keyof messages, name: keyof messageGroup) => {
-        toastInstance.add({ severity: type, summary: '', detail: messages[type][name], life: 13000 });
+    const showToast = (type:  keyof messages | string, name: keyof messageGroup, custom: boolean = false) => {
+        if (!custom){            
+            toastInstance.add({ severity: type, summary: '', detail: messages[(type as keyof messages)][name], life: 13000 });
+        }
+        else toastInstance.add({ severity: type, summary: '', detail: name, life: 13000 });
     }
 
     const showSuccess = (name: keyof messageGroup) => {
@@ -49,10 +52,15 @@ export const useToastCompose = (toastInstance: ToastServiceMethods) => {
         showToast('warn', name)
     }
 
+    const showCustomToast = (type: string, text: string ) => {
+        showToast(type !== 'warning' ? type : 'warn', text, true)
+    }
+
     return {
         showToast,
         showSuccess,
         showError,
+        showCustomToast,
         showWarning
     };
 }

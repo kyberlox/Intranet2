@@ -415,7 +415,7 @@ class PeerUserModel:
             stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, self.ActiveUsers.date_time == today)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()
-            LogsMaker().warning_message(f"Получили ли запись: {exist_node}")
+            LogsMaker().warning_message(f"Получили ли запись: {exist_node}, {today}")
             if exist_node:
                 print("ЗАПИСЬ ЕСТЬ")
                 return False
@@ -460,16 +460,14 @@ class PeerUserModel:
 
             check_info = False
 
-            print("ТУТ ЧЕТ ДЕЛАЕМ ВООБЩЕ??")
             if int(activities_id) == 14:
-                print("МЫ ВООБЩЕ СЮДА ИДЕМ???")
                 check_info = await self.check_birthday_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за ДР: check_info = {check_info} ")
             elif int(activities_id) == 15:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
 
-            print("ТУТ ЧЕТ ДЕЛАЕМ ВООБЩЕ??")
+            
             if check_info is True:
                 if "PeerCurator" in roots.keys():
                     stmt_max = select(func.max(self.ActiveUsers.id))

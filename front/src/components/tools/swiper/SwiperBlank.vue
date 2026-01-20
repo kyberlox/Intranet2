@@ -27,14 +27,15 @@
     <!-- для загруженных video -->
     <swiper-slide v-for="(video, index) in videosNative"
                   :key="'postVideoNative' + index">
-        <iframe v-if="video && video.file_url"
-                width="100%"
-                height="500px"
-                :title="'Видеоконтент'"
-                :src="String((video.file_url))"
-                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen>
-        </iframe>
+        <video v-if="video && video.file_url"
+               width="100%"
+               height="500px"
+               controls
+               :title="'Видеоконтент'"
+               allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+               allowfullscreen>
+            <source :src="String((video.file_url))">
+        </video>
     </swiper-slide>
 
     <SwiperButtons :isBeginning="isBeginning"

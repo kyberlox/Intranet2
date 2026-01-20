@@ -98,7 +98,7 @@
                                 <h3>Рабочий телефон</h3>
                                 <span>{{ user.indirect_data.work_phone }}</span>
                             </div>
-                            <div>
+                            <div> 
                                 <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
                                 <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
                                             class="personal__user__vcard"
@@ -138,6 +138,7 @@ import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';
 import { featureFlags } from '@/assets/static/featureFlags';
 import Loader from '@/components/layout/Loader.vue';
+import { useUserScore } from '@/stores/userScoreData';
 
 export default defineComponent({
     props: {
@@ -191,13 +192,22 @@ export default defineComponent({
         const senderId = computed(() => useUserData().getMyId);
 
         const sendPoints = (comment: string, activityId: number) => {
-            const sendingData: IPointsForm = { "uuid_from": senderId.value, "uuid_to": Number(props.id), "activities_id": activityId, "description": comment };
+            const sendingData: IPointsForm = {
+                "uuid_from": senderId.value,
+                "uuid_to": Number(props.id),
+                "activities_id": activityId,
+                "description": comment
+            };
             Api.put('peer/send_points', sendingData)
                 .catch((error) => handleApiError(error, toast))
                 .then((data) => {
                     handleApiResponse(data, toast, 'trySupportError', 'pointsSendSuccess');
                 })
-                .finally(() => isPointsModalOpen.value = false)
+                .finally(() => {
+                    isPointsModalOpen.value = false
+                    Api.get('peer/actions')
+                        .then((data) => useUserScore().setActions(data))
+                })
         }
 
         return {

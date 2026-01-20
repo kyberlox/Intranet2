@@ -31,7 +31,10 @@
     .portal__auth__content,
     .one-c-memo-card,
     .book-nav__li,
-    .training-feedback__wrapper {
+    .training-feedback__wrapper,
+    .points-admin-panel__wrapper,
+    .points-admin-panel__navigation__wrapper,
+    .point-info__table thead {
         background: #1b1b1b;
 
         ul {
@@ -85,7 +88,9 @@
         background: rgb(81, 81, 81);
     }
 
-    .modal__header {
+    .modal__header,
+    .point-info__table thead th,
+    .point-info__table tbody tr {
         border-color: #000000;
     }
 
@@ -95,12 +100,16 @@
         background: #131313;
     }
 
-    .postcard__form-wrapper {
+    .postcard__form-wrapper,
+    .point-info__table tbody tr td {
         background-color: #2e2e2e;
     }
 
     .refer-page,
-    .admin-block-inner__toolbar {
+    .admin-block-inner__toolbar,
+    .point-info__table thead th,
+    .activity-edit__table,
+    .activity-edit__input {
         background-color: #212121;
 
         &__jobs-link {

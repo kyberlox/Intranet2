@@ -400,6 +400,166 @@ class PeerUserModel:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в send_points при отправке баллов от {roots.get('user_id')} к {data.get('uuid_to')} для активности {data.get('activities_id')}: {e}")
 
+    async def check_birthday_points(self, session, uuid_to, activities_id):
+        """
+        Функция проверяет получал ли пользовательь uuid_to баллы за день рождения сегодня
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        #Функция проверяет получал ли пользователь баллы за день рождения сегодня
+        # Возвращает False если запись уже есть и новую не надо
+        # from datetime import date
+        try:
+            today = datetime.today().date()
+            stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, func.date(self.ActiveUsers.date_time) == today)
+            res = await session.execute(stmt) 
+            exist_node = res.scalar_one_or_none()
+            LogsMaker().warning_message(f"Получили ли запись: {exist_node}, {today}")
+            if exist_node:
+                return False
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_birthday_points: {e}")
+    
+    async def check_new_workers_points(self, session, uuid_to, activities_id):
+        """
+        Функция проверяет получил ли пользователь приветственные баллы в качестве нового сотрудника
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        try:
+            stmt_count = select(func.count(self.ActiveUsers.id)).where(
+                self.ActiveUsers.uuid_to == uuid_to,
+                self.ActiveUsers.activities_id == activities_id
+            )
+            result_count = await session.execute(stmt_count)
+            nodes_count = result_count.scalar()
+            if nodes_count >= 1:
+                return False
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_birthday_points: {e}")
+
+    async def check_anniversary_in_company(self, session, uuid_to, activities_id, date_register):
+        """
+        Функция проверяет прошел ли год с момента последней годовщины работы в компании.
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        from sqlalchemy import extract
+        try:
+            # Проверяем что разница между датой текущей и датой регистрации больше или равно единицы
+            today = datetime.today().date() # 2026-01-20 00:00:00
+            # convert_today = datetime.strptime(today, '%Y-%m-%d')
+            if "T" in date_register:
+                date_register = date_register.split("T")[0]
+            convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
+            if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+                year_diff = abs(datetime.today().year - convert_date_reg.year)
+                if year_diff >= 1:
+                    #проверяем была ли запись у пользователя в этом году 
+                    stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, extract("year", self.ActiveUsers.date_time) == datetime.today().year)
+                    res = await session.execute(stmt) 
+                    exist_node = res.scalar_one_or_none()
+                    if exist_node:
+                        return False
+                    else:
+                        return True
+                else:
+                    LogsMaker().info_message(f"Разница в годах меньше единицы: {datetime.today().year}, {convert_date_reg.year}")
+                    return False
+            else:
+                LogsMaker().info_message(f"День и месяц не совпадают: {datetime.today().day}, {convert_date_reg.day}, {datetime.today().month}, {convert_date_reg.month}")
+                return False
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")
+
+    
+
+    async def send_auto_points(self, session, data: dict, roots: dict):
+        try:
+            from .MerchStoreModel import MerchStoreModel
+            uuid_from = int(roots['user_id'])
+            uuid_to = int(data["uuid_to"])
+            activities_id = int(data["activities_id"])
+            description = data["description"]
+            
+            # Проверяем существование пользователя
+            stmt_user = select(self.User).where(self.User.id == uuid_to, self.User.active == True)
+            result_user = await session.execute(stmt_user)
+            existing_user = result_user.scalar_one_or_none()
+            
+            if not existing_user:
+                return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует, не удалось автоматически отправить баллы")
+
+            check_info = False
+
+            if int(activities_id) == 14:
+                check_info = await self.check_birthday_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за ДР: check_info = {check_info} ")
+            elif int(activities_id) == 15:
+                check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
+            elif int(activities_id) == 16:
+                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
+
+            
+            if check_info is True:
+                if "PeerCurator" in roots.keys():
+                    stmt_max = select(func.max(self.ActiveUsers.id))
+                    result_max = await session.execute(stmt_max)
+                    max_id = result_max.scalar() or 0
+                    new_id = max_id + 1
+                    
+                    new_action = self.ActiveUsers(
+                        id=new_id,
+                        uuid_from=uuid_from,
+                        uuid_to=uuid_to,
+                        description=description,
+                        activities_id=activities_id,
+                        valid=1,
+                        date_time=datetime.now()
+                    )
+
+                    
+                    value = 0
+                    
+                    if activities_id in roots.get("PeerCurator", []):
+                        session.add(new_action)
+                        # await session.commit()
+                        
+                        stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
+                        result_coast = await session.execute(stmt_coast)
+                        value = result_coast.scalar()
+                        
+                        merch_model = MerchStoreModel(uuid_to)
+                        add_points = await merch_model.upload_user_sum(session, value)
+                        
+                        add_history = self.PeerHistory(
+                            user_uuid=roots['user_id'],
+                            user_to=uuid_to,
+                            active_info=description,
+                            active_coast=value,
+                            active_id=new_id,
+                            info_type='activity',
+                            date_time=datetime.now()
+                        )
+
+                        session.add(add_history)
+                        await session.commit()
+                        return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
+                
+                else:
+                    return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
+            else:
+                return LogsMaker().info_message(f"Пользователю с id {uuid_to} уже были назначены баллы за активность с id = {activities_id}")
+            
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в send_auto_points при автоматической отправке баллов от {roots.get('user_id')} к {data.get('uuid_to')} для активности {data.get('activities_id')}: {e}")
+
+
     async def get_admins_list(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
@@ -528,7 +688,7 @@ class PeerUserModel:
     async def delete_peer_moder(self, session, roots: dict):
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                stmt = select(self.Roots).where(self.Roots.user_uuid == self.uuid)
+                stmt = select(self.Roots).where(self.Roots.user_uuid == int(self.uuid))
                 result = await session.execute(stmt)
                 existing_moder = result.scalar_one_or_none()
                 
@@ -599,7 +759,7 @@ class PeerUserModel:
                     stmt_activity = select(self.Activities.name).join(
                         self.ActiveUsers, 
                         self.ActiveUsers.activities_id == self.Activities.id
-                    ).where(self.ActiveUsers.uuid_from == active.user_uuid, self.ActiveUsers.uuid_to == active.user_to)
+                    ).where(self.ActiveUsers.id == active.active_id)
                     
                     result_activity = await session.execute(stmt_activity)
                     active_name = result_activity.scalar_one_or_none()

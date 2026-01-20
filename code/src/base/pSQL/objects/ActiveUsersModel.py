@@ -109,8 +109,8 @@ class ActiveUsersModel:
                 result_count = await session.execute(stmt_count)
                 likes_count = result_count.scalar()
 
-                likes_left = 10 - likes_count
-                if likes_count > 10:
+                likes_left = 5 - likes_count
+                if likes_count > 5:
                     likes_left = 0
                     
                 action = {"value": activity.id, "name": activity.name, "likes_left": likes_left}

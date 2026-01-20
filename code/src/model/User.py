@@ -154,12 +154,47 @@ class User:
     # день рождения
     async def get_birthday_celebrants(self, date, session):
         # from ..base.pSQL.objects import UserModel
-        return await self.UserModel.find_all_celebrants(date=date, session=session)
+        from ..services.Peer import Peer
+        # users = await self.UserModel.find_all_celebrants(date=date, session=session)
+        # if users:
+        #     for user in users:
+        #         send_data = {
+        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+        #             "uuid_to": int(user['id']),
+        #             "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+        #             "description": f"Поздравительные баллы. С днем рождения!"
+        #         }
+        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        return users
 
     # новые сотрудники
     async def get_new_workers(self, session):
         # from ..base.pSQL.objects import UserModel
-        return await self.UserModel.new_workers(session)
+        from ..services.Peer import Peer
+        users = await self.UserModel.new_workers(session)
+        # if users:
+        #     for user in users:
+        #         send_data = {
+        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+        #             "uuid_to": int(user['id']),
+        #             "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+        #             "description": f"Добро пожаловать в ЭМК!"
+        #         }
+        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        return users
+
+    async def anniversary_in_company(self, session):
+        from ..services.Peer import Peer
+        send_data = {
+            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+            "uuid_to": 2366,
+            "activities_id": 16, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "description": f"+ год вы с нами!", 
+            # "date_register": "2025-03-11T04:00:00+04:00"
+            "date_register": "2025-01-20T04:00:00+04:00"
+        }
+        send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        return send_point
 
     # дамп данных в эластик
     async def dump_users_data_es(self, session):
@@ -492,7 +527,10 @@ def send_error(data=Body(...)):
 async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id=user_id).get_user_likes(session)
 
-
+#Тестовая для проверки передачи баллов за годовщину
+@users_router.get("/anniversary_in_company", tags=["Пользователь"])
+async def anniversary_in_company(session: AsyncSession = Depends(get_async_db)):
+    return await User().anniversary_in_company(session=session)
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

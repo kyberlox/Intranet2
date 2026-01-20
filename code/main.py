@@ -346,7 +346,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     return response
 
 
-
 # Прогресс процесса через вебсокет
 @app.websocket("/ws/progress/{upload_id}")
 async def websocket_endpoint(websocket: WebSocket, upload_id: int):
@@ -414,6 +413,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
 #         return progress
 #     else:
 #         return f'нет такого upload_id = {upload_id}'
+
 
 @app.get("/get_info_message")
 def get_info_message():

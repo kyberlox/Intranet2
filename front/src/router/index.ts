@@ -427,6 +427,12 @@ const router = createRouter({
       }
     },
     {
+      path: '/communications/corpevents/:tagId',
+      name: 'corpEventsByTag',
+      props: (route) => ({ tagId: route.params.tagId}),
+      component: () => import('@/views/innerCommunications/CorpEvents.vue'),
+    },
+    {
       path: '/communications/corplife/',
       name: 'corpLife',
       component: () => import('@/views/innerCommunications/corpLife/CorpLife.vue')

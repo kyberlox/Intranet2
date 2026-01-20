@@ -198,6 +198,16 @@ class Peer:
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.send_points(data=data, roots=roots, session=session)
+    
+    async def send_auto_points(self, data, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
+        return await self.PeerUserModel.send_auto_points(data=data, roots=roots, session=session)
+
 
     async def get_admins_list(self, session):
         from ..base.pSQL.objects.RootsModel import RootsModel
@@ -315,7 +325,8 @@ async def get_uuid_from_request(request, session):
 @peer_router.get("/sum")
 async def sum(request: Request, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
-
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid).sum(session)
 
 
@@ -327,6 +338,8 @@ async def sum(request: Request, session: AsyncSession = Depends(get_async_db)):
 @peer_router.get("/actions")
 async def get_actions(request: Request, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid).actions(session)
 
 
@@ -341,6 +354,8 @@ async def get_activities(session: AsyncSession = Depends(get_async_db)):
 @peer_router.post("/edit_activity")
 async def post_edit_activity(request: Request, session: AsyncSession = Depends(get_async_db), data=Body()):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'],
                       need_valid=data['need_valid'], active=data['active']).edit_activity(session)
 
@@ -348,6 +363,8 @@ async def post_edit_activity(request: Request, session: AsyncSession = Depends(g
 @peer_router.delete("/remove_activity/{id}")
 async def del_remove_activity(request: Request, id: str, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     res = await Peer(id=id, user_uuid=uuid).remove_activity(session)
     await session.commit()
     return res
@@ -359,18 +376,25 @@ async def del_remove_activity(request: Request, id: str, session: AsyncSession =
 @peer_router.post("/do_valid/{action_id}/{uuid_to}")
 async def post_do_valid(request: Request, action_id: int, uuid_to: int, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid).do_valid(action_id=action_id, uuid_to=uuid_to, session=session)
 
 
 @peer_router.post("/do_not_valid/{action_id}")
 async def post_do_not_valid(request: Request, action_id: int, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid).do_not_valid(action_id=action_id, session=session)
 
 
 @peer_router.get("/points_to_confirm/{activities_id}")
 async def get_points_to_confirm(request: Request, activities_id: int, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
+
     return await Peer(activities_id=activities_id, user_uuid=uuid).points_to_confirm(session)
 
 
@@ -382,6 +406,8 @@ async def get_req_curators(session: AsyncSession = Depends(get_async_db)):
 @peer_router.put("/add_curator/{uuid}/{activities_id}")
 async def add_curator(uuid: int, request: Request, activities_id: int, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid, activities_id=activities_id).add_curator(user_id=uuid, session=session)
 
 
@@ -389,6 +415,8 @@ async def add_curator(uuid: int, request: Request, activities_id: int, session: 
 async def delete_curator(uuid: int, request: Request, activities_id: int,
                          session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     res = await Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(user_id=uuid, session=session)
     await session.commit()
     return res
@@ -397,6 +425,8 @@ async def delete_curator(uuid: int, request: Request, activities_id: int,
 @peer_router.put("/new_activity")
 async def put_new_activity(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid).new_activity(data=data,session=session)  # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
 
 
@@ -426,6 +456,8 @@ async def put_new_activity(request: Request, data=Body(), session: AsyncSession 
 @peer_router.get("/user_history")
 async def user_history(request: Request, session: AsyncSession = Depends(get_async_db)):
     uuid = await get_uuid_from_request(request, session)
+    if uuid is None:
+        uuid = 2366
     return await Peer(user_uuid=uuid).user_history(session=session)
 
 
@@ -435,6 +467,8 @@ async def user_history(request: Request, session: AsyncSession = Depends(get_asy
 @peer_router.put("/send_points")
 async def send_points(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).send_points(data=data,
                                                        session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 
@@ -442,42 +476,56 @@ async def send_points(request: Request, data=Body(), session: AsyncSession = Dep
 @peer_router.get("/get_admins_list")
 async def get_admins_list(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).get_admins_list(session=session)
 
 
 @peer_router.put("/add_peer_admin/{uuid}")
 async def add_peer_admin(uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).add_peer_admin(uuid=uuid, session=session)
 
 
 @peer_router.delete("/delete_admin/{uuid}")
 async def delete_admin(uuid: str, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).delete_admin(uuid=uuid, session=session)
 
 
 @peer_router.get("/get_moders_list")
 async def get_moders_list(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).get_moders_list(session)
 
 
 @peer_router.put("/add_peer_moder/{uuid}")
 async def add_peer_moder(uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).add_peer_moder(uuid=uuid, session=session)
 
 
 @peer_router.delete("/delete_peer_moder/{uuid}")
 async def delete_peer_moder(uuid: str, request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).delete_peer_moder(uuid=uuid, session=session)
 
 
 @peer_router.get("/get_curators_history")
 async def get_curators_history(request: Request, session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).get_curators_history(session=session)
 
 
@@ -490,4 +538,6 @@ async def return_points_to_user(user_uuid: int, note_id: int, session: AsyncSess
 async def remove_user_points(request: Request, uuid: int, action_id: int,
                              session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).remove_user_points(action_id=action_id, user_uuid=uuid, session=session)

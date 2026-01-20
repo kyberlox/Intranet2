@@ -3,21 +3,21 @@
     <table class="point-info__table">
         <thead>
             <tr>
-                <th>Дата</th>
-                <th>Активность</th>
-                <th>Кто отправил</th>
-                <th>Комментарий</th>
-                <th>Баллов</th>
+                <th><span>Дата</span></th>
+                <th><span>Активность</span></th>
+                <th><span>Кто отправил</span></th>
+                <th><span>Комментарий</span></th>
+                <th><span>Баллы</span></th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="item in pointsHistory"
                 :key="item.id_activeusers">
-                <td>{{ dateConvert(item.date_time, 'toStringType') }}</td>
-                <td>{{ item.activity_name }}</td>
-                <td>{{ item.fio_from }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.cost }}</td>
+                <td><span>{{ dateConvert(item.date_time, 'toStringType') }}</span></td>
+                <td><span>{{ item.activity_name }}</span></td>
+                <td><span>{{ item.fio_from }}</span></td>
+                <td><span>{{ item.description }}</span></td>
+                <td><span>{{ item.cost }}</span></td>
             </tr>
         </tbody>
         <tfoot></tfoot>

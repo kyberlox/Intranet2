@@ -327,6 +327,8 @@
 
             &--user-points {
                 padding: 0;
+                overflow-y: auto;
+                max-height: 500px;
             }
 
             &__user-photo {

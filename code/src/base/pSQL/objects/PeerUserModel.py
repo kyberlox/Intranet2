@@ -474,6 +474,7 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")
 
+    
 
     async def send_auto_points(self, session, data: dict, roots: dict):
         try:

@@ -155,16 +155,16 @@ class User:
     async def get_birthday_celebrants(self, date, session):
         # from ..base.pSQL.objects import UserModel
         from ..services.Peer import Peer
-        users = await self.UserModel.find_all_celebrants(date=date, session=session)
-        if users:
-            for user in users:
-                send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                    "uuid_to": int(user['id']),
-                    "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-                    "description": f"Поздравительные баллы. С днем рождения!"
-                }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        # users = await self.UserModel.find_all_celebrants(date=date, session=session)
+        # if users:
+        #     for user in users:
+        #         send_data = {
+        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+        #             "uuid_to": int(user['id']),
+        #             "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+        #             "description": f"Поздравительные баллы. С днем рождения!"
+        #         }
+        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
         return users
 
     # новые сотрудники
@@ -172,15 +172,15 @@ class User:
         # from ..base.pSQL.objects import UserModel
         from ..services.Peer import Peer
         users = await self.UserModel.new_workers(session)
-        if users:
-            for user in users:
-                send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                    "uuid_to": int(user['id']),
-                    "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-                    "description": f"Добро пожаловать в ЭМК!"
-                }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        # if users:
+        #     for user in users:
+        #         send_data = {
+        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+        #             "uuid_to": int(user['id']),
+        #             "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+        #             "description": f"Добро пожаловать в ЭМК!"
+        #         }
+        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
         return users
 
     async def anniversary_in_company(self, session):

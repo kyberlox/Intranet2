@@ -164,7 +164,7 @@ class User:
                     "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Поздравительные баллы. С днем рождения!"
                 }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
         return users
 
     # новые сотрудники
@@ -177,10 +177,10 @@ class User:
                 send_data = {
                     "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(user['id']),
-                    "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-                    "description": f"Поздравительные баллы. С днем рождения!"
+                    "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "description": f"Добро пожаловать в ЭМК!"
                 }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
         return users
 
     # дамп данных в эластик

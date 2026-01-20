@@ -63,7 +63,7 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         onMounted(() => {
-            if (!allEvents.value.length)
+            if (!allEvents.value.length && filterYears.value.length && !currentTag.value)
                 Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                     .then(res => {
                         useViewsDataStore().setData(res, 'corpEventsData');

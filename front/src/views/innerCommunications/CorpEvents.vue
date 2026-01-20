@@ -44,7 +44,7 @@ export default defineComponent({
     },
     setup(props) {
         const allEvents: ComputedRef<INews[]> = computed(() => useViewsDataStore().getData('corpEventsData') as INews[]);
-        const visibleEvents = ref<INews[]>(allEvents.value);
+        const visibleEvents = ref<INews[]>();
         const buttonText: Ref<string> = ref('Год публикации');
         const showFilter = ref(false);
         const currentTag: Ref<string> = ref(props.tagId ? props.tagId : '');
@@ -53,23 +53,27 @@ export default defineComponent({
         const currentYear: Ref<string> = ref('');
 
         watch(([currentTag, currentYear]), async () => {
-            const { newVisibleNews, newEmptyTag, newFilterYears } =
-                await useNewsFilterWatch(currentTag, currentYear, allEvents, sectionTips['КорпоративныеСобытия']);
+            if (currentTag.value || currentYear.value) {
+                const { newVisibleNews, newEmptyTag, newFilterYears } =
+                    await useNewsFilterWatch(currentTag, currentYear, allEvents, sectionTips['КорпоративныеСобытия']);
+                console.log(newVisibleNews.value);
 
-            visibleEvents.value = newVisibleNews.value;
-            emptyTag.value = newEmptyTag.value;
-            filterYears.value = newFilterYears.value;
-            showFilter.value = false;
+                visibleEvents.value = newVisibleNews.value;
+                emptyTag.value = newEmptyTag.value;
+                filterYears.value = newFilterYears.value;
+                showFilter.value = false;
+            }
         }, { immediate: true, deep: true })
 
         onMounted(() => {
-            if (!allEvents.value.length && filterYears.value.length && !currentTag.value)
+            if (!allEvents.value.length && !currentTag.value) {
                 Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                     .then(res => {
                         useViewsDataStore().setData(res, 'corpEventsData');
                         visibleEvents.value = res;
                         filterYears.value = extractYears(allEvents.value);
                     })
+            }
         })
 
         const filterYear = (year: string) => {
@@ -82,6 +86,8 @@ export default defineComponent({
                 visibleEvents.value = showEventsByYear(allEvents.value, year);
             }
             showFilter.value = false;
+            console.log(visibleEvents.value);
+
         }
 
         return {

@@ -44,7 +44,7 @@ export default defineComponent({
     },
     setup(props) {
         const allEvents: ComputedRef<INews[]> = computed(() => useViewsDataStore().getData('corpEventsData') as INews[]);
-        const visibleEvents = ref<INews[]>(allEvents.value);
+        const visibleEvents = ref<INews[]>();
         const buttonText: Ref<string> = ref('Год публикации');
         const showFilter = ref(false);
         const currentTag: Ref<string> = ref(props.tagId ? props.tagId : '');
@@ -63,7 +63,7 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         onMounted(() => {
-            if (!allEvents.value.length && filterYears.value.length && !currentTag.value)
+            if (!allEvents.value.length && !currentTag.value)
                 Api.get(`article/find_by/${sectionTips['КорпоративныеСобытия']}`)
                     .then(res => {
                         useViewsDataStore().setData(res, 'corpEventsData');

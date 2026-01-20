@@ -196,7 +196,6 @@ async def calendar_event(request: Request, session: AsyncSession = Depends(get_a
             user_id = token
     else:
         user_id = token
-    print(user_id, 'Получили ли из заголовков')
     send_idea =  await Idea().add(dict(data))
     if send_idea and user_id:
         """

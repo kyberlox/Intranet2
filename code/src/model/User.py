@@ -154,12 +154,34 @@ class User:
     # день рождения
     async def get_birthday_celebrants(self, date, session):
         # from ..base.pSQL.objects import UserModel
-        return await self.UserModel.find_all_celebrants(date=date, session=session)
+        from ..services.Peer import Peer
+        users = await self.UserModel.find_all_celebrants(date=date, session=session)
+        if users:
+            for user in users:
+                send_data = {
+                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_to": int(user['id']),
+                    "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "description": f"Поздравительные баллы. С днем рождения!"
+                }
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        return users
 
     # новые сотрудники
     async def get_new_workers(self, session):
         # from ..base.pSQL.objects import UserModel
-        return await self.UserModel.new_workers(session)
+        from ..services.Peer import Peer
+        users = await self.UserModel.new_workers(session)
+        if users:
+            for user in users:
+                send_data = {
+                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_to": int(user['id']),
+                    "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "description": f"Добро пожаловать в ЭМК!"
+                }
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        return users
 
     # дамп данных в эластик
     async def dump_users_data_es(self, session):

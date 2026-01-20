@@ -5,7 +5,7 @@ import datetime
 #from ..models.User import User
 #from .ActiveUsersModel import ActiveUsersModel
 
-from .App import select #get_db
+from .App import select, func #get_db
 # db_gen = get_db()
 # database = next(db_gen)
 
@@ -34,7 +34,13 @@ class MerchStoreModel:
                     user.user_points = value
                 # await session.commit()
             else:
+                stmt_max = select(func.max(Roots.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
+                new_id = max_id + 1
+
                 new_user_sum = Roots(
+                    id=new_id,
                     user_uuid=int(self.user_id),
                     root_token={},
                     user_points=value

@@ -155,7 +155,7 @@ class User:
     async def get_birthday_celebrants(self, date, session):
         # from ..base.pSQL.objects import UserModel
         from ..services.Peer import Peer
-        # users = await self.UserModel.find_all_celebrants(date=date, session=session)
+        users = await self.UserModel.find_all_celebrants(date=date, session=session)
         # if users:
         #     for user in users:
         #         send_data = {

@@ -414,13 +414,6 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
 #     else:
 #         return f'нет такого upload_id = {upload_id}'
 
-@app.get("/api/error_msg")
-async def get_error_msg():
-    return LogsMaker().error_message(f'Вот так выглядит error msg')
-
-@app.get("/api/warning_msg")
-async def get_warning_msg():
-    return LogsMaker().warning_message(f'Вот так выглядит warning msg')
 
 @app.get("/get_info_message")
 def get_info_message():

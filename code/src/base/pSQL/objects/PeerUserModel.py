@@ -415,6 +415,7 @@ class PeerUserModel:
             stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, self.ActiveUsers.date_time == today)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()
+            LogsMaker().warning_message(f"Получили ли запись: {exist_node}")
             if exist_node:
                 print("ЗАПИСЬ ЕСТЬ")
                 return False

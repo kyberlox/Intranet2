@@ -193,7 +193,7 @@ class User:
             "date_register": "2025-03-11T04:00:00+04:00"
         }
         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
-        return users
+        return send_point
 
     # дамп данных в эластик
     async def dump_users_data_es(self, session):

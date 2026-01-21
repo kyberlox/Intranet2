@@ -88,10 +88,10 @@
                                 <h3>Кабинет</h3>
                                 <span>{{ user.indirect_data.uf_usr_1586854037086 }}</span>
                             </div>
-                            <div v-if="user.uf_phone_inner"
+                            <div v-if="user.uf_usr_1753418205828"
                                  class="personal__user__property__items__inner-phone">
                                 <h3>Внутренний телефон</h3>
-                                <span>{{ user.uf_phone_inner }}</span>
+                                <span>{{ user.uf_usr_1753418205828 }}</span>
                             </div>
                             <div v-if="user.indirect_data && user.indirect_data.work_phone"
                                  class="personal__user__property__items__work-phone">

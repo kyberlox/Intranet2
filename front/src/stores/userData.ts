@@ -68,7 +68,7 @@ export const useUserData = defineStore('userData', {
 ${(state.user.last_name ?? '') + ' ' + (state.user.name ?? '') + ' ' + (state.user.second_name ?? '')}
 --
 АО «НПО «ЭМК»
-${(state.user.uf_phone_inner ? "Тел.:" + state.user.uf_phone_inner : '')}
+${(state.user.uf_usr_1753418205828 ? "Тел.:" + state.user.uf_usr_1753418205828 : '')}
 ${(state.user.personal_mobile ? "Моб.:" + state.user.personal_mobile : '')}
 ${(state.user.email ? "Эл. почта:" + state.user.email : '')}`)}
 });

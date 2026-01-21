@@ -124,6 +124,16 @@
                         transform: translateY(-1px);
                     }
                 }
+
+                &--green {
+                    background: #00c42e !important;
+                    color: white;
+
+                    &:hover {
+                        background: #00c42eb9 !important;
+                        transform: translateY(-1px);
+                    }
+                }
             }
 
             &--secondary {

@@ -8,6 +8,7 @@ export interface IUser {
     email: string,
     personal_mobile: string,
     uf_phone_inner: number,
+    uf_usr_1753418205828: number, //новый формат телефона
     personal_city: string,
     personal_gender: string,
     personal_birthday: string,

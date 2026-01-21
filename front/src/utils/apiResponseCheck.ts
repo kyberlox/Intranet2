@@ -10,7 +10,7 @@ export const handleApiResponse = (data: AxiosResponse | {'status': string}, toas
     if ((!data || ((typeof data == 'object' && 'data' in data && Boolean(data.data) == false)) )) {
         toast.showError(errorName);        
     }
-    else if (data?.status && typeof data.status == 'string' ){
+    else if ((data?.status == 'warn' || data?.status == 'error') && typeof data.status == 'string' ){
         toast.showCustomToast(data.status, errorName)
     }
     else

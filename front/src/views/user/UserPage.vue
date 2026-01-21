@@ -55,7 +55,7 @@
                             <div class="personal__user__property__items__uf_usr_1705744824758"
                                  v-if="user.indirect_data.uf_department || (user.indirect_data && user.indirect_data.uf_usr_1705744824758 && user.indirect_data.uf_usr_1705744824758.length)">
                                 <h3>Отдел</h3>
-                                <span v-for="(item, index) in new Set(user.indirect_data.uf_department.concat(user.indirect_data.uf_usr_1705744824758))"
+                                <span v-for="(item, index) in (user.indirect_data.uf_department.concat(user.indirect_data.uf_usr_1705744824758)).filter((e: string) => duplicateExist(e, user.indirect_data.uf_department))"
                                       :key="'dep' + index">
                                     {{ item }}
                                 </span>
@@ -88,17 +88,17 @@
                                 <h3>Кабинет</h3>
                                 <span>{{ user.indirect_data.uf_usr_1586854037086 }}</span>
                             </div>
-                            <div v-if="user.uf_phone_inner"
+                            <div v-if="user.uf_usr_1753418205828"
                                  class="personal__user__property__items__inner-phone">
                                 <h3>Внутренний телефон</h3>
-                                <span>{{ user.uf_phone_inner }}</span>
+                                <span>{{ user.uf_usr_1753418205828 }}</span>
                             </div>
                             <div v-if="user.indirect_data && user.indirect_data.work_phone"
                                  class="personal__user__property__items__work-phone">
                                 <h3>Рабочий телефон</h3>
                                 <span>{{ user.indirect_data.work_phone }}</span>
                             </div>
-                            <div> 
+                            <div>
                                 <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
                                 <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
                                             class="personal__user__vcard"
@@ -139,6 +139,7 @@ import type { IPointsForm } from '@/interfaces/IPutFetchData';
 import { featureFlags } from '@/assets/static/featureFlags';
 import Loader from '@/components/layout/Loader.vue';
 import { useUserScore } from '@/stores/userScoreData';
+import { duplicateExist } from '@/utils/stringUtils';
 
 export default defineComponent({
     props: {
@@ -218,6 +219,7 @@ export default defineComponent({
             myId: computed(() => userData.getMyId),
             sendPoints,
             formatBirthday,
+            duplicateExist,
         }
     }
 })

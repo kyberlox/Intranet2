@@ -92,7 +92,7 @@ class PeerUserModel:
                     add_history = self.PeerHistory(
                         user_uuid=int(self.uuid),
                         user_to=int(uuid_to),
-                        active_info=f"Одобрено назанчение баллов пользователю: {description}",
+                        active_info=f"Одобрено назначение баллов пользователю: {description}",
                         active_coast=active_info.coast,
                         active_id=action_id,
                         info_type='activity',
@@ -472,9 +472,7 @@ class PeerUserModel:
                 LogsMaker().info_message(f"День и месяц не совпадают: {datetime.today().day}, {convert_date_reg.day}, {datetime.today().month}, {convert_date_reg.month}")
                 return False
         except Exception as e:
-            return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")
-
-    
+            return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")  
 
     async def send_auto_points(self, session, data: dict, roots: dict):
         try:
@@ -558,7 +556,6 @@ class PeerUserModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в send_auto_points при автоматической отправке баллов от {roots.get('user_id')} к {data.get('uuid_to')} для активности {data.get('activities_id')}: {e}")
-
 
     async def get_admins_list(self, session, roots: dict):
         try:
@@ -764,6 +761,10 @@ class PeerUserModel:
                     result_activity = await session.execute(stmt_activity)
                     active_name = result_activity.scalar_one_or_none()
                     
+                    stmt_active_users = select(self.ActiveUsers).where(self.ActiveUsers.id == active.active_id)
+                    res_active_users = await session.execute(stmt_active_users)
+                    active_users_inf = res_active_users.scalar_one_or_none()
+
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
@@ -771,7 +772,9 @@ class PeerUserModel:
                         "uuid_to_fio": user_fio,
                         "description": active.active_info,
                         "activity_name": active_name,
-                        "coast": active.active_coast
+                        "coast": active.active_coast,
+                        "valid": active_users_inf.valid,
+                        "action_id": active_users_inf.id
 
                     }
                     activity_history.append(info)
@@ -814,16 +817,16 @@ class PeerUserModel:
 
     async def remove_user_points(self, session, action_id: int, roots: dict):
         try:
-            if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
-                stmt_activity = select(self.Activities).join(
-                    self.ActiveUsers, 
-                    self.Activities.id == self.ActiveUsers.activities_id
-                ).where(self.ActiveUsers.id == action_id)
+            stmt_activity = select(self.Activities).join(
+                self.ActiveUsers, 
+                self.Activities.id == self.ActiveUsers.activities_id
+            ).where(self.ActiveUsers.id == action_id)
                 
-                result_activity = await session.execute(stmt_activity)
-                active_info = result_activity.scalar_one_or_none()
+            result_activity = await session.execute(stmt_activity)
+            active_inform = result_activity.scalar_one_or_none()
+            if "PeerModer" in roots.keys() and roots["PeerModer"] == True or "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True or "PeerCurator" in roots.keys() and active_inform.id in roots["PeerCurator"]:
                 
-                if active_info:
+                if active_inform:
                     stmt_action = select(self.ActiveUsers).where(
                         self.ActiveUsers.id == action_id,
                         self.ActiveUsers.valid == 1
@@ -832,15 +835,21 @@ class PeerUserModel:
                     action_info = result_action.scalar_one_or_none()
                     
                     if action_info:
-                        stmt_update = update(self.ActiveUsers).where(self.ActiveUsers.id == action_id).values(valid=2)
-                        await session.execute(stmt_update)
+                        action_info.valid = 2
+                        # stmt_active_users = update(self.ActiveUsers).where(self.ActiveUsers.id == action_id).values(valid=2)
+                        # await session.execute(stmt_update)
+                        stmt_peer_history = select(self.PeerHistory).where(self.PeerHistory.active_id == action_id)
+                        result_history = await session.execute(stmt_peer_history)
+                        peer_history_info = result_history.scalar_one_or_none()
+
+                        peer_history_info.active_info = f'Отозваны баллы за активность: {action_info.description}'
                         
                         stmt_user = select(self.Roots).where(self.Roots.user_uuid == self.uuid)
                         result_user = await session.execute(stmt_user)
                         user_info = result_user.scalar_one_or_none()
                         
                         if user_info:
-                            user_info.user_points = user_info.user_points - active_info.coast
+                            user_info.user_points = user_info.user_points - active_inform.coast
                             await session.commit()
                             return LogsMaker().info_message(f"У пользователя с id = {self.uuid} сняты баллы за активность {action_id}")
                         else:
@@ -854,3 +863,9 @@ class PeerUserModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в remove_user_points при снятии баллов у пользователя {self.uuid} за активность {action_id}: {e}")
+
+    async def send_points_to_employee_of_the_year(self, roots: dict):
+        """
+        
+        """
+        pass

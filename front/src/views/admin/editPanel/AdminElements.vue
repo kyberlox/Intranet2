@@ -20,12 +20,17 @@
           </div>
 
           <!-- редактирование тегов сверху перед 31(актуальными новостями), 33(видеорепортажи) и 51(корп события) -->
-          <div v-if="id == '31' || id == '33' || id == '51'"
-               class="admin-block-inner__toolbar-left">
-            <button @click="showTagsModal = true"
+          <div class="admin-block-inner__toolbar-left">
+            <button v-if="id == '31' || id == '33' || id == '51'"
+                    @click="showTagsModal = true"
                     class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">
               # Список тэгов
             </button>
+            <button class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--green"
+                    v-else-if="id == '14' && PeerAdmin && featureFlags.pointsSystem">
+              Зафиксировать баллы
+            </button>
+
           </div>
         </div>
         <div class="admin-block-inner__toolbar-right">
@@ -132,6 +137,8 @@ import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiResponse } from '@/utils/apiResponseCheck';
 import { handleApiError } from '@/utils/apiResponseCheck';
 import AdminTagsModal from './AdminTagsModal.vue';
+import { useUserData } from '@/stores/userData';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 interface SectionItem {
   id: number;
@@ -170,6 +177,7 @@ export default defineComponent({
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
     const showTagsModal = ref(false);
+    const userData = useUserData();
 
     const filteredItems = computed(() => {
       if (!searchQuery.value) return items.value;
@@ -217,9 +225,11 @@ export default defineComponent({
       isLoading,
       sectionId,
       showTagsModal,
+      featureFlags,
       getStatusText,
       removeItem,
-      useDateFormat
+      useDateFormat,
+      PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin)
     };
   }
 });

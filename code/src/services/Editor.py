@@ -491,7 +491,6 @@ class Editor:
 
         # вытащить основные поля из psql
         art = await Article(id=self.art_id).find_by_id(self.session)
-
         if self.section_id is None:
             if "section_id" in art:
                 self.section_id = art["section_id"]
@@ -722,13 +721,14 @@ class Editor:
             art["content_type"] = data["content_type"]
         else:
             art["content_type"] = None
-
+        
         # вставить данные в статью
         res = await Article(id=self.art_id).update(art, self.session)
         return res
 
     async def delete_art(self):
         await self.validate()
+        print(self.art_id, 'удаляем доску почета')
         res = await Article(id=self.art_id).delete(self.session)
         return res
 
@@ -745,7 +745,6 @@ class Editor:
         art = await ArticleModel(id=self.art_id).find_by_id(self.session)
         if "_sa_instance_state" in art:
             art.pop("_sa_instance_state")
-
         # вытаскию новые значения
         # валидировать данные data
         for key in data.keys():
@@ -754,7 +753,6 @@ class Editor:
                 # если это один из основных параметрова
                 if key in self.fundamental:
                     if key == 'date_publiction':
-                        print(f'меняю дату date_publiction с {data[key]} на {make_date_valid(data[key])}')
                         art[key] = make_date_valid(data[key])
                     else:
                         # фиксирую
@@ -1098,7 +1096,6 @@ class Editor:
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
-
         # сохранил
         await Article(id=self.art_id).update(art, self.session)
 
@@ -1137,7 +1134,7 @@ async def get_editor_roots(user_uuid, session):
 
     if user_uuid is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'PeerAdmin': False, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [], 'PeerCurator': [7], 'VisionAdmin': True, 'GPT_gen_access': True}
+        editor_roots = {'PeerAdmin': True, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [], 'PeerCurator': [7], 'VisionAdmin': True, 'GPT_gen_access': True}
         print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     return editor_roots
 

@@ -380,6 +380,7 @@ class ActiveUsersModel:
             for merch in merch_history:
                 activities.append({
                     "id": merch.id,
+                    "user_uuid": merch.user_uuid
                     "fio_from": "Магазин мерча",
                     "description": merch.merch_info,
                     "date_time": merch.date_time,

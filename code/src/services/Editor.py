@@ -722,13 +722,15 @@ class Editor:
             art["content_type"] = data["content_type"]
         else:
             art["content_type"] = None
-
+        
+        print(self.art_id, art, 'добавляем доску почета')
         # вставить данные в статью
         res = await Article(id=self.art_id).update(art, self.session)
         return res
 
     async def delete_art(self):
         await self.validate()
+        print(self.art_id, 'удаляем доску почета')
         res = await Article(id=self.art_id).delete(self.session)
         return res
 
@@ -754,7 +756,6 @@ class Editor:
                 # если это один из основных параметрова
                 if key in self.fundamental:
                     if key == 'date_publiction':
-                        print(f'меняю дату date_publiction с {data[key]} на {make_date_valid(data[key])}')
                         art[key] = make_date_valid(data[key])
                     else:
                         # фиксирую
@@ -798,6 +799,7 @@ class Editor:
 
         # перезаписать файлы
         # сохранить
+        print(self.art_id, art, 'обновляем доску почета')
         res = await ArticleModel(id=self.art_id).update(art, self.session)
         return res
 

@@ -846,7 +846,7 @@ class PeerUserModel:
                         user_info = result_user.scalar_one_or_none()
                         
                         if user_info:
-                            user_info.user_points = user_info.user_points - active_info.coast
+                            user_info.user_points = user_info.user_points - active_inform.coast
                             await session.commit()
                             return LogsMaker().info_message(f"У пользователя с id = {self.uuid} сняты баллы за активность {action_id}")
                         else:

@@ -98,7 +98,7 @@
                                 <h3>Рабочий телефон</h3>
                                 <span>{{ user.indirect_data.work_phone }}</span>
                             </div>
-                            <div>
+                            <div> 
                                 <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
                                 <RouterLink :to="{ name: 'vcard', params: { id: user.uuid } }"
                                             class="personal__user__vcard"
@@ -125,14 +125,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
 import { type IUser } from '@/interfaces/IEntities';
 import { useUserData } from '@/stores/userData';
 import SendPoints from './userPointsComponents/SendPointsModalSlot.vue';
-import { handleApiError, handleApiResponse, handleApiResponse2 } from '@/utils/apiResponseCheck';
+import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
 import type { IPointsForm } from '@/interfaces/IPutFetchData';

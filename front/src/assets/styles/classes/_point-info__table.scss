@@ -4,7 +4,6 @@
     font-size: 14px;
     background-color: #fff;
     border-radius: 8px;
-    overflow: scroll;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
     display: block;
@@ -15,8 +14,10 @@
 
     thead {
         background-color: #f8f9fa;
+        width: 100%;
 
         th {
+            width: 100%;
             padding: 16px 12px;
             text-align: left;
             font-weight: 600;
@@ -36,6 +37,7 @@
 
     tbody {
         tr {
+            width: 100%;
             border-bottom: 1px solid #e9ecef;
             transition: background-color 0.2s ease;
 

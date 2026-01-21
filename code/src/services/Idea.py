@@ -186,34 +186,34 @@ description="""
 | | | - `base_name` (string) — имя файла (опционально) | |
 
 """)
-async def calendar_event(request: Request, session: AsyncSession = Depends(get_async_db), data = Body()):
-    from .Peer import Peer
-    user_id = None
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.headers.get("user_id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+async def calendar_event(data = Body()): # request: Request, session: AsyncSession = Depends(get_async_db), 
+    # from .Peer import Peer
+    # user_id = None
+    # token = request.cookies.get("user_id")
+    # if token is None:
+    #     token = request.headers.get("user_id")
+    #     if token is not None:
+    #         user_id = token
+    # else:
+    #     user_id = token
     send_idea =  await Idea().add(dict(data))
-    if send_idea and user_id:
-        """
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        В будущем поставить сюда айдишник той активности, 
-        которая отвечает за отправку баллов предложенной активности
-        И поставить айдишник нашего административного аккаунта
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        """
-        # id = 8
-        send_data = {
-            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-            "uuid_to": int(user_id),
-            "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-            "description": f"Баллы за предложение по улучшению сервиса: {data['NAME']}. Описание: {data['DETAIL_TEXT']}"
-        }
-        send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
-        return send_idea
-    else:
-        return LogsMaker().error_message("Произошла ошибка с получением айдишника пользоватля из сессии и заголовков")
+    # if send_idea and user_id:
+    #     """
+    #     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #     В будущем поставить сюда айдишник той активности, 
+    #     которая отвечает за отправку баллов предложенной активности
+    #     И поставить айдишник нашего административного аккаунта
+    #     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #     """
+    #     # id = 8
+    #     send_data = {
+    #         "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+    #         "uuid_to": int(user_id),
+    #         "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+    #         "description": f"Баллы за предложение по улучшению сервиса: {data['NAME']}. Описание: {data['DETAIL_TEXT']}"
+    #     }
+    #     send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
+    return send_idea
+    # else:
+    #     return LogsMaker().error_message("Произошла ошибка с получением айдишника пользоватля из сессии и заголовков")
     

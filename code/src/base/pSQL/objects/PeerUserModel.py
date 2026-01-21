@@ -764,9 +764,9 @@ class PeerUserModel:
                     result_activity = await session.execute(stmt_activity)
                     active_name = result_activity.scalar_one_or_none()
                     
-                    stmt_active_users = select(self.ActiveUsers.valid).where(self.ActiveUsers.id == active.active_id)
+                    stmt_active_users = select(self.ActiveUsers).where(self.ActiveUsers.id == active.active_id)
                     res_active_users = await session.execute(stmt_active_users)
-                    valid = res_active_users.scalar()
+                    active_users_inf = res_active_users.scalar_one_or_none()
 
                     info = {
                         "id": active.id,
@@ -776,7 +776,8 @@ class PeerUserModel:
                         "description": active.active_info,
                         "activity_name": active_name,
                         "coast": active.active_coast,
-                        "valid": valid
+                        "valid": active_users_inf.valid,
+                        "action_id": active_users_inf.id
 
                     }
                     activity_history.append(info)

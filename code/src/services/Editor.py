@@ -491,7 +491,6 @@ class Editor:
 
         # вытащить основные поля из psql
         art = await Article(id=self.art_id).find_by_id(self.session)
-        print(art, "rendering")
         if self.section_id is None:
             if "section_id" in art:
                 self.section_id = art["section_id"]
@@ -723,7 +722,6 @@ class Editor:
         else:
             art["content_type"] = None
         
-        print(self.art_id, art, 'добавляем доску почета')
         # вставить данные в статью
         res = await Article(id=self.art_id).update(art, self.session)
         return res
@@ -747,7 +745,6 @@ class Editor:
         art = await ArticleModel(id=self.art_id).find_by_id(self.session)
         if "_sa_instance_state" in art:
             art.pop("_sa_instance_state")
-        print(art, 'до обновления')
         # вытаскию новые значения
         # валидировать данные data
         for key in data.keys():
@@ -799,7 +796,6 @@ class Editor:
 
         # перезаписать файлы
         # сохранить
-        print(self.art_id, art, 'обновляем доску почета')
         res = await ArticleModel(id=self.art_id).update(art, self.session)
         return res
 
@@ -1079,7 +1075,7 @@ class Editor:
 
         # получаю статью
         art = await Article(id=self.art_id).find_by_id(self.session)
-
+        print(art, 'статья до обновления')
         if self.section_id == 14:
             art["name"] = result["fio"]
 
@@ -1100,7 +1096,7 @@ class Editor:
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
-
+        print(art, 'статья после обновления')
         # сохранил
         await Article(id=self.art_id).update(art, self.session)
 

@@ -747,7 +747,7 @@ class Editor:
         art = await ArticleModel(id=self.art_id).find_by_id(self.session)
         if "_sa_instance_state" in art:
             art.pop("_sa_instance_state")
-
+        print(art, 'до обновления')
         # вытаскию новые значения
         # валидировать данные data
         for key in data.keys():

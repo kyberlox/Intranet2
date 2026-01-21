@@ -472,9 +472,7 @@ class PeerUserModel:
                 LogsMaker().info_message(f"День и месяц не совпадают: {datetime.today().day}, {convert_date_reg.day}, {datetime.today().month}, {convert_date_reg.month}")
                 return False
         except Exception as e:
-            return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")
-
-    
+            return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")  
 
     async def send_auto_points(self, session, data: dict, roots: dict):
         try:
@@ -558,7 +556,6 @@ class PeerUserModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в send_auto_points при автоматической отправке баллов от {roots.get('user_id')} к {data.get('uuid_to')} для активности {data.get('activities_id')}: {e}")
-
 
     async def get_admins_list(self, session, roots: dict):
         try:
@@ -866,3 +863,9 @@ class PeerUserModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в remove_user_points при снятии баллов у пользователя {self.uuid} за активность {action_id}: {e}")
+
+    async def send_points_to_employee_of_the_year(self, roots: dict):
+        """
+        
+        """
+        pass

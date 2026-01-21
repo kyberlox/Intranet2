@@ -1075,7 +1075,7 @@ class Editor:
 
         # получаю статью
         art = await Article(id=self.art_id).find_by_id(self.session)
-        print(art, 'статья до обновления')
+
         if self.section_id == 14:
             art["name"] = result["fio"]
 
@@ -1096,7 +1096,6 @@ class Editor:
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
-        print(art, 'статья после обновления')
         # сохранил
         await Article(id=self.art_id).update(art, self.session)
 
@@ -1135,7 +1134,7 @@ async def get_editor_roots(user_uuid, session):
 
     if user_uuid is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'PeerAdmin': False, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [], 'PeerCurator': [7], 'VisionAdmin': True, 'GPT_gen_access': True}
+        editor_roots = {'PeerAdmin': True, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [], 'PeerCurator': [7], 'VisionAdmin': True, 'GPT_gen_access': True}
         print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     return editor_roots
 

@@ -863,3 +863,9 @@ class PeerUserModel:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в remove_user_points при снятии баллов у пользователя {self.uuid} за активность {action_id}: {e}")
+
+    async def send_points_to_employee_of_the_year(self, roots: dict):
+        """
+        
+        """
+        pass

@@ -491,7 +491,7 @@ class Editor:
 
         # вытащить основные поля из psql
         art = await Article(id=self.art_id).find_by_id(self.session)
-
+        print(art, "rendering")
         if self.section_id is None:
             if "section_id" in art:
                 self.section_id = art["section_id"]

@@ -764,6 +764,10 @@ class PeerUserModel:
                     result_activity = await session.execute(stmt_activity)
                     active_name = result_activity.scalar_one_or_none()
                     
+                    stmt_active_users = select(self.ActiveUsers.valid).where(self.ActiveUsers.id == active.active_id)
+                    res_active_users = await session.execute(stmt_active_users)
+                    valid = res_active_users.scalar()
+
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
@@ -771,7 +775,8 @@ class PeerUserModel:
                         "uuid_to_fio": user_fio,
                         "description": active.active_info,
                         "activity_name": active_name,
-                        "coast": active.active_coast
+                        "coast": active.active_coast,
+                        "valid": valid
 
                     }
                     activity_history.append(info)

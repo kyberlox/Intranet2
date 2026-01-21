@@ -5,3 +5,7 @@ export const textAreaRowsToContent = (str: string): number => {
 export const makeSlashToBr = (str: string): string => {
     return str.replace('\n', '<br/>');
 }
+
+export const duplicateExist = (element: string, searchArray: Array<string>) => {
+    return searchArray.includes(element) ? true : false
+}

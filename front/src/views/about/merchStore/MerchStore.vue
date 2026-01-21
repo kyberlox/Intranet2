@@ -3,7 +3,7 @@
     <div class="page__title">Магазин мерча</div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
-             v-if="merchItems.length && isLoading">
+             v-if="merchItems.length && !isLoading">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
                         v-for="item in merchItems"

@@ -23,7 +23,7 @@
 
                     <div class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
                         <div class="navbar-collapse"
-                             :class="{ 'collapse': isMobileMenuOpen }">
+                             :class="{ 'collapse': !isMobileMenuOpen }">
                             <ul class="navbar-nav m-auto">
                                 <li class="nav-item dropdown"
                                     @mouseleave="isMobileScreen ? '' : handleDropdown('close', point.id)"

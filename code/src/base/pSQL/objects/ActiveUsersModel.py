@@ -359,7 +359,7 @@ class ActiveUsersModel:
                     user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
                 
                 if row[-1] == 7:
-                    description = f"Лучший сотрудник {row.description} год(а)"
+                    description = f"Лучший сотрудник {row.description} года"
                 else:
                     description = row.description
                 activities.append({

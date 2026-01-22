@@ -913,3 +913,4 @@ class PeerUserModel:
 
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в send_points_to_employee_of_the_year: {e}")
+    

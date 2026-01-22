@@ -79,37 +79,16 @@
         }
     }
 
-    &__workers-slider {
-        width: min-content;
-        flex-grow: 1;
+    &__workers-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
 
         @include sm {
-            width: 100%;
+            grid-template-columns: 1fr;
         }
     }
 
-    &__static {
-        &__greetings {
-            flex-grow: 0;
-            max-width: fit-content;
-            cursor: zoom-in;
-            margin: auto;
-            text-align: center;
-            background: #f8d7c4;
-
-            @include lg {
-                max-width: 100%;
-                width: 100%;
-                padding: 10px;
-            }
-
-            img {
-                border: 1px solid rgb(211, 201, 201);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-                max-width: 341px;
-            }
-        }
-    }
 
     &__page {
         &__swiper {

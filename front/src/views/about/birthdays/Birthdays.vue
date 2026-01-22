@@ -18,57 +18,29 @@
                     :nullifyDateInput="nullifyDateInput" />
     </div>
 </div>
-<div class="birthday__workers-grid">
-    <div class="birthday__page-content">
-        <div class="birthday__page__swiper__wrapper"
-             v-if="slidesForBirthday.length && !isLoading">
-            <swiper class="birthday__page__swiper"
-                    v-bind="sliderConfig"
-                    @swiper="swiperOn">
-                <swiper-slide v-for="(slide, index) in slidesForBirthday"
-                              :key="'vertSlide' + index">
-                    <VerticalSliderSlide :needCakeIcon="true"
-                                         :slide="slide" />
-                </swiper-slide>
-            </swiper>
-            <SwiperButtons :isBeginning="isBeginning"
-                           :isEnd="isEnd"
-                           @slideNext="slideNext"
-                           @slidePrev="slidePrev" />
-        </div>
-        <div v-else-if="isLoading"
-             class="contest__page__loader">
-            <Loader />
-        </div>
-        <ContentPlug :plugText="noBirthdays"
-                     :plugImg="noBirthImage"
-                     v-else />
-        <div class="birthday__static__greetings">
-            <img @click="openModal([birthdayPageImg])"
-                 :src=birthdayPageImg
-                 alt="поздравление" />
-        </div>
+<div class="birthday__workers-grid"
+     v-if="slidesForBirthday.length && !isLoading">
+    <div v-for="(slide, index) in slidesForBirthday"
+         :key="'vertSlide' + index">
+        <VerticalSliderSlide :needCakeIcon="true"
+                             :slide="slide" />
     </div>
 </div>
-<Transition name="modal">
-    <ZoomModal v-if="!hiddenModal"
-               :image="imageInModal"
-               @close="hiddenModal = true; imageInModal = '';" />
-</Transition>
+<div v-else-if="isLoading"
+     class="contest__page__loader">
+    <Loader />
+</div>
+<ContentPlug :plugText="noBirthdays"
+             :plugImg="noBirthImage"
+             v-else />
 </template>
 
 <script lang="ts">
 import { ref, watch, nextTick, defineComponent } from "vue";
-import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
-import { useSwiperconf } from "@/composables/useSwiperConf";
-import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/navigation";
 import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
-import SwiperButtons from '@/components/tools/swiper/SwiperButtons.vue';
 import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.png";
 import Loader from "@/components/layout/Loader.vue";
 import { noBirthdays } from "@/assets/static/contentPlugs";
@@ -78,11 +50,7 @@ import noBirthImage from "@/assets/imgs/plugs/contentPlugBirthdays.jpg";
 export default defineComponent({
     components: {
         DatePicker,
-        Swiper,
-        SwiperSlide,
         VerticalSliderSlide,
-        SwiperButtons,
-        ZoomModal,
         Loader,
         ContentPlug
     },
@@ -139,10 +107,6 @@ export default defineComponent({
             },
         ];
 
-        // onMounted(() => {
-        //     Api.get(`article/find_by/${sectionTips['ДниРождения']}`)
-        //         .then((data) => slidesForBirthday.value = data)
-        // })
 
         watch((searchValue), (newVal) => {
             if (!newVal) return;
@@ -155,7 +119,6 @@ export default defineComponent({
         const dateFromDatepicker = ref();
         const nullifyDateInput = ref(false);
 
-        const swiperConf = useSwiperconf('vertical');
 
         return {
             slidesForBirthday,
@@ -168,14 +131,7 @@ export default defineComponent({
             nullifyDateInput,
             openModal,
             pickDate,
-            isEnd: swiperConf.isEnd,
-            sliderConfig: swiperConf.sliderConfig,
-            swiperInstance: swiperConf.swiperInstance,
-            isBeginning: swiperConf.isBeginning,
             birthdayPageImg,
-            swiperOn: swiperConf.swiperOn,
-            slideNext: swiperConf.slideNext,
-            slidePrev: swiperConf.slidePrev,
             noBirthdays,
             noBirthImage,
         };

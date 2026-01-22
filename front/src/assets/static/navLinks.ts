@@ -42,11 +42,6 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "blogs",
             },
             {
-                id: 1.6,
-                name: "Видеоинтервью",
-                href: "videoInterviews",
-            },
-            {
                 id: 1.7,
                 name: "Учебный центр",
                 href: "trainingcenter",
@@ -149,11 +144,6 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "corpNews",
             },
             {
-                id: 3.3,
-                name: "Видеорепортажи",
-                href: "videoReports",
-            },
-            {
                 id: 3.4,
                 name: "Корпоративная газета ЭМК",
                 href: "gazette",
@@ -174,6 +164,21 @@ export const mainMenuPoints: MainMenuPoints = [
                 name: "Фотоотчеты",
                 href: "officialEvents",
             },
+            {
+                id: 4.3,
+                name: "Видеорепортажи",
+                href: "videoReports",
+            },
+            {
+                id: 4.4,
+                name: "Видеоинтервью",
+                href: "videoInterviews",
+            },
+            {
+                id: 4.5,
+                name: "Фильмы ТО ЭМК",
+                href: 'filmsEmk'
+            }
         ],
     },
     {

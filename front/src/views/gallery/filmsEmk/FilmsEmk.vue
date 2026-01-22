@@ -1,5 +1,5 @@
 <template>
-<div class="page__title mt20">Фотоотчеты</div>
+<div class="page__title mt20">Фильмы творческого объединения ЭМК</div>
 <button @click="showFilter = !showFilter"
         class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
     Год публикации
@@ -13,7 +13,7 @@
                 class="mt20"
                 :page=page
                 :slides="visibleEvents"
-                :routeTo="'officialEvent'" />
+                :routeTo="'filmEmk'" />
 </template>
 <script lang="ts">
 import DateFilter from '@/components/tools/common/DateFilter.vue';
@@ -33,18 +33,17 @@ export default defineComponent({
     },
     setup() {
         const offEventKey = ref(0);
-        const allSlides = computed((): IBaseEntity[] => useViewsDataStore().getData('officialEventsData') as IBaseEntity[]);
+        const allSlides = computed((): IBaseEntity[] => useViewsDataStore().getData('filmsEmk') as IBaseEntity[]);
         const visibleEvents: Ref<IBaseEntity[]> = ref(allSlides.value);
         const buttonText: Ref<string> = ref('Год публикации');
         const showFilter = ref(false);
         onMounted(() => {
             if (allSlides.value.length) return;
-            Api.get(`article/find_by/${sectionTips['офСобытия']}`)
+            Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`)
                 .then((res) => {
-                    useViewsDataStore().setData(res, 'officialEventsData');
+                    useViewsDataStore().setData(res, 'filmsEmk');
                     visibleEvents.value = res;
                 })
-
         })
 
         const filterYear = (year: string) => {
@@ -61,7 +60,7 @@ export default defineComponent({
         }
         return {
             allSlides,
-            page: 'officialEvents',
+            page: 'filmsEmk',
             visibleEvents,
             buttonText,
             offEventKey,

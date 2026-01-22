@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import type { INews, ICalendar, IAfishaItem, ICareSlide, IOurPeople, IVideoInterview, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
 import type { MainPageCards } from "@/interfaces/IMainPage";
 
-interface DataState {
+export interface DataState {
     homeData: MainPageCards,
     ourPeopleData: IOurPeople[],
     actualNewsData: INews[],
@@ -17,12 +17,13 @@ interface DataState {
     partnerBonusData: IBaseEntity[],
     calendarData: ICalendar[],
     factoryGuidData: IFactoryGuidSlides[],
+    filmsEmk: IBaseEntity[],
     // yearResultsData: any[];
     // blogsData: any[];
     // gazettesData: any[],
 }
 
-type DataStateKey = keyof DataState;
+export type DataStateKey = keyof DataState;
 
 export const useViewsDataStore = defineStore('viewsData', {
     state: (): DataState => ({
@@ -40,6 +41,7 @@ export const useViewsDataStore = defineStore('viewsData', {
         careData: [],
         calendarData: [],
         factoryGuidData: [],
+        filmsEmk: [],
         // yearResultsData: [],
         // blogsData: [],
         // gazettesData: any[],

@@ -70,12 +70,12 @@ const router = createRouter({
       }
     },
     {
-      path: '/about/videoInterviews',
+      path: '/gallery/videoInterviews',
       name: 'videoInterviews',
       component: () => import('@/views/about/videoInterview/VideoInterviews.vue'),
     },
     {
-      path: '/about/videoInterviews/:id',
+      path: '/gallery/videoInterviews/:id',
       name: 'videoInterview',
       component: () => import('@/views/PostPreview.vue'),
       props: (route) => ({ id: route.params.id, pageTitle: 'Видеоинтервью' }),
@@ -84,23 +84,37 @@ const router = createRouter({
       }
     },
     {
-      path: '/about/videoreports',
+      path: '/gallery/videoreports',
       name: 'videoReports',
       component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
-      path: '/about/videoreportsByTag/:tagId',
+      path: '/gallery/videoreportsByTag/:tagId',
       name: 'videoReportsByTag',
       props: (route) => ({ tagId: route.params.tagId}),
       component: () => import('@/views/news/videoReports/VideoReports.vue'),
     },
     {
-      path: '/about/videoreports/:id',
+      path: '/gallery/videoreports/:id',
       name: 'videoReport',
       component: () => import('@/views/PostPreview.vue'),
       props: (route) => ({ id: route.params.id, pageTitle: 'Видеорепортажи' }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Видеорепортажи', route: 'videoReports' }]
+      }
+    },
+    {
+      path: '/gallery/filmsEmk',
+      name: 'filmsEmk',
+      component: () => import('@/views/gallery/filmsEmk/FilmsEmk.vue'),
+    },
+    {
+      path: '/gallery/filmsEmk/:id',
+      name: 'filmEmk',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Фильмы творческого объединения ЭМК' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Фильмы ТО ЭМК', route: 'filmsEmk' }]
       }
     },
     {
@@ -409,7 +423,7 @@ const router = createRouter({
       component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue'),
       props: (route) => ({ id: route.params.id }),
       meta: {
-        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Официальные события', route: 'officialEvents' }]
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Фотоотчеты', route: 'officialEvents' }]
       }
     },
     {

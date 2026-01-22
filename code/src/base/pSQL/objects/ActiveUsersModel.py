@@ -358,15 +358,19 @@ class ActiveUsersModel:
                 if user_info:
                     user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
                 
+                if row[-1] == 7:
+                    description = f"Лучший сотрудник {row.description} года"
+                else:
+                    description = row.description
                 activities.append({
                     "id_activeusers": row.id,
                     "uuid_from": row.uuid_from,
                     "fio_from": user_fio,
-                    "description": row.description,
+                    "description": description,
                     "date_time": row.date_time,
                     "activity_name": row.name,
                     "cost": row.coast,
-                    "id_activites": row.id
+                    "id_activites": row[-1]
                 })
 
             # Получаем историю мерча

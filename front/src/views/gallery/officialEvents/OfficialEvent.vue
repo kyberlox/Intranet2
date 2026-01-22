@@ -1,6 +1,6 @@
 <template>
 <div class="experience__page mt20">
-    <div class="page__title">Официальные события</div>
+    <div class="page__title">Фотоотчеты</div>
     <div class="page__title__details"
          v-if="title">{{ title }}</div>
     <ContentGallery v-if="formattedSlides"

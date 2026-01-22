@@ -5,8 +5,8 @@
                    :pageTitle="pageTitle"
                    :storeItemsName="storeItemsName"
                    :sectionId="Number(sectionId)"
-                   :type="'interview'"
-                   :routeTo="'corpEvent'" />
+                   :type="'video'"
+                   :routeTo="'videoReport'" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
@@ -29,9 +29,9 @@ export default defineComponent({
     setup() {
 
         return {
-            pageTitle: 'Корпоративные события',
-            sectionId: sectionTips['КорпоративныеСобытия'],
-            storeItemsName: 'corpEventsData' as keyof DataState
+            pageTitle: 'Видеорепортажи',
+            sectionId: sectionTips['Видеорепортажи'],
+            storeItemsName: 'videoReportsData' as keyof DataState
         };
     },
 });

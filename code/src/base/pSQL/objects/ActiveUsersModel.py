@@ -361,7 +361,7 @@ class ActiveUsersModel:
                 if row[-1] == 7:
                     description = f"Лучший сотрудник {row.description} год(а)"
                 else:
-                    description = row.description)
+                    description = row.description
                 activities.append({
                     "id_activeusers": row.id,
                     "uuid_from": row.uuid_from,

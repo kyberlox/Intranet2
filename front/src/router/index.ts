@@ -109,6 +109,11 @@ const router = createRouter({
       component: () => import('@/views/gallery/filmsEmk/FilmsEmk.vue'),
     },
     {
+      path: '/gallery/filmsEmk/tag/:tagId',
+      name: 'filmsEmkByTag',
+      component: () => import('@/views/gallery/filmsEmk/FilmsEmk.vue'),
+    },
+    {
       path: '/gallery/filmsEmk/:id',
       name: 'filmEmk',
       component: () => import('@/views/PostPreview.vue'),

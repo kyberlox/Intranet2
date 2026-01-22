@@ -17,6 +17,7 @@ export interface DataState {
     partnerBonusData: IBaseEntity[],
     calendarData: ICalendar[],
     factoryGuidData: IFactoryGuidSlides[],
+    filmsEmk: IBaseEntity[],
     // yearResultsData: any[];
     // blogsData: any[];
     // gazettesData: any[],
@@ -40,6 +41,7 @@ export const useViewsDataStore = defineStore('viewsData', {
         careData: [],
         calendarData: [],
         factoryGuidData: [],
+        filmsEmk: [],
         // yearResultsData: [],
         // blogsData: [],
         // gazettesData: any[],

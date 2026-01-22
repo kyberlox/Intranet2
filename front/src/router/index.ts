@@ -104,6 +104,20 @@ const router = createRouter({
       }
     },
     {
+      path: '/gallery/filmsEmk',
+      name: 'filmsEmk',
+      component: () => import('@/views/gallery/filmsEmk/FilmsEmk.vue'),
+    },
+    {
+      path: '/about/filmsEmk/:id',
+      name: 'filmEmk',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Фильмы творческого объединения ЭМК' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Фильмы ТО ЭМК', route: 'filmsEmk' }]
+      }
+    },
+    {
       path: '/about/trainingcenter',
       name: 'trainingcenter',
       component: () => import('@/views/about/trainingCenter/TrainingCenter.vue')

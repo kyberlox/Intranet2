@@ -1,5 +1,5 @@
 <template>
-<div class="page__title mt20">Официальные события</div>
+<div class="page__title mt20">Фотоотчеты</div>
 <button @click="showFilter = !showFilter"
         class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
     Год публикации

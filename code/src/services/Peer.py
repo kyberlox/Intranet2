@@ -288,6 +288,15 @@ class Peer:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         self.PeerUserModel.uuid = user_uuid
         return await self.PeerUserModel.remove_user_points(action_id=action_id, roots=roots, session=session)
+    
+    async def send_points_to_employee_of_the_year(self, session):
+        from ..base.pSQL.objects.RootsModel import RootsModel
+        root_init = RootsModel(user_uuid=self.user_uuid)
+        roots_uuid = await root_init.get_token_by_uuid(session=session)
+        roots = await root_init.token_processing_for_peer(roots_uuid)
+        if self.user_uuid is None:
+            roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
+        return await self.PeerUserModel.send_points_to_employee_of_the_year(roots=roots, session=session)
 
 
 async def get_uuid_from_request(request, session):
@@ -541,3 +550,10 @@ async def remove_user_points(request: Request, uuid: int, action_id: int,
     if user_uuid is None:
         user_uuid = 2366
     return await Peer(user_uuid=user_uuid).remove_user_points(action_id=action_id, user_uuid=uuid, session=session)
+
+@peer_router.post("/send_points_to_employee_of_the_year")
+async def send_points_to_employee_of_the_year(request: Request, session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
+    return await Peer(user_uuid=user_uuid).send_points_to_employee_of_the_year(session=session)

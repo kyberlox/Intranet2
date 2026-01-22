@@ -901,12 +901,14 @@ class PeerUserModel:
                 for article in articles_employers:
                     send_data = {
                         "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                        "uuid_to": 2366,
+                        "uuid_to": article['indirect_data']['uuid'],
                         "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-                        "description": "2024"
+                        "description": article['indirect_data']['year']
                     }
+                    await self.send_auto_points(session=session, data=send_data, roots=roots)
+                return True
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")
 
         except Exception as e:
-            return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")
+            return LogsMaker().error_message(f"Ошибка в send_points_to_employee_of_the_year: {e}")

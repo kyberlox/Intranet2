@@ -72,7 +72,7 @@ const router = createRouter({
     {
       path: '/gallery/videoInterviews',
       name: 'videoInterviews',
-      component: () => import('@/views/about/videoInterview/VideoInterviews.vue'),
+      component: () => import('@/views/gallery/videoInterview/VideoInterviews.vue'),
     },
     {
       path: '/gallery/videoInterviews/:id',
@@ -86,13 +86,13 @@ const router = createRouter({
     {
       path: '/gallery/videoreports',
       name: 'videoReports',
-      component: () => import('@/views/news/videoReports/VideoReports.vue'),
+      component: () => import('@/views/gallery/videoReports/VideoReports.vue'),
     },
     {
       path: '/gallery/videoreportsByTag/:tagId',
       name: 'videoReportsByTag',
       props: (route) => ({ tagId: route.params.tagId}),
-      component: () => import('@/views/news/videoReports/VideoReports.vue'),
+      component: () => import('@/views/gallery/videoReports/VideoReports.vue'),
     },
     {
       path: '/gallery/videoreports/:id',

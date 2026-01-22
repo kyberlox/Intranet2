@@ -902,7 +902,7 @@ class PeerUserModel:
                     uuid_to = article['indirect_data']['uuid'] if 'uuid' in article['indirect_data'] else article['indirect_data']['user_id']
                     send_data = {
                         "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                        "uuid_to": article['indirect_data']['uuid'],
+                        "uuid_to": uuid_to,
                         "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                         "description": article['indirect_data']['year']
                     }

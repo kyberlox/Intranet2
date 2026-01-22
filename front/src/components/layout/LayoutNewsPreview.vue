@@ -3,7 +3,7 @@
     {{ pageTitle }}
 </h1>
 <div class="tags__page__filter">
-    <div>
+    <div v-if="needYears">
         <button @click="showFilter = !showFilter"
                 class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
             {{ currentYear || 'Год публикации' }}
@@ -55,6 +55,10 @@ export default defineComponent({
         needTags: {
             type: Boolean,
             default: false
+        },
+        needYears: {
+            type: Boolean,
+            default: true
         },
         tagId: {
             type: String

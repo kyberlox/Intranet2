@@ -409,7 +409,7 @@ const router = createRouter({
       component: () => import('@/views/gallery/officialEvents/OfficialEvent.vue'),
       props: (route) => ({ id: route.params.id }),
       meta: {
-        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Официальные события', route: 'officialEvents' }]
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Фотоотчеты', route: 'officialEvents' }]
       }
     },
     {

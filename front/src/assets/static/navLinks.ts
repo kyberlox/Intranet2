@@ -171,7 +171,7 @@ export const mainMenuPoints: MainMenuPoints = [
             },
             {
                 id: 4.2,
-                name: "Официальные события",
+                name: "Фотоотчеты",
                 href: "officialEvents",
             },
         ],

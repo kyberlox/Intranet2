@@ -549,6 +549,8 @@ class PeerUserModel:
                     value = 0
                     
                     if activities_id in roots.get("PeerCurator", []):
+                        
+                        print(3)
                         session.add(new_action)
                         # await session.commit()
                         
@@ -896,6 +898,7 @@ class PeerUserModel:
         """
         from .ArticleModel import ArticleModel
         try:
+            print(roots, 'права мои')
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 articles_employers = await ArticleModel(section_id=14).find_by_section_id(session=session)
                 if not articles_employers:

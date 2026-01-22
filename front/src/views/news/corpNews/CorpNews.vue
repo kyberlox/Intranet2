@@ -31,7 +31,7 @@ export default defineComponent({
         return {
             pageTitle: 'Новости организационного развития',
             sectionId: sectionTips['НовостиОргРазвития'],
-            storeItemsName: 'corpEventsData' as keyof DataState
+            storeItemsName: 'corpNewsData' as keyof DataState
         };
     },
 });

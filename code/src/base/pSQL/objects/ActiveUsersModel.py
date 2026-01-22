@@ -362,6 +362,7 @@ class ActiveUsersModel:
                     description = f"Лучший сотрудник {row.description} год(а)"
                 else:
                     description = row.description
+                print(row, 'че пришло')
                 activities.append({
                     "id_activeusers": row.id,
                     "uuid_from": row.uuid_from,

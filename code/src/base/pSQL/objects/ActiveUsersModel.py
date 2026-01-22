@@ -357,7 +357,7 @@ class ActiveUsersModel:
                 user_fio = ""
                 if user_info:
                     user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
-
+                print(row.id, 'айдишник активности')
                 if row.id == 7:
                     description = f"Лучший сотрудник {row.description} год(а)"
                 else:

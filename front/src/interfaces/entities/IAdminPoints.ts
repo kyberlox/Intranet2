@@ -62,4 +62,6 @@ date_time:string,
 id: number,
 uuid_to: number,
 user_to_fio:string,
+valid: number,
+action_id: number
 }

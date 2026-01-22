@@ -1,7 +1,8 @@
 <template>
 <PointsHistoryActionTable :needCheckButton="false"
                           :onlyHistory="true"
-                          :activitiesInTable="activitiesInTable" />
+                          :activitiesInTable="activitiesInTable"
+                          @moderate="moderate" />
 </template>
 
 <script lang="ts">
@@ -17,12 +18,22 @@ export default defineComponent({
         const activitiesInTable = ref<ICuratorActivityHistory[]>([]);
 
         onMounted(() => {
+            tableInit();
+        })
+
+        const moderate = (a: string, actionId: number, uuid: number) => {
+            Api.post(`peer/remove_user_points/${uuid}/${actionId}`)
+                .finally(() => tableInit())
+        }
+
+        const tableInit = () => {
             Api.get('peer/get_curators_history')
                 .then((data: ICuratorActivityHistory[]) => activitiesInTable.value = data)
-        })
+        }
 
         return {
             activitiesInTable,
+            moderate
         }
     }
 })

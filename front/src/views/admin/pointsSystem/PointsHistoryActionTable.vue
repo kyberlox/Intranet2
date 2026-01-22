@@ -99,7 +99,14 @@
                             <CheckIcon v-if="!onlyHistory"
                                        @click="moderate('accept', item.id, item.uuid_to)"
                                        class="moderator-panel__action-btn moderator-panel__action-btn--accept" />
+                            <div class="moderator-panel__cell--cancel primary-button"
+                                 @click="moderate('return', (item as ICuratorActivityHistory).action_id, item.uuid_to)"
+                                 v-else-if="(item as ICuratorActivityHistory).valid == 1">
+                                Отменить
+                            </div>
                         </td>
+
+
                     </tr>
                 </tbody>
                 <tfoot class="moderator-panel__tfoot"></tfoot>
@@ -123,7 +130,7 @@ import type { IActivityToConfirm, ICuratorActivityHistory } from '@/interfaces/I
 export default defineComponent({
     components: {
         CheckIcon,
-        CancelIcon
+        CancelIcon,
     },
     props: {
         activitiesInTable: {

@@ -351,7 +351,7 @@ class ArticleSearchModel:
 
             art_info['image'] = res_info["_source"]["preview_photo"] if "preview_photo" in res_info["_source"].keys() else None
             art_info['coincident'] = res_info['highlight']
-            articles.append(art_info)
+            articles.append(art_info) 
 
         sec_art = {}
         sec_art['section'] = 'Контент'

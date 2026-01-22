@@ -899,7 +899,7 @@ class PeerUserModel:
                 if not articles_employers:
                     return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
                 for article in articles_employers:
-                    print(article['indirect_data'])
+                    uuid_to = article['indirect_data']['uuid'] if 'uuid' in article['indirect_data'] else article['indirect_data']['user_id']
                     send_data = {
                         "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                         "uuid_to": article['indirect_data']['uuid'],

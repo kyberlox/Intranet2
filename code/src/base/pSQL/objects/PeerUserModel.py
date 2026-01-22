@@ -430,7 +430,7 @@ class PeerUserModel:
         try:
             stmt_count = select(func.count(self.ActiveUsers.id)).where(
                 self.ActiveUsers.uuid_to == uuid_to,
-                self.ActiveUsers.activities_id == activities_id
+                self.ActiveUsers.activities_id == activities_id,
             )
             result_count = await session.execute(stmt_count)
             nodes_count = result_count.scalar()
@@ -474,6 +474,26 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")  
 
+    async def check_employers_of_the_year(self, session, uuid_to, activities_id, year):
+        """
+        Функция проверяет получал ли пользователь баллы в номинации "Сотрудник года"
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        try:
+            stmt_count = select(func.count(self.ActiveUsers.id)).where(
+                self.ActiveUsers.uuid_to == uuid_to,
+                self.ActiveUsers.activities_id == activities_id,
+                self.ActiveUsers.description == str(year)
+            )
+            result_count = await session.execute(stmt_count)
+            nodes_count = result_count.scalar()
+            if nodes_count >= 1:
+                return False
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
+
     async def send_auto_points(self, session, data: dict, roots: dict):
         try:
             from .MerchStoreModel import MerchStoreModel
@@ -501,10 +521,13 @@ class PeerUserModel:
             elif int(activities_id) == 16:
                 check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
+            elif int(activities_id) == 7:
+                check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за сотрудника года: check_info = {check_info} ")
 
             
             if check_info is True:
-                if "PeerCurator" in roots.keys():
+                if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
                     stmt_max = select(func.max(self.ActiveUsers.id))
                     result_max = await session.execute(stmt_max)
                     max_id = result_max.scalar() or 0
@@ -864,8 +887,26 @@ class PeerUserModel:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в remove_user_points при снятии баллов у пользователя {self.uuid} за активность {action_id}: {e}")
 
-    async def send_points_to_employee_of_the_year(self, roots: dict):
+    async def send_points_to_employee_of_the_year(self, session, roots: dict):
         """
-        
+        Функция вытягивает всех номинантов "Сотрудник года" по всем годам
+        Выдает баллы если раннее они не были назначены
         """
-        pass
+        from .ArticleModel import ArticleModel
+        try:
+            if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
+                articles_employers = await ArticleModel(section_id=14).find_by_section_id(session=session)
+                if not articles_employers:
+                    return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
+                for article in articles_employers:
+                    send_data = {
+                        "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                        "uuid_to": 2366,
+                        "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                        "description": "2024"
+                    }
+            else:
+                return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")
+
+        except Exception as e:
+            return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")

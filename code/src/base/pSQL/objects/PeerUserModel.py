@@ -909,3 +909,4 @@ class PeerUserModel:
                 return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")
 
         except Exception as e:
+            return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")

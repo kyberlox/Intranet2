@@ -527,9 +527,7 @@ class PeerUserModel:
 
             
             if check_info is True:
-                print(1)
                 if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
-                    print(2)
                     stmt_max = select(func.max(self.ActiveUsers.id))
                     result_max = await session.execute(stmt_max)
                     max_id = result_max.scalar() or 0
@@ -549,8 +547,6 @@ class PeerUserModel:
                     value = 0
                     
                     if activities_id in roots.get("PeerCurator", []):
-                        
-                        print(3)
                         session.add(new_action)
                         # await session.commit()
                         
@@ -898,12 +894,12 @@ class PeerUserModel:
         """
         from .ArticleModel import ArticleModel
         try:
-            print(roots, 'права мои')
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
                 articles_employers = await ArticleModel(section_id=14).find_by_section_id(session=session)
                 if not articles_employers:
                     return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
                 for article in articles_employers:
+                    print(article['indirect_data'])
                     send_data = {
                         "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                         "uuid_to": article['indirect_data']['uuid'],

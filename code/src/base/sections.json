@@ -203,9 +203,15 @@
   },
   {
     "id" : 42,
-    "name" : "Официальные события",
+    "name" : "Фотоотчеты",
     "parent_id" : 4,
     "sectionHref": "officialEvent"
+  },
+  {
+    "id" : 43,
+    "name" : "Фильмы ТО ЭМК",
+    "parent_id" : 4,
+    "sectionHref": "filmsEmk"
   },
   {
     "id" : 5,

@@ -97,7 +97,7 @@ async def get_editor_roots(user_uuid, session):
     editor_roots = await roots_model.token_processing_for_editor(all_roots)
     if user_uuid is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'PeerAdmin': False, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [], 'PeerCurator': [7], 'VisionAdmin': True, 'GPT_gen_access': True}
+        editor_roots = {'PeerAdmin': False, 'PeerModer': False, 'EditorAdmin': False, 'EditorModer': [31, 33], 'PeerCurator': [], 'VisionAdmin': False, 'GPT_gen_access': False}
     return editor_roots
 
 

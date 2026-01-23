@@ -36,7 +36,6 @@ export default defineComponent({
     },
     setup(props) {
         const router = useRouter();
-
         const pickTag = (id: string) => {
             if (props.pageTitle == 'Актуальные новости') {
                 router.push({ name: 'actualNewsByTag', params: { tagId: id } })
@@ -46,7 +45,11 @@ export default defineComponent({
             else if (props.pageTitle == 'Корпоративные события') {
                 router.push({ name: 'corpEventsByTag', params: { tagId: id } })
             }
+            else if (props.pageTitle == 'Фильмы творческого объединения ЭМК') {
+                router.push({ name: 'filmsEmkByTag', params: { tagId: id } })
+            }
         }
+
         return {
             excursions,
             pickTag

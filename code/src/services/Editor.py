@@ -1134,7 +1134,7 @@ async def get_editor_roots(user_uuid, session):
 
     if user_uuid is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'PeerAdmin': False, 'PeerModer': False, 'EditorAdmin': False, 'EditorModer': [31, 33], 'PeerCurator': [], 'VisionAdmin': False, 'GPT_gen_access': False}
+        editor_roots = {'PeerAdmin': True, 'PeerModer': True, 'EditorAdmin': True, 'EditorModer': [31, 33], 'PeerCurator': [], 'VisionAdmin': True, 'GPT_gen_access': True}
         print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     return editor_roots
 

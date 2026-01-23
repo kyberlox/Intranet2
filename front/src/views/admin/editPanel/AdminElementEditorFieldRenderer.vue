@@ -38,10 +38,6 @@
     </div>
 
     <div class="admin-element-inner__field mt10">
-        <!-- <AdminEditInput v-if="newFileData?.videos_embed"
-                        :item="{ name: 'Видео с источников', field: 'videos_embed', values: [{ name: '', id: '' }] }"
-                        @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)" /> -->
-
         <AdminEditInputMulti v-if="newFileData?.videos_embed"
                              :title="'Видео с источников'"
                              :item="newFileData?.videos_embed"

@@ -36,8 +36,8 @@
 import { defineComponent, computed, watch, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
-import LayoutHeader from "./components/layout/LayoutHeader.vue";
-import Sidebar from "./components/layout/RightSidebar.vue";
+import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
+import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
 import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
 import AuthPage from "./views/user/AuthPage.vue";
 import YandexMetrika from "./components/tools/common/YandexMetrika.vue";

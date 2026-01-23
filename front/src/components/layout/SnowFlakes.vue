@@ -1,5 +1,5 @@
 <template>
-  <div class="snowflakes-container" />
+<div class="snowflakes-container" />
 </template>
 
 <script lang="ts">

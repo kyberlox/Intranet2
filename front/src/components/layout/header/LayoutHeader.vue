@@ -118,14 +118,14 @@ import { mainMenuPoints } from "@/assets/static/navLinks";
 import type { ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
 import { useRoute, useRouter } from "vue-router";
-import SidebarLk from "./TopRightSidebar.vue";
+import SidebarLk from "../sidebars/TopRightSidebar.vue";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
 import SearchModal from "@/components/tools/modal/SearchModal/SearchModal.vue";
 import { useUserData } from "@/stores/userData";
 import { useWindowSize } from '@vueuse/core'
 import { screenCheck } from "@/utils/screenCheck";
 import { useUserScore } from "@/stores/userScoreData";
-import SlotModal from "../tools/modal/SlotModal.vue";
+import SlotModal from "@/components/tools/modal/SlotModal.vue";
 import LayoutHeaderPointsModal from "./LayoutHeaderPointsModal.vue";
 
 import { featureFlags } from "@/assets/static/featureFlags";

@@ -1,6 +1,6 @@
 <template>
 <Editor :modules="editorModules"
-        :value="content"
+        v-model="content"
         editorStyle="height: 350px"
         @text-change="handleTextChange">
     <template v-slot:toolbar>
@@ -30,10 +30,12 @@ export default defineComponent({
         const content = ref(props.modelValue);
 
         watch(() => props.modelValue, (newValue) => {
+            console.log(props);
+
             if (newValue !== content.value) {
                 content.value = sanitizeValue(newValue);
             }
-        });
+        }, { immediate: true, deep: true });
 
         const sanitizeValue = (html: string): string => {
             if (!html) return '';

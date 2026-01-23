@@ -7,10 +7,10 @@
                       v-if="needCakeIcon" />
     </div>
     <div class="birthday__slide__info">
-        <div class="birthday__page__swiper__slide__title">{{ slide?.user_fio }}</div>
-        <div class="birthday__page__swiper__slide__subtitle">{{ slide?.position }}</div>
-        <div class="birthday__page__swiper__slide__departments">
-            <div class="birthday__page__swiper__slide__department"
+        <div class="birthday__page__slide__title">{{ slide?.user_fio }}</div>
+        <div class="birthday__page__slide__subtitle">{{ slide?.position }}</div>
+        <div class="birthday__page__slide__departments">
+            <div class="birthday__page__slide__department"
                  v-for="(dep, index) in slide?.department"
                  :key="'dep' + index">
                 {{ dep }}
@@ -33,7 +33,7 @@ interface IBirthdaySlide {
 }
 
 export default defineComponent({
-    name: 'verticalSliderSlide',
+    name: 'userSlide',
     props: {
         slide: {
             type: Object as PropType<IBirthdaySlide>

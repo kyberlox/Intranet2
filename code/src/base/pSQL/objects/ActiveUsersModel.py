@@ -391,8 +391,8 @@ class ActiveUsersModel:
                     "activity_name": "Снятие баллов за покупку",
                     "cost": -merch.merch_coast
                 })
-            
-            return activities
+            sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+            return sorted_result
             
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в user_history при получении полной истории для пользователя {self.uuid_to}: {e}")

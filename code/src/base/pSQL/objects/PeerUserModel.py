@@ -801,8 +801,8 @@ class PeerUserModel:
 
                     }
                     activity_history.append(info)
-                
-                return activity_history
+                sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав для просмотра истории кураторов")
                 

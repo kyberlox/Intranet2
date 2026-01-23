@@ -422,7 +422,7 @@ class ArticleSearchModel:
                         data_row["authorId"] = article_data["indirect_data"]["author_uuid"] if "author_uuid" in article_data["indirect_data"].keys() else None
                         data_row["company"] = article_data["indirect_data"]["company"] if "company" in article_data["indirect_data"].keys() else None
                 data_row["title"] = article_data["name"]
-                data_row["preview_text"] = html_to_text_simple(article_data["preview_text"]) if article_data["preview_text"] else None
+                data_row["preview_text"] = html_to_text_simple(article_data["preview_text"]) if "preview_text" in article_data and article_data["preview_text"] else None
                 data_row["content_text"] = html_to_text_simple(article_data["content_text"]) if article_data["content_text"] else None
                 data_row["content_type"] = article_data["content_type"] if "content_type" in article_data.keys() else None
                 data_row["preview_photo"] = preview_photo

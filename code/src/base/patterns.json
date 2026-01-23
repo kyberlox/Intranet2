@@ -16,11 +16,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -193,11 +189,7 @@
         "field": "author",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -281,11 +273,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -349,11 +337,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -470,11 +454,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -632,11 +612,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -775,11 +751,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -846,11 +818,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -989,11 +957,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -1070,11 +1034,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -1225,11 +1185,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -1486,11 +1442,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -1555,11 +1507,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -1619,11 +1567,7 @@
         "field": "name",
         "data_type": "str"
       },
-      {
-        "name": "Аннотация",
-        "field": "preview_text",
-        "data_type": "str"
-      },
+       
       {
         "name": "Содержимое",
         "field": "content_text",

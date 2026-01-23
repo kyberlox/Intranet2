@@ -16,7 +16,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, type Ref, computed, type ComputedRef, watch } from 'vue';
-import DatePicker from '../tools/common/DatePicker.vue';
+import DatePicker from '@/components/tools/common/DatePicker.vue';
 import { dateConvert, formatDateNoTime } from '@/utils/dateConvert';
 import { useRoute, useRouter } from 'vue-router';
 import { useViewsDataStore } from '@/stores/viewsData';

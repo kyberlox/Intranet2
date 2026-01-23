@@ -233,7 +233,6 @@ export default defineComponent({
         })
     }
 
-
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
       if (item.field) {
         newData.value = {

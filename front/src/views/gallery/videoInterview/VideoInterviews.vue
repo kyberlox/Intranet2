@@ -1,6 +1,5 @@
 <template>
-<LayoutNewsPreview :id="id"
-                   :tagId="tagId"
+<LayoutNewsPreview :tagId="tagId"
                    :needTags="false"
                    :pageTitle="pageTitle"
                    :storeItemsName="storeItemsName"
@@ -11,7 +10,7 @@
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
 import { defineComponent } from 'vue';
-import LayoutNewsPreview from '@/components/layout/LayoutNewsPreview.vue';
+import LayoutNewsPreview from '@/components/layout/newsPreview/LayoutNewsPreview.vue';
 import type { DataState } from '@/stores/viewsData';
 
 export default defineComponent({
@@ -19,9 +18,6 @@ export default defineComponent({
         LayoutNewsPreview,
     },
     props: {
-        id: {
-            type: Number
-        },
         tagId: {
             type: String
         }

@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { testMode } from '@/assets/static/testMode';
@@ -40,9 +40,17 @@ export default defineComponent({
         const login = ref();
         const pass = ref();
 
+        onMounted(() => {
+            if (testMode) {
+                tryLogin();
+            }
+        })
+
         const tryLogin = () => {
             isLoading.value = true
             if (testMode) {
+                login.value = 'gazinskii.i.v';
+                pass.value = 'B(tu0xm4)';
                 testLogin()
             }
             else {

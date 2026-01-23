@@ -86,11 +86,11 @@
                       </span>
                       <span v-if="item.date_publiction"
                             class="admin-block-inner__card-date">
-                        {{ useDateFormat(item.date_publiction, 'DD.MM.YYYY') }}
+                        {{ useDateFormat(item.date_publiction, 'DD.MM.YYYY HH:mm:ss') }}
                       </span>
                       <span v-else-if="item.date_creation"
                             class="admin-block-inner__card-date">
-                        {{ useDateFormat(item.date_creation, 'DD.MM.YYYY') }}
+                        {{ useDateFormat(item.date_creation, 'DD.MM.YYYY HH:mm:ss') }}
                       </span>
                     </div>
                   </div>

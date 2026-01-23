@@ -25,14 +25,14 @@
 </template>
 <script lang='ts'>
 import { defineComponent, ref, computed } from 'vue';
-import SlotModal from '../tools/modal/SlotModal.vue';
+import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import Api from '@/utils/Api';
 import { createMail } from "@/utils/createMail";
 import { useUserData } from '@/stores/userData';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
-import Loader from './Loader.vue';
+import Loader from '../Loader.vue';
 
 export default defineComponent({
     components: {

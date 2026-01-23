@@ -1,3 +1,5 @@
+@use '/src/assets/styles/mixins' as *;
+
 .admin-element-inner {
     &__field {
         min-width: 250px;
@@ -93,10 +95,14 @@
     &__editor {
         display: flex;
         flex-direction: column;
-        min-width: 33%;
+        min-width: 500px;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         transform-origin: center top;
         gap: 20px;
+
+        @include md {
+            min-width: 33%;
+        }
 
         &--preview-full-width {
             align-items: center;
@@ -342,6 +348,11 @@
 
     &__editor__loader {
         margin: auto;
+
+        &>.loader {
+            width: 64px;
+            height: 64px;
+        }
     }
 
     &__fields {

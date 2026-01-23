@@ -5,6 +5,7 @@
     </p>
     <DatePicker class="admin-element-inner__date-picker"
                 :disable-year-select="false"
+                :timePicker="true"
                 :calendarType="'full'"
                 :defaultData="(value as string)"
                 :item="item"

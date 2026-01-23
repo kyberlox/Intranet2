@@ -91,56 +91,55 @@
 
 
     &__page {
-        &__swiper {
-            width: 100%;
-            margin: 0;
-            height: 100% !important;
+
+        width: 100%;
+        margin: 0;
+        height: 100% !important;
+
+        @include sm {
+            aspect-ratio: 4/5 !important;
+        }
+
+        &__wrapper {
+            flex: 1;
+            max-width: calc(100% - 341px);
+            min-height: 100%;
+            position: relative;
+
+            @include lg {
+                max-width: 100% !important;
+            }
+        }
+
+        &__slide {
+            height: 100%;
+            object-fit: contain;
+            background-size: cover;
+            background-position-x: center;
+            display: flex;
 
             @include sm {
-                aspect-ratio: 4/5 !important;
+                min-height: 600px !important;
             }
 
-            &__wrapper {
-                flex: 1;
-                max-width: calc(100% - 341px);
-                min-height: 100%;
-                position: relative;
-
-                @include lg {
-                    max-width: 100% !important;
-                }
+            &__title {
+                font-weight: bold;
             }
 
-            &__slide {
-                height: 100%;
-                object-fit: contain;
-                background-size: cover;
-                background-position-x: center;
+            &__subtitle {
+                margin-top: 2px;
+                color: #666;
+            }
+
+            &__info {
                 display: flex;
-
-                @include sm {
-                    min-height: 600px !important;
-                }
-
-                &__title {
-                    font-weight: bold;
-                }
-
-                &__subtitle {
-                    margin-top: 2px;
-                    color: #666;
-                }
-
-                &__info {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: flex-end;
-                    font-size: 12px;
-                    padding: 6px;
-                    background: white;
-                    margin-top: auto;
-                    width: 100%;
-                }
+                flex-direction: column;
+                justify-content: flex-end;
+                font-size: 12px;
+                padding: 6px;
+                background: white;
+                margin-top: auto;
+                width: 100%;
             }
         }
     }
@@ -215,20 +214,5 @@
         @include sm {
             right: 46px;
         }
-    }
-}
-
-.swiper-navigation__buttons-group--birthday {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9;
-    width: 100%;
-    margin: auto;
-    padding: 0 10px;
-
-    @include sm {
-        display: flex !important;
     }
 }

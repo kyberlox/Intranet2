@@ -4,8 +4,8 @@
      v-if="slidesForBirthday.length && !isLoading">
     <div v-for="(slide, index) in slidesForBirthday"
          :key="'vertSlide' + index">
-        <VerticalSliderSlide :needCakeIcon="true"
-                             :slide="slide" />
+        <UserSlide :needCakeIcon="true"
+                   :slide="slide" />
     </div>
 </div>
 <div v-else-if="isLoading"
@@ -21,7 +21,7 @@
 import { ref, defineComponent, onMounted } from "vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import Api from "@/utils/Api";
-import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
+import UserSlide from "@/components/layout/UserSlide.vue";
 import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.png";
 import Loader from "@/components/layout/Loader.vue";
 import { noWorkers } from "@/assets/static/contentPlugs";
@@ -31,13 +31,14 @@ import { sectionTips } from "@/assets/static/sectionTips";
 
 export default defineComponent({
     components: {
-        VerticalSliderSlide,
+        UserSlide,
         Loader,
         ContentPlug
     },
     setup() {
         const isLoading = ref(false);
-
+        const dateFromDatepicker = ref();
+        const nullifyDateInput = ref(false);
         const slidesForBirthday = ref([]);
         const imageInModal = ref();
         const hiddenModal = ref(true);
@@ -51,11 +52,6 @@ export default defineComponent({
             Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
                 .then((data) => slidesForBirthday.value = data)
         })
-
-
-        const dateFromDatepicker = ref();
-        const nullifyDateInput = ref(false);
-
 
         return {
             slidesForBirthday,

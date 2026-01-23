@@ -6,6 +6,6 @@ export const makeSlashToBr = (str: string): string => {
     return str.replace('\n', '<br/>');
 }
 
-export const duplicateExist = (element: string, searchArray: Array<string>) => {
-    return searchArray.includes(element) ? true : false
+export const createUniqueArr = (firstArr: string[], secArr: string[]) => {
+   return new Set(firstArr.concat(secArr))
 }

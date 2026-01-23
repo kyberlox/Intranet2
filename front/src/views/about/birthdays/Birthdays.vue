@@ -22,8 +22,8 @@
      v-if="slidesForBirthday.length && !isLoading">
     <div v-for="(slide, index) in slidesForBirthday"
          :key="'vertSlide' + index">
-        <VerticalSliderSlide :needCakeIcon="true"
-                             :slide="slide" />
+        <UserSlide :needCakeIcon="true"
+                   :slide="slide" />
     </div>
 </div>
 <div v-else-if="isLoading"
@@ -40,7 +40,7 @@ import { ref, watch, nextTick, defineComponent } from "vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
-import VerticalSliderSlide from '@/components/tools/swiper/VerticalSliderSlideUsers.vue';
+import UserSlide from "@/components/layout/UserSlide.vue";
 import birthdayPageImg from "@/assets/imgs/plugs/birthdayPlug.png";
 import Loader from "@/components/layout/Loader.vue";
 import { noBirthdays } from "@/assets/static/contentPlugs";
@@ -50,7 +50,7 @@ import noBirthImage from "@/assets/imgs/plugs/contentPlugBirthdays.jpg";
 export default defineComponent({
     components: {
         DatePicker,
-        VerticalSliderSlide,
+        UserSlide,
         Loader,
         ContentPlug
     },
@@ -106,7 +106,6 @@ export default defineComponent({
                 value: formatDate(tomorrow),
             },
         ];
-
 
         watch((searchValue), (newVal) => {
             if (!newVal) return;

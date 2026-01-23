@@ -3,7 +3,7 @@
                locale="ru"
                cancelText="Назад"
                selectText="Ок"
-               :enable-time-picker="false"
+               :enable-time-picker="timePicker"
                disable-year-select
                :six-weeks="true"
                auto-apply
@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch, computed, type PropType } from 'vue';
-import { type ICalendarMarker } from '@/components/layout/RightSidebarCalendar.vue';
+import { type ICalendarMarker } from '@/components/layout/sidebars/RightSidebarCalendar.vue';
 import { useStyleModeStore } from '@/stores/styleMode';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 
@@ -51,6 +51,10 @@ export default defineComponent({
         },
         item: {
             type: Object as PropType<IAdminListItem>,
+        },
+        timePicker: {
+            type: Boolean,
+            default: () => false
         }
     },
     setup(props, { emit }) {
@@ -80,6 +84,8 @@ export default defineComponent({
             const day = date.getDate();
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
+            const time = date.getHours() + ':' + (date.getMinutes() > 9 ? date.getMinutes() : "0" + date.getMinutes());
+
             if (props.calendarType == 'dayAndMonth') {
                 return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}`;
             }
@@ -91,7 +97,7 @@ export default defineComponent({
                 return formatMonth.charAt(0).toUpperCase() + formatMonth.slice(1);
             }
             else if (props.calendarType == 'full') {
-                return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
+                return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time}`
             }
         };
 
@@ -106,7 +112,6 @@ export default defineComponent({
             }
             else if (props.calendarType !== 'month') {
                 if (props.item?.field?.includes('publiction')) {
-
                     dateInput.value = new Date();
                 }
                 else dateInput.value = null

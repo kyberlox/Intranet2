@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { testMode } from '@/assets/static/testMode';

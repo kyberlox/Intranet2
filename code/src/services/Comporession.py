@@ -74,7 +74,7 @@ def resize_image_yowai_mo_quality(input_path: str) -> BytesIO:
         )
         
         # Легкое повышение резкости (опционально)
-        img = img.filter(ImageFilter.SHARPEN)
+        # img = img.filter(ImageFilter.SHARPEN)
         
         # Сохранение с высоким качеством
         output_buffer = BytesIO()

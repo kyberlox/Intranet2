@@ -914,3 +914,40 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в send_points_to_employee_of_the_year: {e}")
     
+    async def send_points_to_realized_idea(self, session, user_id, name_idea):
+        """
+        Функция отправляет пользователю баллы за реализованную идею
+        """
+        try:
+            from .MerchStoreModel import MerchStoreModel
+            uuid_from = 4133
+            uuid_to = user_id
+            activities_id = 17
+            description = f"Баллы за реализованную идею: {name_idea}"
+            # Проверяем существование пользователя
+            stmt_user = select(self.User).where(self.User.id == uuid_to, self.User.active == True)
+            result_user = await session.execute(stmt_user)
+            existing_user = result_user.scalar_one_or_none()
+            
+            if not existing_user:
+                return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует, не удалось автоматически отправить баллы")
+            stmt_max = select(func.max(self.ActiveUsers.id))
+            result_max = await session.execute(stmt_max)
+            max_id = result_max.scalar() or 0
+            new_id = max_id + 1
+            
+            new_action = self.ActiveUsers(
+                id=new_id,
+                uuid_from=uuid_from,
+                uuid_to=uuid_to,
+                description=description,
+                activities_id=activities_id,
+                valid=1,
+                date_time=datetime.now()
+            )
+            
+            
+            
+        except Exception as e:
+            return LogsMaker().error_message(f"Ошибка в send_points_to_realized_idea: {e}")
+        

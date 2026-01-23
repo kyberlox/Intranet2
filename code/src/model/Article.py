@@ -2017,6 +2017,8 @@ class Article:
 
                     active_articles.append(res)
             SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 32, 33, 42, 43, 51, 52]
+            if not active_articles:
+                return active_articles
             if self.section_id == "111" or self.section_id == "14":
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             # отдельная сортировка Памятки новому сторуднику

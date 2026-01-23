@@ -801,8 +801,8 @@ class PeerUserModel:
 
                     }
                     activity_history.append(info)
-                
-                return activity_history
+                sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав для просмотра истории кураторов")
                 
@@ -945,7 +945,29 @@ class PeerUserModel:
                 valid=1,
                 date_time=datetime.now()
             )
+            session.add(new_action)
+            # await session.commit()
             
+            stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
+            result_coast = await session.execute(stmt_coast)
+            value = result_coast.scalar()
+            
+            merch_model = MerchStoreModel(uuid_to)
+            add_points = await merch_model.upload_user_sum(session, value)
+            
+            add_history = self.PeerHistory(
+                user_uuid=uuid_from,
+                user_to=uuid_to,
+                active_info=description,
+                active_coast=value,
+                active_id=new_id,
+                info_type='activity',
+                date_time=datetime.now()
+            )
+
+            session.add(add_history)
+            await session.commit()
+            return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
             
             
         except Exception as e:

@@ -67,18 +67,25 @@ export default defineComponent({
         const activeSectionEditors = ref([]);
         const isLoading = ref(false);
         const gptRoot = computed(() => useUserData().getUserRoots.GPT_gen_access || useUserData().getUserRoots.EditorAdmin);
-        const newSections = ref(sections.value);
+        const newSections = ref<{ id: string | number; name: string; }[]>([]);
 
-        watch((gptRoot), () => {
-            if (gptRoot.value) {
-                newSections.value.push({ id: 'gpt', name: 'Доступ к gpt' })
+        watch([sections, gptRoot], ([sectionsVal, gptVal]) => {
+            console.log('her');
+
+            if (gptVal && sectionsVal.length) {
+                newSections.value = [...sectionsVal];
+                if (!newSections.value.find((e) => e.id === 'gpt')) {
+                    newSections.value.push({ id: 'gpt', name: 'Доступ к gpt' });
+                }
+            } else {
+                newSections.value = [...sectionsVal];
             }
         }, { immediate: true, deep: true })
 
-        watch((activeSection), () => {
+        watch(activeSection, () => {
             if (!activeSection.value) return
             editorsInit()
-        }, { immediate: true, deep: true })
+        }, { immediate: true })
 
         const editorsInit = () => {
             isLoading.value = true;

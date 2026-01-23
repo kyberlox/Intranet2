@@ -40,17 +40,9 @@ export default defineComponent({
         const login = ref();
         const pass = ref();
 
-        onMounted(() => {
-            if (testMode) {
-                tryLogin();
-            }
-        })
-
         const tryLogin = () => {
             isLoading.value = true
             if (testMode) {
-                login.value = 'gazinskii.i.v';
-                pass.value = 'B(tu0xm4)';
                 testLogin()
             }
             else {

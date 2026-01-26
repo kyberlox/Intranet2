@@ -85,33 +85,64 @@
 #             return user_details #str(conn.entries[0].objectGUID.value)
 
 # print(check_ad_credentials("timofeev.a.a", "!"))
-from src.base.pSQL.models.FilesDB import FilesDB
-from src.base.pSQL.objects.App import select, func, AsyncSessionLocal
-import asyncio
+# from src.base.pSQL.models.FilesDB import FilesDB
+# from src.base.pSQL.objects.App import select, func, AsyncSessionLocal
+# import asyncio
 
 
-# async def test(art_id):
-#     async with AsyncSessionLocal() as session:
-#         stmt_max = select(FilesDB.name).where(
-#             FilesDB.article_id == art_id
-#         )
-#         result_max = await session.execute(stmt_max)
-#         all_names = result_max.scalars().all()
-#         if all_names == []:
-#             max_num = None
-#         else:
-#             nums = lambda x :  [int(n.split('_')[-1].split('.')[0]) for n in x ]
-#             max_num = max(nums(all_names))
+# # async def test(art_id):
+# #     async with AsyncSessionLocal() as session:
+# #         stmt_max = select(FilesDB.name).where(
+# #             FilesDB.article_id == art_id
+# #         )
+# #         result_max = await session.execute(stmt_max)
+# #         all_names = result_max.scalars().all()
+# #         if all_names == []:
+# #             max_num = None
+# #         else:
+# #             nums = lambda x :  [int(n.split('_')[-1].split('.')[0]) for n in x ]
+# #             max_num = max(nums(all_names))
 
-#         return max_num
-        #return nums(all_names)
-from bitrix24 import Bitrix24
-def getInfoBlock(id):
-    bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
-    result = bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
-    for res in result:
-        if int(res['ID']) == 10855:
-            return res
-af = ["61", "83", "75", "77", "81", "82", "98", "78", "84"]
-for sec in af:
-    print(getInfoBlock(sec))
+# #         return max_num
+#         #return nums(all_names)
+# from bitrix24 import Bitrix24
+# def getInfoBlock(id):
+#     bx24 = Bitrix24("https://portal.emk.ru/rest/2158/no7abhbtokxxctlb/")
+#     result = bx24.callMethod(f'lists.element.get?IBLOCK_TYPE_ID=lists&IBLOCK_ID={id}')
+#     for res in result:
+#         if int(res['ID']) == 10855:
+#             return res
+# af = ["61", "83", "75", "77", "81", "82", "98", "78", "84"]
+# for sec in af:
+#     print(getInfoBlock(sec))
+
+import requests
+import json
+
+def get_from_response(response):
+    #Конвертировать ответ сервера в словарь
+    result = response.text
+    return json.loads(result)
+
+#ТУТ НУЖНО УКАЗАТЬ АКТУАЛЬНЫЙ session_id
+session_id="b5518524-0b74-4e71-b02e-f3cb29718a57"
+cookies = {'session_id': session_id}
+
+#Тут заменить "14" на номер раздела, в котром будем менять
+response = requests.get("https://intranet.emk.ru/api/article/find_by/32", cookies=cookies)
+arts = get_from_response(response)
+
+for art in arts:
+    art_id = art["id"]
+    print(art_id)
+    response = requests.get(f'https://intranet.emk.ru/api/article/find_by_ID/{art_id}', cookies=cookies)
+    art_inf = get_from_response(response)
+    # indirect_data = art_inf['indirect_data']
+    #Условие другое
+    if art_inf['date_publiction'] is None:
+        #data другая
+        data={"date_publiction": art_inf['date_creation']}
+        json_data = json.dumps(data)
+        response = requests.post(f"https://intranet.emk.ru/api/editor/update/{art_id}", data=json_data, cookies=cookies)
+        print("Сделано")
+

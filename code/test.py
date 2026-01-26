@@ -129,7 +129,7 @@ session_id="b5518524-0b74-4e71-b02e-f3cb29718a57"
 cookies = {'session_id': session_id}
 
 #Тут заменить "14" на номер раздела, в котром будем менять
-response = requests.get("https://intranet.emk.ru/api/article/find_by/52", cookies=cookies)
+response = requests.get("https://intranet.emk.ru/api/article/find_by/32", cookies=cookies)
 arts = get_from_response(response)
 
 for art in arts:

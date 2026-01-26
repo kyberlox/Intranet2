@@ -2016,7 +2016,7 @@ class Article:
                         #         res['reactions'] = has_user_liked
 
                     active_articles.append(res)
-            SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 33, 42, 43, 51, 52]
+            SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 33, 43, 51 , 52, 42] # 51 , 52, 42
             if not active_articles:
                 return active_articles
             if self.section_id == "111" or self.section_id == "14":

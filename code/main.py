@@ -66,7 +66,8 @@ app = FastAPI(
     version="2.0.0",
     docs_url=None,#"/api/docs",
     redoc_url=None,
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
+    max_upload_size=1024 * 1024 * 1024 * 2
 )
 
 app.include_router(users_router, prefix="/api")

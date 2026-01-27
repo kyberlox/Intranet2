@@ -181,6 +181,11 @@ class User:
         #             "description": f"Добро пожаловать в ЭМК!"
         #         }
         #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        #         if send_point['status'] == 'info':
+        #             self.UserModel.id = int(user['id'])
+        #             user_info = await self.UserModel.find_by_id(session)
+        #             if 'email' in user_info and user_info['email']:
+        #                 data = {'sender': user_info['email']}
         return users
 
     async def anniversary_in_company(self, session):

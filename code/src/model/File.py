@@ -685,14 +685,17 @@ class File:
             print('скачиваю файл')
             # Асинхронная загрузка с мониторингом прогресса
             async with aiofiles.open(file_path, "wb") as f:
-                while True:
-                    # Читаем чанк данных
-                    chunk = file.file.read(chunk_size)
-                    if not chunk:
-                        break
-                    
-                    # Записываем чанк в файл
+                
+                while chunk := await file.read(chunk_size):
                     await f.write(chunk)
+                # while True:
+                    # Читаем чанк данных
+                    # chunk = file.file.read(chunk_size)
+                    # if not chunk:
+                    #     break
+                    
+                    # # Записываем чанк в файл
+                    # await f.write(chunk)
                     total_written += len(chunk)
                     
                     # Обновляем прогресс

@@ -87,6 +87,7 @@ export default defineComponent({
             else {
                 formattedReportages.value.splice(-1, 1);
             }
+            emitInPrevFormat()
         }
 
         const changeReport = (index: number, newVal: string) => {

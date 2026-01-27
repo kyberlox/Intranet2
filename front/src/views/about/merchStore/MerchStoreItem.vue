@@ -29,7 +29,7 @@
                  class="merch-store-item__info__description"
                  v-html="currentItem.content_text">
             </div>
-            <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && currentSize !== 'no_size' && currentSize"
+            <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && !checkSizes(currentItem as IMerchItem).includes('no_size')"
                  class="merch-store-item__info__sizes__title">
                 <span>Размер</span>
                 <div class="merch-store-item__info__sizes">
@@ -37,7 +37,7 @@
                          :class="{ 'merch-store-item__info__size--active': item == currentSize }"
                          v-for="item in checkSizes(currentItem as IMerchItem).filter((e) => e !== 'no_size')"
                          :key="'size' + item"
-                         @click="setCurrentSize(item)">
+                         @click="setCurrentSize(item as ('s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'))">
                         {{ item }}
                     </div>
                 </div>
@@ -54,13 +54,14 @@
                  class="merch-store-item__info__count">
                 <span class="merch-store-item__info__count-text">
                     {{
-                        currentItem?.indirect_data?.sizes_left[currentSize]
+                        currentItem?.indirect_data?.sizes_left[currentSize as ("s" | "m" | "l" | "xl" | "xxl" | "no_size"
+                        )]
                     }}
                 </span> шт. осталось
             </div>
             <div class="merch-store-item__action__wrapper">
-                <div class="merch-store-item__action__button"
-                     @click="acceptBuyModalOpen = true">
+                <div @click="callModal(true)"
+                     class="merch-store-item__action__button">
                     Оформить
                 </div>
             </div>
@@ -72,7 +73,7 @@
                @close="modalIsOpen = false" />
 
     <AcceptBuyModal v-if="acceptBuyModalOpen"
-                    @closeModal="acceptBuyModalOpen = false"
+                    @closeModal="callModal(false)"
                     @acceptBuy="(quantity: number) => acceptBuy(quantity)" />
 </div>
 </template>
@@ -88,6 +89,7 @@ import Api from '@/utils/Api';
 import type { IMerchItem } from '@/interfaces/entities/IMerch';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 export default defineComponent({
     components: {
@@ -105,7 +107,7 @@ export default defineComponent({
     setup(props) {
         const activeImage = ref();
         const modalIsOpen = ref(false);
-        const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>('no_size');
+        const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
         const acceptBuyModalOpen = ref(false);
 
         const toastInstance = useToast();
@@ -122,26 +124,47 @@ export default defineComponent({
             currentSize.value = size;
         }
 
-        const acceptBuy = async (quantity: number) => {
-            if (!currentSize.value) return
-            const sizeName = currentSize.value;
-            toast.showWarning('merchBuyWarning');
-            // await Api.put('store/create_purchase', { [sizeName]: quantity!, 'art_id': Number(currentItem.value?.id)! })
-            //     .then((data) => {
-            //         handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
-            //     })
-            //     .catch((error) => {
-            //         handleApiError(error, toast)
-            //     })
+        const acceptBuy = (quantity: number) => {
+            if (!featureFlags.pointsSystem) {
+                toast.showWarning('merchBuyWarning');
+            } else
+                Api.put('store/create_purchase', { [currentSize.value as string]: quantity!, 'art_id': Number(currentItem.value?.id)! })
+                    .then((data) => {
+                        if ('not_enough' in data.not_enough) {
+                            toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
+                        }
+                        handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => callModal(false))
         }
 
-        const checkSizes = (item: IMerchItem) =>
-            Object.keys(item.indirect_data?.sizes_left ?? {}) as ('s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size')[];
+        const checkSizes = (item: IMerchItem) => {
+            const sizes = Object.keys(item.indirect_data?.sizes_left ?? []);
+            const notNullSizes: string[] = []
+            sizes.forEach((e) => {
+                if (item.indirect_data?.sizes_left[(e as keyof typeof item.indirect_data.sizes_left)] !== 0) {
+                    notNullSizes.push(e)
+                }
+            })
+            if (notNullSizes.length == 1 && notNullSizes[0] == 'no_size') {
+                currentSize.value = "no_size"
+            }
+            return notNullSizes
+        }
 
         onMounted(() => {
             Api.get(`article/find_by_ID/${props.id}`)
                 .then((data) => currentItem.value = data)
         })
+
+        const callModal = (status: boolean) => {
+            if (currentSize.value) {
+                acceptBuyModalOpen.value = status;
+            } else toast.showCustomToast('info', 'Выберите размер')
+        }
 
         return {
             activeImage,
@@ -152,7 +175,8 @@ export default defineComponent({
             setZoomImg,
             setCurrentSize,
             acceptBuy,
-            checkSizes
+            checkSizes,
+            callModal
         }
     }
 })

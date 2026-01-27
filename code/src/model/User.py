@@ -234,10 +234,10 @@ class User:
                             # срабатывает это условие и уходит в else
                             print('РАЗНЫЕ ФОТКИ')
                             # cтарую фотку - в архив
-                            if psql_user['photo_file_b24_url'] is not None and psql_user[
-                                'photo_file_b24_url'] != b24_url:
-                                old_file_id = psql_user['photo_file_id']
-                                await File(id=old_file_id).go_user_photo_archive(session)
+                            # if psql_user['photo_file_b24_url'] is not None and psql_user[
+                            #     'photo_file_b24_url'] != b24_url:
+                            #     old_file_id = psql_user['photo_file_id']
+                            #     await File(id=old_file_id).go_user_photo_archive(session)
                             # если есть несоответствие - скачать новую
                             file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
 

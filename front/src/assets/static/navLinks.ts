@@ -280,13 +280,13 @@ export const supportLinks: SupportLink[] = [
     },
     {
         title: "Наш сайт",
-        href: "http://www.emk.ru/",
-        description: "http://www.emk.ru",
+        href: "https://www.emk.ru/",
+        description: "https://www.emk.ru",
         icon: EmkLogo,
     },
     {
         title: "Редактор Интранет",
-        href: "admin",
+        href: "https://intranet.emk.ru/admin",
         description: "Перейти",
         icon: DocsIcon,
     },

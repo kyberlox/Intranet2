@@ -97,6 +97,7 @@ class MerchStoreModel:
                     shop_cart[size] = request_value
 
             if error_flag:
+                # return LogsMaker().warning_message(f"Недостаточно средств у пользователя с id = {self.user_id} для покупки мерча art_id = {art_id}")
                 return {"not_enough": missing_items}
 
             # Рассчитываем общую стоимость
@@ -122,7 +123,7 @@ class MerchStoreModel:
             # Обновляем баланс пользователя
             money_left = user.user_points - total_price
             user.user_points = money_left
-
+            print()
             # Добавляем запись в историю
             merch_description = f"{merch_info.name}, Куплено {total_count} штук(а)"
             add_history = PeerHistory(

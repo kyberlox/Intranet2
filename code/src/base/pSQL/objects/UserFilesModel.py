@@ -42,7 +42,6 @@ class UserFilesModel():
                 )
                 result_photo = await session.execute(stmt_photo)
                 user_photo_exists = result_photo.scalar_one_or_none()
-                
                 # Если уже есть - заменить
                 if user_photo_exists:
                     # Проверить, вдруг это тоже самое
@@ -52,13 +51,11 @@ class UserFilesModel():
                         # Текущую актуальную - в архив
                         self.id = user_photo_exists.id
                         await self.go_user_photo_archive(session)
-                
                 #ищем доступный айдишник
                 stmt_max = select(func.max(UserFiles.id))
                 result_max = await session.execute(stmt_max)
                 max_id = result_max.scalar() or 0
                 new_id = max_id + 1
-
                 # Создаем новую запись
                 new_usfile = UserFiles(
                     id=new_id,
@@ -68,6 +65,7 @@ class UserFilesModel():
                     user_id=int(self.user_id), 
                     URL=self.URL
                 )
+                print(123)
                 w_photo = {
                     'id':new_id,
                     'name':self.name, 

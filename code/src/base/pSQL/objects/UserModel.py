@@ -142,7 +142,8 @@ class UserModel:
                     if key not in DB_columns:
                         current_value = current_indirect_data.get(key)
                         new_value = user_data[key]
-                        
+                        if key == 'personal_photo':
+                            print(new_value, current_value)
                         if key not in current_indirect_data or new_value != current_value:
                             current_indirect_data[key] = new_value
                             need_update_indirect_data = True

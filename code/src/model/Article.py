@@ -1712,7 +1712,6 @@ class Article:
         if art['section_id'] == 56:
             if art['active'] == True:
                 size_list = ['s', 'm', 'l', 'xl', 'xxl', 'no_size']
-                print(art)
                 result = {}
                 result['id'] = art['id']
                 result['active'] = art['active']

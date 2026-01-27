@@ -708,7 +708,6 @@ class Editor:
 
         # отдельно проверяю дату публикации
         if "date_publiction" in art and art["date_publiction"] is not None:
-            print(art["date_publiction"])
             art["date_publiction"] = make_date_valid(art["date_publiction"])
         
         
@@ -728,12 +727,11 @@ class Editor:
 
     async def delete_art(self):
         await self.validate()
-        print(self.art_id, 'удаляем доску почета')
         res = await Article(id=self.art_id).delete(self.session)
         return res
 
     async def update(self, data: dict):
-        print(data)
+        # print(data)
 
         from ..base.Elastic.ArticleSearchModel import ArticleSearchModel
         await self.validate()

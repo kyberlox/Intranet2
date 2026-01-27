@@ -604,6 +604,23 @@ class File:
         except Exception as e:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в функции add_user_img : {e} ")
+
+    async def go_user_photo_archive(self, session):
+        """
+        Ищет файл
+        Добавляет файл в архив
+        """
+        file_data = await UserFilesModel(id = self.id).find_user_photo_by_id(session=session)
+        if not file_data:
+            raise HTTPException(404, detail="File not found")
+        
+        try:
+
+            await UserFilesModel(id = self.id).go_user_photo_archive(session=session)
+            return {"status": "to_archive"}
+        except Exception as e:
+            # raise HTTPException(500, detail=str(e))
+            return LogsMaker().error_message(f"Ошибка в функции go_user_photo_archive : {e} ")
     
     async def delete_user_img(self, session):
         """

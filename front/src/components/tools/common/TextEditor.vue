@@ -30,8 +30,6 @@ export default defineComponent({
         const content = ref(props.modelValue);
 
         watch(() => props.modelValue, (newValue) => {
-            console.log(props);
-
             if (newValue !== content.value) {
                 content.value = sanitizeValue(newValue);
             }

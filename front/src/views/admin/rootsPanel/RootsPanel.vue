@@ -70,8 +70,6 @@ export default defineComponent({
         const newSections = ref<{ id: string | number; name: string; }[]>([]);
 
         watch([sections, gptRoot], ([sectionsVal, gptVal]) => {
-            console.log('her');
-
             if (gptVal && sectionsVal.length) {
                 newSections.value = [...sectionsVal];
                 if (!newSections.value.find((e) => e.id === 'gpt')) {

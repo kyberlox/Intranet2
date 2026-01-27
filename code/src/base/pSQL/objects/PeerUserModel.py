@@ -574,7 +574,7 @@ class PeerUserModel:
                 else:
                     return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
             else:
-                return LogsMaker().info_message(f"Пользователю с id {uuid_to} уже были назначены баллы за активность с id = {activities_id}")
+                return LogsMaker().warning_message(f"Пользователю с id {uuid_to} уже были назначены баллы за активность с id = {activities_id}")
             
         except Exception as e:
             await session.rollback()

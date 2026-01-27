@@ -7,5 +7,5 @@ export const makeSlashToBr = (str: string): string => {
 }
 
 export const createUniqueArr = (firstArr: string[], secArr: string[]) => {
-   return new Set(firstArr.concat(secArr))
+   return new Set(firstArr.concat(secArr).filter((e)=>Boolean(e) !== false))
 }

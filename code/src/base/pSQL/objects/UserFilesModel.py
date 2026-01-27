@@ -34,9 +34,7 @@ class UserFilesModel():
             user_model = UserModel(Id=self.user_id)
             # existing_user = await user_model.find_by_id(session)
             existing_user = await user_model.find_by_id_all(session)
-            print(123)
             if existing_user: #  and existing_user['active'] is True
-                print(123)
                 # Проверка есть ли у пользователя аватарка
                 stmt_photo = select(UserFiles).where(
                     UserFiles.user_id == self.user_id, 
@@ -44,26 +42,20 @@ class UserFilesModel():
                 )
                 result_photo = await session.execute(stmt_photo)
                 user_photo_exists = result_photo.scalar_one_or_none()
-                print(123)
                 # Если уже есть - заменить
                 if user_photo_exists:
-                    print(123)
                     # Проверить, вдруг это тоже самое
                     if user_photo_exists.b24_url == self.b24_url:
-                        print(234)
                         return False
                     else:  # Если другая
                         # Текущую актуальную - в архив
-                        print(76765)
                         self.id = user_photo_exists.id
                         await self.go_user_photo_archive(session)
-                print(123)
                 #ищем доступный айдишник
                 stmt_max = select(func.max(UserFiles.id))
                 result_max = await session.execute(stmt_max)
                 max_id = result_max.scalar() or 0
                 new_id = max_id + 1
-                print(123)
                 # Создаем новую запись
                 new_usfile = UserFiles(
                     id=new_id,

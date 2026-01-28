@@ -30,7 +30,7 @@ class MerchStore:
             'user_info': f'ID={user_sql['id']}, ФИО = {user_sql['last_name']} {user_sql['name']} {user_sql['second_name']}'
         }
         SendEmail(data=mail_data).send_active_purchase()
-        return res
+        return True
 
 
 

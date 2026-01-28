@@ -186,6 +186,8 @@ class User:
                     user_info = await self.UserModel.find_by_id(session)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
+                        SendEmail(data=data).send_to_new_wrokers()
+
         return users
 
     async def anniversary_in_company(self, session):

@@ -174,13 +174,14 @@ class SendEmail:
 
     def send_to_new_wrokers(self):
         try:
+            company = 'АО "НПО "ЭМК"'
             msg = MIMEMultipart()
             msg["From"] = server_mail_login
             msg["To"] = self.data['sender']
             msg['Subject'] = 'Приветственное письмо'
             text_msg = f'<p>Приветствуем тебя, наш новый коллега!</p>\n,
                         <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>\n,
-                        <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>'
+                        <p>С уважением,<br>Команда {company}.</p>'
             html_content = f"""
             <html lang="ru">
             <head>
@@ -288,6 +289,7 @@ class SendEmail:
     
     def send_active_purchase(self):
         try:
+            company = 'АО "НПО "ЭМК"'
             msg = MIMEMultipart() 
             msg["From"] = self.data['sender']
             msg["To"] = server_mail_login
@@ -296,7 +298,7 @@ class SendEmail:
             user_info = self.data['user_info']
             text_msg = f'<p>Запрос на покупку мерча!</p>\n,
                         <p>Пользователь: {user_info}. Хочет приобрести: {items}</p>\n,
-                        <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>'
+                        <p>С уважением,<br>Команда {company}.</p>'
             html_content = f"""
             <html lang="ru">
             <head>

@@ -543,4 +543,4 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
                 }
             )
     except Exception as e:
-        return {"msg": "ошибка создания пдф"}
+        return {"msg": f"ошибка создания пдф: {e}"}

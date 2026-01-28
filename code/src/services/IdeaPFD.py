@@ -117,7 +117,6 @@ class IdeaData(BaseModel):
     idea_title: str = Field(..., description="Название идеи")
     idea_text: str = Field(..., description="Текст идеи")
     idea_number: Optional[str] = Field("000", description="Номер идеи")
-    )
 
 class RobustPDFGenerator:
     """Универсальный генератор PDF с гарантированной поддержкой кириллицы"""

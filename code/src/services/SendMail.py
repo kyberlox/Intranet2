@@ -182,83 +182,83 @@ class SendEmail:
             text_msg = f'<p>Приветствуем тебя, наш новый коллега!</p>\
                         <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>\
                         <p>С уважением,<br>Команда {company}.</p>'
-            html_content = f"""
+            html_content = f'''
             <html lang="ru">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <style>
-                    body {
+                    body {{
                         margin: 0;
                         padding: 20px;
                         font-family: Arial, sans-serif;
                         background-color: #f9f9f9;
                         color: #333;
                         line-height: 1.5;
-                    }
+                    }}
                     
-                    .container {
+                    .container {{
                         max-width: 600px;
                         margin: 0 auto;
                         background-color: #ffffff;
                         padding: 30px;
                         border: 1px solid #ddd;
-                    }
+                    }}
                     
-                    .text {
+                    .text {{
                         margin-bottom: 30px;
                         white-space: pre-line;
-                    }
+                    }}
                     
-                    .postcard {
+                    .postcard {{
                         text-align: center;
                         margin: 30px 0;
-                    }
+                    }}
                     
-                    .postcard img {
+                    .postcard img {{
                         max-width: 100%;
                         height: auto;
                         border: 1px solid #eee;
-                    }
+                    }}
                     
-                    .logo {
+                    .logo {{
                         text-align: center;
                         margin: 30px 0;
-                    }
+                    }}
                     
-                    .logo img {
+                    .logo img {{
                         width: 200px;
                         height: auto;
-                    }
+                    }}
                     
-                    .signature {
+                    .signature {{
                         margin-top: 30px;
                         padding-top: 20px;
                         border-top: 1px solid #eee;
                         font-size: 14px;
                         color: #666;
                         white-space: pre-line;
-                    }
+                    }}
                     
-                    @media (max-width: 600px) {
-                        body {
+                    @media (max-width: 600px) {{
+                        body {{
                             padding: 10px;
-                        }
+                        }}
                         
-                        .container {
+                        .container {{
                             padding: 20px;
-                        }
+                        }}
                         
-                        .logo img {
+                        .logo img {{
                             width: 150px;
-                        }
-                    }
+                        }}
+                    }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="text">
-                        ${text_msg}
+                        {text_msg}
                     </div>
                     
                     <div class="logo">
@@ -267,7 +267,7 @@ class SendEmail:
                 </div>
             </body>
             </html>
-            """
+            '''
             msg.attach(MIMEText(html_content, "html"))
 
             # Загружаем логотип и добавляем его как встроенное изображение
@@ -299,83 +299,83 @@ class SendEmail:
             text_msg = f'<p>Запрос на покупку мерча!</p>\
                         <p>Пользователь: {user_info}. Хочет приобрести: {items}</p>\
                         <p>С уважением,<br>Команда {company}.</p>'
-            html_content = f"""
+            html_content = f'''
             <html lang="ru">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <style>
-                    body {
+                    body {{
                         margin: 0;
                         padding: 20px;
                         font-family: Arial, sans-serif;
                         background-color: #f9f9f9;
                         color: #333;
                         line-height: 1.5;
-                    }
+                    }}
                     
-                    .container {
+                    .container {{
                         max-width: 600px;
                         margin: 0 auto;
                         background-color: #ffffff;
                         padding: 30px;
                         border: 1px solid #ddd;
-                    }
+                    }}
                     
-                    .text {
+                    .text {{
                         margin-bottom: 30px;
                         white-space: pre-line;
-                    }
+                    }}
                     
-                    .postcard {
+                    .postcard {{
                         text-align: center;
                         margin: 30px 0;
-                    }
+                    }}
                     
-                    .postcard img {
+                    .postcard img {{
                         max-width: 100%;
                         height: auto;
                         border: 1px solid #eee;
-                    }
+                    }}
                     
-                    .logo {
+                    .logo {{
                         text-align: center;
                         margin: 30px 0;
-                    }
+                    }}
                     
-                    .logo img {
+                    .logo img {{
                         width: 200px;
                         height: auto;
-                    }
+                    }}
                     
-                    .signature {
+                    .signature {{
                         margin-top: 30px;
                         padding-top: 20px;
                         border-top: 1px solid #eee;
                         font-size: 14px;
                         color: #666;
                         white-space: pre-line;
-                    }
+                    }}
                     
-                    @media (max-width: 600px) {
-                        body {
+                    @media (max-width: 600px) {{
+                        body {{
                             padding: 10px;
-                        }
+                        }}
                         
-                        .container {
+                        .container {{
                             padding: 20px;
-                        }
+                        }}
                         
-                        .logo img {
+                        .logo img {{
                             width: 150px;
-                        }
-                    }
+                        }}
+                    }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="text">
-                        ${text_msg}
+                        {text_msg}
                     </div>
                     
                     <div class="logo">
@@ -384,7 +384,7 @@ class SendEmail:
                 </div>
             </body>
             </html>
-            """
+            '''
             msg.attach(MIMEText(html_content, "html"))
 
             # Загружаем логотип и добавляем его как встроенное изображение

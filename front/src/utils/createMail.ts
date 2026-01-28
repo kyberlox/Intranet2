@@ -1,4 +1,4 @@
-export const createMail = (text: string, signature: string) => {
+export const createMail = (text: string, signature: string, postCard: boolean) => {
     return `
         <!DOCTYPE html>
         <html lang="ru">
@@ -79,9 +79,9 @@ export const createMail = (text: string, signature: string) => {
                     ${text}
                 </div>
                 
-                <div class="postcard">
+              ${postCard ? `<div class="postcard">
                     <img src="cid:file_logo" alt="Поздравительная открытка">
-                </div>
+                </div>` : ''}
                 
                 <div class="signature">
                     ${signature}

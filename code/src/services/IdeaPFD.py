@@ -743,8 +743,8 @@ async def generate_pdf_simple_endpoint(data: IdeaData):
     Простая генерация PDF (альтернатива для обхода проблем с кодировкой)
     """
     try:
-        json_data = data.dict()
-        generator = SimplePDFGenerator(json_data)
+        # json_data = data.dict()
+        generator = SimplePDFGenerator(data)
         pdf_stream = generator.generate()
         pdf_content = pdf_stream.getvalue()
         

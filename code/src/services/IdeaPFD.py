@@ -540,5 +540,16 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
             filename=f"{NAME} {FIO}",  # Имя файла для пользователя
             media_type="application/pdf"
         )
+        # def iterfile():
+        #     with open("./result.pdf", "rb") as f:
+        #         yield from f
+        # return StreamingResponse(
+        #     iterfile(),
+        #     media_type="application/pdf",
+        #     headers={
+        #         "Content-Disposition": f"attachment; filename={f"{NAME} {FIO}"}",
+        #         "Content-Length": str(os.path.getsize("./result.pdf"))
+        #     }
+        # )
     except Exception as e:
         return {"msg": f"ошибка создания пдф: {e}"}

@@ -173,34 +173,38 @@ class SendEmail:
             return LogsMaker().error_message(e)
 
     def send_to_new_wrokers(self):
-        msg = MIMEMultipart()
-        msg["From"] = server_mail_login
-        msg["To"] = self.data['sender']
-        msg['Subject'] = 'Приветственное письмо'
-        html_content = """
-        <html>
-            <body>
-                <p>Приветствуем тебя, наш новый коллега!</p>
-                <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>
-                <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>
-                <p>
-                    <img src="cid:company_logo" alt="Логотип компании" width="200">
-                </p>
-            </body>
-        </html>
-        """
-        msg.attach(MIMEText(html_content, "html"))
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = server_mail_login
+            msg["To"] = self.data['sender']
+            msg['Subject'] = 'Приветственное письмо'
+            html_content = """
+            <html>
+                <body>
+                    <p>Приветствуем тебя, наш новый коллега!</p>
+                    <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>
+                    <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>
+                    <p>
+                        <img src="cid:company_logo" alt="Логотип компании" width="200">
+                    </p>
+                </body>
+            </html>
+            """
+            msg.attach(MIMEText(html_content, "html"))
 
-        # Загружаем логотип и добавляем его как встроенное изображение
-        with open("./src/services/mail_logo.png", "rb") as img_file:
-            logo = MIMEImage(img_file.read())
-            logo.add_header("Content-ID", "<company_logo>") 
-            logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
-            msg.attach(logo)
+            # Загружаем логотип и добавляем его как встроенное изображение
+            with open("./src/services/mail_logo.png", "rb") as img_file:
+                logo = MIMEImage(img_file.read())
+                logo.add_header("Content-ID", "<company_logo>") 
+                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+                msg.attach(logo)
 
-        server = smtplib.SMTP(server_mail_host)
-        server.starttls()
-        server.login(server_mail_login, server_mail_pswd)
-        server.send_message(msg)
-        server.quit()
-        return {'status': True}
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(server_mail_login, server_mail_pswd)
+            server.send_message(msg)
+            server.quit()
+            return {'status': True}
+        except Exception as e:
+            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            return {'status': False}

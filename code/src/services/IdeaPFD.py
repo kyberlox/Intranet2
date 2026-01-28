@@ -366,7 +366,7 @@ def process_image_for_docx(image_path, docx_pattern, docx_result,
             os.remove(circular_path)
             print(f"✓ Временный файл удален: {circular_path}")
 
-        return docx_result, result_pdf  # Теперь возвращаем оба пути
+        return docx_pattern, result_pdf  # Теперь возвращаем оба пути
 
     except Exception as e:
         print(f"\n✗ ОШИБКА В ПРОЦЕССЕ ОБРАБОТКИ: {e}")

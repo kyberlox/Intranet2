@@ -518,12 +518,12 @@ class SimplePDFGenerator:
         safe_text = self._encode_text(text)
         
         # Получаем ширину текста
-        text_width = canvas_obj.stringWidth(safe_text, "Helvetica", 10)
+        text_width = canvas_obj.stringWidth(text, "Helvetica", 10)
         
         # Центрируем
         x = (self.page_width - text_width) / 2
         
-        canvas_obj.drawString(x, y, safe_text)
+        canvas_obj.drawString(x, y, text)
     
     def _wrap_text(self, text: str, max_width: float, font_name: str = "Helvetica", font_size: int = 9) -> list:
         """Разбивка текста на строки по ширине"""

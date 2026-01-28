@@ -289,29 +289,29 @@ class PDFGenerator:
         story.append(Paragraph(idea_text, text_style))
         
         # QR-код
-        story.append(Spacer(1, 20*mm))
+        # story.append(Spacer(1, 20*mm))
         
-        qr_url = 'https://intranet.emk.ru/'
-        try:
-            qr_code = qr.QrCodeWidget(qr_url)
-            bounds = qr_code.getBounds()
-            width = bounds[2] - bounds[0]
-            height = bounds[3] - bounds[1]
+        # qr_url = 'https://intranet.emk.ru/'
+        # try:
+        #     qr_code = qr.QrCodeWidget(qr_url)
+        #     bounds = qr_code.getBounds()
+        #     width = bounds[2] - bounds[0]
+        #     height = bounds[3] - bounds[1]
             
-            d = Drawing(30*mm, 30*mm, transform=[30*mm/width, 0, 0, 30*mm/height, 0, 0])
-            d.add(qr_code)
+        #     d = Drawing(30*mm, 30*mm, transform=[30*mm/width, 0, 0, 30*mm/height, 0, 0])
+        #     d.add(qr_code)
             
-            qr_buffer = BytesIO()
-            c = canvas.Canvas(qr_buffer, pagesize=(30*mm, 30*mm))
-            renderPDF.draw(d, c, 0, 0)
-            c.save()
-            qr_buffer.seek(0)
+        #     qr_buffer = BytesIO()
+        #     c = canvas.Canvas(qr_buffer, pagesize=(30*mm, 30*mm))
+        #     renderPDF.draw(d, c, 0, 0)
+        #     c.save()
+        #     qr_buffer.seek(0)
             
-            qr_img = RLImage(qr_buffer, width=30*mm, height=30*mm)
-            qr_img.hAlign = 'LEFT'
-            story.append(qr_img)
-        except Exception as e:
-            print(f"Ошибка при создании QR-кода: {e}")
+        #     qr_img = RLImage(qr_buffer, width=30*mm, height=30*mm)
+        #     qr_img.hAlign = 'LEFT'
+        #     story.append(qr_img)
+        # except Exception as e:
+        #     print(f"Ошибка при создании QR-кода: {e}")
         
         # Собираем документ
         doc.build(

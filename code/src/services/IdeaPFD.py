@@ -535,13 +535,10 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
     DESCRIPTION = data['description']
     try:
         result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
-        return StreamingResponse(
-                result_pdf,
-                media_type="application/pdf",
-                headers={
-                    "Content-Disposition": f"attachment; filename=result.pdf",
-                    "Content-Length": str(os.path.getsize("./result.pdf"))
-                }
-            )
+        return FileResponse(
+            path="./result.pdf",
+            filename=f"{NAME} {FIO}",  # Имя файла для пользователя
+            media_type="application/pdf"
+        )
     except Exception as e:
         return {"msg": f"ошибка создания пдф: {e}"}

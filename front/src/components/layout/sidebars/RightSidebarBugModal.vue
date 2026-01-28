@@ -24,7 +24,7 @@
 </SlotModal>
 </template>
 <script lang='ts'>
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import Api from '@/utils/Api';
 import { createMail } from "@/utils/createMail";
@@ -51,7 +51,7 @@ export default defineComponent({
         const sendReport = () => {
             if (!email.value || !bugreport.value) return emptyInput.value = true;;
             isLoading.value = true;
-            const mailText = createMail(bugreport.value, '');
+            const mailText = createMail(bugreport.value, '', false);
             const body = {
                 "sender": email.value,
                 "reciever": '',

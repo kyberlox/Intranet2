@@ -11,6 +11,12 @@ export interface IPostIdea {
     base?: string
 }
 
+export interface IPostIdeaPdf{
+name: string,
+description: string,
+user_id?: string
+}
+
 export interface IValidatePoints {
     action_id: number
     uuid_to: number

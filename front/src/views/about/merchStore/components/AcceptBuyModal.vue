@@ -15,7 +15,11 @@
 
         </div>
         <button @click="accept"
-                class="merch-store__accept-buy-modal__button">Подтвердить</button>
+                class="merch-store__accept-buy-modal__button"
+                :class="{ 'merch-store__accept-buy-modal__button--loading': isLoading }">
+            <Loader v-if="isLoading" />
+            <span v-else>Подтвердить</span>
+        </button>
     </div>
 </SlotModal>
 </template>
@@ -23,9 +27,17 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
+import Loader from '@/components/layout/Loader.vue';
+
 export default defineComponent({
     components: {
-        SlotModal
+        SlotModal,
+        Loader
+    },
+    props: {
+        isLoading: {
+            type: Boolean
+        }
     },
     setup(props, { emit }) {
         const quantity = ref(1);

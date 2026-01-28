@@ -505,6 +505,7 @@ def get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT,
 
 
 from fastapi import APIRouter, Body, Request
+from fastapi.responses import FileResponse, StreamingResponse
 
 
 idea_pdf_router = APIRouter(prefix="/idea_pdf")
@@ -543,4 +544,4 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
                 }
             )
     except Exception as e:
-        return {"msg": "ошибка создания пдф"}
+        return {"msg": f"ошибка создания пдф: {e}"}

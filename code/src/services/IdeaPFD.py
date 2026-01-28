@@ -514,7 +514,7 @@ from ..base.pSQL.objects.App import get_async_db
 
 @idea_pdf_router.post("/generate_pdf")
 async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
-    from .model.User import User
+    from ..model.User import User
 
     DOCX_PATTERN = "./pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
@@ -532,13 +532,15 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
 
     NAME=data['name']
     DESCRIPTION = data['description']
-
-    result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
-    return StreamingResponse(
-            result_pdf,
-            media_type="application/pdf",
-            headers={
-                "Content-Disposition": f"attachment; filename={result}",
-                "Content-Length": str(os.path.getsize(DOCX_RESULT))
-            }
-        )
+    try:
+        result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
+        return StreamingResponse(
+                result_pdf,
+                media_type="application/pdf",
+                headers={
+                    "Content-Disposition": f"attachment; filename=result.pdf",
+                    "Content-Length": str(os.path.getsize("./result.pdf"))
+                }
+            )
+    except Exception as e:
+        return {"msg": "ошибка создания пдф"}

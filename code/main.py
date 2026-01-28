@@ -30,6 +30,7 @@ from src.services.Chelp import C_app
 from src.services.Auth import AuthService, auth_router
 from src.services.Comporession import compress_router
 from src.services.Idea import idea_router
+from src.services.IdeaPFD import idea_pdf_router
 from src.services.Editor import editor_router
 from src.services.FieldsVisions import fieldsvisions_router
 from src.services.Peer import peer_router
@@ -86,6 +87,7 @@ app.include_router(compress_router, prefix="/api")
 
 app.include_router(b24_router, prefix="/api")
 app.include_router(idea_router, prefix="/api")
+app.include_router(idea_pdf_router, prefix="/api")
 app.include_router(fieldsvisions_router, prefix="/api")
 app.include_router(tag_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")

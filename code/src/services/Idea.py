@@ -105,6 +105,7 @@ class Idea:
         
     async def get_ideas(self, user_id, session):
         await self.validate_ideas()
+        user_id = 2366
         if user_id is not None:
             #print(user_id)
             result = []
@@ -214,6 +215,4 @@ async def calendar_event(data = Body()): # request: Request, session: AsyncSessi
     #     }
     #     send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
     return send_idea
-    # else:
-    #     return LogsMaker().error_message("Произошла ошибка с получением айдишника пользоватля из сессии и заголовков")
     

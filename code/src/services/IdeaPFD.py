@@ -366,7 +366,7 @@ def process_image_for_docx(image_path, docx_pattern, docx_result,
             os.remove(circular_path)
             print(f"✓ Временный файл удален: {circular_path}")
 
-        return result_docx, result_pdf  # Теперь возвращаем оба пути
+        return docx_pattern, result_pdf  # Теперь возвращаем оба пути
 
     except Exception as e:
         print(f"\n✗ ОШИБКА В ПРОЦЕССЕ ОБРАБОТКИ: {e}")
@@ -500,7 +500,6 @@ def get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT,
     )
 
     return result_docx, result_pdf
-    
 
 
 
@@ -517,7 +516,7 @@ from ..base.pSQL.objects.App import get_async_db
 async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
     from ..model.User import User
 
-    DOCX_PATTERN = "./pattern_idea_pdf.docx"
+    DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 
     user_info = await User(id=int(data['user_id'])).search_by_id(session)

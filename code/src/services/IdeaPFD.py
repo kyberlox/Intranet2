@@ -520,7 +520,7 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
     DOCX_PATTERN = "./pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 
-    user_info = await User(id=data['user_id']).search_by_id(session)
+    user_info = await User(id=int(data['user_id'])).search_by_id(session)
     photo_name = user_info['photo_file_url'].split("/")[-1]
     image_PATH = f"./files_db/user_photo/{photo_name}"
 

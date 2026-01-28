@@ -749,10 +749,10 @@ async def generate_pdf_simple_endpoint(data: IdeaData):
         pdf_content = pdf_stream.getvalue()
         
         # Формируем имя файла
-        title = data.idea_title
-        safe_title = "".join(c if c.isalnum() or c in " _-" else "_" for c in title)
-        idea_number = str(data.idea_number or "000").zfill(3)
-        filename = f"Идея_{idea_number}_{safe_title[:50]}.pdf"
+        # title = data.idea_title
+        # safe_title = "".join(c if c.isalnum() or c in " _-" else "_" for c in title)
+        # idea_number = str(data.idea_number or "000").zfill(3)
+        filename = f"Идея.pdf"
         
         return Response(
             content=pdf_content,

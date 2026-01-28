@@ -27,10 +27,12 @@ from reportlab.pdfbase.ttfonts import TTFont
 import requests
 from PIL import Image as PILImage
 import qrcode
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 import uvicorn
+
+idea_pdf_router = APIRouter(prefix="/idea_pdf")
 
 # Загрузка шрифтов для поддержки кириллицы
 def register_fonts():
@@ -490,15 +492,9 @@ class PDFGenerator:
         return self.generate_pdf()
 
 
-# Инициализация FastAPI приложения
-app = FastAPI(
-    title="PDF Generator API",
-    description="API для генерации PDF документов с идеями",
-    version="1.0.0"
-)
 
 
-@app.post("/generate-pdf", response_class=Response)
+@idea_pdf_router.post("/generate-pdf", response_class=Response)
 async def generate_pdf_endpoint(data: IdeaData):
     """
     Генерация PDF документа на основе переданных данных
@@ -536,7 +532,7 @@ async def generate_pdf_endpoint(data: IdeaData):
         raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
 
 
-@app.post("/generate-pdf-save")
+@idea_pdf_router.post("/generate-pdf-save")
 async def generate_pdf_and_save(data: IdeaData, 
                                directory: Optional[str] = None):
     """
@@ -570,7 +566,7 @@ async def generate_pdf_and_save(data: IdeaData,
         raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
 
 
-@app.get("/download-pdf/{filename}")
+@idea_pdf_router.get("/download-pdf/{filename}")
 async def download_pdf(filename: str, directory: Optional[str] = None):
     """
     Скачивание ранее сгенерированного PDF файла
@@ -753,7 +749,7 @@ class SimplePDFGenerator:
 
 
 # Дополнительный эндпоинт с простым генератором
-@app.post("/generate-pdf-simple", response_class=Response)
+@idea_pdf_router.post("/generate-pdf-simple", response_class=Response)
 async def generate_pdf_simple_endpoint(data: IdeaData):
     """
     Простая генерация PDF (альтернатива для обхода проблем с кодировкой)

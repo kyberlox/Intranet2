@@ -562,7 +562,7 @@ from ..base.pSQL.objects.App import get_async_db
 async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
     from ..model.User import User
 
-    DOCX_PATTERN = "./pattern_idea_pdf.docx"
+    DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 
     user_info = await User(id=int(data['user_id'])).search_by_id(session)

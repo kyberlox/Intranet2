@@ -4,6 +4,8 @@ from fastapi import APIRouter, Body, Request
 from ..model import User
 from .Auth import AuthService
 
+from .SendMail import SendEmail
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,7 +21,19 @@ class MerchStore:
         self.user_uuid = user_uuid
 
     async def create_purchase(self, data, session):
-        return await MerchStoreModel(user_id=self.user_uuid).create_purchase(data=data, session=session)
+        res = await MerchStoreModel(user_id=self.user_uuid).create_purchase(data=data, session=session)
+        if "not_enough" in res:
+            return res
+        #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
+        user_sql = await User(id=self.user_uuid).search_by_id(session=session)
+        mail_data = {
+            'sender': user_sql['email'],
+            'items': res,
+            'user_info': f'ID={user_sql['id']}, ФИО = {user_sql['last_name']} {user_sql['name']} {user_sql['second_name']}'
+        }
+        SendEmail(data=mail_data).send_active_purchase()
+        return True
+
 
 
 async def get_uuid_from_request(request, session):

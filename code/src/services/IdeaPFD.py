@@ -491,46 +491,177 @@ class PDFGenerator:
         """Получение PDF как BytesIO потока"""
         return self.generate_pdf()
 
-
-
-
-@idea_pdf_router.post("/generate-pdf", response_class=Response)
-async def generate_pdf_endpoint(data: IdeaData):
-    """
-    Генерация PDF документа на основе переданных данных
+# Альтернативная реализация с использованием reportlab.pdfgen.canvas напрямую
+class SimplePDFGenerator:
+    """Простой генератор PDF для обхода проблем с кодировкой"""
     
-    Возвращает PDF файл для скачивания
-    """
-    try:
-        # Конвертируем Pydantic модель в словарь
-        json_data = data.dict()
+    def __init__(self, json_data: Dict[str, Any]):
+        self.data = json_data
         
-        # Создаем генератор PDF
-        generator = PDFGenerator(json_data)
-        
-        # Получаем PDF как поток
-        pdf_stream = generator.get_pdf_stream()
-        pdf_content = pdf_stream.getvalue()
-        
-        # Формируем имя файла
-        filename = generator.output_filename
-        
-        # Возвращаем PDF как файл
-        return Response(
-            content=pdf_content,
-            media_type="application/pdf",
-            headers={
-                "Content-Disposition": f'attachment; filename="{filename}"',
-                "Content-Type": "application/pdf",
-                "Content-Length": str(len(pdf_content))
-            }
-        )
+    def _encode_text(self, text: str) -> str:
+        """Кодирование текста для избежания проблем с кодировкой"""
+        if not text:
+            return ""
+        try:
+            # Пробуем закодировать в utf-8
+            return text.encode('utf-8').decode('utf-8')
+        except:
+            # Если не получается, убираем проблемные символы
+            return text.encode('ascii', 'ignore').decode('ascii')
     
-    except Exception as e:
-        error_msg = str(e)
-        print(f"Ошибка генерации PDF: {error_msg}")
-        raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
+    def _draw_centered_text(self, canvas_obj, text: str, y: float, max_width: float = None):
+        """Рисование центрированного текста с обработкой кодировки"""
+        if not text:
+            return
+        
+        # Кодируем текст
+        safe_text = self._encode_text(text)
+        
+        # Получаем ширину текста
+        text_width = canvas_obj.stringWidth(safe_text, "Helvetica", 10)
+        
+        # Центрируем
+        x = (self.page_width - text_width) / 2
+        
+        canvas_obj.drawString(x, y, safe_text)
+    
+    def _wrap_text(self, text: str, max_width: float, font_name: str = "Helvetica", font_size: int = 9) -> list:
+        """Разбивка текста на строки по ширине"""
+        if not text:
+            return []
+        
+        # Простая логика разбивки
+        words = text.split()
+        lines = []
+        current_line = []
+        
+        for word in words:
+            current_line.append(word)
+            test_line = ' '.join(current_line)
+            # Примерная оценка ширины (точная требует canvas)
+            if len(test_line) * (font_size / 2) > max_width:
+                if len(current_line) == 1:
+                    lines.append(test_line)
+                    current_line = []
+                else:
+                    current_line.pop()
+                    lines.append(' '.join(current_line))
+                    current_line = [word]
+        
+        if current_line:
+            lines.append(' '.join(current_line))
+        
+        return lines
+    
+    def generate(self) -> BytesIO:
+        """Генерация простого PDF"""
+        try:
+            buffer = BytesIO()
+            c = canvas.Canvas(buffer, pagesize=A4)
+            
+            # Ширина и высота страницы
+            self.page_width, self.page_height = A4
+            
+            # Заголовок
+            c.setFont("Helvetica", 12)
+            header_text = "Интранет: Есть идея!"
+            c.drawRightString(self.page_width - 15*mm, self.page_height - 20*mm, header_text)
+            c.setLineWidth(0.4)
+            c.line(0, self.page_height - 24*mm, self.page_width, self.page_height - 24*mm)
+            
+            # ФИО
+            c.setFont("Helvetica-Bold", 10)
+            full_name = self.data.get('full_name', '')
+            self._draw_centered_text(c, full_name, self.page_height - 100*mm)
+            
+            # Должность и отдел
+            c.setFont("Helvetica", 9)
+            position = self.data.get('position', '')
+            department = self.data.get('department', '')
+            subdepartment = self.data.get('subdepartment', '')
+            directorate = self.data.get('directorate', '')
+            
+            dept_parts = []
+            if directorate:
+                dept_parts.append(directorate)
+            if subdepartment:
+                dept_parts.append(subdepartment)
+            if department:
+                dept_parts.append(department)
+            dept_parts.append('НПО ЭМК')
+            
+            y_pos = self.page_height - 110*mm
+            for part in dept_parts:
+                if part.strip():
+                    self._draw_centered_text(c, part, y_pos)
+                    y_pos -= 5*mm
+            
+            # Должность жирным
+            c.setFont("Helvetica-Bold", 9)
+            self._draw_centered_text(c, position, y_pos)
+            
+            # Название идеи
+            y_pos -= 15*mm
+            c.setFont("Helvetica", 10)
+            idea_number = str(self.data.get('idea_number', '000')).zfill(3)
+            idea_title = self.data.get('idea_title', '')
+            title = f"№{idea_number}. {idea_title}"
+            
+            # Разбиваем длинный заголовок
+            title_lines = self._wrap_text(title, self.page_width - 30*mm, "Helvetica", 10)
+            for line in title_lines:
+                self._draw_centered_text(c, line, y_pos)
+                y_pos -= 5*mm
+            
+            # Текст идеи
+            y_pos -= 10*mm
+            c.setFont("Helvetica", 9)
+            idea_text = self.data.get('idea_text', '')
+            
+            # Простой перенос текста
+            text_lines = []
+            for paragraph in idea_text.split('\n'):
+                paragraph_lines = self._wrap_text(paragraph, self.page_width - 30*mm, "Helvetica", 9)
+                text_lines.extend(paragraph_lines)
+                text_lines.append('')  # Пустая строка между абзацами
+            
+            # Отрисовка текста
+            for line in text_lines:
+                if y_pos < 50*mm:  # Если осталось мало места
+                    c.showPage()
+                    y_pos = self.page_height - 30*mm
+                    
+                    # Рисуем заголовок на новой странице
+                    c.setFont("Helvetica", 12)
+                    c.drawRightString(self.page_width - 15*mm, self.page_height - 20*mm, header_text)
+                    c.setLineWidth(0.4)
+                    c.line(0, self.page_height - 24*mm, self.page_width, self.page_height - 24*mm)
+                    
+                    c.setFont("Helvetica", 9)
+                
+                if line.strip():
+                    c.drawString(15*mm, y_pos, line)
+                    y_pos -= 4*mm
+                else:
+                    y_pos -= 2*mm
+            
+            # Подвал
+            c.setLineWidth(0.4)
+            c.line(0, 10*mm, self.page_width, 10*mm)
+            c.setFont("Helvetica", 8)
+            c.drawCentredString(self.page_width / 2, 6*mm, "Страница 1/1")
+            
+            c.save()
+            buffer.seek(0)
+            return buffer
+            
+        except Exception as e:
+            print(f"Ошибка в SimplePDFGenerator.generate(): {e}")
+            raise
 
+# Удаляем дублирующийся эндпоинт (он уже есть выше)
+# @idea_pdf_router.post("/generate-pdf", response_class=Response)
+# async def generate_pdf_endpoint(data: IdeaData):
 
 @idea_pdf_router.post("/generate-pdf-save")
 async def generate_pdf_and_save(data: IdeaData, 
@@ -557,7 +688,7 @@ async def generate_pdf_and_save(data: IdeaData,
             "filename": os.path.basename(filepath),
             "filepath": filepath,
             "size": os.path.getsize(filepath),
-            "download_url": f"/download-pdf/{os.path.basename(filepath)}"
+            "download_url": f"/idea_pdf/download-pdf/{os.path.basename(filepath)}"
         }
     
     except Exception as e:
@@ -605,149 +736,6 @@ async def download_pdf(filename: str, directory: Optional[str] = None):
         raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {error_msg}")
 
 
-
-
-
-def create_pdf_from_json(json_data: Dict[str, Any], 
-                        output_file: Optional[str] = None,
-                        directory: Optional[str] = None) -> str:
-    """
-    Функция для использования вне FastAPI
-    """
-    generator = PDFGenerator(json_data, output_file)
-    return generator.save_to_file(directory=directory)
-
-
-# Альтернативная реализация с использованием reportlab.pdfgen.canvas напрямую
-class SimplePDFGenerator:
-    """Простой генератор PDF для обхода проблем с кодировкой"""
-    
-    def __init__(self, json_data: Dict[str, Any]):
-        self.data = json_data
-        
-    def generate(self) -> BytesIO:
-        """Генерация простого PDF"""
-        buffer = BytesIO()
-        c = canvas.Canvas(buffer, pagesize=A4)
-        
-        # Ширина и высота страницы
-        width, height = A4
-        
-        # Заголовок
-        c.setFont("Helvetica", 12)
-        c.drawRightString(width - 15*mm, height - 20*mm, "Интранет: Есть идея!")
-        c.setLineWidth(0.4)
-        c.line(0, height - 24*mm, width, height - 24*mm)
-        
-        # ФИО
-        c.setFont("Helvetica-Bold", 10)
-        full_name = self.data.get('full_name', '')
-        c.drawCentredString(width/2, height - 100*mm, full_name)
-        
-        # Должность и отдел
-        c.setFont("Helvetica", 9)
-        position = self.data.get('position', '')
-        department = self.data.get('department', '')
-        subdepartment = self.data.get('subdepartment', '')
-        directorate = self.data.get('directorate', '')
-        
-        dept_parts = []
-        if directorate:
-            dept_parts.append(directorate)
-        if subdepartment:
-            dept_parts.append(subdepartment)
-        if department:
-            dept_parts.append(department)
-        dept_parts.append('НПО ЭМК')
-        
-        y_pos = height - 110*mm
-        for part in dept_parts:
-            if part.strip():
-                c.drawCentredString(width/2, y_pos, part)
-                y_pos -= 5*mm
-        
-        # Должность жирным
-        c.setFont("Helvetica-Bold", 9)
-        c.drawCentredString(width/2, y_pos, position)
-        
-        # Название идеи
-        y_pos -= 15*mm
-        c.setFont("Helvetica", 10)
-        idea_number = str(self.data.get('idea_number', '000')).zfill(3)
-        idea_title = self.data.get('idea_title', '')
-        title = f"№{idea_number}. {idea_title}"
-        
-        # Разбиваем длинный заголовок
-        if len(title) > 50:
-            words = title.split()
-            lines = []
-            current_line = []
-            
-            for word in words:
-                current_line.append(word)
-                test_line = ' '.join(current_line)
-                if len(test_line) > 50:
-                    lines.append(' '.join(current_line[:-1]))
-                    current_line = [word]
-            
-            if current_line:
-                lines.append(' '.join(current_line))
-            
-            for line in lines:
-                c.drawCentredString(width/2, y_pos, line)
-                y_pos -= 5*mm
-        else:
-            c.drawCentredString(width/2, y_pos, title)
-            y_pos -= 5*mm
-        
-        # Текст идеи
-        y_pos -= 10*mm
-        c.setFont("Helvetica", 9)
-        idea_text = self.data.get('idea_text', '')
-        
-        # Простой перенос текста
-        text_lines = []
-        for paragraph in idea_text.split('\n'):
-            words = paragraph.split()
-            current_line = []
-            
-            for word in words:
-                current_line.append(word)
-                test_line = ' '.join(current_line)
-                if c.stringWidth(test_line, "Helvetica", 9) > (width - 30*mm):
-                    if len(current_line) == 1:
-                        text_lines.append(' '.join(current_line))
-                        current_line = []
-                    else:
-                        text_lines.append(' '.join(current_line[:-1]))
-                        current_line = [word]
-            
-            if current_line:
-                text_lines.append(' '.join(current_line))
-            text_lines.append('')  # Пустая строка между абзацами
-        
-        # Отрисовка текста
-        for line in text_lines:
-            if y_pos < 50*mm:  # Если осталось мало места
-                c.showPage()
-                y_pos = height - 30*mm
-            if line.strip():
-                c.drawString(15*mm, y_pos, line)
-                y_pos -= 4*mm
-            else:
-                y_pos -= 2*mm
-        
-        # Подвал
-        c.setLineWidth(0.4)
-        c.line(0, 10*mm, width, 10*mm)
-        c.setFont("Helvetica", 8)
-        c.drawCentredString(width/2, 6*mm, "Страница 1/1")
-        
-        c.save()
-        buffer.seek(0)
-        return buffer
-
-
 # Дополнительный эндпоинт с простым генератором
 @idea_pdf_router.post("/generate-pdf-simple", response_class=Response)
 async def generate_pdf_simple_endpoint(data: IdeaData):
@@ -770,8 +758,9 @@ async def generate_pdf_simple_endpoint(data: IdeaData):
             content=pdf_content,
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f'attachment; filename="{filename}"',
-                "Content-Type": "application/pdf"
+                "Content-Disposition": f"attachment; filename={filename}",
+                "Content-Type": "application/pdf",
+                "Content-Length": str(len(pdf_content))
             }
         )
     
@@ -779,8 +768,6 @@ async def generate_pdf_simple_endpoint(data: IdeaData):
         error_msg = str(e)
         print(f"Ошибка простой генерации PDF: {error_msg}")
         raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
-
-
 
 
 @idea_pdf_router.post("/generate-pdf", response_class=Response)
@@ -810,7 +797,8 @@ async def generate_pdf_endpoint(data: IdeaData):
             media_type="application/pdf",
             headers={
                 "Content-Disposition": f"attachment; filename={filename}",
-                "Content-Type": "application/pdf"
+                "Content-Type": "application/pdf",
+                "Content-Length": str(len(pdf_content))
             }
         )
     
@@ -818,6 +806,11 @@ async def generate_pdf_endpoint(data: IdeaData):
         raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {str(e)}")
 
 
-
-
-
+def create_pdf_from_json(json_data: Dict[str, Any], 
+                        output_file: Optional[str] = None,
+                        directory: Optional[str] = None) -> str:
+    """
+    Функция для использования вне FastAPI
+    """
+    generator = PDFGenerator(json_data, output_file)
+    return generator.save_to_file(directory=directory)

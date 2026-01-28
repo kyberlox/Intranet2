@@ -504,7 +504,8 @@ def get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT,
 
 
 
-from fastapi import APIRouter, Body, Request, StreamingResponse
+from fastapi import APIRouter, Body, Request
+from fastapi.responses import FileResponse, StreamingResponse
 
 
 idea_pdf_router = APIRouter(prefix="/idea_pdf")

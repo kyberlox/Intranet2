@@ -41,42 +41,70 @@ idea_pdf_router = APIRouter(prefix="/idea_pdf")
 
 # Функция для работы с кириллицей в PDF
 def setup_pdf_encoding():
-    """Настройка кодировки для работы с кириллицей"""
+    """Регистрация шрифтов, доступных в системе"""
     try:
-        # Регистрируем стандартные шрифты
-        pdfmetrics.registerFont(TTFont('Helvetica', 'Helvetica'))
-        pdfmetrics.registerFont(TTFont('Helvetica-Bold', 'Helvetica-Bold'))
+        # Проверяем, какие шрифты доступны
+        available_fonts = []
         
-        # Пробуем найти и зарегистрировать шрифт с поддержкой кириллицы
-        font_paths = [
-            # Linux
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+        # Список возможных путей к шрифтам
+        font_search_paths = [
             # Windows
             "C:/Windows/Fonts/arial.ttf",
-            "C:/Windows/Fonts/arialbd.ttf",  # Arial Bold
+            "C:/Windows/Fonts/times.ttf",
+            "C:/Windows/Fonts/cour.ttf",  # Courier
+            # Linux
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+            "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
             # Mac
+            "/System/Library/Fonts/Helvetica.ttc",
             "/System/Library/Fonts/Arial.ttf",
             "/Library/Fonts/Arial.ttf",
+            # Общие пути (может быть установлен в проект)
+            "./fonts/arial.ttf",
+            "./fonts/DejaVuSans.ttf",
+            "/app/fonts/arial.ttf",  # Для Docker
         ]
         
-        for font_path in font_paths:
+        for font_path in font_search_paths:
             if os.path.exists(font_path):
                 try:
-                    font_name = 'Arial' if 'arial' in font_path.lower() else 'DejaVuSans'
+                    font_name = os.path.basename(font_path).split('.')[0]
+                    
+                    # Регистрируем обычный и жирный варианты
                     pdfmetrics.registerFont(TTFont(font_name, font_path))
-                    print(f"Зарегистрирован шрифт: {font_name} из {font_path}")
-                    return font_name
+                    
+                    # Для шрифтов, у которых есть отдельные файлы для жирного
+                    bold_path = font_path.replace('.ttf', '-Bold.ttf').replace('.ttc', 'Bold.ttc')
+                    if os.path.exists(bold_path):
+                        pdfmetrics.registerFont(TTFont(f'{font_name}-Bold', bold_path))
+                    
+                    available_fonts.append(font_name)
+                    print(f"Найден шрифт: {font_name} по пути {font_path}")
+                    
                 except Exception as e:
-                    print(f"Не удалось зарегистрировать шрифт {font_path}: {e}")
-                    continue
+                    print(f"Не удалось загрузить шрифт {font_path}: {e}")
         
-        print("Используем стандартный Helvetica")
-        return 'Helvetica'
+        # Если не нашли шрифты, используем стандартные PDF шрифты
+        if not available_fonts:
+            print("Не найдены системные шрифты, использую стандартные PDF шрифты")
+            # Стандартные PDF шрифты (не требуют файлов)
+            return 'Helvetica'  # Это стандартный PDF шрифт
+        
+        # Предпочитаем Arial или DejaVu как наиболее распространенные
+        for preferred in ['Arial', 'DejaVuSans', 'LiberationSans', 'Ubuntu', 'FreeSans']:
+            if preferred in available_fonts:
+                print(f"Использую шрифт: {preferred}")
+                return preferred
+        
+        # Иначе первый найденный
+        print(f"Использую первый найденный шрифт: {available_fonts[0]}")
+        return available_fonts[0]
         
     except Exception as e:
         print(f"Ошибка при настройке шрифтов: {e}")
-        return 'Helvetica'
+        return 'Helvetica'  # Fallback на стандартный PDF шрифт
 
 # Модель для входных данных
 class IdeaData(BaseModel):
@@ -89,9 +117,6 @@ class IdeaData(BaseModel):
     idea_title: str = Field(..., description="Название идеи")
     idea_text: str = Field(..., description="Текст идеи")
     idea_number: Optional[str] = Field("000", description="Номер идеи")
-    qr_code_url: Optional[str] = Field(
-        "https://portal.emk.ru/intranet/editor/feedback/",
-        description="URL для QR-кода"
     )
 
 class RobustPDFGenerator:
@@ -250,8 +275,8 @@ class RobustPDFGenerator:
             
             # Фото пользователя (центрируем)
             photo_stream = None
-            if self.data.get('photo_url'):
-                photo_stream = self.download_image(self.data['photo_url'])
+            # if self.data.get('photo_url'):
+            #     photo_stream = self.download_image(self.data['photo_url'])
             
             if not photo_stream:
                 photo_stream = self.create_placeholder_image()
@@ -403,23 +428,23 @@ class RobustPDFGenerator:
                     # Отступ между абзацами
                     y_pos -= 2*mm
             
-            # QR-код
-            qr_url = self.data.get('qr_code_url', 'https://portal.emk.ru/intranet/editor/feedback/')
-            try:
-                qr_buffer = self.create_qr_code_image(qr_url, size=200)
-                qr_img = PILImage.open(qr_buffer)
-                qr_img_buffer = BytesIO()
-                qr_img.save(qr_img_buffer, format='PNG')
-                qr_img_buffer.seek(0)
+            # # QR-код
+            # qr_url = self.data.get('qr_code_url', 'https://portal.emk.ru/intranet/editor/feedback/')
+            # try:
+            #     qr_buffer = self.create_qr_code_image(qr_url, size=200)
+            #     qr_img = PILImage.open(qr_buffer)
+            #     qr_img_buffer = BytesIO()
+            #     qr_img.save(qr_img_buffer, format='PNG')
+            #     qr_img_buffer.seek(0)
                 
-                qr_size = 30 * mm
-                qr_x = 15 * mm
-                qr_y = 20 * mm
+            #     qr_size = 30 * mm
+            #     qr_x = 15 * mm
+            #     qr_y = 20 * mm
                 
-                c.drawImage(ImageReader(qr_img_buffer), qr_x, qr_y, 
-                           width=qr_size, height=qr_size, mask='auto')
-            except Exception as e:
-                print(f"Ошибка при добавлении QR-кода: {e}")
+            #     c.drawImage(ImageReader(qr_img_buffer), qr_x, qr_y, 
+            #                width=qr_size, height=qr_size, mask='auto')
+            # except Exception as e:
+            #     print(f"Ошибка при добавлении QR-кода: {e}")
             
             # Подвал
             c.setLineWidth(0.4)

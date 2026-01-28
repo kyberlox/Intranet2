@@ -622,7 +622,7 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
     try:
         result_docx, result_pdf = get_pdf_test(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
         return FileResponse(
-            path="./result.pdf",
+            path="./result.docx",
             filename=f"{NAME} {FIO}",  # Имя файла для пользователя
             media_type="application/pdf"
         )

@@ -1,762 +1,544 @@
-import json
+from PIL import Image, ImageDraw
+from docx import Document
+from docx.shared import Cm, Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 import os
-import tempfile
-from io import BytesIO
-from datetime import datetime
-from pathlib import Path
-from typing import Optional, Dict, Any
-import uuid
+import sys
+from docx2pdf import convert
 
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm
-from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.colors import black, Color
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as RLImage, Flowable
-from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_LEFT, TA_RIGHT
-from reportlab.graphics.barcode.qr import QrCodeWidget
-from reportlab.graphics.shapes import Drawing
-from reportlab.graphics import renderPDF
 
-import requests
-from PIL import Image as PILImage
-import qrcode
-from fastapi import APIRouter, HTTPException, Response
-from fastapi.responses import FileResponse, StreamingResponse
-from pydantic import BaseModel, Field
-import uvicorn
 
-# Попробуем импортировать PyPDF2 для работы с UTF-8
-try:
-    from PyPDF2 import PdfReader, PdfWriter
-    HAS_PYPDF2 = True
-except ImportError:
-    HAS_PYPDF2 = False
-    print("PyPDF2 не установлен. Установите: pip install PyPDF2")
+
+
+
+def create_circular_image(image_path, output_path=None, border_width=0, border_color=(255, 255, 255, 255)):
+    """
+    Создает идеально круглое изображение с возможностью добавления обводки
+    
+    Args:
+        image_path (str): Путь к исходному изображению
+        output_path (str, optional): Путь для сохранения результата. Если None, будет создан автоматически
+        border_width (int): Ширина обводки в пикселях (0 - без обводки)
+        border_color (tuple): Цвет обводки в формате RGBA
+        
+    Returns:
+        str: Путь к сохраненному круглому изображению
+    """
+    try:
+        # Открываем изображение
+        img = Image.open(image_path).convert("RGBA")
+        print(f"✓ Загружено изображение: {image_path} ({img.size[0]}x{img.size[1]})")
+        
+        # Создаем квадратное изображение
+        width, height = img.size
+        size = min(width, height)  # Размер квадрата
+        
+        # Координаты для обрезки до центрального квадрата
+        left = (width - size) // 2
+        top = (height - size) // 2
+        right = left + size
+        bottom = top + size
+        
+        # Обрезаем до квадрата
+        img_square = img.crop((left, top, right, bottom))
+        
+        # Создаем маску для идеального круга
+        mask = Image.new('L', (size, size), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse([0, 0, size, size], fill=255)
+        
+        # Применяем маску
+        circular_img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+        circular_img.paste(img_square, (0, 0), mask=mask)
+        
+        # Добавляем обводку (если нужно)
+        if border_width > 0:
+            total_size = size + border_width * 2
+            bordered_img = Image.new('RGBA', (total_size, total_size), (0, 0, 0, 0))
+            
+            # Создаем маску для обводки
+            border_mask = Image.new('L', (total_size, total_size), 0)
+            draw_border = ImageDraw.Draw(border_mask)
+            draw_border.ellipse([0, 0, total_size, total_size], fill=255)
+            
+            # Заливаем обводку цветом
+            border_layer = Image.new('RGBA', (total_size, total_size), border_color)
+            bordered_img.paste(border_layer, (0, 0), mask=border_mask)
+            
+            # Вставляем основное изображение
+            bordered_img.paste(circular_img, (border_width, border_width), mask=circular_img)
+            circular_img = bordered_img
+            size = total_size
+        
+        # Сохраняем результат
+        if output_path is None:
+            name, ext = os.path.splitext(image_path)
+            output_path = f"circle.png"
+        
+        circular_img.save(output_path, 'PNG')
+        print(f"✓ Создано круглое изображение: {output_path} ({size}x{size})")
+        
+        return output_path
+        
+    except Exception as e:
+        print(f"✗ Ошибка при создании круглого изображения: {e}")
+        raise
+
+def add_caption_after_image(paragraph, fio, position, departments, font_name='Calibri'):
+    """
+    Добавляет подпись после изображения в документ Word
+    
+    Args:
+        paragraph: Параграф, после которого добавляется подпись
+        fio (str): ФИО
+        position (str): Должность
+        departments (list): Список подразделений
+        font_name (str): Имя шрифта
+    """
+    try:
+        # Получаем доступ к документу через параграф
+        doc = paragraph._parent
+        
+        # Добавляем пустую строку перед подписью
+        doc.add_paragraph()
+        
+        # ФИО (14pt, жирный, по центру)
+        if fio:
+            fio_para = doc.add_paragraph()
+            fio_run = fio_para.add_run(fio)
+            fio_run.font.size = Pt(14)
+            fio_run.font.bold = True
+            fio_run.font.name = font_name
+            fio_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            print(f"✓ Добавлено ФИО: {fio}")
+        
+        # Должность (12pt, жирный, по центру)
+        if position:
+            pos_para = doc.add_paragraph()
+            pos_run = pos_para.add_run(position)
+            pos_run.font.size = Pt(12)
+            pos_run.font.bold = True
+            pos_run.font.name = font_name
+            pos_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            print(f"✓ Добавлена должность: {position}")
+        
+        # Список подразделений (каждое с новой строки, 12pt, по центру)
+        if departments and isinstance(departments, list):
+            for dept in departments:
+                if dept.strip():  # Пропускаем пустые строки
+                    dept_para = doc.add_paragraph()
+                    dept_run = dept_para.add_run(dept.strip())
+                    dept_run.font.size = Pt(12)
+                    dept_run.font.name = font_name
+                    dept_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            print(f"✓ Добавлено подразделений: {len(departments)}")
+        
+        # Добавляем пустую строку после подписи
+        doc.add_paragraph()
+        
+    except Exception as e:
+        print(f"✗ Ошибка при добавлении подписи: {e}")
+        raise
+
+def add_article_content(doc, name, description, font_name='Calibri'):
+    """
+    Добавляет заголовок статьи и текст после подписи
+    
+    Args:
+        doc: Документ Word
+        name (str): Название статьи
+        description (str): Текст статьи
+        font_name (str): Имя шрифта
+    """
+    try:
+        # Добавляем два переноса строки перед заголовком
+        doc.add_paragraph()
+        doc.add_paragraph()
+        
+        # Заголовок статьи (курсив, 20pt, по центру)
+        if name:
+            title_para = doc.add_paragraph()
+            title_run = title_para.add_run(name)
+            title_run.font.size = Pt(20)
+            title_run.font.italic = True
+            title_run.font.name = font_name
+            title_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            print(f"✓ Добавлен заголовок статьи: {name}")
+        
+        # Добавляем два переноса строки после заголовка
+        doc.add_paragraph()
+        doc.add_paragraph()
+        
+        # Текст статьи (обычный текст)
+        if description:
+            # Разбиваем текст на абзацы по переносам строк
+            paragraphs = description.strip().split('\n')
+            
+            for para_text in paragraphs:
+                if para_text.strip():  # Пропускаем пустые строки
+                    desc_para = doc.add_paragraph()
+                    desc_run = desc_para.add_run(para_text.strip())
+                    desc_run.font.size = Pt(12)
+                    desc_run.font.name = font_name
+                    # Выравнивание по ширине
+                    desc_para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            
+            print(f"✓ Добавлен текст статьи: {len(paragraphs)} абзацев")
+        
+        # Добавляем перенос строки в конце
+        doc.add_paragraph()
+        
+    except Exception as e:
+        print(f"✗ Ошибка при добавлении статьи: {e}")
+        raise
+
+def insert_image_with_content_to_docx(image_path, docx_pattern, docx_result, 
+                                     fio=None, position=None, departments=None,
+                                     name=None, description=None,
+                                     image_size_cm=5, replace_placeholder=None, 
+                                     alignment='center', font_name='Calibri'):
+    """
+    Вставляет изображение, подпись и статью в Word-документ
+    
+    Args:
+        image_path (str): Путь к круглому изображению
+        docx_pattern (str): Путь к шаблонному Word-документу
+        docx_result (str): Путь для сохранения результата
+        fio (str): ФИО для подписи
+        position (str): Должность для подписи
+        departments (list): Список подразделений для подписи
+        name (str): Название статьи
+        description (str): Текст статьи
+        image_size_cm (float): Размер изображения в сантиметрах
+        replace_placeholder (str, optional): Текст-заполнитель для замены изображением
+        alignment (str): Выравнивание ('center', 'left', 'right')
+        font_name (str): Имя шрифта для подписи
+    """
+    try:
+        # Проверяем существование файлов
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Изображение не найдено: {image_path}")
+        
+        if not os.path.exists(docx_pattern):
+            print(f"⚠ Шаблон не найден, создается новый документ: {docx_pattern}")
+            doc = Document()
+            doc.save(docx_pattern)
+        
+        # Открываем шаблон
+        doc = Document(docx_pattern)
+        print(f"✓ Загружен шаблон: {docx_pattern}")
+        
+        # Определяем выравнивание
+        align_map = {
+            'center': WD_ALIGN_PARAGRAPH.CENTER,
+            'left': WD_ALIGN_PARAGRAPH.LEFT,
+            'right': WD_ALIGN_PARAGRAPH.RIGHT
+        }
+        align_value = align_map.get(alignment, WD_ALIGN_PARAGRAPH.CENTER)
+        
+        img_paragraph = None
+        
+        # Если указан заполнитель для замены
+        if replace_placeholder:
+            found_placeholder = False
+            for paragraph in doc.paragraphs:
+                if replace_placeholder in paragraph.text:
+                    # Очищаем параграф и добавляем изображение
+                    paragraph.clear()
+                    run = paragraph.add_run()
+                    run.add_picture(image_path, width=Cm(image_size_cm))
+                    paragraph.alignment = align_value
+                    img_paragraph = paragraph
+                    found_placeholder = True
+                    print(f"✓ Заменен заполнитель: '{replace_placeholder}' на изображение")
+                    break
+            
+            if not found_placeholder:
+                print(f"⚠ Заполнитель '{replace_placeholder}' не найден, добавляю изображение в конец")
+                # Добавляем в конец, если заполнитель не найден
+                img_paragraph = doc.add_paragraph()
+                run = img_paragraph.add_run()
+                run.add_picture(image_path, width=Cm(image_size_cm))
+                img_paragraph.alignment = align_value
+        else:
+            # Просто добавляем изображение в конец документа
+            img_paragraph = doc.add_paragraph()
+            run = img_paragraph.add_run()
+            run.add_picture(image_path, width=Cm(image_size_cm))
+            img_paragraph.alignment = align_value
+            print("✓ Изображение добавлено в конец документа")
+        
+        # Добавляем подпись после изображения
+        if fio or position or departments:
+            add_caption_after_image(img_paragraph, fio, position, departments, font_name)
+        
+        # Добавляем статью (заголовок и текст)
+        if name or description:
+            add_article_content(doc, name, description, font_name)
+        
+        # Сохраняем результат
+        doc.save(docx_result)
+        print(f"✓ Документ сохранен: {docx_result}")
+        
+        
+
+        return docx_result
+        
+    except Exception as e:
+        print(f"✗ Ошибка при вставке изображения с контентом в Word: {e}")
+        raise
+
+def process_image_for_docx(image_path, docx_pattern, docx_result,
+                          fio=None, position=None, departments=None,
+                          name=None, description=None,
+                          image_size_cm=5, border_width=0, border_color=None,
+                          replace_placeholder=None, alignment='center',
+                          font_name='Calibri', convert_to_pdf=True):
+    """
+    Полный процесс: создание круглого изображения и вставка в Word с подписью и статьей
+    
+    Args:
+        image_path (str): Путь к исходному изображению
+        docx_pattern (str): Путь к шаблонному Word-документу
+        docx_result (str): Путь для сохранения результата
+        fio (str): ФИО для подписи
+        position (str): Должность для подписи
+        departments (list): Список подразделений для подписи
+        name (str): Название статьи
+        description (str): Текст статьи
+        image_size_cm (float): Размер изображения в сантиметрах
+        border_width (int): Ширина обводки в пикселях
+        border_color (tuple): Цвет обводки RGBA
+        replace_placeholder (str, optional): Текст-заполнитель для замены
+        alignment (str): Выравнивание изображения
+        font_name (str): Имя шрифта для подписи
+    """
+    # Цвет обводки по умолчанию (белый)
+    if border_color is None:
+        border_color = (255, 255, 255, 255)
+    
+    try:
+        print("\n" + "="*60)
+        print("НАЧАЛО ОБРАБОТКИ")
+        print("="*60)
+
+        # 1. Создаем круглое изображение
+        circular_path = create_circular_image(
+            image_path=image_path,
+            border_width=border_width,
+            border_color=border_color
+        )
+
+        # 2. Вставляем в Word с подписью и статьей
+        result_docx = insert_image_with_content_to_docx(
+            image_path=circular_path,
+            docx_pattern=docx_pattern,
+            docx_result=docx_result,
+            fio=fio,
+            position=position,
+            departments=departments,
+            name=name,
+            description=description,
+            image_size_cm=image_size_cm,
+            replace_placeholder=replace_placeholder,
+            alignment=alignment,
+            font_name=font_name
+        )
+
+        # 3. Конвертируем в PDF, если требуется
+        result_pdf = None
+        if convert_to_pdf and result_docx and os.path.exists(result_docx):
+            # Меняем расширение .docx на .pdf для имени файла
+            pdf_path = os.path.splitext(result_docx)[0] + '.pdf'
+            result_pdf = convert_docx_to_pdf(result_docx, pdf_path)
+
+        print("="*60)
+        print("ОБРАБОТКА ЗАВЕРШЕНА УСПЕШНО!")
+        print(f"• Исходное изображение: {image_path}")
+        print(f"• Круглое изображение:  {circular_path}")
+        print(f"• Документ Word:        {result_docx}")
+        if result_pdf:
+            print(f"• Документ PDF:         {result_pdf}")
+        print("="*60)
+
+        # Очистка временного файла
+        if os.path.exists(circular_path):
+            os.remove(circular_path)
+            print(f"✓ Временный файл удален: {circular_path}")
+
+        return result_docx, result_pdf  # Теперь возвращаем оба пути
+
+    except Exception as e:
+        print(f"\n✗ ОШИБКА В ПРОЦЕССЕ ОБРАБОТКИ: {e}")
+        import traceback
+        traceback.print_exc()
+        return None, None
+
+def convert_docx_to_pdf(docx_path, pdf_path=None):
+    """
+    Конвертирует DOCX-файл в PDF с использованием docx2pdf.
+    Внимание: docx2pdf работает через Microsoft Word (Windows/macOS).
+    Для Linux может потребоваться Wine или альтернативный метод.
+
+    Args:
+        docx_path (str): Путь к исходному DOCX-файлу.
+        pdf_path (str, optional): Путь для сохранения PDF.
+                                 Если None, заменяет расширение на .pdf.
+
+    Returns:
+        str: Путь к созданному PDF-файлу.
+    """
+    try:
+        # Формируем путь для PDF, если он не указан
+        if pdf_path is None:
+            name, _ = os.path.splitext(docx_path)
+            pdf_path = f"{name}.pdf"
+
+        print(f"🔄 Начинаю конвертацию {docx_path} в PDF...")
+
+        # Основная функция конвертации из библиотеки docx2pdf[citation:1]
+        convert(docx_path, pdf_path)
+
+        print(f"✅ PDF успешно создан: {pdf_path}")
+        return pdf_path
+
+    except Exception as e:
+        # Ловим возможные ошибки (например, если не установлен MS Word)
+        print(f"❌ Ошибка при конвертации через docx2pdf: {e}")
+        print("⚠  Попробую использовать метод с LibreOffice...")
+        # Вызываем альтернативный метод
+        return convert_docx_to_pdf_libreoffice(docx_path, pdf_path)
+
+def convert_docx_to_pdf_libreoffice(docx_path, pdf_path=None):
+    """
+    Альтернативный метод конвертации через LibreOffice.
+    Работает на Linux, macOS и Windows (если установлен LibreOffice).
+
+    Args:
+        docx_path (str): Путь к исходному DOCX-файлу.
+        pdf_path (str, optional): Путь для сохранения PDF.
+
+    Returns:
+        str: Путь к созданному PDF-файлу.
+    """
+    try:
+        import subprocess
+        import re
+
+        # Определяем команду для LibreOffice[citation:4][citation:8]
+        # Параметр --headless запускает без графического интерфейса
+        if pdf_path is None:
+            output_dir = os.path.dirname(docx_path)
+            args = ['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', output_dir, docx_path]
+        else:
+            output_dir = os.path.dirname(pdf_path)
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            # LibreOffice сохраняет с тем же именем, поэтому временно конвертируем в нужную папку
+            temp_args = ['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', output_dir, docx_path]
+            process = subprocess.run(temp_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=60)
+
+            # Если нужно конкретное имя файла, перемещаем результат
+            expected_name = os.path.splitext(os.path.basename(docx_path))[0] + '.pdf'
+            temp_pdf = os.path.join(output_dir, expected_name)
+            if os.path.exists(temp_pdf) and temp_pdf != pdf_path:
+                os.rename(temp_pdf, pdf_path)
+
+        print(f"✅ PDF успешно создан через LibreOffice: {pdf_path}")
+        return pdf_path
+
+    except FileNotFoundError:
+        print("❌ LibreOffice не найден. Установите его:")
+        print("   sudo apt-get install libreoffice  # для Ubuntu/Debian")
+        return None
+    except Exception as e:
+        print(f"❌ Ошибка при конвертации через LibreOffice: {e}")
+        return None
+
+
+
+def get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT,
+         FIO=None, POSITION=None, DEPARTMENTS=None,
+         NAME=None, DESCRIPTION=None, **kwargs):
+    """
+    Основная функция с поддержкой конвертации в PDF.
+
+    Новый параметр:
+        convert_to_pdf (bool): Если True (по умолчанию), конвертирует в PDF.
+    """
+    # Параметры по умолчанию
+    params = {
+        'image_size_cm': 5,
+        'border_width': 0,
+        'border_color': None,
+        'replace_placeholder': None,
+        'alignment': 'center',
+        'font_name': 'Calibri',
+        'convert_to_pdf': True  # Новый параметр по умолчанию
+    }
+
+    # Обновляем параметры из kwargs
+    params.update(kwargs)
+
+    # Выполняем обработку
+    result_docx, result_pdf = process_image_for_docx(
+        image_path=image_PATH,
+        docx_pattern=DOCX_PATTERN,
+        docx_result=DOCX_RESULT,
+        fio=FIO,
+        position=POSITION,
+        departments=DEPARTMENTS,
+        name=NAME,
+        description=DESCRIPTION,
+        image_size_cm=params['image_size_cm'],
+        border_width=params['border_width'],
+        border_color=params['border_color'],
+        replace_placeholder=params['replace_placeholder'],
+        alignment=params['alignment'],
+        font_name=params['font_name'],
+        convert_to_pdf=params['convert_to_pdf']  # Передаем новый параметр
+    )
+
+    return result_docx, result_pdf
+    
+
+
+
+from fastapi import APIRouter, Body, Request
+
 
 idea_pdf_router = APIRouter(prefix="/idea_pdf")
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from ..base.pSQL.objects.App import get_async_db
 
-# Функция для работы с кириллицей в PDF
-def setup_pdf_encoding():
-    """Регистрация шрифтов, доступных в системе"""
-    try:
-        # Проверяем, какие шрифты доступны
-        available_fonts = []
-        
-        # Список возможных путей к шрифтам
-        font_search_paths = [
-            # Windows
-            "C:/Windows/Fonts/arial.ttf",
-            "C:/Windows/Fonts/times.ttf",
-            "C:/Windows/Fonts/cour.ttf",  # Courier
-            # Linux
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-            "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
-            "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
-            # Mac
-            "/System/Library/Fonts/Helvetica.ttc",
-            "/System/Library/Fonts/Arial.ttf",
-            "/Library/Fonts/Arial.ttf",
-            # Общие пути (может быть установлен в проект)
-            "./fonts/arial.ttf",
-            "./fonts/DejaVuSans.ttf",
-            "/app/fonts/arial.ttf",  # Для Docker
-        ]
-        
-        for font_path in font_search_paths:
-            if os.path.exists(font_path):
-                try:
-                    font_name = os.path.basename(font_path).split('.')[0]
-                    
-                    # Регистрируем обычный и жирный варианты
-                    pdfmetrics.registerFont(TTFont(font_name, font_path))
-                    
-                    # Для шрифтов, у которых есть отдельные файлы для жирного
-                    bold_path = font_path.replace('.ttf', '-Bold.ttf').replace('.ttc', 'Bold.ttc')
-                    if os.path.exists(bold_path):
-                        pdfmetrics.registerFont(TTFont(f'{font_name}-Bold', bold_path))
-                    
-                    available_fonts.append(font_name)
-                    print(f"Найден шрифт: {font_name} по пути {font_path}")
-                    
-                except Exception as e:
-                    print(f"Не удалось загрузить шрифт {font_path}: {e}")
-        
-        # Если не нашли шрифты, используем стандартные PDF шрифты
-        if not available_fonts:
-            print("Не найдены системные шрифты, использую стандартные PDF шрифты")
-            # Стандартные PDF шрифты (не требуют файлов)
-            return 'Helvetica'  # Это стандартный PDF шрифт
-        
-        # Предпочитаем Arial или DejaVu как наиболее распространенные
-        for preferred in ['Arial', 'DejaVuSans', 'LiberationSans', 'Ubuntu', 'FreeSans']:
-            if preferred in available_fonts:
-                print(f"Использую шрифт: {preferred}")
-                return preferred
-        
-        # Иначе первый найденный
-        print(f"Использую первый найденный шрифт: {available_fonts[0]}")
-        return available_fonts[0]
-        
-    except Exception as e:
-        print(f"Ошибка при настройке шрифтов: {e}")
-        return 'Helvetica'  # Fallback на стандартный PDF шрифт
+@idea_pdf_router.post("/generate_pdf")
+async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
+    from .model.User import User
 
-# Модель для входных данных
-class IdeaData(BaseModel):
-    full_name: str = Field(..., description="ФИО пользователя")
-    photo_url: Optional[str] = Field(None, description="Ссылка на фото пользователя")
-    position: str = Field(..., description="Должность")
-    department: str = Field(..., description="Отдел")
-    subdepartment: Optional[str] = Field(None, description="Подотдел")
-    directorate: Optional[str] = Field(None, description="Дирекция")
-    idea_title: str = Field(..., description="Название идеи")
-    idea_text: str = Field(..., description="Текст идеи")
-    idea_number: Optional[str] = Field("000", description="Номер идеи")
+    DOCX_PATTERN = "./pattern_idea_pdf.docx"
+    DOCX_RESULT = "./result.docx"
 
-class RobustPDFGenerator:
-    """Универсальный генератор PDF с гарантированной поддержкой кириллицы"""
-    
-    def __init__(self, json_data: Dict[str, Any], output_filename: Optional[str] = None):
-        """
-        Инициализация генератора PDF с данными из JSON
-        """
-        self.data = json_data
-        self.buffer = BytesIO()
-        
-        # Настраиваем шрифты
-        self.font_name = setup_pdf_encoding()
-        
-        # Размеры страницы A4 в мм
-        self.page_width = 210 * mm
-        self.page_height = 297 * mm
-        
-        # Настройки полей
-        self.left_margin = 15 * mm
-        self.right_margin = 15 * mm
-        self.top_margin = 30 * mm
-        self.bottom_margin = 20 * mm
-        
-        # Имя файла для сохранения
-        if output_filename:
-            self.output_filename = output_filename
-        else:
-            self.output_filename = self._generate_filename()
-    
-    def _generate_filename(self) -> str:
-        """Генерация имени файла на основе данных"""
-        # Безопасное название идеи
-        title = self.data.get('idea_title', 'Идея')
-        safe_title = "".join(c if c.isalnum() or c in " _-" else "_" for c in title)
-        
-        # Номер идеи
-        idea_number = str(self.data.get('idea_number', '000')).zfill(3)
-        
-        # Генерируем имя файла как в примере
-        filename = f"Idea_{idea_number}_{safe_title[:50]}.pdf"
-        return filename
-    
-    def _safe_unicode(self, text: str) -> str:
-        """Безопасная обработка Unicode текста"""
-        if not text:
-            return ""
-        
-        try:
-            # Проверяем, что текст можно закодировать в UTF-8
-            text.encode('utf-8')
-            return text
-        except UnicodeEncodeError:
-            # Заменяем проблемные символы
-            return text.encode('utf-8', 'replace').decode('utf-8')
-    
-    def download_image(self, url: str) -> Optional[BytesIO]:
-        """Скачивание изображения по URL"""
-        try:
-            if not url:
-                return None
-                
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            return BytesIO(response.content)
-        except Exception as e:
-            print(f"Ошибка загрузки изображения {url}: {e}")
-            return None
-    
-    def create_placeholder_image(self) -> BytesIO:
-        """Создание placeholder изображения"""
-        img = PILImage.new('RGB', (200, 200), color=(220, 220, 220))
-        buffer = BytesIO()
-        img.save(buffer, format='PNG')
-        buffer.seek(0)
-        return buffer
-    
-    def create_circular_image(self, image_stream: BytesIO) -> BytesIO:
-        """Создание круглого изображения с обрезкой"""
-        try:
-            # Открываем изображение
-            img = PILImage.open(image_stream)
-            
-            # Конвертируем в RGB если нужно
-            if img.mode not in ['RGB', 'RGBA']:
-                img = img.convert('RGB')
-            
-            # Обрезаем до квадрата
-            width, height = img.size
-            min_dimension = min(width, height)
-            left = (width - min_dimension) // 2
-            top = (height - min_dimension) // 2
-            right = left + min_dimension
-            bottom = top + min_dimension
-            
-            img = img.crop((left, top, right, bottom))
-            
-            # Масштабируем
-            img = img.resize((200, 200), PILImage.Resampling.LANCZOS)
-            
-            # Сохраняем в буфер
-            buffer = BytesIO()
-            img.save(buffer, format='PNG', quality=95)
-            buffer.seek(0)
-            
-            return buffer
-        except Exception as e:
-            print(f"Ошибка обработки изображения: {e}")
-            return image_stream
-    
-    def create_qr_code_image(self, data: str, size: int = 200) -> BytesIO:
-        """Создание QR-кода"""
-        try:
-            qr = qrcode.QRCode(
-                version=1,
-                error_correction=qrcode.constants.ERROR_CORRECT_M,
-                box_size=10,
-                border=4,
-            )
-            qr.add_data(data)
-            qr.make(fit=True)
-            
-            qr_img = qr.make_image(fill_color="black", back_color="white")
-            qr_img = qr_img.convert('RGB')
-            
-            buffer = BytesIO()
-            qr_img.save(buffer, format='PNG')
-            buffer.seek(0)
-            return buffer
-        except Exception as e:
-            print(f"Ошибка создания QR-кода: {e}")
-            placeholder = PILImage.new('RGB', (size, size), color='white')
-            buffer = BytesIO()
-            placeholder.save(buffer, format='PNG')
-            buffer.seek(0)
-            return buffer
-    
-    def generate_pdf_with_canvas(self) -> BytesIO:
-        """Генерация PDF с использованием canvas напрямую (наиболее надежный способ)"""
-        try:
-            buffer = BytesIO()
-            c = canvas.Canvas(buffer, pagesize=A4)
-            
-            # Устанавливаем UTF-8 кодировку для canvas
-            c._doc.info.producer = "PDF Generator (UTF-8)"
-            
-            width, height = A4
-            
-            # Заголовок
-            c.setFont(self.font_name, 12)
-            header_text = self._safe_unicode("Интранет: Есть идея!")
-            c.drawRightString(width - 15*mm, height - 20*mm, header_text)
-            c.setLineWidth(0.4)
-            c.line(0, height - 24*mm, width, height - 24*mm)
-            
-            # Фото пользователя (центрируем)
-            photo_stream = None
-            # if self.data.get('photo_url'):
-            #     photo_stream = self.download_image(self.data['photo_url'])
-            
-            if not photo_stream:
-                photo_stream = self.create_placeholder_image()
-            
-            if photo_stream:
-                try:
-                    # Конвертируем фото
-                    img = PILImage.open(photo_stream)
-                    img_buffer = BytesIO()
-                    img.save(img_buffer, format='PNG')
-                    img_buffer.seek(0)
-                    
-                    # Рисуем фото
-                    photo_width = 60 * mm
-                    photo_height = 60 * mm
-                    photo_x = (width - photo_width) / 2
-                    photo_y = height - 90 * mm
-                    
-                    c.drawImage(ImageReader(img_buffer), photo_x, photo_y, 
-                               width=photo_width, height=photo_height, 
-                               mask='auto')
-                except Exception as e:
-                    print(f"Ошибка при добавлении фото: {e}")
-            
-            # ФИО пользователя
-            c.setFont(self.font_name + '-Bold' if self.font_name == 'Helvetica' else self.font_name, 10)
-            full_name = self._safe_unicode(self.data.get('full_name', ''))
-            text_width = c.stringWidth(full_name, self.font_name, 10)
-            c.drawString((width - text_width) / 2, height - 155*mm, full_name)
-            
-            # Должность и отделы
-            c.setFont(self.font_name, 9)
-            position = self._safe_unicode(self.data.get('position', ''))
-            department = self._safe_unicode(self.data.get('department', ''))
-            subdepartment = self._safe_unicode(self.data.get('subdepartment', ''))
-            directorate = self._safe_unicode(self.data.get('directorate', ''))
-            
-            # Формируем иерархию
-            dept_parts = []
-            if directorate:
-                dept_parts.append(directorate)
-            if subdepartment:
-                dept_parts.append(subdepartment)
-            if department:
-                dept_parts.append(department)
-            dept_parts.append('НПО ЭМК')
-            
-            # Рисуем отделы
-            y_pos = height - 165*mm
-            for part in dept_parts:
-                if part.strip():
-                    text_width = c.stringWidth(part, self.font_name, 9)
-                    c.drawString((width - text_width) / 2, y_pos, part)
-                    y_pos -= 5*mm
-            
-            # Должность жирным
-            c.setFont(self.font_name + '-Bold' if self.font_name == 'Helvetica' else self.font_name, 9)
-            text_width = c.stringWidth(position, self.font_name, 9)
-            c.drawString((width - text_width) / 2, y_pos, position)
-            
-            # Название идеи с номером
-            y_pos -= 15*mm
-            c.setFont(self.font_name, 10)
-            idea_number = str(self.data.get('idea_number', '000')).zfill(3)
-            idea_title = self._safe_unicode(self.data.get('idea_title', ''))
-            title = self._safe_unicode(f"№{idea_number}. {idea_title}")
-            
-            # Разбиваем заголовок если длинный
-            max_title_width = width - 30*mm
-            title_width = c.stringWidth(title, self.font_name, 10)
-            
-            if title_width > max_title_width:
-                # Простой перенос
-                words = title.split()
-                lines = []
-                current_line = []
-                
-                for word in words:
-                    current_line.append(word)
-                    test_line = ' '.join(current_line)
-                    test_width = c.stringWidth(test_line, self.font_name, 10)
-                    
-                    if test_width > max_title_width:
-                        if len(current_line) == 1:
-                            lines.append(test_line)
-                            current_line = []
-                        else:
-                            current_line.pop()
-                            lines.append(' '.join(current_line))
-                            current_line = [word]
-                
-                if current_line:
-                    lines.append(' '.join(current_line))
-                
-                for line in lines:
-                    text_width = c.stringWidth(line, self.font_name, 10)
-                    c.drawString((width - text_width) / 2, y_pos, line)
-                    y_pos -= 5*mm
-            else:
-                text_width = c.stringWidth(title, self.font_name, 10)
-                c.drawString((width - text_width) / 2, y_pos, title)
-                y_pos -= 5*mm
-            
-            # Текст идеи
-            y_pos -= 10*mm
-            c.setFont(self.font_name, 9)
-            idea_text = self._safe_unicode(self.data.get('idea_text', ''))
-            
-            # Перенос текста
-            paragraphs = idea_text.split('\n')
-            max_text_width = width - 30*mm
-            
-            for paragraph in paragraphs:
-                if paragraph.strip():
-                    words = paragraph.split()
-                    current_line = []
-                    
-                    for word in words:
-                        current_line.append(word)
-                        test_line = ' '.join(current_line)
-                        test_width = c.stringWidth(test_line, self.font_name, 9)
-                        
-                        if test_width > max_text_width:
-                            if len(current_line) == 1:
-                                # Слово слишком длинное, рисуем как есть
-                                c.drawString(15*mm, y_pos, test_line)
-                                y_pos -= 4*mm
-                                current_line = []
-                            else:
-                                # Рисуем предыдущую строку
-                                current_line.pop()
-                                line_text = ' '.join(current_line)
-                                c.drawString(15*mm, y_pos, line_text)
-                                y_pos -= 4*mm
-                                current_line = [word]
-                        
-                        # Проверяем место на странице
-                        if y_pos < 50*mm:
-                            c.showPage()
-                            y_pos = height - 30*mm
-                            c.setFont(self.font_name, 9)
-                    
-                    # Рисуем остаток параграфа
-                    if current_line:
-                        line_text = ' '.join(current_line)
-                        c.drawString(15*mm, y_pos, line_text)
-                        y_pos -= 4*mm
-                    
-                    # Отступ между абзацами
-                    y_pos -= 2*mm
-            
-            # # QR-код
-            # qr_url = self.data.get('qr_code_url', 'https://portal.emk.ru/intranet/editor/feedback/')
-            # try:
-            #     qr_buffer = self.create_qr_code_image(qr_url, size=200)
-            #     qr_img = PILImage.open(qr_buffer)
-            #     qr_img_buffer = BytesIO()
-            #     qr_img.save(qr_img_buffer, format='PNG')
-            #     qr_img_buffer.seek(0)
-                
-            #     qr_size = 30 * mm
-            #     qr_x = 15 * mm
-            #     qr_y = 20 * mm
-                
-            #     c.drawImage(ImageReader(qr_img_buffer), qr_x, qr_y, 
-            #                width=qr_size, height=qr_size, mask='auto')
-            # except Exception as e:
-            #     print(f"Ошибка при добавлении QR-кода: {e}")
-            
-            # Подвал
-            c.setLineWidth(0.4)
-            c.line(0, 10*mm, width, 10*mm)
-            c.setFont(self.font_name, 8)
-            footer_text = self._safe_unicode("Страница 1/1")
-            text_width = c.stringWidth(footer_text, self.font_name, 8)
-            c.drawString((width - text_width) / 2, 6*mm, footer_text)
-            
-            c.save()
-            buffer.seek(0)
-            
-            # Если есть PyPDF2, улучшаем кодировку
-            if HAS_PYPDF2:
-                try:
-                    buffer = self._improve_pdf_encoding(buffer)
-                except Exception as e:
-                    print(f"Не удалось улучшить кодировку PDF: {e}")
-            
-            return buffer
-            
-        except Exception as e:
-            print(f"Критическая ошибка при генерации PDF: {e}")
-            raise
-    
-    def _improve_pdf_encoding(self, pdf_buffer: BytesIO) -> BytesIO:
-        """Улучшение кодировки PDF с помощью PyPDF2"""
-        if not HAS_PYPDF2:
-            return pdf_buffer
-        
-        try:
-            # Читаем PDF
-            pdf_buffer.seek(0)
-            reader = PdfReader(pdf_buffer)
-            writer = PdfWriter()
-            
-            # Копируем все страницы
-            for page in reader.pages:
-                writer.add_page(page)
-            
-            # Добавляем метаданные UTF-8
-            writer.add_metadata({
-                '/Producer': 'PDF Generator with UTF-8',
-                '/Title': self._safe_unicode(self.data.get('idea_title', '')),
-                '/Author': self._safe_unicode(self.data.get('full_name', '')),
-                '/Creator': 'Python PDF Generator',
-                '/CreationDate': datetime.now().strftime("D:%Y%m%d%H%M%S"),
-            })
-            
-            # Сохраняем в новый буфер
-            output_buffer = BytesIO()
-            writer.write(output_buffer)
-            output_buffer.seek(0)
-            
-            return output_buffer
-            
-        except Exception as e:
-            print(f"Ошибка при улучшении PDF: {e}")
-            pdf_buffer.seek(0)
-            return pdf_buffer
-    
-    def generate_pdf(self) -> BytesIO:
-        """Основной метод генерации PDF"""
-        return self.generate_pdf_with_canvas()
-    
-    def save_to_file(self, filename: Optional[str] = None, 
-                    directory: Optional[str] = None) -> str:
-        """
-        Сохранение PDF в файл
-        """
-        try:
-            # Определяем директорию
-            if directory is None:
-                directory = tempfile.gettempdir()
-            
-            # Создаем директорию если её нет
-            os.makedirs(directory, exist_ok=True)
-            
-            # Определяем имя файла
-            if filename is None:
-                filename = self.output_filename
-            
-            # Полный путь к файлу
-            filepath = os.path.join(directory, filename)
-            
-            # Генерируем PDF
-            pdf_buffer = self.generate_pdf()
-            
-            # Сохраняем в файл
-            with open(filepath, 'wb') as f:
-                f.write(pdf_buffer.getvalue())
-            
-            print(f"PDF сохранен: {filepath}")
-            return filepath
-            
-        except Exception as e:
-            print(f"Ошибка при сохранении файла: {e}")
-            raise
-    
-    def get_pdf_bytes(self) -> bytes:
-        """Получение PDF как байтов"""
-        pdf_buffer = self.generate_pdf()
-        return pdf_buffer.getvalue()
-    
-    def get_pdf_stream(self) -> BytesIO:
-        """Получение PDF как BytesIO потока"""
-        return self.generate_pdf()
+    user_info = await User(id=data['user_id']).search_by_id(session)
 
-# Эндпоинты API
-@idea_pdf_router.post("/generate-pdf", response_class=Response)
-async def generate_pdf_endpoint(data: IdeaData):
-    """
-    Генерация PDF документа на основе переданных данных
-    """
-    try:
-        # Конвертируем Pydantic модель в словарь
-        json_data = data.dict()
-        
-        # Создаем генератор PDF
-        generator = RobustPDFGenerator(json_data)
-        
-        # Получаем PDF как поток
-        pdf_stream = generator.get_pdf_stream()
-        pdf_content = pdf_stream.getvalue()
-        
-        # Формируем имя файла
-        filename = generator.output_filename
-        
-        # Возвращаем PDF как файл
-        return Response(
-            content=pdf_content,
+    image_PATH = f"./files_db/user_photo/{sad}"
+
+    
+
+    #достану
+    FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
+    POSITION = user_info['indirect_data']['work_position']
+    DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
+
+    NAME=data['name']
+    DESCRIPTION = data['description']
+
+    result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
+    return StreamingResponse(
+            result_pdf,
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "Content-Type": "application/pdf",
-                "Content-Length": str(len(pdf_content))
+                "Content-Disposition": f"attachment; filename={result}",
+                "Content-Length": str(os.path.getsize(DOCX_RESULT))
             }
         )
-    
-    except Exception as e:
-        error_msg = str(e)
-        print(f"Ошибка генерации PDF: {error_msg}")
-        # Более информативное сообщение об ошибке
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {str(e)}")
-
-
-@idea_pdf_router.post("/generate-pdf-save")
-async def generate_pdf_and_save(data: IdeaData, 
-                               directory: Optional[str] = None):
-    """
-    Генерация PDF документа и сохранение его в файл
-    """
-    try:
-        # Конвертируем Pydantic модель в словарь
-        json_data = data.dict()
-        
-        # Создаем генератор PDF
-        generator = RobustPDFGenerator(json_data)
-        
-        # Сохраняем в файл
-        filepath = generator.save_to_file(directory=directory)
-        
-        # Возвращаем путь к файлу
-        return {
-            "status": "success",
-            "message": "PDF успешно сгенерирован",
-            "filename": os.path.basename(filepath),
-            "filepath": filepath,
-            "size": os.path.getsize(filepath),
-            "download_url": f"/idea_pdf/download-pdf/{os.path.basename(filepath)}"
-        }
-    
-    except Exception as e:
-        error_msg = str(e)
-        print(f"Ошибка генерации PDF: {error_msg}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
-
-
-@idea_pdf_router.get("/download-pdf/{filename}")
-async def download_pdf(filename: str, directory: Optional[str] = None):
-    """
-    Скачивание ранее сгенерированного PDF файла
-    """
-    try:
-        if directory is None:
-            directory = tempfile.gettempdir()
-        
-        filepath = os.path.join(directory, filename)
-        
-        if not os.path.exists(filepath):
-            raise HTTPException(status_code=404, detail="Файл не найден")
-        
-        # Получаем размер файла
-        file_size = os.path.getsize(filepath)
-        
-        # Открываем файл для чтения в бинарном режиме
-        def iterfile():
-            with open(filepath, "rb") as f:
-                yield from f
-        
-        return StreamingResponse(
-            iterfile(),
-            media_type="application/pdf",
-            headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "Content-Length": str(file_size)
-            }
-        )
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        error_msg = str(e)
-        print(f"Ошибка при загрузке файла: {error_msg}")
-        raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {error_msg}")
-
-
-@idea_pdf_router.get("/health")
-async def health_check():
-    """Проверка здоровья сервиса"""
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
-
-
-# Простой тестовый эндпоинт
-@idea_pdf_router.post("/test")
-async def test_pdf_generation():
-    """Тестирование генерации PDF с русским текстом"""
-    test_data = {
-        "full_name": "Иванов Иван Иванович",
-        "photo_url": "https://via.placeholder.com/200",
-        "position": "Инженер-разработчик",
-        "department": "Отдел разработки",
-        "subdepartment": "Группа веб-разработки",
-        "directorate": "Дирекция информационных технологий",
-        "idea_title": "Тестовая идея на русском языке",
-        "idea_text": """Это тестовый текст на русском языке для проверки генерации PDF.
-
-Вторая строка текста.
-Третья строка с русскими символами: привет, мир!
-
-Теперь проверим длинный текст, который должен переноситься на новую строку автоматически при достижении конца строки на странице PDF документа.""",
-        "idea_number": "999"
-    }
-    
-    try:
-        generator = RobustPDFGenerator(test_data)
-        pdf_stream = generator.generate()
-        pdf_content = pdf_stream.getvalue()
-        
-        return Response(
-            content=pdf_content,
-            media_type="application/pdf",
-            headers={
-                "Content-Disposition": "attachment; filename=test_russian.pdf",
-                "Content-Type": "application/pdf"
-            }
-        )
-    
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Тестовая ошибка: {str(e)}")
-
-
-def create_pdf_from_json(json_data: Dict[str, Any], 
-                        output_file: Optional[str] = None,
-                        directory: Optional[str] = None) -> str:
-    """
-    Функция для использования вне FastAPI
-    """
-    generator = RobustPDFGenerator(json_data, output_file)
-    return generator.save_to_file(directory=directory)
-
-
-# Тестовый код при прямом запуске
-if __name__ == "__main__":
-    print("=" * 60)
-    print("Тестирование генерации PDF с русским текстом")
-    print("=" * 60)
-    
-    # Тестовые данные
-    test_data = {
-        "full_name": "Высоцкая Мария Сергеевна",
-        "photo_url": "https://via.placeholder.com/200",
-        "position": "Специалист по продажам, подбору оборудования и клиентскому сервису",
-        "department": "Коммерческая дирекция",
-        "subdepartment": "Дирекция по продажам",
-        "directorate": "",
-        "idea_title": "Краны с кламповым присоединением",
-        "idea_text": """В течении года от химических предприятий поступает все больше запросов на краны шаровые с кламповым присоединением, в основном материал корпуса- нержавеющая сталь, PN до 1,6Мпа, DN 20-50. Со слов заказчиков в РФ изготовителей подобных изделий нет, пользуются импортом. Основным преимуществом с их слов, является высокая скорость монтажа/демонтажа. Предлагаю провести аналитику данного рынка, изучить потребности всех КО, работающих с хим.предприятиями. В случае выявление потребностей, проработать возможность изготовление кранов САЗ с данным присоединением.""",
-        "idea_number": "301"
-    }
-    
-    try:
-        # Создаем генератор
-        generator = RobustPDFGenerator(test_data)
-        
-        # Тестируем сохранение
-        filepath = generator.save_to_file(directory="./test_output")
-        print(f"✓ PDF успешно создан: {filepath}")
-        
-        # Проверяем размер файла
-        if os.path.exists(filepath):
-            file_size = os.path.getsize(filepath)
-            print(f"✓ Размер файла: {file_size} байт")
-        
-        print("\n✓ Тестирование завершено успешно!")
-        
-    except Exception as e:
-        print(f"✗ Ошибка при тестировании: {e}")
-        import traceback
-        traceback.print_exc()

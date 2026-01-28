@@ -25,6 +25,8 @@ COPY ./requirements.txt /data/app/requirements.txt
 
 RUN pip install --upgrade pip
 
+RUN sudo apt-get install libreoffice
+
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 #COPY ./ /data/app

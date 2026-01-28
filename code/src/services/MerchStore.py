@@ -22,6 +22,8 @@ class MerchStore:
 
     async def create_purchase(self, data, session):
         res = await MerchStoreModel(user_id=self.user_uuid).create_purchase(data=data, session=session)
+        if "not_enough" in res:
+            return res
         #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
         user_sql = await User(id=self.user_uuid).search_by_id(session=session)
         mail_data = {

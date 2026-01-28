@@ -603,7 +603,7 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
 async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
     from ..model.User import User
 
-    DOCX_PATTERN = "./pattern_idea_pdf.docx"
+    DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 
     user_info = await User(id=int(data['user_id'])).search_by_id(session)
@@ -622,7 +622,7 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
     try:
         result_docx, result_pdf = get_pdf_test(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
         return FileResponse(
-            path="./pattern_idea_pdf.docx",
+            path=DOCX_PATTERN,
             filename=f"{NAME} {FIO}",  # Имя файла для пользователя
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )

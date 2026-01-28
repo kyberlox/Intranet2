@@ -516,13 +516,14 @@ from ..base.pSQL.objects.App import get_async_db
 @idea_pdf_router.post("/generate_pdf")
 async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
     from ..model.User import User
+    from ..model.File import User
 
     DOCX_PATTERN = "./pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
-
+    
     user_info = await User(id=data['user_id']).search_by_id(session)
-
-    image_PATH = f"./files_db/user_photo/4133_1.png"
+    photo_name = user_info['photo_file_url'].split("/")[-1]
+    image_PATH = f"./files_db/user_photo/{photo_name}"
 
     
 

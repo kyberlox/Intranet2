@@ -36,9 +36,10 @@
                     </a>
                 </div>
                 <div>
-                    <a :href="`https://portal.emk.ru/intranet/editor/feedback/pdfgen.php?ELEMENT_ID=${textContent?.id}`"
-                       target="_blank"
-                       class="primary-button">Сохранить PDF</a>
+                    <div :href="`https://portal.emk.ru/intranet/editor/feedback/pdfgen.php?ELEMENT_ID=${textContent?.id}`"
+                         target="_blank"
+                         @click="savePdf"
+                         class="primary-button">Сохранить PDF</div>
                 </div>
             </div>
         </div>
@@ -49,6 +50,9 @@
 
 <script lang="ts">
 import type { IBXFileType } from '@/interfaces/IEntities';
+import type { IPostIdeaPdf } from '@/interfaces/IPostFetch';
+import Api from '@/utils/Api';
+import download from 'downloadjs';
 import { defineComponent, type PropType } from 'vue';
 
 interface IUserForModal {
@@ -60,7 +64,6 @@ interface IUserForModal {
         work_position?: string
         uf_usr_1696592324977?: string[]
     }
-
 }
 
 interface IModalTextContent {
@@ -69,6 +72,7 @@ interface IModalTextContent {
     name: string
     content: string
     files: IBXFileType
+    user_id: string
 }
 
 export default defineComponent({
@@ -80,9 +84,26 @@ export default defineComponent({
             type: Object as PropType<IModalTextContent>,
         }
     },
-    setup() {
-        return {
+    setup(props) {
+        console.log(props);
 
+        const savePdf = () => {
+            const ideaTitle = `#${props.textContent?.number} ${props.textContent?.name}`;
+            const ideaContent = props.textContent?.content ?? '';
+
+            const body: IPostIdeaPdf = {
+                user_id: props.textContent?.user_id,
+                name: ideaTitle,
+                description: ideaContent
+            }
+
+            Api.post('idea_pdf/generate_pdf', body, { responseType: 'blob' })
+                .then((data) => {
+                    download(new Blob([data.data]), ideaTitle + '.pdf', 'application/pdf')
+                })
+        }
+        return {
+            savePdf
         }
     }
 })

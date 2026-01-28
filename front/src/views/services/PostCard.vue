@@ -155,7 +155,7 @@ export default defineComponent({
         const sendMsg = () => {
             isLoading.value = true;
             if (!msgSender.value || !msgReciever.value || !imageInMsg.value) return;
-            const mailText = createMail(msgText.value, signature.value);
+            const mailText = createMail(msgText.value, signature.value, true);
             const mailTheme = msgTheme.value ? msgTheme.value : '';
             const body = {
                 "sender": user.value.email,

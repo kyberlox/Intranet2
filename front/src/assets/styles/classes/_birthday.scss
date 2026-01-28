@@ -81,7 +81,9 @@
 
     &__workers-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        // grid-template-columns: repeat(4, 1fr);
+        // grid-template-columns: repeat(450px, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         gap: 20px;
 
         @include sm {
@@ -174,7 +176,7 @@
             position: relative;
 
             @include sm {
-                min-height: auto;
+                // min-height: auto;
             }
 
             &__icon {

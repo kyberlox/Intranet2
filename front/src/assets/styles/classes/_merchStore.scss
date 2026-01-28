@@ -466,6 +466,16 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
 
+            &--loading {
+                background: #aba7a5;
+            }
+
+            &>.loader {
+                margin: auto;
+                width: 20px;
+                height: 20px;
+            }
+
             @include sm {
                 padding: 10px;
                 font-size: 13px;

@@ -17,11 +17,13 @@ export const handleApiResponse = (data: AxiosResponse | {'status': string}, toas
         toast.showSuccess(successName);
 }
 
-export const handleApiError = (error: AxiosError, toast: IToastMethods) => {    
-    if (error.response?.status === 401) {
+export const handleApiError = (error: AxiosError | boolean, toast: IToastMethods) => {        
+    if(error !== true) {
+    if ((error as AxiosError).response?.status === 401) {
         toast.showError('authorizatonError');
     }
     else{        
         toast.showError('serverError');
+    }
     }
 }

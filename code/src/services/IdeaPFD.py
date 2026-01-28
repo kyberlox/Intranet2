@@ -503,6 +503,51 @@ def get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT,
     
 
 
+def get_pdf_test(image_PATH, DOCX_PATTERN, DOCX_RESULT,
+         FIO=None, POSITION=None, DEPARTMENTS=None,
+         NAME=None, DESCRIPTION=None, **kwargs):
+    """
+    Основная функция с поддержкой конвертации в PDF.
+
+    Новый параметр:
+        convert_to_pdf (bool): Если True (по умолчанию), конвертирует в PDF.
+    """
+    # Параметры по умолчанию
+    params = {
+        'image_size_cm': 5,
+        'border_width': 0,
+        'border_color': None,
+        'replace_placeholder': None,
+        'alignment': 'center',
+        'font_name': 'Calibri',
+        'convert_to_pdf': True  # Новый параметр по умолчанию
+    }
+
+    # Обновляем параметры из kwargs
+    params.update(kwargs)
+
+    # Выполняем обработку
+    result_docx, result_pdf = process_image_for_docx(
+        image_path=image_PATH,
+        docx_pattern=DOCX_PATTERN,
+        docx_result=DOCX_RESULT,
+        fio=FIO,
+        position=POSITION,
+        departments=DEPARTMENTS,
+        name=NAME,
+        description=DESCRIPTION,
+        image_size_cm=params['image_size_cm'],
+        border_width=params['border_width'],
+        border_color=params['border_color'],
+        replace_placeholder=params['replace_placeholder'],
+        alignment=params['alignment'],
+        font_name=params['font_name'],
+        convert_to_pdf=params['convert_to_pdf']  # Передаем новый параметр
+    )
+
+    return result_docx, result_pdf
+
+
 
 from fastapi import APIRouter, Body, Request
 from fastapi.responses import FileResponse, StreamingResponse
@@ -540,5 +585,57 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
             filename=f"{NAME} {FIO}",  # Имя файла для пользователя
             media_type="application/pdf"
         )
+        # def iterfile():
+        #     with open("./result.pdf", "rb") as f:
+        #         yield from f
+        # return StreamingResponse(
+        #     iterfile(),
+        #     media_type="application/pdf",
+        #     headers={
+        #         "Content-Disposition": f"attachment; filename={f"{NAME} {FIO}"}",
+        #         "Content-Length": str(os.path.getsize("./result.pdf"))
+        #     }
+        # )
+    except Exception as e:
+        return {"msg": f"ошибка создания пдф: {e}"}
+
+@idea_pdf_router.post("/generate_pdf_test")
+async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
+    from ..model.User import User
+
+    DOCX_PATTERN = "./pattern_idea_pdf.docx"
+    DOCX_RESULT = "./result.docx"
+
+    user_info = await User(id=int(data['user_id'])).search_by_id(session)
+    photo_name = user_info['photo_file_url'].split("/")[-1]
+    image_PATH = f"./files_db/user_photo/{photo_name}"
+
+    
+
+    #достану
+    FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
+    POSITION = user_info['indirect_data']['work_position']
+    DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
+
+    NAME=data['name']
+    DESCRIPTION = data['description']
+    try:
+        result_docx, result_pdf = get_pdf_test(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
+        return FileResponse(
+            path="./result.pdf",
+            filename=f"{NAME} {FIO}",  # Имя файла для пользователя
+            media_type="application/pdf"
+        )
+        # def iterfile():
+        #     with open("./result.pdf", "rb") as f:
+        #         yield from f
+        # return StreamingResponse(
+        #     iterfile(),
+        #     media_type="application/pdf",
+        #     headers={
+        #         "Content-Disposition": f"attachment; filename={f"{NAME} {FIO}"}",
+        #         "Content-Length": str(os.path.getsize("./result.pdf"))
+        #     }
+        # )
     except Exception as e:
         return {"msg": f"ошибка создания пдф: {e}"}

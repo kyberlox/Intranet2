@@ -25,3 +25,4 @@ fastapi-socketio==0.0.10
 asyncpg==0.30.0
 markdown2==2.5.4
 Pygments==2.19.2
+reportlab==4.4.9

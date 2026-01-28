@@ -172,7 +172,121 @@ class SendEmail:
         except SMTPException as e:
             return LogsMaker().error_message(e)
 
-    def send_to_new_wrokers(self):
+    # def send_to_new_wrokers(self):
+    #     try:
+    #         msg = MIMEMultipart()
+    #         msg["From"] = server_mail_login
+    #         msg["To"] = self.data['sender']
+    #         msg['Subject'] = 'Приветственное письмо'
+    #         text_msg = f'<p>Приветствуем тебя, наш новый коллега!</p>\n,
+    #                     <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>\n,
+    #                     <p>С уважением,<br>Команда АО "НПО "ЭМК".</p>'
+    #         html_content = """
+    #         <html lang="ru">
+    #         <head>
+    #             <meta charset="UTF-8">
+    #             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    #             <style>
+    #                 body {
+    #                     margin: 0;
+    #                     padding: 20px;
+    #                     font-family: Arial, sans-serif;
+    #                     background-color: #f9f9f9;
+    #                     color: #333;
+    #                     line-height: 1.5;
+    #                 }
+                    
+    #                 .container {
+    #                     max-width: 600px;
+    #                     margin: 0 auto;
+    #                     background-color: #ffffff;
+    #                     padding: 30px;
+    #                     border: 1px solid #ddd;
+    #                 }
+                    
+    #                 .text {
+    #                     margin-bottom: 30px;
+    #                     white-space: pre-line;
+    #                 }
+                    
+    #                 .postcard {
+    #                     text-align: center;
+    #                     margin: 30px 0;
+    #                 }
+                    
+    #                 .postcard img {
+    #                     max-width: 100%;
+    #                     height: auto;
+    #                     border: 1px solid #eee;
+    #                 }
+                    
+    #                 .logo {
+    #                     text-align: center;
+    #                     margin: 30px 0;
+    #                 }
+                    
+    #                 .logo img {
+    #                     width: 200px;
+    #                     height: auto;
+    #                 }
+                    
+    #                 .signature {
+    #                     margin-top: 30px;
+    #                     padding-top: 20px;
+    #                     border-top: 1px solid #eee;
+    #                     font-size: 14px;
+    #                     color: #666;
+    #                     white-space: pre-line;
+    #                 }
+                    
+    #                 @media (max-width: 600px) {
+    #                     body {
+    #                         padding: 10px;
+    #                     }
+                        
+    #                     .container {
+    #                         padding: 20px;
+    #                     }
+                        
+    #                     .logo img {
+    #                         width: 150px;
+    #                     }
+    #                 }
+    #             </style>
+    #         </head>
+    #         <body>
+    #             <div class="container">
+    #                 <div class="text">
+    #                     ${text_msg}
+    #                 </div>
+                    
+    #                 <div class="logo">
+    #                     <img src="cid:company_logo" alt="Логотип компании">
+    #                 </div>
+    #             </div>
+    #         </body>
+    #         </html>
+    #         """
+    #         msg.attach(MIMEText(html_content, "html"))
+
+    #         # Загружаем логотип и добавляем его как встроенное изображение
+    #         with open("./src/services/mail_logo.png", "rb") as img_file:
+    #             logo = MIMEImage(img_file.read())
+    #             logo.add_header("Content-ID", "<company_logo>") 
+    #             logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+    #             msg.attach(logo)
+
+    #         server = smtplib.SMTP(server_mail_host)
+    #         server.starttls()
+    #         server.login(server_mail_login, server_mail_pswd)
+    #         server.send_message(msg)
+    #         server.quit()
+    #         return {'status': True}
+    #     except Exception as e:
+    #         LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+    #         return {'status': False} 
+    
+    def send_active_purchase(self):
         try:
             msg = MIMEMultipart()
             msg["From"] = server_mail_login
@@ -207,4 +321,4 @@ class SendEmail:
             return {'status': True}
         except Exception as e:
             LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
-            return {'status': False}
+            return {'status': False} 

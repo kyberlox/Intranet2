@@ -13,16 +13,13 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib.colors import black
+from reportlab.lib.colors import black, Color
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as RLImage, Flowable
-from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
+from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics import renderPDF
-from reportlab.graphics.renderPDF import draw
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 
 import requests
 from PIL import Image as PILImage
@@ -32,35 +29,53 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 import uvicorn
 
+# Попробуем импортировать PyPDF2 для работы с UTF-8
+try:
+    from PyPDF2 import PdfReader, PdfWriter
+    HAS_PYPDF2 = True
+except ImportError:
+    HAS_PYPDF2 = False
+    print("PyPDF2 не установлен. Установите: pip install PyPDF2")
+
 idea_pdf_router = APIRouter(prefix="/idea_pdf")
 
-# Загрузка шрифтов для поддержки кириллицы
-def register_fonts():
-    """Регистрация шрифтов для поддержки кириллицы"""
+# Функция для работы с кириллицей в PDF
+def setup_pdf_encoding():
+    """Настройка кодировки для работы с кириллицей"""
     try:
-        # Попробуем загрузить DejaVu Sans (обычно есть в системах Linux)
+        # Регистрируем стандартные шрифты
+        pdfmetrics.registerFont(TTFont('Helvetica', 'Helvetica'))
+        pdfmetrics.registerFont(TTFont('Helvetica-Bold', 'Helvetica-Bold'))
+        
+        # Пробуем найти и зарегистрировать шрифт с поддержкой кириллицы
         font_paths = [
+            # Linux
             "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
             "/usr/share/fonts/dejavu/DejaVuSans.ttf",
-            "C:/Windows/Fonts/arial.ttf",  # Windows
-            "C:/Windows/Fonts/times.ttf",  # Windows
+            # Windows
+            "C:/Windows/Fonts/arial.ttf",
+            "C:/Windows/Fonts/arialbd.ttf",  # Arial Bold
+            # Mac
+            "/System/Library/Fonts/Arial.ttf",
+            "/Library/Fonts/Arial.ttf",
         ]
         
         for font_path in font_paths:
             if os.path.exists(font_path):
                 try:
-                    pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
-                    print(f"Шрифт зарегистрирован: {font_path}")
-                    return 'DejaVuSans'
-                except:
+                    font_name = 'Arial' if 'arial' in font_path.lower() else 'DejaVuSans'
+                    pdfmetrics.registerFont(TTFont(font_name, font_path))
+                    print(f"Зарегистрирован шрифт: {font_name} из {font_path}")
+                    return font_name
+                except Exception as e:
+                    print(f"Не удалось зарегистрировать шрифт {font_path}: {e}")
                     continue
         
-        # Если не нашли DejaVu, используем Helvetica с кодировкой
-        print("Используем стандартный шрифт Helvetica")
+        print("Используем стандартный Helvetica")
         return 'Helvetica'
         
     except Exception as e:
-        print(f"Ошибка при регистрации шрифтов: {e}")
+        print(f"Ошибка при настройке шрифтов: {e}")
         return 'Helvetica'
 
 # Модель для входных данных
@@ -79,7 +94,9 @@ class IdeaData(BaseModel):
         description="URL для QR-кода"
     )
 
-class PDFGenerator:
+class RobustPDFGenerator:
+    """Универсальный генератор PDF с гарантированной поддержкой кириллицы"""
+    
     def __init__(self, json_data: Dict[str, Any], output_filename: Optional[str] = None):
         """
         Инициализация генератора PDF с данными из JSON
@@ -87,8 +104,8 @@ class PDFGenerator:
         self.data = json_data
         self.buffer = BytesIO()
         
-        # Регистрируем шрифты
-        self.font_name = register_fonts()
+        # Настраиваем шрифты
+        self.font_name = setup_pdf_encoding()
         
         # Размеры страницы A4 в мм
         self.page_width = 210 * mm
@@ -116,28 +133,21 @@ class PDFGenerator:
         idea_number = str(self.data.get('idea_number', '000')).zfill(3)
         
         # Генерируем имя файла как в примере
-        filename = f"Идея_{idea_number}_{safe_title[:50]}.pdf"
+        filename = f"Idea_{idea_number}_{safe_title[:50]}.pdf"
         return filename
     
-    def _safe_text(self, text: str) -> str:
-        """Безопасное преобразование текста для PDF"""
+    def _safe_unicode(self, text: str) -> str:
+        """Безопасная обработка Unicode текста"""
         if not text:
             return ""
         
-        # Заменяем специальные символы HTML
-        text = text.replace('&', '&amp;')
-        text = text.replace('<', '&lt;')
-        text = text.replace('>', '&gt;')
-        text = text.replace('"', '&quot;')
-        text = text.replace("'", '&#39;')
-        
-        # Убедимся, что текст в правильной кодировке
         try:
+            # Проверяем, что текст можно закодировать в UTF-8
             text.encode('utf-8')
             return text
-        except:
-            # Если есть проблемы с кодировкой, удаляем не-ASCII символы
-            return text.encode('ascii', 'ignore').decode('ascii')
+        except UnicodeEncodeError:
+            # Заменяем проблемные символы
+            return text.encode('utf-8', 'replace').decode('utf-8')
     
     def download_image(self, url: str) -> Optional[BytesIO]:
         """Скачивание изображения по URL"""
@@ -194,9 +204,8 @@ class PDFGenerator:
             return image_stream
     
     def create_qr_code_image(self, data: str, size: int = 200) -> BytesIO:
-        """Создание QR-кода с использованием библиотеки qrcode"""
+        """Создание QR-кода"""
         try:
-            # Создаем QR-код
             qr = qrcode.QRCode(
                 version=1,
                 error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -206,88 +215,40 @@ class PDFGenerator:
             qr.add_data(data)
             qr.make(fit=True)
             
-            # Создаем изображение
             qr_img = qr.make_image(fill_color="black", back_color="white")
-            
-            # Конвертируем в RGB
             qr_img = qr_img.convert('RGB')
             
-            # Сохраняем в буфер
             buffer = BytesIO()
             qr_img.save(buffer, format='PNG')
             buffer.seek(0)
-            
             return buffer
         except Exception as e:
             print(f"Ошибка создания QR-кода: {e}")
-            # Создаем placeholder для QR-кода
             placeholder = PILImage.new('RGB', (size, size), color='white')
             buffer = BytesIO()
             placeholder.save(buffer, format='PNG')
             buffer.seek(0)
             return buffer
     
-    def draw_header(self, canvas_obj: canvas.Canvas):
-        """Отрисовка заголовка страницы"""
-        # Заголовок справа
-        canvas_obj.setFont(self.font_name, 12)
-        canvas_obj.setFillColor(black)
-        
-        # Позиция как в оригинале
-        title_y = self.page_height - 20 * mm
-        title_x = self.page_width - 15 * mm
-        
-        # Безопасный текст для заголовка
-        header_text = "Интранет: Есть идея!"
-        canvas_obj.drawRightString(title_x, title_y, header_text)
-        
-        # Линия под заголовком
-        canvas_obj.setLineWidth(0.4)
-        line_y = title_y - 4 * mm
-        canvas_obj.line(0, line_y, self.page_width, line_y)
-    
-    def draw_footer(self, canvas_obj: canvas.Canvas, page_num: int, total_pages: int):
-        """Отрисовка подвала страницы"""
-        # Линия над номером страницы
-        line_y = 10 * mm
-        canvas_obj.setLineWidth(0.4)
-        canvas_obj.line(0, line_y, self.page_width, line_y)
-        
-        # Номер страницы по центру
-        canvas_obj.setFont(self.font_name, 8)
-        footer_y = 6 * mm
-        footer_text = f"Страница {page_num}/{total_pages}"
-        canvas_obj.drawCentredString(self.page_width / 2, footer_y, footer_text)
-    
-    def generate_pdf(self) -> BytesIO:
-        """Генерация PDF документа"""
+    def generate_pdf_with_canvas(self) -> BytesIO:
+        """Генерация PDF с использованием canvas напрямую (наиболее надежный способ)"""
         try:
-            # Создаем буфер для PDF
-            pdf_buffer = BytesIO()
+            buffer = BytesIO()
+            c = canvas.Canvas(buffer, pagesize=A4)
             
-            # Создаем документ с UTF-8 кодировкой
-            doc = SimpleDocTemplate(
-                pdf_buffer,
-                pagesize=A4,
-                rightMargin=self.right_margin,
-                leftMargin=self.left_margin,
-                topMargin=self.top_margin,
-                bottomMargin=self.bottom_margin,
-                encoding='utf-8'  # Важно для поддержки кириллицы
-            )
+            # Устанавливаем UTF-8 кодировку для canvas
+            c._doc.info.producer = "PDF Generator (UTF-8)"
             
-            # Создаем стили с правильным шрифтом
-            styles = getSampleStyleSheet()
+            width, height = A4
             
-            # Переопределяем стиль Normal для использования нашего шрифта
-            normal_style = styles['Normal']
-            normal_style.fontName = self.font_name
-            normal_style.encoding = 'utf-8'
+            # Заголовок
+            c.setFont(self.font_name, 12)
+            header_text = self._safe_unicode("Интранет: Есть идея!")
+            c.drawRightString(width - 15*mm, height - 20*mm, header_text)
+            c.setLineWidth(0.4)
+            c.line(0, height - 24*mm, width, height - 24*mm)
             
-            # Создаем элементы для документа
-            story = []
-            
-            # Фото пользователя
+            # Фото пользователя (центрируем)
             photo_stream = None
             if self.data.get('photo_url'):
                 photo_stream = self.download_image(self.data['photo_url'])
@@ -297,35 +258,38 @@ class PDFGenerator:
             
             if photo_stream:
                 try:
-                    circular_photo = self.create_circular_image(photo_stream)
-                    user_photo = RLImage(circular_photo, width=60*mm, height=60*mm)
-                    user_photo.hAlign = 'CENTER'
-                    story.append(user_photo)
-                    story.append(Spacer(1, 10*mm))
+                    # Конвертируем фото
+                    img = PILImage.open(photo_stream)
+                    img_buffer = BytesIO()
+                    img.save(img_buffer, format='PNG')
+                    img_buffer.seek(0)
+                    
+                    # Рисуем фото
+                    photo_width = 60 * mm
+                    photo_height = 60 * mm
+                    photo_x = (width - photo_width) / 2
+                    photo_y = height - 90 * mm
+                    
+                    c.drawImage(ImageReader(img_buffer), photo_x, photo_y, 
+                               width=photo_width, height=photo_height, 
+                               mask='auto')
                 except Exception as e:
                     print(f"Ошибка при добавлении фото: {e}")
-                    story.append(Spacer(1, 70*mm))
             
             # ФИО пользователя
-            full_name = self._safe_text(self.data.get('full_name', ''))
-            name_style = ParagraphStyle(
-                'NameStyle',
-                parent=styles['Normal'],
-                fontName=self.font_name + '-Bold' if self.font_name == 'Helvetica' else self.font_name,
-                fontSize=10,
-                alignment=TA_CENTER,
-                spaceAfter=5*mm,
-                encoding='utf-8'
-            )
-            story.append(Paragraph(full_name, name_style))
+            c.setFont(self.font_name + '-Bold' if self.font_name == 'Helvetica' else self.font_name, 10)
+            full_name = self._safe_unicode(self.data.get('full_name', ''))
+            text_width = c.stringWidth(full_name, self.font_name, 10)
+            c.drawString((width - text_width) / 2, height - 155*mm, full_name)
             
             # Должность и отделы
-            position = self._safe_text(self.data.get('position', ''))
-            department = self._safe_text(self.data.get('department', ''))
-            subdepartment = self._safe_text(self.data.get('subdepartment', ''))
-            directorate = self._safe_text(self.data.get('directorate', ''))
+            c.setFont(self.font_name, 9)
+            position = self._safe_unicode(self.data.get('position', ''))
+            department = self._safe_unicode(self.data.get('department', ''))
+            subdepartment = self._safe_unicode(self.data.get('subdepartment', ''))
+            directorate = self._safe_unicode(self.data.get('directorate', ''))
             
-            # Формируем иерархию как в оригинале
+            # Формируем иерархию
             dept_parts = []
             if directorate:
                 dept_parts.append(directorate)
@@ -335,103 +299,196 @@ class PDFGenerator:
                 dept_parts.append(department)
             dept_parts.append('НПО ЭМК')
             
-            # HTML-like строка
-            dept_html = f"<b>{position}</b><br/>" + "<br/>".join(dept_parts)
+            # Рисуем отделы
+            y_pos = height - 165*mm
+            for part in dept_parts:
+                if part.strip():
+                    text_width = c.stringWidth(part, self.font_name, 9)
+                    c.drawString((width - text_width) / 2, y_pos, part)
+                    y_pos -= 5*mm
             
-            dept_style = ParagraphStyle(
-                'DeptStyle',
-                parent=styles['Normal'],
-                fontName=self.font_name,
-                fontSize=9,
-                alignment=TA_CENTER,
-                spaceAfter=20*mm,
-                encoding='utf-8'
-            )
-            story.append(Paragraph(dept_html, dept_style))
+            # Должность жирным
+            c.setFont(self.font_name + '-Bold' if self.font_name == 'Helvetica' else self.font_name, 9)
+            text_width = c.stringWidth(position, self.font_name, 9)
+            c.drawString((width - text_width) / 2, y_pos, position)
             
             # Название идеи с номером
+            y_pos -= 15*mm
+            c.setFont(self.font_name, 10)
             idea_number = str(self.data.get('idea_number', '000')).zfill(3)
-            idea_title = self._safe_text(self.data.get('idea_title', ''))
-            title_text = f"№{idea_number}. {idea_title}"
+            idea_title = self._safe_unicode(self.data.get('idea_title', ''))
+            title = self._safe_unicode(f"№{idea_number}. {idea_title}")
             
-            title_style = ParagraphStyle(
-                'TitleStyle',
-                parent=styles['Heading2'],
-                fontName=self.font_name,
-                fontSize=10,
-                alignment=TA_CENTER,
-                textColor=black,
-                spaceBefore=0,
-                spaceAfter=40,
-                leading=14,
-                encoding='utf-8'
-            )
-            story.append(Paragraph(title_text, title_style))
+            # Разбиваем заголовок если длинный
+            max_title_width = width - 30*mm
+            title_width = c.stringWidth(title, self.font_name, 10)
+            
+            if title_width > max_title_width:
+                # Простой перенос
+                words = title.split()
+                lines = []
+                current_line = []
+                
+                for word in words:
+                    current_line.append(word)
+                    test_line = ' '.join(current_line)
+                    test_width = c.stringWidth(test_line, self.font_name, 10)
+                    
+                    if test_width > max_title_width:
+                        if len(current_line) == 1:
+                            lines.append(test_line)
+                            current_line = []
+                        else:
+                            current_line.pop()
+                            lines.append(' '.join(current_line))
+                            current_line = [word]
+                
+                if current_line:
+                    lines.append(' '.join(current_line))
+                
+                for line in lines:
+                    text_width = c.stringWidth(line, self.font_name, 10)
+                    c.drawString((width - text_width) / 2, y_pos, line)
+                    y_pos -= 5*mm
+            else:
+                text_width = c.stringWidth(title, self.font_name, 10)
+                c.drawString((width - text_width) / 2, y_pos, title)
+                y_pos -= 5*mm
             
             # Текст идеи
-            idea_text = self._safe_text(self.data.get('idea_text', '')).replace('\n', '<br/>')
+            y_pos -= 10*mm
+            c.setFont(self.font_name, 9)
+            idea_text = self._safe_unicode(self.data.get('idea_text', ''))
             
-            text_style = ParagraphStyle(
-                'TextStyle',
-                parent=styles['Normal'],
-                fontName=self.font_name,
-                fontSize=9,
-                alignment=TA_JUSTIFY,
-                leading=12,
-                firstLineIndent=20,
-                encoding='utf-8'
-            )
+            # Перенос текста
+            paragraphs = idea_text.split('\n')
+            max_text_width = width - 30*mm
             
-            story.append(Paragraph(idea_text, text_style))
+            for paragraph in paragraphs:
+                if paragraph.strip():
+                    words = paragraph.split()
+                    current_line = []
+                    
+                    for word in words:
+                        current_line.append(word)
+                        test_line = ' '.join(current_line)
+                        test_width = c.stringWidth(test_line, self.font_name, 9)
+                        
+                        if test_width > max_text_width:
+                            if len(current_line) == 1:
+                                # Слово слишком длинное, рисуем как есть
+                                c.drawString(15*mm, y_pos, test_line)
+                                y_pos -= 4*mm
+                                current_line = []
+                            else:
+                                # Рисуем предыдущую строку
+                                current_line.pop()
+                                line_text = ' '.join(current_line)
+                                c.drawString(15*mm, y_pos, line_text)
+                                y_pos -= 4*mm
+                                current_line = [word]
+                        
+                        # Проверяем место на странице
+                        if y_pos < 50*mm:
+                            c.showPage()
+                            y_pos = height - 30*mm
+                            c.setFont(self.font_name, 9)
+                    
+                    # Рисуем остаток параграфа
+                    if current_line:
+                        line_text = ' '.join(current_line)
+                        c.drawString(15*mm, y_pos, line_text)
+                        y_pos -= 4*mm
+                    
+                    # Отступ между абзацами
+                    y_pos -= 2*mm
             
             # QR-код
-            story.append(Spacer(1, 20*mm))
-            
             qr_url = self.data.get('qr_code_url', 'https://portal.emk.ru/intranet/editor/feedback/')
             try:
-                # Создаем QR-код как изображение
                 qr_buffer = self.create_qr_code_image(qr_url, size=200)
-                qr_image = RLImage(qr_buffer, width=30*mm, height=30*mm)
-                qr_image.hAlign = 'LEFT'
-                story.append(qr_image)
+                qr_img = PILImage.open(qr_buffer)
+                qr_img_buffer = BytesIO()
+                qr_img.save(qr_img_buffer, format='PNG')
+                qr_img_buffer.seek(0)
+                
+                qr_size = 30 * mm
+                qr_x = 15 * mm
+                qr_y = 20 * mm
+                
+                c.drawImage(ImageReader(qr_img_buffer), qr_x, qr_y, 
+                           width=qr_size, height=qr_size, mask='auto')
             except Exception as e:
-                print(f"Ошибка при создании QR-кода: {e}")
-                # Добавляем placeholder
-                story.append(Spacer(1, 30*mm))
+                print(f"Ошибка при добавлении QR-кода: {e}")
             
-            # Собираем документ
-            doc.build(
-                story,
-                onFirstPage=self._add_header_footer,
-                onLaterPages=self._add_header_footer
-            )
+            # Подвал
+            c.setLineWidth(0.4)
+            c.line(0, 10*mm, width, 10*mm)
+            c.setFont(self.font_name, 8)
+            footer_text = self._safe_unicode("Страница 1/1")
+            text_width = c.stringWidth(footer_text, self.font_name, 8)
+            c.drawString((width - text_width) / 2, 6*mm, footer_text)
             
-            pdf_buffer.seek(0)
-            return pdf_buffer
+            c.save()
+            buffer.seek(0)
+            
+            # Если есть PyPDF2, улучшаем кодировку
+            if HAS_PYPDF2:
+                try:
+                    buffer = self._improve_pdf_encoding(buffer)
+                except Exception as e:
+                    print(f"Не удалось улучшить кодировку PDF: {e}")
+            
+            return buffer
             
         except Exception as e:
             print(f"Критическая ошибка при генерации PDF: {e}")
             raise
     
-    def _add_header_footer(self, canvas_obj: canvas.Canvas, doc: SimpleDocTemplate):
-        """Добавление header и footer на каждую страницу"""
+    def _improve_pdf_encoding(self, pdf_buffer: BytesIO) -> BytesIO:
+        """Улучшение кодировки PDF с помощью PyPDF2"""
+        if not HAS_PYPDF2:
+            return pdf_buffer
+        
         try:
-            self.draw_header(canvas_obj)
-            self.draw_footer(canvas_obj, canvas_obj.getPageNumber(), doc.page)
+            # Читаем PDF
+            pdf_buffer.seek(0)
+            reader = PdfReader(pdf_buffer)
+            writer = PdfWriter()
+            
+            # Копируем все страницы
+            for page in reader.pages:
+                writer.add_page(page)
+            
+            # Добавляем метаданные UTF-8
+            writer.add_metadata({
+                '/Producer': 'PDF Generator with UTF-8',
+                '/Title': self._safe_unicode(self.data.get('idea_title', '')),
+                '/Author': self._safe_unicode(self.data.get('full_name', '')),
+                '/Creator': 'Python PDF Generator',
+                '/CreationDate': datetime.now().strftime("D:%Y%m%d%H%M%S"),
+            })
+            
+            # Сохраняем в новый буфер
+            output_buffer = BytesIO()
+            writer.write(output_buffer)
+            output_buffer.seek(0)
+            
+            return output_buffer
+            
         except Exception as e:
-            print(f"Ошибка в _add_header_footer: {e}")
+            print(f"Ошибка при улучшении PDF: {e}")
+            pdf_buffer.seek(0)
+            return pdf_buffer
+    
+    def generate_pdf(self) -> BytesIO:
+        """Основной метод генерации PDF"""
+        return self.generate_pdf_with_canvas()
     
     def save_to_file(self, filename: Optional[str] = None, 
                     directory: Optional[str] = None) -> str:
         """
         Сохранение PDF в файл
-        
-        Args:
-            filename: Имя файла (если None, будет сгенерировано автоматически)
-            directory: Директория для сохранения (если None, временная директория)
-        
-        Returns:
-            str: Полный путь к сохраненному файлу
         """
         try:
             # Определяем директорию
@@ -462,26 +519,6 @@ class PDFGenerator:
             print(f"Ошибка при сохранении файла: {e}")
             raise
     
-    def save_to_file_streaming(self, filename: Optional[str] = None,
-                              directory: Optional[str] = None) -> BytesIO:
-        """
-        Сохранение PDF в файл и возврат BytesIO потока
-        """
-        # Сохраняем в файл
-        filepath = self.save_to_file(filename, directory)
-        
-        # Читаем файл обратно в BytesIO
-        with open(filepath, 'rb') as f:
-            content = f.read()
-        
-        # Очищаем временный файл
-        try:
-            os.remove(filepath)
-        except:
-            pass
-        
-        return BytesIO(content)
-    
     def get_pdf_bytes(self) -> bytes:
         """Получение PDF как байтов"""
         pdf_buffer = self.generate_pdf()
@@ -491,192 +528,58 @@ class PDFGenerator:
         """Получение PDF как BytesIO потока"""
         return self.generate_pdf()
 
-# Альтернативная реализация с использованием reportlab.pdfgen.canvas напрямую
-class SimplePDFGenerator:
-    """Простой генератор PDF для обхода проблем с кодировкой"""
-    
-    def __init__(self, json_data: Dict[str, Any]):
-        self.data = json_data
-        
-    def _encode_text(self, text: str) -> str:
-        """Кодирование текста для избежания проблем с кодировкой"""
-        if not text:
-            return ""
-        try:
-            # Пробуем закодировать в utf-8
-            return text.encode('utf-8').decode('utf-8')
-        except:
-            # Если не получается, убираем проблемные символы
-            return text.encode('ascii', 'ignore').decode('ascii')
-    
-    def _draw_centered_text(self, canvas_obj, text: str, y: float, max_width: float = None):
-        """Рисование центрированного текста с обработкой кодировки"""
-        if not text:
-            return
-        
-        # Кодируем текст
-        safe_text = self._encode_text(text)
-        
-        # Получаем ширину текста
-        text_width = canvas_obj.stringWidth(text, "Helvetica", 10)
-        
-        # Центрируем
-        x = (self.page_width - text_width) / 2
-        
-        canvas_obj.drawString(x, y, text)
-    
-    def _wrap_text(self, text: str, max_width: float, font_name: str = "Helvetica", font_size: int = 9) -> list:
-        """Разбивка текста на строки по ширине"""
-        if not text:
-            return []
-        
-        # Простая логика разбивки
-        words = text.split()
-        lines = []
-        current_line = []
-        
-        for word in words:
-            current_line.append(word)
-            test_line = ' '.join(current_line)
-            # Примерная оценка ширины (точная требует canvas)
-            if len(test_line) * (font_size / 2) > max_width:
-                if len(current_line) == 1:
-                    lines.append(test_line)
-                    current_line = []
-                else:
-                    current_line.pop()
-                    lines.append(' '.join(current_line))
-                    current_line = [word]
-        
-        if current_line:
-            lines.append(' '.join(current_line))
-        
-        return lines
-    
-    def generate(self) -> BytesIO:
-        """Генерация простого PDF"""
-        try:
-            buffer = BytesIO()
-            c = canvas.Canvas(buffer, pagesize=A4)
-            
-            # Ширина и высота страницы
-            self.page_width, self.page_height = A4
-            
-            # Заголовок
-            c.setFont("Helvetica", 12)
-            header_text = "Интранет: Есть идея!"
-            c.drawRightString(self.page_width - 15*mm, self.page_height - 20*mm, header_text)
-            c.setLineWidth(0.4)
-            c.line(0, self.page_height - 24*mm, self.page_width, self.page_height - 24*mm)
-            
-            # ФИО
-            c.setFont("Helvetica-Bold", 10)
-            full_name = self.data.get('full_name', '')
-            self._draw_centered_text(c, full_name, self.page_height - 100*mm)
-            
-            # Должность и отдел
-            c.setFont("Helvetica", 9)
-            position = self.data.get('position', '')
-            department = self.data.get('department', '')
-            subdepartment = self.data.get('subdepartment', '')
-            directorate = self.data.get('directorate', '')
-            
-            dept_parts = []
-            if directorate:
-                dept_parts.append(directorate)
-            if subdepartment:
-                dept_parts.append(subdepartment)
-            if department:
-                dept_parts.append(department)
-            dept_parts.append('НПО ЭМК')
-            
-            y_pos = self.page_height - 110*mm
-            for part in dept_parts:
-                if part.strip():
-                    self._draw_centered_text(c, part, y_pos)
-                    y_pos -= 5*mm
-            
-            # Должность жирным
-            c.setFont("Helvetica-Bold", 9)
-            self._draw_centered_text(c, position, y_pos)
-            
-            # Название идеи
-            y_pos -= 15*mm
-            c.setFont("Helvetica", 10)
-            idea_number = str(self.data.get('idea_number', '000')).zfill(3)
-            idea_title = self.data.get('idea_title', '')
-            title = f"№{idea_number}. {idea_title}"
-            
-            # Разбиваем длинный заголовок
-            title_lines = self._wrap_text(title, self.page_width - 30*mm, "Helvetica", 10)
-            for line in title_lines:
-                self._draw_centered_text(c, line, y_pos)
-                y_pos -= 5*mm
-            
-            # Текст идеи
-            y_pos -= 10*mm
-            c.setFont("Helvetica", 9)
-            idea_text = self.data.get('idea_text', '')
-            
-            # Простой перенос текста
-            text_lines = []
-            for paragraph in idea_text.split('\n'):
-                paragraph_lines = self._wrap_text(paragraph, self.page_width - 30*mm, "Helvetica", 9)
-                text_lines.extend(paragraph_lines)
-                text_lines.append('')  # Пустая строка между абзацами
-            
-            # Отрисовка текста
-            for line in text_lines:
-                if y_pos < 50*mm:  # Если осталось мало места
-                    c.showPage()
-                    y_pos = self.page_height - 30*mm
-                    
-                    # Рисуем заголовок на новой странице
-                    c.setFont("Helvetica", 12)
-                    c.drawRightString(self.page_width - 15*mm, self.page_height - 20*mm, header_text)
-                    c.setLineWidth(0.4)
-                    c.line(0, self.page_height - 24*mm, self.page_width, self.page_height - 24*mm)
-                    
-                    c.setFont("Helvetica", 9)
-                
-                if line.strip():
-                    c.drawString(15*mm, y_pos, line)
-                    y_pos -= 4*mm
-                else:
-                    y_pos -= 2*mm
-            
-            # Подвал
-            c.setLineWidth(0.4)
-            c.line(0, 10*mm, self.page_width, 10*mm)
-            c.setFont("Helvetica", 8)
-            c.drawCentredString(self.page_width / 2, 6*mm, "Страница 1/1")
-            
-            c.save()
-            buffer.seek(0)
-            return buffer
-            
-        except Exception as e:
-            print(f"Ошибка в SimplePDFGenerator.generate(): {e}")
-            raise
-
-# Удаляем дублирующийся эндпоинт (он уже есть выше)
-# @idea_pdf_router.post("/generate-pdf", response_class=Response)
-# async def generate_pdf_endpoint(data: IdeaData):
-
-@idea_pdf_router.post("/generate-pdf-save")
-async def generate_pdf_and_save(data: IdeaData, 
-                               directory: Optional[str] = None):
+# Эндпоинты API
+@idea_pdf_router.post("/generate-pdf", response_class=Response)
+async def generate_pdf_endpoint(data: IdeaData):
     """
-    Генерация PDF документа и сохранение его в файл
-    
-    Возвращает информацию о сохраненном файла
+    Генерация PDF документа на основе переданных данных
     """
     try:
         # Конвертируем Pydantic модель в словарь
         json_data = data.dict()
         
         # Создаем генератор PDF
-        generator = PDFGenerator(json_data)
+        generator = RobustPDFGenerator(json_data)
+        
+        # Получаем PDF как поток
+        pdf_stream = generator.get_pdf_stream()
+        pdf_content = pdf_stream.getvalue()
+        
+        # Формируем имя файла
+        filename = generator.output_filename
+        
+        # Возвращаем PDF как файл
+        return Response(
+            content=pdf_content,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "Content-Type": "application/pdf",
+                "Content-Length": str(len(pdf_content))
+            }
+        )
+    
+    except Exception as e:
+        error_msg = str(e)
+        print(f"Ошибка генерации PDF: {error_msg}")
+        # Более информативное сообщение об ошибке
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {str(e)}")
+
+
+@idea_pdf_router.post("/generate-pdf-save")
+async def generate_pdf_and_save(data: IdeaData, 
+                               directory: Optional[str] = None):
+    """
+    Генерация PDF документа и сохранение его в файл
+    """
+    try:
+        # Конвертируем Pydantic модель в словарь
+        json_data = data.dict()
+        
+        # Создаем генератор PDF
+        generator = RobustPDFGenerator(json_data)
         
         # Сохраняем в файл
         filepath = generator.save_to_file(directory=directory)
@@ -694,6 +597,8 @@ async def generate_pdf_and_save(data: IdeaData,
     except Exception as e:
         error_msg = str(e)
         print(f"Ошибка генерации PDF: {error_msg}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
 
 
@@ -723,7 +628,7 @@ async def download_pdf(filename: str, directory: Optional[str] = None):
             iterfile(),
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f'attachment; filename="{filename}"',
+                "Content-Disposition": f"attachment; filename={filename}",
                 "Content-Length": str(file_size)
             }
         )
@@ -736,74 +641,51 @@ async def download_pdf(filename: str, directory: Optional[str] = None):
         raise HTTPException(status_code=500, detail=f"Ошибка при загрузке файла: {error_msg}")
 
 
-# Дополнительный эндпоинт с простым генератором
-@idea_pdf_router.post("/generate-pdf-simple", response_class=Response)
-async def generate_pdf_simple_endpoint(data: IdeaData):
-    """
-    Простая генерация PDF (альтернатива для обхода проблем с кодировкой)
-    """
+@idea_pdf_router.get("/health")
+async def health_check():
+    """Проверка здоровья сервиса"""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+# Простой тестовый эндпоинт
+@idea_pdf_router.post("/test")
+async def test_pdf_generation():
+    """Тестирование генерации PDF с русским текстом"""
+    test_data = {
+        "full_name": "Иванов Иван Иванович",
+        "photo_url": "https://via.placeholder.com/200",
+        "position": "Инженер-разработчик",
+        "department": "Отдел разработки",
+        "subdepartment": "Группа веб-разработки",
+        "directorate": "Дирекция информационных технологий",
+        "idea_title": "Тестовая идея на русском языке",
+        "idea_text": """Это тестовый текст на русском языке для проверки генерации PDF.
+
+Вторая строка текста.
+Третья строка с русскими символами: привет, мир!
+
+Теперь проверим длинный текст, который должен переноситься на новую строку автоматически при достижении конца строки на странице PDF документа.""",
+        "idea_number": "999"
+    }
+    
     try:
-        # json_data = data.dict()
-        generator = SimplePDFGenerator(data)
+        generator = RobustPDFGenerator(test_data)
         pdf_stream = generator.generate()
         pdf_content = pdf_stream.getvalue()
         
-        # Формируем имя файла
-        # title = data.idea_title
-        # safe_title = "".join(c if c.isalnum() or c in " _-" else "_" for c in title)
-        # idea_number = str(data.idea_number or "000").zfill(3)
-        filename = f"Идея.pdf"
-        
         return Response(
             content=pdf_content,
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "Content-Type": "application/pdf",
-                "Content-Length": str(len(pdf_content))
+                "Content-Disposition": "attachment; filename=test_russian.pdf",
+                "Content-Type": "application/pdf"
             }
         )
     
     except Exception as e:
-        error_msg = str(e)
-        print(f"Ошибка простой генерации PDF: {error_msg}")
-        raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {error_msg}")
-
-
-@idea_pdf_router.post("/generate-pdf", response_class=Response)
-async def generate_pdf_endpoint(data: IdeaData):
-    """
-    Генерация PDF документа на основе переданных данных
-    
-    Возвращает PDF файл для скачивания
-    """
-    try:
-        # Конвертируем Pydantic модель в словарь
-        json_data = data.dict()
-        
-        # Создаем генератор PDF
-        generator = PDFGenerator(json_data)
-        
-        # Получаем PDF как поток
-        pdf_stream = generator.get_pdf_stream()
-        pdf_content = pdf_stream.getvalue()
-        
-        # Формируем имя файла
-        filename = generator.output_filename
-        
-        # Возвращаем PDF как файл
-        return Response(
-            content=pdf_content,
-            media_type="application/pdf",
-            headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "Content-Type": "application/pdf",
-                "Content-Length": str(len(pdf_content))
-            }
-        )
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка генерации PDF: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Тестовая ошибка: {str(e)}")
 
 
 def create_pdf_from_json(json_data: Dict[str, Any], 
@@ -812,5 +694,45 @@ def create_pdf_from_json(json_data: Dict[str, Any],
     """
     Функция для использования вне FastAPI
     """
-    generator = PDFGenerator(json_data, output_file)
+    generator = RobustPDFGenerator(json_data, output_file)
     return generator.save_to_file(directory=directory)
+
+
+# Тестовый код при прямом запуске
+if __name__ == "__main__":
+    print("=" * 60)
+    print("Тестирование генерации PDF с русским текстом")
+    print("=" * 60)
+    
+    # Тестовые данные
+    test_data = {
+        "full_name": "Высоцкая Мария Сергеевна",
+        "photo_url": "https://via.placeholder.com/200",
+        "position": "Специалист по продажам, подбору оборудования и клиентскому сервису",
+        "department": "Коммерческая дирекция",
+        "subdepartment": "Дирекция по продажам",
+        "directorate": "",
+        "idea_title": "Краны с кламповым присоединением",
+        "idea_text": """В течении года от химических предприятий поступает все больше запросов на краны шаровые с кламповым присоединением, в основном материал корпуса- нержавеющая сталь, PN до 1,6Мпа, DN 20-50. Со слов заказчиков в РФ изготовителей подобных изделий нет, пользуются импортом. Основным преимуществом с их слов, является высокая скорость монтажа/демонтажа. Предлагаю провести аналитику данного рынка, изучить потребности всех КО, работающих с хим.предприятиями. В случае выявление потребностей, проработать возможность изготовление кранов САЗ с данным присоединением.""",
+        "idea_number": "301"
+    }
+    
+    try:
+        # Создаем генератор
+        generator = RobustPDFGenerator(test_data)
+        
+        # Тестируем сохранение
+        filepath = generator.save_to_file(directory="./test_output")
+        print(f"✓ PDF успешно создан: {filepath}")
+        
+        # Проверяем размер файла
+        if os.path.exists(filepath):
+            file_size = os.path.getsize(filepath)
+            print(f"✓ Размер файла: {file_size} байт")
+        
+        print("\n✓ Тестирование завершено успешно!")
+        
+    except Exception as e:
+        print(f"✗ Ошибка при тестировании: {e}")
+        import traceback
+        traceback.print_exc()

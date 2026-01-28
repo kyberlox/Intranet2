@@ -179,8 +179,8 @@ class SendEmail:
             msg["From"] = server_mail_login
             msg["To"] = self.data['sender']
             msg['Subject'] = 'Приветственное письмо'
-            text_msg = f'<p>Приветствуем тебя, наш новый коллега!</p>\n,
-                        <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>\n,
+            text_msg = f'<p>Приветствуем тебя, наш новый коллега!</p>\
+                        <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>\
                         <p>С уважением,<br>Команда {company}.</p>'
             html_content = f"""
             <html lang="ru">
@@ -296,8 +296,8 @@ class SendEmail:
             msg['Subject'] = 'Покупка мерча'
             items = self.data['items']
             user_info = self.data['user_info']
-            text_msg = f'<p>Запрос на покупку мерча!</p>\n,
-                        <p>Пользователь: {user_info}. Хочет приобрести: {items}</p>\n,
+            text_msg = f'<p>Запрос на покупку мерча!</p>\
+                        <p>Пользователь: {user_info}. Хочет приобрести: {items}</p>\
                         <p>С уважением,<br>Команда {company}.</p>'
             html_content = f"""
             <html lang="ru">

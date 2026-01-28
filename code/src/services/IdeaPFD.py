@@ -622,9 +622,9 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
     try:
         result_docx, result_pdf = get_pdf_test(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
         return FileResponse(
-            path=DOCX_RESULT,
+            path="./result.pdf",
             filename=f"{NAME} {FIO}",  # Имя файла для пользователя
-            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            media_type="application/pdf"
         )
         # def iterfile():
         #     with open("./result.pdf", "rb") as f:

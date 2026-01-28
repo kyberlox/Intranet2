@@ -521,7 +521,7 @@ async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db
 
     user_info = await User(id=data['user_id']).search_by_id(session)
 
-    image_PATH = f"./files_db/user_photo/{sad}"
+    image_PATH = f"./files_db/user_photo/4133_1.png"
 
     
 

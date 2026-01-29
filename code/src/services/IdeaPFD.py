@@ -524,15 +524,13 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     photo_name = user_info['photo_file_url'].split("/")[-1]
     image_PATH = f"./files_db/user_photo/{photo_name}"
 
-    
-
     #достану
     FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
     # FIO = main_idea[0]['username']
     POSITION = user_info['indirect_data']['work_position']
     DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
 
-    NAME=f"{main_idea[0]['number']} {main_idea[0]['name']}"
+    NAME=f"№{main_idea[0]['number']}. {main_idea[0]['name']}"
     DESCRIPTION = main_idea[0]['content']
     try:
         result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)

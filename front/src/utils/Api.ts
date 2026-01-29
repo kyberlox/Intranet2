@@ -31,9 +31,9 @@ vendorApi.interceptors.request.use((config)=> {
 })
 
 export default class Api {
-    static async get(url: string) {
+    static async get(url: string, config?: AxiosRequestConfig) {
         try {
-            return (await api.get(url)).data
+            return (await api.get(url, config)).data
         } catch (error) {
             if (error instanceof AxiosError && error.response?.status == 401) {
                 useUserData().logOut()

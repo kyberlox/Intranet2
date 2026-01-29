@@ -168,6 +168,9 @@ class User:
                 # await session.commit()
         return users
 
+    async def get_all_users(self, session):
+        return await self.UserModel.all(session
+
     # новые сотрудники
     async def get_new_workers(self, session):
         # from ..base.pSQL.objects import UserModel
@@ -612,6 +615,10 @@ async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async
 @users_router.get("/anniversary_in_company", tags=["Пользователь"])
 async def anniversary_in_company(session: AsyncSession = Depends(get_async_db)):
     return await User().anniversary_in_company(session=session)
+
+@users_router.get("/get_all_users", tags=["Пользователь"])
+async def get_all_users(session: AsyncSession = Depends(get_async_db)):
+    return await User().get_all_users(session=session)
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

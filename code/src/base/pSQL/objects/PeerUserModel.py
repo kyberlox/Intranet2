@@ -809,6 +809,29 @@ class PeerUserModel:
                     )
                     result_merch = await session.execute(stmt_history)
                     merch_history = result_history.scalars().all()
+                    for merch in merch_history:
+                        stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == merch.user_uuid)
+                        result_user = await session.execute(stmt_user)
+                        user_info = result_user.first()
+                        
+                        user_fio = ""
+                        if user_info:
+                            user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
+                        merch_value = merch.merch_info.split(', ')[1]
+                        merch_name = merch.merch_info.split(', ')[0]
+                        info = {
+                            "id": merch.id,
+                            "date_time": merch.date_time,
+                            "uuid_to": merch.user_uuid,
+                            "uuid_to_fio": user_fio,
+                            "description": merch_value,
+                            "activity_name": merch_name, 
+                            "coast": merch.merch_coast,
+                            "valid": 1, 
+                            "action_id": merch.id 
+
+                        }
+                        activity_history.append(info)
                 sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
                 return sorted_result
             else:

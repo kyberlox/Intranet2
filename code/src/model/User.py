@@ -255,8 +255,10 @@ class User:
                         else:
                             LogsMaker().info_message(f'разница меньше года {user.id}')
                     else:
+                        continue
                         # LogsMaker().info_message('Дата и месяц не совпадает')
                 else:
+                    continue
                     # LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user.id}')
 
 

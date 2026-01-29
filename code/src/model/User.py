@@ -252,7 +252,7 @@ class User:
                             continue
                         elif year_diff >= 1:
                             LogsMaker().info_message(f'Пользователь {user.id} год с нами')
-                            send_data['activities_id'] = 20
+                            send_data['activities_id'] = 16
                             send_data['description'] = "+ год вы с нами!"
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)

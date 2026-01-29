@@ -169,7 +169,7 @@ class User:
         return users
 
     async def get_all_users(self, session):
-        return await self.UserModel.all(session
+        return await self.UserModel.all(session)
 
     # новые сотрудники
     async def get_new_workers(self, session):

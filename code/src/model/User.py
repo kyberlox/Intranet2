@@ -230,7 +230,7 @@ class User:
                         # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 
                         # ставим для теста текущий год - 2027
-                        teset_date = datetime.strptime("2027-01-29", '%Y-%m-%d')
+                        teset_date = datetime.strptime("2031-01-29", '%Y-%m-%d')
 
                         # year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
                         year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)

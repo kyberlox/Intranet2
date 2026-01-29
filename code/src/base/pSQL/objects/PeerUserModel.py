@@ -831,9 +831,10 @@ class PeerUserModel:
                             "action_id": merch.id 
 
                         }
+                        print('добавляем ли мерч')
                         activity_history.append(info)
                 sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
-                print(sorted_result)
+                # print(sorted_result)
                 return sorted_result
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав для просмотра истории кураторов")

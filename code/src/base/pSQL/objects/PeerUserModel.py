@@ -848,7 +848,7 @@ class PeerUserModel:
             result_points = await session.execute(stmt_points)
             points = result_points.scalar_one_or_none()
             print(points, note_id, type(note_id))
-            if points:
+            if isinstance(points, int):
                 stmt_delete = select(self.PeerHistory).where(self.PeerHistory.id == note_id)
                 result_delete = await session.execute(stmt_delete)
                 history_record = result_delete.scalar_one_or_none()

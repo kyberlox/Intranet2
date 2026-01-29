@@ -825,8 +825,8 @@ class PeerUserModel:
                             "date_time": merch.date_time,
                             "uuid_to": merch.user_uuid,
                             "uuid_to_fio": user_fio,
-                            "description": merch_value,
-                            "activity_name": merch_name, 
+                            "description": merch.merch_info,
+                            "activity_name": "Покупка мерча", 
                             "coast": merch.merch_coast,
                             "valid": 3, 
                             "action_id": merch.id 
@@ -847,7 +847,6 @@ class PeerUserModel:
             stmt_points = select(self.PeerHistory.merch_coast).where(self.PeerHistory.id == note_id)
             result_points = await session.execute(stmt_points)
             points = result_points.scalar_one_or_none()
-            print(points, note_id, type(note_id))
             if isinstance(points, int):
                 stmt_delete = select(self.PeerHistory).where(self.PeerHistory.id == note_id)
                 result_delete = await session.execute(stmt_delete)

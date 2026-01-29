@@ -172,21 +172,21 @@ class User:
         # from ..base.pSQL.objects import UserModel
         from ..services.Peer import Peer
         users = await self.UserModel.new_workers(session)
-        if users:
-            for user in users:
-                send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                    "uuid_to": int(user['id']),
-                    "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-                    "description": f"Добро пожаловать в ЭМК!"
-                }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
-                if send_point['status'] == 'info':
-                    self.UserModel.id = int(user['id'])
-                    user_info = await self.UserModel.find_by_id(session)
-                    if 'email' in user_info and user_info['email']:
-                        data = {'sender': user_info['email']}
-                        SendEmail(data=data).send_to_new_wrokers()
+        # if users:
+        #     for user in users:
+        #         send_data = {
+        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+        #             "uuid_to": int(user['id']),
+        #             "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+        #             "description": f"Добро пожаловать в ЭМК!"
+        #         }
+        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        #         if send_point['status'] == 'info':
+        #             self.UserModel.id = int(user['id'])
+        #             user_info = await self.UserModel.find_by_id(session)
+        #             if 'email' in user_info and user_info['email']:
+        #                 data = {'sender': user_info['email']}
+        #                 SendEmail(data=data).send_to_new_wrokers()
 
         return users
 

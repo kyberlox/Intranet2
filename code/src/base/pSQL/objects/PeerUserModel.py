@@ -828,11 +828,10 @@ class PeerUserModel:
                             "description": merch_value,
                             "activity_name": merch_name, 
                             "coast": merch.merch_coast,
-                            "valid": 1, 
+                            "valid": 3, 
                             "action_id": merch.id 
 
                         }
-                        print('добавляем ли мерч')
                         activity_history.append(info)
                 sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
                 # print(sorted_result)

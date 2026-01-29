@@ -547,12 +547,14 @@ async def return_points_to_user(user_uuid: int, note_id: int, session: AsyncSess
     return await Peer().return_points_to_user(note_id=note_id, user_uuid=user_uuid, session=session)
 
 
-@peer_router.post("/remove_user_points/{uuid}/{action_id}")
-async def remove_user_points(request: Request, uuid: int, action_id: int,
+@peer_router.post("/remove_user_points/{uuid}/{action_id}/{valid}")
+async def remove_user_points(request: Request, uuid: int, action_id: int, valid: int,
                              session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
     if user_uuid is None:
         user_uuid = 2366
+    if int(valid) == 3:
+        return await Peer().return_points_to_user(note_id=action_id, user_uuid=uuid, session=session)
     return await Peer(user_uuid=user_uuid).remove_user_points(action_id=action_id, user_uuid=uuid, session=session)
 
 @peer_router.post("/send_points_to_employee_of_the_year")

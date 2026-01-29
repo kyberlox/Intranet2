@@ -450,33 +450,33 @@ class PeerUserModel:
         try:
             # Проверяем что разница между датой текущей и датой регистрации больше или равно единицы
             today = datetime.today().date() # 2026-01-20 00:00:00
-            # convert_today = datetime.strptime(today, '%Y-%m-%d')
-            if "T" in date_register:
-                date_register = date_register.split("T")[0]
-            convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
-            if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
-                year_diff = abs(datetime.today().year - convert_date_reg.year)
-                if year_diff >= 1:
+            # # convert_today = datetime.strptime(today, '%Y-%m-%d')
+            # if "T" in date_register:
+            #     date_register = date_register.split("T")[0]
+            # convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
+            # if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+            #     year_diff = abs(datetime.today().year - convert_date_reg.year)
+            #     if year_diff >= 1:
                     #проверяем была ли запись у пользователя в этом году 
-                    stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, extract("year", self.ActiveUsers.date_time) == datetime.today().year)
-                    res = await session.execute(stmt) 
-                    exist_node = res.scalar_one_or_none()
-                    if exist_node:
-                        return False
-                    else:
-                        return True
-                else:
-                    LogsMaker().info_message(f"Разница в годах меньше единицы: {datetime.today().year}, {convert_date_reg.year}")
-                    return False
-            else:
-                LogsMaker().info_message(f"День и месяц не совпадают: {datetime.today().day}, {convert_date_reg.day}, {datetime.today().month}, {convert_date_reg.month}")
+            stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, extract("year", self.ActiveUsers.date_time) == datetime.today().year)
+            res = await session.execute(stmt) 
+            exist_node = res.scalar_one_or_none()
+            if exist_node:
                 return False
+            else:
+                return True
+            #     else:
+            #         LogsMaker().info_message(f"Разница в годах меньше единицы: {datetime.today().year}, {convert_date_reg.year}")
+            #         return False
+            # else:
+            #     LogsMaker().info_message(f"День и месяц не совпадают: {datetime.today().day}, {convert_date_reg.day}, {datetime.today().month}, {convert_date_reg.month}")
+            #     return False
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_anniversary_in_company: {e}")  
 
     async def check_employers_of_the_year(self, session, uuid_to, activities_id, year):
         """
-        Функция проверяет получал ли пользователь баллы в номинации "Сотрудник года"
+        Функция проверяет получал ли пользователь баллы в номинации "Сотрудник года" или "Почетная грамота"
         Возвращает False если пользователь уже получил баллы 
         Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
         """
@@ -518,12 +518,12 @@ class PeerUserModel:
             elif int(activities_id) == 15:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
-            elif int(activities_id) == 16:
+            elif int(activities_id) in [16, 19, 20]:
                 check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
-            elif int(activities_id) == 7:
+            elif int(activities_id) == 7 or int(activities_id) == 18:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
-                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за сотрудника года: check_info = {check_info} ")
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
 
             
             if check_info is True:
@@ -921,7 +921,7 @@ class PeerUserModel:
 
     async def send_points_to_employee_of_the_year(self, session, roots: dict):
         """
-        Функция вытягивает всех номинантов "Сотрудник года" по всем годам
+        Функция вытягивает всех номинантов "Сотрудник года" и "Почетная грамота" по всем годам
         Выдает баллы если раннее они не были назначены
         """
         from .ArticleModel import ArticleModel
@@ -932,12 +932,20 @@ class PeerUserModel:
                     return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
                 for article in articles_employers:
                     uuid_to = article['indirect_data']['uuid'] if 'uuid' in article['indirect_data'] else article['indirect_data']['user_id']
-                    send_data = {
-                        "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                        "uuid_to": uuid_to,
-                        "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-                        "description": article['indirect_data']['year']
-                    }
+                    if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
+                        send_data = {
+                            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                            "uuid_to": uuid_to,
+                            "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                            "description": article['indirect_data']['year']
+                        }
+                    elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
+                        send_data = {
+                            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                            "uuid_to": uuid_to,
+                            "activities_id": 18, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                            "description": article['indirect_data']['year']
+                        }
                     await self.send_auto_points(session=session, data=send_data, roots=roots)
                 return True
             else:

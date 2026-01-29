@@ -191,17 +191,80 @@ class User:
         return users
 
     async def anniversary_in_company(self, session):
+        """
+        Функция пробегает по всем сотрудникам. Смотрит на их date_register (временно, в будущем поставить поле дата трудоустройства)
+        Функция проверяет прошел ли год с момента последней годовщины работы в компании.
+        Или может быть наступил юбилей работы в компании
+        Подставляет нужный айдишник активности, в случае юбилея отправляет письмо
+        ID = 16 - это +год рабоыты в компании
+        ID = 19 - это Юбилей 5 лет работы в компании
+        ID = 20 - это Юбилей 10 лет работы в компании
+        """
         from ..services.Peer import Peer
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-01", '%Y-%m-%d')
+        DESCRIPTIONS = {'16': "+ год вы с нами!", "19": "5 лет вы с нами!", "20": "10 лет вы с нами!"}
+        TODAY = datetime.today().date() # 2026-01-20 00:00:00
+        all_users = await self.UserModel.all(session)
         send_data = {
             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-            "uuid_to": 2366,
-            "activities_id": 16, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-            "description": f"+ год вы с нами!", 
+            "uuid_to": 0,
+            "activities_id": activities_id, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "description": description, 
             # "date_register": "2025-03-11T04:00:00+04:00"
-            "date_register": "2025-01-20T04:00:00+04:00"
+            "date_register": TODAY
         }
-        send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
-        return send_point
+        for user in all_users:
+            if user['active'] is True:
+                if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != '':
+                    date_register = user['indirect_data']['date_register']
+                    if "T" in date_register:
+                        date_register = date_register.split("T")[0]
+                    convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
+                    if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+                        # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
+                        year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
+                        if year_diff >= 10:
+                            LogsMaker().info_message(f'У пользователя {user['id']} годовщина 10 лет')
+                            send_data['activities_id'] = 20
+                            send_data['description'] = "10 лет вы с нами!"
+                            send_data['uuid_to'] = user['id']
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            continue
+                        elif year_diff >= 5:
+                            LogsMaker().info_message(f'У пользователя {user['id']} годовщина 5 лет')
+                            send_data['activities_id'] = 19
+                            send_data['description'] = "5 лет вы с нами!"
+                            send_data['uuid_to'] = user['id']
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            continue
+                        elif year_diff >= 1:
+                            LogsMaker().info_message(f'Пользователь {user['id']} год с нами')
+                            send_data['activities_id'] = 20
+                            send_data['description'] = "+ год вы с нами!"
+                            send_data['uuid_to'] = user['id']
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            continue
+                        else:
+                            LogsMaker().info_message('разница меньше года')
+                    else:
+                        LogsMaker().info_message('Дата и месяц не совпадает')
+                else:
+                    LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user['id']}')
+
+
+
+            # send_data = {
+            #     "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+            #     "uuid_to": user['id'],
+            #     "activities_id": activities_id, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            #     "description": description, 
+            #     # "date_register": "2025-03-11T04:00:00+04:00"
+            #     "date_register": TODAY
+            # }
+            # send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        return True
 
     # дамп данных в эластик
     async def dump_users_data_es(self, session):

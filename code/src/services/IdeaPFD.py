@@ -519,7 +519,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     main_idea = [idea for idea in ideas if idea['id'] == str(id)]
     DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
-    print(main_idea)
+    # print(main_idea)
     user_info = await User(id=int(main_idea[0]['user_id'])).search_by_id(session)
     photo_name = user_info['photo_file_url'].split("/")[-1]
     image_PATH = f"./files_db/user_photo/{photo_name}"
@@ -532,7 +532,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     POSITION = user_info['indirect_data']['work_position']
     DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
 
-    NAME=main_idea[0]['name']
+    NAME=f"{main_idea[0]['number']} {main_idea[0]['name']}"
     DESCRIPTION = main_idea[0]['content']
     try:
         result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)

@@ -585,7 +585,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
         #     media_type="application/pdf"
         # )
         # filename=f"idea1.pdf"
-        filename=f"{NAME} {FIO}.pdf"
+        filename=f"{NAME}.pdf"
         def iterfile():
             with open("./result.pdf", "rb") as f:
                 yield from f

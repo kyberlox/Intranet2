@@ -248,7 +248,7 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             continue
                         else:
-                            LogsMaker().info_message('разница меньше года')
+                            LogsMaker().info_message(f'разница меньше года {user.id}')
                     else:
                         LogsMaker().info_message('Дата и месяц не совпадает')
                 else:

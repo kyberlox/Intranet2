@@ -587,7 +587,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
             iterfile(),
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename={f"тестим"}",
+                "Content-Disposition": f"attachment; filename={f"test"}",
                 "Content-Length": str(os.path.getsize("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf"))
             }
         )

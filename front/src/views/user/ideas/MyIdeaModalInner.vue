@@ -101,6 +101,8 @@ export default defineComponent({
                 .then((data) => {
                     download(new Blob([data.data]), ideaTitle + '.pdf', 'application/pdf')
                 })
+
+            // Api.get('/idea_pdf/generate_pdf/2')
         }
         return {
             savePdf

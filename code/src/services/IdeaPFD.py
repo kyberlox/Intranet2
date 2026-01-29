@@ -580,6 +580,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
         #     filename=f"тестим",  # Имя файла для пользователя
         #     media_type="application/pdf"
         # )
+        filename='test.pdf'
         def iterfile():
             with open("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf", "rb") as f:
                 yield from f
@@ -587,7 +588,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
             iterfile(),
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename={f"test"}",
+                "Content-Disposition": f"attachment; filename={filename}",
                 "Content-Length": str(os.path.getsize("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf"))
             }
         )

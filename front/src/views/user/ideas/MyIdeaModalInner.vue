@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="row mb-3 justify-content-center">
-            <div class="col-sm-10 col-print-12">
+            <div class="col-sm-10 col-print-12 ">
                 <h2 class="page__title text-center">#{{ textContent?.number }} {{ textContent?.name }}
                 </h2>
                 <div v-if="textContent?.content"
@@ -35,11 +35,14 @@
                         </span>
                     </a>
                 </div>
-                <div>
-                    <div :href="`https://portal.emk.ru/intranet/editor/feedback/pdfgen.php?ELEMENT_ID=${textContent?.id}`"
-                         target="_blank"
-                         @click="savePdf"
-                         class="primary-button">Сохранить PDF</div>
+                <div target="_blank"
+                     @click="savePdf(textContent?.id)"
+                     class="primary-button ">
+                    <span v-if="!isLoading">Сохранить PDF</span>
+                    <span class="modal__text__content__loader"
+                          v-else>
+                        <Loader />
+                    </span>
                 </div>
             </div>
         </div>
@@ -47,13 +50,12 @@
 </div>
 </template>
 
-
 <script lang="ts">
+import Loader from '@/components/layout/Loader.vue';
 import type { IBXFileType } from '@/interfaces/IEntities';
-import type { IPostIdeaPdf } from '@/interfaces/IPostFetch';
 import Api from '@/utils/Api';
 import download from 'downloadjs';
-import { defineComponent, type PropType } from 'vue';
+import { defineComponent, type PropType, ref } from 'vue';
 
 interface IUserForModal {
     photo_file_url: string
@@ -76,35 +78,30 @@ interface IModalTextContent {
 }
 
 export default defineComponent({
+    components: {
+        Loader
+    },
     props: {
         currentUser: {
             type: Object as PropType<IUserForModal>,
         },
         textContent: {
             type: Object as PropType<IModalTextContent>,
+            required: true
         }
     },
     setup(props) {
-        console.log(props);
-
-        const savePdf = () => {
-            const ideaTitle = `#${props.textContent?.number} ${props.textContent?.name}`;
-            const ideaContent = props.textContent?.content ?? '';
-
-            const body: IPostIdeaPdf = {
-                user_id: props.textContent?.user_id,
-                name: ideaTitle,
-                description: ideaContent
-            }
-
-            Api.post('idea_pdf/generate_pdf', body, { responseType: 'blob' })
+        const isLoading = ref(false);
+        const savePdf = (id: string) => {
+            isLoading.value = true;
+            Api.get(`/idea_pdf/generate_pdf/${id}`, { responseType: 'blob' })
                 .then((data) => {
-                    download(new Blob([data.data]), ideaTitle + '.pdf', 'application/pdf')
+                    download(new Blob([data]), props.textContent?.name + '.pdf', 'application/pdf')
                 })
-
-            // Api.get('/idea_pdf/generate_pdf/2')
+                .finally(() => isLoading.value = false)
         }
         return {
+            isLoading,
             savePdf
         }
     }

@@ -298,6 +298,11 @@
             overflow-y: auto;
             overflow-x: hidden;
 
+            &__loader {
+                width: 20px;
+                height: 20px;
+            }
+
             &__detail {
                 padding: 0 10px;
 

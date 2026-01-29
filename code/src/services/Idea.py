@@ -37,7 +37,7 @@ class Idea:
     async def validate_ideas(self):
         #беру идеи из битры
         b24_ideas = await B24().getInfoBlock(121)
-
+        
         ideas = []
         #каждую идею
         for idea in b24_ideas:

@@ -124,6 +124,7 @@ class Idea:
                         idea.pop("document_id")
                         idea['files'] = dict()
                     result.append(idea)
+            print(result)
             return result
         else:
             return None

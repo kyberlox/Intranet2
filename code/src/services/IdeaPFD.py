@@ -559,7 +559,6 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     from ..model.User import User
     ideas = await Idea().validate_ideas()
     main_idea = [idea for idea in ideas if idea['id'] == str(id)]
-    print(main_idea)
     DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 
@@ -579,29 +578,12 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     DESCRIPTION = main_idea[0]['content']
     try:
         result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
-        # return FileResponse(
-        #     path="./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf",
-        #     filename=f"тестим",  # Имя файла для пользователя
-        #     media_type="application/pdf"
-        # )
-        # filename=f"idea1.pdf"
+
         filename=f"{NAME}.pdf"
         return FileResponse(
             path="./result.pdf",
             filename=filename,  # Имя файла для пользователя
             media_type="application/pdf"
         ) 
-        
-        # def iterfile():
-        #     with open("./result.pdf", "rb") as f:
-        #         yield from f
-        # return StreamingResponse(
-        #     iterfile(),
-        #     media_type="application/pdf",
-        #     headers={
-        #         "Content-Disposition": f"attachment; filename={filename}",
-        #         "Content-Length": str(os.path.getsize("./result.pdf"))
-        #     }
-        # )
     except Exception as e:
         return {"msg": f"ошибка создания пдф: {e}"}

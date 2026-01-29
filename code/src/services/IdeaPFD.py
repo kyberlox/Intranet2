@@ -555,24 +555,28 @@ from ..base.pSQL.objects.App import get_async_db
     
 @idea_pdf_router.get("/generate_pdf/{id}")
 async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
-    # from ..model.User import User
+    from .Idea import Idea
+    from ..model.User import User
+    ideas = await Idea().validate_ideas()
+    main_idea = idea for idea in ideas if idea['id'] == id
 
-    # DOCX_PATTERN = "./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf"
-    # DOCX_RESULT = "./result.docx"
+    DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
+    DOCX_RESULT = "./result.docx"
 
-    # user_info = await User(id=int(data['user_id'])).search_by_id(session)
-    # photo_name = user_info['photo_file_url'].split("/")[-1]
-    # image_PATH = f"./files_db/user_photo/{photo_name}"
+    user_info = await User(id=int(main_idea['user_id'])).search_by_id(session)
+    photo_name = user_info['photo_file_url'].split("/")[-1]
+    image_PATH = f"./files_db/user_photo/{photo_name}"
 
     
 
-    # #достану
+    #достану
     # FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
-    # POSITION = user_info['indirect_data']['work_position']
-    # DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
+    FIO = main_idea['username']
+    POSITION = user_info['indirect_data']['work_position']
+    DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
 
-    # NAME=data['name']
-    # DESCRIPTION = data['description']
+    NAME=main_idea['name']
+    DESCRIPTION = main_idea['content']
     try:
         # result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
         # return FileResponse(
@@ -580,16 +584,16 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
         #     filename=f"тестим",  # Имя файла для пользователя
         #     media_type="application/pdf"
         # )
-        filename='test.pdf'
+        filename=f"{NAME} {FIO}.pdf"
         def iterfile():
-            with open("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf", "rb") as f:
+            with open("./result.pdf", "rb") as f:
                 yield from f
         return StreamingResponse(
             iterfile(),
             media_type="application/pdf",
             headers={
                 "Content-Disposition": f"attachment; filename={filename}",
-                "Content-Length": str(os.path.getsize("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf"))
+                "Content-Length": str(os.path.getsize("./result.pdf"))
             }
         )
     except Exception as e:

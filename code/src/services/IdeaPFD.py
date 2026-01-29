@@ -559,7 +559,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     from ..model.User import User
     ideas = await Idea().validate_ideas()
     main_idea = [idea for idea in ideas if idea['id'] == id]
-
+    print(main_idea)
     DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 

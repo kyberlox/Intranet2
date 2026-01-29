@@ -558,12 +558,12 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     from .Idea import Idea
     from ..model.User import User
     ideas = await Idea().validate_ideas()
-    main_idea = idea for idea in ideas if idea['id'] == id
+    main_idea = [idea for idea in ideas if idea['id'] == id]
 
     DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
 
-    user_info = await User(id=int(main_idea['user_id'])).search_by_id(session)
+    user_info = await User(id=int(main_idea[0]['user_id'])).search_by_id(session)
     photo_name = user_info['photo_file_url'].split("/")[-1]
     image_PATH = f"./files_db/user_photo/{photo_name}"
 
@@ -571,12 +571,12 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
 
     #достану
     # FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
-    FIO = main_idea['username']
+    FIO = main_idea[0]['username']
     POSITION = user_info['indirect_data']['work_position']
     DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
 
-    NAME=main_idea['name']
-    DESCRIPTION = main_idea['content']
+    NAME=main_idea[0]['name']
+    DESCRIPTION = main_idea[0]['content']
     try:
         # result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
         # return FileResponse(

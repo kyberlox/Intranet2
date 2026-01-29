@@ -811,6 +811,7 @@ class PeerUserModel:
                     result_merch = await session.execute(stmt_history)
                     merch_history = result_history.scalars().all()
                     for merch in merch_history:
+                        print(merch)
                         stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == merch.user_uuid)
                         result_user = await session.execute(stmt_user)
                         user_info = result_user.first()

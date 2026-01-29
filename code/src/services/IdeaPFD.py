@@ -570,8 +570,8 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     
 
     #достану
-    # FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
-    FIO = main_idea[0]['username']
+    FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
+    # FIO = main_idea[0]['username']
     POSITION = user_info['indirect_data']['work_position']
     DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
 
@@ -584,7 +584,8 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
         #     filename=f"тестим",  # Имя файла для пользователя
         #     media_type="application/pdf"
         # )
-        filename=f"idea1.pdf"
+        # filename=f"idea1.pdf"
+        filename=f"{NAME} {FIO}.pdf"
         def iterfile():
             with open("./result.pdf", "rb") as f:
                 yield from f

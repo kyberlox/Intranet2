@@ -167,7 +167,8 @@ open_links = [
     "test", "dump", "get_file", "get_all_files",
     "/api/total_background_task_update",
     "/ws/progress",
-    "/api/vcard/by_uuid/", "/api/vcard/get/"
+    "/api/vcard/by_uuid/", "/api/vcard/get/",
+    "/api/idea_pdf/generate_pdf/"
 ]
 
 

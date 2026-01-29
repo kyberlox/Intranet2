@@ -201,6 +201,7 @@ class User:
         ID = 20 - это Юбилей 10 лет работы в компании
         """
         from ..services.Peer import Peer
+        from datetime import datetime
         LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-01", '%Y-%m-%d')
         DESCRIPTIONS = {'16': "+ год вы с нами!", "19": "5 лет вы с нами!", "20": "10 лет вы с нами!"}
         TODAY = datetime.today().date() # 2026-01-20 00:00:00

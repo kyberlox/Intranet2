@@ -847,7 +847,7 @@ class PeerUserModel:
             stmt_points = select(self.PeerHistory.merch_coast).where(self.PeerHistory.id == note_id)
             result_points = await session.execute(stmt_points)
             points = result_points.scalar_one_or_none()
-            
+            print(points, note_id, type(note_id))
             if points:
                 stmt_delete = select(self.PeerHistory).where(self.PeerHistory.id == note_id)
                 result_delete = await session.execute(stmt_delete)

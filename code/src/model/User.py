@@ -209,8 +209,8 @@ class User:
         send_data = {
             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
             "uuid_to": 0,
-            "activities_id": activities_id, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-            "description": description, 
+            "activities_id": 0, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "description": "", 
             # "date_register": "2025-03-11T04:00:00+04:00"
             "date_register": TODAY
         }

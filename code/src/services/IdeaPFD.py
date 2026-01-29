@@ -575,21 +575,21 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     # DESCRIPTION = data['description']
     try:
         # result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
-        return FileResponse(
-            path="./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf",
-            filename=f"тестим",  # Имя файла для пользователя
-            media_type="application/pdf"
-        )
-        # def iterfile():
-        #     with open("./result.pdf", "rb") as f:
-        #         yield from f
-        # return StreamingResponse(
-        #     iterfile(),
-        #     media_type="application/pdf",
-        #     headers={
-        #         "Content-Disposition": f"attachment; filename={f"{NAME} {FIO}"}",
-        #         "Content-Length": str(os.path.getsize("./result.pdf"))
-        #     }
+        # return FileResponse(
+        #     path="./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf",
+        #     filename=f"тестим",  # Имя файла для пользователя
+        #     media_type="application/pdf"
         # )
+        def iterfile():
+            with open("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf", "rb") as f:
+                yield from f
+        return StreamingResponse(
+            iterfile(),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={f"тестим"}",
+                "Content-Length": str(os.path.getsize("./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf"))
+            }
+        )
     except Exception as e:
         return {"msg": f"ошибка создания пдф: {e}"}

@@ -554,7 +554,7 @@ from ..base.pSQL.objects.App import get_async_db
 #         return {"msg": f"ошибка создания пдф: {e}"}
     
 @idea_pdf_router.get("/generate_pdf/{id}")
-async def generate_pdf(id: str, session: AsyncSession = Depends(get_async_db)):
+async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     # from ..model.User import User
 
     # DOCX_PATTERN = "./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf"

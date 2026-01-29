@@ -455,8 +455,6 @@ def convert_docx_to_pdf_libreoffice(docx_path, pdf_path=None):
         print(f"❌ Ошибка при конвертации через LibreOffice: {e}")
         return None
 
-
-
 def get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT,
          FIO=None, POSITION=None, DEPARTMENTS=None,
          NAME=None, DESCRIPTION=None, **kwargs):
@@ -512,46 +510,6 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..base.pSQL.objects.App import get_async_db
 
-# @idea_pdf_router.post("/generate_pdf")
-# async def generate_pdf(data=Body(), session: AsyncSession = Depends(get_async_db)):
-#     from ..model.User import User
-
-#     DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
-#     DOCX_RESULT = "./result.docx"
-
-#     user_info = await User(id=int(data['user_id'])).search_by_id(session)
-#     photo_name = user_info['photo_file_url'].split("/")[-1]
-#     image_PATH = f"./files_db/user_photo/{photo_name}"
-
-    
-
-#     #достану
-#     FIO = f'{user_info['last_name']} {user_info['name']} {user_info['second_name']}'
-#     POSITION = user_info['indirect_data']['work_position']
-#     DEPARTMENTS=user_info['indirect_data']['uf_department'][0]
-
-#     NAME=data['name']
-#     DESCRIPTION = data['description']
-#     try:
-#         result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
-#         return FileResponse(
-#             path="./result.pdf",
-#             filename=f"{NAME} {FIO}",  # Имя файла для пользователя
-#             media_type="application/pdf"
-#         )
-#         # def iterfile():
-#         #     with open("./result.pdf", "rb") as f:
-#         #         yield from f
-#         # return StreamingResponse(
-#         #     iterfile(),
-#         #     media_type="application/pdf",
-#         #     headers={
-#         #         "Content-Disposition": f"attachment; filename={f"{NAME} {FIO}"}",
-#         #         "Content-Length": str(os.path.getsize("./result.pdf"))
-#         #     }
-#         # )
-#     except Exception as e:
-#         return {"msg": f"ошибка создания пдф: {e}"}
     
 @idea_pdf_router.get("/generate_pdf/{id}")
 async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
@@ -561,7 +519,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     main_idea = [idea for idea in ideas if idea['id'] == str(id)]
     DOCX_PATTERN = "./src/services/pattern_idea_pdf.docx"
     DOCX_RESULT = "./result.docx"
-
+    print(main_idea)
     user_info = await User(id=int(main_idea[0]['user_id'])).search_by_id(session)
     photo_name = user_info['photo_file_url'].split("/")[-1]
     image_PATH = f"./files_db/user_photo/{photo_name}"

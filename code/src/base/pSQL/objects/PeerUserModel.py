@@ -801,6 +801,14 @@ class PeerUserModel:
 
                     }
                     activity_history.append(info)
+                
+                #Собираем историю покупок мерча
+                if roots["PeerAdmin"] is True:
+                    stmt_merch = select(self.PeerHistory).where(
+                        self.PeerHistory.info_type == 'merch'
+                    )
+                    result_merch = await session.execute(stmt_history)
+                    merch_history = result_history.scalars().all()
                 sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
                 return sorted_result
             else:

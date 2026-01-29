@@ -215,9 +215,9 @@ class User:
             "date_register": TODAY
         }
         for user in all_users:
-            if user['active'] is True:
-                if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != '':
-                    date_register = user['indirect_data']['date_register']
+            if user.active is True:
+                if 'date_register' in user.indirect_data and user.indirect_data['date_register'] != '':
+                    date_register = user.indirect_data['date_register']
                     if "T" in date_register:
                         date_register = date_register.split("T")[0]
                     convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
@@ -225,26 +225,26 @@ class User:
                         # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
                         year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
                         if year_diff >= 10:
-                            LogsMaker().info_message(f'У пользователя {user['id']} годовщина 10 лет')
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
                             send_data['activities_id'] = 20
                             send_data['description'] = "10 лет вы с нами!"
-                            send_data['uuid_to'] = user['id']
+                            send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             continue
                         elif year_diff >= 5:
-                            LogsMaker().info_message(f'У пользователя {user['id']} годовщина 5 лет')
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
                             send_data['activities_id'] = 19
                             send_data['description'] = "5 лет вы с нами!"
-                            send_data['uuid_to'] = user['id']
+                            send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             continue
                         elif year_diff >= 1:
-                            LogsMaker().info_message(f'Пользователь {user['id']} год с нами')
+                            LogsMaker().info_message(f'Пользователь {user.id} год с нами')
                             send_data['activities_id'] = 20
                             send_data['description'] = "+ год вы с нами!"
-                            send_data['uuid_to'] = user['id']
+                            send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             continue
                         else:
@@ -252,7 +252,7 @@ class User:
                     else:
                         LogsMaker().info_message('Дата и месяц не совпадает')
                 else:
-                    LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user['id']}')
+                    LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user.id}')
 
 
 

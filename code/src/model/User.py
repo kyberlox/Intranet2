@@ -223,7 +223,12 @@ class User:
                     convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
                     if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                         # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
-                        year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
+
+                        # ставим для теста текущий год - 2027
+                        teset_date = datetime.strptime("2027-01-29", '%Y-%m-%d')
+
+                        # year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
+                        year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
                         if year_diff >= 10:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
                             send_data['activities_id'] = 20
@@ -250,9 +255,9 @@ class User:
                         else:
                             LogsMaker().info_message(f'разница меньше года {user.id}')
                     else:
-                        LogsMaker().info_message('Дата и месяц не совпадает')
+                        # LogsMaker().info_message('Дата и месяц не совпадает')
                 else:
-                    LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user.id}')
+                    # LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user.id}')
 
 
 

@@ -165,6 +165,7 @@ class User:
         #             "description": f"Поздравительные баллы. С днем рождения!"
         #         }
         #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                # await session.commit()
         return users
 
     # новые сотрудники
@@ -181,6 +182,7 @@ class User:
         #             "description": f"Добро пожаловать в ЭМК!"
         #         }
         #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                # await session.commit()
         #         if send_point['status'] == 'info':
         #             self.UserModel.id = int(user['id'])
         #             user_info = await self.UserModel.find_by_id(session)
@@ -272,6 +274,7 @@ class User:
             #     "date_register": TODAY
             # }
             # send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+        await session.commit()
         return True
 
     # дамп данных в эластик

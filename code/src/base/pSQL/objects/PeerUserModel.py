@@ -568,7 +568,7 @@ class PeerUserModel:
                         )
 
                         session.add(add_history)
-                        await session.commit()
+                        # await session.commit()
                         return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
                 
                 else:

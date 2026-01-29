@@ -578,7 +578,7 @@ async def generate_pdf(id: int, session: AsyncSession = Depends(get_async_db)):
     NAME=main_idea[0]['name']
     DESCRIPTION = main_idea[0]['content']
     try:
-        # result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
+        result_docx, result_pdf = get_pdf(image_PATH, DOCX_PATTERN, DOCX_RESULT, FIO, POSITION, DEPARTMENTS, NAME, DESCRIPTION)
         # return FileResponse(
         #     path="./src/services/кальянка Кучеренко Максим Дмитриевич (9).pdf",
         #     filename=f"тестим",  # Имя файла для пользователя

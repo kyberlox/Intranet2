@@ -128,12 +128,12 @@ export default defineComponent({
         AddFileIcon
     },
     setup() {
-        const userGptRoots = computed(() => useUserData().getGptRoot);
+        // const userGptRoots = computed(() => useUserData().getGptRoot);
         const imageGenerationOn = ref(true);
 
-        watch((userGptRoots), (newVal) => {
-            imageGenerationOn.value = newVal;
-        }, { immediate: true, deep: true })
+        // watch((userGptRoots), (newVal) => {
+        //     imageGenerationOn.value = newVal;
+        // }, { immediate: true, deep: true })
 
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);

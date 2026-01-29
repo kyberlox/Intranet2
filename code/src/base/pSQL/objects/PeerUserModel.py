@@ -804,6 +804,7 @@ class PeerUserModel:
                 
                 #Собираем историю покупок мерча
                 if roots["PeerAdmin"] is True:
+                    print('добавляем ли мерч')
                     stmt_merch = select(self.PeerHistory).where(
                         self.PeerHistory.info_type == 'merch'
                     )

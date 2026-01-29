@@ -38,8 +38,6 @@ class Idea:
         #беру идеи из битры
         b24_ideas = await B24().getInfoBlock(121)
 
-        
-
         ideas = []
         #каждую идею
         for idea in b24_ideas:
@@ -89,6 +87,7 @@ class Idea:
             #сохраняю
             ideas.append(cool_idea)
         self.ideas = ideas
+        return ideas
 
     async def get_user(self, user_id, session):
         from src.services.Auth import AuthService

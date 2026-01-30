@@ -37,10 +37,14 @@ class AuthService:
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
-        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
-        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
-        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
-        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
+        # self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
+        self.client_id = "local.6936c2c4e28141.22464163"
+        # self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
+        self.client_secret = "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G"
+        # self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
+        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "http://intranet.emk.org.ru/api/auth_router/auth")
+        # self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
+        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "http://test-portal.emk.ru")
         
         # Время жизни токенов и сессий
         self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
@@ -599,14 +603,14 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
     "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
 }
 """)
-async def bitrix24_callback(code: str, state: Optional[str] = None, response: Response = None):
+async def bitrix24_callback(code: str, user_url: Optional[str] = None, state: Optional[str] = None, response: Response = None):
     # user_url: str, 
     if not code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Authorization code is missing"
         )
-    
+    print(user_url, 'тут')
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
@@ -619,6 +623,10 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, response: Re
     
     redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
     
+    if user_url:
+        redirect_url = user_url
+        
+
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 

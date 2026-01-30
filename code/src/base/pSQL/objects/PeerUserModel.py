@@ -521,7 +521,7 @@ class PeerUserModel:
             elif int(activities_id) in [16, 19, 20]:
                 check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
-            elif int(activities_id) == 7 or int(activities_id) == 18:
+            elif int(activities_id) == 7 or int(activities_id) == 8:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
 

@@ -90,6 +90,7 @@ import type { IMerchItem } from '@/interfaces/entities/IMerch';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 import { featureFlags } from '@/assets/static/featureFlags';
+import { useUserScore } from '@/stores/userScoreData';
 
 export default defineComponent({
     components: {
@@ -144,7 +145,9 @@ export default defineComponent({
                     })
                     .finally(() => {
                         isLoading.value = false;
-                        callModal(false)
+                        callModal(false);
+                        Api.get('/peer/sum')
+                            .then((data) => useUserScore().setCurrentScore(data))
                     })
             }
         }

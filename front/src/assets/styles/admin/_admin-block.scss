@@ -17,6 +17,9 @@
         padding: 24px;
         margin-left: 0;
         overflow-x: auto;
+        max-width: 100%;
+        word-wrap: break-word;
+        word-break: break-word;
 
         @include lg {
             margin-left: 0;

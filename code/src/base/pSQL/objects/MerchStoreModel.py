@@ -164,7 +164,7 @@ class MerchStoreModel:
 
 
             # Рассчитываем общую стоимость
-            total_price = data["no_size"] * merch_info.indirect_data.get('price', 0)
+            total_price = 0
             
             # Проверяем баланс пользователя
             stmt_user = select(Roots).where(Roots.user_uuid == self.user_id)
@@ -189,7 +189,7 @@ class MerchStoreModel:
             add_history = PeerHistory(
                 user_uuid=self.user_id,
                 merch_info=merch_description,
-                merch_coast=total_price,
+                merch_coast=data["user_points"],
                 info_type='merch',
                 date_time=datetime.datetime.now()
             )

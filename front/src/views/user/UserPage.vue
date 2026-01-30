@@ -101,7 +101,7 @@
                             <div v-if="user.indirect_data && user.indirect_data.date_of_employment"
                                  class="personal__user__property__items__work-phone">
                                 <h3>Дата приема на работу</h3>
-                                <span>{{ user.indirect_data.date_of_employment }}</span>
+                                <span>{{ formatDate(user.indirect_data.date_of_employment) }}</span>
                             </div>
                             <div>
                                 <h3 class="personal__user__top__title">Электронная визитная карточка</h3>
@@ -216,6 +216,17 @@ export default defineComponent({
                 })
         }
 
+        const formatDate = (date: string) => {
+            if (date.includes('T')) {
+                const newDate = date.split('T')[0];
+                const year = newDate.split('-')[0];
+                const month = newDate.split('-')[1];
+                const day = newDate.split('-')[2];
+                return `${day}-${month}-${year}`
+            }
+            else return date.replaceAll('.', '-')
+        }
+
         return {
             user,
             modalIsOpen,
@@ -223,6 +234,7 @@ export default defineComponent({
             featureFlags,
             myId: computed(() => userData.getMyId),
             sendPoints,
+            formatDate,
             formatBirthday,
             createUniqueArr
         }

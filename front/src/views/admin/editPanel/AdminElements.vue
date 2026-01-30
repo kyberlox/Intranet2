@@ -73,7 +73,7 @@
                 <div class="admin-block-inner__card-content">
                   <p v-if="item.content_text"
                      class="admin-block-inner__card-description"
-                     v-html="(item.content_text)"></p>
+                     v-html="item.content_text"></p>
                   <div class="admin-block-inner__card-meta">
                     <span class="admin-block-inner__card-status"
                           :class="`admin-block-inner__card-status--${item.active}`">
@@ -139,7 +139,6 @@ import { handleApiError } from '@/utils/apiResponseCheck';
 import AdminTagsModal from './AdminTagsModal.vue';
 import { useUserData } from '@/stores/userData';
 import { featureFlags } from '@/assets/static/featureFlags';
-import { parseMarkdown } from '@/utils/parseMarkdown';
 
 interface SectionItem {
   id: number;
@@ -230,7 +229,6 @@ export default defineComponent({
       getStatusText,
       removeItem,
       useDateFormat,
-      parseMarkdown,
       PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin)
     };
   }

@@ -11,6 +11,7 @@
                          @click="setZoomImg(card.file_url)"
                          class="merch-store-item__images__flex-gallery__card">
                         <img class="pos-rel"
+                             :class="{ 'merch-store-item__images__flex-gallery__card--cover': !currentItem.indirect_data.price }"
                              :src="(card.file_url)" />
                         <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
                     </div>

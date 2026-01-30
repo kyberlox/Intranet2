@@ -6,7 +6,7 @@
              v-if="merchItems.length && !isLoading">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
-                        v-for="item in merchItems"
+                        v-for="item in merchItems.sort((a, b) => (b.indirect_data?.price || 0) - (a.indirect_data?.price || 0))"
                         :key="item.id">
                 <div v-if="item.indirect_data?.images"
                      class="merch-store__grid__item__info">
@@ -51,16 +51,12 @@ import type { IMerch } from '@/interfaces/entities/IMerch';
 import type { IBXFileType } from '@/interfaces/IEntities';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 import { usePointsData } from '@/stores/pointsData';
-import SlotModal from '@/components/tools/modal/SlotModal.vue';
-import LayoutHeaderPointsModal from '@/components/layout/header/LayoutHeaderPointsModal.vue';
 import { featureFlags } from '@/assets/static/featureFlags';
 
 export default defineComponent({
     components: {
         HoverGallery,
         HoverGallerySkeleton,
-        LayoutHeaderPointsModal,
-        SlotModal
     },
     setup() {
         const allActivities = computed(() => usePointsData().getActivities);

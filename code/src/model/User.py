@@ -454,41 +454,39 @@ class User:
             "personal_city": "Саратов",
             "personal_gender": None,
             "personal_birthday": "2001-12-17T00:00:00",
-            "indirect_data": {
-                "id": 2,
-                "is_online": "Y",
-                "time_zone": "Europe/Saratov",
-                "user_type": "employee",
-                "last_login": "2026-01-30T11:55:07+04:00",
-                "work_phone": "",
-                "timestamp_x": {},
-                "date_register": "2025-03-11T04:00:00+04:00",
-                "uf_department": [
-                    420
-                ],
-                "work_position": "",
-                "personal_phone": "",
-                "personal_photo": "",
-                "last_activity_date": {},
-                "uf_employment_date": "",
-                "uf_usr_1586854037086": "",
-                "uf_usr_1586861567149": "",
-                "uf_usr_1594879216192": "",
-                "uf_usr_1679387413613": [],
-                "uf_usr_1696592324977": [
-                    "Дирекция по маркетингу"
-                ],
-                "uf_usr_1705744824758": [
-                    "Отдел WEB-маркетинга"
-                ],
-                "uf_usr_1707225966581": [],
-                "uf_usr_1753418205828": False,
-                "uf_usr_1756973260681": False,
-                "uf_usr_1756973302863": False,
-                "uf_usr_1756973566697": False,
-                "uf_usr_1756973699548": False,
-                "uf_usr_1756973745925": False
-            }
+            "is_online": "Y",
+            "time_zone": "Europe/Saratov",
+            "user_type": "employee",
+            "last_login": "2026-01-30T11:55:07+04:00",
+            "work_phone": "",
+            "timestamp_x": {},
+            "date_register": "2025-03-11T04:00:00+04:00",
+            "uf_department": [
+                420
+            ],
+            "work_position": "",
+            "personal_phone": "",
+            "personal_photo": "",
+            "last_activity_date": {},
+            "uf_employment_date": "",
+            "uf_usr_1586854037086": "",
+            "uf_usr_1586861567149": "",
+            "uf_usr_1594879216192": "",
+            "uf_usr_1679387413613": [],
+            "uf_usr_1696592324977": [
+                "Дирекция по маркетингу"
+            ],
+            "uf_usr_1705744824758": [
+                "Отдел WEB-маркетинга"
+            ],
+            "uf_usr_1707225966581": [],
+            "uf_usr_1753418205828": False,
+            "uf_usr_1756973260681": False,
+            "uf_usr_1756973302863": False,
+            "uf_usr_1756973566697": False,
+            "uf_usr_1756973699548": False,
+            "uf_usr_1756973745925": False
+            
         }
         res =  await self.UserModel.upsert_user(user_data=data, session=session)
         await session.commit()

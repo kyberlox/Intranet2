@@ -360,6 +360,8 @@ class ActiveUsersModel:
                 
                 if row[-1] == 7:
                     description = f"Лучший сотрудник {row.description} года"
+                elif row[-1] == 18:
+                    description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
                 else:
                     description = row.description
                 activities.append({

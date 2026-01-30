@@ -56,10 +56,10 @@ class User:
         await self.UserModel.upsert_user_some_data(user_data=user_data, session=session)
         await session.commit()
 
-        status = await self.set_users_photo(session)
+        # status = await self.set_users_photo(session)
         # await self.UserModel.create_new_user_view()
         # дампим данные в эластик
-        await self.dump_users_data_es(session)
+        # await self.dump_users_data_es(session)
         return {"status": True}
 
     async def search_by_id(self, session):

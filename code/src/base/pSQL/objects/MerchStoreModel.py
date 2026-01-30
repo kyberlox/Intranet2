@@ -197,7 +197,7 @@ class MerchStoreModel:
             await session.commit()
 
             # TODO: добавить отправку на почту заказа
-            LogsMaker().info_message(f"Пользователь с id = {self.user_id} успешно приобрел мерч art_id = {art_id}, количество: {total_count}, стоимость: {total_price}")
+            LogsMaker().info_message(f"Пользователь с id = {self.user_id} успешно приобрел мерч art_id = {art_id}, стоимость: {total_price}")
             return merch_description
         except Exception as e:
             await session.rollback()

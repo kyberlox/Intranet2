@@ -164,7 +164,7 @@ class MerchStoreModel:
 
 
             # Рассчитываем общую стоимость
-            total_price = data["no_size"] * merch_info.indirect_data.get('price', 0)
+            total_price = 0
             
             # Проверяем баланс пользователя
             stmt_user = select(Roots).where(Roots.user_uuid == self.user_id)

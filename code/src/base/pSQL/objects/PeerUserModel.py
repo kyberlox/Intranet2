@@ -791,6 +791,7 @@ class PeerUserModel:
                     if active_users_inf.activities_id == 7:
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 18:
+                        print(active_name)
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in [19, 20]:
                         activity_name = f"Награда за юбилей {active_name}"

@@ -1,32 +1,12 @@
 <template>
 <div class="mt20">
-    <div class="page__title">Капитал ЭМК</div>
-    <div class="modal__text__content__points-info">
-        <span>
-            Уважаемые коллеги!
-            <br />
-            «Капитал ЭМК» — это ваш персональный бонусный клуб внутри компании: <br /> за труд, инициативу и достижения
-            вы
-            получаете баллы, которые можно обменять на товары из корпоративного каталога.
-            <br />
-            Ниже можно ознакомиться с перечнем активностей и стоимостью баллов за каждую из них.
-        </span>
-        <div class="modal__text__content__points-info__list"
-             @click="pointsAboutOpen = !pointsAboutOpen">
-            За что начисляют
-        </div>
-
-        <SlotModal v-if="pointsAboutOpen && featureFlags.pointsSystem"
-                   @close="pointsAboutOpen = false">
-            <LayoutHeaderPointsModal :pointsAboutImportant="true" />
-        </SlotModal>
-    </div>
+    <div class="page__title">Магазин "Капитал ЭМК"</div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
              v-if="merchItems.length && !isLoading">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
-                        v-for="item in merchItems"
+                        v-for="item in merchItems.sort((a, b) => (b.indirect_data?.price || 0) - (a.indirect_data?.price || 0))"
                         :key="item.id">
                 <div v-if="item.indirect_data?.images"
                      class="merch-store__grid__item__info">
@@ -71,16 +51,12 @@ import type { IMerch } from '@/interfaces/entities/IMerch';
 import type { IBXFileType } from '@/interfaces/IEntities';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 import { usePointsData } from '@/stores/pointsData';
-import SlotModal from '@/components/tools/modal/SlotModal.vue';
-import LayoutHeaderPointsModal from '@/components/layout/header/LayoutHeaderPointsModal.vue';
 import { featureFlags } from '@/assets/static/featureFlags';
 
 export default defineComponent({
     components: {
         HoverGallery,
         HoverGallerySkeleton,
-        LayoutHeaderPointsModal,
-        SlotModal
     },
     setup() {
         const allActivities = computed(() => usePointsData().getActivities);

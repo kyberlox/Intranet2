@@ -98,14 +98,9 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "chatgpt",
             },
             {
-                id: 2.41,
+                id: 2.5,
                 name: "DeepSeek",
                 href: "deepseek",
-            },
-            {
-                id: 2.5,
-                name: "Капитал ЭМК",
-                href: "merchStore",
             },
             {
                 id: 2.6,
@@ -229,11 +224,11 @@ export const mainMenuPoints: MainMenuPoints = [
         {
             id: 6.1,
             name: 'О капитале',
-            href: 'aboutCapital'
+            href: 'merchAbout'
         },
         {
             id: 6.2,
-            name: 'Магазин мерча',
+            name: 'Каталог ЭМК',
             href: 'merchStore'
         }
     ]

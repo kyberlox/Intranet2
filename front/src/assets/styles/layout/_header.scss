@@ -145,12 +145,22 @@
 
 .dropdown {
     cursor: pointer;
-    z-index: 16;
+    position: relative;
+    overflow: visible;
 
     &--opened {
         >.dropdown-menu {
             display: block;
         }
+    }
+
+    &-menu {
+        background-color: #fafafa;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 100%;
+        z-index: 1000;
     }
 
     &--mobile {

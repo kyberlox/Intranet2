@@ -566,7 +566,8 @@ class PeerUserModel:
                             info_type='activity',
                             date_time=datetime.now()
                         )
-
+                        if uuid_to == 1037:
+                            print('ну выдает же')
                         session.add(add_history)
                         # await session.commit()
                         return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
@@ -951,6 +952,7 @@ class PeerUserModel:
                             "description": article['indirect_data']['year']
                         }
                     await self.send_auto_points(session=session, data=send_data, roots=roots)
+                await session.commit()
                 return True
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")

@@ -518,10 +518,10 @@ class PeerUserModel:
             elif int(activities_id) == 15:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
-            elif int(activities_id) in [16, 19, 20]:
+            elif int(activities_id) in [16, 19, 20, 21, 22, 23, 24]:
                 check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
-            elif int(activities_id) == 7 or int(activities_id) == 18:
+            elif int(activities_id) == 7 or int(activities_id) == 8:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
 
@@ -973,7 +973,7 @@ class PeerUserModel:
             from .MerchStoreModel import MerchStoreModel
             uuid_from = 4133
             uuid_to = user_id
-            activities_id = 17
+            activities_id = 1
             description = f"Баллы за реализованную идею: {name_idea}"
             # Проверяем существование пользователя
             stmt_user = select(self.User).where(self.User.id == uuid_to, self.User.active == True)

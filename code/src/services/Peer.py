@@ -67,7 +67,8 @@ class Peer:
 
     async def get_all_activities(self, session):
         result = await self.ActivitiesModel.find_all_activities(session=session)
-        return result
+        sorted_result = sorted(result, key=lambda x: x.id, reverse=False)
+        return sorted_result
 
     # async def upload_base_activities(self):
     #     return self.ActivitiesModel.upload_base_activities()

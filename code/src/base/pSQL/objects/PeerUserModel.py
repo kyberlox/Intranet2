@@ -795,7 +795,7 @@ class PeerUserModel:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in [19, 20]:
                         activity_name = f"Награда за юбилей {active_name}"
-                    else:
+                    else:print(active_name, 'начинаем узнавать1.5')
                         activity_name = active_name
                         description = active.active_info
                     print(activity_name, 'начинаем узнавать2')

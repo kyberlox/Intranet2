@@ -792,7 +792,10 @@ class PeerUserModel:
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 18:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
+                    elif active_users_inf.activities_id in [19, 20]:
+                        activity_name = f"Награда за юбилей {active_name}"
                     else:
+                        activity_name = active_name
                         description = active.active_info
                     info = {
                         "id": active.id,
@@ -800,7 +803,7 @@ class PeerUserModel:
                         "uuid_to": active.user_to,
                         "uuid_to_fio": user_fio,
                         "description": description,
-                        "activity_name": active_name,
+                        "activity_name": activity_name,
                         "coast": active.active_coast,
                         "valid": active_users_inf.valid,
                         "action_id": active_users_inf.id

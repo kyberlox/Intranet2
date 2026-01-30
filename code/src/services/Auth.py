@@ -44,7 +44,7 @@ class AuthService:
         # self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
         self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "http://intranet.emk.org.ru/api/auth_router/auth")
         # self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
-        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "http://test-portal.emk.ru")
+        self.bitrix_domain = "http://test-portal.emk.ru"
         
         # Время жизни токенов и сессий
         self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
@@ -603,14 +603,14 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
     "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
 }
 """)
-async def bitrix24_callback(code: str, user_url: Optional[str] = None, state: Optional[str] = None, response: Response = None):
+async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Optional[str] = None, response: Response = None):
     # user_url: str, 
     if not code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Authorization code is missing"
         )
-    print(user_url, 'тут')
+    print(referrer, 'тут')
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
@@ -623,8 +623,8 @@ async def bitrix24_callback(code: str, user_url: Optional[str] = None, state: Op
     
     redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
     
-    if user_url:
-        redirect_url = user_url
+    if referrer:
+        redirect_url = referrer
         
 
     # Создаем RedirectResponse

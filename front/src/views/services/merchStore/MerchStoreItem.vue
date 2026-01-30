@@ -27,7 +27,7 @@
             </h4>
             <div v-if="currentItem.content_text"
                  class="merch-store-item__info__description"
-                 v-html="currentItem.content_text"></div>
+                 v-html="currentItem.content_text.replaceAll('&nbsp;', ' ')"></div>
             <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && !checkSizes(currentItem as IMerchItem).includes('no_size')"
                  class="merch-store-item__info__sizes__title">
                 <span>Размер</span>
@@ -42,7 +42,8 @@
                 </div>
             </div>
 
-            <h3 class="merch-store-item__info__price">
+            <h3 v-if="currentItem?.indirect_data?.price"
+                class="merch-store-item__info__price">
                 <span class="merch-store-item__info__count-text">
                     {{ currentItem?.indirect_data?.price }}
                 </span>
@@ -74,7 +75,8 @@
     <AcceptBuyModal v-if="acceptBuyModalOpen"
                     @closeModal="callModal(false)"
                     :isLoading="isLoading"
-                    @acceptBuy="(quantity: number) => acceptBuy(quantity)" />
+                    :customPrice="currentItem?.indirect_data?.price ? false : true"
+                    @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
 </div>
 </template>
 
@@ -126,15 +128,38 @@ export default defineComponent({
             currentSize.value = size;
         }
 
-        const acceptBuy = (quantity: number) => {
+        const acceptBuy = (quantity: number, customPrice: boolean = false) => {
+            console.log(customPrice);
+
             if (!featureFlags.pointsSystem) {
                 toast.showWarning('merchBuyWarning');
-            } else if (quantity > 0) {
+            } else if (quantity > 0 && !customPrice) {
                 isLoading.value = true;
                 Api.put('store/create_purchase', { [currentSize.value as string]: quantity!, 'art_id': Number(currentItem.value?.id)! })
                     .then((data) => {
                         if (data !== true && 'not_enough' in data) {
                             toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
+                        }
+                        else {
+                            handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+                        }
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => {
+                        isLoading.value = false;
+                        callModal(false);
+                        Api.get('/peer/sum')
+                            .then((data) => useUserScore().setCurrentScore(data))
+                    })
+            }
+            else if (customPrice) {
+                isLoading.value = true;
+                Api.put('store/buy_split', { 'art_id': Number(currentItem.value?.id)!, 'user_points': quantity })
+                    .then((data) => {
+                        if (data !== true && 'status' in data) {
+                            toast.showCustomToast('warn', 'К сожалению у вас не хватает баллов')
                         }
                         else {
                             handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')

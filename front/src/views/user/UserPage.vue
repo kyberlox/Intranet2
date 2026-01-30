@@ -19,9 +19,9 @@
                     <a :href='"https://portal.emk.ru/company/personal/user/" + user.id + "/"'
                        target="_blank"
                        class="personal__user__mess__link primary-button">Профиль в Bitrix24</a>
-                    <button v-if="user.id !== myId && featureFlags.pointsSystem"
+                    <!-- <button v-if="user.id !== myId && featureFlags.pointsSystem"
                             class="personal__user__mess__link primary-button"
-                            @click="isPointsModalOpen = true">Отправить баллы</button>
+                            @click="isPointsModalOpen = true">Отправить баллы</button> -->
                 </div>
             </div>
 
@@ -97,6 +97,11 @@
                                  class="personal__user__property__items__work-phone">
                                 <h3>Рабочий телефон</h3>
                                 <span>{{ user.indirect_data.work_phone }}</span>
+                            </div>
+                            <div v-if="user.indirect_data && user.indirect_data.date_of_employment"
+                                 class="personal__user__property__items__work-phone">
+                                <h3>Дата приема на работу</h3>
+                                <span>{{ user.indirect_data.date_of_employment }}</span>
                             </div>
                             <div>
                                 <h3 class="personal__user__top__title">Электронная визитная карточка</h3>

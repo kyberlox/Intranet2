@@ -222,6 +222,22 @@ export const mainMenuPoints: MainMenuPoints = [
             },
         ],
     },
+    {
+    id: 6,
+    name: "Капитал ЭМК",
+    subPoints: [
+        {
+            id: 6.1,
+            name: 'О капитале',
+            href: 'aboutCapital'
+        },
+        {
+            id: 6.2,
+            name: 'Магазин мерча',
+            href: 'merchStore'
+        }
+    ]
+    }
 ];
 
 export const points = [

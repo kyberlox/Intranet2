@@ -5,19 +5,21 @@
         <span>
             Уважаемые коллеги!
             <br />
-            С 1 февраля стартует корпоративная программа «Капитал ЭМК»!
-            <br />
             «Капитал ЭМК» — это ваш персональный бонусный клуб внутри компании: <br /> за труд, инициативу и достижения
             вы
             получаете баллы, которые можно обменять на товары из корпоративного каталога.
             <br />
+            Ниже можно ознакомиться с перечнем активностей и стоимостью баллов за каждую из них.
         </span>
         <div class="modal__text__content__points-info__list"
              @click="pointsAboutOpen = !pointsAboutOpen">
             За что начисляют
         </div>
-        <PointsAbout v-if="pointsAboutOpen"
-                     :allActivities="allActivities" />
+
+        <SlotModal v-if="pointsAboutOpen && featureFlags.pointsSystem"
+                   @close="pointsAboutOpen = false">
+            <LayoutHeaderPointsModal :pointsAboutImportant="true" />
+        </SlotModal>
     </div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
@@ -28,13 +30,14 @@
                         :key="item.id">
                 <div v-if="item.indirect_data?.images"
                      class="merch-store__grid__item__info">
-                    <HoverGallery :images="item.indirect_data?.images as IBXFileType[]"
-                                  :showIndicators="true" />
+                    <HoverGallery :coverFill="!item.indirect_data.price ? true : false"
+                                  :showIndicators="true"
+                                  :images="(item.indirect_data?.images as IBXFileType[])" />
                 </div>
                 <div class="merch-store__grid__item__title">
                     {{ item.name }}
                 </div>
-                <div
+                <div v-if="item.indirect_data?.price"
                      class="merch-store__grid__item__price merch-store__grid__item__info__item__price merch-store__grid__item__info__item">
                     <span class="">
                         {{ item.indirect_data?.price }}
@@ -67,13 +70,17 @@ import { sectionTips } from '@/assets/static/sectionTips';
 import type { IMerch } from '@/interfaces/entities/IMerch';
 import type { IBXFileType } from '@/interfaces/IEntities';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
-import PointsAbout from '@/views/user/userPointsComponents/PointsAbout.vue';
 import { usePointsData } from '@/stores/pointsData';
+import SlotModal from '@/components/tools/modal/SlotModal.vue';
+import LayoutHeaderPointsModal from '@/components/layout/header/LayoutHeaderPointsModal.vue';
+import { featureFlags } from '@/assets/static/featureFlags';
+
 export default defineComponent({
     components: {
         HoverGallery,
         HoverGallerySkeleton,
-        PointsAbout
+        LayoutHeaderPointsModal,
+        SlotModal
     },
     setup() {
         const allActivities = computed(() => usePointsData().getActivities);
@@ -103,6 +110,7 @@ export default defineComponent({
             isLoading,
             allActivities,
             pointsAboutOpen,
+            featureFlags,
             swiperOn
         }
     }

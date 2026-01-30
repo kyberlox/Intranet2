@@ -22,4 +22,5 @@ export interface IPurchaseMerchData {
     xl?: number
     xxl?: number
     no_size?: number
+    user_points?: number
 }

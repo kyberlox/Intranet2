@@ -35,7 +35,7 @@ class MerchStore:
         return True
     
     async def buy_split(self, data, session):
-        res = await MerchStoreModel(user_id=self.user_uuid).buy_castle(data=data, session=session)
+        res = await MerchStoreModel(user_id=self.user_uuid).buy_split(data=data, session=session)
         #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
         user_sql = await User(id=self.user_uuid).search_by_id(session=session)
         mail_data = {

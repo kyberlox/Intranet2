@@ -631,7 +631,7 @@ async def get_all_users(session: AsyncSession = Depends(get_async_db)):
     return await User().get_all_users(session=session)
 
 @users_router.post("/upload_one_user", tags=["Пользователь"])
-def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_async_db)):
+await def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_async_db)):
     return await User().upload_one_user(user_data=data, session=session)
 
 # @users_router.post("/search_indirect")

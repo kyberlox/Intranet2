@@ -4,6 +4,10 @@
     display: flex;
     min-height: 100vh;
 
+    @include sm {
+        flex-direction: column;
+    }
+
     &__sidebar {
         width: 280px;
         background-color: #f8f9fa;
@@ -14,6 +18,7 @@
         height: 82vh;
         overflow-y: auto;
         z-index: 9;
+        max-width: max-content;
 
         @include lg {
             width: 100%;
@@ -126,7 +131,8 @@
         }
 
         @include lg {
-            display: none;
+            margin-left: 0;
+
         }
 
         @media (max-width: 768px) {

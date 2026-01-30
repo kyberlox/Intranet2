@@ -27,8 +27,7 @@
             </h4>
             <div v-if="currentItem.content_text"
                  class="merch-store-item__info__description"
-                 v-html="currentItem.content_text">
-            </div>
+                 v-html="currentItem.content_text"></div>
             <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && !checkSizes(currentItem as IMerchItem).includes('no_size')"
                  class="merch-store-item__info__sizes__title">
                 <span>Размер</span>

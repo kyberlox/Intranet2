@@ -67,11 +67,6 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "calendar",
             },
             {
-                id: 1.12,
-                name: "Магазин мерча",
-                href: "merchStore",
-            },
-            {
                 id: 1.13,
                 name: 'Новые сотрудники',
                 href: 'newWorkers'
@@ -103,9 +98,14 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "chatgpt",
             },
             {
-                id: 2.5,
+                id: 2.41,
                 name: "DeepSeek",
                 href: "deepseek",
+            },
+            {
+                id: 2.5,
+                name: "Капитал ЭМК",
+                href: "merchStore",
             },
             {
                 id: 2.6,

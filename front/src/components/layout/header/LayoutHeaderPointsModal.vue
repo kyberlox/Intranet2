@@ -1,7 +1,7 @@
 <template>
 <div class="modal__text__content modal__text__content--user-points">
     <PointsInfoTable />
-    <div class="modal__text__content__points-info">
+    <div class="modal__text__content__points-info__list">
         <span @click="pointsAboutOpen = !pointsAboutOpen">
             За что начисляют
         </span>
@@ -34,26 +34,3 @@ export default defineComponent({
     }
 })
 </script>
-
-
-<style scoped>
-.modal__text__content__points-info {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    &>span {
-        color: var(--emk-brand-color) !important;
-        cursor: pointer;
-    }
-
-    allActivities,
-
-    &:hover {
-        &>span {
-            color: var(--emk-brand-color-dark) !important;
-        }
-    }
-}
-</style>

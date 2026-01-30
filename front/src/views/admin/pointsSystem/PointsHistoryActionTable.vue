@@ -20,6 +20,12 @@
                                 Активность
                             </span>
                         </th>
+                        <th v-if="'coast' in item"
+                            class="moderator-panel__head">
+                            <span>
+                                Стоимость
+                            </span>
+                        </th>
                         <th class="moderator-panel__head"
                             v-if="('name' in (item))">
                             <span>
@@ -65,7 +71,12 @@
                                 {{ item.activity_name }}
                             </span>
                         </td>
-
+                        <th v-if="'coast' in item"
+                            class="moderator-panel__head">
+                            <span>
+                                {{ item.coast }}
+                            </span>
+                        </th>
                         <td v-if="'name' in item"
                             class="moderator-panel__cell moderator-panel__cell--parameter">
                             <span>
@@ -100,9 +111,9 @@
                                        @click="moderate('accept', item.id, item.uuid_to)"
                                        class="moderator-panel__action-btn moderator-panel__action-btn--accept" />
                             <div class="moderator-panel__cell--cancel primary-button"
-                                 @click="moderate('return', (item as ICuratorActivityHistory).action_id, item.uuid_to)"
-                                 v-else-if="(item as ICuratorActivityHistory).valid == 1">
-                                Отменить
+                                 @click="moderate('return', (item as ICuratorActivityHistory).action_id, item.uuid_to, (item as ICuratorActivityHistory).valid)"
+                                 v-else-if="(item as ICuratorActivityHistory).valid !== 2">
+                                <span> Отменить</span>
                             </div>
                         </td>
 
@@ -146,7 +157,7 @@ export default defineComponent({
 
         return {
             dateConvert,
-            moderate: (type: string, id: number, uuidTo: number) => emit('moderate', type, id, uuidTo),
+            moderate: (type: string, id: number, uuidTo: number, valid?: number) => emit('moderate', type, id, uuidTo, valid),
         }
     }
 })

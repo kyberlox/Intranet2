@@ -21,8 +21,8 @@ export default defineComponent({
             tableInit();
         })
 
-        const moderate = (a: string, actionId: number, uuid: number) => {
-            Api.post(`peer/remove_user_points/${uuid}/${actionId}`)
+        const moderate = (a: string, actionId: number, uuid: number, valid?: number) => {
+            Api.post(`peer/remove_user_points/${uuid}/${actionId}/${valid}`)
                 .finally(() => tableInit())
         }
 

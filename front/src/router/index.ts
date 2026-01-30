@@ -255,12 +255,12 @@ const router = createRouter({
       props: (route) => ({ targetId: route.params.targetId }),
     },
     {
-      path: '/about/merch',
+      path: '/about/kapitalEmk',
       name: 'merchStore',
       component: () => import('@/views/about/merchStore/MerchStore.vue'),
     },
     {
-      path: '/about/merch/:id',
+      path: '/about/kapitalEmk/merch/:id',
       name: 'merchStoreItem',
       component: () => import('@/views/about/merchStore/MerchStoreItem.vue'),
       props: (route) => ({ id: Number(route.params.id) }),
@@ -606,8 +606,8 @@ const router = createRouter({
       path: '/oauthRedir/:referrer',
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
-        const referrer = to.params.referrer;
-        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user&amp;referrer=${referrer}`;
+        const referrer = `${to.params.referrer}`;
+        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${VITE_OAUTH_CLIENT_ID}&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1769757513&scope=user&referrer=${referrer}`;
       },
       redirect: '',
     },

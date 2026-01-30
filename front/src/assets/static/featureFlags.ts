@@ -1,4 +1,4 @@
 export const featureFlags = {
-    pointsSystem: false,
+    pointsSystem: true,
     visibleArea: false
 }

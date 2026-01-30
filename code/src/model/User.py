@@ -490,6 +490,7 @@ class User:
         }
         res =  await self.UserModel.upsert_user(user_data=data, session=session)
         await session.commit()
+        await self.dump_users_data_es(session)
         return res
 
 '''

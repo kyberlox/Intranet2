@@ -607,7 +607,7 @@ const router = createRouter({
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
         const referrer = `${to.params.referrer}`;
-        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${VITE_OAUTH_CLIENT_ID}&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1769757513&scope=user&referrer=${referrer}`;
+        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1769757513&scope=user&referrer=${referrer}`;
       },
       redirect: '',
     },

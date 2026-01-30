@@ -56,10 +56,10 @@ class User:
         await self.UserModel.upsert_user_some_data(user_data=user_data, session=session)
         await session.commit()
 
-        status = await self.set_users_photo(session)
+        # status = await self.set_users_photo(session)
         # await self.UserModel.create_new_user_view()
         # дампим данные в эластик
-        await self.dump_users_data_es(session)
+        # await self.dump_users_data_es(session)
         return {"status": True}
 
     async def search_by_id(self, session):
@@ -440,6 +440,59 @@ class User:
             file_path = f'https://intranet.emk.ru/api/vcard_files/{filename}'
             return file_path
 
+    async def create_intranet_admin(self, session):
+        data = {
+            "ID": 2,
+            "uuid": None,
+            "active": True,
+            "name": "Интранет",
+            "last_name": "Администратор",
+            "second_name": None,
+            "email": None,
+            "personal_mobile": None,
+            "uf_phone_inner": None,
+            "personal_city": "Саратов",
+            "personal_gender": None,
+            "personal_birthday": "2001-12-17T00:00:00",
+            "is_online": "Y",
+            "time_zone": "Europe/Saratov",
+            "user_type": "employee",
+            "last_login": "2026-01-30T11:55:07+04:00",
+            "work_phone": "",
+            "timestamp_x": {},
+            "date_register": "2025-03-11T04:00:00+04:00",
+            "uf_department": [
+                420
+            ],
+            "work_position": "",
+            "personal_phone": "",
+            "personal_photo": "",
+            "last_activity_date": {},
+            "uf_employment_date": "",
+            "uf_usr_1586854037086": "",
+            "uf_usr_1586861567149": "",
+            "uf_usr_1594879216192": "",
+            "uf_usr_1679387413613": [],
+            "uf_usr_1696592324977": [
+                "Дирекция по маркетингу"
+            ],
+            "uf_usr_1705744824758": [
+                "Отдел WEB-маркетинга"
+            ],
+            "uf_usr_1707225966581": [],
+            "uf_usr_1753418205828": False,
+            "uf_usr_1756973260681": False,
+            "uf_usr_1756973302863": False,
+            "uf_usr_1756973566697": False,
+            "uf_usr_1756973699548": False,
+            "uf_usr_1756973745925": False
+            
+        }
+        res =  await self.UserModel.upsert_user(user_data=data, session=session)
+        await session.commit()
+        await self.dump_users_data_es(session)
+        return res
+
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -633,6 +686,10 @@ async def get_all_users(session: AsyncSession = Depends(get_async_db)):
 @users_router.post("/upload_one_user", tags=["Пользователь"])
 async def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_async_db)):
     return await User().upload_one_user(user_data=data, session=session)
+
+@users_router.post("/create_intranet_admin", tags=["Пользователь"])
+async def create_intranet_admin(session: AsyncSession = Depends(get_async_db)):
+    return await User().create_intranet_admin(session=session)
 
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):

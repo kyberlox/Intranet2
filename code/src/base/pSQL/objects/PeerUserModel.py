@@ -788,19 +788,24 @@ class PeerUserModel:
                     stmt_active_users = select(self.ActiveUsers).where(self.ActiveUsers.id == active.active_id)
                     res_active_users = await session.execute(stmt_active_users)
                     active_users_inf = res_active_users.scalar_one_or_none()
+
+                    activity_name = active_name
+                    description = active.active_info
                     if active_users_inf.activities_id == 7:
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 18:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
-                    else:
-                        description = active.active_info
+                    elif active_users_inf.activities_id in [19, 20]:
+                        activity_name = f"Награда за юбилей {active_name}"
+
+                    
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
                         "uuid_to": active.user_to,
                         "uuid_to_fio": user_fio,
                         "description": description,
-                        "activity_name": active_name,
+                        "activity_name": activity_name,
                         "coast": active.active_coast,
                         "valid": active_users_inf.valid,
                         "action_id": active_users_inf.id
@@ -948,7 +953,7 @@ class PeerUserModel:
                         send_data = {
                             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                             "uuid_to": uuid_to,
-                            "activities_id": 18, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                            "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
                             "description": article['indirect_data']['year']
                         }
                     await self.send_auto_points(session=session, data=send_data, roots=roots)

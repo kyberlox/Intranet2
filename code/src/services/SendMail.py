@@ -403,3 +403,4 @@ class SendEmail:
         except Exception as e:
             LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
             return {'status': False} 
+

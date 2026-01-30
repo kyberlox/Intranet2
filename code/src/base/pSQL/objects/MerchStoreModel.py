@@ -123,7 +123,6 @@ class MerchStoreModel:
             # Обновляем баланс пользователя
             money_left = user.user_points - total_price
             user.user_points = money_left
-            print()
             # Добавляем запись в историю
             merch_description = f"{merch_info.name}, Куплено {total_count} штук(а)"
             add_history = PeerHistory(
@@ -143,3 +142,63 @@ class MerchStoreModel:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка в create_purchase при покупке мерча пользователем {self.user_id}, данные: {data}: {e}")
 
+    async def buy_split(self, session, data: dict):
+        """
+        Создание покупки старого замка
+        data: {"art_id": int, "user_points": int}
+        """
+        try:
+            from ..models.Article import Article
+            from ..models.Roots import Roots
+            from ..models.PeerHistory import PeerHistory
+
+            art_id = data.pop("art_id")
+
+            # Получаем информацию о мерче
+            stmt_merch = select(Article).where(Article.id == art_id)
+            result_merch = await session.execute(stmt_merch)
+            merch_info = result_merch.scalar_one_or_none()
+
+            if not merch_info:
+                return LogsMaker().error_message(f"Ошибка в create_purchase: мерч с art_id = {art_id} не найден для пользователя {self.user_id}")
+
+
+            # Рассчитываем общую стоимость
+            total_price = 0
+            
+            # Проверяем баланс пользователя
+            stmt_user = select(Roots).where(Roots.user_uuid == self.user_id)
+            result_user = await session.execute(stmt_user)
+            user = result_user.scalar_one_or_none()
+
+            if not user or user.user_points is None:
+                return LogsMaker().warning_message(f"Недостаточно средств у пользователя с id = {self.user_id} для покупки мерча art_id = {art_id}")
+            elif data["user_points"] > user.user_points:
+                return LogsMaker().warning_message(f"Пользователя с id = {self.user_id} хочет потратить больше, чем имеет")
+
+            # Выполняем покупку
+            merch_info.indirect_data['no_size'] -= 1
+
+            flag_modified(merch_info, 'indirect_data')
+
+            # Обновляем баланс пользователя
+            # money_left = user.user_points - data["user_points"]
+            user.user_points -= data["user_points"]
+            # Добавляем запись в историю
+            merch_description = f"Пользователь частично купил {merch_info.name}"
+            add_history = PeerHistory(
+                user_uuid=self.user_id,
+                merch_info=merch_description,
+                merch_coast=data["user_points"],
+                info_type='merch',
+                date_time=datetime.datetime.now()
+            )
+            session.add(add_history)
+            await session.commit()
+
+            # TODO: добавить отправку на почту заказа
+            LogsMaker().info_message(f"Пользователь с id = {self.user_id} успешно приобрел мерч art_id = {art_id}, стоимость: {total_price}")
+            return merch_description
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в create_purchase при покупке мерча пользователем {self.user_id}, данные: {data}: {e}")

@@ -362,7 +362,10 @@ class ActiveUsersModel:
                     description = f"Лучший сотрудник {row.description} года"
                 elif row[-1] == 18:
                     description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
+                elif row[-1] in [19, 20]:
+                    activity_name = f"Награда за юбилей {row.name}"
                 else:
+                    activity_name = row.name
                     description = row.description
                 activities.append({
                     "id_activeusers": row.id,
@@ -370,7 +373,7 @@ class ActiveUsersModel:
                     "fio_from": user_fio,
                     "description": description,
                     "date_time": row.date_time,
-                    "activity_name": row.name,
+                    "activity_name": activity_name,
                     "cost": row.coast,
                     "id_activites": row[-1]
                 })

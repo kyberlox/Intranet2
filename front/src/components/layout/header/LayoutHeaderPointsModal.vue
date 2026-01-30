@@ -1,11 +1,12 @@
 <template>
 <div class="modal__text__content modal__text__content--user-points">
-    <PointsInfoTable />
+    <PointsInfoTable v-if="!pointsAboutImportant" />
     <div class="modal__text__content__points-info__list">
-        <span @click="pointsAboutOpen = !pointsAboutOpen">
+        <span v-if="!pointsAboutImportant"
+              @click="pointsAboutOpen = !pointsAboutOpen">
             За что начисляют
         </span>
-        <PointsAbout v-if="pointsAboutOpen"
+        <PointsAbout v-if="pointsAboutOpen || pointsAboutImportant"
                      :allActivities="allActivities" />
     </div>
 </div>
@@ -21,6 +22,12 @@ export default defineComponent({
     components: {
         PointsInfoTable,
         PointsAbout
+    },
+    props: {
+        pointsAboutImportant: {
+            type: Boolean,
+            default: () => false
+        }
     },
     setup() {
         const pointsAboutOpen = ref(false);

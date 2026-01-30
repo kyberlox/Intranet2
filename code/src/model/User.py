@@ -53,7 +53,7 @@ class User:
         return {"status": True}
 
     async def upload_one_user(self, user_data, session):
-        await self.UserModel.upsert_user(user_data=usr_data, session=session)
+        await self.UserModel.upsert_user(user_data=user_data, session=session)
         await session.commit()
 
         status = await self.set_users_photo(session)

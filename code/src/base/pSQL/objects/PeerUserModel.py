@@ -787,13 +787,18 @@ class PeerUserModel:
                     stmt_active_users = select(self.ActiveUsers).where(self.ActiveUsers.id == active.active_id)
                     res_active_users = await session.execute(stmt_active_users)
                     active_users_inf = res_active_users.scalar_one_or_none()
-
+                    if active_users_inf.activities_id == 7:
+                        description = f"Лучший сотрудник {active.active_info} года"
+                    elif active_users_inf.activities_id == 18:
+                        description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
+                    else:
+                        description = active.active_info
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
                         "uuid_to": active.user_to,
                         "uuid_to_fio": user_fio,
-                        "description": active.active_info,
+                        "description": description,
                         "activity_name": active_name,
                         "coast": active.active_coast,
                         "valid": active_users_inf.valid,
@@ -804,7 +809,6 @@ class PeerUserModel:
                 
                 #Собираем историю покупок мерча
                 if roots["PeerAdmin"] is True:
-                    print('добавляем ли мерч')
                     stmt_merch = select(self.PeerHistory).where(
                         self.PeerHistory.info_type == 'merch'
                     )

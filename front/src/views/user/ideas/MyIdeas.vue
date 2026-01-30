@@ -30,7 +30,7 @@
                     @click="callModal(idea)">
                     <td>{{ idea.number }}</td>
                     <td>{{ idea.date_create.split(' ')[0] }}</td>
-                    <td> {{ idea.name }} </td>
+                    <td> {{ idea.name.replaceAll('&quot;', '"') }} </td>
                     <td>{{ idea.status }}</td>
                 </tr>
             </tbody>

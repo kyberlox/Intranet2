@@ -404,4 +404,3 @@ class SendEmail:
             LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
             return {'status': False} 
 
-    def 

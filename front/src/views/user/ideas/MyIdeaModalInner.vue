@@ -19,12 +19,13 @@
         </div>
         <div class="row mb-3 justify-content-center">
             <div class="col-sm-10 col-print-12 ">
-                <h2 class="page__title text-center">#{{ textContent?.number }} {{ textContent?.name }}
+                <h2 class="page__title text-center">#{{ textContent?.number }} {{ textContent?.name.replaceAll('&quot;',
+                    '"') }}
                 </h2>
                 <div v-if="textContent?.content"
                      class="mb-3 modal__text__content__detail">
                     <span>
-                        {{ textContent.content }}
+                        {{ textContent.content.replaceAll('&quot;', '"') }}
                     </span>
                 </div>
                 <div class="mb-3 modal__text__content__detail modal__text__content__detail--link">
@@ -96,7 +97,7 @@ export default defineComponent({
             isLoading.value = true;
             Api.get(`/idea_pdf/generate_pdf/${id}`, { responseType: 'blob' })
                 .then((data) => {
-                    download(new Blob([data]), props.textContent?.name + '.pdf', 'application/pdf')
+                    download(new Blob([data]), props.textContent?.name.replaceAll('&quot;', '"') + '.pdf', 'application/pdf')
                 })
                 .finally(() => isLoading.value = false)
         }

@@ -1,20 +1,22 @@
 <template>
 <div class="page__title mt20">Новые сотрудники</div>
-<div class="birthday__workers-grid"
-     v-if="slidesForBirthday.length && !isLoading">
+<div v-if="isLoading"
+     class="contest__page__loader">
+    <Loader />
+</div>
+
+<div v-else-if="slidesForBirthday.length && !isLoading"
+     class="birthday__workers-grid">
     <div v-for="(slide, index) in slidesForBirthday"
          :key="'vertSlide' + index">
         <UserSlide :needCakeIcon="true"
                    :slide="slide" />
     </div>
 </div>
-<div v-else-if="isLoading"
-     class="contest__page__loader">
-    <Loader />
-</div>
-<ContentPlug :plugText="noWorkers"
-             :plugImg="noWorkersImage"
-             v-else />
+
+<ContentPlug v-else
+             :plugText="noWorkers"
+             :plugImg="noWorkersImage" />
 </template>
 
 <script lang="ts">
@@ -36,7 +38,7 @@ export default defineComponent({
         ContentPlug
     },
     setup() {
-        const isLoading = ref(false);
+        const isLoading = ref(true);
         const dateFromDatepicker = ref();
         const nullifyDateInput = ref(false);
         const slidesForBirthday = ref([]);
@@ -51,6 +53,7 @@ export default defineComponent({
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
                 .then((data) => slidesForBirthday.value = data)
+                .finally(() => isLoading.value = false)
         })
 
         return {
@@ -60,10 +63,10 @@ export default defineComponent({
             dateFromDatepicker,
             isLoading,
             nullifyDateInput,
-            openModal,
             birthdayPageImg,
             noWorkers,
-            noWorkersImage
+            noWorkersImage,
+            openModal,
         };
     },
 });

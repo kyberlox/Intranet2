@@ -257,12 +257,12 @@ const router = createRouter({
     {
       path: '/about/kapitalEmk',
       name: 'merchStore',
-      component: () => import('@/views/about/merchStore/MerchStore.vue'),
+      component: () => import('@/views/services/merchStore/MerchStore.vue'),
     },
     {
       path: '/about/kapitalEmk/merch/:id',
       name: 'merchStoreItem',
-      component: () => import('@/views/about/merchStore/MerchStoreItem.vue'),
+      component: () => import('@/views/services/merchStore/MerchStoreItem.vue'),
       props: (route) => ({ id: Number(route.params.id) }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Магазин мерча', route: 'merchStore' }]

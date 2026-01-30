@@ -359,11 +359,14 @@ class ActiveUsersModel:
                     user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
                 
                 if row[-1] == 7:
+                    activity_name = row.name
                     description = f"Лучший сотрудник {row.description} года"
                 elif row[-1] == 18:
+                    activity_name = row.name
                     description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
                 elif row[-1] in [19, 20]:
                     activity_name = f"Награда за юбилей {row.name}"
+                    description = row.description
                 else:
                     activity_name = row.name
                     description = row.description

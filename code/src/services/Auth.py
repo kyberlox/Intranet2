@@ -37,14 +37,14 @@ class AuthService:
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
-        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
-        # self.client_id = "local.6936c2c4e28141.22464163"
-        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
-        # self.client_secret = "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
-        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
-        # self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "http://intranet.emk.org.ru/api/auth_router/auth")
-        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
-        # self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "http://test-portal.emk.ru")
+        # self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
+        self.client_id = "local.6936c2c4e28141.22464163"
+        # self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
+        self.client_secret = "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
+        # self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
+        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "http://intranet.emk.org.ru/api/auth_router/auth")
+        # self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
+        self.bitrix_domain = "http://test-portal.emk.ru"
         
         # Время жизни токенов и сессий
         self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24

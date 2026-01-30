@@ -1,6 +1,24 @@
 <template>
 <div class="mt20">
-    <div class="page__title">Магазин мерча</div>
+    <div class="page__title">Капитал ЭМК</div>
+    <div class="modal__text__content__points-info">
+        <span>
+            Уважаемые коллеги!
+            <br />
+            С 1 февраля стартует корпоративная программа «Капитал ЭМК»!
+            <br />
+            «Капитал ЭМК» — это ваш персональный бонусный клуб внутри компании: <br /> за труд, инициативу и достижения
+            вы
+            получаете баллы, которые можно обменять на товары из корпоративного каталога.
+            <br />
+        </span>
+        <div class="modal__text__content__points-info__list"
+             @click="pointsAboutOpen = !pointsAboutOpen">
+            За что начисляют
+        </div>
+        <PointsAbout v-if="pointsAboutOpen"
+                     :allActivities="allActivities" />
+    </div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
              v-if="merchItems.length && !isLoading">
@@ -29,7 +47,9 @@
             <HoverGallerySkeleton v-for="i in 8"
                                   :key="'merchplug' + i" />
         </div>
-        <div v-else-if="!isLoading"><span>Тут пока пусто, следите за обновлениями</span></div>
+        <div v-else-if="!isLoading">
+            <span>Тут пока пусто, следите за обновлениями</span>
+        </div>
     </div>
 </div>
 </template>
@@ -40,20 +60,24 @@ import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, computed } from 'vue';
 import HoverGallery from './components/HoverGallery.vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
 import type { IMerch } from '@/interfaces/entities/IMerch';
 import type { IBXFileType } from '@/interfaces/IEntities';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
-
+import PointsAbout from '@/views/user/userPointsComponents/PointsAbout.vue';
+import { usePointsData } from '@/stores/pointsData';
 export default defineComponent({
     components: {
         HoverGallery,
-        HoverGallerySkeleton
+        HoverGallerySkeleton,
+        PointsAbout
     },
     setup() {
+        const allActivities = computed(() => usePointsData().getActivities);
+        const pointsAboutOpen = ref(false);
         const merchItems = ref<IMerch[]>([]);
         const isLoading = ref<boolean>(false);
         const sliderConfig = {
@@ -77,6 +101,8 @@ export default defineComponent({
             sliderConfig,
             merchItems,
             isLoading,
+            allActivities,
+            pointsAboutOpen,
             swiperOn
         }
     }

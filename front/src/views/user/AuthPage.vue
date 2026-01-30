@@ -46,8 +46,8 @@ export default defineComponent({
                 testLogin()
             }
             else {
-                router.push({ name: 'oauthPage', params: { referrer: import.meta.env.VITE_API_URL + route.fullPath } })
             }
+            router.push({ name: 'oauthPage', params: { referrer: import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath } })
             isLoading.value = false
         }
 

@@ -298,6 +298,27 @@
             overflow-y: auto;
             overflow-x: hidden;
 
+            &__points-info {
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+
+
+                &__list {
+                    color: var(--emk-brand-color) !important;
+                    cursor: pointer;
+
+                    &:hover {
+                        &>span {
+                            color: var(--emk-brand-color-dark) !important;
+                        }
+                    }
+                }
+
+
+            }
+
             &__loader {
                 width: 20px;
                 height: 20px;

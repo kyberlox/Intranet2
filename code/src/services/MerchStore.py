@@ -24,7 +24,9 @@ class MerchStore:
         res = await MerchStoreModel(user_id=self.user_uuid).create_purchase(data=data, session=session)
         if "not_enough" in res:
             return res
-        #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
+        #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"\
+        if 'status' in res:
+            return res
         user_sql = await User(id=self.user_uuid).search_by_id(session=session)
         mail_data = {
             'sender': user_sql['email'],
@@ -37,6 +39,8 @@ class MerchStore:
     async def buy_split(self, data, session):
         res = await MerchStoreModel(user_id=self.user_uuid).buy_split(data=data, session=session)
         #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
+        if 'status' in res:
+            return res
         user_sql = await User(id=self.user_uuid).search_by_id(session=session)
         mail_data = {
             'sender': user_sql['email'],

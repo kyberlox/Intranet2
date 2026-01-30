@@ -803,7 +803,6 @@ class PeerUserModel:
                         "coast": active.active_coast,
                         "valid": active_users_inf.valid,
                         "action_id": active_users_inf.id
-
                     }
                     activity_history.append(info)
                 

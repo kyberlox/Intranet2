@@ -943,7 +943,7 @@ class PeerUserModel:
                             "description": article['indirect_data']['year']
                         }
                     elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
-                        print('почетная грамота?')
+                        print('почетная грамота?', article['id'], uuid_to)
                         send_data = {
                             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                             "uuid_to": uuid_to,

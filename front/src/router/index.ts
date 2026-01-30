@@ -255,14 +255,19 @@ const router = createRouter({
       props: (route) => ({ targetId: route.params.targetId }),
     },
     {
-      path: '/about/kapitalEmk',
-      name: 'merchStore',
-      component: () => import('@/views/services/merchStore/MerchStore.vue'),
+      path: '/about/capitalEmk/about',
+      name: 'merchAbout',
+      component: () => import('@/views/capitalEmk/CapitalAbout/CapitalAbout.vue'),
     },
     {
-      path: '/about/kapitalEmk/merch/:id',
+      path: '/about/capitalEmk/merch',
+      name: 'merchStore',
+      component: () => import('@/views/capitalEmk/merchStore/MerchStore.vue'),
+    },
+    {
+      path: '/about/capitalEmk/merch/:id',
       name: 'merchStoreItem',
-      component: () => import('@/views/services/merchStore/MerchStoreItem.vue'),
+      component: () => import('@/views/capitalEmk/merchStore/MerchStoreItem.vue'),
       props: (route) => ({ id: Number(route.params.id) }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Магазин мерча', route: 'merchStore' }]

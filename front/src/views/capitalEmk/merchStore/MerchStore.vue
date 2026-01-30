@@ -1,26 +1,6 @@
 <template>
 <div class="mt20">
-    <div class="page__title">Капитал ЭМК</div>
-    <div class="modal__text__content__points-info">
-        <span>
-            Уважаемые коллеги!
-            <br />
-            «Капитал ЭМК» — это ваш персональный бонусный клуб внутри компании: <br /> за труд, инициативу и достижения
-            вы
-            получаете баллы, которые можно обменять на товары из корпоративного каталога.
-            <br />
-            Ниже можно ознакомиться с перечнем активностей и стоимостью баллов за каждую из них.
-        </span>
-        <div class="modal__text__content__points-info__list"
-             @click="pointsAboutOpen = !pointsAboutOpen">
-            За что начисляют
-        </div>
-
-        <SlotModal v-if="pointsAboutOpen && featureFlags.pointsSystem"
-                   @close="pointsAboutOpen = false">
-            <LayoutHeaderPointsModal :pointsAboutImportant="true" />
-        </SlotModal>
-    </div>
+    <div class="page__title">Магазин "Капитал ЭМК"</div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
              v-if="merchItems.length && !isLoading">

@@ -312,6 +312,11 @@
                     color: var(--emk-brand-color) !important;
                     cursor: pointer;
 
+                    &>span {
+                        display: block;
+                        margin: 15px 0 10px 0;
+                    }
+
                     &:hover {
                         &>span {
                             color: var(--emk-brand-color-dark) !important;

@@ -229,7 +229,7 @@ export const mainMenuPoints: MainMenuPoints = [
         {
             id: 6.1,
             name: 'О капитале',
-            href: 'aboutCapital'
+            href: 'merchAbout'
         },
         {
             id: 6.2,

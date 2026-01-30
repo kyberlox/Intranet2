@@ -788,21 +788,17 @@ class PeerUserModel:
                     stmt_active_users = select(self.ActiveUsers).where(self.ActiveUsers.id == active.active_id)
                     res_active_users = await session.execute(stmt_active_users)
                     active_users_inf = res_active_users.scalar_one_or_none()
+
+                    activity_name = active_name
+                    description = active.active_info
                     if active_users_inf.activities_id == 7:
-                        activity_name = active_name
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 18:
-                        print(active_name, 'начинаем узнавать1')
-                        activity_name = active_name
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in [19, 20]:
                         activity_name = f"Награда за юбилей {active_name}"
-                        description = active.active_info
-                    else:
-                        print(active_name, 'начинаем узнавать1.5')
-                        activity_name = active_name
-                        description = active.active_info
-                    print(activity_name, 'начинаем узнавать2')
+
+                    
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,

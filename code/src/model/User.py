@@ -490,7 +490,9 @@ class User:
                 "uf_usr_1756973745925": False
             }
         }
-        return await self.UserModel.upsert_user(user_data=data, session=session)
+        res =  await self.UserModel.upsert_user(user_data=data, session=session)
+        await session.commit()
+        return res
 
 '''
     # def get(self, method="user.get", params={}):

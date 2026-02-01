@@ -214,11 +214,14 @@ class User:
         ID = 16 - это +год рабоыты в компании
         ID = 19 - это Юбилей 5 лет работы в компании
         ID = 20 - это Юбилей 10 лет работы в компании
+        ID = 16 - это +год рабоыты в компании
+        ID = 19 - это Юбилей 5 лет работы в компании
+        ID = 20 - это Юбилей 10 лет работы в компании
         """
         from ..services.Peer import Peer
         from datetime import datetime
         LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-01", '%Y-%m-%d')
-        DESCRIPTIONS = {'16': "+ год вы с нами!", "19": "5 лет вы с нами!", "20": "10 лет вы с нами!"}
+        YEARS_ID = {'1': 21, "5": 22, "10": 23, "15": 24, "20": 25, "25": 26, "30": 27} # менять значеняи к годам если поменялись айдишники
         TODAY = datetime.today().date() # 2026-01-20 00:00:00
         all_users = await self.UserModel.all(session)
         send_data = {
@@ -230,11 +233,15 @@ class User:
         for user in all_users:
             if user.active is True:
                 # Проверяем либо дату регистрации, либо дату трудоустройства
-                if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != ''):
-                    date_register = user.indirect_data['date_register']
-                    if "T" in date_register:
-                        date_register = date_register.split("T")[0]
-                    convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
+                if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or ("date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != ''):
+                    if "date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != '':
+                        date_register = user.indirect_data['date_of_employment']
+                        convert_date_reg = datetime.strptime(date_register, '%d.%m.%Y')
+                    else:
+                        date_register = user.indirect_data['date_register']
+                        if "T" in date_register:
+                            date_register = date_register.split("T")[0]
+                        convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
                     if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                         # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 
@@ -243,9 +250,41 @@ class User:
 
                         year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
                         # year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
-                        if year_diff >= 10:
+                        if year_diff >= 30:
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 30 лет')
+                            send_data['activities_id'] = YEARS_ID['30']
+                            send_data['description'] = "30 лет вы с нами!"
+                            send_data['uuid_to'] = user.id
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            continue
+                        elif year_diff >= 25:
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 25 лет')
+                            send_data['activities_id'] = YEARS_ID['25']
+                            send_data['description'] = "25 лет вы с нами!"
+                            send_data['uuid_to'] = user.id
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            continue
+                        elif year_diff >= 20:
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 20 лет')
+                            send_data['activities_id'] = YEARS_ID['20']
+                            send_data['description'] = "20 лет вы с нами!"
+                            send_data['uuid_to'] = user.id
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            continue
+                        elif year_diff >= 15:
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 15 лет')
+                            send_data['activities_id'] = YEARS_ID['15']
+                            send_data['description'] = "15 лет вы с нами!"
+                            send_data['uuid_to'] = user.id
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            continue
+                        elif year_diff >= 10:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
-                            send_data['activities_id'] = 20
+                            send_data['activities_id'] = YEARS_ID['10']
                             send_data['description'] = "10 лет вы с нами!"
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
@@ -253,7 +292,7 @@ class User:
                             continue
                         elif year_diff >= 5:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
-                            send_data['activities_id'] = 19
+                            send_data['activities_id'] = YEARS_ID['5']
                             send_data['description'] = "5 лет вы с нами!"
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
@@ -261,7 +300,7 @@ class User:
                             continue
                         elif year_diff >= 1:
                             LogsMaker().info_message(f'Пользователь {user.id} год с нами')
-                            send_data['activities_id'] = 16
+                            send_data['activities_id'] = YEARS_ID['1']
                             send_data['description'] = "+ год вы с нами!"
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
@@ -273,19 +312,7 @@ class User:
                         # LogsMaker().info_message('Дата и месяц не совпадает')
                 else:
                     continue
-                    # LogsMaker().info_message(f'Отсутствует дата регистрации и пользователя {user.id}')
 
-
-
-            # send_data = {
-            #     "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-            #     "uuid_to": user['id'],
-            #     "activities_id": activities_id, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-            #     "description": description, 
-            #     # "date_register": "2025-03-11T04:00:00+04:00"
-            #     "date_register": TODAY
-            # }
-            # send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
         await session.commit()
         return True
 

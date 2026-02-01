@@ -217,7 +217,7 @@ async def send_to_new_idea():
     try:
         from .Idea import Idea
         #Дата запуска капитала ЭМК
-        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-02", '%Y-%m-%d')
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("02.02.2026", '%d.%m.%Y')
 
         #Статус с которым выдаем баллы
         STATUS_IDEA = "Принято"
@@ -226,7 +226,7 @@ async def send_to_new_idea():
         all_ideas.append(test_idea)
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                date_idea = datetime.strptime(idea['date_create'], '%Y-%m-%d')
+                date_idea = datetime.strptime(idea['date_create'], '%d.%m.%Y')
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue
@@ -245,7 +245,7 @@ async def send_to_new_idea():
                 
             await db.commit()
     except Exception as e:
-        logger.error_message(f"Ошибка при отправке баллов за идею: {e}")
+        LogsMaker().error_message(f"Ошибка при отправке баллов за идею: {e}")
         # Откатываем изменения в случае ошибки
         if 'db' in locals():
             await db.rollback()

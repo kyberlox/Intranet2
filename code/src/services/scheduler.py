@@ -226,7 +226,7 @@ async def send_to_new_idea():
         all_ideas.append(test_idea)
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                date_idea = datetime.strptime(idea['date_create'], '%d.%m.%Y')
+                date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue

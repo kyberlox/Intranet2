@@ -8,6 +8,7 @@ from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.App import get_async_db
 from ..model.User import User
 from .MerchStore import MerchStore
+from .Peer import Peer
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +126,6 @@ async def check_trial_expiring() -> List[int]:
 async def send_birthday_notifications(user_ids: List[int]):
     """
     Отправка уведомлений о днях рождения
-    Здесь можно интегрировать с вашей системой уведомлений
     """
     if not user_ids:
         return
@@ -133,9 +133,18 @@ async def send_birthday_notifications(user_ids: List[int]):
     logger.info(f"Отправка поздравлений с ДР для {len(user_ids)} пользователей")
     
     # Пример: логика отправки
-    for user_id in user_ids[:5]:  # Для примера покажем только первые 5
-        logger.info(f"  - Пользователь {user_id}: С Днём рождения!")
-    
+    # for user_id in user_ids[:5]:  # Для примера покажем только первые 5
+    #     logger.info(f"  - Пользователь {user_id}: С Днём рождения!")
+    async with SessionLocal() as db:
+        for user_id in user_ids:
+            send_data = {
+                "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                "uuid_to": int(user_id),
+                "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                "description": f"Поздравительные баллы. С днем рождения!"
+            }
+            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
+        await db.commit()
     # Здесь можно добавить:
     # 1. Отправку email через ваш email-сервис
     # 2. Webhook на внешний сервис
@@ -194,12 +203,12 @@ async def daily_check():
         await send_birthday_notifications(birthday_users)
         
         # 2. Юбилеи регистрации
-        anniversary_users = await get_registration_anniversaries()
-        await send_anniversary_notifications(anniversary_users)
+        # anniversary_users = await get_registration_anniversaries()
+        # await send_anniversary_notifications(anniversary_users)
         
         # 3. Неактивные пользователи
-        inactive_users = await check_inactive_users()
-        await handle_inactive_users(inactive_users)
+        # inactive_users = await check_inactive_users()
+        # await handle_inactive_users(inactive_users)
         
         # 4. Триал (опционально)
         # expiring_trials = await check_trial_expiring()
@@ -225,10 +234,10 @@ async def scheduler_worker():
     # Настраиваем расписание
     
     # Основная задача каждый день в 02:00
-    schedule.every().day.at("02:00").do(daily_check)
+    # schedule.every().day.at("02:00").do(daily_check)
     
     # Для тестирования - раскомментировать:
-    # schedule.every(5).minutes.do(daily_check)  # Каждые 5 минут
+    schedule.every(5).minutes.do(daily_check)  # Каждые 5 минут
     # schedule.every().minute.do(daily_check)    # Каждую минуту
     
     logger = LogsMaker()

@@ -225,13 +225,12 @@ class User:
             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
             "uuid_to": 0,
             "activities_id": 0, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-            "description": "", 
-            # "date_register": "2025-03-11T04:00:00+04:00"
-            "date_register": TODAY
+            "description": ""
         }
         for user in all_users:
             if user.active is True:
-                if 'date_register' in user.indirect_data and user.indirect_data['date_register'] != '':
+                # Проверяем либо дату регистрации, либо дату трудоустройства
+                if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or :
                     date_register = user.indirect_data['date_register']
                     if "T" in date_register:
                         date_register = date_register.split("T")[0]

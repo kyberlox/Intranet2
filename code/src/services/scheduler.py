@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 import aioschedule as schedule
 
 from .LogsMaker import LogsMaker
-from ..base.pSQL.objects.App import get_async_db
+from ..base.pSQL.objects.App import get_async_db, AsyncSessionLocal
 from ..model.User import User
 from .MerchStore import MerchStore
 from .Peer import Peer
@@ -19,7 +19,7 @@ async def get_today_birthdays() -> List[int]:
     Найти всех пользователей, у которых сегодня день рождения
     Возвращает список ID пользователей
     """
-    async with SessionLocal() as db:
+    async with AsyncSessionLocal() as db:
         today = datetime.now()
         
         query = select(User.id).where(
@@ -135,7 +135,7 @@ async def send_birthday_notifications(user_ids: List[int]):
     # Пример: логика отправки
     # for user_id in user_ids[:5]:  # Для примера покажем только первые 5
     #     logger.info(f"  - Пользователь {user_id}: С Днём рождения!")
-    async with SessionLocal() as db:
+    async with AsyncSessionLocal() as db:
         for user_id in user_ids:
             send_data = {
                 "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА

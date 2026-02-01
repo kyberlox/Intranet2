@@ -58,6 +58,8 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.base.pSQL.objects.App import get_async_db
 
+from contextlib import asynccontextmanager
+
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')

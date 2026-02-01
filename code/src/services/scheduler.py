@@ -33,8 +33,8 @@ async def get_today_birthdays() -> List[int]:
         today = datetime.now()
         
         query = select(User.id).where(
-            (extract('month', User.birth_date) == today.month) &
-            (extract('day', User.birth_date) == today.day) &
+            (extract('month', User.personal_birthday) == today.month) &
+            (extract('day', User.personal_birthday) == today.day) &
             (User.is_active == True)
         )
         

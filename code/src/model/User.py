@@ -230,7 +230,7 @@ class User:
         for user in all_users:
             if user.active is True:
                 # Проверяем либо дату регистрации, либо дату трудоустройства
-                if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or :
+                if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != ''):
                     date_register = user.indirect_data['date_register']
                     if "T" in date_register:
                         date_register = date_register.split("T")[0]

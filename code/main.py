@@ -37,7 +37,7 @@ from src.services.Peer import peer_router
 from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
-from src.services.scheduler import import (
+from src.services.scheduler import (
     create_lifespan_context,
     get_scheduler_status,
     add_scheduler_job,

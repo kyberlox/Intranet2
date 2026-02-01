@@ -282,90 +282,100 @@ class AioSchedulerManager:
             logger.error_message(traceback.format_exc())
             raise
     
-    def schedule_daily_check(self, interval_seconds: int = 300):
+    def schedule_periodic_task(self, coro_func, interval_seconds: int = 300):
         """
-        Запланировать ежедневную проверку
+        Запланировать периодическую задачу (исправленная версия)
+        
+        ВНИМАНИЕ: aioscheduler.schedule() ожидает datetime для when, а не int!
+        Правильное использование: schedule(coro, delay_seconds)
         """
         if not self.scheduler:
             raise RuntimeError("Планировщик не инициализирован")
         
-        # Создаем задачу
-        task = self.scheduler.schedule(daily_check(), interval_seconds)
+        # Создаем обертку для периодического выполнения
+        async def periodic_wrapper():
+            while True:
+                try:
+                    # Ждем указанный интервал
+                    await asyncio.sleep(interval_seconds)
+                    
+                    # Выполняем задачу
+                    await coro_func()
+                    
+                except asyncio.CancelledError:
+                    break
+                except Exception as e:
+                    logger = LogsMaker()
+                    logger.error_message(f"Ошибка в периодической задаче: {e}")
+                    await asyncio.sleep(60)  # Ждем минуту при ошибке
+        
+        # Запускаем обертку через asyncio.create_task
+        # и добавляем в планировщик для отслеживания
+        task = asyncio.create_task(periodic_wrapper())
         
         # Сохраняем задачу
-        job_id = f"daily_check_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        job_id = f"periodic_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.jobs[job_id] = task
         
         logger = LogsMaker()
-        logger.info_message(f"Ежедневная проверка запланирована каждые {interval_seconds} секунд, ID: {job_id}")
+        logger.info_message(f"Периодическая задача '{coro_func.__name__}' запланирована каждые {interval_seconds} секунд")
         
         return job_id
     
-    def schedule_test_task(self, interval_seconds: int = 60):
+    def schedule_daily_at_time(self, coro_func, hour: int, minute: int = 0):
         """
-        Запланировать тестовую задачу
+        Запланировать выполнение задачи в определенное время каждый день
         """
         if not self.scheduler:
             raise RuntimeError("Планировщик не инициализирован")
         
-        task = self.scheduler.schedule(test_task(), interval_seconds)
+        async def daily_time_wrapper():
+            while True:
+                try:
+                    now = datetime.now()
+                    
+                    # Вычисляем время следующего запуска
+                    target_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                    
+                    # Если время уже прошло сегодня, планируем на завтра
+                    if now >= target_time:
+                        target_time += timedelta(days=1)
+                    
+                    # Ждем до целевого времени
+                    wait_seconds = (target_time - now).total_seconds()
+                    
+                    if wait_seconds > 0:
+                        logger = LogsMaker()
+                        logger.info_message(f"Задача '{coro_func.__name__}' будет выполнена в "
+                                           f"{target_time.strftime('%H:%M')} "
+                                           f"(через {wait_seconds:.0f} секунд)")
+                        
+                        await asyncio.sleep(wait_seconds)
+                    
+                    # Выполняем задачу
+                    logger.info_message(f"Выполнение задачи '{coro_func.__name__}' в {datetime.now().strftime('%H:%M')}")
+                    await coro_func()
+                    
+                    # Ждем минуту после выполнения, чтобы не запускать снова
+                    await asyncio.sleep(60)
+                    
+                except asyncio.CancelledError:
+                    break
+                except Exception as e:
+                    logger.error_message(f"Ошибка в ежедневной задаче: {e}")
+                    await asyncio.sleep(60)
         
-        job_id = f"test_task_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        # Запускаем обертку
+        task = asyncio.create_task(daily_time_wrapper())
+        
+        # Сохраняем задачу
+        job_id = f"daily_{hour:02d}{minute:02d}_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.jobs[job_id] = task
         
         logger = LogsMaker()
-        logger.info_message(f"Тестовая задача запланирована каждые {interval_seconds} секунд, ID: {job_id}")
+        logger.info_message(f"Задача '{coro_func.__name__}' запланирована ежедневно в {hour:02d}:{minute:02d}")
         
         return job_id
-    
-    def schedule_custom_task(self, coro_func, interval_seconds: int, job_name: str = None):
-        """
-        Запланировать пользовательскую задачу
-        """
-        if not self.scheduler:
-            raise RuntimeError("Планировщик не инициализирован")
-        
-        # Создаем корутину из функции
-        coro = coro_func()
-        
-        # Планируем задачу
-        task = self.scheduler.schedule(coro, interval_seconds)
-        
-        # Генерируем ID
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        if job_name:
-            job_id = f"{job_name}_{timestamp}"
-        else:
-            job_id = f"task_{coro_func.__name__}_{timestamp}"
-        
-        self.jobs[job_id] = task
-        
-        logger = LogsMaker()
-        logger.info_message(f"Задача '{job_id}' запланирована каждые {interval_seconds} секунд")
-        
-        return job_id
-    
-    def remove_job(self, job_id: str) -> bool:
-        """
-        Удалить задачу из планировщика
-        """
-        if job_id not in self.jobs:
-            return False
-        
-        task = self.jobs[job_id]
-        
-        # Пытаемся отменить задачу
-        try:
-            task.cancel()
-            del self.jobs[job_id]
-            
-            logger = LogsMaker()
-            logger.info_message(f"Задача '{job_id}' удалена")
-            return True
-            
-        except Exception as e:
-            logger.error_message(f"Ошибка при удалении задачи '{job_id}': {e}")
-            return False
     
     async def scheduler_worker(self):
         """
@@ -385,11 +395,14 @@ class AioSchedulerManager:
             
             # Добавляем задачи по умолчанию
             
-            # 1. Ежедневная проверка каждые 5 минут (300 секунд)
-            daily_job_id = self.schedule_daily_check(interval_seconds=300)
+            # 1. Ежедневная проверка каждые 5 минут (исправленный метод)
+            daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=300)
             
-            # 2. Тестовая задача каждую минуту (60 секунд)
-            # test_job_id = self.schedule_test_task(interval_seconds=60)
+            # 2. Ежедневная проверка в 7 утра
+            daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)
+            
+            # 3. Тестовая задача каждую минуту (для мониторинга)
+            test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)
             
             logger.info_message(f"Задач в планировщике: {len(self.jobs)}")
             
@@ -399,9 +412,8 @@ class AioSchedulerManager:
                 
                 # Можно добавить периодическую проверку состояния
                 if datetime.now().minute == 0:  # Каждый час
-                    logger.debug_message("Планировщик работает, активных задач: {}".format(
-                        len([t for t in self.jobs.values() if not t.done()])
-                    ))
+                    active_tasks = len([t for t in self.jobs.values() if not t.done()])
+                    logger.debug_message(f"Планировщик работает, активных задач: {active_tasks}")
         
         except asyncio.CancelledError:
             logger.info_message("Планировщик остановлен по запросу")
@@ -437,7 +449,8 @@ class AioSchedulerManager:
             # Отменяем все задачи
             for job_id, task in list(self.jobs.items()):
                 try:
-                    task.cancel()
+                    if not task.done():
+                        task.cancel()
                 except:
                     pass
             
@@ -474,7 +487,8 @@ class AioSchedulerManager:
             jobs_info.append({
                 "id": job_id,
                 "done": task.done(),
-                "cancelled": task.cancelled()
+                "cancelled": task.cancelled(),
+                "running": not task.done() and not task.cancelled()
             })
         
         return {
@@ -484,6 +498,39 @@ class AioSchedulerManager:
             "active_jobs": len([t for t in self.jobs.values() if not t.done()]),
             "jobs": jobs_info
         }
+    
+    def add_job(self, coro_func, interval_seconds: int = 300, job_name: str = None):
+        """
+        Добавить периодическую задачу
+        """
+        if job_name:
+            func_name = job_name
+        else:
+            func_name = coro_func.__name__
+        
+        # Создаем обертку с именем
+        async def named_wrapper():
+            while True:
+                try:
+                    await asyncio.sleep(interval_seconds)
+                    await coro_func()
+                except asyncio.CancelledError:
+                    break
+                except Exception as e:
+                    logger = LogsMaker()
+                    logger.error_message(f"Ошибка в задаче '{func_name}': {e}")
+                    await asyncio.sleep(60)
+        
+        # Запускаем задачу
+        task = asyncio.create_task(named_wrapper())
+        
+        job_id = f"{func_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        self.jobs[job_id] = task
+        
+        logger = LogsMaker()
+        logger.info_message(f"Задача '{func_name}' добавлена с интервалом {interval_seconds} секунд")
+        
+        return job_id
 
 # ==================== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ ИМПОРТА ====================
 
@@ -557,7 +604,7 @@ def get_scheduler_status() -> Dict[str, Any]:
     
     return _scheduler_manager.get_status()
 
-def add_scheduler_job(coro_func, interval_seconds: int, job_name: str = None):
+def add_scheduler_job(coro_func, interval_seconds: int = 300, job_name: str = None):
     """
     Добавить задачу в планировщик
     """
@@ -566,7 +613,7 @@ def add_scheduler_job(coro_func, interval_seconds: int, job_name: str = None):
     if _scheduler_manager is None:
         raise RuntimeError("Планировщик не инициализирован")
     
-    return _scheduler_manager.schedule_custom_task(coro_func, interval_seconds, job_name)
+    return _scheduler_manager.add_job(coro_func, interval_seconds, job_name)
 
 def remove_scheduler_job(job_id: str) -> bool:
     """
@@ -577,8 +624,18 @@ def remove_scheduler_job(job_id: str) -> bool:
     if _scheduler_manager is None:
         return False
     
-    return _scheduler_manager.remove_job(job_id)
-
+    if job_id not in _scheduler_manager.jobs:
+        return False
+    
+    task = _scheduler_manager.jobs[job_id]
+    
+    try:
+        if not task.done():
+            task.cancel()
+        del _scheduler_manager.jobs[job_id]
+        return True
+    except:
+        return False
 # ==================== ДЛЯ ИСПОЛЬЗОВАНИЯ В MAIN.PY ====================
 
 def create_lifespan_context():

@@ -10,7 +10,7 @@ from ..model.User import User
 from .MerchStore import MerchStore
 from .Peer import Peer
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 # ==================== РЕАЛИЗАЦИЯ ЗАПРОСОВ ====================
 
@@ -31,7 +31,7 @@ async def get_today_birthdays() -> List[int]:
         result = await db.execute(query)
         birthdays = result.scalars().all()
         
-        logger.info(f"Найдено пользователей с днём рождения: {len(birthdays)}")
+        LogsMaker().info_message(f"Найдено пользователей с днём рождения: {len(birthdays)}")
         return birthdays
 
 async def get_registration_anniversaries() -> List[Dict[str, Any]]:
@@ -77,7 +77,7 @@ async def get_registration_anniversaries() -> List[Dict[str, Any]]:
                     'registered_at': user.created_at
                 })
         
-        logger.info(f"Найдено юбилеев регистрации: {len(anniversary_users)}")
+        LogsMaker().info_message(f"Найдено юбилеев регистрации: {len(anniversary_users)}")
         return anniversary_users
 
 async def check_inactive_users() -> List[int]:
@@ -95,7 +95,7 @@ async def check_inactive_users() -> List[int]:
         result = await db.execute(query)
         inactive_users = result.scalars().all()
         
-        logger.info(f"Найдено неактивных пользователей: {len(inactive_users)}")
+        LogsMaker().info_message(f"Найдено неактивных пользователей: {len(inactive_users)}")
         return inactive_users
 
 async def check_trial_expiring() -> List[int]:
@@ -116,7 +116,7 @@ async def check_trial_expiring() -> List[int]:
         result = await db.execute(query)
         expiring_users = result.scalars().all()
         
-        logger.info(f"Найдено пользователей с истекающим триалом: {len(expiring_users)}")
+        LogsMaker().info_message(f"Найдено пользователей с истекающим триалом: {len(expiring_users)}")
         return expiring_users
 
 
@@ -130,7 +130,7 @@ async def send_birthday_notifications(user_ids: List[int]):
     if not user_ids:
         return
     
-    logger.info(f"Отправка поздравлений с ДР для {len(user_ids)} пользователей")
+    LogsMaker().info_message(f"Отправка поздравлений с ДР для {len(user_ids)} пользователей")
     
     # Пример: логика отправки
     # for user_id in user_ids[:5]:  # Для примера покажем только первые 5
@@ -158,10 +158,10 @@ async def send_anniversary_notifications(anniversary_users: List[Dict[str, Any]]
     if not anniversary_users:
         return
     
-    logger.info(f"Отправка поздравлений с юбилеем для {len(anniversary_users)} пользователей")
+    LogsMaker().info_message(f"Отправка поздравлений с юбилеем для {len(anniversary_users)} пользователей")
     
     for user in anniversary_users:
-        logger.info(f"  - {user['username']} ({user['email']}): "
+        LogsMaker().info_message(f"  - {user['username']} ({user['email']}): "
                    f"Поздравляем с {user['years']}-летием регистрации!")
         
         # Пример отправки email

@@ -179,7 +179,7 @@ async def handle_inactive_users(user_ids: List[int]):
     if not user_ids:
         return
     
-    logger.info(f"Обработка {len(user_ids)} неактивных пользователей")
+    LogsMaker().info_message(f"Обработка {len(user_ids)} неактивных пользователей")
     
     # Здесь можно:
     # 1. Отправить email с напоминанием
@@ -261,7 +261,7 @@ async def start_background_scheduler():
     Возвращает задачу для возможности отмены
     """
     logger = LogsMaker()
-    logger.debug("Запуск фонового планировщика задач...")
+    logger.info_message("Запуск фонового планировщика задач...")
     
     # Создаём и запускаем задачу планировщика
     scheduler_task = asyncio.create_task(scheduler_worker())

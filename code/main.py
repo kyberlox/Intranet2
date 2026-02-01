@@ -78,23 +78,23 @@ async def lifespan(app: FastAPI):
     
     # Старт приложения
     logger = LogsMaker()
-    logger.debug("=" * 50)
-    logger.debug("Запуск приложения FastAPI")
-    logger.debug("=" * 50)
+    logger.info_message("=" * 50)
+    logger.info_message("Запуск приложения FastAPI")
+    logger.info_message("=" * 50)
     
     # Запускаем планировщик в фоне
     try:
         scheduler_task = await start_background_scheduler()
-        logger.debug("✓ Фоновый планировщик запущен")
+        logger.info_message("✓ Фоновый планировщик запущен")
     except Exception as e:
         logger.fatal_message(f"✗ Ошибка запуска планировщика: {e}")
     
     yield
     
     # Остановка приложения
-    logger.warning("=" * 50)
-    logger.warning("Остановка приложения FastAPI")
-    logger.warning("=" * 50)
+    logger.warning_message("=" * 50)
+    logger.warning_message("Остановка приложения FastAPI")
+    logger.warning_message("=" * 50)
     
     # Останавливаем планировщик
     if scheduler_task:
@@ -102,7 +102,7 @@ async def lifespan(app: FastAPI):
         try:
             await scheduler_task
         except asyncio.CancelledError:
-            logger.warning("✓ Фоновый планировщик остановлен")
+            logger.warning_message("✓ Фоновый планировщик остановлен")
         except Exception as e:
             logger.fatal_message(f"Ошибка при остановке планировщика: {e}")
 

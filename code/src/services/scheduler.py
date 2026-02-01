@@ -161,6 +161,40 @@ async def send_birthday_notifications(user_ids: List[int]):
         if 'db' in locals():
             await db.rollback()
 
+async def send_to_new_users():
+    """
+    Отправка баллов новым сотрудникам
+    """
+    logger = LogsMaker()
+    logger.info_message(f"Отправка баллов новым сотрудникам")
+    from ..model.User import User
+    try:
+        async with AsyncSessionLocal() as db:
+            users = await User().get_new_workers(session=db)
+            for user_id in users:
+                send_data = {
+                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_to": int(user_id['id']),
+                    "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "description": f"Добро пожаловать в ЭМК!"
+                }
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+
+                # if send_point['status'] == 'info':
+                #     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
+                #     if 'email' in user_info and user_info['email']:
+                #         data = {'sender': user_info['email']}
+                #         SendEmail(data=data).send_to_new_wrokers()
+            
+            await db.commit()
+            logger.info_message("Баллы новым сотрудникам успешно отправлены")
+    
+    except Exception as e:
+        logger.error_message(f"Ошибка при отправке уведомлений о днях рождения: {e}")
+        # Откатываем изменения в случае ошибки
+        if 'db' in locals():
+            await db.rollback()
+
 async def send_anniversary_notifications(anniversary_users: List[Dict[str, Any]]):
     """
     Отправка поздравлений с юбилеями регистрации
@@ -219,9 +253,8 @@ async def daily_check():
         birthday_users = await get_today_birthdays()
         await send_birthday_notifications(birthday_users)
         
-        # 2. Юбилеи регистрации
-        # anniversary_users = await get_registration_anniversaries()
-        # await send_anniversary_notifications(anniversary_users)
+        # 2. Новые сотрудники
+        await send_to_new_users()
         
         # 3. Неактивные пользователи
         # inactive_users = await check_inactive_users()
@@ -403,7 +436,7 @@ class AioSchedulerManager:
             # daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)
             
             # 3. Тестовая задача каждую минуту (для мониторинга)
-            test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)
+            # test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)
             
             logger.info_message(f"Задач в планировщике: {len(self.jobs)}")
             

@@ -264,7 +264,7 @@ async def start_background_scheduler():
     logger.info_message("Запуск фонового планировщика задач...")
     
     # Создаём и запускаем задачу планировщика
-    # scheduler_task = asyncio.create_task(scheduler_worker())
-    scheduler_task = await scheduler_worker()
+    scheduler_task = asyncio.create_task(scheduler_worker())
+    # scheduler_task = await scheduler_worker()
 
     return scheduler_task

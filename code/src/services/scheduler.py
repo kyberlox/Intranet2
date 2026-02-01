@@ -200,20 +200,6 @@ async def send_to_new_idea():
     """
     Функция отправляет баллы за идеи со статусом "Принято"
     """
-
-    test_idea = {
-        "id": "38371",
-        "name": "Идея нового контента на наших ресурсах",
-        "user_id": "2366",
-        "username": "(gazinskii.i.v) Игорь Газинский",
-        "content": "Добрый день! Подсмотрел идею на форуме по развитию корпоративных порталов.\r\nКороткие видеоролики – одна из самых популярных сейчас форм контента, наиболее удобных для восприятия. Внедрение такого раздела увеличит глубину просмотра на нашем корпоративном портале и, как мне кажется, активность пользователей;\r\nВозможно, стоит позволить пользователям выкладывать собственные короткие ролики с упрощенной модерацией. Ролики могут быть на любую тематику, раздел талантов или рассказ о каких-либо изменения, и т.д. Такое решение могло бы увеличить еще и количество пользователей в целом;\r\n",
-        "content_type": "text",
-        "date_create": "03.02.2026 16:53:55",
-        "number": "10238492",
-        "status": "Принято",
-        "files": {}
-    }
-
     try:
         from .Idea import Idea
         #Дата запуска капитала ЭМК
@@ -223,7 +209,6 @@ async def send_to_new_idea():
         STATUS_IDEA = "Принято"
         #Получаем все идеи
         all_ideas = await Idea().validate_ideas()
-        all_ideas.append(test_idea)
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
                 date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
@@ -232,7 +217,6 @@ async def send_to_new_idea():
                     continue
                 #пропускаем идеи у которых статус не соответствует 
                 if idea['status'] != STATUS_IDEA:
-                    print(idea["number"])
                     continue
                 
                 send_data = {
@@ -250,38 +234,22 @@ async def send_to_new_idea():
         if 'db' in locals():
             await db.rollback()
                 
-            
-            
-
-
-async def send_anniversary_notifications(anniversary_users: List[Dict[str, Any]]):
+async def send_to_anniversary_in_company():
     """
-    Отправка поздравлений с юбилеями регистрации
-    """
-    if not anniversary_users:
-        return
-    
-    logger = LogsMaker()
-    logger.info_message(f"Отправка поздравлений с юбилеем для {len(anniversary_users)} пользователей")
-    
+    Функция отправляет баллы за годовщину
+    """     
+    LogsMaker().info_message(f"Отправка баллов за годовщину")
+    from ..model.User import User  
     try:
         async with AsyncSessionLocal() as db:
-            for user in anniversary_users:
-                send_data = {
-                    "uuid_from": 4133,  # Административный аккаунт
-                    "uuid_to": int(user['id']),
-                    "activities_id": 8,  # ID активности для юбилея
-                    "description": f"Поздравляем с {user['years']}-летием регистрации!"
-                }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
-            
-            await db.commit()
-            logger.info_message("Уведомления о юбилеях успешно отправлены")
-    
+            await User().anniversary_in_company(session=db)
+        
     except Exception as e:
-        logger.error_message(f"Ошибка при отправке уведомлений о юбилеях: {e}")
+        LogsMaker().error_message(f"Ошибка при отправке баллов за идею: {e}")
+        # Откатываем изменения в случае ошибки
         if 'db' in locals():
             await db.rollback()
+
 
 async def handle_inactive_users(user_ids: List[int]):
     """
@@ -318,9 +286,8 @@ async def daily_check():
         # 3. Идеи
         await send_to_new_idea()
         
-        # 4. Триал (опционально)
-        # expiring_trials = await check_trial_expiring()
-        # await handle_expiring_trials(expiring_trials)
+        # 4. Годовщина
+        await send_to_anniversary_in_company()
         
         logger.info_message(f"ЗАВЕРШЕНИЕ ЕЖЕДНЕВНОЙ ПРОВЕРКИ - УСПЕХ")
         
@@ -488,7 +455,7 @@ class AioSchedulerManager:
             # Добавляем задачи по умолчанию
             
             # 1. Ежедневная проверка каждые 5 минут (исправленный метод)
-            daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
+            # daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
             
             # 2. Ежедневная проверка в 7 утра
             # daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)

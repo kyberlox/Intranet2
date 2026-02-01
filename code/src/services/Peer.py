@@ -298,9 +298,6 @@ class Peer:
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.send_points_to_employee_of_the_year(roots=roots, session=session)
-    
-    async def send_points_to_realized_idea(self, session, user_id, name_idea):
-        return await self.PeerUserModel.send_points_to_realized_idea(name_idea=name_idea, user_id=user_id, session=session)
 
 
 

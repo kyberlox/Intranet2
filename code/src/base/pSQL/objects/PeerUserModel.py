@@ -515,6 +515,7 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
     async def send_auto_points(self, session, data: dict, roots: dict):
+        YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
         try:
             from .MerchStoreModel import MerchStoreModel
             uuid_from = int(roots['user_id'])
@@ -538,8 +539,8 @@ class PeerUserModel:
             elif int(activities_id) == 15:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
-            # elif int(activities_id) in [16, 19, 20, 21, 22, 23, 24]:
-            #     check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+            elif int(activities_id) in YEARS_ID:
+                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
             elif int(activities_id) == 7 or int(activities_id) == 8:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
@@ -782,6 +783,7 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Ошибка в get_moders_list при получении списка модераторов: {e}")
 
     async def get_curators_history(self, session, roots: dict):
+        YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
                 stmt_history = select(self.PeerHistory).where(
@@ -818,8 +820,10 @@ class PeerUserModel:
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 18:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
-                    elif active_users_inf.activities_id in [19, 20]:
+                    elif active_users_inf.activities_id in YEARS_ID:
                         activity_name = f"Награда за юбилей {active_name}"
+                    elif active_users_inf.activities_id == 16:
+                        description = f"Баллы за идею №{active.active_info}"
 
                     
                     info = {
@@ -988,62 +992,3 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в send_points_to_employee_of_the_year: {e}")
     
-    async def send_points_to_realized_idea(self, session, user_id, name_idea):
-        """
-        Функция отправляет пользователю баллы за реализованную идею
-        """
-        try:
-            from .MerchStoreModel import MerchStoreModel
-            uuid_from = 4133
-            uuid_to = user_id
-            activities_id = 1
-            description = f"Баллы за реализованную идею: {name_idea}"
-            # Проверяем существование пользователя
-            stmt_user = select(self.User).where(self.User.id == uuid_to, self.User.active == True)
-            result_user = await session.execute(stmt_user)
-            existing_user = result_user.scalar_one_or_none()
-            
-            if not existing_user:
-                return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует, не удалось автоматически отправить баллы")
-            stmt_max = select(func.max(self.ActiveUsers.id))
-            result_max = await session.execute(stmt_max)
-            max_id = result_max.scalar() or 0
-            new_id = max_id + 1
-            
-            new_action = self.ActiveUsers(
-                id=new_id,
-                uuid_from=uuid_from,
-                uuid_to=uuid_to,
-                description=description,
-                activities_id=activities_id,
-                valid=1,
-                date_time=datetime.now()
-            )
-            session.add(new_action)
-            # await session.commit()
-            
-            stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
-            result_coast = await session.execute(stmt_coast)
-            value = result_coast.scalar()
-            
-            merch_model = MerchStoreModel(uuid_to)
-            add_points = await merch_model.upload_user_sum(session, value)
-            
-            add_history = self.PeerHistory(
-                user_uuid=uuid_from,
-                user_to=uuid_to,
-                active_info=description,
-                active_coast=value,
-                active_id=new_id,
-                info_type='activity',
-                date_time=datetime.now()
-            )
-
-            session.add(add_history)
-            await session.commit()
-            return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
-            
-            
-        except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в send_points_to_realized_idea: {e}")
-        

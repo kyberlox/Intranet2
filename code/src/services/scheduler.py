@@ -265,6 +265,6 @@ async def start_background_scheduler():
     
     # Создаём и запускаем задачу планировщика
     # scheduler_task = asyncio.create_task(scheduler_worker())
-    scheduler_task = asyncio.create_task(scheduler_worker)
+    scheduler_task = await scheduler_worker()
 
     return scheduler_task

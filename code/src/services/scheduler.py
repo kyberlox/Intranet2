@@ -11,7 +11,7 @@ from aioscheduler import TimedScheduler
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.App import get_async_db, AsyncSessionLocal
 # from ..model.User import User
-from ..base.pSQL.models.User import User
+# from ..base.pSQL.models.User import User
 from .MerchStore import MerchStore
 from .Peer import Peer
 
@@ -29,6 +29,7 @@ async def get_today_birthdays() -> List[int]:
     Найти всех пользователей, у которых сегодня день рождения
     Возвращает список ID пользователей
     """
+    from ..base.pSQL.models.User import User
     async with AsyncSessionLocal() as db:
         today = datetime.now()
         
@@ -178,7 +179,7 @@ async def send_to_new_users():
                     "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Добро пожаловать в ЭМК!"
                 }
-                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
 
                 # if send_point['status'] == 'info':
                 #     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)

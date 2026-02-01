@@ -37,7 +37,14 @@ from src.services.Peer import peer_router
 from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
-from src.services.scheduler import start_background_scheduler
+from src.services.scheduler import import (
+    create_lifespan_context,
+    get_scheduler_status,
+    add_scheduler_job,
+    remove_scheduler_job,
+    start_background_scheduler,
+    stop_background_scheduler
+)
 
 from src.services.LogsMaker import LogsMaker
 
@@ -58,53 +65,11 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.base.pSQL.objects.App import get_async_db
 
-from contextlib import asynccontextmanager
-
+# from contextlib import asynccontextmanager
+lifespan = create_lifespan_context()
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')
-
-
-
-# Глобальная переменная для хранения задачи планировщика
-scheduler_task = None
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Управление жизненным циклом приложения
-    """
-    global scheduler_task
-    
-    # Старт приложения
-    logger = LogsMaker()
-    logger.info_message("=" * 50)
-    logger.info_message("Запуск приложения FastAPI")
-    logger.info_message("=" * 50)
-    
-    # Запускаем планировщик в фоне
-    try:
-        scheduler_task = await start_background_scheduler()
-        logger.info_message("✓ Фоновый планировщик запущен")
-    except Exception as e:
-        logger.fatal_message(f"✗ Ошибка запуска планировщика: {e}")
-    
-    yield
-    
-    # Остановка приложения
-    logger.warning_message("=" * 50)
-    logger.warning_message("Остановка приложения FastAPI")
-    logger.warning_message("=" * 50)
-    
-    # Останавливаем планировщик
-    if scheduler_task:
-        scheduler_task.cancel()
-        try:
-            await scheduler_task
-        except asyncio.CancelledError:
-            logger.warning_message("✓ Фоновый планировщик остановлен")
-        except Exception as e:
-            logger.fatal_message(f"Ошибка при остановке планировщика: {e}")
 
 
 

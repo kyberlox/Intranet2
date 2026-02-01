@@ -37,7 +37,7 @@ from src.services.Peer import peer_router
 from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
-from src.services.sheduler import start_background_scheduler
+from src.services.scheduler import start_background_scheduler
 
 from src.services.LogsMaker import LogsMaker
 

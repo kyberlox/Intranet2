@@ -493,6 +493,26 @@ class PeerUserModel:
             return True
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
+    
+    async def check_ideas(self, session, uuid_to, activities_id, year):
+        """
+        Функция проверяет получал ли пользователь баллы в за Принятую иедю
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        try:
+            stmt_count = select(func.count(self.ActiveUsers.id)).where(
+                self.ActiveUsers.uuid_to == uuid_to,
+                self.ActiveUsers.activities_id == activities_id,
+                self.ActiveUsers.description == str(year)
+            )
+            result_count = await session.execute(stmt_count)
+            nodes_count = result_count.scalar()
+            if nodes_count >= 1:
+                return False
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
     async def send_auto_points(self, session, data: dict, roots: dict):
         try:
@@ -518,12 +538,15 @@ class PeerUserModel:
             elif int(activities_id) == 15:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
-            elif int(activities_id) in [16, 19, 20, 21, 22, 23, 24]:
-                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+            # elif int(activities_id) in [16, 19, 20, 21, 22, 23, 24]:
+            #     check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
             elif int(activities_id) == 7 or int(activities_id) == 8:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
+            elif int(activities_id) == 16:
+                check_info = await self.check_ideas(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за идею: check_info = {check_info} ")
 
             
             if check_info is True:

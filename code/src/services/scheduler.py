@@ -196,6 +196,64 @@ async def send_to_new_users():
         if 'db' in locals():
             await db.rollback()
 
+async def send_to_new_idea():
+    """
+    Функция отправляет баллы за идеи со статусом "Принято"
+    """
+
+    test_idea = {
+        "id": "38371",
+        "name": "Идея нового контента на наших ресурсах",
+        "user_id": "2366",
+        "username": "(gazinskii.i.v) Игорь Газинский",
+        "content": "Добрый день! Подсмотрел идею на форуме по развитию корпоративных порталов.\r\nКороткие видеоролики – одна из самых популярных сейчас форм контента, наиболее удобных для восприятия. Внедрение такого раздела увеличит глубину просмотра на нашем корпоративном портале и, как мне кажется, активность пользователей;\r\nВозможно, стоит позволить пользователям выкладывать собственные короткие ролики с упрощенной модерацией. Ролики могут быть на любую тематику, раздел талантов или рассказ о каких-либо изменения, и т.д. Такое решение могло бы увеличить еще и количество пользователей в целом;\r\n",
+        "content_type": "text",
+        "date_create": "03.02.2026 16:53:55",
+        "number": "10238492",
+        "status": "Рассмотрение",
+        "files": {}
+    }
+
+    try:
+        from .Idea import Idea
+        #Дата запуска капитала ЭМК
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-02", '%Y-%m-%d')
+
+        #Статус с которым выдаем баллы
+        STATUS_IDEA = "Принято"
+        #Получаем все идеи
+        all_ideas = await Idea().validate_ideas()
+        all_ideas.append(test_idea)
+        async with AsyncSessionLocal() as db:
+            for idea in all_ideas:
+                date_idea = datetime.strptime(idea['date_create'], '%Y-%m-%d')
+                #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
+                if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
+                    continue
+                #пропускаем идеи у которых статус не соответствует 
+                if idea['status'] != STATUS_IDEA:
+                    print(idea["number"])
+                    continue
+                
+                send_data = {
+                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_to": int(idea['user_id']),
+                    "activities_id": 16, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "description": idea["number"]
+                }
+                send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
+                
+            await db.commit()
+    except Exception as e:
+        logger.error_message(f"Ошибка при отправке баллов за идею: {e}")
+        # Откатываем изменения в случае ошибки
+        if 'db' in locals():
+            await db.rollback()
+                
+            
+            
+
+
 async def send_anniversary_notifications(anniversary_users: List[Dict[str, Any]]):
     """
     Отправка поздравлений с юбилеями регистрации
@@ -257,9 +315,8 @@ async def daily_check():
         # 2. Новые сотрудники
         await send_to_new_users()
         
-        # 3. Неактивные пользователи
-        # inactive_users = await check_inactive_users()
-        # await handle_inactive_users(inactive_users)
+        # 3. Идеи
+        await send_to_new_idea()
         
         # 4. Триал (опционально)
         # expiring_trials = await check_trial_expiring()
@@ -431,7 +488,7 @@ class AioSchedulerManager:
             # Добавляем задачи по умолчанию
             
             # 1. Ежедневная проверка каждые 5 минут (исправленный метод)
-            # daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=120)
+            daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
             
             # 2. Ежедневная проверка в 7 утра
             # daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)

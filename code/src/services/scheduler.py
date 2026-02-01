@@ -35,7 +35,7 @@ async def get_today_birthdays() -> List[int]:
         query = select(User.id).where(
             (extract('month', User.personal_birthday) == today.month) &
             (extract('day', User.personal_birthday) == today.day) &
-            (User.is_active == True)
+            (User.active == True)
         )
         
         result = await db.execute(query)

@@ -210,7 +210,7 @@ async def send_to_new_idea():
         "content_type": "text",
         "date_create": "03.02.2026 16:53:55",
         "number": "10238492",
-        "status": "Рассмотрение",
+        "status": "Принято",
         "files": {}
     }
 

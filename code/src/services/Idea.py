@@ -104,7 +104,7 @@ class Idea:
         
     async def get_ideas(self, user_id, session):
         await self.validate_ideas()
-        # user_id = 2366
+        user_id = 2366
         if user_id is not None:
             #print(user_id)
             result = []

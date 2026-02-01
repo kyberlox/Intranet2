@@ -37,6 +37,7 @@ from src.services.Peer import peer_router
 from src.services.Roots import roots_router, Roots
 from src.services.MerchStore import store_router
 from src.services.AIchat import ai_router
+from src.services.sheduler import start_background_scheduler
 
 from src.services.LogsMaker import LogsMaker
 
@@ -61,6 +62,50 @@ load_dotenv()
 
 DOMAIN = os.getenv('HOST')
 
+
+
+# Глобальная переменная для хранения задачи планировщика
+scheduler_task = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Управление жизненным циклом приложения
+    """
+    global scheduler_task
+    
+    # Старт приложения
+    logger = LogsMaker()
+    logger.debug("=" * 50)
+    logger.debug("Запуск приложения FastAPI")
+    logger.debug("=" * 50)
+    
+    # Запускаем планировщик в фоне
+    try:
+        scheduler_task = await start_background_scheduler()
+        logger.debug("✓ Фоновый планировщик запущен")
+    except Exception as e:
+        logger.fatal_message(f"✗ Ошибка запуска планировщика: {e}")
+    
+    yield
+    
+    # Остановка приложения
+    logger.warning("=" * 50)
+    logger.warning("Остановка приложения FastAPI")
+    logger.warning("=" * 50)
+    
+    # Останавливаем планировщик
+    if scheduler_task:
+        scheduler_task.cancel()
+        try:
+            await scheduler_task
+        except asyncio.CancelledError:
+            logger.warning("✓ Фоновый планировщик остановлен")
+        except Exception as e:
+            logger.fatal_message(f"Ошибка при остановке планировщика: {e}")
+
+
+
 #app = FastAPI(title="МЕГА ТУРБО ГИПЕР УЛЬТРА ИНТРАНЕТ", docs_url="/api/docs") # timeout=60*20 version="2.0", openapi="3.1.0", docs_url="/api/docs"
 app = FastAPI(
     title="Intranet2.0 API DOCS",
@@ -68,7 +113,8 @@ app = FastAPI(
     docs_url=None,#"/api/docs",
     redoc_url=None,
     openapi_url="/api/openapi.json",
-    max_upload_size=1024 * 1024 * 1024 * 2
+    max_upload_size=1024 * 1024 * 1024 * 2,
+    lifespan=lifespan  # Подключаем управление жизненным циклом
 )
 
 app.include_router(users_router, prefix="/api")
@@ -99,18 +145,6 @@ app.include_router(store_router, prefix="/api")
 app.include_router(C_app, prefix="/api")
 
 
-#app.mount("/api/view/app", StaticFiles(directory="./front_jinja/static"), name="app")
-
-#templates = Jinja2Templates(directory="./src/services/templates") 
-
-# origins = [
-#     "http://localhost:8000",
-#     DOMAIN,
-#     "https://intranet.emk.ru",
-#     "http://intranet.emk.ru"
-# ]
-
-
 
 origins = ['*']
 
@@ -137,17 +171,6 @@ app.mount("/api/tours", StaticFiles(directory="./files_db/tours"), name="tours")
 app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
-
-# b24_docs_routs = [
-#     "/api/users_depart"
-# ]
-
-
-# for route in app.routes:
-#     if isinstance(route, APIRoute):# and route.path in b24_docs_routs:
-#         if route.path in b24_docs_routs:
-#             route.tags.append("Битрикс24")
-#             print(route.tags, route.path)
                 
 
 
@@ -170,7 +193,6 @@ open_links = [
     "/api/vcard/by_uuid/", "/api/vcard/get/",
     "/api/idea_pdf/generate_pdf/"
 ]
-
 
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
@@ -349,6 +371,23 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     
     return response
 
+@app.get("/scheduler/status")
+async def scheduler_status():
+    """Статус планировщика"""
+    return {
+        "running": scheduler_task is not None and not scheduler_task.done(),
+        "tasks_scheduled": len(schedule.jobs) if 'schedule' in globals() else 0
+    }
+
+@app.post("/scheduler/run-now")
+async def run_scheduler_now():
+    """
+    Ручной запуск задач планировщика
+    (только для администраторов в продакшене!)
+    """
+    from app.core.scheduler import daily_check
+    await daily_check()
+    return {"message": "Задачи выполнены"}
 
 # Прогресс процесса через вебсокет
 @app.websocket("/ws/progress/{upload_id}")

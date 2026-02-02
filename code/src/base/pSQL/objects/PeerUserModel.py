@@ -859,8 +859,8 @@ class PeerUserModel:
                         user_fio = ""
                         if user_info:
                             user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
-                        merch_value = merch.merch_info.split(', ')[1]
-                        merch_name = merch.merch_info.split(', ')[0]
+                        # merch_value = merch.merch_info.split(', ')[1]
+                        # merch_name = merch.merch_info.split(', ')[0]
                         info = {
                             "id": merch.id,
                             "date_time": merch.date_time,

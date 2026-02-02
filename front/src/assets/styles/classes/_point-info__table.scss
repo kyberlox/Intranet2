@@ -1,11 +1,11 @@
 .point-info__table {
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 17px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow-x: scroll;
-    table-layout: auto;
+    table-layout: fixed;
     width: 100%;
 
     &__slug {

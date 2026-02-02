@@ -17,6 +17,11 @@ export const useUserScore = defineStore('userScoreData', {
         },
         setStatistics(statData: IActivityStatistics[]) {
             this.statistics = statData;
+            let score = 0;
+            statData.forEach((e)=>{
+                return score += e.cost
+            });
+            this.setCurrentScore(score);
         }
     },
 

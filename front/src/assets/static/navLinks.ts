@@ -228,7 +228,7 @@ export const mainMenuPoints: MainMenuPoints = [
         },
         {
             id: 6.2,
-            name: 'Каталог ЭМК',
+            name: 'Магазин мерча',
             href: 'merchStore'
         }
     ]

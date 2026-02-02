@@ -12,6 +12,8 @@ export interface INewActivityData {
     id?: number
     activity_id?: string
     uuid?: string | number
+    is_auto?: boolean
+    description?: string
 }
 
 export interface IPurchaseMerchData {

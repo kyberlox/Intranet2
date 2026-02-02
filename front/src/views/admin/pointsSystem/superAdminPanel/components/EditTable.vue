@@ -93,7 +93,7 @@ export default defineComponent({
             keys: string[];
             name: 'activity' | 'curator' | 'moder' | 'admin';
         }[] = [{
-            id: 1, keys: ['Параметр', 'Стоимость'], name: 'activity'
+            id: 1, keys: ['Параметр', 'Описание', 'Стоимость'], name: 'activity'
         },
         {
             id: 2, keys: ['Сотрудник', 'Активность'], name: 'curator'
@@ -116,7 +116,6 @@ export default defineComponent({
                 case 'activity':
                     if (!newEntity) return;
                     Api.put('peer/new_activity', newEntity)
-                        .then((data) => console.log(data))
                         .finally(() =>
                             setTimeout(() => {
                                 reloadTable(('activity'))

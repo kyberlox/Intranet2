@@ -43,10 +43,7 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
             break;
         case 'score':
         if(featureFlags.pointsSystem){     
-            const scoreRoutes = [{
-                route: '/peer/sum',
-                functionName: useUserScore().setCurrentScore
-            },
+            const scoreRoutes = [
             {
                 route: '/peer/actions',
                 functionName: useUserScore().setActions

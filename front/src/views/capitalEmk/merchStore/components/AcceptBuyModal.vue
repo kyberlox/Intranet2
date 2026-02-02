@@ -1,6 +1,12 @@
 <template>
 <SlotModal @close="$emit('closeModal')">
     <div class="merch-store__accept-buy-modal__wrapper">
+        <div class="merch-store__accept-buy-modal__balance header__points-balance">
+            <span>Ваш баланс: </span>
+            <span>
+                {{ currentScore }}
+            </span>
+        </div>
         <div class="merch-store__accept-buy-modal__content">
             <p class="merch-store__accept-buy-modal__title">
                 {{
@@ -31,9 +37,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref, watch, computed } from 'vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import Loader from '@/components/layout/Loader.vue';
+import { useUserScore } from '@/stores/userScoreData';
 
 export default defineComponent({
     components: {
@@ -47,7 +54,7 @@ export default defineComponent({
         customPrice: {
             type: Boolean,
             default: () => false
-        }
+        },
     },
     setup(props, { emit }) {
         const quantity = ref(1);
@@ -59,6 +66,7 @@ export default defineComponent({
 
         return {
             quantity,
+            currentScore: computed(() => useUserScore().getCurrentScore),
             accept: () => emit('acceptBuy', quantity.value, props.customPrice)
         }
     }

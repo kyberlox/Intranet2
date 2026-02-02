@@ -1,6 +1,9 @@
 @use '/src/assets/styles/mixins' as *;
 
 .dark-mode {
+    strong {
+        color: var(--emk-brand-color) !important;
+    }
 
     // бургер
     .navbar {
@@ -98,6 +101,13 @@
     .modal__wrapper,
     .training-feedback {
         background: #131313;
+    }
+
+    .news-inner__page__wrapper {
+        .swiper-slide {
+            background-color: rgba(0, 0, 0, 0.86) !important;
+            background-blend-mode: darken !important;
+        }
     }
 
     .postcard__form-wrapper,

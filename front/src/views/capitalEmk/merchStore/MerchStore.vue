@@ -1,12 +1,13 @@
 <template>
 <div class="mt20">
-    <div class="page__title">Магазин "Капитал ЭМК"</div>
+    <div class="page__title"
+         @click="console.log(merchItems)">Магазин "Капитал ЭМК"</div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
              v-if="merchItems.length && !isLoading">
             <RouterLink :to="{ name: 'merchStoreItem', params: { id: item.id } }"
                         class="merch-store__grid__item"
-                        v-for="item in merchItems.sort((a, b) => (b.indirect_data?.price || 0) - (a.indirect_data?.price || 0))"
+                        v-for="item in sortedMerchItems"
                         :key="item.id">
                 <div v-if="item.indirect_data?.images"
                      class="merch-store__grid__item__info">
@@ -20,8 +21,13 @@
                 <div v-if="item.indirect_data?.price"
                      class="merch-store__grid__item__price merch-store__grid__item__info__item__price merch-store__grid__item__info__item">
                     <span class="">
-                        {{ item.indirect_data?.price }}
-                    </span> эмк-коинов
+                        <strong>
+                            {{
+                                String(item.indirect_data?.price).replace(/(\d)(?=(\d{3})+([^\d]|$))/g, "$1 ")
+                            }}
+                        </strong>
+                        баллов
+                    </span>
                 </div>
             </RouterLink>
         </div>
@@ -72,6 +78,22 @@ export default defineComponent({
         const swiperOn = (swiper: SwiperType) => {
             swiperInstance.value = swiper;
         }
+        const sortedMerchItems = computed(() => {
+            return [...merchItems.value].sort((a, b) => {
+                const priceA = a.indirect_data?.price;
+                const priceB = b.indirect_data?.price;
+
+                // Если обе цены пустые, сохраняем порядок
+                if (!priceA && !priceB) return 0;
+
+                // Пустые цены в конец
+                if (!priceA) return 1;
+                if (!priceB) return -1;
+
+                // Сортируем по числовому значению
+                return Number(priceA) - Number(priceB);
+            });
+        });
 
         onMounted(() => {
             isLoading.value = true;
@@ -87,6 +109,7 @@ export default defineComponent({
             allActivities,
             pointsAboutOpen,
             featureFlags,
+            sortedMerchItems,
             swiperOn
         }
     }

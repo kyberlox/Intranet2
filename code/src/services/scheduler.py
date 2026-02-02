@@ -218,14 +218,11 @@ async def send_to_new_idea():
         all_ideas = await Idea().validate_ideas()
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                try:
+                if 'T' in idea['date_create']:
+                    date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
+                else:
                     date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
-                except ValueError:
-                    try:
-                        date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
-                        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
-                    except:
-                        print('другая неведомая хуйня')
+                
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue

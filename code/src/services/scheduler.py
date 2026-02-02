@@ -250,7 +250,6 @@ async def send_to_new_idea():
                 # if '-' in idea['date_create']:
                 #     date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
                 # else:
-                print(idea['date_create'])
                 date_idea = make_date_valid(idea['date_create'])
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
@@ -285,7 +284,7 @@ async def send_to_anniversary_in_company():
             await User().anniversary_in_company(session=db)
         
     except Exception as e:
-        LogsMaker().error_message(f"Ошибка при отправке баллов за идею: {e}")
+        LogsMaker().error_message(f"Ошибка при отправке баллов за годовщину: {e}")
         # Откатываем изменения в случае ошибки
         if 'db' in locals():
             await db.rollback()

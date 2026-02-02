@@ -187,7 +187,7 @@ async def send_birthday_notifications(user_ids: List[int]):
                     user_info = await User(id=int(user_id)).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
-                        # SendEmail(data=data).send_to_birthday_notifications()
+                        SendEmail(data=data).send_to_birthday_notifications()
             await db.commit()
             logger.info_message("Уведомления о днях рождения успешно отправлены")
     
@@ -220,7 +220,7 @@ async def send_to_new_users():
                     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
-                        # SendEmail(data=data).send_to_new_wrokers()
+                        SendEmail(data=data).send_to_new_wrokers()
             
             await db.commit()
             logger.info_message("Баллы новым сотрудникам успешно отправлены")
@@ -494,7 +494,7 @@ class AioSchedulerManager:
             # Добавляем задачи по умолчанию
             
             # 1. Ежедневная проверка каждые 5 минут (исправленный метод)
-            daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
+            # daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
             
             # 2. Ежедневная проверка в 7 утра
             # daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)

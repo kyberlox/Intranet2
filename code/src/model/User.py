@@ -24,39 +24,34 @@ def make_date_valid(date):
                 if 'T' in date:
                     if '+' in date:
                         try:
-                            print(-1)
                             return datetime.strptime(date.split('+')[0], '%Y-%m-%dT%H:%M:%S')
                         except:
-                            print(-2)
                             return datetime.strptime(date.split('+')[0], '%Y-%m-%d')
                     else:
                         try:
                             # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                            print(1)
                             return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
                         except:
                             # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                             # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                            print(2)
                             return datetime.strptime(date, '%Y-%m-%d')
                 else:
                     try:
                         # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                        print(3)
+                        
                         return datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
                     except:
                         # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                         # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                        print(4)
+                       
                         return datetime.strptime(date, '%Y-%m-%d')
             elif '.' in date:
                 try:
-                    print(5)
                     return datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                     # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
                 except:
                     # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    print(6)
+                    
                     return datetime.strptime(date, '%d.%m.%Y')
                     # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 

@@ -370,7 +370,7 @@ async def post_edit_activity(request: Request, session: AsyncSession = Depends(g
     if uuid is None:
         uuid = 2366
     return await Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'],
-                      need_valid=data['need_valid'], active=data['active']).edit_activity(session)
+                      need_valid=data['need_valid'], active=data['active'], description=data['description']).edit_activity(session)
 
 
 @peer_router.delete("/remove_activity/{id}")

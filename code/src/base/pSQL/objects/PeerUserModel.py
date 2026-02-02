@@ -842,7 +842,7 @@ class PeerUserModel:
                         "action_id": active_users_inf.id
                     }
                     activity_history.append(info)
-                
+                print(123)
                 #Собираем историю покупок мерча
                 if roots["PeerAdmin"] is True:
                     stmt_merch = select(self.PeerHistory).where(
@@ -851,6 +851,7 @@ class PeerUserModel:
                     result_merch = await session.execute(stmt_merch)
                     merch_history = result_merch.scalars().all()
                     for merch in merch_history:
+                        print(123)
                         stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == merch.user_uuid)
                         result_user = await session.execute(stmt_user)
                         user_info = result_user.first()

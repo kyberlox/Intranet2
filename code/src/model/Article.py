@@ -1671,7 +1671,9 @@ class Article:
                     url = file["file_url"]
                     file["file_url"] = f"{DOMAIN}{url}"
                     art['documentation'].append(file)
-
+        # сортируем фотки по айдишникам
+        sorted_images = sorted(art['images'], key=lambda x: int(x['id']), reverse=True)
+        art['images'] = sorted_images
         self.section_id = art['section_id']
         prev = await self.get_preview(session)
         art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"

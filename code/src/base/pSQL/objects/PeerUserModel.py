@@ -542,7 +542,7 @@ class PeerUserModel:
             elif int(activities_id) in YEARS_ID:
                 check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
-            elif int(activities_id) == 7 or int(activities_id) == 8:
+            elif int(activities_id) == 20 or int(activities_id) == 8:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
             elif int(activities_id) == 16:
@@ -590,8 +590,7 @@ class PeerUserModel:
                             info_type='activity',
                             date_time=datetime.now()
                         )
-                        if uuid_to == 1037:
-                            print('ну выдает же')
+                        
                         session.add(add_history)
                         # await session.commit()
                         return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
@@ -816,9 +815,9 @@ class PeerUserModel:
 
                     activity_name = active_name
                     description = active.active_info
-                    if active_users_inf.activities_id == 7:
+                    if active_users_inf.activities_id == 20:
                         description = f"Лучший сотрудник {active.active_info} года"
-                    elif active_users_inf.activities_id == 18:
+                    elif active_users_inf.activities_id == 8:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in YEARS_ID:
                         activity_name = f"Награда за юбилей {active_name}"
@@ -847,6 +846,7 @@ class PeerUserModel:
                     result_merch = await session.execute(stmt_merch)
                     merch_history = result_merch.scalars().all()
                     for merch in merch_history:
+                        
                         stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == merch.user_uuid)
                         result_user = await session.execute(stmt_user)
                         user_info = result_user.first()
@@ -854,8 +854,8 @@ class PeerUserModel:
                         user_fio = ""
                         if user_info:
                             user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
-                        merch_value = merch.merch_info.split(', ')[1]
-                        merch_name = merch.merch_info.split(', ')[0]
+                        # merch_value = merch.merch_info.split(', ')[1]
+                        # merch_name = merch.merch_info.split(', ')[0]
                         info = {
                             "id": merch.id,
                             "date_time": merch.date_time,
@@ -958,8 +958,9 @@ class PeerUserModel:
     async def send_points_to_employee_of_the_year(self, session, roots: dict):
         """
         Функция вытягивает всех номинантов "Сотрудник года" и "Почетная грамота" по всем годам
-        Выдает баллы если раннее они не были назначены
+        Выдает баллы если раннее они не были назначены и год выдачи баллов больше или равно году запуска Капитала ЭМК
         """
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-01", '%Y-%m-%d')
         from .ArticleModel import ArticleModel
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
@@ -968,22 +969,24 @@ class PeerUserModel:
                     return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
                 for article in articles_employers:
                     uuid_to = article['indirect_data']['uuid'] if 'uuid' in article['indirect_data'] else article['indirect_data']['user_id']
-                    if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
-                        send_data = {
-                            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                            "uuid_to": uuid_to,
-                            "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
-                            "description": article['indirect_data']['year']
-                        }
-                    elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
-                        print('почетная грамота?', article['id'], uuid_to)
-                        send_data = {
-                            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                            "uuid_to": uuid_to,
-                            "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
-                            "description": article['indirect_data']['year']
-                        }
-                    await self.send_auto_points(session=session, data=send_data, roots=roots)
+                    year_award = datetime.strptime(f'01.01.{article['indirect_data']['year']}', '%d.%m.%Y')
+                    if year_award.year >= LAUNCH_DATE_OF_CAPITAL_EMK.year:
+                        if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
+                            send_data = {
+                                "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                                "uuid_to": uuid_to,
+                                "activities_id": 20, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                                "description": article['indirect_data']['year']
+                            }
+                        elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
+                            print('почетная грамота?', article['id'], uuid_to)
+                            send_data = {
+                                "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                                "uuid_to": uuid_to,
+                                "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                                "description": article['indirect_data']['year']
+                            }
+                        await self.send_auto_points(session=session, data=send_data, roots=roots)
                 await session.commit()
                 return True
             else:

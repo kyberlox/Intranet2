@@ -136,6 +136,7 @@ async def send_birthday_notifications(user_ids: List[int]):
     """
     Отправка уведомлений о днях рождения
     """
+    from .SendEmail import SendEmail
     if not user_ids:
         return
     
@@ -152,7 +153,11 @@ async def send_birthday_notifications(user_ids: List[int]):
                     "description": f"Поздравительные баллы. С днем рождения!"
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
-            
+                if send_point['status'] == 'info':
+                    user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
+                    if 'email' in user_info and user_info['email']:
+                        data = {'sender': user_info['email']}
+                        SendEmail(data=data).send_to_birthday_notifications()
             await db.commit()
             logger.info_message("Уведомления о днях рождения успешно отправлены")
     
@@ -169,6 +174,7 @@ async def send_to_new_users():
     logger = LogsMaker()
     logger.info_message(f"Отправка баллов новым сотрудникам")
     from ..model.User import User
+    from .SendEmail import SendEmail
     try:
         async with AsyncSessionLocal() as db:
             users = await User().get_new_workers(session=db)
@@ -181,11 +187,11 @@ async def send_to_new_users():
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
 
-                # if send_point['status'] == 'info':
-                #     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
-                #     if 'email' in user_info and user_info['email']:
-                #         data = {'sender': user_info['email']}
-                #         SendEmail(data=data).send_to_new_wrokers()
+                if send_point['status'] == 'info':
+                    user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
+                    if 'email' in user_info and user_info['email']:
+                        data = {'sender': user_info['email']}
+                        SendEmail(data=data).send_to_new_wrokers()
             
             await db.commit()
             logger.info_message("Баллы новым сотрудникам успешно отправлены")

@@ -166,16 +166,6 @@ class User:
         # from ..base.pSQL.objects import UserModel
         from ..services.Peer import Peer
         users = await self.UserModel.find_all_celebrants(date=date, session=session)
-        # if users:
-        #     for user in users:
-        #         send_data = {
-        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-        #             "uuid_to": int(user['id']),
-        #             "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-        #             "description": f"Поздравительные баллы. С днем рождения!"
-        #         }
-        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
-                # await session.commit()
         return users
 
     async def get_all_users(self, session):
@@ -186,22 +176,6 @@ class User:
         # from ..base.pSQL.objects import UserModel
         from ..services.Peer import Peer
         users = await self.UserModel.new_workers(session)
-        # if users:
-        #     for user in users:
-        #         send_data = {
-        #             "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-        #             "uuid_to": int(user['id']),
-        #             "activities_id": 15, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-        #             "description": f"Добро пожаловать в ЭМК!"
-        #         }
-        #         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
-                # await session.commit()
-        #         if send_point['status'] == 'info':
-        #             self.UserModel.id = int(user['id'])
-        #             user_info = await self.UserModel.find_by_id(session)
-        #             if 'email' in user_info and user_info['email']:
-        #                 data = {'sender': user_info['email']}
-        #                 SendEmail(data=data).send_to_new_wrokers()
 
         return users
 
@@ -248,7 +222,7 @@ class User:
                         # ставим для теста текущий год - 2027
                         # teset_date = datetime.strptime("2031-01-29", '%Y-%m-%d')
 
-                        year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
+                        year_diff = abs(datetime.today().year - convert_date_reg.year)
                         # year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
                         if year_diff >= 30:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 30 лет')
@@ -257,6 +231,8 @@ class User:
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_jubilee_in_company(year=30)
                             continue
                         elif year_diff >= 25:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 25 лет')
@@ -265,6 +241,8 @@ class User:
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
                             continue
                         elif year_diff >= 20:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 20 лет')
@@ -273,6 +251,8 @@ class User:
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
                             continue
                         elif year_diff >= 15:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 15 лет')
@@ -281,6 +261,8 @@ class User:
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
                             continue
                         elif year_diff >= 10:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
@@ -289,6 +271,8 @@ class User:
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
                             continue
                         elif year_diff >= 5:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
@@ -297,6 +281,8 @@ class User:
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
                             continue
                         elif year_diff >= 1:
                             LogsMaker().info_message(f'Пользователь {user.id} год с нами')
@@ -304,6 +290,8 @@ class User:
                             send_data['description'] = "+ год вы с нами!"
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            email_data = {'sender': user['email']}
+                            SendEmail(data=email_data).send_to_anniversary_in_company(year=year_diff)
                             continue
                         else:
                             LogsMaker().info_message(f'разница меньше года {user.id}')
@@ -328,6 +316,7 @@ class User:
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
         try:
+            await asyncio.sleep(15)
             res = await B24().getUser(self.id)
             if res:
                 usr_data = res[0]
@@ -350,6 +339,12 @@ class User:
                         # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
                         # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
                         # проверим url первоисточника текущей аватарки
+                        if psql_user['photo_file_id'] is None:
+                            print('photo_file_id is Non')
+                        if psql_user['photo_file_b24_url'] != b24_url:
+                            photo_file_id = psql_user['photo_file_id']
+                            print(f'{photo_file_id} != {b24_url}')
+
                         if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
                             # срабатывает это условие и уходит в else
                             print('РАЗНЫЕ ФОТКИ')

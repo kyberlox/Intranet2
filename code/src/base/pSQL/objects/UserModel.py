@@ -117,7 +117,7 @@ class UserModel:
                                     need_update = True
                             except ValueError:
                                 pass
-                        elif current_value is not None:
+                        elif current_value is not None and column in user_data:
                             updates[column] = None
                             need_update = True
                     else:
@@ -225,19 +225,20 @@ class UserModel:
                     current_value = getattr(user, column, None)
                     new_value = user_data.get(column)
                     
-                    if column == 'personal_birthday':
+                    if column == 'personal_birthday': #для ДР
                         # Обработка дат
-                        if new_value and new_value != "":
+                        if new_value and new_value != "" and new_value is not None: #если новое занчение ДР не пустая строка и не None
+                            print("полез в дату дня рождения")
                             try:
-                                dt_new = datetime.strptime(new_value.split('T')[0], '%Y-%m-%d').date()
+                                dt_new = datetime.strptime(new_value.split('T')[0], '%Y-%m-%d').date() #валидируем
                                 if current_value is None or dt_new != current_value.date():
                                     updates[column] = dt_new
                                     need_update = True
                             except ValueError:
                                 pass
-                        elif current_value is not None:
-                            updates[column] = None
-                            need_update = True
+                        # elif current_value is not None and column in user_data: #если пришла пустая, а была не пустая
+                        #     updates[column] = None #зануляем
+                        #     need_update = True
                     else:
                         if new_value != current_value and new_value != None and new_value != "": #не перзаписывай основные поля на пустые занчения
                             updates[column] = new_value if new_value != "" else None

@@ -185,7 +185,7 @@ class MerchStoreModel:
             # money_left = user.user_points - data["user_points"]
             user.user_points -= data["user_points"]
             # Добавляем запись в историю
-            merch_description = f"Пользователь частично купил {merch_info.name}"
+            merch_description = f"{merch_info.name} за {data["user_points"]} ЭМК коинов"
             add_history = PeerHistory(
                 user_uuid=self.user_id,
                 merch_info=merch_description,

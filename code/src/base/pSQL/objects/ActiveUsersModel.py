@@ -343,45 +343,44 @@ class ActiveUsersModel:
             results = result_activities.all()
             
             activities = []
-            if not results:
-                return activities
-            for row in results:
-                # Получаем информацию о пользователе
-                stmt_user = select(
-                    self.User.name, 
-                    self.User.second_name, 
-                    self.User.last_name
-                ).where(self.User.id == row.uuid_from)
-                
-                result_user = await session.execute(stmt_user)
-                user_info = result_user.first()
-                
-                user_fio = ""
-                if user_info:
-                    user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
-                
-                activity_name = row.name
-                description = row.description
-
-                if row[-1] == 7:
-                    description = f"Лучший сотрудник {row.description} года"
-                elif row[-1] == 18:
-                    description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
-                elif row[-1] in YEARS_ID:
-                    activity_name = f"Награда за юбилей {row.name}"
-                elif row[-1] in 16:
-                    activity_name = f"Баллы за идею №{row.description}"
+            if results:
+                for row in results:
+                    # Получаем информацию о пользователе
+                    stmt_user = select(
+                        self.User.name, 
+                        self.User.second_name, 
+                        self.User.last_name
+                    ).where(self.User.id == row.uuid_from)
                     
-                activities.append({
-                    "id_activeusers": row.id,
-                    "uuid_from": row.uuid_from,
-                    "fio_from": user_fio,
-                    "description": description,
-                    "date_time": row.date_time,
-                    "activity_name": activity_name,
-                    "cost": row.coast,
-                    "id_activites": row[-1]
-                })
+                    result_user = await session.execute(stmt_user)
+                    user_info = result_user.first()
+                    
+                    user_fio = ""
+                    if user_info:
+                        user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
+                    
+                    activity_name = row.name
+                    description = row.description
+
+                    if row[-1] == 7:
+                        description = f"Лучший сотрудник {row.description} года"
+                    elif row[-1] == 18:
+                        description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
+                    elif row[-1] in YEARS_ID:
+                        activity_name = f"Награда за юбилей {row.name}"
+                    elif row[-1] in 16:
+                        activity_name = f"Баллы за идею №{row.description}"
+                        
+                    activities.append({
+                        "id_activeusers": row.id,
+                        "uuid_from": row.uuid_from,
+                        "fio_from": user_fio,
+                        "description": description,
+                        "date_time": row.date_time,
+                        "activity_name": activity_name,
+                        "cost": row.coast,
+                        "id_activites": row[-1]
+                    })
 
             # Получаем историю мерча
             stmt_merch = select(self.PeerHistory).where(

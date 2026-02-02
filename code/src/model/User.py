@@ -185,23 +185,26 @@ class User:
         Функция проверяет прошел ли год с момента последней годовщины работы в компании.
         Или может быть наступил юбилей работы в компании
         Подставляет нужный айдишник активности, в случае юбилея отправляет письмо
-        ID = 16 - это +год рабоыты в компании
-        ID = 19 - это Юбилей 5 лет работы в компании
-        ID = 20 - это Юбилей 10 лет работы в компании
-        ID = 16 - это +год рабоыты в компании
-        ID = 19 - это Юбилей 5 лет работы в компании
-        ID = 20 - это Юбилей 10 лет работы в компании
+        ID = 7 - это +год рабоыты в компании
+        ID = 8 - это Юбилей 5 лет работы в компании
+        ID = 9 - это Юбилей 10 лет работы в компании
+        ID = 10 - это +год рабоыты в компании
+        ID = 11 - это Юбилей 5 лет работы в компании
+        ID = 12 - это Юбилей 10 лет работы в компании
+        ID = 13 - это Юбилей 10 лет работы в компании
+        ID = 14 - это Юбилей 10 лет работы в компании
+        ID = 15 - это Юбилей 10 лет работы в компании
         """
         from ..services.Peer import Peer
         from datetime import datetime
         LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
-        YEARS_ID = {'1': 21, "5": 22, "10": 23, "15": 24, "20": 25, "25": 26, "30": 27} # менять значеняи к годам если поменялись айдишники
+        YEARS_ID = {'1': 7, "5": 8, "10": 9, "15": 10, "20": 11, "25": 12, "30": 13, "35": 14, "40": 15} # менять значеняи к годам если поменялись айдишники
         TODAY = datetime.today().date() # 2026-01-20 00:00:00
         all_users = await self.UserModel.all(session)
         send_data = {
-            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+            "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
             "uuid_to": 0,
-            "activities_id": 0, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "activities_id": 0,
             "description": ""
         }
         for user in all_users:
@@ -224,7 +227,27 @@ class User:
 
                         year_diff = abs(datetime.today().year - convert_date_reg.year)
                         # year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
-                        if year_diff >= 30:
+                        if year_diff >= 40:
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 40 лет')
+                            send_data['activities_id'] = YEARS_ID['40']
+                            send_data['description'] = "40 лет вы с нами!"
+                            send_data['uuid_to'] = user.id
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=40)
+                            continue
+                        elif year_diff >= 35:
+                            LogsMaker().info_message(f'У пользователя {user.id} годовщина 35 лет')
+                            send_data['activities_id'] = YEARS_ID['35']
+                            send_data['description'] = "35 лет вы с нами!"
+                            send_data['uuid_to'] = user.id
+                            send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+                            # Добавить письмо
+                            email_data = {'sender': user['email']}
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=35)
+                            continue
+                        elif year_diff >= 30:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 30 лет')
                             send_data['activities_id'] = YEARS_ID['30']
                             send_data['description'] = "30 лет вы с нами!"
@@ -232,7 +255,7 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_jubilee_in_company(year=30)
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=30)
                             continue
                         elif year_diff >= 25:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 25 лет')
@@ -242,7 +265,7 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
                             continue
                         elif year_diff >= 20:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 20 лет')
@@ -252,7 +275,7 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
                             continue
                         elif year_diff >= 15:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 15 лет')
@@ -262,7 +285,7 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
                             continue
                         elif year_diff >= 10:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
@@ -272,7 +295,7 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
                             continue
                         elif year_diff >= 5:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
@@ -282,16 +305,16 @@ class User:
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             # Добавить письмо
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
+                            # SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
                             continue
                         elif year_diff >= 1:
-                            LogsMaker().info_message(f'Пользователь {user.id} год с нами')
+                            LogsMaker().info_message(f'Пользователь {user.id} с нами {year_diff} лет')
                             send_data['activities_id'] = YEARS_ID['1']
                             send_data['description'] = "+ год вы с нами!"
                             send_data['uuid_to'] = user.id
                             send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                             email_data = {'sender': user['email']}
-                            SendEmail(data=email_data).send_to_anniversary_in_company(year=year_diff)
+                            # SendEmail(data=email_data).send_to_anniversary_in_company(year=year_diff)
                             continue
                         else:
                             LogsMaker().info_message(f'разница меньше года {user.id}')

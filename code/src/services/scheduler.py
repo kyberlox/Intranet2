@@ -136,6 +136,7 @@ async def send_birthday_notifications(user_ids: List[int]):
     """
     Отправка уведомлений о днях рождения
     """
+    from ..model.User import User
     from .SendMail import SendEmail
     if not user_ids:
         return
@@ -217,7 +218,11 @@ async def send_to_new_idea():
         all_ideas = await Idea().validate_ideas()
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
+                try:
+                    date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
+                except:
+                    date_idea = datetime.strptime(idea['date_create'].split()[0], '%Y-%m-%d')
+                    LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue

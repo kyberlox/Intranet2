@@ -440,7 +440,7 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_birthday_points: {e}")
 
-    async def check_anniversary_in_company(self, session, uuid_to, activities_id, date_register):
+    async def check_anniversary_in_company(self, session, uuid_to, activities_id):
         """
         Функция проверяет прошел ли год с момента последней годовщины работы в компании.
         Возвращает False если пользователь уже получил баллы 
@@ -540,7 +540,7 @@ class PeerUserModel:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
             elif int(activities_id) in YEARS_ID:
-                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
             elif int(activities_id) == 2 or int(activities_id) == 6:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)

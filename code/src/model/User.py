@@ -22,7 +22,7 @@ def make_date_valid(date):
         if isinstance(date, str):
             if '-' in date:
                 if 'T' in date:
-                    if '+' id date:
+                    if '+' in date:
                         try:
                             print(-1)
                             return datetime.strptime(date.split('+')[0], '%Y-%m-%dT%H:%M:%S')

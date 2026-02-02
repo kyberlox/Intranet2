@@ -533,7 +533,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
         return LogsMaker().warning_message(message="Login or Password has missing")
 
     session = await AuthService().root_authenticate(login, password, sess)
-    
+    print(session, 'рутовская штучка')
     if not session:
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")

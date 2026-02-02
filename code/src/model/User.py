@@ -248,7 +248,7 @@ class User:
                         # ставим для теста текущий год - 2027
                         # teset_date = datetime.strptime("2031-01-29", '%Y-%m-%d')
 
-                        year_diff = abs(datetime.today().year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
+                        year_diff = abs(datetime.today().year - convert_date_reg.year)
                         # year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
                         if year_diff >= 30:
                             LogsMaker().info_message(f'У пользователя {user.id} годовщина 30 лет')

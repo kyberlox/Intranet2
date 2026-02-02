@@ -325,6 +325,7 @@ class ActiveUsersModel:
     async def user_history(self, session):
         YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
         try:
+            print(self.uuid_to, 'айдишник пользователя')
             # Получаем активность пользователя
             stmt_activities = select(
                 self.ActiveUsers.id,
@@ -344,6 +345,7 @@ class ActiveUsersModel:
             
             activities = []
             if results:
+                print('получаем результат')
                 for row in results:
                     # Получаем информацию о пользователе
                     stmt_user = select(
@@ -381,7 +383,7 @@ class ActiveUsersModel:
                         "cost": row.coast,
                         "id_activites": row[-1]
                     })
-
+            print('смотрим мерч')
             # Получаем историю мерча
             stmt_merch = select(self.PeerHistory).where(
                 self.PeerHistory.user_uuid == self.uuid_to,

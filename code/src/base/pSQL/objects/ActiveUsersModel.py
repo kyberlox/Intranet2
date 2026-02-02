@@ -390,7 +390,9 @@ class ActiveUsersModel:
             )
             result_merch = await session.execute(stmt_merch)
             merch_history = result_merch.scalars().all()
-            
+            if not merch_history:
+                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
             for merch in merch_history:
                 activities.append({
                     "id": merch.id,

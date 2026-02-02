@@ -236,7 +236,7 @@ class UserModel:
                                     need_update = True
                             except ValueError:
                                 pass
-                        # elif current_value is not None: #если пришла пустая, а была не пустая
+                        # elif current_value is not None and column in user_data: #если пришла пустая, а была не пустая
                         #     updates[column] = None #зануляем
                         #     need_update = True
                     else:

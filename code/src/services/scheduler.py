@@ -22,6 +22,35 @@ _scheduler = None
 _scheduler_task = None
 _scheduler_manager = None
 
+
+def make_date_valid(date):
+    if date is not None:
+        if isinstance(date, str):
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+            elif '.' in date:
+                try:
+                    return datetime.datetime.strptime(date, '%d.%m.%Y')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                except:
+                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    return datetime.datetime.strptime(date, '%d.%m.%Y')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 # ==================== РЕАЛИЗАЦИЯ ЗАПРОСОВ ====================
 
 async def get_today_birthdays() -> List[int]:
@@ -218,10 +247,10 @@ async def send_to_new_idea():
         all_ideas = await Idea().validate_ideas()
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                if '-' in idea['date_create']:
-                    date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
-                else:
-                    date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
+                # if '-' in idea['date_create']:
+                #     date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
+                # else:
+                date_idea = make_date_valid(idea['date_create'])
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue

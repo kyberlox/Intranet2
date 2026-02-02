@@ -817,16 +817,12 @@ class PeerUserModel:
                     activity_name = active_name
                     description = active.active_info
                     if active_users_inf.activities_id == 20:
-                        print(active_users_inf.id, '123')
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 8:
-                        print(active_users_inf.id, '123')
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in YEARS_ID:
-                        print(active_users_inf.id, '123')
                         activity_name = f"Награда за юбилей {active_name}"
                     elif active_users_inf.activities_id == 16:
-                        print(active_users_inf.id, '123')
                         description = f"Баллы за идею №{active.active_info}"
 
                     
@@ -842,7 +838,7 @@ class PeerUserModel:
                         "action_id": active_users_inf.id
                     }
                     activity_history.append(info)
-                print(123)
+                
                 #Собираем историю покупок мерча
                 if roots["PeerAdmin"] is True:
                     stmt_merch = select(self.PeerHistory).where(
@@ -851,7 +847,7 @@ class PeerUserModel:
                     result_merch = await session.execute(stmt_merch)
                     merch_history = result_merch.scalars().all()
                     for merch in merch_history:
-                        print(123)
+                        
                         stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == merch.user_uuid)
                         result_user = await session.execute(stmt_user)
                         user_info = result_user.first()

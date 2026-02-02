@@ -159,6 +159,7 @@ async def send_birthday_notifications(user_ids: List[int]):
                 if send_point['status'] == 'info':
                     print(123)
                     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
+                    print(user_info, 'инфа о пользователе')
                     if 'email' in user_info and user_info['email']:
                         print(123)
                         data = {'sender': user_info['email']}

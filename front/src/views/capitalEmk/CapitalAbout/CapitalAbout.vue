@@ -29,7 +29,7 @@
                     для этого также сообщите нам (тел. 5182/5185).
                 </li>
             </ul>
-            Перейти в магазин мерча можно по кнопке
+            Как потратить баллы
         </span>
         <RouterLink :to="{ name: 'merchStore' }"
                     class="primary-button">
@@ -42,7 +42,7 @@
             каждую из них.
             <CapitalActivityTable :title="'За что начисляют баллы'"
                                   :allActivities="allActivities.filter((e) => !e.name.includes('Годовщина') && !e.name.includes('Юбилейная')).sort((a, b) => a.coast - b.coast)" />
-            <CapitalActivityTable :title="'Баллы за время работы в компании'"
+            <CapitalActivityTable :title="'Баллы за стаж работы в компании'"
                                   :allActivities="allActivities.filter((e) => e.name.includes('Годовщина') || e.name.includes('Юбилейная')).sort((a, b) => a.coast - b.coast)" />
         </div>
     </div>

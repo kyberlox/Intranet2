@@ -218,7 +218,7 @@ async def send_to_new_idea():
         all_ideas = await Idea().validate_ideas()
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                if 'T' in idea['date_create']:
+                if '-' in idea['date_create']:
                     date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
                 else:
                     date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')

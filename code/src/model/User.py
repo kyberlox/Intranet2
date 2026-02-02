@@ -246,6 +246,7 @@ class User:
             "description": ""
         }
         for user in all_users:
+            print(user)
             if user.active is True:
                 # Проверяем либо дату регистрации, либо дату трудоустройства
                 if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or ("date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != ''):

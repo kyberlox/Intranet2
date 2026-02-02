@@ -780,16 +780,7 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
-                        # # отдельно проверяю дату начала для афиши
-                        # elif "date_from" == key and data[key] is not None:
-                        #     print(f'меняю дату date_from с {data[key]} на {make_date_valid(data[key])}')
-                        #     art["indirect_data"][key] = make_date_valid(data[key])
-                        
-                        # # отдельно проверяю дату конца для афиши
-                        # elif "date_to" == key and data[key] is not None:
-                        #     print(f'меняю дату date_to с {data[key]} на {make_date_valid(data[key])}')
-                        #     art["indirect_data"][key] = make_date_valid(data[key])
-                        # else:
+                        #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы

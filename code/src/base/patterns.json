@@ -189,7 +189,6 @@
         "field": "author",
         "data_type": "str"
       },
-       
       {
         "name": "Содержимое",
         "field": "content_text",
@@ -493,6 +492,16 @@
         "field": "date_creation",
         "data_type": "str",
         "disabled": true
+      },
+      {
+        "name": "ID автора",
+        "field": "author_uuid",
+        "data_type": "search_by_uuid"
+      },
+      {
+        "name": "Автор блога",
+        "field": "author",
+        "data_type": "str"
       },
       {
         "name" : "Список доступных тэгов",

@@ -13,8 +13,8 @@
         justify-content: center;
         object-fit: contain;
         // aspect-ratio: 16/9;
-        background: #b1b1b137;
         aspect-ratio: 16/9;
+
 
         &:not(.homeview__grid__card__bg-image--plug) {
             // border: 1px solid rgba(128, 128, 128, 0.333);
@@ -45,7 +45,7 @@
                 justify-content: center;
                 width: 45px;
                 height: 42px;
-                background: #ef7f1b;
+                background: #ef7f1b !important;
                 outline: none;
                 border: none;
                 margin-top: 10px;

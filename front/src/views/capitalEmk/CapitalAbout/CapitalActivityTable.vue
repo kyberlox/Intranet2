@@ -9,6 +9,9 @@
                 </span>
             </th>
             <th class="moderator-panel__head">
+                <span>Описание</span>
+            </th>
+            <th class="moderator-panel__head">
                 <span>Баллы</span>
             </th>
         </tr>
@@ -19,8 +22,15 @@
             :key="activity.id">
             <td v-if="activity.name"
                 class="moderator-panel__cell moderator-panel__cell--date">
+                <b>
+                    <span>
+                        {{ activity.name }}
+                    </span>
+                </b>
+            </td>
+            <td class="moderator-panel__cell moderator-panel__cell--date">
                 <span>
-                    {{ activity.name }}
+                    {{ activity.description || '' }}
                 </span>
             </td>
             <td v-if="activity.coast"

@@ -169,6 +169,13 @@
     &-inner__page__wrapper {
         min-height: 490px;
         padding: 8px;
+
+        .swiper-slide {
+            &:not(.modal__overlay) {
+                background-color: rgba(255, 255, 255, 0.86) !important;
+                background-blend-mode: lighten;
+            }
+        }
     }
 
     &__about-event {

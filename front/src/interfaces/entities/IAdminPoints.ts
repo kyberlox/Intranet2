@@ -2,7 +2,9 @@ export interface IActivitiesList {
     id: number,
     need_valid: boolean,
     name: string,
-    coast: number
+    coast: number,
+    is_auto: boolean,
+    description: string
 }
 
 export interface IActivityToSend {

@@ -124,3 +124,12 @@ p {
 .absolute {
     position: absolute;
 }
+
+.link {
+    color: #0000EE;
+    text-decoration: underline;
+
+    &:hover {
+        color: var(--emk-brand-color);
+    }
+}

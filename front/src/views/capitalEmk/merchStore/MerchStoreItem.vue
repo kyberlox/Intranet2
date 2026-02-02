@@ -46,9 +46,9 @@
             <h3 v-if="currentItem?.indirect_data?.price"
                 class="merch-store-item__info__price">
                 <span class="merch-store-item__info__count-text">
-                    {{ currentItem?.indirect_data?.price }}
+                    {{ String(currentItem?.indirect_data?.price).replace(/(\d)(?=(\d{3})+([^\d]|$))/g, "$1 ") }}
                 </span>
-                эмк-коинов
+                баллов
             </h3>
 
             <div v-if="currentSize && false"
@@ -75,6 +75,7 @@
 
     <AcceptBuyModal v-if="acceptBuyModalOpen"
                     @closeModal="callModal(false)"
+                    :price="currentItem?.indirect_data?.price"
                     :isLoading="isLoading"
                     :customPrice="currentItem?.indirect_data?.price ? false : true"
                     @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
@@ -83,7 +84,7 @@
 
 <script lang="ts">
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
 import AcceptBuyModal from './components/AcceptBuyModal.vue';
 import { useToast } from 'primevue/usetoast';
@@ -114,6 +115,7 @@ export default defineComponent({
         const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
         const acceptBuyModalOpen = ref(false);
         const isLoading = ref(false);
+        const currentScore = computed(() => useUserScore().getCurrentScore);
 
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
@@ -130,16 +132,21 @@ export default defineComponent({
         }
 
         const acceptBuy = (quantity: number, customPrice: boolean = false) => {
-            console.log(customPrice);
-
             if (!featureFlags.pointsSystem) {
                 toast.showWarning('merchBuyWarning');
-            } else if (quantity > 0 && !customPrice) {
+            }
+            else if ((customPrice && currentScore.value < quantity) || (!customPrice && currentItem.value?.indirect_data?.price && currentScore.value < currentItem.value?.indirect_data?.price)) {
+                toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
+            }
+            else if (quantity > 0 && !customPrice) {
                 isLoading.value = true;
                 Api.put('store/create_purchase', { [currentSize.value as string]: quantity!, 'art_id': Number(currentItem.value?.id)! })
                     .then((data) => {
-                        if (data !== true && 'not_enough' in data) {
+                        if (data == true) return;
+                        if ('not_enough' in data) {
                             toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
+                        } else if ('message' in data) {
+                            toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
                         }
                         else {
                             handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
@@ -151,8 +158,8 @@ export default defineComponent({
                     .finally(() => {
                         isLoading.value = false;
                         callModal(false);
-                        Api.get('/peer/sum')
-                            .then((data) => useUserScore().setCurrentScore(data))
+                        Api.get('/peer/user_history')
+                            .then((e) => useUserScore().setStatistics(e))
                     })
             }
             else if (customPrice) {
@@ -172,8 +179,8 @@ export default defineComponent({
                     .finally(() => {
                         isLoading.value = false;
                         callModal(false);
-                        Api.get('/peer/sum')
-                            .then((data) => useUserScore().setCurrentScore(data))
+                        Api.get('/peer/user_history')
+                            .then((e) => useUserScore().setStatistics(e))
                     })
             }
         }

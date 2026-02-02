@@ -266,7 +266,7 @@ class User:
 
                             year_diff = abs(datetime.today().year - convert_date_reg.year)
                             # year_diff = abs(teset_date.year - LAUNCH_DATE_OF_CAPITAL_EMK.year)
-                            if year_diff >= 40:
+                            if year_diff = 40:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 40 лет')
                                 send_data['activities_id'] = YEARS_ID['40']
                                 send_data['description'] = "40 лет вы с нами!"
@@ -276,7 +276,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=40)
                                 continue
-                            elif year_diff >= 35:
+                            elif year_diff = 35:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 35 лет')
                                 send_data['activities_id'] = YEARS_ID['35']
                                 send_data['description'] = "35 лет вы с нами!"
@@ -286,7 +286,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=35)
                                 continue
-                            elif year_diff >= 30:
+                            elif year_diff = 30:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 30 лет')
                                 send_data['activities_id'] = YEARS_ID['30']
                                 send_data['description'] = "30 лет вы с нами!"
@@ -296,7 +296,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=30)
                                 continue
-                            elif year_diff >= 25:
+                            elif year_diff = 25:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 25 лет')
                                 send_data['activities_id'] = YEARS_ID['25']
                                 send_data['description'] = "25 лет вы с нами!"
@@ -306,7 +306,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
                                 continue
-                            elif year_diff >= 20:
+                            elif year_diff = 20:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 20 лет')
                                 send_data['activities_id'] = YEARS_ID['20']
                                 send_data['description'] = "20 лет вы с нами!"
@@ -316,7 +316,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
                                 continue
-                            elif year_diff >= 15:
+                            elif year_diff = 15:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 15 лет')
                                 send_data['activities_id'] = YEARS_ID['15']
                                 send_data['description'] = "15 лет вы с нами!"
@@ -326,7 +326,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
                                 continue
-                            elif year_diff >= 10:
+                            elif year_diff = 10:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
                                 send_data['activities_id'] = YEARS_ID['10']
                                 send_data['description'] = "10 лет вы с нами!"
@@ -336,7 +336,7 @@ class User:
                                 email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
                                 continue
-                            elif year_diff >= 5:
+                            elif year_diff = 5:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
                                 send_data['activities_id'] = YEARS_ID['5']
                                 send_data['description'] = "5 лет вы с нами!"

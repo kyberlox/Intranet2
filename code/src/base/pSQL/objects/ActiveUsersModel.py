@@ -343,7 +343,8 @@ class ActiveUsersModel:
             results = result_activities.all()
             
             activities = []
-            
+            if not results:
+                return activities
             for row in results:
                 # Получаем информацию о пользователе
                 stmt_user = select(

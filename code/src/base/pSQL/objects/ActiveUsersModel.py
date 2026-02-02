@@ -367,7 +367,7 @@ class ActiveUsersModel:
                     elif row[-1] == 2:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
                     elif row[-1] in YEARS_ID:
-                        activity_name = f"Награда за {row.name}"
+                        activity_name = f"Награда за '{row.name}'"
                     elif row[-1] == 4:
                         activity_name = f"Баллы за идею"
                         description = f"Идея №{row.description}"

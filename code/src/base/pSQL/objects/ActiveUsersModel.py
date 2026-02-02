@@ -325,7 +325,6 @@ class ActiveUsersModel:
     async def user_history(self, session):
         YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
         try:
-            print(self.uuid_to, 'айдишник пользователя')
             # Получаем активность пользователя
             stmt_activities = select(
                 self.ActiveUsers.id,
@@ -345,7 +344,6 @@ class ActiveUsersModel:
             
             activities = []
             if results:
-                print('получаем результат')
                 for row in results:
                     # Получаем информацию о пользователе
                     stmt_user = select(
@@ -370,7 +368,7 @@ class ActiveUsersModel:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
                     elif row[-1] in YEARS_ID:
                         activity_name = f"Награда за юбилей {row.name}"
-                    elif row[-1] in 16:
+                    elif row[-1] == 16:
                         activity_name = f"Баллы за идею №{row.description}"
                         
                     activities.append({
@@ -383,7 +381,7 @@ class ActiveUsersModel:
                         "cost": row.coast,
                         "id_activites": row[-1]
                     })
-            print('смотрим мерч')
+            
             # Получаем историю мерча
             stmt_merch = select(self.PeerHistory).where(
                 self.PeerHistory.user_uuid == self.uuid_to,

@@ -14,7 +14,7 @@ from ..base.pSQL.objects.App import get_async_db, AsyncSessionLocal
 # from ..base.pSQL.models.User import User
 from .MerchStore import MerchStore
 from .Peer import Peer
-
+from .SendMail import SendEmail
 # ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
 
 # Глобальный экземпляр планировщика
@@ -136,7 +136,7 @@ async def send_birthday_notifications(user_ids: List[int]):
     """
     Отправка уведомлений о днях рождения
     """
-    from .SendEmail import SendEmail
+    from .SendMail import SendEmail
     if not user_ids:
         return
     
@@ -174,7 +174,6 @@ async def send_to_new_users():
     logger = LogsMaker()
     logger.info_message(f"Отправка баллов новым сотрудникам")
     from ..model.User import User
-    from .SendEmail import SendEmail
     try:
         async with AsyncSessionLocal() as db:
             users = await User().get_new_workers(session=db)

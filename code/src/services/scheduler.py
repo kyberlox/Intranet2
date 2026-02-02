@@ -147,21 +147,16 @@ async def send_birthday_notifications(user_ids: List[int]):
     try:
         async with AsyncSessionLocal() as db:
             for user_id in user_ids:
-                print(123)
                 send_data = {
                     "uuid_from": 2,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(user_id),
                     "activities_id": 1,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Поздравительные баллы. С днем рождения!"
                 }
-                print(123)
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
                 if send_point['status'] == 'info':
-                    print(123)
-                    user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
-                    print(user_info, 'инфа о пользователе')
+                    user_info = await User(id=int(user_id)).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
-                        print(123)
                         data = {'sender': user_info['email']}
                         # SendEmail(data=data).send_to_birthday_notifications()
             await db.commit()
@@ -225,9 +220,12 @@ async def send_to_new_idea():
             for idea in all_ideas:
                 try:
                     date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
-                except:
-                    date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
-                    LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
+                except ValueError:
+                    try:
+                        date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
+                        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
+                    except:
+                        print('другая неведомая хуйня')
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue

@@ -273,7 +273,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=40)
                                 continue
                             elif year_diff >= 35:
@@ -283,7 +283,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=35)
                                 continue
                             elif year_diff >= 30:
@@ -293,7 +293,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=30)
                                 continue
                             elif year_diff >= 25:
@@ -303,7 +303,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
                                 continue
                             elif year_diff >= 20:
@@ -313,7 +313,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
                                 continue
                             elif year_diff >= 15:
@@ -323,7 +323,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
                                 continue
                             elif year_diff >= 10:
@@ -333,7 +333,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
                                 continue
                             elif year_diff >= 5:
@@ -343,7 +343,7 @@ class User:
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
                                 continue
                             elif year_diff >= 1:
@@ -352,7 +352,7 @@ class User:
                                 send_data['description'] = "+ год вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
-                                email_data = {'sender': user['email']}
+                                email_data = {'sender': user.email}
                                 # SendEmail(data=email_data).send_to_anniversary_in_company(year=year_diff)
                                 continue
                             else:

@@ -960,7 +960,7 @@ class PeerUserModel:
         Функция вытягивает всех номинантов "Сотрудник года" и "Почетная грамота" по всем годам
         Выдает баллы если раннее они не были назначены и год выдачи баллов больше или равно году запуска Капитала ЭМК
         """
-        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-01", '%Y-%m-%d')
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
         from .ArticleModel import ArticleModel
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:

@@ -5,8 +5,11 @@
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow-x: scroll;
-    table-layout: fixed;
-    width: 100%;
+    table-layout: auto;
+    width: 70%;
+    margin: auto;
+    max-width: 1080px;
+
 
     &__slug {
         padding: 20px;
@@ -23,7 +26,10 @@
             color: #495057;
             border-bottom: 2px solid #e9ecef;
 
+
             &:first-child {
+                width: 30%;
+                white-space: pre-wrap;
                 padding-left: 20px;
             }
 
@@ -55,6 +61,7 @@
                 &:first-child {
                     padding-left: 20px;
                     font-weight: 500;
+
                 }
 
                 &:last-child {

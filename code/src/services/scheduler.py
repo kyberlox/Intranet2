@@ -209,7 +209,7 @@ async def send_to_new_idea():
     try:
         from .Idea import Idea
         #Дата запуска капитала ЭМК
-        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("02.02.2026", '%d.%m.%Y')
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("03.02.2026", '%d.%m.%Y')
 
         #Статус с которым выдаем баллы
         STATUS_IDEA = "Принято"

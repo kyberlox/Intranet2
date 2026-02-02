@@ -28,7 +28,7 @@
                     </span>
                 </b>
             </td>
-            <td class="moderator-panel__cell moderator-panel__cell--date">
+            <td class="moderator-panel__cell moderator-panel__cell--description">
                 <span>
                     {{ activity.description || '' }}
                 </span>

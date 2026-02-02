@@ -194,7 +194,7 @@ class User:
         """
         from ..services.Peer import Peer
         from datetime import datetime
-        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-01", '%Y-%m-%d')
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
         YEARS_ID = {'1': 21, "5": 22, "10": 23, "15": 24, "20": 25, "25": 26, "30": 27} # менять значеняи к годам если поменялись айдишники
         TODAY = datetime.today().date() # 2026-01-20 00:00:00
         all_users = await self.UserModel.all(session)

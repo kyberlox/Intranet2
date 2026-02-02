@@ -147,9 +147,9 @@ async def send_birthday_notifications(user_ids: List[int]):
         async with AsyncSessionLocal() as db:
             for user_id in user_ids:
                 send_data = {
-                    "uuid_from": 4133,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_from": 2,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(user_id),
-                    "activities_id": 7,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "activities_id": 1,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Поздравительные баллы. С днем рождения!"
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
@@ -157,7 +157,7 @@ async def send_birthday_notifications(user_ids: List[int]):
                     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
-                        SendEmail(data=data).send_to_birthday_notifications()
+                        # SendEmail(data=data).send_to_birthday_notifications()
             await db.commit()
             logger.info_message("Уведомления о днях рождения успешно отправлены")
     
@@ -180,9 +180,9 @@ async def send_to_new_users():
             users = await User().get_new_workers(session=db)
             for user_id in users:
                 send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(user_id['id']),
-                    "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Добро пожаловать в ЭМК!"
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
@@ -191,7 +191,7 @@ async def send_to_new_users():
                     user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
-                        SendEmail(data=data).send_to_new_wrokers()
+                        # SendEmail(data=data).send_to_new_wrokers()
             
             await db.commit()
             logger.info_message("Баллы новым сотрудникам успешно отправлены")
@@ -209,6 +209,7 @@ async def send_to_new_idea():
     try:
         from .Idea import Idea
         #Дата запуска капитала ЭМК
+        LogsMaker().info_message("Отправка баллов пользователям за идею")
         LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("03.02.2026", '%d.%m.%Y')
 
         #Статус с которым выдаем баллы
@@ -226,9 +227,9 @@ async def send_to_new_idea():
                     continue
                 
                 send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(idea['user_id']),
-                    "activities_id": 16, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "activities_id": 4, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": idea["number"]
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
@@ -461,7 +462,7 @@ class AioSchedulerManager:
             # Добавляем задачи по умолчанию
             
             # 1. Ежедневная проверка каждые 5 минут (исправленный метод)
-            # daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
+            daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
             
             # 2. Ежедневная проверка в 7 утра
             # daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)

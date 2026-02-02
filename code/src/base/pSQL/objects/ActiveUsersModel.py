@@ -323,7 +323,7 @@ class ActiveUsersModel:
             return LogsMaker().error_message(f"Ошибка в new_a_week при получении недельной статистики для пользователя {self.uuid_to}: {e}")
 
     async def user_history(self, session):
-        YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
+        YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             # Получаем активность пользователя
             stmt_activities = select(
@@ -362,13 +362,13 @@ class ActiveUsersModel:
                     activity_name = row.name
                     description = row.description
 
-                    if row[-1] == 7:
+                    if row[-1] == 6:
                         description = f"Лучший сотрудник {row.description} года"
-                    elif row[-1] == 18:
+                    elif row[-1] == 2:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
                     elif row[-1] in YEARS_ID:
-                        activity_name = f"Награда за юбилей {row.name}"
-                    elif row[-1] == 16:
+                        activity_name = f"Награда за {row.name}"
+                    elif row[-1] == 4:
                         activity_name = f"Баллы за идею"
                         description = f"Идея №{row.description}"
 

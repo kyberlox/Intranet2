@@ -227,7 +227,7 @@ class UserModel:
                     
                     if column == 'personal_birthday':
                         # Обработка дат
-                        if new_value and new_value != "":
+                        if new_value and new_value != "" and new_value != None:
                             try:
                                 dt_new = datetime.strptime(new_value.split('T')[0], '%Y-%m-%d').date()
                                 if current_value is None or dt_new != current_value.date():

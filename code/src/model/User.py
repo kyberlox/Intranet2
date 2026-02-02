@@ -24,7 +24,7 @@ def make_date_valid(date):
                 if 'T' in date:
                     try:
                         # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                        return datetime.strptime(date, '%Y-%m-%d')
+                        return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
                     except:
                         # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                         # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
@@ -32,14 +32,14 @@ def make_date_valid(date):
                 else:
                     try:
                         # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                        return datetime.strptime(date, '%Y-%m-%d')
+                        return datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
                     except:
                         # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                         # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
                         return datetime.strptime(date, '%Y-%m-%d')
             elif '.' in date:
                 try:
-                    return datetime.strptime(date, '%d.%m.%Y')
+                    return datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
                     # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
                 except:
                     # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')

@@ -1672,7 +1672,7 @@ class Article:
                     file["file_url"] = f"{DOMAIN}{url}"
                     art['documentation'].append(file)
         # сортируем фотки по айдишникам
-        sorted_images = sorted(art['images'], key=lambda x: int(x['id']), reverse=True)
+        sorted_images = sorted(art['images'], key=lambda x: int(x['id']), reverse=False)
         art['images'] = sorted_images
         self.section_id = art['section_id']
         prev = await self.get_preview(session)

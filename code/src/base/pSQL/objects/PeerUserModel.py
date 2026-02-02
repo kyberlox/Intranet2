@@ -969,7 +969,8 @@ class PeerUserModel:
                     return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
                 for article in articles_employers:
                     uuid_to = article['indirect_data']['uuid'] if 'uuid' in article['indirect_data'] else article['indirect_data']['user_id']
-                    if int(article['indirect_data']['year']) >= LAUNCH_DATE_OF_CAPITAL_EMK.date:
+                    year_award = datetime.strptime(f'01.01.{article['indirect_data']['year']}', '%d.%m.%Y')
+                    if year_award.year >= LAUNCH_DATE_OF_CAPITAL_EMK.year:
                         if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
                             send_data = {
                                 "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА

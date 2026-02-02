@@ -15,3 +15,5 @@ class Activities(Base):
     description = Column(Text, nullable=True)
 
     activeusers = relationship("ActiveUsers", back_populates="activities")
+
+

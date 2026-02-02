@@ -11,7 +11,7 @@ LogsMaker().ready_status_message("Успешная инициализация т
 
 
 class ActivitiesModel:
-    def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False, active: bool = False, is_auto: bool = False, name: str = ''):
+    def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False, active: bool = False, is_auto: bool = False, description: str = ''):
 
         self.id = id
         self.name = name

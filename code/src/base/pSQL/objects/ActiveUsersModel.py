@@ -369,7 +369,9 @@ class ActiveUsersModel:
                     elif row[-1] in YEARS_ID:
                         activity_name = f"Награда за юбилей {row.name}"
                     elif row[-1] == 16:
-                        activity_name = f"Баллы за идею №{row.description}"
+                        activity_name = f"Баллы за идею"
+                        description = f"Идея №{row.description}"
+
                         
                     activities.append({
                         "id_activeusers": row.id,

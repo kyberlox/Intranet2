@@ -781,8 +781,8 @@ class Editor:
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
-                        elif key == 'author_uuid':
-                            print(data[key])
+                        # elif key == 'author_uuid':
+                        #     print(data[key])
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы

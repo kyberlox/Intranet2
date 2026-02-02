@@ -18,9 +18,10 @@ peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эф�
 
 class Peer:
     def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False,
-                 active: bool = False, activities_id: int = 0):
+                 active: bool = False, activities_id: int = 0, description: str = ''):
         self.id = id
         self.name = name
+        self.description = description
         self.coast = coast
         self.user_uuid = user_uuid
         self.need_valid = need_valid
@@ -79,6 +80,7 @@ class Peer:
         self.ActivitiesModel.coast = self.coast
         self.ActivitiesModel.need_valid = self.need_valid
         self.ActivitiesModel.active = self.active
+        self.ActivitiesModel.description = self.description
         from ..base.pSQL.objects.RootsModel import RootsModel
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)

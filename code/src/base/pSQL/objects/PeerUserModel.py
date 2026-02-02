@@ -590,8 +590,7 @@ class PeerUserModel:
                             info_type='activity',
                             date_time=datetime.now()
                         )
-                        if uuid_to == 1037:
-                            print('ну выдает же')
+                        
                         session.add(add_history)
                         # await session.commit()
                         return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")

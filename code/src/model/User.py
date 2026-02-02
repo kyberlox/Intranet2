@@ -16,6 +16,35 @@ import asyncio
 
 users_router = APIRouter(prefix="/users")
 
+def make_date_valid(date):
+    from datetime import datetime
+    if date is not None:
+        if isinstance(date, str):
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d')
+            elif '.' in date:
+                try:
+                    return datetime.strptime(date, '%d.%m.%Y')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                except:
+                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    return datetime.strptime(date, '%d.%m.%Y')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 
 class User:
     def __init__(self, id=0, uuid=""):
@@ -213,12 +242,10 @@ class User:
                 if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or ("date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != ''):
                     if "date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != '':
                         date_register = user.indirect_data['date_of_employment']
-                        convert_date_reg = datetime.strptime(date_register, '%d.%m.%Y')
+                        convert_date_reg = make_date_valid(date_register)
                     else:
                         date_register = user.indirect_data['date_register']
-                        if "T" in date_register:
-                            date_register = date_register.split("T")[0]
-                        convert_date_reg = datetime.strptime(date_register, '%Y-%m-%d')
+                        convert_date_reg = convert_date_reg = make_date_valid(date_register)
                     if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                         # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 

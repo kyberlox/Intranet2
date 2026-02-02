@@ -269,7 +269,7 @@ class User:
                             if year_diff == 40:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 40 лет')
                                 send_data['activities_id'] = YEARS_ID['40']
-                                send_data['description'] = "40 лет вы с нами!"
+                                send_data['description'] = "40 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -279,7 +279,7 @@ class User:
                             elif year_diff == 35:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 35 лет')
                                 send_data['activities_id'] = YEARS_ID['35']
-                                send_data['description'] = "35 лет вы с нами!"
+                                send_data['description'] = "35 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -289,7 +289,7 @@ class User:
                             elif year_diff == 30:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 30 лет')
                                 send_data['activities_id'] = YEARS_ID['30']
-                                send_data['description'] = "30 лет вы с нами!"
+                                send_data['description'] = "30 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -299,7 +299,7 @@ class User:
                             elif year_diff == 25:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 25 лет')
                                 send_data['activities_id'] = YEARS_ID['25']
-                                send_data['description'] = "25 лет вы с нами!"
+                                send_data['description'] = "25 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -309,7 +309,7 @@ class User:
                             elif year_diff == 20:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 20 лет')
                                 send_data['activities_id'] = YEARS_ID['20']
-                                send_data['description'] = "20 лет вы с нами!"
+                                send_data['description'] = "20 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -319,7 +319,7 @@ class User:
                             elif year_diff == 15:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 15 лет')
                                 send_data['activities_id'] = YEARS_ID['15']
-                                send_data['description'] = "15 лет вы с нами!"
+                                send_data['description'] = "15 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -329,7 +329,7 @@ class User:
                             elif year_diff == 10:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
                                 send_data['activities_id'] = YEARS_ID['10']
-                                send_data['description'] = "10 лет вы с нами!"
+                                send_data['description'] = "10 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -339,7 +339,7 @@ class User:
                             elif year_diff == 5:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
                                 send_data['activities_id'] = YEARS_ID['5']
-                                send_data['description'] = "5 лет вы с нами!"
+                                send_data['description'] = "5 лет Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 # Добавить письмо
@@ -349,7 +349,7 @@ class User:
                             elif year_diff >= 1:
                                 LogsMaker().info_message(f'Пользователь {user.id} с нами {year_diff} лет')
                                 send_data['activities_id'] = YEARS_ID['1']
-                                send_data['description'] = "+ год вы с нами!"
+                                send_data['description'] = "+ год Вы с нами!"
                                 send_data['uuid_to'] = user.id
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 email_data = {'sender': user.email}

@@ -817,12 +817,16 @@ class PeerUserModel:
                     activity_name = active_name
                     description = active.active_info
                     if active_users_inf.activities_id == 20:
+                        print(active_users_inf.id, '123')
                         description = f"Лучший сотрудник {active.active_info} года"
                     elif active_users_inf.activities_id == 8:
+                        print(active_users_inf.id, '123')
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in YEARS_ID:
+                        print(active_users_inf.id, '123')
                         activity_name = f"Награда за юбилей {active_name}"
                     elif active_users_inf.activities_id == 16:
+                        print(active_users_inf.id, '123')
                         description = f"Баллы за идею №{active.active_info}"
 
                     

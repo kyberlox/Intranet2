@@ -82,23 +82,35 @@ export default defineComponent({
     setup(props) {
         const myId = computed(() => useUserData().getMyId);
         const sections = computed(() => useAdminData().getSections);
-        const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
+        const PeerAdmin = computed(() => useUserData().getUserRoots.PeerAdmin);
         const PeerModer = computed(() => useUserData().getUserRoots.PeerModer);
         const userRoots = computed(() => useUserData().getUserRoots);
         const fullNavigation = ref<NavGroup[]>();
 
         const checkByFlags = (e: NavGroup) => {
+            console.log(userRoots.value);
+
+            console.log(e.id)
+            console.log(PeerAdmin.value)
+            // if (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)) {
+            //     return false
+            // }
+            // else return true
             switch (true) {
                 // id == 2 у настройки областей видимости
                 case !featureFlags.visibleArea && e.id == 2:
+                    console.log(1);
                     return false
                 // id == 3 у бальной системы
-                case !featureFlags.pointsSystem && e.id == 3 && PeerModer.value:
+                case (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)):
+                    console.log(2);
                     return false
                 // id == 4 у прав на разделы(gpt)
-                case !adminRoot.value && e.id == 4:
+                case !userRoots.value.EditorAdmin && e.id == 4:
+                    console.log(3);
                     return false
                 case !props.needDefaultNav && e.id == 0:
+                    console.log(4);
                     return false
                 default:
                     return true
@@ -119,7 +131,9 @@ export default defineComponent({
                     nav: [...g.nav],
                 }))
             fullNavigation.value[0].nav.push(...sections.value)
-            fullNavigation.value = fullNavigation.value.filter((e) => checkByFlags(e))
+            fullNavigation.value = fullNavigation.value.filter((e) => checkByFlags(e));
+            console.log(fullNavigation.value);
+
         }, { deep: true, immediate: true })
 
         const defineRoute = (typeId: number, section: { id: string | number, name: string }) => {

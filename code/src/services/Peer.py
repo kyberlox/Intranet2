@@ -18,9 +18,10 @@ peer_router = APIRouter(prefix="/peer", tags=["Сервис системы эф�
 
 class Peer:
     def __init__(self, id: int = 0, name: str = '', coast: int = 0, user_uuid: int = 0, need_valid: bool = False,
-                 active: bool = False, activities_id: int = 0):
+                 active: bool = False, activities_id: int = 0, description: str = ''):
         self.id = id
         self.name = name
+        self.description = description
         self.coast = coast
         self.user_uuid = user_uuid
         self.need_valid = need_valid
@@ -67,7 +68,8 @@ class Peer:
 
     async def get_all_activities(self, session):
         result = await self.ActivitiesModel.find_all_activities(session=session)
-        return result
+        sorted_result = sorted(result, key=lambda x: x.id, reverse=False)
+        return sorted_result
 
     # async def upload_base_activities(self):
     #     return self.ActivitiesModel.upload_base_activities()
@@ -78,6 +80,7 @@ class Peer:
         self.ActivitiesModel.coast = self.coast
         self.ActivitiesModel.need_valid = self.need_valid
         self.ActivitiesModel.active = self.active
+        self.ActivitiesModel.description = self.description
         from ..base.pSQL.objects.RootsModel import RootsModel
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
@@ -297,9 +300,6 @@ class Peer:
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.send_points_to_employee_of_the_year(roots=roots, session=session)
-    
-    async def send_points_to_realized_idea(self, session, user_id, name_idea):
-        return await self.PeerUserModel.send_points_to_realized_idea(name_idea=name_idea, user_id=user_id, session=session)
 
 
 
@@ -370,7 +370,7 @@ async def post_edit_activity(request: Request, session: AsyncSession = Depends(g
     if uuid is None:
         uuid = 2366
     return await Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'],
-                      need_valid=data['need_valid'], active=data['active']).edit_activity(session)
+                      need_valid=data['need_valid'], active=data['active'], description=data['description']).edit_activity(session)
 
 
 @peer_router.delete("/remove_activity/{id}")

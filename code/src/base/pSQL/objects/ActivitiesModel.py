@@ -11,13 +11,15 @@ LogsMaker().ready_status_message("Успешная инициализация т
 
 
 class ActivitiesModel:
-    def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False, active: bool = False):
+    def __init__(self, id: int = 0, name: str = '', coast: int = 0, need_valid: bool = False, active: bool = False, is_auto: bool = False, description: str = ''):
 
         self.id = id
         self.name = name
         self.coast = coast
         self.need_valid = need_valid
         self.active = active
+        self.is_auto = is_auto
+        self.description = description
 
         
         from ..models.Activities import Activities
@@ -45,6 +47,8 @@ class ActivitiesModel:
                     activity.coast = self.coast
                     activity.need_valid = self.need_valid
                     activity.active = self.active
+                    activity.is_auto = self.is_auto
+                    activity.description = self.description
                     await session.commit()
 
                     return LogsMaker().info_message(f"Обновление активности id = {self.id}, name = '{self.name}' завершено успешно")
@@ -102,8 +106,19 @@ class ActivitiesModel:
                     name=data['name'],
                     coast=data['coast'],
                     need_valid=data['need_valid'],
-                    active=True
+                    active=True,
+                    is_auto=data['is_auto']
                 )
+                if 'description' in data:
+                    new_active = self.Activities(
+                        id=new_id,
+                        name=data['name'],
+                        coast=data['coast'],
+                        need_valid=data['need_valid'],
+                        active=True,
+                        is_auto=data['is_auto'],
+                        description=data['description']
+                    )
 
                 
                 # Если активность не требует подтверждения, назначаем куратора

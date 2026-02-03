@@ -1,11 +1,12 @@
 <template>
 <div class="modal__text__content modal__text__content--user-points">
-    <PointsInfoTable />
-    <div class="modal__text__content__points-info">
-        <span @click="pointsAboutOpen = !pointsAboutOpen">
+    <PointsInfoTable v-if="!pointsAboutImportant" />
+    <div class="modal__text__content__points-info__list">
+        <span v-if="!pointsAboutImportant"
+              @click="pointsAboutOpen = !pointsAboutOpen">
             За что начисляют
         </span>
-        <PointsAbout v-if="pointsAboutOpen"
+        <PointsAbout v-if="pointsAboutOpen || pointsAboutImportant"
                      :allActivities="allActivities" />
     </div>
 </div>
@@ -22,6 +23,12 @@ export default defineComponent({
         PointsInfoTable,
         PointsAbout
     },
+    props: {
+        pointsAboutImportant: {
+            type: Boolean,
+            default: () => false
+        }
+    },
     setup() {
         const pointsAboutOpen = ref(false);
         const pointsData = usePointsData();
@@ -34,26 +41,3 @@ export default defineComponent({
     }
 })
 </script>
-
-
-<style scoped>
-.modal__text__content__points-info {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    &>span {
-        color: var(--emk-brand-color) !important;
-        cursor: pointer;
-    }
-
-    allActivities,
-
-    &:hover {
-        &>span {
-            color: var(--emk-brand-color-dark) !important;
-        }
-    }
-}
-</style>

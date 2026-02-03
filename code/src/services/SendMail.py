@@ -174,14 +174,20 @@ class SendEmail:
 
     def send_to_new_wrokers(self):
         try:
-            company = 'АО "НПО "ЭМК"'
+            company = '«Капитал ЭМК»'
             msg = MIMEMultipart()
             msg["From"] = server_mail_login
             msg["To"] = self.data['sender']
             msg['Subject'] = 'Приветственное письмо'
-            text_msg = f'<p>Приветствуем тебя, наш новый коллега!</p>\
-                        <p>Надеюсь тебе у нас понравится. Желаем тебе карьерных высот, бешенной работоспособности и 3 сникерса ежедневно!</p>\
-                        <p>С уважением,<br>Команда {company}.</p>'
+            text_msg = f'''<p>Дорогой(ая) коллега!</p>\
+                        <p>Рады приветствовать Вас в команде ЭМК!</p>\
+                        <p>Первые шаги в новой компании — всегда особенное время. Желаем лёгкой 
+                        адаптации, интересных задач и поддержки от коллег. Пусть работа приносит не 
+                        только результат, но и удовольствие.</p>\
+                        <p>В знак приветствия на Ваш счёт {company} зачислены стартовые баллы. 
+                        Загляните в каталог — выберите то, что сделает первый месяц в компании чуточку приятнее.</p>\
+                        <p>Спасибо, что выбрали ЭМК!</p>\
+                        <p>С уважением,<br>Команда {company}.</p>'''
             html_content = f'''
             <html lang="ru">
             <head>
@@ -292,7 +298,7 @@ class SendEmail:
             company = 'АО "НПО "ЭМК"'
             msg = MIMEMultipart() 
             msg["From"] = self.data['sender']
-            msg["To"] = server_mail_login
+            msg["To"] = f'{server_mail_login}, timofeev.a.a@emk.ru'
             msg['Subject'] = 'Покупка мерча'
             items = self.data['items']
             user_info = self.data['user_info']
@@ -403,3 +409,365 @@ class SendEmail:
         except Exception as e:
             LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
             return {'status': False} 
+
+    def send_to_birthday_notifications(self):
+        try:
+            company = '«Капитал ЭМК»'
+            msg = MIMEMultipart()
+            msg["From"] = server_mail_login
+            msg["To"] = self.data['sender']
+            msg['Subject'] = 'С днем рождения!'
+            text_msg = f'''<p>Дорогой(ая) коллега!</p>\
+                        <p>С днём рождения! </p>\
+                        <p>Пусть новый год жизни приносит вдохновение в работе, радость в мелочах и поводы 
+                        для гордости. Желаем энергии для смелых решений, лёгкости в трудные дни и людей 
+                        рядом, которые делают путь интереснее.</p>\
+                        <p>В знак внимания мы зачислили на Ваш счёт в {company} подарочные баллы. 
+                        Загляните в каталог — выберите то, что порадует именно вас.</p>\
+                        <p>Спасибо, что вы с нами!</p>\
+                        <p>С уважением,<br>Команда {company}.</p>'''
+            html_content = f'''
+            <html lang="ru">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {{
+                        margin: 0;
+                        padding: 20px;
+                        font-family: Arial, sans-serif;
+                        background-color: #f9f9f9;
+                        color: #333;
+                        line-height: 1.5;
+                    }}
+                    
+                    .container {{
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                        padding: 30px;
+                        border: 1px solid #ddd;
+                    }}
+                    
+                    .text {{
+                        margin-bottom: 30px;
+                        white-space: pre-line;
+                    }}
+                    
+                    .postcard {{
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    
+                    .postcard img {{
+                        max-width: 100%;
+                        height: auto;
+                        border: 1px solid #eee;
+                    }}
+                    
+                    .logo {{
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    
+                    .logo img {{
+                        width: 200px;
+                        height: auto;
+                    }}
+                    
+                    .signature {{
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #eee;
+                        font-size: 14px;
+                        color: #666;
+                        white-space: pre-line;
+                    }}
+                    
+                    @media (max-width: 600px) {{
+                        body {{
+                            padding: 10px;
+                        }}
+                        
+                        .container {{
+                            padding: 20px;
+                        }}
+                        
+                        .logo img {{
+                            width: 150px;
+                        }}
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="text">
+                        {text_msg}
+                    </div>
+                    
+                    <div class="logo">
+                        <img src="cid:company_logo" alt="Логотип компании">
+                    </div>
+                </div>
+            </body>
+            </html>
+            '''
+            msg.attach(MIMEText(html_content, "html"))
+
+            # Загружаем логотип и добавляем его как встроенное изображение
+            with open("./src/services/mail_logo.png", "rb") as img_file:
+                logo = MIMEImage(img_file.read())
+                logo.add_header("Content-ID", "<company_logo>") 
+                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+                msg.attach(logo)
+
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(server_mail_login, server_mail_pswd)
+            server.send_message(msg)
+            server.quit()
+            return {'status': True}
+        except Exception as e:
+            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            return {'status': False} 
+    
+    def send_to_anniversary_in_company(self, year):
+        try:
+            company = '«Капитал ЭМК»'
+            msg = MIMEMultipart()
+            msg["From"] = server_mail_login
+            msg["To"] = self.data['sender']
+            msg['Subject'] = 'С годовщиной!'
+            text_msg = f'''<p>Дорогой(ая) коллега!</p>\
+                        <p>Сегодня особенный день — ровно {year} лет/год(а) назад Вы присоединились к нашей 
+                        команде. Спасибо, что остаётесь с нами!</p>\
+                        <p>Желаем, чтобы работа продолжала приносить удовольствие, а каждый новый год в  
+                        компании открывал интересные возможности.</p>\
+                        <p>В знак благодарности за Ваш стаж на счёт {company} зачислены баллы. 
+                        Выбирайте подарок по душе в корпоративном каталоге.</p>\
+                        <p>С уважением,<br>Команда {company}.</p>'''
+            html_content = f'''
+            <html lang="ru">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {{
+                        margin: 0;
+                        padding: 20px;
+                        font-family: Arial, sans-serif;
+                        background-color: #f9f9f9;
+                        color: #333;
+                        line-height: 1.5;
+                    }}
+                    
+                    .container {{
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                        padding: 30px;
+                        border: 1px solid #ddd;
+                    }}
+                    
+                    .text {{
+                        margin-bottom: 30px;
+                        white-space: pre-line;
+                    }}
+                    
+                    .postcard {{
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    
+                    .postcard img {{
+                        max-width: 100%;
+                        height: auto;
+                        border: 1px solid #eee;
+                    }}
+                    
+                    .logo {{
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    
+                    .logo img {{
+                        width: 200px;
+                        height: auto;
+                    }}
+                    
+                    .signature {{
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #eee;
+                        font-size: 14px;
+                        color: #666;
+                        white-space: pre-line;
+                    }}
+                    
+                    @media (max-width: 600px) {{
+                        body {{
+                            padding: 10px;
+                        }}
+                        
+                        .container {{
+                            padding: 20px;
+                        }}
+                        
+                        .logo img {{
+                            width: 150px;
+                        }}
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="text">
+                        {text_msg}
+                    </div>
+                    
+                    <div class="logo">
+                        <img src="cid:company_logo" alt="Логотип компании">
+                    </div>
+                </div>
+            </body>
+            </html>
+            '''
+            msg.attach(MIMEText(html_content, "html"))
+
+            # Загружаем логотип и добавляем его как встроенное изображение
+            with open("./src/services/mail_logo.png", "rb") as img_file:
+                logo = MIMEImage(img_file.read())
+                logo.add_header("Content-ID", "<company_logo>") 
+                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+                msg.attach(logo)
+
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(server_mail_login, server_mail_pswd)
+            server.send_message(msg)
+            server.quit()
+            return {'status': True}
+        except Exception as e:
+            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            return {'status': False} 
+    
+    def send_to_jubilee_in_company(self, year):
+        try:
+            company = '«Капитал ЭМК»'
+            msg = MIMEMultipart()
+            msg["From"] = server_mail_login
+            msg["To"] = self.data['sender']
+            msg['Subject'] = 'С юилеем!'
+            text_msg = f'''<p>Дорогой(ая) коллега!</p>\
+                        <p>{year} лет — это не просто цифра. Это годы, наполненные Вашим вкладом, идеями 
+                        и поддержкой команды. Спасибо, что Вы с нами все эти годы!</p>\
+                        <p>Ценим вашу преданность и профессионализм. Пусть следующие годы принесут 
+                        новые вызовы, рост и яркие достижения.</p>\
+                        <p>В честь юбилея на Ваш счёт {company} зачислено особое вознаграждение. 
+                        С этими баллами в каталоге найдётся достойный выбор!</p>\
+                        <p>С благодарностью,<br>Команда {company}.</p>'''
+            html_content = f'''
+            <html lang="ru">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {{
+                        margin: 0;
+                        padding: 20px;
+                        font-family: Arial, sans-serif;
+                        background-color: #f9f9f9;
+                        color: #333;
+                        line-height: 1.5;
+                    }}
+                    
+                    .container {{
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                        padding: 30px;
+                        border: 1px solid #ddd;
+                    }}
+                    
+                    .text {{
+                        margin-bottom: 30px;
+                        white-space: pre-line;
+                    }}
+                    
+                    .postcard {{
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    
+                    .postcard img {{
+                        max-width: 100%;
+                        height: auto;
+                        border: 1px solid #eee;
+                    }}
+                    
+                    .logo {{
+                        text-align: center;
+                        margin: 30px 0;
+                    }}
+                    
+                    .logo img {{
+                        width: 200px;
+                        height: auto;
+                    }}
+                    
+                    .signature {{
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #eee;
+                        font-size: 14px;
+                        color: #666;
+                        white-space: pre-line;
+                    }}
+                    
+                    @media (max-width: 600px) {{
+                        body {{
+                            padding: 10px;
+                        }}
+                        
+                        .container {{
+                            padding: 20px;
+                        }}
+                        
+                        .logo img {{
+                            width: 150px;
+                        }}
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="text">
+                        {text_msg}
+                    </div>
+                    
+                    <div class="logo">
+                        <img src="cid:company_logo" alt="Логотип компании">
+                    </div>
+                </div>
+            </body>
+            </html>
+            '''
+            msg.attach(MIMEText(html_content, "html"))
+
+            # Загружаем логотип и добавляем его как встроенное изображение
+            with open("./src/services/mail_logo.png", "rb") as img_file:
+                logo = MIMEImage(img_file.read())
+                logo.add_header("Content-ID", "<company_logo>") 
+                logo.add_header("Content-Disposition", "inline", filename="mail_logo.png")
+                msg.attach(logo)
+
+            server = smtplib.SMTP(server_mail_host)
+            server.starttls()
+            server.login(server_mail_login, server_mail_pswd)
+            server.send_message(msg)
+            server.quit()
+            return {'status': True}
+        except Exception as e:
+            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            return {'status': False} 
+    

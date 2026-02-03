@@ -440,7 +440,7 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_birthday_points: {e}")
 
-    async def check_anniversary_in_company(self, session, uuid_to, activities_id, date_register):
+    async def check_anniversary_in_company(self, session, uuid_to, activities_id):
         """
         Функция проверяет прошел ли год с момента последней годовщины работы в компании.
         Возвращает False если пользователь уже получил баллы 
@@ -493,11 +493,32 @@ class PeerUserModel:
             return True
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
+    
+    async def check_ideas(self, session, uuid_to, activities_id, year):
+        """
+        Функция проверяет получал ли пользователь баллы в за Принятую иедю
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        try:
+            stmt_count = select(func.count(self.ActiveUsers.id)).where(
+                self.ActiveUsers.uuid_to == uuid_to,
+                self.ActiveUsers.activities_id == activities_id,
+                self.ActiveUsers.description == str(year)
+            )
+            result_count = await session.execute(stmt_count)
+            nodes_count = result_count.scalar()
+            if nodes_count >= 1:
+                return False
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
     async def send_auto_points(self, session, data: dict, roots: dict):
+        YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             from .MerchStoreModel import MerchStoreModel
-            uuid_from = int(roots['user_id'])
+            uuid_from = int(data["uuid_from"])
             uuid_to = int(data["uuid_to"])
             activities_id = int(data["activities_id"])
             description = data["description"]
@@ -512,18 +533,21 @@ class PeerUserModel:
 
             check_info = False
 
-            if int(activities_id) == 14:
+            if int(activities_id) == 1:
                 check_info = await self.check_birthday_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за ДР: check_info = {check_info} ")
-            elif int(activities_id) == 15:
+            elif int(activities_id) == 3:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
-            elif int(activities_id) in [16, 19, 20]:
-                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+            elif int(activities_id) in YEARS_ID:
+                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
-            elif int(activities_id) == 7 or int(activities_id) == 18:
+            elif int(activities_id) == 2 or int(activities_id) == 6:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
+            elif int(activities_id) == 4:
+                check_info = await self.check_ideas(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за идею: check_info = {check_info} ")
 
             
             if check_info is True:
@@ -566,7 +590,7 @@ class PeerUserModel:
                             info_type='activity',
                             date_time=datetime.now()
                         )
-
+                        
                         session.add(add_history)
                         # await session.commit()
                         return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
@@ -758,10 +782,11 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Ошибка в get_moders_list при получении списка модераторов: {e}")
 
     async def get_curators_history(self, session, roots: dict):
+        YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
                 stmt_history = select(self.PeerHistory).where(
-                    self.PeerHistory.user_uuid == int(roots['user_id']),
+                    # self.PeerHistory.user_uuid == int(roots['user_id']),
                     self.PeerHistory.info_type == 'activity'
                 )
                 result_history = await session.execute(stmt_history)
@@ -788,29 +813,41 @@ class PeerUserModel:
                     res_active_users = await session.execute(stmt_active_users)
                     active_users_inf = res_active_users.scalar_one_or_none()
 
+                    activity_name = active_name
+                    description = active.active_info
+
+                    if active_users_inf.activities_id == 6:
+                        description = f"Лучший сотрудник {active.active_info} года"
+                    elif active_users_inf.activities_id == 2:
+                        description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
+                    elif active_users_inf.activities_id in YEARS_ID:
+                        activity_name = f"Награда за {active_name}"
+                    elif active_users_inf.activities_id == 16:
+                        description = f"Баллы за идею №{active.active_info}"
+
+                   
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
                         "uuid_to": active.user_to,
                         "uuid_to_fio": user_fio,
-                        "description": active.active_info,
-                        "activity_name": active_name,
+                        "description": description,
+                        "activity_name": activity_name,
                         "coast": active.active_coast,
                         "valid": active_users_inf.valid,
                         "action_id": active_users_inf.id
-
                     }
                     activity_history.append(info)
                 
                 #Собираем историю покупок мерча
                 if roots["PeerAdmin"] is True:
-                    print('добавляем ли мерч')
                     stmt_merch = select(self.PeerHistory).where(
                         self.PeerHistory.info_type == 'merch'
                     )
                     result_merch = await session.execute(stmt_merch)
                     merch_history = result_merch.scalars().all()
                     for merch in merch_history:
+                        
                         stmt_user = select(self.User.name, self.User.second_name, self.User.last_name).where(self.User.id == merch.user_uuid)
                         result_user = await session.execute(stmt_user)
                         user_info = result_user.first()
@@ -818,8 +855,8 @@ class PeerUserModel:
                         user_fio = ""
                         if user_info:
                             user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
-                        merch_value = merch.merch_info.split(', ')[1]
-                        merch_name = merch.merch_info.split(', ')[0]
+                        # merch_value = merch.merch_info.split(', ')[1]
+                        # merch_name = merch.merch_info.split(', ')[0]
                         info = {
                             "id": merch.id,
                             "date_time": merch.date_time,
@@ -922,8 +959,9 @@ class PeerUserModel:
     async def send_points_to_employee_of_the_year(self, session, roots: dict):
         """
         Функция вытягивает всех номинантов "Сотрудник года" и "Почетная грамота" по всем годам
-        Выдает баллы если раннее они не были назначены
+        Выдает баллы если раннее они не были назначены и год выдачи баллов больше или равно году запуска Капитала ЭМК
         """
+        LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("2026-02-03", '%Y-%m-%d')
         from .ArticleModel import ArticleModel
         try:
             if "PeerAdmin" in roots.keys() and roots["PeerAdmin"] == True:
@@ -932,21 +970,25 @@ class PeerUserModel:
                     return LogsMaker().warning_message("Не найдены статьи по разделу 'Доска почета'.")
                 for article in articles_employers:
                     uuid_to = article['indirect_data']['uuid'] if 'uuid' in article['indirect_data'] else article['indirect_data']['user_id']
-                    if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
-                        send_data = {
-                            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                            "uuid_to": uuid_to,
-                            "activities_id": 7, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
-                            "description": article['indirect_data']['year']
-                        }
-                    elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
-                        send_data = {
-                            "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                            "uuid_to": uuid_to,
-                            "activities_id": 18, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
-                            "description": article['indirect_data']['year']
-                        }
-                    await self.send_auto_points(session=session, data=send_data, roots=roots)
+                    year_award = datetime.strptime(f'01.01.{article['indirect_data']['year']}', '%d.%m.%Y')
+                    if year_award.year >= LAUNCH_DATE_OF_CAPITAL_EMK.year:
+                        if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
+                            send_data = {
+                                "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                                "uuid_to": uuid_to,
+                                "activities_id": 6, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                                "description": article['indirect_data']['year']
+                            }
+                        elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
+                            print('почетная грамота?', article['id'], uuid_to)
+                            send_data = {
+                                "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                                "uuid_to": uuid_to,
+                                "activities_id": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                                "description": article['indirect_data']['year']
+                            }
+                        await self.send_auto_points(session=session, data=send_data, roots=roots)
+                await session.commit()
                 return True
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав назначения баллов сотрудникам года")
@@ -954,62 +996,3 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в send_points_to_employee_of_the_year: {e}")
     
-    async def send_points_to_realized_idea(self, session, user_id, name_idea):
-        """
-        Функция отправляет пользователю баллы за реализованную идею
-        """
-        try:
-            from .MerchStoreModel import MerchStoreModel
-            uuid_from = 4133
-            uuid_to = user_id
-            activities_id = 17
-            description = f"Баллы за реализованную идею: {name_idea}"
-            # Проверяем существование пользователя
-            stmt_user = select(self.User).where(self.User.id == uuid_to, self.User.active == True)
-            result_user = await session.execute(stmt_user)
-            existing_user = result_user.scalar_one_or_none()
-            
-            if not existing_user:
-                return LogsMaker().warning_message(f"Пользователя с id = {uuid_to} не существует, не удалось автоматически отправить баллы")
-            stmt_max = select(func.max(self.ActiveUsers.id))
-            result_max = await session.execute(stmt_max)
-            max_id = result_max.scalar() or 0
-            new_id = max_id + 1
-            
-            new_action = self.ActiveUsers(
-                id=new_id,
-                uuid_from=uuid_from,
-                uuid_to=uuid_to,
-                description=description,
-                activities_id=activities_id,
-                valid=1,
-                date_time=datetime.now()
-            )
-            session.add(new_action)
-            # await session.commit()
-            
-            stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
-            result_coast = await session.execute(stmt_coast)
-            value = result_coast.scalar()
-            
-            merch_model = MerchStoreModel(uuid_to)
-            add_points = await merch_model.upload_user_sum(session, value)
-            
-            add_history = self.PeerHistory(
-                user_uuid=uuid_from,
-                user_to=uuid_to,
-                active_info=description,
-                active_coast=value,
-                active_id=new_id,
-                info_type='activity',
-                date_time=datetime.now()
-            )
-
-            session.add(add_history)
-            await session.commit()
-            return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
-            
-            
-        except Exception as e:
-            return LogsMaker().error_message(f"Ошибка в send_points_to_realized_idea: {e}")
-        

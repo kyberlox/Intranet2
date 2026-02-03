@@ -72,13 +72,13 @@ class Idea:
             valid_staus = {
                 None : None,
                 "909" : "На экспертизе",
-                "910" : "В работе", # за это баллы
-                "912" : "Реализовано", # за это баллы
+                "910" : "В работе", 
+                "912" : "Реализовано", 
                 "913" : "Отказано",
                 "2151" : "Новая",
                 "2152" : "Рассмотрение",
-                "2161" : "Реализация в рамках другой задачи",  # за это баллы
-                "2176" : "Принято"
+                "2161" : "Реализация в рамках другой задачи", 
+                "2176" : "Принято" # за это баллы
             }
 
             if "status" in cool_idea:
@@ -104,7 +104,6 @@ class Idea:
         
     async def get_ideas(self, user_id, session):
         await self.validate_ideas()
-        # user_id = 2366
         if user_id is not None:
             #print(user_id)
             result = []
@@ -148,26 +147,6 @@ class Idea:
         res = B24().send_idea(incr, fields)
         return res
 
-# async def get_uuid_from_request(request, session):
-#     # from .Auth import AuthService
-#     user_id = None
-#     token = request.cookies.get("user_id")
-#     if token is None:
-#         token = request.headers.get("user_id")
-#         if token is not None:
-#             user_id = token
-#     else:
-#         user_id = token
-
-#     if user_id is not None:
-
-#         # получить и вывести его id
-#         usr = User()
-#         usr.id = int(user_id)
-#         user_inf = await usr.search_by_id(session=session)
-#         if user_inf is not None and "id" in user_inf.keys():
-#             return user_inf["id"]
-#     return None
 
 @idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"],
 description="""
@@ -187,32 +166,7 @@ description="""
 | | | - `base_name` (string) — имя файла (опционально) | |
 
 """)
-async def calendar_event(data = Body()): # request: Request, session: AsyncSession = Depends(get_async_db), 
-    # from .Peer import Peer
-    # user_id = None
-    # token = request.cookies.get("user_id")
-    # if token is None:
-    #     token = request.headers.get("user_id")
-    #     if token is not None:
-    #         user_id = token
-    # else:
-    #     user_id = token
+async def calendar_event(data = Body()):
     send_idea =  await Idea().add(dict(data))
-    # if send_idea and user_id:
-    #     """
-    #     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    #     В будущем поставить сюда айдишник той активности, 
-    #     которая отвечает за отправку баллов предложенной активности
-    #     И поставить айдишник нашего административного аккаунта
-    #     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    #     """
-    #     # id = 8
-    #     send_data = {
-    #         "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-    #         "uuid_to": int(user_id),
-    #         "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-    #         "description": f"Баллы за предложение по улучшению сервиса: {data['NAME']}. Описание: {data['DETAIL_TEXT']}"
-    #     }
-    #     send_point = await Peer(user_uuid=send_data['uuid_from']).send_points(data=send_data, session=session)
     return send_idea
     

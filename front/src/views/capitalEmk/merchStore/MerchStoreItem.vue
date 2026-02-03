@@ -11,6 +11,7 @@
                          @click="setZoomImg(card.file_url)"
                          class="merch-store-item__images__flex-gallery__card">
                         <img class="pos-rel"
+                             :class="{ 'merch-store-item__images__flex-gallery__card--cover': !card.file_url.includes('.png') }"
                              :src="(card.file_url)" />
                         <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
                     </div>
@@ -27,8 +28,7 @@
             </h4>
             <div v-if="currentItem.content_text"
                  class="merch-store-item__info__description"
-                 v-html="currentItem.content_text">
-            </div>
+                 v-html="currentItem.content_text.replaceAll('&nbsp;', ' ')"></div>
             <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && !checkSizes(currentItem as IMerchItem).includes('no_size')"
                  class="merch-store-item__info__sizes__title">
                 <span>Размер</span>
@@ -43,11 +43,12 @@
                 </div>
             </div>
 
-            <h3 class="merch-store-item__info__price">
+            <h3 v-if="currentItem?.indirect_data?.price"
+                class="merch-store-item__info__price">
                 <span class="merch-store-item__info__count-text">
-                    {{ currentItem?.indirect_data?.price }}
+                    {{ String(currentItem?.indirect_data?.price).replace(/(\d)(?=(\d{3})+([^\d]|$))/g, "$1 ") }}
                 </span>
-                эмк-коинов
+                баллов
             </h3>
 
             <div v-if="currentSize && false"
@@ -74,14 +75,16 @@
 
     <AcceptBuyModal v-if="acceptBuyModalOpen"
                     @closeModal="callModal(false)"
+                    :price="currentItem?.indirect_data?.price"
                     :isLoading="isLoading"
-                    @acceptBuy="(quantity: number) => acceptBuy(quantity)" />
+                    :customPrice="currentItem?.indirect_data?.price ? false : true"
+                    @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
 </div>
 </template>
 
 <script lang="ts">
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
 import AcceptBuyModal from './components/AcceptBuyModal.vue';
 import { useToast } from 'primevue/usetoast';
@@ -91,6 +94,7 @@ import type { IMerchItem } from '@/interfaces/entities/IMerch';
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 import { featureFlags } from '@/assets/static/featureFlags';
+import { useUserScore } from '@/stores/userScoreData';
 
 export default defineComponent({
     components: {
@@ -111,6 +115,7 @@ export default defineComponent({
         const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
         const acceptBuyModalOpen = ref(false);
         const isLoading = ref(false);
+        const currentScore = computed(() => useUserScore().getCurrentScore);
 
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
@@ -126,15 +131,22 @@ export default defineComponent({
             currentSize.value = size;
         }
 
-        const acceptBuy = (quantity: number) => {
+        const acceptBuy = (quantity: number, customPrice: boolean = false) => {
             if (!featureFlags.pointsSystem) {
                 toast.showWarning('merchBuyWarning');
-            } else if (quantity > 0) {
+            }
+            else if ((customPrice && currentScore.value < quantity) || (!customPrice && currentItem.value?.indirect_data?.price && currentScore.value < currentItem.value?.indirect_data?.price)) {
+                toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
+            }
+            else if (quantity > 0 && !customPrice) {
                 isLoading.value = true;
                 Api.put('store/create_purchase', { [currentSize.value as string]: quantity!, 'art_id': Number(currentItem.value?.id)! })
                     .then((data) => {
-                        if (data !== true && 'not_enough' in data) {
+                        if (data == true) return;
+                        if ('not_enough' in data) {
                             toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
+                        } else if ('message' in data) {
+                            toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
                         }
                         else {
                             handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
@@ -145,7 +157,30 @@ export default defineComponent({
                     })
                     .finally(() => {
                         isLoading.value = false;
-                        callModal(false)
+                        callModal(false);
+                        Api.get('/peer/user_history')
+                            .then((e) => useUserScore().setStatistics(e))
+                    })
+            }
+            else if (customPrice) {
+                isLoading.value = true;
+                Api.put('store/buy_split', { 'art_id': Number(currentItem.value?.id)!, 'user_points': quantity })
+                    .then((data) => {
+                        if (data !== true && 'status' in data) {
+                            toast.showCustomToast('warn', 'К сожалению у вас не хватает баллов')
+                        }
+                        else {
+                            handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+                        }
+                    })
+                    .catch((error) => {
+                        handleApiError(error, toast)
+                    })
+                    .finally(() => {
+                        isLoading.value = false;
+                        callModal(false);
+                        Api.get('/peer/user_history')
+                            .then((e) => useUserScore().setStatistics(e))
                     })
             }
         }

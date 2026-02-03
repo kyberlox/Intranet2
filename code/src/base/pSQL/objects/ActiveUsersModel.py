@@ -323,6 +323,7 @@ class ActiveUsersModel:
             return LogsMaker().error_message(f"Ошибка в new_a_week при получении недельной статистики для пользователя {self.uuid_to}: {e}")
 
     async def user_history(self, session):
+        YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             # Получаем активность пользователя
             stmt_activities = select(
@@ -342,37 +343,47 @@ class ActiveUsersModel:
             results = result_activities.all()
             
             activities = []
-            
-            for row in results:
-                # Получаем информацию о пользователе
-                stmt_user = select(
-                    self.User.name, 
-                    self.User.second_name, 
-                    self.User.last_name
-                ).where(self.User.id == row.uuid_from)
-                
-                result_user = await session.execute(stmt_user)
-                user_info = result_user.first()
-                
-                user_fio = ""
-                if user_info:
-                    user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
-                
-                if row[-1] == 7:
-                    description = f"Лучший сотрудник {row.description} года"
-                else:
+            if results:
+                for row in results:
+                    # Получаем информацию о пользователе
+                    stmt_user = select(
+                        self.User.name, 
+                        self.User.second_name, 
+                        self.User.last_name
+                    ).where(self.User.id == row.uuid_from)
+                    
+                    result_user = await session.execute(stmt_user)
+                    user_info = result_user.first()
+                    
+                    user_fio = ""
+                    if user_info:
+                        user_fio = f"{user_info.last_name or ''} {user_info.name or ''} {user_info.second_name or ''}".strip()
+                    
+                    activity_name = row.name
                     description = row.description
-                activities.append({
-                    "id_activeusers": row.id,
-                    "uuid_from": row.uuid_from,
-                    "fio_from": user_fio,
-                    "description": description,
-                    "date_time": row.date_time,
-                    "activity_name": row.name,
-                    "cost": row.coast,
-                    "id_activites": row[-1]
-                })
 
+                    if row[-1] == 6:
+                        description = f"Лучший сотрудник {row.description} года"
+                    elif row[-1] == 2:
+                        description = f"Почетная грамота в конкурсе 'Лучший сотрудник {row.description} года'"
+                    elif row[-1] in YEARS_ID:
+                        activity_name = f"Награда за '{row.name}'"
+                    elif row[-1] == 4:
+                        activity_name = f"Баллы за идею"
+                        description = f"Идея №{row.description}"
+
+                        
+                    activities.append({
+                        "id_activeusers": row.id,
+                        "uuid_from": row.uuid_from,
+                        "fio_from": user_fio,
+                        "description": description,
+                        "date_time": row.date_time,
+                        "activity_name": activity_name,
+                        "cost": row.coast,
+                        "id_activites": row[-1]
+                    })
+            
             # Получаем историю мерча
             stmt_merch = select(self.PeerHistory).where(
                 self.PeerHistory.user_uuid == self.uuid_to,
@@ -380,7 +391,9 @@ class ActiveUsersModel:
             )
             result_merch = await session.execute(stmt_merch)
             merch_history = result_merch.scalars().all()
-            
+            if not merch_history:
+                sorted_result = sorted(activities, key=lambda x: x['date_time'], reverse=True)
+                return sorted_result
             for merch in merch_history:
                 activities.append({
                     "id": merch.id,

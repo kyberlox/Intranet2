@@ -69,8 +69,6 @@ class UserModel:
             # database.rollback()
             LogsMaker().error_message(str(e))
 
-
-
     async def upsert_user(self, user_data: dict, session):
         """
         Добавляет или обновляет запись в таблице.
@@ -119,7 +117,7 @@ class UserModel:
                                     need_update = True
                             except ValueError:
                                 pass
-                        elif current_value is not None:
+                        elif current_value is not None and column in user_data:
                             updates[column] = None
                             need_update = True
                     else:
@@ -187,6 +185,8 @@ class UserModel:
             await session.rollback()
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
 
+
+            
     async def upsert_user_some_data(self, user_data: dict, session):
         """
         Добавляет или обновляет запись в таблице.
@@ -281,6 +281,8 @@ class UserModel:
             await session.rollback()
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
 
+
+            
     async def find_by_id_all(self, session):
         from src.model.File import File
         from .App import DOMAIN

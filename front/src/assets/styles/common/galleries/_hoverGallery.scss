@@ -14,7 +14,12 @@
         max-width: 100%;
         object-fit: contain;
         background: whitesmoke;
+        // background: #ca6f0e4f;
         border-radius: 20px;
+
+        &--cover {
+            object-fit: cover;
+        }
     }
 
     &__zones {

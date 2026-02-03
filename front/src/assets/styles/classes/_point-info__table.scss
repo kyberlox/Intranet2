@@ -1,12 +1,15 @@
 .point-info__table {
-    width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 17px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
-    display: block;
+    overflow-x: scroll;
+    table-layout: auto;
+    width: 70%;
+    margin: auto;
+    max-width: 1080px;
+
 
     &__slug {
         padding: 20px;
@@ -14,17 +17,19 @@
 
     thead {
         background-color: #f8f9fa;
-        width: 100%;
 
         th {
-            width: 100%;
+            white-space: nowrap;
             padding: 16px 12px;
             text-align: left;
             font-weight: 600;
             color: #495057;
             border-bottom: 2px solid #e9ecef;
 
+
             &:first-child {
+                width: 30%;
+                white-space: pre-wrap;
                 padding-left: 20px;
             }
 
@@ -37,7 +42,6 @@
 
     tbody {
         tr {
-            width: 100%;
             border-bottom: 1px solid #e9ecef;
             transition: background-color 0.2s ease;
 
@@ -57,6 +61,7 @@
                 &:first-child {
                     padding-left: 20px;
                     font-weight: 500;
+
                 }
 
                 &:last-child {

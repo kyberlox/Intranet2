@@ -16,7 +16,8 @@
     <div class="hover-gallery__image-container">
         <img :src="currentImage.file_url"
              :alt="alt"
-             class="hover-gallery__image" />
+             class="hover-gallery__image"
+             :class="{ 'hover-gallery__image--cover': !currentImage.file_url?.includes('.png') }" />
     </div>
 
     <div class="hover-gallery__zones"
@@ -49,6 +50,10 @@ export default defineComponent({
         showIndicators: {
             type: Boolean,
             default: true
+        },
+        coverFill: {
+            type: Boolean,
+            default: () => false
         }
     },
     setup(props) {

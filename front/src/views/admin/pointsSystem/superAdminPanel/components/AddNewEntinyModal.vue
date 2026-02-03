@@ -5,15 +5,25 @@
             <AdminEditInput @pick="(value: string) => newActivity.name = value"
                             :item="{ name: 'Название' }"
                             :placeholder="'Укажите название'" />
+
+            <AdminEditInput @pick="(value: string) => newActivity.coast = Number(value)"
+                            :item="{ name: 'Описание' }"
+                            :type="'string'"
+                            :placeholder="'Укажите описание'" />
+
             <AdminEditInput @pick="(value: string) => newActivity.coast = Number(value)"
                             :item="{ name: 'Cтоимость' }"
                             :type="'number'"
                             :placeholder="'Укажите стоимость'" />
 
-            <AdminEditSelect @pick="(value: string) => newActivity.need_valid = Boolean(value == 'true')"
+            <AdminEditSelect v-if="!newActivity.is_auto"
+                             @pick="(value: string) => newActivity.need_valid = Boolean(value == 'true')"
                              :item="{ name: 'Доступно всем', values: ['true', 'false'] }" />
 
-            <AdminEditInput v-if="!pickedUser && !newActivity.need_valid"
+            <AdminEditSelect @pick="(value: string) => newActivity.is_auto = Boolean(value == 'true')"
+                             :item="{ name: 'Автоматически', values: ['true', 'false'] }" />
+
+            <AdminEditInput v-if="!pickedUser && !newActivity.need_valid && !newActivity.is_auto"
                             @pick="(value: string) => searchQuery = value"
                             :item="{ name: 'Куратор' }"
                             :placeholder="'Выберите сотрудника'" />
@@ -111,6 +121,13 @@ export default defineComponent({
                 newActivity.value = {}
             }
         })
+
+        watch((newActivity), () => {
+            if (newActivity.value.is_auto) {
+                newActivity.value.uuid = 2;
+                newActivity.value.need_valid = false;
+            }
+        }, { deep: true })
 
         const addActivity = () => {
             emit('addNew', newActivity.value);

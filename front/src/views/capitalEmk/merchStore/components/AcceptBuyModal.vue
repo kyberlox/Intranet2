@@ -1,16 +1,28 @@
 <template>
 <SlotModal @close="$emit('closeModal')">
     <div class="merch-store__accept-buy-modal__wrapper">
+        <div class="merch-store__accept-buy-modal__balance header__points-balance">
+            <span>Ваш баланс: </span>
+            <span>
+                {{ currentScore }}
+            </span>
+        </div>
         <div class="merch-store__accept-buy-modal__content">
-            <p class="merch-store__accept-buy-modal__title">Укажите кол-во:</p>
-
-            <button class="merch-store__accept-buy-modal__quantity-input merch-store__accept-buy-modal__quantity-input--operation"
+            <p class="merch-store__accept-buy-modal__title">
+                {{
+                    customPrice ? "Укажите, сколько баллов вы готовы потратить" : "Укажите кол - во"
+                }}
+            </p>
+            <button v-if="!customPrice"
+                    class="merch-store__accept-buy-modal__quantity-input merch-store__accept-buy-modal__quantity-input--operation"
                     @click="quantity--">-</button>
             <input class="merch-store__accept-buy-modal__quantity-input"
+                   :class="{ 'merch-store__accept-buy-modal__quantity-input--custom-price': customPrice }"
                    type="number"
                    v-model="quantity"
                    min="0" />
-            <button class="merch-store__accept-buy-modal__quantity-input merch-store__accept-buy-modal__quantity-input--operation"
+            <button v-if="!customPrice"
+                    class="merch-store__accept-buy-modal__quantity-input merch-store__accept-buy-modal__quantity-input--operation"
                     @click="quantity++">+</button>
 
         </div>
@@ -25,9 +37,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref, watch, computed } from 'vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import Loader from '@/components/layout/Loader.vue';
+import { useUserScore } from '@/stores/userScoreData';
 
 export default defineComponent({
     components: {
@@ -37,7 +50,11 @@ export default defineComponent({
     props: {
         isLoading: {
             type: Boolean
-        }
+        },
+        customPrice: {
+            type: Boolean,
+            default: () => false
+        },
     },
     setup(props, { emit }) {
         const quantity = ref(1);
@@ -49,7 +66,8 @@ export default defineComponent({
 
         return {
             quantity,
-            accept: () => emit('acceptBuy', quantity.value)
+            currentScore: computed(() => useUserScore().getCurrentScore),
+            accept: () => emit('acceptBuy', quantity.value, props.customPrice)
         }
     }
 })

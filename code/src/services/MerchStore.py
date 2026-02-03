@@ -24,7 +24,9 @@ class MerchStore:
         res = await MerchStoreModel(user_id=self.user_uuid).create_purchase(data=data, session=session)
         if "not_enough" in res:
             return res
-        #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
+        #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"\
+        if 'status' in res:
+            return res
         user_sql = await User(id=self.user_uuid).search_by_id(session=session)
         mail_data = {
             'sender': user_sql['email'],
@@ -33,6 +35,21 @@ class MerchStore:
         }
         SendEmail(data=mail_data).send_active_purchase()
         return True
+    
+    async def buy_split(self, data, session):
+        res = await MerchStoreModel(user_id=self.user_uuid).buy_split(data=data, session=session)
+        #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
+        if 'status' in res:
+            return res
+        user_sql = await User(id=self.user_uuid).search_by_id(session=session)
+        mail_data = {
+            'sender': user_sql['email'],
+            'items': res,
+            'user_info': f'ID={user_sql['id']}, ФИО = {user_sql['last_name']} {user_sql['name']} {user_sql['second_name']}'
+        }
+        SendEmail(data=mail_data).send_active_purchase()
+        return True
+
 
 
 
@@ -63,3 +80,10 @@ async def create_purchase(request: Request, data=Body(), session: AsyncSession =
     if user_uuid is None:
         user_uuid = 2366
     return await MerchStore(user_uuid).create_purchase(data=data, session=session)
+
+@store_router.put("/buy_split")
+async def buy_split(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
+    user_uuid = await get_uuid_from_request(request, session)
+    if user_uuid is None:
+        user_uuid = 2366
+    return await MerchStore(user_uuid).buy_split(data=data, session=session)

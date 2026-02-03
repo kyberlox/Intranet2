@@ -255,14 +255,19 @@ const router = createRouter({
       props: (route) => ({ targetId: route.params.targetId }),
     },
     {
-      path: '/about/merch',
-      name: 'merchStore',
-      component: () => import('@/views/about/merchStore/MerchStore.vue'),
+      path: '/about/capitalEmk/about',
+      name: 'merchAbout',
+      component: () => import('@/views/capitalEmk/CapitalAbout/CapitalAbout.vue'),
     },
     {
-      path: '/about/merch/:id',
+      path: '/about/capitalEmk/merch',
+      name: 'merchStore',
+      component: () => import('@/views/capitalEmk/merchStore/MerchStore.vue'),
+    },
+    {
+      path: '/about/capitalEmk/merch/:id',
       name: 'merchStoreItem',
-      component: () => import('@/views/about/merchStore/MerchStoreItem.vue'),
+      component: () => import('@/views/capitalEmk/merchStore/MerchStoreItem.vue'),
       props: (route) => ({ id: Number(route.params.id) }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Магазин мерча', route: 'merchStore' }]
@@ -606,8 +611,8 @@ const router = createRouter({
       path: '/oauthRedir/:referrer',
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
-        const referrer = to.params.referrer;
-        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user&amp;referrer=${referrer}`;
+        const referrer = `${to.params.referrer}`;
+        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1769757513&scope=user&referrer=${referrer}`;
       },
       redirect: '',
     },

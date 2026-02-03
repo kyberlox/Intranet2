@@ -67,11 +67,6 @@ export const mainMenuPoints: MainMenuPoints = [
                 href: "calendar",
             },
             {
-                id: 1.12,
-                name: "Магазин мерча",
-                href: "merchStore",
-            },
-            {
                 id: 1.13,
                 name: 'Новые сотрудники',
                 href: 'newWorkers'
@@ -222,6 +217,22 @@ export const mainMenuPoints: MainMenuPoints = [
             },
         ],
     },
+    {
+    id: 6,
+    name: "Капитал ЭМК",
+    subPoints: [
+        {
+            id: 6.1,
+            name: 'О капитале',
+            href: 'merchAbout'
+        },
+        {
+            id: 6.2,
+            name: 'Магазин мерча',
+            href: 'merchStore'
+        }
+    ]
+    }
 ];
 
 export const points = [

@@ -42,7 +42,7 @@ class AuthService:
         self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
         # self.client_secret = "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
         self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
-        # self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "http://intranet.emk.org.ru/api/auth_router/auth")
+        # self.redirect_uri = "http://intranet.emk.org.ru/api/auth_router/auth"
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
         # self.bitrix_domain = "http://test-portal.emk.ru"
         
@@ -533,7 +533,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
         return LogsMaker().warning_message(message="Login or Password has missing")
 
     session = await AuthService().root_authenticate(login, password, sess)
-    
+    print(session, 'рутовская штучка')
     if not session:
         # return await LogsMaker().warning_message(message="Invalid credentials")
         return LogsMaker().warning_message(message="Invalid credentials")
@@ -621,7 +621,8 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
             detail="Failed to authenticate with Bitrix24"
         )
     
-    redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
     
     if referrer:
         redirect_url = referrer

@@ -1,14 +1,22 @@
 <template>
 <tr class="activity-edit__row"
     v-for="active in activities"
-    :key="active.id"
-    data-row-id="14">
+    :key="active.id">
     <td class="activity-edit__cell activity-edit__cell--parameter">
         <div class="activity-edit__field">
             <PencilIcon />
             <input data-type="activityName"
                    class="activity-edit__input activity-edit__input--name"
                    v-model="findActivity(active).name"
+                   @change="$emit('editActivity', findActivity(active))" />
+        </div>
+    </td>
+    <td class="activity-edit__cell activity-edit__cell--description">
+        <div class="activity-edit__field">
+            <PencilIcon />
+            <input data-type="activityName"
+                   class="activity-edit__input activity-edit__input--name"
+                   v-model="findActivity(active).description"
                    @change="$emit('editActivity', findActivity(active))" />
         </div>
     </td>
@@ -24,7 +32,8 @@
         </div>
     </td>
     <td class="activity-edit__cell activity-edit__cell--actions">
-        <CancelIcon class="moderator__button cancelBtn"
+        <CancelIcon v-if="!active.is_auto"
+                    class="moderator__button cancelBtn"
                     @click="deleteItem(active.id)" />
     </td>
 </tr>

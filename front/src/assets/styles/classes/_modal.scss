@@ -298,6 +298,33 @@
             overflow-y: auto;
             overflow-x: hidden;
 
+            &__points-info {
+                // margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+
+                &>.point-info__table {
+                    max-width: max-content !important;
+                }
+
+                &__list {
+                    color: var(--emk-brand-color) !important;
+                    cursor: pointer;
+
+                    &>span {
+                        display: block;
+                        margin: 15px 0 10px 0;
+                    }
+
+                    &:hover {
+                        &>span {
+                            color: var(--emk-brand-color-dark) !important;
+                        }
+                    }
+                }
+            }
+
             &__loader {
                 width: 20px;
                 height: 20px;
@@ -323,7 +350,9 @@
 
             &--points-modal {
                 padding: 0;
-                width: 50%;
+                width: 750px;
+                // width: 50%;
+                overflow-x: auto;
 
                 @include sm {
                     width: 100%;

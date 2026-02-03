@@ -187,6 +187,100 @@ class UserModel:
             await session.rollback()
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
 
+    async def upsert_user_some_data(self, user_data: dict, session):
+        """
+        Добавляет или обновляет запись в таблице.
+        user_data: словарь с данными пользователя
+        """
+
+        try:
+            # Валидация и преобразование данных
+            new_user_data = {}
+            for key in user_data.keys():
+                if key == 'ID':
+                    new_user_data["id"] = int(user_data[key])
+                elif key == 'XML_ID':
+                    new_user_data["uuid"] = user_data["XML_ID"][3:]
+                else:
+                    new_user_data[key.lower()] = user_data[key]
+            user_data = new_user_data
+
+            # Проверяем существование пользователя
+            stmt = select(self.user).where(self.user.id == user_data["id"])
+            result = await session.execute(stmt)
+            usr = result.scalar_one_or_none()
+
+            DB_columns = ['uuid', 'active', 'name', 'last_name', 'second_name', 'email', 
+                        'personal_mobile', 'uf_phone_inner', 'personal_city', 
+                        'personal_gender', 'personal_birthday']
+
+            # Если пользователь существует - обновляем
+            if usr:
+                user = usr  # Используем уже полученный объект
+                need_update = False
+                updates = {}
+
+                # Проверка основных параметров
+                for column in DB_columns:
+                    current_value = getattr(user, column, None)
+                    new_value = user_data.get(column)
+                    
+                    if column == 'personal_birthday': #для ДР
+                        # Обработка дат
+                        if new_value and new_value != "" and new_value is not None: #если новое занчение ДР не пустая строка и не None
+                            print("полез в дату дня рождения")
+                            try:
+                                dt_new = datetime.strptime(new_value.split('T')[0], '%Y-%m-%d').date() #валидируем
+                                if current_value is None or dt_new != current_value.date():
+                                    updates[column] = dt_new
+                                    need_update = True
+                            except ValueError:
+                                pass
+                        # elif current_value is not None and column in user_data: #если пришла пустая, а была не пустая
+                        #     updates[column] = None #зануляем
+                        #     need_update = True
+                    else:
+                        if new_value != current_value and new_value != None and new_value != "": #не перзаписывай основные поля на пустые занчения
+                            updates[column] = new_value if new_value != "" else None
+                            need_update = True
+
+                # Если есть изменения - обновляем
+                if need_update:
+                    for key, value in updates.items():
+                        setattr(user, key, value)
+                    # await session.commit()
+                    LogsMaker().info_message(f"Внесены изменения в данные пользователя с id = {user.id}")
+
+                # Проверка дополнительных параметров в indirect_data
+                need_update_indirect_data = False
+                current_indirect_data = user.indirect_data.copy() if user.indirect_data else {}
+                
+                for key in user_data.keys():
+                    if key not in DB_columns:
+                        current_value = current_indirect_data.get(key)
+                        new_value = user_data[key]
+                        if key == 'personal_photo':
+                            print(new_value, current_value)
+                        if key not in current_indirect_data or new_value != current_value:
+                            current_indirect_data[key] = new_value
+                            need_update_indirect_data = True
+
+                # Если есть изменения в indirect_data - обновляем
+                if need_update_indirect_data:
+                    user.indirect_data = current_indirect_data
+                    # await session.commit()
+                    LogsMaker().info_message(f"Обновлены дополнительные данные пользователя с id = {user.id}")
+                return True
+            
+            # Если пользователя нет 
+            else:
+                                
+                return LogsMaker().info_message(f"Пользователь с id = {user_data['id']} ещё не создан!")
+
+        except Exception as e:
+            await session.rollback()
+            LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
+
     async def find_by_id_all(self, session):
         from src.model.File import File
         from .App import DOMAIN

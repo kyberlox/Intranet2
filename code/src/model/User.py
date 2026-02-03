@@ -540,7 +540,7 @@ class User:
             "name": "Интранет",
             "last_name": "Администратор",
             "second_name": None,
-            "email": None,
+            "email": "it.dpm@emk.ru",
             "personal_mobile": None,
             "uf_phone_inner": None,
             "personal_city": "Саратов",

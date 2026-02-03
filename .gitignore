@@ -28,3 +28,6 @@
 
 # dev.ignore
 **.sh
+
+/code/*.pdf
+/code/*.docx

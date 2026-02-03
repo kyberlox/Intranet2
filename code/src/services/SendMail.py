@@ -657,7 +657,7 @@ class SendEmail:
             msg = MIMEMultipart()
             msg["From"] = server_mail_login
             msg["To"] = self.data['sender']
-            msg['Subject'] = 'С юилеем!'
+            msg['Subject'] = 'С юбилеем!'
             text_msg = f'''<p>Дорогой(ая) коллега!</p>\
                         <p>{year} лет — это не просто цифра. Это годы, наполненные Вашим вкладом, идеями 
                         и поддержкой команды. Спасибо, что Вы с нами все эти годы!</p>\

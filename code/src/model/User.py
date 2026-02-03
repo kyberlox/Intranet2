@@ -787,7 +787,7 @@ async def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_as
 async def create_intranet_admin(session: AsyncSession = Depends(get_async_db)):
     return await User().create_intranet_admin(session=session)
 
-@users_router.post("/send_test_email", tags=["Пользователь"])
+@users_router.get("/send_test_email", tags=["Пользователь"])
 async def send_test_email(session: AsyncSession = Depends(get_async_db)):
     data = {'sender': 'kucherenko.m.d@emk.ru'}
     #Письмо ДР

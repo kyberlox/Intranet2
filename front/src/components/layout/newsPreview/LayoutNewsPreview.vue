@@ -23,7 +23,7 @@
                  :plugImg="emptyPlug"
                  :plugText="emptyPageHtml" />
 
-    <SampleGallery v-if="!emptyTag"
+    <SampleGallery v-else-if="!emptyTag"
                    :gallery="visibleNews"
                    :type="'postPreview'"
                    :routeTo="routeTo" />

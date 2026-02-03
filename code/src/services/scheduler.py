@@ -497,7 +497,7 @@ class AioSchedulerManager:
             # daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
             
             # 2. Ежедневная проверка в 7 утра
-            # daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)
+            daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)
             
             # 3. Тестовая задача каждую минуту (для мониторинга)
             # test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)

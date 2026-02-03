@@ -38,7 +38,7 @@ export default defineComponent({
             }
             else
                 if (props.item?.field?.includes('from') || props.item?.field?.includes('to')) {
-                    emit('pick', date)
+                    emit('pick', useDateFormat(date as string, 'DD.MM.YYYY'))
                 }
                 else {
                     emit('pick', useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss'))

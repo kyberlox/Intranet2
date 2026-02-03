@@ -1,13 +1,12 @@
 <template>
 <div class="modal__text__content modal__text__content--user-points">
-    <PointsInfoTable v-if="!pointsAboutImportant" />
+    <PointsInfoTable />
     <div class="modal__text__content__points-info__list">
-        <span v-if="!pointsAboutImportant"
-              @click="pointsAboutOpen = !pointsAboutOpen">
+        <a href="/about/capitalEmk/about"
+           target="_blank"
+           class="link">
             За что начисляют
-        </span>
-        <PointsAbout v-if="pointsAboutOpen || pointsAboutImportant"
-                     :allActivities="allActivities" />
+        </a>
     </div>
 </div>
 </template>
@@ -15,13 +14,11 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import PointsInfoTable from '@/views/user/userPointsComponents/PointsInfoTable.vue';
-import PointsAbout from '@/views/user/userPointsComponents/PointsAbout.vue';
 import { usePointsData } from '@/stores/pointsData';
 
 export default defineComponent({
     components: {
         PointsInfoTable,
-        PointsAbout
     },
     props: {
         pointsAboutImportant: {

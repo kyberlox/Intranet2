@@ -99,18 +99,14 @@ export default defineComponent({
             switch (true) {
                 // id == 2 у настройки областей видимости
                 case !featureFlags.visibleArea && e.id == 2:
-                    console.log(1);
                     return false
                 // id == 3 у бальной системы
                 case (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)):
-                    console.log(2);
                     return false
                 // id == 4 у прав на разделы(gpt)
                 case !userRoots.value.EditorAdmin && e.id == 4:
-                    console.log(3);
                     return false
                 case !props.needDefaultNav && e.id == 0:
-                    console.log(4);
                     return false
                 default:
                     return true

@@ -93,13 +93,10 @@ class User:
     async def upload_one_user(self, user_data, session):
         await self.UserModel.upsert_user_some_data(user_data=user_data, session=session)
         await session.commit()
-
-        # status = await self.set_users_photo(session)
-        # await self.UserModel.create_new_user_view()
-        # дампим данные в эластик
-        # await self.dump_users_data_es(session)
         return {"status": True}
 
+
+      
     async def search_by_id(self, session):
         self.UserModel.id = self.id
         res = await self.UserModel.find_by_id(session)
@@ -773,6 +770,10 @@ async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async
 @users_router.get("/anniversary_in_company", tags=["Пользователь"])
 async def anniversary_in_company(session: AsyncSession = Depends(get_async_db)):
     return await User().anniversary_in_company(session=session)
+
+@users_router.post("/upload_one_user", tags=["Пользователь"])
+async def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_async_db)):
+    return await User().upload_one_user(user_data=data, session=session)
 
 @users_router.get("/get_all_users", tags=["Пользователь"])
 async def get_all_users(session: AsyncSession = Depends(get_async_db)):

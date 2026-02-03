@@ -27,4 +27,7 @@
 /front/cypress
 
 # dev.ignore
-*.sh
+**.sh
+
+/code/*.pdf
+/code/*.docx

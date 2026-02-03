@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th><span>Дата</span></th>
-                <th><span>Активность</span></th>
+                <th><span>Название</span></th>
                 <th><span>Кто отправил</span></th>
                 <th><span>Комментарий</span></th>
                 <th><span>Баллы</span></th>

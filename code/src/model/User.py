@@ -93,13 +93,10 @@ class User:
     async def upload_one_user(self, user_data, session):
         await self.UserModel.upsert_user_some_data(user_data=user_data, session=session)
         await session.commit()
-
-        # status = await self.set_users_photo(session)
-        # await self.UserModel.create_new_user_view()
-        # дампим данные в эластик
-        # await self.dump_users_data_es(session)
         return {"status": True}
 
+
+      
     async def search_by_id(self, session):
         self.UserModel.id = self.id
         res = await self.UserModel.find_by_id(session)
@@ -543,7 +540,7 @@ class User:
             "name": "Интранет",
             "last_name": "Администратор",
             "second_name": None,
-            "email": None,
+            "email": "it.dpm@emk.ru",
             "personal_mobile": None,
             "uf_phone_inner": None,
             "personal_city": "Саратов",
@@ -774,6 +771,10 @@ async def get_user_likes(user_id: int, session: AsyncSession = Depends(get_async
 async def anniversary_in_company(session: AsyncSession = Depends(get_async_db)):
     return await User().anniversary_in_company(session=session)
 
+@users_router.post("/upload_one_user", tags=["Пользователь"])
+async def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_async_db)):
+    return await User().upload_one_user(user_data=data, session=session)
+
 @users_router.get("/get_all_users", tags=["Пользователь"])
 async def get_all_users(session: AsyncSession = Depends(get_async_db)):
     return await User().get_all_users(session=session)
@@ -784,6 +785,16 @@ async def upload_one_user(data=Body(...), session: AsyncSession = Depends(get_as
 
 @users_router.post("/create_intranet_admin", tags=["Пользователь"])
 async def create_intranet_admin(session: AsyncSession = Depends(get_async_db)):
+    return await User().create_intranet_admin(session=session)
+
+@users_router.post("/send_test_email", tags=["Пользователь"])
+async def send_test_email(session: AsyncSession = Depends(get_async_db)):
+    #Письмо новичку
+    #Письмо новичку
+    #Письмо новичку
+    #Письмо новичку
+    #Письмо новичку
+    #Письмо новичку
     return await User().create_intranet_admin(session=session)
 
 # @users_router.post("/search_indirect")

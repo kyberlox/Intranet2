@@ -1,7 +1,6 @@
 <template>
 <div class="mt20">
-    <div class="page__title"
-         @click="console.log(merchItems)">Магазин "Капитал ЭМК"</div>
+    <div class="page__title">Магазин "Капитал ЭМК"</div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
              v-if="merchItems.length && !isLoading">

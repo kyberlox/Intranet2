@@ -84,7 +84,7 @@ export default defineComponent({
         const sections = computed(() => useAdminData().getSections);
         const adminRoot = computed(() => useUserData().getUserRoots.PeerAdmin);
         const PeerModer = computed(() => useUserData().getUserRoots.PeerModer);
-        const userRoots = computed(() => useUserData().getUserRoots)
+        const userRoots = computed(() => useUserData().getUserRoots);
         const fullNavigation = ref<NavGroup[]>();
 
         const checkByFlags = (e: NavGroup) => {
@@ -93,7 +93,7 @@ export default defineComponent({
                 case !featureFlags.visibleArea && e.id == 2:
                     return false
                 // id == 3 у бальной системы
-                case !featureFlags.pointsSystem && e.id == 3:
+                case !featureFlags.pointsSystem && e.id == 3 && PeerModer.value:
                     return false
                 // id == 4 у прав на разделы(gpt)
                 case !adminRoot.value && e.id == 4:
@@ -137,6 +137,7 @@ export default defineComponent({
             myId,
             sections,
             fullNavigation,
+            PeerModer,
             defineRoute,
         }
     }

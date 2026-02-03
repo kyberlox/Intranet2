@@ -14,7 +14,7 @@ from ..base.pSQL.objects.App import get_async_db, AsyncSessionLocal
 # from ..base.pSQL.models.User import User
 from .MerchStore import MerchStore
 from .Peer import Peer
-
+from .SendMail import SendEmail
 # ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
 
 # Глобальный экземпляр планировщика
@@ -22,6 +22,35 @@ _scheduler = None
 _scheduler_task = None
 _scheduler_manager = None
 
+
+def make_date_valid(date):
+    if date is not None:
+        if isinstance(date, str):
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.strptime(date, '%Y-%m-%d')
+            elif '.' in date:
+                try:
+                    return datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                except:
+                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                    return datetime.strptime(date, '%d.%m.%Y')
+                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 # ==================== РЕАЛИЗАЦИЯ ЗАПРОСОВ ====================
 
 async def get_today_birthdays() -> List[int]:
@@ -136,7 +165,8 @@ async def send_birthday_notifications(user_ids: List[int]):
     """
     Отправка уведомлений о днях рождения
     """
-    from .SendEmail import SendEmail
+    from ..model.User import User
+    from .SendMail import SendEmail
     if not user_ids:
         return
     
@@ -147,14 +177,14 @@ async def send_birthday_notifications(user_ids: List[int]):
         async with AsyncSessionLocal() as db:
             for user_id in user_ids:
                 send_data = {
-                    "uuid_from": 4133,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_from": 2,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(user_id),
-                    "activities_id": 7,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "activities_id": 1,  # В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Поздравительные баллы. С днем рождения!"
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
                 if send_point['status'] == 'info':
-                    user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
+                    user_info = await User(id=int(user_id)).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
                         SendEmail(data=data).send_to_birthday_notifications()
@@ -174,15 +204,14 @@ async def send_to_new_users():
     logger = LogsMaker()
     logger.info_message(f"Отправка баллов новым сотрудникам")
     from ..model.User import User
-    from .SendEmail import SendEmail
     try:
         async with AsyncSessionLocal() as db:
             users = await User().get_new_workers(session=db)
             for user_id in users:
                 send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(user_id['id']),
-                    "activities_id": 14, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Добро пожаловать в ЭМК!"
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
@@ -209,6 +238,7 @@ async def send_to_new_idea():
     try:
         from .Idea import Idea
         #Дата запуска капитала ЭМК
+        LogsMaker().info_message("Отправка баллов пользователям за идею")
         LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("03.02.2026", '%d.%m.%Y')
 
         #Статус с которым выдаем баллы
@@ -217,7 +247,10 @@ async def send_to_new_idea():
         all_ideas = await Idea().validate_ideas()
         async with AsyncSessionLocal() as db:
             for idea in all_ideas:
-                date_idea = datetime.strptime(idea['date_create'].split()[0], '%d.%m.%Y')
+                # if '-' in idea['date_create']:
+                #     date_idea = datetime.strptime(idea['date_create'].split('T')[0], '%Y-%m-%d')
+                # else:
+                date_idea = make_date_valid(idea['date_create'])
                 #пропускаем идеи которые были отправлены до запуска каптиала ЭМК
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue
@@ -226,9 +259,9 @@ async def send_to_new_idea():
                     continue
                 
                 send_data = {
-                    "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                    "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                     "uuid_to": int(idea['user_id']),
-                    "activities_id": 16, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+                    "activities_id": 4, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": idea["number"]
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
@@ -251,7 +284,7 @@ async def send_to_anniversary_in_company():
             await User().anniversary_in_company(session=db)
         
     except Exception as e:
-        LogsMaker().error_message(f"Ошибка при отправке баллов за идею: {e}")
+        LogsMaker().error_message(f"Ошибка при отправке баллов за годовщину: {e}")
         # Откатываем изменения в случае ошибки
         if 'db' in locals():
             await db.rollback()

@@ -440,7 +440,7 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_birthday_points: {e}")
 
-    async def check_anniversary_in_company(self, session, uuid_to, activities_id, date_register):
+    async def check_anniversary_in_company(self, session, uuid_to, activities_id):
         """
         Функция проверяет прошел ли год с момента последней годовщины работы в компании.
         Возвращает False если пользователь уже получил баллы 
@@ -515,10 +515,10 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
     async def send_auto_points(self, session, data: dict, roots: dict):
-        YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
+        YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             from .MerchStoreModel import MerchStoreModel
-            uuid_from = int(roots['user_id'])
+            uuid_from = int(data["uuid_from"])
             uuid_to = int(data["uuid_to"])
             activities_id = int(data["activities_id"])
             description = data["description"]
@@ -533,19 +533,19 @@ class PeerUserModel:
 
             check_info = False
 
-            if int(activities_id) == 14:
+            if int(activities_id) == 1:
                 check_info = await self.check_birthday_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за ДР: check_info = {check_info} ")
-            elif int(activities_id) == 15:
+            elif int(activities_id) == 3:
                 check_info = await self.check_new_workers_points(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за нового сотрудника: check_info = {check_info} ")
             elif int(activities_id) in YEARS_ID:
-                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id, date_register=data["date_register"])
+                check_info = await self.check_anniversary_in_company(session=session, uuid_to=uuid_to, activities_id=activities_id)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за годовщину работы в компании: check_info = {check_info} ")
-            elif int(activities_id) == 20 or int(activities_id) == 8:
+            elif int(activities_id) == 2 or int(activities_id) == 6:
                 check_info = await self.check_employers_of_the_year(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за конкурс сотрудник года: check_info = {check_info} ")
-            elif int(activities_id) == 16:
+            elif int(activities_id) == 4:
                 check_info = await self.check_ideas(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за идею: check_info = {check_info} ")
 
@@ -782,11 +782,11 @@ class PeerUserModel:
             return LogsMaker().error_message(f"Ошибка в get_moders_list при получении списка модераторов: {e}")
 
     async def get_curators_history(self, session, roots: dict):
-        YEARS_ID = [21, 22, 23, 24, 25, 26, 27] # менять значеняи к годам если поменялись айдишники
+        YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
                 stmt_history = select(self.PeerHistory).where(
-                    self.PeerHistory.user_uuid == int(roots['user_id']),
+                    # self.PeerHistory.user_uuid == int(roots['user_id']),
                     self.PeerHistory.info_type == 'activity'
                 )
                 result_history = await session.execute(stmt_history)
@@ -815,16 +815,17 @@ class PeerUserModel:
 
                     activity_name = active_name
                     description = active.active_info
-                    if active_users_inf.activities_id == 20:
+
+                    if active_users_inf.activities_id == 6:
                         description = f"Лучший сотрудник {active.active_info} года"
-                    elif active_users_inf.activities_id == 8:
+                    elif active_users_inf.activities_id == 2:
                         description = f"Почетная грамота в конкурсе 'Лучший сотрудник {active.active_info} года'"
                     elif active_users_inf.activities_id in YEARS_ID:
-                        activity_name = f"Награда за юбилей {active_name}"
+                        activity_name = f"Награда за {active_name}"
                     elif active_users_inf.activities_id == 16:
                         description = f"Баллы за идею №{active.active_info}"
 
-                    
+                   
                     info = {
                         "id": active.id,
                         "date_time": active.date_time,
@@ -973,17 +974,17 @@ class PeerUserModel:
                     if year_award.year >= LAUNCH_DATE_OF_CAPITAL_EMK.year:
                         if "award" in article['indirect_data'] and article['indirect_data']['award'] == "Сотрудник года":
                             send_data = {
-                                "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                                "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                                 "uuid_to": uuid_to,
-                                "activities_id": 20, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                                "activities_id": 6, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
                                 "description": article['indirect_data']['year']
                             }
                         elif "award" in article['indirect_data'] and article['indirect_data']['award'] == "Почетная грамота":
                             print('почетная грамота?', article['id'], uuid_to)
                             send_data = {
-                                "uuid_from": 4133, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+                                "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
                                 "uuid_to": uuid_to,
-                                "activities_id": 8, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
+                                "activities_id": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ СОТРУДНИКА ГОДА
                                 "description": article['indirect_data']['year']
                             }
                         await self.send_auto_points(session=session, data=send_data, roots=roots)

@@ -107,9 +107,18 @@ class ActivitiesModel:
                     coast=data['coast'],
                     need_valid=data['need_valid'],
                     active=True,
-                    is_auto=data['is_auto'],
-                    description=data['description']
+                    is_auto=data['is_auto']
                 )
+                if 'description' in data:
+                    new_active = self.Activities(
+                        id=new_id,
+                        name=data['name'],
+                        coast=data['coast'],
+                        need_valid=data['need_valid'],
+                        active=True,
+                        is_auto=data['is_auto'],
+                        description=data['description']
+                    )
 
                 
                 # Если активность не требует подтверждения, назначаем куратора

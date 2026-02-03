@@ -186,7 +186,7 @@ class UserModel:
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
 
 
-
+            
     async def upsert_user_some_data(self, user_data: dict, session):
         """
         Добавляет или обновляет запись в таблице.
@@ -282,7 +282,7 @@ class UserModel:
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")
 
 
-
+            
     async def find_by_id_all(self, session):
         from src.model.File import File
         from .App import DOMAIN

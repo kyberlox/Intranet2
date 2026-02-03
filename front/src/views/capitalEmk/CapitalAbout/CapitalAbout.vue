@@ -29,7 +29,7 @@
                     для этого также сообщите нам (тел. 5182/5185).
                 </li>
             </ul>
-            Как потратить баллы
+            <strong> Как потратить баллы</strong>
         </span>
         <RouterLink :to="{ name: 'merchStore' }"
                     class="primary-button">

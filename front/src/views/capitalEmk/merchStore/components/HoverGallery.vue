@@ -17,7 +17,7 @@
         <img :src="currentImage.file_url"
              :alt="alt"
              class="hover-gallery__image"
-             :class="{ 'hover-gallery__image--cover': coverFill }" />
+             :class="{ 'hover-gallery__image--cover': !currentImage.file_url?.includes('.png') }" />
     </div>
 
     <div class="hover-gallery__zones"

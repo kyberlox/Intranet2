@@ -789,12 +789,15 @@ async def create_intranet_admin(session: AsyncSession = Depends(get_async_db)):
 
 @users_router.post("/send_test_email", tags=["Пользователь"])
 async def send_test_email(session: AsyncSession = Depends(get_async_db)):
+    data = {'sender': 'kucherenko.m.d@emk.ru'}
+    #Письмо ДР
+    SendEmail(data=data).send_to_birthday_notifications()
     #Письмо новичку
-    #Письмо новичку
-    #Письмо новичку
-    #Письмо новичку
-    #Письмо новичку
-    #Письмо новичку
+    SendEmail(data=data).send_to_new_wrokers()
+    #Письмо годовщины
+    SendEmail(data=data).send_to_anniversary_in_company(year=7)
+    #Письмо юбилей 5 лет
+    SendEmail(data=data).send_to_jubilee_in_company(year=5)
     return await User().create_intranet_admin(session=session)
 
 # @users_router.post("/search_indirect")

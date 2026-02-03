@@ -36,10 +36,12 @@
             Магазин мерча
         </RouterLink>
         <div class="block">
-            Ниже можно ознакомиться с перечнем событий и достижений и
-            стоимостью
-            баллов за
-            каждую из них.
+            <span>
+                Ниже можно ознакомиться с перечнем событий и достижений и
+                стоимостью
+                баллов за
+                каждую из них.
+            </span>
             <CapitalActivityTable :title="'За что начисляют баллы'"
                                   :allActivities="allActivities.filter((e) => !e.name.includes('Годовщина') && !e.name.includes('Юбилейная')).sort((a, b) => a.coast - b.coast)" />
             <CapitalActivityTable :title="'Баллы за стаж работы в компании'"

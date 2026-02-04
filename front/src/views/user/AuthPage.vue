@@ -61,9 +61,9 @@ export default defineComponent({
         }
 
         watch((route), () => {
-            if (!useUserData().getIsLogin && route.name) {
+            if (!useUserData().getIsLogin && route.fullPath) {
                 // localStorage.setItem('from', String(route.name));
-                document.cookie = `referrer=${String(route.name)}`;
+                document.cookie = `referrer=${route.fullPath}`;
             }
         }, { immediate: true, deep: true })
 

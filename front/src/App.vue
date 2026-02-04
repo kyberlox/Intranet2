@@ -73,12 +73,13 @@ export default defineComponent({
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');
-                const refferer = document.cookie.replace(
+                const referrer = document.cookie.replace(
                     /(?:(?:^|.*;\s*)referrer\s*\=\s*([^;]*).*$)|^.*$/,
                     "$1",
                 );
-                if (refferer) {
-                    router.push({ name: refferer });
+                if (referrer) {
+                    console.log(referrer);
+                    router.push({ name: referrer });
                     // localStorage.removeItem('from');
                 }
                 if (userData.getAuthKey) {

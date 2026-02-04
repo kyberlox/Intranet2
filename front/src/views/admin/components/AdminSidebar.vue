@@ -3,7 +3,9 @@
     <div class="admin-panel__sidebar">
         <div v-if="needDefaultNav">
             <div class="admin-panel__header">
-                <h3 class="admin-panel__title">Панель редактора</h3>
+                <h3 class="admin-panel__title">
+                    Панель редактора
+                </h3>
             </div>
             <nav v-for="(item, index) in fullNavigation"
                  :key="'nav' + index"

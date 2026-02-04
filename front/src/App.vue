@@ -72,8 +72,6 @@ export default defineComponent({
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (isLogin.value) {
-                console.log(document.cookie)
-
                 prefetchSection('score');
                 prefetchSection('calendar');
                 const referrer = Cookies.get('referrer');

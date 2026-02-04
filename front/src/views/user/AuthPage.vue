@@ -62,13 +62,9 @@ export default defineComponent({
         }
 
         watch((route), () => {
-            if (!useUserData().getIsLogin && route.name) {
-                // Cookies.remove('referrer');
-
-                // localStorage.setItem('from', String(route.name));
-                // document.cookie = `referrer=${String(route.name)}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+            if (!useUserData().getIsLogin && route.fullPath) {
                 if (route.name !== 'oauthPage') {
-                    Cookies.set('referrer', String(route.name), { expires: 365 });
+                    Cookies.set('referrer', String(route.fullPath), { expires: 365 });
                 }
             }
         }, { immediate: true, deep: true })

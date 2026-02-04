@@ -47,7 +47,7 @@ import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
-import router from "./router";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: "app-layout",
@@ -67,6 +67,7 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
+        const router = useRouter();
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (isLogin.value) {

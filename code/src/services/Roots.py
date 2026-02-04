@@ -161,8 +161,8 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
     if user_id is None:
         print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        # user_roots = {'EditorAdmin': True, 'EditorModer': [31, 33], 'VisionAdmin': True, 'GPT_gen_access': True}
-        user_roots = {}
+        user_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'EditorModer': [31, 33], 'VisionAdmin': True, 'GPT_gen_access': True}
+        # user_roots = {}
     # 'PeerAdmin': True, 'PeerModer': True, 'PeerCurator': [], 
     return user_roots
 

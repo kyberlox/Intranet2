@@ -94,6 +94,10 @@ export default defineComponent({
             }
         }, { immediate: true, deep: true })
 
+        onMounted(() => {
+            userData.initKeyFromStorage();
+        })
+
         return {
             isLogin,
             userId: computed(() => useUserData().getMyId),

@@ -346,7 +346,7 @@ class AuthService:
         user_info = await self.get_user_info(tokens["access_token"])
 
         # Доступ на тестовый только для особенных
-        ADMIN_UUIDS = [2375, 4133]    # 2366, 
+        ADMIN_UUIDS = [2366, 2375, 4133]    # 2366, 
         if int(user_info['ID']) not in ADMIN_UUIDS:
             return None
 

@@ -44,8 +44,13 @@ class FilesDBModel():
                 from ..models.Article import Article
                 new_art = Article(id=int(self.article_id))
                 session.add(new_art)
+            stmt_max = select(func.max(FilesDB.id))
+            result_max = await session.execute(stmt_max)
+            max_id = result_max.scalar() or 0
+            new_id = max_id + 1
             # if existing_art:
             new_artfile = FilesDB(
+                id=new_id,
                 article_id=int(self.article_id), 
                 name=self.name, 
                 original_name=self.original_name, 

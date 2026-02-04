@@ -70,6 +70,8 @@ export default defineComponent({
         const router = useRouter();
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
+            console.log(isLogin.value);
+
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');

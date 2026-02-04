@@ -858,5 +858,6 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
 @auth_router.get("/drop_sessions", tags=["Авторизация"])
 async def drop_sessions():
-    res = AuthService.redis.flushall()
+    serv = AuthService()
+    res = serv.redis.flushall()
     return True

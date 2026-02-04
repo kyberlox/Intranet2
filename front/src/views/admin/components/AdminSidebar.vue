@@ -42,13 +42,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import { useAdminData } from '@/stores/adminData';
 import { featureFlags } from '@/assets/static/featureFlags';
+import router from '@/router';
 
 type AdminSection = {
     name: string;
@@ -90,14 +91,6 @@ export default defineComponent({
         const fullNavigation = ref<NavGroup[]>();
 
         const checkByFlags = (e: NavGroup) => {
-            console.log(userRoots.value);
-
-            console.log(e.id)
-            console.log(PeerAdmin.value)
-            // if (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)) {
-            //     return false
-            // }
-            // else return true
             switch (true) {
                 // id == 2 у настройки областей видимости
                 case !featureFlags.visibleArea && e.id == 2:

@@ -84,7 +84,6 @@ export default defineComponent({
             workLinks,
             supportLinks,
             bugModalIsVisible,
-            needAdminLink: computed(() => useUserData().getNeedAdminLink),
             callBugReportModal
         };
     },

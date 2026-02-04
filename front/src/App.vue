@@ -66,12 +66,12 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
-
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');
+
                 if (userData.getAuthKey) {
                     prefetchSection('user');
                 }

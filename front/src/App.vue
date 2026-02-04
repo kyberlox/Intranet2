@@ -74,7 +74,7 @@ export default defineComponent({
                 prefetchSection('score');
                 prefetchSection('calendar');
                 const refferer = document.cookie.replace(
-                    /(?:(?:^|.*;\s*)refferer\s*\=\s*([^;]*).*$)|^.*$/,
+                    /(?:(?:^|.*;\s*)referrer\s*\=\s*([^;]*).*$)|^.*$/,
                     "$1",
                 );
                 if (refferer) {

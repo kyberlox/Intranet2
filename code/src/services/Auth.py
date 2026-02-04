@@ -631,11 +631,12 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
             detail="Failed to authenticate with Bitrix24"
         )
     
-    # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
-    redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
+    redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
     
-    if referrer:
-        redirect_url = referrer
+    # if referrer:
+    #     redirect_url = referrer
+        
 
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)

@@ -162,7 +162,7 @@ export default defineComponent({
                 "reciever": msgReciever.value,
                 "title": mailTheme,
                 "text": mailText,
-                "file_url": imageInMsg.value.replace('http://intranet.emk.org.ru/api/files/', '')
+                "file_url": imageInMsg.value.replace('https://intranet.emk.ru/api/files/', '')
             }
             Api.post('/users/test_send_mail', body)
                 .then((data) => handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess'))

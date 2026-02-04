@@ -70,15 +70,16 @@ export default defineComponent({
         const router = useRouter();
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            console.log(isLogin.value);
-
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');
-                const refferer = localStorage.getItem('from');
+                const refferer = document.cookie.replace(
+                    /(?:(?:^|.*;\s*)refferer\s*\=\s*([^;]*).*$)|^.*$/,
+                    "$1",
+                );
                 if (refferer) {
                     router.push({ name: refferer });
-                    localStorage.removeItem('from');
+                    // localStorage.removeItem('from');
                 }
                 if (userData.getAuthKey) {
                     prefetchSection('user');

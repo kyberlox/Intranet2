@@ -639,7 +639,7 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
         
 
     # Создаем RedirectResponse
-    response = RedirectResponse(url=referrer, status_code=302)
+    response = RedirectResponse(url=redirect_url, status_code=302)
 
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     # response = JSONResponse(content={

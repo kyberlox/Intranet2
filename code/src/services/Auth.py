@@ -344,7 +344,12 @@ class AuthService:
         
         # Получаем информацию о пользователе
         user_info = await self.get_user_info(tokens["access_token"])
-        
+
+        # Доступ на тестовый только для особенных
+        ADMIN_UUIDS = [2366, 2375, 4133]    # 2366, 
+        if int(user_info['ID']) not in ADMIN_UUIDS:
+            return None
+
         if not user_info:
             return None
         
@@ -403,6 +408,11 @@ class AuthService:
             "user_id" : user_id,
             "user": session_data
         }
+    
+    def flush_all(self):
+        """Очищает ВСЕ данные во всех базах данных Redis."""
+        self.redis.flushall()
+        print("Redis FLUSHALL выполнен: все данные удалены.")
 
 #ROOT
 def extract_auth_data(html_content):
@@ -627,9 +637,6 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
     if referrer:
         redirect_url = referrer
 
-    ADMIN_UUIDS = [2375, 4133]    # 2366, 
-    if int(session["user"]['ID']) not in ADMIN_UUIDS:
-        redirect_url = f"https://intranet.emk.ru/"
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 
@@ -858,6 +865,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
 @auth_router.get("/drop_sessions", tags=["Авторизация"])
 async def drop_sessions():
+    import redis
     serv = AuthService()
-    res = serv.redis.flushall()
+    res = serv.flush_all()
     return True

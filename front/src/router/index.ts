@@ -655,7 +655,7 @@ const router = createRouter({
     },
     // cтраница авторизации через б24
     {
-      path: '/oauthRedir/:referrer',
+      path: '/oauthRedir',
       name: 'oauthPage',
       beforeEnter: () => {
       window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user`;      },

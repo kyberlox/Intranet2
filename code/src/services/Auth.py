@@ -45,7 +45,9 @@ class AuthService:
         # self.redirect_uri = "http://intranet.emk.org.ru/api/auth_router/auth"
         self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://test-portal.emk.ru")
         # self.bitrix_domain = "http://test-portal.emk.ru"
-        
+
+        self.main_redirect = os.getenv('HOST')
+
         # Время жизни токенов и сессий
         self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
         # self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
@@ -627,8 +629,9 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to authenticate with Bitrix24"
         )
-    print(session, 'приходит ли')
-    redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    
+    # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
     
     # if referrer:

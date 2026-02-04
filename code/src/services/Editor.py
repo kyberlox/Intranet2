@@ -849,7 +849,7 @@ class Editor:
                 result['videos_embed'].append(file)
             else:
                 result['documentation'].append(file)
-
+        sorted_images = sorted(result['images'], key=lambda x: int(x['id']), reverse=False)
         return result
 
     async def get_sections_list(self):

@@ -68,7 +68,7 @@ export default defineComponent({
                 // localStorage.setItem('from', String(route.name));
                 // document.cookie = `referrer=${String(route.name)}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
                 if (route.name !== 'oauthPage') {
-                    Cookies.set('referrer', String(route.name));
+                    Cookies.set('referrer', String(route.name), { expires: 365, sameSite: 'Lax' });
                 }
             }
         }, { immediate: true, deep: true })

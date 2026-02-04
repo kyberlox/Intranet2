@@ -347,14 +347,16 @@ class AuthService:
         # Получаем информацию о пользователе
         user_info = await self.get_user_info(tokens["access_token"])
 
+        
+
+        if not user_info:
+            return None
+        
         # Доступ на тестовый только для особенных
            # 2366, 
         if int(user_info['ID']) not in ADMIN_UUIDS:
             return None
 
-        if not user_info:
-            return None
-        
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
         return session

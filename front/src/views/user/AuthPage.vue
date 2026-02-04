@@ -63,7 +63,7 @@ export default defineComponent({
 
         watch((route), () => {
             if (!useUserData().getIsLogin && route.fullPath) {
-                if (route.name !== 'oauthPage') {
+                if (route.name !== 'oauthPage' && !Cookies.get('referrer')) {
                     Cookies.set('referrer', String(route.fullPath), { expires: 365 });
                 }
             }

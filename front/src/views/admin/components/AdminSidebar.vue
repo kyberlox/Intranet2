@@ -3,7 +3,9 @@
     <div class="admin-panel__sidebar">
         <div v-if="needDefaultNav">
             <div class="admin-panel__header">
-                <h3 class="admin-panel__title">Панель редактора</h3>
+                <h3 class="admin-panel__title">
+                    Панель редактора
+                </h3>
             </div>
             <nav v-for="(item, index) in fullNavigation"
                  :key="'nav' + index"
@@ -40,13 +42,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import { useAdminData } from '@/stores/adminData';
 import { featureFlags } from '@/assets/static/featureFlags';
+import router from '@/router';
 
 type AdminSection = {
     name: string;
@@ -88,29 +91,17 @@ export default defineComponent({
         const fullNavigation = ref<NavGroup[]>();
 
         const checkByFlags = (e: NavGroup) => {
-            console.log(userRoots.value);
-
-            console.log(e.id)
-            console.log(PeerAdmin.value)
-            // if (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)) {
-            //     return false
-            // }
-            // else return true
             switch (true) {
                 // id == 2 у настройки областей видимости
                 case !featureFlags.visibleArea && e.id == 2:
-                    console.log(1);
                     return false
                 // id == 3 у бальной системы
                 case (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)):
-                    console.log(2);
                     return false
                 // id == 4 у прав на разделы(gpt)
                 case !userRoots.value.EditorAdmin && e.id == 4:
-                    console.log(3);
                     return false
                 case !props.needDefaultNav && e.id == 0:
-                    console.log(4);
                     return false
                 default:
                     return true

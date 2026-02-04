@@ -71,6 +71,7 @@ export default defineComponent({
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');
+
                 if (userData.getAuthKey) {
                     prefetchSection('user');
                 }

@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserData } from '@/stores/userData';
+
 const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 
@@ -543,12 +545,22 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/views/admin/components/AdminSidebar.vue')
+      component: () => import('@/views/admin/components/AdminSidebar.vue'),
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
+      }
+      },
     },
     {
       path: '/admin/:id',
       name: 'adminBlockInner',
       component: () => import('@/views/admin/editPanel/AdminElements.vue'),
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
+      }
+      },
       props: (route) => ({ id: route.params.id })
     },
  {
@@ -556,6 +568,11 @@ const router = createRouter({
       name: 'adminElementInnerAdd',
       component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
+      }
+      },
     },
     {
       path: '/admin/:id/:elementId',
@@ -564,7 +581,12 @@ const router = createRouter({
       props: (route) => ({ id: route.params.id, elementId: route.params.elementId }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]
+      },
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
       }
+      },
     },
     {
       path: '/admin/visibility',
@@ -572,7 +594,12 @@ const router = createRouter({
       component: () => import('@/views/admin/visibilityAreaEditor/VisibilityAreaEditor.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      },
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
       }
+      },
     },
     {
       path: '/admin/scoreAdmin',
@@ -580,7 +607,12 @@ const router = createRouter({
       component: () => import('@/views/admin/pointsSystem/superAdminPanel/SuperAdminPanel.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      },
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
       }
+      },
     },
     {
       path: '/admin/pointsmoderation',
@@ -588,7 +620,12 @@ const router = createRouter({
       component: () => import('@/views/admin/pointsSystem/moderatorPanel/ModeratorValidationPanel.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      },
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
       }
+      },
     },
     {
       path: '/admin/curatorhistory',
@@ -596,7 +633,12 @@ const router = createRouter({
       component: () => import('@/views/admin/pointsSystem/curatorHistory/CuratorHistory.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      },
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
       }
+      },
     },
     {
       path: '/admin/roots',
@@ -604,16 +646,19 @@ const router = createRouter({
       component: () => import('@/views/admin/rootsPanel/RootsPanel.vue'),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
+      },
+      beforeEnter: (to, from) => {
+      if (useUserData().getNoRoots) {
+        return {name: 'home'}
       }
+      },
     },
     // cтраница авторизации через б24
     {
-      path: '/oauthRedir/:referrer',
+      path: '/oauthRedir',
       name: 'oauthPage',
-      beforeEnter: (to, from, next) => {
-        const referrer = `${to.params.referrer}`;
-        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1769757513&scope=user&referrer=${referrer}`;
-      },
+      beforeEnter: () => {
+      window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user`;      },
       redirect: '',
     },
     // VCARD

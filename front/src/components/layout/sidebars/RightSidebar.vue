@@ -45,7 +45,7 @@
                 <div class="support__block__link">{{ link.description }}</div>
             </div>
         </a>
-        <a v-for="(link, index) in supportLinks.filter((e) => e.href !== 'bugReport').filter((e) => needAdminLink ? e : e.href !== 'admin')"
+        <a v-for="(link, index) in supportLinks.filter((e) => e.href !== 'bugReport')"
            :href="link.href"
            target="_blank"
            class="support__block"
@@ -84,7 +84,6 @@ export default defineComponent({
             workLinks,
             supportLinks,
             bugModalIsVisible,
-            needAdminLink: computed(() => useUserData().getNeedAdminLink),
             callBugReportModal
         };
     },

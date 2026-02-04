@@ -6,7 +6,7 @@ import uuid
 import json
 import logging
 
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie
 from fastapi.responses import RedirectResponse, JSONResponse
 import requests
 
@@ -23,7 +23,7 @@ load_dotenv()
 
 auth_router = APIRouter(prefix="/auth_router")
 
-
+ADMIN_UUIDS = [2366, 2375, 4133, 3123] 
 
 class AuthService: 
     def __init__(self):
@@ -37,15 +37,17 @@ class AuthService:
         self.redis = RedisStorage()
         
         # Конфигурация Bitrix24 OAuth
-        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.694e30fa384123.22179976")
+        self.client_id = os.getenv("BITRIX_CLIENT_ID", "local.6936c2c4e28141.22464163")
         # self.client_id = "local.6936c2c4e28141.22464163"
-        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "42HE4Ld1A3gYQ9dbLRiXyO6GoQblrsExtCUhvumW6MZhh2kt0G")
+        self.client_secret = os.getenv("BITRIX_CLIENT_SECRET", "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9")
         # self.client_secret = "jgXugnqtLI0IZf1iJvvAIi2aWi183EM2nBEr3SGHIZRa0f6Pg9"
-        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "https://intranet.emk.ru/api/auth_router/auth")
+        self.redirect_uri = os.getenv("BITRIX_REDIRECT_URI", "http://intranet.emk.org.ru/api/auth_router/auth")
         # self.redirect_uri = "http://intranet.emk.org.ru/api/auth_router/auth"
-        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://portal.emk.ru")
+        self.bitrix_domain = os.getenv("BITRIX_DOMAIN", "https://test-portal.emk.ru")
         # self.bitrix_domain = "http://test-portal.emk.ru"
-        
+
+        self.main_redirect = os.getenv('HOST')
+
         # Время жизни токенов и сессий
         self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
         # self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
@@ -344,10 +346,17 @@ class AuthService:
         
         # Получаем информацию о пользователе
         user_info = await self.get_user_info(tokens["access_token"])
+
         
+
         if not user_info:
             return None
         
+        # Доступ на тестовый только для особенных
+           # 2366, 
+        if int(user_info['ID']) not in ADMIN_UUIDS:
+            return None
+
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
         return session
@@ -370,7 +379,7 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        print(user_data)
+        # print(user_data)
         user_data["uuid"] = user_uuid
         # user_data_string = json.dump(user_data)
         # print(user_data_string)
@@ -389,7 +398,7 @@ class AuthService:
             "created_at": datetime.now().isoformat(),
             "member_id": None
         }
-        print(session_data)
+        # print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.get_session(session_id)
@@ -403,6 +412,8 @@ class AuthService:
             "user_id" : user_id,
             "user": session_data
         }
+    
+
 
 #ROOT
 def extract_auth_data(html_content):
@@ -603,17 +614,18 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
     "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
 }
 """)
-async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Optional[str] = None, response: Response = None):
+async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: str | None = Cookie(default=None), response: Response = None):
     # user_url: str, 
     if not code:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Authorization code is missing"
         )
-    print(referrer, 'тут')
+    
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
+    # print(referrer, 'че получаем')
     
     if not session:
         raise HTTPException(
@@ -621,16 +633,17 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
             detail="Failed to authenticate with Bitrix24"
         )
     
-    redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']} referrer: Optional[str] = None, 
+    redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
+    # print(redirect_url, 'до')
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
-    
-    # if referrer:
-    #     redirect_url = referrer
+    if referrer:
+        redirect_url = redirect_url + f'{referrer}'
         
-
+    # print(redirect_url, 'после')
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
-
+    # response.delete_cookie(key="referrer")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     # response = JSONResponse(content={
     #     "status": "success",

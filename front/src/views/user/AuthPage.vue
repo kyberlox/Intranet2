@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { testMode } from '@/assets/static/testMode';
@@ -59,6 +59,13 @@ export default defineComponent({
                     useUserData().setMyId(2366)
                 })
         }
+
+        watch((route), () => {
+            if (!useUserData().getIsLogin) {
+                localStorage.setItem('from', String(route.name));
+            }
+        }, { immediate: true, deep: true })
+
 
         return {
             login,

@@ -6,7 +6,7 @@ import uuid
 import json
 import logging
 
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie
 from fastapi.responses import RedirectResponse, JSONResponse
 import requests
 
@@ -612,7 +612,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
     "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
 }
 """)
-async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Optional[str] = None, response: Response = None):
+async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: str | None = Cookie(default=None), response: Response = None):
     # user_url: str, 
     if not code:
         raise HTTPException(
@@ -623,6 +623,7 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
+    print(referrer, 'че получаем')
     
     if not session:
         raise HTTPException(
@@ -630,7 +631,7 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
             detail="Failed to authenticate with Bitrix24"
         )
     
-    # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
+    # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']} referrer: Optional[str] = None, 
     redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
     # if referrer:
@@ -639,7 +640,7 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
 
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
-
+    response.delete_cookie(key="user_preferences")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     # response = JSONResponse(content={
     #     "status": "success",

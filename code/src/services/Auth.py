@@ -344,7 +344,12 @@ class AuthService:
         
         # Получаем информацию о пользователе
         user_info = await self.get_user_info(tokens["access_token"])
-        
+
+        # Доступ на тестовый только для особенных
+        ADMIN_UUIDS = [2375, 4133]    # 2366, 
+        if int(user_info['ID']) not in ADMIN_UUIDS:
+            return None
+
         if not user_info:
             return None
         
@@ -632,9 +637,6 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
     if referrer:
         redirect_url = referrer
 
-    ADMIN_UUIDS = [2375, 4133]    # 2366, 
-    if int(session["user"]['ID']) not in ADMIN_UUIDS:
-        redirect_url = f"https://intranet.emk.ru/"
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 

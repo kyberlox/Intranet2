@@ -76,9 +76,7 @@ export default defineComponent({
                 prefetchSection('calendar');
                 const referrer = Cookies.get('referrer');
                 if (referrer) {
-                    console.log(referrer);
                     router.push({ name: referrer });
-                    Cookies.remove('referrer');
                 }
                 if (userData.getAuthKey) {
                     prefetchSection('user');

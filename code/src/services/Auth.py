@@ -636,7 +636,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     print(redirect_url, 'до')
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
     if referrer:
-        redirect_url = redirect_url + f'/{referrer}'
+        redirect_url = redirect_url + f'{referrer}'
         
     print(redirect_url, 'после')
     # Создаем RedirectResponse

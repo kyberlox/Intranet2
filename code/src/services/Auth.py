@@ -379,7 +379,7 @@ class AuthService:
 
         # Получаем дополнительные данные пользователя (замените на ваш метод)
         user_data = await User(uuid=user_uuid).user_inf_by_uuid(sess)
-        print(user_data)
+        # print(user_data)
         user_data["uuid"] = user_uuid
         # user_data_string = json.dump(user_data)
         # print(user_data_string)
@@ -398,7 +398,7 @@ class AuthService:
             "created_at": datetime.now().isoformat(),
             "member_id": None
         }
-        print(session_data)
+        # print(session_data)
 
         # если пользователь валидный проверяем, нет ли его сессии в Rdis
         ses_find = self.redis.get_session(session_id)
@@ -625,7 +625,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
-    print(referrer, 'че получаем')
+    # print(referrer, 'че получаем')
     
     if not session:
         raise HTTPException(
@@ -635,12 +635,12 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     
     # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']} referrer: Optional[str] = None, 
     redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
-    print(redirect_url, 'до')
+    # print(redirect_url, 'до')
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
     if referrer:
         redirect_url = redirect_url + f'{referrer}'
         
-    print(redirect_url, 'после')
+    # print(redirect_url, 'после')
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
     # response.delete_cookie(key="referrer")
@@ -866,13 +866,3 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # )
 
     return res.json
-
-
-
-@auth_router.get("/drop_sessions", tags=["Авторизация"])
-async def drop_sessions():
-    import redis
-    serv = AuthService()
-    res = serv.flush_all()
-    return True
-

@@ -619,7 +619,7 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Authorization code is missing"
         )
-    print(referrer, 'тут')
+    
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
@@ -633,7 +633,6 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
     # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']}
     redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
-    print(session, 'куда')
     # if referrer:
     #     redirect_url = referrer
         

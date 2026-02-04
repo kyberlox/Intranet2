@@ -80,7 +80,7 @@ export default defineComponent({
                 if (referrer) {
                     console.log(referrer);
                     router.push({ name: referrer });
-                    // localStorage.removeItem('from');
+                    Cookies.remove('referrer');
                 }
                 if (userData.getAuthKey) {
                     prefetchSection('user');

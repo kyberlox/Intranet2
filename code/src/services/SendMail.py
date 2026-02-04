@@ -298,7 +298,7 @@ class SendEmail:
             company = 'АО "НПО "ЭМК"'
             msg = MIMEMultipart() 
             msg["From"] = self.data['sender']
-            msg["To"] = f'{server_mail_login}, timofeev.a.a@emk.ru'
+            msg["To"] = f'{server_mail_login}, timofeev.a.a@emk.ru, mazhidova.m.r@emk.ru'
             msg['Subject'] = 'Покупка мерча'
             items = self.data['items']
             user_info = self.data['user_info']

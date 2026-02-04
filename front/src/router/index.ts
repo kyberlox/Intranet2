@@ -612,8 +612,7 @@ const router = createRouter({
       name: 'oauthPage',
       beforeEnter: (to, from, next) => {
         const referrer = `${to.params.referrer}`;
-        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&redirect_uri=https%3A%2F%2Ftest-portal.emk.ru%2Fintranet%2Frest%2Fauthuser.php&response_type=code&state=test_1769757513&scope=user&referrer=${referrer}`;
-      },
+  window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user`;      },
       redirect: '',
     },
     // VCARD

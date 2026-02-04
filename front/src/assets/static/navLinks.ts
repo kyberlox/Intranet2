@@ -295,10 +295,4 @@ export const supportLinks: SupportLink[] = [
         description: "https://www.emk.ru",
         icon: EmkLogo,
     },
-    {
-        title: "Редактор Интранет",
-        href: "https://intranet.emk.ru/admin",
-        description: "Перейти",
-        icon: DocsIcon,
-    },
 ];

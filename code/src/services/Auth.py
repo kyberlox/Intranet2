@@ -633,14 +633,15 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     
     # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']} referrer: Optional[str] = None, 
     redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
+    print(redirect_url, 'до')
     #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
-    # if referrer:
-    #     redirect_url = referrer
+    if referrer:
+        redirect_url = redirect_url + f'/{referrer}'
         
-
+    print(redirect_url, 'после')
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
-    response.delete_cookie(key="referrer")
+    # response.delete_cookie(key="referrer")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     # response = JSONResponse(content={
     #     "status": "success",

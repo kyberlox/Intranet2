@@ -403,6 +403,11 @@ class AuthService:
             "user_id" : user_id,
             "user": session_data
         }
+    
+    def flush_all(self):
+        """Очищает ВСЕ данные во всех базах данных Redis."""
+        self.redis.flushall()
+        print("Redis FLUSHALL выполнен: все данные удалены.")
 
 #ROOT
 def extract_auth_data(html_content):
@@ -858,6 +863,7 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
 @auth_router.get("/drop_sessions", tags=["Авторизация"])
 async def drop_sessions():
+    import redis
     serv = AuthService()
-    res = serv.redis.flushall()
+    res = serv.flush_all()
     return True

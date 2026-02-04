@@ -23,7 +23,7 @@ load_dotenv()
 
 auth_router = APIRouter(prefix="/auth_router")
 
-
+ADMIN_UUIDS = [2366, 2375, 4133, 3123] 
 
 class AuthService: 
     def __init__(self):
@@ -346,7 +346,7 @@ class AuthService:
         user_info = await self.get_user_info(tokens["access_token"])
 
         # Доступ на тестовый только для особенных
-        ADMIN_UUIDS = [2366, 2375, 4133]    # 2366, 
+           # 2366, 
         if int(user_info['ID']) not in ADMIN_UUIDS:
             return None
 
@@ -409,10 +409,7 @@ class AuthService:
             "user": session_data
         }
     
-    def flush_all(self):
-        """Очищает ВСЕ данные во всех базах данных Redis."""
-        self.redis.flushall()
-        print("Redis FLUSHALL выполнен: все данные удалены.")
+
 
 #ROOT
 def extract_auth_data(html_content):
@@ -864,9 +861,12 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     return res.json
 
+
+
 @auth_router.get("/drop_sessions", tags=["Авторизация"])
 async def drop_sessions():
     import redis
     serv = AuthService()
     res = serv.flush_all()
     return True
+

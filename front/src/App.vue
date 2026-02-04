@@ -47,7 +47,7 @@ import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
-import router from "./router";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     name: "app-layout",
@@ -67,11 +67,17 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
+        const router = useRouter();
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (isLogin.value) {
                 prefetchSection('score');
                 prefetchSection('calendar');
+                const refferer = localStorage.getItem('from');
+                if (refferer) {
+                    router.push({ name: refferer });
+                    localStorage.removeItem('from');
+                }
                 if (userData.getAuthKey) {
                     prefetchSection('user');
                 }
@@ -85,17 +91,6 @@ export default defineComponent({
                 }
             }
         }, { immediate: true, deep: true })
-
-        onMounted(() => {
-            userData.initKeyFromStorage();
-            if (useUserData().getIsLogin) {
-                const refferer = localStorage.getItem('from');
-                if (refferer) {
-                    router.push(refferer);
-                    localStorage.removeItem('from');
-                }
-            }
-        })
 
         return {
             isLogin,

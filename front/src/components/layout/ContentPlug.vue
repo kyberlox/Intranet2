@@ -10,7 +10,7 @@
         <span class="empty-page-plug__img__mark"
               v-if="needGptMark">
             *изображение сгенерировано сервисом
-            <span class="orange">chatGPT</span> внутри корпоративного портала</span>
+            <span class="orange">chatGPT</span> внутрикорпоративного портала</span>
     </div>
 </div>
 </template>

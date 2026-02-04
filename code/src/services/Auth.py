@@ -626,8 +626,10 @@ async def bitrix24_callback(code: str, referrer: Optional[str] = None, state: Op
     
     if referrer:
         redirect_url = referrer
-        
 
+    ADMIN_UUIDS = [2375, 4133]    # 2366, 
+    if int(session["user"]['ID']) not in ADMIN_UUIDS:
+        redirect_url = f"https://intranet.emk.ru/"
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
 
@@ -853,3 +855,9 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # )
 
     return res.json
+
+@auth_router.get("/drop_sessions", tags=["Авторизация"])
+async def drop_sessions():
+    serv = AuthService()
+    res = serv.redis.flushall()
+    return True

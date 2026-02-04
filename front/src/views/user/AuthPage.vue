@@ -61,7 +61,7 @@ export default defineComponent({
         }
 
         watch((route), () => {
-            if (!useUserData().getIsLogin) {
+            if (!useUserData().getIsLogin && !localStorage.getItem('from')) {
                 localStorage.setItem('from', String(route.name));
             }
         }, { immediate: true, deep: true })

@@ -47,6 +47,7 @@ import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
+import router from "./router";
 
 export default defineComponent({
     name: "app-layout",
@@ -87,6 +88,13 @@ export default defineComponent({
 
         onMounted(() => {
             userData.initKeyFromStorage();
+            if (useUserData().getIsLogin) {
+                const refferer = localStorage.getItem('from');
+                if (refferer) {
+                    router.push(refferer);
+                    localStorage.removeItem('from');
+                }
+            }
         })
 
         return {

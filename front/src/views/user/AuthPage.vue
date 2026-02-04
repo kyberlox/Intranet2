@@ -27,6 +27,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { testMode } from '@/assets/static/testMode';
 import Api from '@/utils/Api';
 import { useUserData } from '@/stores/userData';
+import Cookies from 'js-cookie';
 
 export default defineComponent({
     name: 'AuthPage',
@@ -63,9 +64,8 @@ export default defineComponent({
         watch((route), () => {
             if (!useUserData().getIsLogin && route.name) {
                 // localStorage.setItem('from', String(route.name));
-                document.cookie = `referrer=${String(route.name)}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-
-                console.log(document.cookie)
+                // document.cookie = `referrer=${String(route.name)}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+                Cookies.set('referrer', String(route.name))
             }
         }, { immediate: true, deep: true })
 

@@ -48,6 +48,7 @@ import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
 import { useRouter } from "vue-router";
+import Cookies from "js-cookie";
 
 export default defineComponent({
     name: "app-layout",
@@ -75,10 +76,7 @@ export default defineComponent({
 
                 prefetchSection('score');
                 prefetchSection('calendar');
-                const referrer = document.cookie.replace(
-                    /(?:(?:^|.*;\s*)referrer\s*\=\s*([^;]*).*$)|^.*$/,
-                    "$1",
-                );
+                const referrer = Cookies.get('referrer');
                 if (referrer) {
                     console.log(referrer);
                     router.push({ name: referrer });

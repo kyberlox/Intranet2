@@ -354,8 +354,8 @@ class AuthService:
         
         # Доступ на тестовый только для особенных
            # 2366, 
-        if int(user_info['ID']) not in ADMIN_UUIDS:
-            return None
+        # if int(user_info['ID']) not in ADMIN_UUIDS:
+        #     return None
 
         # Создаем сессию
         session = await self.create_session(tokens, user_info)

@@ -226,11 +226,13 @@ class AuthService:
         )
         # Если access_token истек, удаляем сессию
         if now >= access_token_expires_at:
+            print('удаляем сессию')
             self.delete_session(session_id)
             return None
         
         # Если access_token скоро истекает (менее 5 минут), обновляем его
         if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
+            print('обновляем access токен')
         # if now >= access_token_expires_at - timedelta(minutes=1):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]

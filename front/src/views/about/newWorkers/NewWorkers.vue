@@ -9,7 +9,7 @@
      class="birthday__workers-grid">
     <div v-for="(slide, index) in slidesForBirthday"
          :key="'vertSlide' + index">
-        <UserSlide :needCakeIcon="true"
+        <UserSlide :needCakeIcon="false"
                    :slide="slide" />
     </div>
 </div>

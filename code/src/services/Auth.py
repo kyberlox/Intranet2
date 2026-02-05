@@ -49,8 +49,8 @@ class AuthService:
         self.main_redirect = os.getenv('HOST')
 
         # Время жизни токенов и сессий
-        # self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
-        self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
+        self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
+        # self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
         self.refresh_token_ttl = timedelta(days=30)  # Время жизни refresh_token
         self.session_ttl = timedelta(days=7)  # Время жизни сессии
         self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
@@ -224,16 +224,16 @@ class AuthService:
         access_token_expires_at = datetime.fromisoformat(
             session_data["access_token_expires_at"]
         )
-        # Если access_token истек, удаляем сессию
-        if now >= access_token_expires_at:
-            print('удаляем сессию')
-            self.delete_session(session_id)
-            return None
+        # # Если access_token истек, удаляем сессию
+        # if now >= access_token_expires_at:
+        #     print('удаляем сессию')
+        #     self.delete_session(session_id)
+        #     return None
         
         # Если access_token скоро истекает (менее 5 минут), обновляем его
-        if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
-            print('обновляем access токен', access_token_expires_at)
-        # if now >= access_token_expires_at - timedelta(minutes=1):
+        # if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
+        #     print('обновляем access токен', access_token_expires_at)
+        if now >= access_token_expires_at - timedelta(minutes=5):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]
             )

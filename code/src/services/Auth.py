@@ -232,7 +232,7 @@ class AuthService:
         
         # Если access_token скоро истекает (менее 5 минут), обновляем его
         if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
-            print('обновляем access токен')
+            print('обновляем access токен', access_token_expires_at)
         # if now >= access_token_expires_at - timedelta(minutes=1):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]

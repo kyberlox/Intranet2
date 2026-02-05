@@ -1122,13 +1122,13 @@ async def get_editor_roots(user_uuid, session):
     roots_model.user_uuid = user_uuid
     all_roots = await roots_model.get_token_by_uuid(session)
     editor_roots = await roots_model.token_processing_for_editor(all_roots)
-    print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В EDITOR', user_uuid)
+    # print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В EDITOR', user_uuid)
 
-    if user_uuid is None:
-        print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'EditorModer': [31, 33], 'VisionAdmin': True, 'GPT_gen_access': True}
-        # editor_roots = {}
-        print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+    # if user_uuid is None:
+    #     print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+    #     editor_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'EditorModer': [31, 33], 'VisionAdmin': True, 'GPT_gen_access': True}
+    #     # editor_roots = {}
+    #     print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     # 'PeerAdmin': True, 'PeerModer': True, 'PeerCurator': [], 
     return editor_roots
 

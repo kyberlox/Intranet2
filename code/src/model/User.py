@@ -410,11 +410,11 @@ class User:
                         # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
                         # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
                         # проверим url первоисточника текущей аватарки
-                        if psql_user['photo_file_id'] is None:
-                            print('photo_file_id is Non')
-                        if psql_user['photo_file_b24_url'] != b24_url:
-                            photo_file_id = psql_user['photo_file_id']
-                            print(f'{photo_file_id} != {b24_url}')
+                        # if psql_user['photo_file_id'] is None:
+                        #     print('photo_file_id is Non')
+                        # if psql_user['photo_file_b24_url'] != b24_url:
+                        #     photo_file_id = psql_user['photo_file_id']
+                        #     print(f'{photo_file_id} != {b24_url}')
 
                         if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
                             # срабатывает это условие и уходит в else

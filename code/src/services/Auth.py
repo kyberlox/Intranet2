@@ -49,8 +49,8 @@ class AuthService:
         self.main_redirect = os.getenv('HOST')
 
         # Время жизни токенов и сессий
-        self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
-        # self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
+        # self.access_token_ttl = timedelta(hours=1)  # Время жизни access_token в Bitrix24
+        self.access_token_ttl = timedelta(minutes=3)  # Время жизни access_token в Bitrix24
         self.refresh_token_ttl = timedelta(days=30)  # Время жизни refresh_token
         self.session_ttl = timedelta(days=7)  # Время жизни сессии
         self.session_sliding_window = timedelta(minutes=15)  # Интервал для скользящего обновления сессии
@@ -212,29 +212,6 @@ class AuthService:
 
         now = datetime.now()
         
-        # # 2. Для ROOT-авторизации - упрощенная проверка
-        # if auth_type == "root_auth" or session_data.get("refresh_token") is None:
-        #     # Проверяем только срок сессии
-        #     session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
-            
-        #     if now > session_expires_at:
-        #         self.delete_session(session_id)
-        #         return None
-            
-        #     # Обновляем активность
-        #     last_activity = datetime.fromisoformat(session_data["last_activity"])
-        #     if now > last_activity + self.session_sliding_window:
-        #         session_data["last_activity"] = now.isoformat()
-        #         session_data["session_expires_at"] = (now + self.session_ttl).isoformat()
-                
-        #         self.redis.save_session(
-        #             key=session_id,
-        #             data=session_data,
-        #             ttl=int(self.session_ttl.total_seconds())
-        #         )
-            
-        #     return session_data
-
         
         session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
         
@@ -247,9 +224,13 @@ class AuthService:
         access_token_expires_at = datetime.fromisoformat(
             session_data["access_token_expires_at"]
         )
+        # Если access_token истек, удаляем сессию
+        if now >= access_token_expires_at:
+            self.delete_session(session_id)
+            return None
         
-        # Если access_token истек или скоро истекает (менее 5 минут), обновляем его
-        if now >= access_token_expires_at - timedelta(minutes=5):
+        # Если access_token скоро истекает (менее 5 минут), обновляем его
+        if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
         # if now >= access_token_expires_at - timedelta(minutes=1):
             refreshed_tokens = self.refresh_access_token_sync(
                 session_data["refresh_token"]
@@ -323,8 +304,6 @@ class AuthService:
             LogsMaker().error_message(f"Token refresh failed: {str(e)}")
             return None
 
-
-
     def delete_session(self, session_id: str) -> None:
         """Удаление сессии"""
         session_data = self.redis.get_session(session_id)
@@ -354,6 +333,9 @@ class AuthService:
         
         # Доступ на тестовый только для особенных
            # 2366, 
+        if 'intranet.emk.org' in self.main_redirect:
+            if int(user_info['ID']) not in ADMIN_UUIDS:
+                return None
         # if int(user_info['ID']) not in ADMIN_UUIDS:
         #     return None
 

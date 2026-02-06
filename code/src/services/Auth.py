@@ -609,7 +609,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
-    # print(referrer, 'че получаем')
+    # print(request.headers, 'че получаем')
     
     if not session:
         raise HTTPException(
@@ -627,6 +627,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     # print(redirect_url, 'после')
     # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url, status_code=302)
+    # response = RedirectResponse(url='com.example.myapp://news/actual', status_code=302)
     # response.delete_cookie(key="referrer")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
     # response = JSONResponse(content={

@@ -598,7 +598,7 @@ async def root_auth(response: Response, data=Body(), sess: AsyncSession = Depend
     "refresh_token_expires_at": "2024-02-14T10:30:00+03:00"
 }
 """)
-async def bitrix24_callback(request: Request, code: str, state: Optional[str] = None, referrer: str | None = Cookie(default=None), response: Response = None):
+async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: str | None = Cookie(default=None), response: Response = None):
     # user_url: str, 
     if not code:
         raise HTTPException(
@@ -609,7 +609,7 @@ async def bitrix24_callback(request: Request, code: str, state: Optional[str] = 
     auth_service = AuthService()
     session = await auth_service.authenticate_user(code)
     
-    print(request.headers, 'че получаем')
+    # print(request.headers, 'че получаем')
     
     if not session:
         raise HTTPException(

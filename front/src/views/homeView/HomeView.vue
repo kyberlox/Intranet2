@@ -1,7 +1,8 @@
 <template>
 <div class="homeview mt20">
     <div v-if="mainPageCards.length"
-         class="homeview__grid">
+         class="homeview__grid"
+         :key="key">
         <div v-for="item in mainPageCards.filter((e) => !(e.title == 'Афиша' && e.images.length == 0))"
              :class="[{ 'homeview__grid__card--section': item.type == 'section' }, { 'homeview__grid__card--swiper': item.type == 'swiper', 'homeview__grid__card--swiper--afisha': item.title == 'Афиша' }]"
              :key="item.id">
@@ -28,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, type ComputedRef } from "vue";
+import { computed, defineComponent, onBeforeMount, type ComputedRef, ref } from "vue";
 import HomeViewSwiperBlock from "./components/HomeViewSwiperBlock.vue";
 import HomeViewSectionBlock from "./components/HomeViewSectionBlock.vue";
 import type { MainPageCards } from "@/interfaces/IMainPage";
@@ -46,6 +47,7 @@ export default defineComponent({
     },
     setup() {
         const useViewsData = useViewsDataStore();
+        const key = ref(0);
         const mainPageCards: ComputedRef<MainPageCards> = computed(() => {
             const data = useViewsData.getData('homeData') as MainPageCards;
             return Array.isArray(data) ? data : [];
@@ -60,8 +62,38 @@ export default defineComponent({
                 })
         })
 
+        setInterval(() => {
+            Api.get(`article/find_by/${sectionTips['Главная']}`)
+                .then((data: MainPageCards) => {
+                    const result = data;
+                    if (!result) return;
+                    if (checkUpdates(result)) {
+                        useViewsData.setData(result, 'homeData');
+                        key.value++;
+                    }
+                })
+        }, 240000);
+
+        const checkUpdates = (mainArr: MainPageCards) => {
+            let needUpdate = false;
+            mainPageCards.value.forEach((exEl) => {
+                const checkTarget = mainArr.find((e) => e.id == exEl.id);
+                if (checkTarget) {
+                    checkTarget.images.forEach((checkImage) => {
+                        const newTarget = exEl.images.find((e) => e.id == checkImage.id)
+                        if (!newTarget || newTarget.image !== checkImage.image || newTarget.title !== checkImage.title) {
+                            needUpdate = true;
+                        }
+                    })
+                }
+            })
+            return needUpdate;
+        }
+
         return {
-            mainPageCards
+            mainPageCards,
+            key,
+            checkUpdates,
         };
     },
 });

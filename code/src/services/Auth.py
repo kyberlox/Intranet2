@@ -634,11 +634,12 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     # Создаем RedirectResponse
 
     """Верни ЭТУ СТРОКУ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"""
-    #response = RedirectResponse(url=redirect_url, status_code=302)
+    response = RedirectResponse(url=redirect_url, status_code=302)
 
     """это для андроидов"""
-    token = session["session_id"]
-    response = RedirectResponse(url=f"com.example.app://?token={token}", status_code=302)
+    # token = session["session_id"]
+    # response = RedirectResponse(url=f"com.example.app://?token={token}", status_code=302)
+    
     # response = RedirectResponse(url='com.example.myapp://news/actual', status_code=302)
     # response.delete_cookie(key="referrer")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект

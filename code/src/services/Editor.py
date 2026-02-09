@@ -690,6 +690,7 @@ class Editor:
             # найти человека по uuid
             if key == "uuid" or key == "author_uuid":
                 uuid = int(data[key])
+                print(uuid, 'тут что ли')
                 # поиск по uuid
                 usr_dt = await User(uuid).search_by_id(self.session)
                 photo = usr_dt["personal_photo"]

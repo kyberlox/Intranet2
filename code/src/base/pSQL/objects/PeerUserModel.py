@@ -514,6 +514,26 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
+    async def check_article_author(self, session, uuid_to, activities_id, article_name):
+        """
+        Функция проверяет получал ли пользователь баллы в за предложенную новость
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        try:
+            stmt_count = select(func.count(self.ActiveUsers.id)).where(
+                self.ActiveUsers.uuid_to == uuid_to,
+                self.ActiveUsers.activities_id == activities_id,
+                self.ActiveUsers.description == article_name
+            )
+            result_count = await session.execute(stmt_count)
+            nodes_count = result_count.scalar()
+            if nodes_count >= 1:
+                return False
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
+
     async def send_auto_points(self, session, data: dict, roots: dict):
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
@@ -548,6 +568,9 @@ class PeerUserModel:
             elif int(activities_id) == 4:
                 check_info = await self.check_ideas(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за идею: check_info = {check_info} ")
+            elif int(activities_id) == 5:
+                check_info = await self.check_article_author(session=session, uuid_to=uuid_to, activities_id=activities_id, article_name=description)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за предложенную новость: check_info = {check_info} ")
 
             
             if check_info is True:

@@ -536,15 +536,17 @@ class PeerUserModel:
 
             #Если баллы еще никому не назначались
             if not existing_node:
+                LogsMaker().info_message('Баллы за новость еще никому не назначались')
                 return True
 
             #Если баллы автору уже назначались баллы
             if existing_node.uuid_to == uuid_to:
+                LogsMaker().info_message('Пользователь уже получил баллы за эту новость')
                 return False 
             
             #Автора изменили и необходимо снять баллы у предыдущего автора, удалить запись и вернуть True
             self.uuid = existing_node.uuid_to
-
+            LogsMaker().info_message('У статьи поменяли автора')
             #Снимаем баллы
             await self.remove_user_points(session=session, action_id=existing_node.id, roots=roots)
             return True
@@ -864,6 +866,9 @@ class PeerUserModel:
                         activity_name = f"Награда за {active_name}"
                     elif active_users_inf.activities_id == 16:
                         description = f"Баллы за идею №{active.active_info}"
+                    elif active_users_inf.activities_id == 5:
+                        art_inf = await ArticleModel(id=row.description).find_by_id(session=session)
+                        description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
 
                    
                     info = {

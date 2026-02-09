@@ -523,7 +523,7 @@ class PeerUserModel:
         try:
             stmt = select(self.ActiveUsers).where(
                 self.ActiveUsers.activities_id == activities_id, 
-                self.ActiveUsers.description == article_id,
+                self.ActiveUsers.description == str(article_id),
                 self.ActiveUsers.valid == 1
             )
             # stmt_count = select(func.count(self.ActiveUsers.id)).where(
@@ -551,7 +551,7 @@ class PeerUserModel:
             await self.remove_user_points(session=session, action_id=existing_node.id, roots=roots)
             return True
         except Exception as e:
-            return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
+            return LogsMaker().error_message(f"Произошла ошибка в check_article_author: {e}")
 
     async def send_auto_points(self, session, data: dict, roots: dict):
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники

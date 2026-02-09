@@ -344,8 +344,8 @@ class AuthService:
         #     return None
 
         # НЕЛЬЗЯ ИЗ АКСИОМЫ !
-        # if not user_info:
-        #     return None
+        if 'UF_DEPARTMENT' in user_info and 112 in user_info['UF_DEPARTMENT']:
+            return None
 
 
         # Создаем сессию

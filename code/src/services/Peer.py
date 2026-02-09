@@ -284,8 +284,8 @@ class Peer:
         return await self.PeerUserModel.send_points_to_employee_of_the_year(roots=roots, session=session)
 
     async def send_points_to_article_author(self, session, article_id, author_id):
-        
-        roots = {'user_id': 4133, "PeerAdmin":True,"EditorAdmin":True,"EditorModer":[53,31],"VisionAdmin":True}
+
+        roots = {'2': 4133, "PeerAdmin":True}
         send_data = {
             'uuid_from': 2,
             'uuid_to': author_id,

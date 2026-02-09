@@ -867,6 +867,7 @@ class PeerUserModel:
                     elif active_users_inf.activities_id == 16:
                         description = f"Баллы за идею №{active.active_info}"
                     elif active_users_inf.activities_id == 5:
+                        from .ArticleModel import ArticleModel
                         art_inf = await ArticleModel(id=row.description).find_by_id(session=session)
                         description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
 

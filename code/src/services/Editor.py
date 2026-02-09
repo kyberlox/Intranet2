@@ -781,7 +781,7 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
-                        print(key, data[key], 'тут что ли')
+                        
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':
                         #     print(data[key])
@@ -1090,6 +1090,11 @@ class Editor:
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
+
+        #Отправляем баллы пользователю на 31 раздел
+        if self.section_id == 31:
+            await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
+
         # сохранил
         await Article(id=self.art_id).update(art, self.session)
 

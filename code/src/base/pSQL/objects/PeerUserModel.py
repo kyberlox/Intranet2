@@ -514,22 +514,39 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
-    async def check_article_author(self, session, uuid_to, activities_id, article_name):
+    async def check_article_author(self, session, uuid_to, activities_id, article_id, roots):
         """
         Функция проверяет получал ли пользователь баллы в за предложенную новость
         Возвращает False если пользователь уже получил баллы 
         Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
         """
         try:
-            stmt_count = select(func.count(self.ActiveUsers.id)).where(
-                self.ActiveUsers.uuid_to == uuid_to,
-                self.ActiveUsers.activities_id == activities_id,
-                self.ActiveUsers.description == article_name
+            stmt = select(self.ActiveUsers).where(
+                self.ActiveUsers.activities_id == activities_id, 
+                self.ActiveUsers.description == article_id,
+                self.ActiveUsers.valid == 1
             )
-            result_count = await session.execute(stmt_count)
-            nodes_count = result_count.scalar()
-            if nodes_count >= 1:
-                return False
+            # stmt_count = select(func.count(self.ActiveUsers.id)).where(
+            #     self.ActiveUsers.uuid_to == uuid_to,
+            #     self.ActiveUsers.activities_id == activities_id,
+            #     self.ActiveUsers.description == article_id
+            # )
+            result = await session.execute(stmt)
+            existing_node = result.scalar_one_or_none()
+
+            #Если баллы еще никому не назначались
+            if not existing_node:
+                return True
+
+            #Если баллы автору уже назначались баллы
+            if existing_node.uuid_to == uuid_to:
+                return False 
+            
+            #Автора изменили и необходимо снять баллы у предыдущего автора, удалить запись и вернуть True
+            self.uuid = existing_node.uuid_to
+
+            #Снимаем баллы
+            await self.remove_user_points(session=session, action_id=existing_node.id, roots=roots)
             return True
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
@@ -569,7 +586,7 @@ class PeerUserModel:
                 check_info = await self.check_ideas(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за идею: check_info = {check_info} ")
             elif int(activities_id) == 5:
-                check_info = await self.check_article_author(session=session, uuid_to=uuid_to, activities_id=activities_id, article_name=description)
+                check_info = await self.check_article_author(session=session, uuid_to=uuid_to, activities_id=activities_id, article_id=description, roots=roots)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за предложенную новость: check_info = {check_info} ")
 
             

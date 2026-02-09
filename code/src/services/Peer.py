@@ -283,7 +283,7 @@ class Peer:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.send_points_to_employee_of_the_year(roots=roots, session=session)
 
-    async def send_points_to_article_author(self, session, article_name, author_id):
+    async def send_points_to_article_author(self, session, article_id, author_id):
         from ..base.pSQL.objects.RootsModel import RootsModel
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
@@ -292,7 +292,7 @@ class Peer:
             'uuid_from': 2,
             'uuid_to': author_id,
             'activities_id': 5,
-            'description': article_name
+            'description': article_id
         }
         return await self.PeerUserModel.send_auto_points(roots=roots, session=session, data=send_data)
 

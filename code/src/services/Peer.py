@@ -169,24 +169,6 @@ class Peer:
 
     """"""
 
-    # async def upload_past_activeusers(self):
-    #     return self.ActiveUsersModel().upload_past_table_ActiveUsers()
-
-    # async def history_mdr(self, activity_name):
-    #     return self.ActiveUsersModel().history_mdr(activity_name)
-
-    # async def top(self):
-    #     return self.ActiveUsersModel().top()
-
-    # async def my_place(self):
-    #     return self.ActiveUsersModel(uuid_to=self.user_uuid).my_place()
-
-    # async def statistics_history(self):
-    #     return self.ActiveUsersModel(uuid_to=self.user_uuid, activities_id=self.activities_id).statistics_history()
-
-    # async def new_a_week(self):
-    #     return self.ActiveUsersModel(uuid_to=self.user_uuid).new_a_week()
-
     async def user_history(self, session):
         self.ActiveUsersModel.uuid_to = self.user_uuid
         return await self.ActiveUsersModel.user_history(session=session)
@@ -301,7 +283,16 @@ class Peer:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
         return await self.PeerUserModel.send_points_to_employee_of_the_year(roots=roots, session=session)
 
+    async def send_points_to_article_author(self, session, article_id, author_id):
 
+        roots = {'2': 4133, "PeerAdmin":True}
+        send_data = {
+            'uuid_from': 2,
+            'uuid_to': author_id,
+            'activities_id': 5,
+            'description': str(article_id)
+        }
+        return await self.PeerUserModel.send_auto_points(roots=roots, session=session, data=send_data)
 
 async def get_uuid_from_request(request, session):
     user_id = None

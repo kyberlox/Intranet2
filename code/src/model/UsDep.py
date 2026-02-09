@@ -54,6 +54,10 @@ class UsDep:
         return await self.UserSQL.find_dep_by_user_id(session)
 
 
+
+        
+
+
 # Таблицу пользователей и департаментов можно обновить
 @usdep_router.put("", tags=["Пользователь-Департамент", "Битрикс24"],
 description="""

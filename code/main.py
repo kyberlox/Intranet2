@@ -478,8 +478,8 @@ async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
     from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
     from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
     await UserSearchModel().dump(session)
-    await StructureSearchModel().dump(session)
-    await ArticleSearchModel().dump(session)
+    # await StructureSearchModel().dump(session)
+    # await ArticleSearchModel().dump(session)
     return {"status": True}
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")

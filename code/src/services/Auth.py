@@ -338,12 +338,15 @@ class AuthService:
         if 'intranet.emk.org' in self.main_redirect:
             if int(user_info['ID']) not in ADMIN_UUIDS:
                 return None
+        
         # if int(user_info['ID']) not in ADMIN_UUIDS:
         #     return None
 
         # НЕЛЬЗЯ ИЗ АКСИОМЫ !
         if 'UF_DEPARTMENT' in user_info and 112 in user_info['UF_DEPARTMENT']:
             return None
+
+
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
         return session
@@ -629,7 +632,14 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
         
     # print(redirect_url, 'после')
     # Создаем RedirectResponse
+
+    """Верни ЭТУ СТРОКУ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"""
     response = RedirectResponse(url=redirect_url, status_code=302)
+
+    """это для андроидов"""
+    # token = session["session_id"]
+    # response = RedirectResponse(url=f"com.example.app://?token={token}", status_code=302)
+    
     # response = RedirectResponse(url='com.example.myapp://news/actual', status_code=302)
     # response.delete_cookie(key="referrer")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект
@@ -854,3 +864,11 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # )
 
     return res.json
+
+
+# 'fd40b169007ecc8600325f14000010250000077c36bedcb2c9fb31f78061f5b96d1ebd'
+@auth_router.get("/check_cookies", tags=["Авторизация"])
+async def check_cookies():
+    refresh_token = 'fd40b169007ecc8600325f14000010250000077c36bedcb2c9fb31f78061f5b96d1ebd'
+    AuthService().refresh_access_token_sync(refresh_token=refresh_token)
+    return True

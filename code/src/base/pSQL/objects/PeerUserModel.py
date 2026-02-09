@@ -514,6 +514,45 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_employers_of_the_year: {e}")
 
+    async def check_article_author(self, session, uuid_to, activities_id, article_id, roots):
+        """
+        Функция проверяет получал ли пользователь баллы в за предложенную новость
+        Возвращает False если пользователь уже получил баллы 
+        Возвращает True если пользователь еще не получил баллы, а значит ему надо их начислить
+        """
+        try:
+            stmt = select(self.ActiveUsers).where(
+                self.ActiveUsers.activities_id == activities_id, 
+                self.ActiveUsers.description == str(article_id),
+                self.ActiveUsers.valid == 1
+            )
+            # stmt_count = select(func.count(self.ActiveUsers.id)).where(
+            #     self.ActiveUsers.uuid_to == uuid_to,
+            #     self.ActiveUsers.activities_id == activities_id,
+            #     self.ActiveUsers.description == article_id
+            # )
+            result = await session.execute(stmt)
+            existing_node = result.scalar_one_or_none()
+
+            #Если баллы еще никому не назначались
+            if not existing_node:
+                LogsMaker().info_message('Баллы за новость еще никому не назначались')
+                return True
+
+            #Если баллы автору уже назначались баллы
+            if existing_node.uuid_to == uuid_to:
+                LogsMaker().info_message('Пользователь уже получил баллы за эту новость')
+                return False 
+            
+            #Автора изменили и необходимо снять баллы у предыдущего автора, удалить запись и вернуть True
+            self.uuid = existing_node.uuid_to
+            LogsMaker().info_message('У статьи поменяли автора')
+            #Снимаем баллы
+            await self.remove_user_points(session=session, action_id=existing_node.id, roots=roots)
+            return True
+        except Exception as e:
+            return LogsMaker().error_message(f"Произошла ошибка в check_article_author: {e}")
+
     async def send_auto_points(self, session, data: dict, roots: dict):
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
@@ -548,55 +587,58 @@ class PeerUserModel:
             elif int(activities_id) == 4:
                 check_info = await self.check_ideas(session=session, uuid_to=uuid_to, activities_id=activities_id, year=description)
                 LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за идею: check_info = {check_info} ")
+            elif int(activities_id) == 5:
+                check_info = await self.check_article_author(session=session, uuid_to=uuid_to, activities_id=activities_id, article_id=description, roots=roots)
+                LogsMaker().info_message(f"Проверяем необходимость поставить баллы пользователю за предложенную новость: check_info = {check_info} ")
 
             
             if check_info is True:
-                if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
-                    stmt_max = select(func.max(self.ActiveUsers.id))
-                    result_max = await session.execute(stmt_max)
-                    max_id = result_max.scalar() or 0
-                    new_id = max_id + 1
+                # if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
+                stmt_max = select(func.max(self.ActiveUsers.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
+                new_id = max_id + 1
+                
+                new_action = self.ActiveUsers(
+                    id=new_id,
+                    uuid_from=uuid_from,
+                    uuid_to=uuid_to,
+                    description=description,
+                    activities_id=activities_id,
+                    valid=1,
+                    date_time=datetime.now()
+                )
+
+                
+                value = 0
+                
+                if activities_id in roots.get("PeerCurator", []) or ('PeerAdmin' in roots and roots['PeerAdmin'] is True):
+                    session.add(new_action)
+                    # await session.commit()
                     
-                    new_action = self.ActiveUsers(
-                        id=new_id,
-                        uuid_from=uuid_from,
-                        uuid_to=uuid_to,
-                        description=description,
-                        activities_id=activities_id,
-                        valid=1,
+                    stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
+                    result_coast = await session.execute(stmt_coast)
+                    value = result_coast.scalar()
+                    
+                    merch_model = MerchStoreModel(uuid_to)
+                    add_points = await merch_model.upload_user_sum(session, value)
+                    
+                    add_history = self.PeerHistory(
+                        user_uuid=uuid_from,
+                        user_to=uuid_to,
+                        active_info=description,
+                        active_coast=value,
+                        active_id=new_id,
+                        info_type='activity',
                         date_time=datetime.now()
                     )
-
                     
-                    value = 0
-                    
-                    if activities_id in roots.get("PeerCurator", []):
-                        session.add(new_action)
-                        # await session.commit()
-                        
-                        stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
-                        result_coast = await session.execute(stmt_coast)
-                        value = result_coast.scalar()
-                        
-                        merch_model = MerchStoreModel(uuid_to)
-                        add_points = await merch_model.upload_user_sum(session, value)
-                        
-                        add_history = self.PeerHistory(
-                            user_uuid=roots['user_id'],
-                            user_to=uuid_to,
-                            active_info=description,
-                            active_coast=value,
-                            active_id=new_id,
-                            info_type='activity',
-                            date_time=datetime.now()
-                        )
-                        
-                        session.add(add_history)
-                        # await session.commit()
-                        return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
+                    session.add(add_history)
+                # await session.commit()
+                return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
                 
-                else:
-                    return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
+                # else:
+                #     return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
             else:
                 return LogsMaker().warning_message(f"Пользователю с id {uuid_to} уже были назначены баллы за активность с id = {activities_id}")
             
@@ -824,6 +866,11 @@ class PeerUserModel:
                         activity_name = f"Награда за {active_name}"
                     elif active_users_inf.activities_id == 16:
                         description = f"Баллы за идею №{active.active_info}"
+                    elif active_users_inf.activities_id == 5:
+                        from .ArticleModel import ArticleModel
+                        if "Отозваны" not in active.active_info:
+                            art_inf = await ArticleModel(id=int(active.active_info)).find_by_id(session=session)
+                            description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
 
                    
                     info = {

@@ -690,6 +690,7 @@ class Editor:
             # найти человека по uuid
             if key == "uuid" or key == "author_uuid":
                 uuid = int(data[key])
+                
                 # поиск по uuid
                 usr_dt = await User(uuid).search_by_id(self.session)
                 photo = usr_dt["personal_photo"]
@@ -780,6 +781,7 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
+                        
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':
                         #     print(data[key])
@@ -1088,6 +1090,12 @@ class Editor:
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
+
+        #Отправляем баллы пользователю на 31 раздел
+        if self.section_id == 31:
+            from .Peer import Peer
+            await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
+
         # сохранил
         await Article(id=self.art_id).update(art, self.session)
 

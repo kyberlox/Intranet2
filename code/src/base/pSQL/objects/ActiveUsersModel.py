@@ -323,6 +323,7 @@ class ActiveUsersModel:
             return LogsMaker().error_message(f"Ошибка в new_a_week при получении недельной статистики для пользователя {self.uuid_to}: {e}")
 
     async def user_history(self, session):
+        
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             # Получаем активность пользователя
@@ -371,6 +372,11 @@ class ActiveUsersModel:
                     elif row[-1] == 4:
                         activity_name = f"Баллы за идею"
                         description = f"Идея №{row.description}"
+                    elif row[-1] == 5:
+                        from .ArticleModel import ArticleModel
+                        art_inf = await ArticleModel(id=int(row.description)).find_by_id(session=session)
+                        description = f"Баллы за предложенную новость: {art_inf['name']}"
+
 
                         
                     activities.append({

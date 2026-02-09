@@ -292,7 +292,7 @@ class Peer:
             'uuid_from': 2,
             'uuid_to': author_id,
             'activities_id': 5,
-            'description': article_id
+            'description': str(article_id)
         }
         return await self.PeerUserModel.send_auto_points(roots=roots, session=session, data=send_data)
 

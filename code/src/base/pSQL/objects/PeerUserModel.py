@@ -593,6 +593,7 @@ class PeerUserModel:
 
             
             if check_info is True:
+                print(roots)
                 if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
                     stmt_max = select(func.max(self.ActiveUsers.id))
                     result_max = await session.execute(stmt_max)

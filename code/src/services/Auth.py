@@ -336,7 +336,6 @@ class AuthService:
         # Доступ на тестовый только для особенных
            # 2366, 
         if 'intranet.emk.org' in self.main_redirect:
-            print(user_info)
             if int(user_info['ID']) not in ADMIN_UUIDS:
                 return None
         

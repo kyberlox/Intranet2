@@ -53,6 +53,14 @@ class UsDep:
         self.UserSQL.id = self.ID
         return await self.UserSQL.find_dep_by_user_id(session)
 
+    async def is_from_axioma(self):
+        self.usr_id
+        self.dep_id
+
+        # await self.UserSQL.find_dep_by_user_id(session)
+
+        
+
 
 # Таблицу пользователей и департаментов можно обновить
 @usdep_router.put("", tags=["Пользователь-Департамент", "Битрикс24"],

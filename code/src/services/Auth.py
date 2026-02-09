@@ -338,8 +338,13 @@ class AuthService:
         if 'intranet.emk.org' in self.main_redirect:
             if int(user_info['ID']) not in ADMIN_UUIDS:
                 return None
+        
         # if int(user_info['ID']) not in ADMIN_UUIDS:
         #     return None
+
+        # НЕЛЬЗЯ ИЗ АКСИОМЫ !
+
+
 
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
@@ -626,7 +631,12 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
         
     # print(redirect_url, 'после')
     # Создаем RedirectResponse
-    response = RedirectResponse(url=redirect_url, status_code=302)
+
+    """Верни ЭТУ СТРОКУ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"""
+    #response = RedirectResponse(url=redirect_url, status_code=302)
+
+    """это для андроидов"""
+    response = RedirectResponse(url="com.example.app://test123", status_code=302)
     # response = RedirectResponse(url='com.example.myapp://news/actual', status_code=302)
     # response.delete_cookie(key="referrer")
     # Для API возвращаем JSON, для веб-приложения можно сделать редирект

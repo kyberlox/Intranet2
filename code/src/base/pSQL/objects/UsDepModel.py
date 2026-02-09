@@ -76,3 +76,11 @@ class UsDepModel():
             return res
         else:
             return []
+
+    async def is_user_from_axioma(self, session):
+        """
+        Проверяет есть ли запись self.user_id с dep_id == 112
+        """
+        result =  await session.execute(select(self.us_dep).where(self.us_dep.user_id == self.id))
+        res = result.scalars().all()
+

@@ -212,7 +212,7 @@ class AuthService:
 
         now = datetime.now()
         
-        
+        print(session_data)
         session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
         
         # Проверяем истекла ли сессия

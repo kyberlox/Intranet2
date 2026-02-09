@@ -393,6 +393,8 @@ class User:
                 usr_data = res[0]
                 print(usr_data, 'НОВИЧКИ С БИТРЫ')
                 # смотрим логи 
+                if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
+                    usr_data["ACTIVE"] = False
                 await self.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
@@ -433,6 +435,7 @@ class User:
                                 await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
                     await self.update_user_elastic(session)
+                await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
                 return None
             else:
                 # не скачиваем фотку у неактивных пользователей

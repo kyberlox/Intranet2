@@ -212,7 +212,7 @@ class AuthService:
 
         now = datetime.now()
         
-        print(session_data)
+        
         session_expires_at = datetime.fromisoformat(session_data["session_expires_at"])
         
         # Проверяем истекла ли сессия
@@ -864,3 +864,11 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # )
 
     return res.json
+
+
+# 'fd40b169007ecc8600325f14000010250000077c36bedcb2c9fb31f78061f5b96d1ebd'
+@auth_router.get("/check_cookies", tags=["Авторизация"])
+async def check_cookies():
+    refresh_token = 'fd40b169007ecc8600325f14000010250000077c36bedcb2c9fb31f78061f5b96d1ebd'
+    AuthService().refresh_access_token_sync(refresh_token=refresh_token)
+    return True

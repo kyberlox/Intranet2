@@ -341,6 +341,9 @@ class AuthService:
         # if int(user_info['ID']) not in ADMIN_UUIDS:
         #     return None
 
+        # НЕЛЬЗЯ ИЗ АКСИОМЫ !
+        if 'UF_DEPARTMENT' in user_info and 112 in user_info['UF_DEPARTMENT']:
+            return None
         # Создаем сессию
         session = await self.create_session(tokens, user_info)
         return session

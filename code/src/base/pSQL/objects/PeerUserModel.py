@@ -593,53 +593,52 @@ class PeerUserModel:
 
             
             if check_info is True:
-                print(roots)
-                if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
-                    stmt_max = select(func.max(self.ActiveUsers.id))
-                    result_max = await session.execute(stmt_max)
-                    max_id = result_max.scalar() or 0
-                    new_id = max_id + 1
+                # if "PeerCurator" in roots.keys() or "PeerAdmin" in roots.keys() and roots['PeerAdmin'] is True:
+                stmt_max = select(func.max(self.ActiveUsers.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
+                new_id = max_id + 1
+                
+                new_action = self.ActiveUsers(
+                    id=new_id,
+                    uuid_from=uuid_from,
+                    uuid_to=uuid_to,
+                    description=description,
+                    activities_id=activities_id,
+                    valid=1,
+                    date_time=datetime.now()
+                )
+
+                
+                value = 0
+                
+                if activities_id in roots.get("PeerCurator", []):
+                    session.add(new_action)
+                    # await session.commit()
                     
-                    new_action = self.ActiveUsers(
-                        id=new_id,
-                        uuid_from=uuid_from,
-                        uuid_to=uuid_to,
-                        description=description,
-                        activities_id=activities_id,
-                        valid=1,
+                    stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
+                    result_coast = await session.execute(stmt_coast)
+                    value = result_coast.scalar()
+                    
+                    merch_model = MerchStoreModel(uuid_to)
+                    add_points = await merch_model.upload_user_sum(session, value)
+                    
+                    add_history = self.PeerHistory(
+                        user_uuid=roots['user_id'],
+                        user_to=uuid_to,
+                        active_info=description,
+                        active_coast=value,
+                        active_id=new_id,
+                        info_type='activity',
                         date_time=datetime.now()
                     )
-
                     
-                    value = 0
-                    
-                    if activities_id in roots.get("PeerCurator", []):
-                        session.add(new_action)
-                        # await session.commit()
-                        
-                        stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
-                        result_coast = await session.execute(stmt_coast)
-                        value = result_coast.scalar()
-                        
-                        merch_model = MerchStoreModel(uuid_to)
-                        add_points = await merch_model.upload_user_sum(session, value)
-                        
-                        add_history = self.PeerHistory(
-                            user_uuid=roots['user_id'],
-                            user_to=uuid_to,
-                            active_info=description,
-                            active_coast=value,
-                            active_id=new_id,
-                            info_type='activity',
-                            date_time=datetime.now()
-                        )
-                        
-                        session.add(add_history)
-                        # await session.commit()
-                        return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
+                    session.add(add_history)
+                    # await session.commit()
+                    return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
                 
-                else:
-                    return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
+                # else:
+                #     return LogsMaker().warning_message(f"Недостаточно прав для отправки активности")
             else:
                 return LogsMaker().warning_message(f"Пользователю с id {uuid_to} уже были назначены баллы за активность с id = {activities_id}")
             

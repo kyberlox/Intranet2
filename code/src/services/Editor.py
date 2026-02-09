@@ -690,7 +690,7 @@ class Editor:
             # найти человека по uuid
             if key == "uuid" or key == "author_uuid":
                 uuid = int(data[key])
-                print(uuid, 'тут что ли')
+                
                 # поиск по uuid
                 usr_dt = await User(uuid).search_by_id(self.session)
                 photo = usr_dt["personal_photo"]
@@ -781,6 +781,7 @@ class Editor:
                             tags_id = data["tags"]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
+                        print(key, data[key], 'тут что ли')
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':
                         #     print(data[key])

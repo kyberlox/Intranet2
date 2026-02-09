@@ -803,6 +803,8 @@ async def send_test_email(session: AsyncSession = Depends(get_async_db)):
     SendEmail(data=data).send_to_jubilee_in_company(year=5)
     return await User().create_intranet_admin(session=session)
 
+
+
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

@@ -612,28 +612,28 @@ class PeerUserModel:
                 
                 value = 0
                 
-                # if activities_id in roots.get("PeerCurator", []):
-                session.add(new_action)
-                # await session.commit()
-                
-                stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
-                result_coast = await session.execute(stmt_coast)
-                value = result_coast.scalar()
-                
-                merch_model = MerchStoreModel(uuid_to)
-                add_points = await merch_model.upload_user_sum(session, value)
-                
-                add_history = self.PeerHistory(
-                    user_uuid=roots['user_id'],
-                    user_to=uuid_to,
-                    active_info=description,
-                    active_coast=value,
-                    active_id=new_id,
-                    info_type='activity',
-                    date_time=datetime.now()
-                )
-                
-                session.add(add_history)
+                if activities_id in roots.get("PeerCurator", []) or ('PeerAdmin' in roots and roots['PeerAdmin'] is True):
+                    session.add(new_action)
+                    # await session.commit()
+                    
+                    stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
+                    result_coast = await session.execute(stmt_coast)
+                    value = result_coast.scalar()
+                    
+                    merch_model = MerchStoreModel(uuid_to)
+                    add_points = await merch_model.upload_user_sum(session, value)
+                    
+                    add_history = self.PeerHistory(
+                        user_uuid=uuid_from,
+                        user_to=uuid_to,
+                        active_info=description,
+                        active_coast=value,
+                        active_id=new_id,
+                        info_type='activity',
+                        date_time=datetime.now()
+                    )
+                    
+                    session.add(add_history)
                 # await session.commit()
                 return LogsMaker().info_message(f"Активность успешно отправлена пользователю с id = {uuid_to}")
                 

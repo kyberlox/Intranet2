@@ -391,7 +391,6 @@ class User:
             res = await B24().getUser(self.id)
             if res:
                 usr_data = res[0]
-                print(usr_data, 'НОВИЧКИ С БИТРЫ')
                 # смотрим логи 
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False

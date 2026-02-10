@@ -18,7 +18,9 @@
                          :key="'chat' + index">
                         <div v-if="chat.role == 'user'"
                              class="neuroChat__message neuroChat__message--user">
-                            {{ chat.content }}
+                            <span>
+                                {{ chat.content }}
+                            </span>
                         </div>
                         <div v-if="chat.role == 'assistant' && chatType == 'createImg' && chat.type == 'img'"
                              class="neuroChat__messages">

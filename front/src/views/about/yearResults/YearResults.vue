@@ -23,7 +23,6 @@
              :class="{ 'staff__filter__link--active': currentYear == Number(year) }"
              @click="currentYear = Number(year)">
             {{ year }}
-
         </div>
     </div>
     <div class="row mb-5 mt20"

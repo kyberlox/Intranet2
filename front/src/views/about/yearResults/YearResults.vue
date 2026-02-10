@@ -105,7 +105,6 @@ export default defineComponent({
                 if (item.indirect_data?.award && !awardTypes.value.includes(item.indirect_data?.award)) {
                     awardTypes.value.push(item.indirect_data.award)
                 }
-
             })
             actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
         }

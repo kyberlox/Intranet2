@@ -13,8 +13,8 @@
                              @userPicked="(e) => $emit('handleUserPick', e)"
                              @usersPicked="(e) => $emit('handleUsersPick', e)" />
 
-        <AdminUsersList v-if="item.field == 'users'"
-                        :users="(item.value as IUserList[])"
+        <AdminUsersList v-if="item.field == 'users' || item.field == 'author'"
+                        :users="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
                         @removeUser="(id: number) => $emit('handleUsersPick', String(id), 'remove')" />
 
         <AdminEditInputMulti v-else-if="item.field == 'reports'"

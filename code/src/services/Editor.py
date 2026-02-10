@@ -1011,6 +1011,15 @@ class Editor:
                 "work_position",
                 "photo_file_url"
             ],
+            "31": [
+                "id",
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department",
+                "photo_file_url"
+            ],
             "172": [
                 "name",
                 "second_name",
@@ -1085,11 +1094,21 @@ class Editor:
             result.pop("department")
             result.pop('position')
 
+        
+
         # вписываю в неё эти значения
         for key in result.keys():
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][key] = result[key]
+
+        if self.section_id == 31:
+            art['indirect_data']['author'] = {
+                'id': user_id,
+                'fio': result["fio"],
+                'position': result["position"],
+                'photo_file_url': result["photo_file_url"]
+            }
 
         #Отправляем баллы пользователю на 31 раздел
         if self.section_id == 31:

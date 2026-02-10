@@ -899,7 +899,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         'position' : session_data['user_info']['WORK_POSITION']
     }
     
-    res = requests.post(url='http://exhibitions.kuberlox.ru/login', json=user_info)
+    res = requests.post(url='http://exhibitions.kuberlox.ru/login', data=user_info)
 
     if res.status_code != 200:
         raise HTTPException(

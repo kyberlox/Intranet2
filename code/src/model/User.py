@@ -435,7 +435,8 @@ class User:
                                 await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
                     await self.update_user_elastic(session)
-                await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
+                else:
+                    await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
                 return None
             else:
                 # не скачиваем фотку у неактивных пользователей

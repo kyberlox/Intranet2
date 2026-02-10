@@ -905,11 +905,11 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         if res.status_code != 200:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST ,
-                detail=f"Ошибка перехода на конфигуратор ТЕП: {res.text}"
+                detail=f"Ошибка перехода на контакты с выставок: {res.text}"
             )
     
 
-    redirect_url = f"https://tepconf.emk.ru/{session_data["session_id"]}"
+    redirect_url = f"http://exhibitions.kuberlox.ru/login"
      # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url) #, status_code=302
 

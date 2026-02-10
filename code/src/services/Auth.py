@@ -890,7 +890,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
       "last_name": session_data['user_info']['LAST_NAME'],
       "first_name": session_data['user_info']['NAME'], 
       "middle_name": session_data['user_info']['SECOND_NAME']
-    },
+    }
 
     department=""
     for dep in user_deps['indirect_data']['uf_department']:

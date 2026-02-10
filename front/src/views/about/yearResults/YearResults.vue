@@ -26,18 +26,22 @@
 
         </div>
     </div>
-    <div class="row mb-5 mt20">
+    <div class="row mb-5 mt20"
+         v-if="awardTypes.length && currentYear && activeLocation">
         <h2 class="page__title">
-            Сотрудник года {{ activeLocation }}
+            {{ activeLocation }}
             <span v-if="currentYear"
                   class="year">/ {{ currentYear }}</span>
         </h2>
-        <WorkerCard :workers="workerOfTheYear" />
-        <h2 v-if="workerWithDiploma.length"
-            class="page__title mt20">
-            Почетными грамотами награждены:
-        </h2>
-        <WorkerCard :workers="workerWithDiploma" />
+
+        <div v-for="award in awardTypes"
+             :key="award">
+            <div v-if="awardFilter(allTimeAwards, award).length">
+                <WorkerCard :pageTitle="award"
+                            :workers="awardFilter(allTimeAwards, award)" />
+            </div>
+        </div>
+
     </div>
 </div>
 </template>
@@ -56,16 +60,14 @@ export default defineComponent({
         Loader
     },
     setup() {
-        const dateYear = new Date().getFullYear();
-        const currentYear = ref(dateYear - 1);
+        const currentYear = ref();
         const isLoading = ref(false);
         const workersLocations = ref<string[]>([]);
-        const activeLocation = ref<string>('ЭМК');
+        const activeLocation = ref<string>();
+        const awardTypes = ref<string[]>([]);
 
         const allTimeAwards: Ref<IWorkerOfTheYear[]> = ref([]);
         const chosenYearAwards: Ref<IWorkerOfTheYear[]> = ref([]);
-        const workerOfTheYear: Ref<IWorkerOfTheYear[]> = ref([]);
-        const workerWithDiploma: Ref<IWorkerOfTheYear[]> = ref([]);
         const actualYears: Ref<string[]> = ref([]);
 
         onMounted(() => {
@@ -77,8 +79,13 @@ export default defineComponent({
                     allTimeAwards.value = res;
                     res.map((item: IWorkerOfTheYear) => {
                         if (item.indirect_data?.location && !workersLocations.value.includes(item.indirect_data?.location)) {
-                            workersLocations.value.push(item.indirect_data.location)
+                            workersLocations.value.push(item.indirect_data.location);
                         }
+                        activeLocation.value = workersLocations.value[workersLocations.value.length - 1];
+                        if (item.indirect_data?.year && !actualYears.value.includes(item.indirect_data.year)) {
+                            actualYears.value.push(item.indirect_data.year)
+                        }
+                        currentYear.value = actualYears.value[actualYears.value.length - 1];
                     })
                 })
                 .finally(() => {
@@ -89,50 +96,40 @@ export default defineComponent({
 
         const initWorkers = () => {
             chosenYearAwards.value.length = 0;
-            workerWithDiploma.value.length = 0;
-            workerOfTheYear.value.length = 0;
             actualYears.value.length = 0;
-
             allTimeAwards.value.map(item => {
-                if (item.indirect_data?.location == activeLocation.value && item.indirect_data && (actualYears.value.length == 0 || (actualYears.value.indexOf(item.indirect_data.year) < 0))) {
+                if (item.indirect_data?.location == activeLocation.value
+                    && item.indirect_data
+                    && (actualYears.value.length == 0 || !actualYears.value.includes(item.indirect_data.year))) {
                     actualYears.value.push(item.indirect_data.year)
                 }
-                if (item.indirect_data && item.indirect_data.year == String(currentYear.value) && item.indirect_data.location == activeLocation.value) {
-                    if (item.indirect_data.award == 'Почетная грамота') {
-                        workerWithDiploma.value.push(item);
-                    }
-                    else {
-                        workerOfTheYear.value.push(item);
-                    }
+                if (item.indirect_data?.award && !awardTypes.value.includes(item.indirect_data?.award)) {
+                    awardTypes.value.push(item.indirect_data.award)
                 }
+
             })
             actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
         }
 
         watch((activeLocation), () => {
             initWorkers();
-            currentYear.value = dateYear - 1;
-        }, {
-            immediate: true,
-            deep: true
-        })
+        }, { immediate: true, deep: true })
 
         watch((currentYear), () => {
             initWorkers();
-        }, {
-            immediate: true,
-            deep: true
-        })
+        }, { immediate: true, deep: true })
 
         return {
             currentYear,
             chosenYearAwards,
-            workerWithDiploma,
-            workerOfTheYear,
             actualYears,
             isLoading,
             activeLocation,
-            workersLocations
+            workersLocations,
+            awardTypes,
+            allTimeAwards,
+            awardFilter: ((items: IWorkerOfTheYear[], award: string) => items.filter((e) => e.indirect_data?.award == award
+                && e.indirect_data.year == currentYear.value))
         };
     },
 });

@@ -898,6 +898,8 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         'department': user_deps['indirect_data']['uf_department'],
         'position' : session_data['user_info']['WORK_POSITION']
     }
+
+    print(user_info)
     
     res = requests.post(url='http://exhibitions.kuberlox.ru/login', data=user_info)
 

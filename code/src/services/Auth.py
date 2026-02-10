@@ -906,7 +906,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     print(user_info)
     
-    res = requests.post(url='http://exhibitions.kyberlox.ru/login', data=user_info)
+    res = requests.post(url='http://exhibitions.kyberlox.ru/login', json=user_info)
     print(res.status_code)
 
     if res.status_code != 200:

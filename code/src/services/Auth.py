@@ -886,11 +886,15 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     user_deps = await User(id=int(user_id)).search_by_id(session=sess)
 
     
-    # fio = session_data['user_info']['full_name'].split()
+    fio = {
+      "last_name": session_data['user_info']['LAST_NAME'],
+      "first_name": session_data['user_info']['NAME'], 
+      "middle_name": session_data['user_info']['SECOND_NAME']
+    },
     user_info = {
         'id': session_data['user_id'],
         'session_id': session_data["session_id"]
-        'fio': [session_data['user_info']['LAST_NAME'], session_data['user_info']['NAME'], session_data['user_info']['SECOND_NAME']],
+        'fio': fio,
         'department': user_deps['indirect_data']['uf_department'],
         'position' : session_data['user_info']['WORK_POSITION']
     }

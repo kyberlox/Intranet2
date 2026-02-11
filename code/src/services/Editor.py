@@ -880,6 +880,7 @@ class Editor:
         if user_id_list == []:
             art['indirect_data']['users'] = []
         else:
+
             # иду по списку user_id
             for user_id in user_id_list:
                 user_info = await User(id=user_id).search_by_id(self.session)
@@ -892,20 +893,25 @@ class Editor:
 
                 users = art['indirect_data']['users']
                 if users != []:
+                    #исключили тех кого нет в списке user_id_list, но были в бд
+                    sorted_users = [item for item in users if item['id'] in user_id_list]
+
+                    art['indirect_data']['users'] = sorted_users
+                    
                     # проверяю есть ли такой в списке статьи
                     had_find = False
 
-                    for user in users:
+                    for user in sorted_users:
                         if int(user["id"]) == int(user_id):
                             had_find = True
 
                         # если есть в стаье, но нет в user_id_list
-                        elif user["id"] not in user_id_list:
-                            print(users, user_id_list)
-                            print(user["id"] not in user_id_list)
-                            # выписываю
-                            art['indirect_data']['users'].remove(user)
-                            print(art['indirect_data']['users'], 'выписали', user["id"])
+                        # elif user["id"] not in user_id_list:
+                        #     print(users, user_id_list)
+                        #     print(user["id"] not in user_id_list)
+                        #     # выписываю
+                        #     art['indirect_data']['users'].remove(user)
+                        #     print(art['indirect_data']['users'], 'выписали', user["id"])
                     
                     # если ещё нет
                     if not had_find:

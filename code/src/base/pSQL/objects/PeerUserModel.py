@@ -1047,7 +1047,7 @@ class PeerUserModel:
     async def remove_author_points(self, session, article_id):
         try:
             stmt_action = select(self.ActiveUsers).where(
-                self.ActiveUsers.uuid_to == self.uuid,
+                self.ActiveUsers.uuid_to == int(self.uuid),
                 self.ActiveUsers.description == str(article_id),
                 self.ActiveUsers.valid == 1
             )

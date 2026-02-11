@@ -27,7 +27,6 @@ export default defineComponent({
         }
     },
     setup() {
-
         const formatUsers = (usersArr: IUserList[]) => {
             if (!usersArr.length) return;
             const formatUsers: IUserSearch[] = [];

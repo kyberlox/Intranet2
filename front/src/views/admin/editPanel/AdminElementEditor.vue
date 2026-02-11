@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref, computed, onUnmounted } from 'vue';
+import { defineComponent, onMounted, ref, type Ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Api from '@/utils/Api';
 
@@ -157,6 +157,7 @@ export default defineComponent({
               isCreateNew.value = false;
               newElementSkeleton.value = data.fields;
             }
+            users.value = findValInObject(data, 'users')?.map((e: IUserList) => e.id) || [];
             // для файлов
             newFileData.value = data.files;
             newData.value.videos_native = data.files.videos_native;
@@ -179,7 +180,7 @@ export default defineComponent({
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
 
-      Api.post('file/upload_link', { art_id: isCreateNew.value ? newId.value : props.elementId, links: newEmbedList.value })
+      Api.post('file/upload_link', { art_id: newId.value, links: newEmbedList.value })
         .then(() => Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
           .then((data) => {
             handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
@@ -194,7 +195,7 @@ export default defineComponent({
     }
 
     const handleUpload = (e: IFileToUpload | string[], embed: boolean = false) => {
-      const idToUpload = isCreateNew.value ? newId.value : props.elementId;
+      const idToUpload = newId.value;
 
       if (embed) {
         newEmbedList.value = (e as string[]);
@@ -219,7 +220,7 @@ export default defineComponent({
     }
 
     const uploadMany = (e: IFileToUpload[]) => {
-      const idToUpload = isCreateNew.value ? newId.value : props.elementId;
+      const idToUpload = newId.value;
       const formData = new FormData()
       e.forEach((e) => {
         formData.append('files', e.file);
@@ -242,7 +243,6 @@ export default defineComponent({
     };
 
     const handleUserPick = (userId: number) => {
-      console.log(userId)
       Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
         .then((data) => {
           if (data) {
@@ -272,7 +272,7 @@ export default defineComponent({
         updateUsersInfo();
       }
       else if (type == 'fetchRemove') {
-        Api.get(`editor/get_user_info/${props.id}/${props.elementId}/null`)
+        Api.get(`editor/get_user_info/${props.id}/${newId.value}/null`)
           .then((data) => {
             if (data) {
               reloadElementData(false)

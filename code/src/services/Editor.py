@@ -880,6 +880,7 @@ class Editor:
         if user_id_list == []:
             art['indirect_data']['users'] = []
         else:
+
             # иду по списку user_id
             for user_id in user_id_list:
                 user_info = await User(id=user_id).search_by_id(self.session)
@@ -891,23 +892,29 @@ class Editor:
                     art['indirect_data']['users'] = []
 
                 users = art['indirect_data']['users']
-
                 if users != []:
+                    #исключили тех кого нет в списке user_id_list, но были в бд
+                    sorted_users = [item for item in users if item['id'] in user_id_list]
+
+                    art['indirect_data']['users'] = sorted_users
+                    
                     # проверяю есть ли такой в списке статьи
                     had_find = False
 
-                    for user in users:
+                    for user in sorted_users:
                         if int(user["id"]) == int(user_id):
                             had_find = True
 
                         # если есть в стаье, но нет в user_id_list
-                        elif int(user["id"]) not in user_id_list:
-                            # выписываю
-                            art['indirect_data']['users'].remove(user)
-
+                        # elif user["id"] not in user_id_list:
+                        #     print(users, user_id_list)
+                        #     print(user["id"] not in user_id_list)
+                        #     # выписываю
+                        #     art['indirect_data']['users'].remove(user)
+                        #     print(art['indirect_data']['users'], 'выписали', user["id"])
+                    
                     # если ещё нет
                     if not had_find:
-
                         # хватаю ФИО
                         if "last_name" in user_info:
                             last_name = user_info['last_name']
@@ -942,7 +949,7 @@ class Editor:
                             "photo_file_url": photo_file_url,
                             "position": position
                         }
-
+                        # users.append(usr)
                         # записываю
                         art['indirect_data']['users'].append(usr)
                 else:
@@ -1039,12 +1046,12 @@ class Editor:
         if 'null' in user_id:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
-            print(art['indirect_data'], 'до')
+            
             if art['section_id'] == 31:
                 await Peer(user_uuid=int(art['indirect_data']['author']['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
-                print(art['indirect_data'], 'до')
+                
                 art['indirect_data'].pop('author')
-                print(art['indirect_data'], 'после')
+                
                 # сохранил
                 await Article(id=self.art_id).update(art, self.session)
                 return []
@@ -1114,12 +1121,22 @@ class Editor:
             result.pop('position')
 
         if self.section_id == 31:
-            art['indirect_data']['author'] = {
-                'id': user_id,
-                'fio': result["fio"],
-                'position': result["position"],
-                'photo_file_url': result["photo_file_url"]
-            }
+            if not art['indirect_data']:
+                art['indirect_data'] = {
+                    'author': {
+                        'id': user_id,
+                        'fio': result["fio"],
+                        'position': result["position"],
+                        'photo_file_url': result["photo_file_url"]
+                    }
+                }
+            else:
+                art['indirect_data']['author'] = {
+                    'id': user_id,
+                    'fio': result["fio"],
+                    'position': result["position"],
+                    'photo_file_url': result["photo_file_url"]
+                }
         else:
             # вписываю в неё эти значения
             for key in result.keys():

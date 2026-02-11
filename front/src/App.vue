@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from "vue";
-import { RouterView, useRoute } from "vue-router";
+import { RouterView, useRoute, useRouter } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
@@ -47,7 +47,6 @@ import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
-import { checkPrime } from "crypto";
 
 export default defineComponent({
     name: "app-layout",
@@ -65,8 +64,11 @@ export default defineComponent({
     },
     setup() {
         const route = useRoute();
+        const router = useRouter();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
+        const noAdminRoots = computed(() => userData.getNoRoots);
+
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (userData.getMyId == 0) {
@@ -89,6 +91,12 @@ export default defineComponent({
                         prefetchSection('factoryGuid')
                     }
                 }
+        }, { immediate: true, deep: true })
+
+        watch([route, noAdminRoots], () => {
+            if (route.fullPath.includes('admin') && noAdminRoots.value) {
+                router.push({ name: 'home' })
+            }
         }, { immediate: true, deep: true })
 
         onMounted(() => {

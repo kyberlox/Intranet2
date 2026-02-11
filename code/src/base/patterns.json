@@ -501,7 +501,8 @@
       {
         "name": "Автор блога",
         "field": "author",
-        "data_type": "str"
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name" : "Список доступных тэгов",

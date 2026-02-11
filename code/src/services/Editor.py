@@ -1035,7 +1035,7 @@ class Editor:
                 "department"
             ]
         }
-        if user_id == "":
+        if user_id == 0:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
             if art['section_id'] == 31:
@@ -1047,7 +1047,7 @@ class Editor:
                 art['indirect_data'].pop(art_field)
             await Article(id=self.art_id).update(art, self.session)
             return []
-        user_id = int(user_id)
+        # user_id = int(user_id)
         user_info = await User(id=user_id).search_by_id(self.session)
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]

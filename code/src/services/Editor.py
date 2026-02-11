@@ -1035,7 +1035,7 @@ class Editor:
                 "department"
             ]
         }
-        if not user_id:
+        if 'null' in user_id:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
             if art['section_id'] == 31:

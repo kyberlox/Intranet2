@@ -114,7 +114,6 @@ export default defineComponent({
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
     const newData: Ref<IPostInner> = ref({ id: Number(newId.value) });
     const newFileData = ref<INewFileData>({});
-    const needToBeDeleted = ref(true);
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
     const usersList = ref<IUserList[]>([]);
@@ -177,7 +176,6 @@ export default defineComponent({
     }
 
     const applyNewData = () => {
-      needToBeDeleted.value = false;
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
 
@@ -252,31 +250,41 @@ export default defineComponent({
         })
     }
 
-    const handleUsersPick = (uuid: string, type: ('add' | 'remove') = 'add') => {
+    const handleUsersPick = (uuid: string, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
       if (type == 'add') {
         if (!users.value.includes(uuid))
           users.value.push(uuid)
       }
-      else {
+      else if (type == 'remove') {
+        console.log(users.value)
+        console.log(usersList.value)
         users.value.length = 0
         usersList.value.map((e) => {
           if (Number(e.id) !== Number(uuid)) {
             users.value.push(String(e.id))
           }
         })
+        const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
+        Api.post(`editor/get_users_info`, usersBody)
+          .then((data) => {
+            if (data) {
+              reloadElementData(false)
+            }
+          })
       }
-
-      const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
-      Api.post(`editor/get_users_info`, usersBody)
-        .then((data) => {
-          if (data) {
-            reloadElementData(false)
-          }
-        })
+      else
+        if (type == 'fetchRemove') {
+          Api.get(`editor/get_user_info/${props.id}/${props.elementId}/null`)
+            .then((data) => {
+              if (data) {
+                reloadElementData(false)
+              }
+            })
+        }
     }
 
     onUnmounted(() => {
-      if (needToBeDeleted.value && isCreateNew.value) {
+      if (!newData.value.name && !newData.value.content_text && newData.value.content_text?.length == 0 && !newData.value.videos_embed?.length && !newData.value.videos_native?.length && isCreateNew.value) {
         Api.delete(`editor/del/${newId.value}`)
       }
     })

@@ -8,14 +8,16 @@
          class="admin-element-inner__field"
          :key="index">
 
+        <!-- Для того чтобы вписать данные -->
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
                              :type="item.data_type"
                              @userPicked="(e) => $emit('handleUserPick', e)"
                              @usersPicked="(e) => $emit('handleUsersPick', e)" />
 
+        <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
         <AdminUsersList v-if="item.field == 'users' || item.field == 'author'"
                         :users="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
-                        @removeUser="(id: number) => $emit('handleUsersPick', String(id), 'remove')" />
+                        @removeUser="(id: number) => $emit('handleUsersPick', String(id), item.field == 'users' ? 'remove' : 'fetchRemove')" />
 
         <AdminEditInputMulti v-else-if="item.field == 'reports'"
                              :item="(item.value as IReportage[])"

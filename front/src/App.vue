@@ -94,10 +94,6 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         watch([route, noAdminRoots], () => {
-            console.log(route);
-            console.log(noAdminRoots.value);
-
-
             if (route.fullPath.includes('admin') && noAdminRoots.value) {
                 router.push({ name: 'home' })
             }

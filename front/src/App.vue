@@ -47,7 +47,6 @@ import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
-import { checkPrime } from "crypto";
 
 export default defineComponent({
     name: "app-layout",

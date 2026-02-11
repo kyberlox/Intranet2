@@ -242,7 +242,6 @@ export default defineComponent({
     };
 
     const handleUserPick = (userId: number) => {
-      console.log(userId)
       Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
         .then((data) => {
           if (data) {

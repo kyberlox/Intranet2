@@ -1190,7 +1190,7 @@ async def set_user_info(session: AsyncSession = Depends(get_async_db), data=Body
     else:
         return "\'users_id\' is not found"
 
-    return await Editor(art_id=art_id, session=session).get_users_info(user_id_list=users_id)
+    return await Editor(art_id=int(art_id), session=session).get_users_info(user_id_list=users_id)
 
 
 # получить паттерн

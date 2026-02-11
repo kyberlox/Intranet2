@@ -546,19 +546,11 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/admin/components/AdminSidebar.vue'),
-      beforeEnter: (to, from) => {
-        
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
     },
     {
       path: '/admin/:id',
       name: 'adminBlockInner',
       component: () => import('@/views/admin/editPanel/AdminElements.vue'),
-
       props: (route) => ({ id: route.params.id })
     },
  {

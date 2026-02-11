@@ -123,8 +123,6 @@ export default defineComponent({
                 }))
             fullNavigation.value[0].nav.push(...sections.value)
             fullNavigation.value = fullNavigation.value.filter((e) => checkByFlags(e));
-            console.log(fullNavigation.value);
-
         }, { deep: true, immediate: true })
 
         const defineRoute = (typeId: number, section: { id: string | number, name: string }) => {

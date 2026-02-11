@@ -55,7 +55,7 @@ export default defineComponent({
         }
     },
     name: 'adminEditUserSearch',
-    emits: ['usersPicked', 'userPicked', 'handleUserPick', 'handleUsersPick'],
+    emits: ['handleUserPick', 'handleUsersPick'],
     setup(props, { emit }) {
         const pickedUser = ref()
         const usersList = ref([])

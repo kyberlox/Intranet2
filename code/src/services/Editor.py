@@ -1044,7 +1044,8 @@ class Editor:
                 await Article(id=self.art_id).update(art, self.session)
                 return []
             for art_field in art_fields:
-                art['indirect_data'].pop(art_field)
+                if art_field in art['indirect_data']:
+                    art['indirect_data'].pop(art_field)
             await Article(id=self.art_id).update(art, self.session)
             return []
         # user_id = int(user_id)
@@ -1175,7 +1176,6 @@ async def get_editor_roots(user_uuid, session):
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 async def set_user_info(section_id: int, art_id: int, user_id, session: AsyncSession = Depends(get_async_db)):
-    print(user_id, type(user_id))
     return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id)
 
 

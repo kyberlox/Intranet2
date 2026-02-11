@@ -905,6 +905,7 @@ class Editor:
                             print(user["id"] not in user_id_list)
                             # выписываю
                             art['indirect_data']['users'].remove(user)
+                            print(art['indirect_data']['users'], 'выписали', user["id"])
                     
                     # если ещё нет
                     if not had_find:

@@ -91,13 +91,13 @@ class Editor:
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction",
                             "date_creation", "preview_text"]
-        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        self.notEditble = ["id", "section_id", "date_creation", "content_type", "author", "users"]
         self.pattern = None
 
     async def validate(self):
         if self.art_id is not None and self.section_id is None:
 
-            art = await ArticleModel(id=self.art_id).find_by_id(session=self.session)
+            art = await ArticleModel(id=int(self.art_id)).find_by_id(session=self.session)
             # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
 
             if "section_id" in art:

@@ -891,7 +891,6 @@ class Editor:
                     art['indirect_data']['users'] = []
 
                 users = art['indirect_data']['users']
-
                 if users != []:
                     # проверяю есть ли такой в списке статьи
                     had_find = False
@@ -901,13 +900,14 @@ class Editor:
                             had_find = True
 
                         # если есть в стаье, но нет в user_id_list
-                        elif int(user["id"]) not in user_id_list:
+                        elif user["id"] not in user_id_list:
+                            print(users, user_id_list)
+                            print(user["id"] not in user_id_list)
                             # выписываю
                             art['indirect_data']['users'].remove(user)
-
+                    
                     # если ещё нет
                     if not had_find:
-
                         # хватаю ФИО
                         if "last_name" in user_info:
                             last_name = user_info['last_name']
@@ -942,7 +942,7 @@ class Editor:
                             "photo_file_url": photo_file_url,
                             "position": position
                         }
-
+                        # users.append(usr)
                         # записываю
                         art['indirect_data']['users'].append(usr)
                 else:

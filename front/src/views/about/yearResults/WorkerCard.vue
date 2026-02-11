@@ -1,5 +1,8 @@
 <template>
-<div class="staff__item-wrapper ">
+<h3 class="page__title">
+    {{ pageTitle }}
+</h3>
+<div class="staff__item-wrapper">
     <div class="staff__item col-sm-2"
          v-for="item in workers"
          :key="item.id"
@@ -37,6 +40,10 @@ export default defineComponent({
     props: {
         workers: {
             type: Array<IWorkerOfTheYear>,
+            required: true
+        },
+        pageTitle: {
+            type: String,
             required: true
         }
     },

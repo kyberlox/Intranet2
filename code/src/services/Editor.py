@@ -1121,6 +1121,7 @@ class Editor:
             result.pop('position')
 
         if self.section_id == 31:
+            print(art)
             art['indirect_data']['author'] = {
                 'id': user_id,
                 'fio': result["fio"],

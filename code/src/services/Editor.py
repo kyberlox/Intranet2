@@ -901,7 +901,7 @@ class Editor:
                             had_find = True
 
                         # если есть в стаье, но нет в user_id_list
-                        elif int(user["id"]) not in user_id_list:
+                        elif user["id"] not in user_id_list:
                             print('выписываю')
                             # выписываю
                             art['indirect_data']['users'].remove(user)

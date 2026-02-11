@@ -93,7 +93,7 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         watch([route, noAdminRoots], () => {
-            if (route.fullPath.includes('admin') && noAdminRoots) {
+            if (route.fullPath.includes('admin') && noAdminRoots.value) {
                 useRouter().push({ name: 'home' })
             }
         })

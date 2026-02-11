@@ -975,4 +975,4 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #  # Создаем RedirectResponse
     response = RedirectResponse(url="exhibitions://auth", json=user_info) #, status_code=302
 
-    return res.json
+    return response

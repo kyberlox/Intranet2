@@ -554,7 +554,8 @@
       {
         "name": "Список пользователей",
         "field": "users",
-        "data_type": "str"
+        "data_type": "str",
+        "disabled": true
       },
       {
         "name": "Название статьи",

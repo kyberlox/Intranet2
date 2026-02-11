@@ -902,12 +902,13 @@ class Editor:
 
                         # если есть в стаье, но нет в user_id_list
                         elif int(user["id"]) not in user_id_list:
+                            print('выписываю')
                             # выписываю
                             art['indirect_data']['users'].remove(user)
-
+                    print(user_id, users)
                     # если ещё нет
                     if not had_find:
-
+                        print('еще нет')
                         # хватаю ФИО
                         if "last_name" in user_info:
                             last_name = user_info['last_name']
@@ -942,7 +943,7 @@ class Editor:
                             "photo_file_url": photo_file_url,
                             "position": position
                         }
-
+                        # users.append(usr)
                         # записываю
                         art['indirect_data']['users'].append(usr)
                 else:

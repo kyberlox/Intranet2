@@ -11,6 +11,7 @@
                                      :newFileData="newFileData"
                                      :uploadProgress="uploadProgress"
                                      @handleUserPick="handleUserPick"
+                                     @handleUsersPick="handleUsersPick"
                                      @handleEmitValueChange="handleEmitValueChange"
                                      @reportageChanged="(e) => { newData.reports = e }"
                                      @tagsChanged="(e: number[]) => newData.tags = e"
@@ -274,9 +275,9 @@ export default defineComponent({
         })
     }
 
-    onUnmounted(async () => {
+    onUnmounted(() => {
       if (needToBeDeleted.value && isCreateNew.value) {
-        await Api.delete(`editor/del/${newId.value}`)
+        Api.delete(`editor/del/${newId.value}`)
       }
     })
 

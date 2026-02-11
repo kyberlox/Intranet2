@@ -875,7 +875,7 @@ class Editor:
 
     async def get_users_info(self, user_id_list):
         await self.validate()
-        art = await Article(id=self.art_id).find_by_id(self.session)
+        art = await Article(id=int(self.art_id)).find_by_id(self.session)
 
         if user_id_list == []:
             art['indirect_data']['users'] = []
@@ -991,7 +991,8 @@ class Editor:
 
         return art['indirect_data']['users']
 
-    async def get_user_info(self, user_id: Optional[int] = None):
+    async def get_user_info(self, user_id):
+        from .Peer import Peer
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1035,19 +1036,24 @@ class Editor:
                 "department"
             ]
         }
-        if not user_id:
-            art = await Article(id=self.art_id).find_by_id(self.session)
+        if 'null' in user_id:
+            art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
+            print(art['indirect_data'], 'до')
             if art['section_id'] == 31:
+                await Peer(user_uuid=art['indirect_data']['author']['id']).remove_author_points(session=session, article_id=int(self.art_id))
+                print(art['indirect_data'], 'до')
                 art['indirect_data'].pop('author')
+                print(art['indirect_data'], 'после')
                 # сохранил
                 await Article(id=self.art_id).update(art, self.session)
                 return []
             for art_field in art_fields:
-                art['indirect_data'].pop(art_field)
+                if art_field in art['indirect_data']:
+                    art['indirect_data'].pop(art_field)
             await Article(id=self.art_id).update(art, self.session)
             return []
-
+        # user_id = int(user_id)
         user_info = await User(id=user_id).search_by_id(self.session)
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
@@ -1125,7 +1131,7 @@ class Editor:
 
         #Отправляем баллы пользователю на 31 раздел
         if self.section_id == 31:
-            from .Peer import Peer
+            
             await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
 
         # сохранил
@@ -1174,7 +1180,7 @@ async def get_editor_roots(user_uuid, session):
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-async def set_user_info(section_id: int, art_id: int, user_id: int, session: AsyncSession = Depends(get_async_db)):
+async def set_user_info(section_id: int, art_id: int, user_id, session: AsyncSession = Depends(get_async_db)):
     return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id)
 
 
@@ -1189,7 +1195,7 @@ async def set_user_info(session: AsyncSession = Depends(get_async_db), data=Body
     else:
         return "\'users_id\' is not found"
 
-    return await Editor(art_id=art_id, session=session).get_users_info(user_id_list=users_id)
+    return await Editor(art_id=int(art_id), session=session).get_users_info(user_id_list=users_id)
 
 
 # получить паттерн

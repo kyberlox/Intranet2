@@ -293,6 +293,10 @@ class Peer:
             'description': str(article_id)
         }
         return await self.PeerUserModel.send_auto_points(roots=roots, session=session, data=send_data)
+    
+    async def remove_author_points(self, session, article_id):
+        self.PeerUserModel.uuid = self.user_uuid
+        return await self.PeerUserModel.send_auto_points(session=session, article_id=article_id)
 
 async def get_uuid_from_request(request, session):
     user_id = None

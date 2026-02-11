@@ -870,7 +870,8 @@ class PeerUserModel:
                         from .ArticleModel import ArticleModel
                         if "Отозваны" not in active.active_info:
                             art_inf = await ArticleModel(id=int(active.active_info)).find_by_id(session=session)
-                            description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
+                            # description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
+                            description = f"Баллы за предложенную новость, art_id={active.active_info}"
 
                    
                     info = {
@@ -1043,3 +1044,37 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в send_points_to_employee_of_the_year: {e}")
     
+    async def remove_author_points(self, session, article_id):
+        try:
+            stmt_action = select(self.ActiveUsers).where(
+                self.ActiveUsers.uuid_to == self.uuid,
+                self.ActiveUsers.description == article_id,
+                self.ActiveUsers.valid == 1
+            )
+            result_action = await session.execute(stmt_action)
+            action_info = result_action.scalar_one_or_none()
+            if action_info:
+                action_info.valid = 2
+                # stmt_active_users = update(self.ActiveUsers).where(self.ActiveUsers.id == action_id).values(valid=2)
+                # await session.execute(stmt_update)
+                stmt_peer_history = select(self.PeerHistory).where(self.PeerHistory.active_id == action_info.id)
+                result_history = await session.execute(stmt_peer_history)
+                peer_history_info = result_history.scalar_one_or_none()
+
+                peer_history_info.active_info = f'Отозваны баллы за статью с id: {action_info.description}'
+                
+                stmt_user = select(self.Roots).where(self.Roots.user_uuid == self.uuid)
+                result_user = await session.execute(stmt_user)
+                user_info = result_user.scalar_one_or_none()
+                
+                if user_info:
+                    user_info.user_points = user_info.user_points - active_inform.coast
+                    await session.commit()
+                    return LogsMaker().info_message(f"У пользователя с id = {self.uuid} сняты баллы за новость с id {article_id}")
+                else:
+                    return LogsMaker().info_message(f"Пользователь с id = {self.uuid} не найден")
+            else:
+                return LogsMaker().info_message(f"Назначение баллов за статью с id = {article_id} не найдены/не валидна")
+        except Exception as e:
+            await session.rollback()
+            return LogsMaker().error_message(f"Ошибка в remove_author_points при снятии баллов у пользователя {self.uuid} за статью {article_id}: {e}")

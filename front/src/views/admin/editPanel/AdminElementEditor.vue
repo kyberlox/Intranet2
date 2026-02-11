@@ -242,6 +242,7 @@ export default defineComponent({
     };
 
     const handleUserPick = (userId: number) => {
+      console.log(userId)
       Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
         .then((data) => {
           if (data) {
@@ -250,20 +251,8 @@ export default defineComponent({
         })
     }
 
-    const handleUsersPick = (uuid: string, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
-      if (type == 'add') {
-        if (!users.value.includes(uuid))
-          users.value.push(uuid)
-      }
-      else if (type == 'remove') {
-        console.log(users.value)
-        console.log(usersList.value)
-        users.value.length = 0
-        usersList.value.map((e) => {
-          if (Number(e.id) !== Number(uuid)) {
-            users.value.push(String(e.id))
-          }
-        })
+    const handleUsersPick = (uuid: string | number, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
+      const updateUsersInfo = () => {
         const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
         Api.post(`editor/get_users_info`, usersBody)
           .then((data) => {
@@ -272,15 +261,24 @@ export default defineComponent({
             }
           })
       }
-      else
-        if (type == 'fetchRemove') {
-          Api.get(`editor/get_user_info/${props.id}/${props.elementId}/null`)
-            .then((data) => {
-              if (data) {
-                reloadElementData(false)
-              }
-            })
+      if (type == 'add') {
+        if (!users.value.includes(String(uuid))) {
+          users.value.push(String(uuid));
+          updateUsersInfo();
         }
+      }
+      else if (type == 'remove') {
+        users.value = users.value.filter((e) => e !== uuid);
+        updateUsersInfo();
+      }
+      else if (type == 'fetchRemove') {
+        Api.get(`editor/get_user_info/${props.id}/${props.elementId}/null`)
+          .then((data) => {
+            if (data) {
+              reloadElementData(false)
+            }
+          })
+      }
     }
 
     onUnmounted(() => {

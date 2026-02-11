@@ -547,6 +547,8 @@ const router = createRouter({
       name: 'admin',
       component: () => import('@/views/admin/components/AdminSidebar.vue'),
       beforeEnter: (to, from) => {
+        
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -557,6 +559,7 @@ const router = createRouter({
       name: 'adminBlockInner',
       component: () => import('@/views/admin/editPanel/AdminElements.vue'),
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -569,6 +572,7 @@ const router = createRouter({
       component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -583,6 +587,7 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]
       },
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -596,6 +601,7 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -609,6 +615,7 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -622,6 +629,7 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -635,6 +643,7 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }
@@ -648,6 +657,7 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
       beforeEnter: (to, from) => {
+      console.log(useUserData().getNoRoots);
       if (useUserData().getNoRoots) {
         return {name: 'home'}
       }

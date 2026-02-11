@@ -11,8 +11,8 @@
         <!-- Для того чтобы вписать данные -->
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
                              :type="item.data_type"
-                             @userPicked="(e) => $emit('handleUserPick', e)"
-                             @usersPicked="(e) => $emit('handleUsersPick', e)" />
+                             @handleUserPick="(e) => $emit('handleUserPick', e)"
+                             @handleUsersPick="(e) => $emit('handleUsersPick', e)" />
 
         <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
         <AdminUsersList v-if="item.field == 'users' || item.field == 'author'"

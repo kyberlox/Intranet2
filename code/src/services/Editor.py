@@ -1170,11 +1170,11 @@ async def get_editor_roots(user_uuid, session):
     editor_roots = await roots_model.token_processing_for_editor(all_roots)
     # print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В EDITOR', user_uuid)
 
-    if user_uuid is None:
-        print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-        editor_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True, 'GPT_gen_access': True}
-        # editor_roots = {}
-        print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+    # if user_uuid is None:
+    #     print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+    #     editor_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True, 'GPT_gen_access': True}
+    #     # editor_roots = {}
+    #     print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     # 'PeerAdmin': True, 'PeerModer': True, 'PeerCurator': [], 
     return editor_roots
 
@@ -1227,12 +1227,9 @@ async def get_sections_list(request: Request, session: AsyncSession = Depends(ge
     # user_uuid = 261
     editor_roots = await get_editor_roots(user_uuid, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
-    print(editor_roots, 'мои права')
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
-        print('я одмин')
         return await Editor(session=session).get_sections_list()
     elif "EditorModer" in editor_roots.keys() and editor_roots["EditorModer"] != []:
-        print('я не одмин')
         sections = await Editor(session=session).get_sections_list()
         result = [section for section in sections if section['id'] in editor_roots["EditorModer"]]
         return result

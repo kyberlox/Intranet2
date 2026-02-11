@@ -27,7 +27,9 @@ export default defineComponent({
         }
     },
     setup() {
+
         const formatUsers = (usersArr: IUserList[]) => {
+            if (!usersArr.length) return;
             const formatUsers: IUserSearch[] = [];
             usersArr.map((e) => {
                 formatUsers.push({ name: e.fio ? e.fio : e.name, user_position: e.position, image: e.photo_file_url, id: e.id })

@@ -30,7 +30,7 @@
     </div>
     <div v-if="activeSection && !isLoading"
          class="admin-panel__content admin-panel__content__add-user-btn">
-        <AdminEditUserSearch @userPicked="addRootToUser" />
+        <AdminEditUserSearch @handleUserPick="addRootToUser" />
         <AdminUsersList :users="activeSectionEditors"
                         @removeUser="(id: number) => removeUsersRoot(id)" />
     </div>
@@ -48,7 +48,7 @@ import AdminSidebar from '../components/AdminSidebar.vue';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import Api from '@/utils/Api';
 import AdminEditUserSearch from '../components/inputFields/AdminEditUserSearch.vue';
-import AdminUsersList from '../components/inputFields/AdminUsersList.vue';
+import AdminUsersList, { type IUserList } from '../components/inputFields/AdminUsersList.vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useUserData } from '@/stores/userData';
 
@@ -64,7 +64,7 @@ export default defineComponent({
     setup() {
         const sections = computed(() => useAdminData().getSections)
         const activeSection = ref();
-        const activeSectionEditors = ref([]);
+        const activeSectionEditors = ref<IUserList[]>([]);
         const isLoading = ref(false);
         const gptRoot = computed(() => useUserData().getUserRoots.GPT_gen_access || useUserData().getUserRoots.EditorAdmin);
         const newSections = ref<{ id: string | number; name: string; }[]>([]);
@@ -94,7 +94,7 @@ export default defineComponent({
             }
             else
                 Api.get(`roots/get_editors_list/${activeSection.value.id}`)
-                    .then((data) => activeSectionEditors.value = data)
+                    .then((data) => Array.isArray(data) ? activeSectionEditors.value = data : activeSectionEditors.value = [])
                     .finally(() => isLoading.value = false)
         }
 

@@ -1035,7 +1035,7 @@ class Editor:
                 "department"
             ]
         }
-        if user_id == 0:
+        if not user_id:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
             if art['section_id'] == 31:
@@ -1175,6 +1175,7 @@ async def get_editor_roots(user_uuid, session):
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 async def set_user_info(section_id: int, art_id: int, user_id, session: AsyncSession = Depends(get_async_db)):
+    print(user_id, type(user_id))
     return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id)
 
 

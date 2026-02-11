@@ -973,6 +973,12 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     # redirect_url = f"http://exhibitions.kuberlox.ru/login"
     #  # Создаем RedirectResponse
-    response = RedirectResponse(url="exhibitions://auth", json=user_info, status_code=302)
+    # response = RedirectResponse(url="exhibitions://auth", json=user_info, status_code=302)
+
+    user_info_json = json.dumps(user_info, ensure_ascii=False)
+    
+    # Создаем RedirectResponse на deep link с передачей данных
+    redirect_url = f"exhibitions://auth?data={user_info_json}"
+    response = RedirectResponse(url=redirect_url, status_code=302)
 
     return response

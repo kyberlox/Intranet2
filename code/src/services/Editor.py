@@ -1041,7 +1041,9 @@ class Editor:
             art_fields = fields_to_return[str(art['section_id'])]
             if art['section_id'] == 31:
                 await Peer(user_uuid=art['indirect_data']['author']['id']).remove_author_points(session=session, article_id=int(self.art_id))
+                print(art['indirect_data'], 'до')
                 art['indirect_data'].pop('author')
+                print(art['indirect_data'], 'после')
                 # сохранил
                 await Article(id=self.art_id).update(art, self.session)
                 return []

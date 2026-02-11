@@ -870,7 +870,8 @@ class PeerUserModel:
                         from .ArticleModel import ArticleModel
                         if "Отозваны" not in active.active_info:
                             art_inf = await ArticleModel(id=int(active.active_info)).find_by_id(session=session)
-                            description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
+                            # description = f"Баллы за предложенную новость, art_id={art_inf['id']}"
+                            description = f"Баллы за предложенную новость, art_id={active.active_info}"
 
                    
                     info = {

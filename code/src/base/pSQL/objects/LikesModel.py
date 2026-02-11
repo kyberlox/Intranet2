@@ -155,7 +155,7 @@ class LikesModel:
             return self.reactions
 
         except Exception as e:
-            return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}: {e}")
+            return LogsMaker().error_message(f"Ошибка при выводе лайка статьи с id = {self.art_id}, пользователь {self.user_id}: {e}")
 
 
     async def get_likes_count(self, session) -> int:

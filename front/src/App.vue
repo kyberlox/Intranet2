@@ -68,22 +68,26 @@ export default defineComponent({
         const isLogin = computed(() => userData.getIsLogin);
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            if (isLogin.value) {
-                prefetchSection('score');
-                prefetchSection('calendar');
-
-                if (userData.getAuthKey) {
-                    prefetchSection('user');
-                }
-                const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
-                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
-
-                if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
-                    prefetchSection('blogs')
-                } else if (factoryGuidRoutes.includes(String(route.name))) {
-                    prefetchSection('factoryGuid')
-                }
+            if (userData.getMyId == 0) {
+                userData.setLogin(false);
             }
+            else
+                if (isLogin.value) {
+                    prefetchSection('score');
+                    prefetchSection('calendar');
+
+                    if (userData.getAuthKey) {
+                        prefetchSection('user');
+                    }
+                    const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
+                    const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
+
+                    if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
+                        prefetchSection('blogs')
+                    } else if (factoryGuidRoutes.includes(String(route.name))) {
+                        prefetchSection('factoryGuid')
+                    }
+                }
         }, { immediate: true, deep: true })
 
         onMounted(() => {

@@ -11,6 +11,7 @@
                                      :newFileData="newFileData"
                                      :uploadProgress="uploadProgress"
                                      @handleUserPick="handleUserPick"
+                                     @handleUsersPick="handleUsersPick"
                                      @handleEmitValueChange="handleEmitValueChange"
                                      @reportageChanged="(e) => { newData.reports = e }"
                                      @tagsChanged="(e: number[]) => newData.tags = e"
@@ -113,7 +114,6 @@ export default defineComponent({
     const currentItem: Ref<IPostInner> = ref({ id: 0 });
     const newData: Ref<IPostInner> = ref({ id: Number(newId.value) });
     const newFileData = ref<INewFileData>({});
-    const needToBeDeleted = ref(true);
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
     const usersList = ref<IUserList[]>([]);
@@ -176,7 +176,6 @@ export default defineComponent({
     }
 
     const applyNewData = () => {
-      needToBeDeleted.value = false;
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
 
@@ -243,6 +242,7 @@ export default defineComponent({
     };
 
     const handleUserPick = (userId: number) => {
+      console.log(userId)
       Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
         .then((data) => {
           if (data) {
@@ -251,32 +251,39 @@ export default defineComponent({
         })
     }
 
-    const handleUsersPick = (uuid: string, type: ('add' | 'remove') = 'add') => {
+    const handleUsersPick = (uuid: string | number, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
+      const updateUsersInfo = () => {
+        const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
+        Api.post(`editor/get_users_info`, usersBody)
+          .then((data) => {
+            if (data) {
+              reloadElementData(false)
+            }
+          })
+      }
       if (type == 'add') {
-        if (!users.value.includes(uuid))
-          users.value.push(uuid)
+        if (!users.value.includes(String(uuid))) {
+          users.value.push(String(uuid));
+          updateUsersInfo();
+        }
       }
-      else {
-        users.value.length = 0
-        usersList.value.map((e) => {
-          if (Number(e.id) !== Number(uuid)) {
-            users.value.push(String(e.id))
-          }
-        })
+      else if (type == 'remove') {
+        users.value = users.value.filter((e) => e !== uuid);
+        updateUsersInfo();
       }
-
-      const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
-      Api.post(`editor/get_users_info`, usersBody)
-        .then((data) => {
-          if (data) {
-            reloadElementData(false)
-          }
-        })
+      else if (type == 'fetchRemove') {
+        Api.get(`editor/get_user_info/${props.id}/${props.elementId}/null`)
+          .then((data) => {
+            if (data) {
+              reloadElementData(false)
+            }
+          })
+      }
     }
 
-    onUnmounted(async () => {
-      if (needToBeDeleted.value && isCreateNew.value) {
-        await Api.delete(`editor/del/${newId.value}`)
+    onUnmounted(() => {
+      if (!newData.value.name && !newData.value.content_text && newData.value.content_text?.length == 0 && !newData.value.videos_embed?.length && !newData.value.videos_native?.length && isCreateNew.value) {
+        Api.delete(`editor/del/${newId.value}`)
       }
     })
 

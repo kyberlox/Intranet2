@@ -55,7 +55,7 @@ export default defineComponent({
         }
     },
     name: 'adminEditUserSearch',
-    emits: ['usersPicked', 'userPicked'],
+    emits: ['usersPicked', 'userPicked', 'handleUserPick', 'handleUsersPick'],
     setup(props, { emit }) {
         const pickedUser = ref()
         const usersList = ref([])
@@ -69,7 +69,7 @@ export default defineComponent({
         const handleUserPick = (user: IUserSearch) => {
             pickedUser.value = user;
             usersList.value = usersList.value.filter((e: IUserSearch) => e.id == user.id);
-            emit((props.type == 'search_by_uuids' ? 'usersPicked' : 'userPicked'), user.id);
+            emit((props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick'), user.id);
             pickedUser.value = false;
             showSearchModal.value = false;
             usersList.value.length = 0;

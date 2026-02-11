@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, \
     File
 from fastapi.responses import JSONResponse
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.ArticleModel import ArticleModel
@@ -91,13 +91,13 @@ class Editor:
 
         self.fundamental = ["id, section_id", "name", "content_text", "content_type", "active", "date_publiction",
                             "date_creation", "preview_text"]
-        self.notEditble = ["id", "section_id", "date_creation", "content_type"]
+        self.notEditble = ["id", "section_id", "date_creation", "content_type", "author", "users"]
         self.pattern = None
 
     async def validate(self):
         if self.art_id is not None and self.section_id is None:
 
-            art = await ArticleModel(id=self.art_id).find_by_id(session=self.session)
+            art = await ArticleModel(id=int(self.art_id)).find_by_id(session=self.session)
             # art = asyncio.run(ArticleModel(id = self.art_id).find_by_id(session=self.session))
 
             if "section_id" in art:
@@ -875,7 +875,7 @@ class Editor:
 
     async def get_users_info(self, user_id_list):
         await self.validate()
-        art = await Article(id=self.art_id).find_by_id(self.session)
+        art = await Article(id=int(self.art_id)).find_by_id(self.session)
 
         if user_id_list == []:
             art['indirect_data']['users'] = []
@@ -992,6 +992,7 @@ class Editor:
         return art['indirect_data']['users']
 
     async def get_user_info(self, user_id):
+        from .Peer import Peer
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1011,6 +1012,15 @@ class Editor:
                 "work_position",
                 "photo_file_url"
             ],
+            "31": [
+                "id",
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department",
+                "photo_file_url"
+            ],
             "172": [
                 "name",
                 "second_name",
@@ -1026,6 +1036,24 @@ class Editor:
                 "department"
             ]
         }
+        if 'null' in user_id:
+            art = await Article(id=int(self.art_id)).find_by_id(self.session)
+            art_fields = fields_to_return[str(art['section_id'])]
+            print(art['indirect_data'], 'до')
+            if art['section_id'] == 31:
+                await Peer(user_uuid=int(art['indirect_data']['author']['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
+                print(art['indirect_data'], 'до')
+                art['indirect_data'].pop('author')
+                print(art['indirect_data'], 'после')
+                # сохранил
+                await Article(id=self.art_id).update(art, self.session)
+                return []
+            for art_field in art_fields:
+                if art_field in art['indirect_data']:
+                    art['indirect_data'].pop(art_field)
+            await Article(id=self.art_id).update(art, self.session)
+            return []
+        # user_id = int(user_id)
         user_info = await User(id=user_id).search_by_id(self.session)
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
@@ -1085,15 +1113,25 @@ class Editor:
             result.pop("department")
             result.pop('position')
 
-        # вписываю в неё эти значения
-        for key in result.keys():
-            if art['indirect_data'] is None:
-                art['indirect_data'] = dict()
-            art['indirect_data'][key] = result[key]
+        if self.section_id == 31:
+            art['indirect_data']['author'] = {
+                'id': user_id,
+                'fio': result["fio"],
+                'position': result["position"],
+                'photo_file_url': result["photo_file_url"]
+            }
+        else:
+            # вписываю в неё эти значения
+            for key in result.keys():
+                if art['indirect_data'] is None:
+                    art['indirect_data'] = dict()
+                art['indirect_data'][key] = result[key]
+
+        
 
         #Отправляем баллы пользователю на 31 раздел
         if self.section_id == 31:
-            from .Peer import Peer
+            
             await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
 
         # сохранил
@@ -1132,17 +1170,17 @@ async def get_editor_roots(user_uuid, session):
     editor_roots = await roots_model.token_processing_for_editor(all_roots)
     # print('ПИШЕМ УСЛОВИЕ ДЛЯ ИГОРЯ В EDITOR', user_uuid)
 
-    # if user_uuid is None:
-    #     print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
-    #     editor_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'EditorModer': [31, 33], 'VisionAdmin': True, 'GPT_gen_access': True}
-    #     # editor_roots = {}
-    #     print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+    if user_uuid is None:
+        print('ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
+        editor_roots = {'PeerAdmin': True, 'EditorAdmin': True, 'VisionAdmin': True, 'GPT_gen_access': True}
+        # editor_roots = {}
+        print(editor_roots, 'ФОРМИРУЕМ ЕМУ СЛОВАРЬ КОГСТЫЛЬ')
     # 'PeerAdmin': True, 'PeerModer': True, 'PeerCurator': [], 
     return editor_roots
 
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-async def set_user_info(section_id: int, art_id: int, user_id: int, session: AsyncSession = Depends(get_async_db)):
+async def set_user_info(section_id: int, art_id: int, user_id, session: AsyncSession = Depends(get_async_db)):
     return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id)
 
 
@@ -1157,7 +1195,7 @@ async def set_user_info(session: AsyncSession = Depends(get_async_db), data=Body
     else:
         return "\'users_id\' is not found"
 
-    return await Editor(art_id=art_id, session=session).get_users_info(user_id_list=users_id)
+    return await Editor(art_id=int(art_id), session=session).get_users_info(user_id_list=users_id)
 
 
 # получить паттерн

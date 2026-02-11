@@ -375,7 +375,7 @@ class ActiveUsersModel:
                     elif row[-1] == 5:
                         from .ArticleModel import ArticleModel
                         art_inf = await ArticleModel(id=int(row.description)).find_by_id(session=session)
-                        description = f"Баллы за предложенную новость: {art_inf['name']}"
+                        description = f"Баллы за предложенную новость: {art_inf['name']}" if 'name' in art_inf else f"Баллы за предложенную новость: Новость удалена!" 
 
 
                         

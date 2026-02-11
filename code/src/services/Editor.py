@@ -1121,13 +1121,22 @@ class Editor:
             result.pop('position')
 
         if self.section_id == 31:
-            print(art)
-            art['indirect_data']['author'] = {
-                'id': user_id,
-                'fio': result["fio"],
-                'position': result["position"],
-                'photo_file_url': result["photo_file_url"]
-            }
+            if not art['indirect_data']:
+                art['indirect_data'] = {
+                    'author': {
+                        'id': user_id,
+                        'fio': result["fio"],
+                        'position': result["position"],
+                        'photo_file_url': result["photo_file_url"]
+                    }
+                }
+            else:
+                art['indirect_data']['author'] = {
+                    'id': user_id,
+                    'fio': result["fio"],
+                    'position': result["position"],
+                    'photo_file_url': result["photo_file_url"]
+                }
         else:
             # вписываю в неё эти значения
             for key in result.keys():

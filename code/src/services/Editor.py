@@ -992,6 +992,7 @@ class Editor:
         return art['indirect_data']['users']
 
     async def get_user_info(self, user_id):
+        from .Peer import Peer
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1127,7 +1128,7 @@ class Editor:
 
         #Отправляем баллы пользователю на 31 раздел
         if self.section_id == 31:
-            from .Peer import Peer
+            
             await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
 
         # сохранил

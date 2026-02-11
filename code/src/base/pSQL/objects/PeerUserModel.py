@@ -1048,7 +1048,7 @@ class PeerUserModel:
         try:
             stmt_action = select(self.ActiveUsers).where(
                 self.ActiveUsers.uuid_to == self.uuid,
-                self.ActiveUsers.description == article_id,
+                self.ActiveUsers.description == str(article_id),
                 self.ActiveUsers.valid == 1
             )
             result_action = await session.execute(stmt_action)

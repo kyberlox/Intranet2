@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie, UploadFile, \
     File
 from fastapi.responses import JSONResponse
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.ArticleModel import ArticleModel
@@ -991,7 +991,7 @@ class Editor:
 
         return art['indirect_data']['users']
 
-    async def get_user_info(self, user_id):
+    async def get_user_info(self, user_id: Optional[int] = None):
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1035,6 +1035,19 @@ class Editor:
                 "department"
             ]
         }
+        if not user_id:
+            art = await Article(id=self.art_id).find_by_id(self.session)
+            art_fields = fields_to_return[str(art['section_id'])]
+            if art['section_id'] == 31:
+                art['indirect_data'].pop('author')
+                # сохранил
+                await Article(id=self.art_id).update(art, self.session)
+                return []
+            for art_field in art_fields:
+                art['indirect_data'].pop(art_field)
+            await Article(id=self.art_id).update(art, self.session)
+            return []
+
         user_info = await User(id=user_id).search_by_id(self.session)
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]

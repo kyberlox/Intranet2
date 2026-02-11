@@ -922,4 +922,57 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     return res.json
 
+@auth_router.get("/exhibition_app", tags=["Авторизация"])
+async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
+    import httpx
+    #проверка на авторизацию
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to authenticate with Bitrix24"
+        )
+    
+    user_id = request.cookies.get('user_id')
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    user_deps = await User(id=int(user_id)).search_by_id(session=sess)
 
+    
+    fio = {
+      "last_name": session_data['user_info']['LAST_NAME'],
+      "first_name": session_data['user_info']['NAME'], 
+      "middle_name": session_data['user_info']['SECOND_NAME']
+    }
+
+    department=""
+    for dep in user_deps['indirect_data']['uf_department']:
+        department += dep
+    
+    user_info = {
+        'id': session_data['user_id'],
+        'session_id': session_data["session_id"],
+        'fio': fio,
+        'department': department,
+        'position' : session_data['user_info']['WORK_POSITION']
+    }
+
+    print(user_info)
+    
+    res = requests.post(url='http://exhibitions.kyberlox.ru/login', json=user_info)
+    print(res.status_code)
+
+    if res.status_code != 200:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST ,
+            detail=f"Ошибка перехода на контакты с выставок: {res.text}"
+        )
+
+
+    # redirect_url = f"http://exhibitions.kuberlox.ru/login"
+    #  # Создаем RedirectResponse
+    response = RedirectResponse(url="exhibitions://auth", json=user_info) #, status_code=302
+
+    return res.json

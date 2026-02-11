@@ -891,7 +891,6 @@ class Editor:
                     art['indirect_data']['users'] = []
 
                 users = art['indirect_data']['users']
-                print(user_id_list, 'приходит')
                 if users != []:
                     # проверяю есть ли такой в списке статьи
                     had_find = False
@@ -902,13 +901,11 @@ class Editor:
 
                         # если есть в стаье, но нет в user_id_list
                         elif user["id"] not in user_id_list:
-                            print('выписываю')
                             # выписываю
                             art['indirect_data']['users'].remove(user)
-                    print(user_id, users)
+                    
                     # если ещё нет
                     if not had_find:
-                        print('еще нет')
                         # хватаю ФИО
                         if "last_name" in user_info:
                             last_name = user_info['last_name']

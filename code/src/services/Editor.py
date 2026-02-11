@@ -891,7 +891,7 @@ class Editor:
                     art['indirect_data']['users'] = []
 
                 users = art['indirect_data']['users']
-
+                print(user_id_list, 'приходит')
                 if users != []:
                     # проверяю есть ли такой в списке статьи
                     had_find = False

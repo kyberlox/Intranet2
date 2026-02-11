@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from "vue";
-import { RouterView, useRoute } from "vue-router";
+import { RouterView, useRoute, useRouter } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
@@ -66,6 +66,8 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
+        const noAdminRoots = computed(() => userData.getNoRoots);
+
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (userData.getMyId == 0) {
@@ -89,6 +91,12 @@ export default defineComponent({
                     }
                 }
         }, { immediate: true, deep: true })
+
+        watch([route, noAdminRoots], () => {
+            if (route.fullPath.includes('admin') && noAdminRoots) {
+                useRouter().push({ name: 'home' })
+            }
+        })
 
         onMounted(() => {
             userData.initKeyFromStorage();

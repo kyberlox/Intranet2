@@ -42,14 +42,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import { useAdminData } from '@/stores/adminData';
 import { featureFlags } from '@/assets/static/featureFlags';
-import router from '@/router';
 
 type AdminSection = {
     name: string;
@@ -135,12 +134,6 @@ export default defineComponent({
                     name: String(section.id)
                 }
         }
-
-        onMounted(() => {
-            if (useUserData().getNoRoots) {
-                console.log('noroots')
-            }
-        })
 
         return {
             myId,

@@ -558,12 +558,7 @@ const router = createRouter({
       path: '/admin/:id',
       name: 'adminBlockInner',
       component: () => import('@/views/admin/editPanel/AdminElements.vue'),
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
       props: (route) => ({ id: route.params.id })
     },
  {
@@ -571,12 +566,7 @@ const router = createRouter({
       name: 'adminElementInnerAdd',
       component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     {
       path: '/admin/:id/:elementId',
@@ -586,12 +576,7 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]
       },
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     {
       path: '/admin/visibility',
@@ -600,12 +585,7 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     {
       path: '/admin/scoreAdmin',
@@ -614,12 +594,7 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     {
       path: '/admin/pointsmoderation',
@@ -628,12 +603,7 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     {
       path: '/admin/curatorhistory',
@@ -642,12 +612,7 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     {
       path: '/admin/roots',
@@ -656,12 +621,7 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
-      beforeEnter: (to, from) => {
-      console.log(useUserData().getNoRoots);
-      if (useUserData().getNoRoots) {
-        return {name: 'home'}
-      }
-      },
+
     },
     // cтраница авторизации через б24
     {

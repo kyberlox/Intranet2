@@ -157,7 +157,7 @@ export default defineComponent({
               isCreateNew.value = false;
               newElementSkeleton.value = data.fields;
             }
-            users.value = findValInObject(data, 'users').map((e: IUserList) => e.id);
+            users.value = findValInObject(data, 'users')?.map((e: IUserList) => e.id) || [];
             // для файлов
             newFileData.value = data.files;
             newData.value.videos_native = data.files.videos_native;

@@ -138,6 +138,12 @@ export default defineComponent({
                 }
         }
 
+        onMounted(() => {
+            if (useUserData().getNoRoots) {
+                console.log('noroots')
+            }
+        })
+
         return {
             myId,
             sections,

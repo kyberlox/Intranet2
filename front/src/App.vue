@@ -64,6 +64,7 @@ export default defineComponent({
     },
     setup() {
         const route = useRoute();
+        const router = useRouter();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
         const noAdminRoots = computed(() => userData.getNoRoots);
@@ -93,10 +94,14 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         watch([route, noAdminRoots], () => {
+            console.log(route);
+            console.log(noAdminRoots.value);
+
+
             if (route.fullPath.includes('admin') && noAdminRoots.value) {
-                useRouter().push({ name: 'home' })
+                router.push({ name: 'home' })
             }
-        })
+        }, { immediate: true, deep: true })
 
         onMounted(() => {
             userData.initKeyFromStorage();

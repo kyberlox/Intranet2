@@ -85,7 +85,7 @@ export default defineComponent({
                             actualYears.value.push(item.indirect_data.year)
                         }
                     })
-                    currentYear.value = actualYears.value.sort((a, b) => b - a)[0];
+                    currentYear.value = actualYears.value.sort((a, b) => Number(b) - Number(a))[0];
                 })
                 .finally(() => {
                     initWorkers();

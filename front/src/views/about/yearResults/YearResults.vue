@@ -33,7 +33,8 @@
                   class="year">/ {{ currentYear }}</span>
         </h2>
 
-        <div v-for="award in awardTypes"
+        <div class="mb-5"
+             v-for="award in awardTypes"
              :key="award">
             <div v-if="awardFilter(allTimeAwards, award).length">
                 <WorkerCard :pageTitle="award"
@@ -104,12 +105,12 @@ export default defineComponent({
                         || !actualYears.value.includes(item.indirect_data.year))) {
                     actualYears.value.push(item.indirect_data.year)
 
-                    if (item.indirect_data?.award
-                        && !awardTypes.value.includes(item.indirect_data?.award)
-                        && currentYear.value == item.indirect_data?.year
-                        && activeLocation.value == item.indirect_data.location) {
-                        awardTypes.value.push(item.indirect_data.award)
-                    }
+                }
+                if (item.indirect_data?.award
+                    && !awardTypes.value.includes(item.indirect_data?.award)
+                    && currentYear.value == item.indirect_data?.year
+                    && activeLocation.value == item.indirect_data.location) {
+                    awardTypes.value.push(item.indirect_data.award)
                 }
             })
             actualYears.value.sort((a: string, b: string) => Number(a) - Number(b));

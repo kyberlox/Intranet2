@@ -474,9 +474,11 @@ async def user_history(request: Request, session: AsyncSession = Depends(get_asy
 
 @peer_router.put("/send_points")
 async def send_points(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
+    from .SendMail import SendEmail
     user_uuid = await get_uuid_from_request(request, session)
-    return await Peer(user_uuid=user_uuid).send_points(data=data,
-                                                       session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
+    email_data = {'sender': 'zelenina.a.a@emk.ru'}
+    SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
+    return await Peer(user_uuid=user_uuid).send_points(data=data, session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 
 
 @peer_router.get("/get_admins_list")

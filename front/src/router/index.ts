@@ -8,22 +8,21 @@ const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 const checkIsAdmin = () => {
   const userData = useUserData();
   if(!userData.getIsLogin) {
-  console.log('ne zalog');
-    return false
-  };
-    console.log('zalog');
-    return Api.get('roots/get_root_token_by_uuid')
+    return false;
+  } else
+  if(!userData.getNoRoots){
+    return true
+  } else
+   Api.get('roots/get_root_token_by_uuid')
       .then((res)=>{
          if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
           useUserData().setUserRoots(res);
-          console.log('est prava');
           return true;
         }
         else{
-          console.log('net prav');
-          return false
+          return false;
           }
-      })  
+      })
 }
 
 const router = createRouter({
@@ -571,10 +570,8 @@ const router = createRouter({
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
         if(isAdmin){
-          console.log('захожу')
           next()
         } else {
-          console.log('возвращаюсь')
           next({name: 'home'})
         };
     },
@@ -583,13 +580,29 @@ const router = createRouter({
       path: '/admin/:id',
       name: 'adminBlockInner',
       component: () => import('@/views/admin/editPanel/AdminElements.vue'),
-      props: (route) => ({ id: route.params.id })
+      props: (route) => ({ id: route.params.id }),
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
     },
  {
       path: '/admin/:id/new',
       name: 'adminElementInnerAdd',
       component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     {
@@ -600,6 +613,14 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'adminBlockInner' }]
       },
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     {
@@ -609,6 +630,14 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     {
@@ -618,6 +647,14 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     {
@@ -627,6 +664,14 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     {
@@ -636,6 +681,14 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     {
@@ -645,6 +698,14 @@ const router = createRouter({
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       },
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
+        if(isAdmin){
+          next()
+        } else {
+          next({name: 'home'})
+        };
+    },
 
     },
     // cтраница авторизации через б24

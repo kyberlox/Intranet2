@@ -573,11 +573,9 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/admin/components/AdminSidebar.vue'),
-      beforeEnter: (to, from, next) => {
-        if(checkIsAdmin()){
-        next();
-        }
-        else next({name: 'home'})
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await checkIsAdmin();
+        if(isAdmin){next()} else next({name: 'home'});
     },
     },
     {

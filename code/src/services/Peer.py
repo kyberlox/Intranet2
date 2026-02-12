@@ -475,8 +475,6 @@ async def user_history(request: Request, session: AsyncSession = Depends(get_asy
 @peer_router.put("/send_points")
 async def send_points(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
     user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
     return await Peer(user_uuid=user_uuid).send_points(data=data,
                                                        session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 

@@ -18,9 +18,14 @@ const checkIsAdmin = () => {
       })
       .finally(()=>{
         if(userData.getNoRoots){
+          console.log('netpraf');
+          
           return false
         }
-      else return true})
+      else {
+        console.log('est prava')
+        return true
+      }})
       
   }
   else return false;

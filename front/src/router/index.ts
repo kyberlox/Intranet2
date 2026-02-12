@@ -577,6 +577,7 @@ const router = createRouter({
         if(!checkIsAdmin()){
           return {name: 'home'}
         }
+        return true
     },
     },
     {

@@ -80,12 +80,12 @@ export default defineComponent({
                         if (item.indirect_data?.location && !workersLocations.value.includes(item.indirect_data?.location)) {
                             workersLocations.value.push(item.indirect_data.location);
                         }
-                        activeLocation.value = workersLocations.value[workersLocations.value.length - 1];
+                        activeLocation.value = workersLocations.value[0];
                         if (item.indirect_data?.year && !actualYears.value.includes(item.indirect_data.year)) {
                             actualYears.value.push(item.indirect_data.year)
                         }
-                        currentYear.value = actualYears.value[actualYears.value.length - 1];
                     })
+                    currentYear.value = actualYears.value.sort((a, b) => Number(b) - Number(a))[0];
                 })
                 .finally(() => {
                     initWorkers();
@@ -93,20 +93,29 @@ export default defineComponent({
                 })
         })
 
-        const initWorkers = () => {
+        const initWorkers = (changeYear: boolean = false) => {
             chosenYearAwards.value.length = 0;
+            awardTypes.value.length = 0
             actualYears.value.length = 0;
             allTimeAwards.value.map(item => {
                 if (item.indirect_data?.location == activeLocation.value
                     && item.indirect_data
-                    && (actualYears.value.length == 0 || !actualYears.value.includes(item.indirect_data.year))) {
+                    && (actualYears.value.length == 0
+                        || !actualYears.value.includes(item.indirect_data.year))) {
                     actualYears.value.push(item.indirect_data.year)
-                }
-                if (item.indirect_data?.award && !awardTypes.value.includes(item.indirect_data?.award)) {
-                    awardTypes.value.push(item.indirect_data.award)
+
+                    if (item.indirect_data?.award
+                        && !awardTypes.value.includes(item.indirect_data?.award)
+                        && currentYear.value == item.indirect_data?.year
+                        && activeLocation.value == item.indirect_data.location) {
+                        awardTypes.value.push(item.indirect_data.award)
+                    }
                 }
             })
-            actualYears.value.sort((a: string, b: string) => Number(a) - Number(b))
+            actualYears.value.sort((a: string, b: string) => Number(a) - Number(b));
+            if (!actualYears.value.includes(currentYear.value) && !changeYear) {
+                currentYear.value = actualYears.value[actualYears.value.length - 1]
+            }
         }
 
         watch((activeLocation), () => {
@@ -114,7 +123,7 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         watch((currentYear), () => {
-            initWorkers();
+            initWorkers(true);
         }, { immediate: true, deep: true })
 
         return {
@@ -126,8 +135,9 @@ export default defineComponent({
             workersLocations,
             awardTypes,
             allTimeAwards,
-            awardFilter: ((items: IWorkerOfTheYear[], award: string) => items.filter((e) => e.indirect_data?.award == award
-                && e.indirect_data.year == currentYear.value))
+            awardFilter: ((items: IWorkerOfTheYear[], award: string) =>
+                items.filter((e) => e.indirect_data?.award == award
+                    && e.indirect_data.year == currentYear.value && activeLocation.value == e.indirect_data.location))
         };
     },
 });

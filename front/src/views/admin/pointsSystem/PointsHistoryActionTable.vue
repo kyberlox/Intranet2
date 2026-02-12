@@ -116,8 +116,6 @@
                                 <span> Отменить</span>
                             </div>
                         </td>
-
-
                     </tr>
                 </tbody>
                 <tfoot class="moderator-panel__tfoot"></tfoot>

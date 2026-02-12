@@ -20,7 +20,9 @@ export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' |
                 })
                 Api.get('roots/get_root_token_by_uuid')
                 .then((res)=>{
+                    if(res){
                     useUserData().setUserRoots(res);
+                    }
                 })
             break;
         case 'factoryGuid':

@@ -10,7 +10,9 @@ const checkIsAdmin = () => {
   if(userData.getIsLogin){
      Api.get('roots/get_root_token_by_uuid')
       .then((res)=>{
-      useUserData().setUserRoots(res);
+        if(res){
+        useUserData().setUserRoots(res);
+      }
       })
       .finally(()=>{
         if(userData.getNoRoots){

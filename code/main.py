@@ -183,7 +183,10 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
             #         status_code = status.HTTP_401_UNAUTHORIZED,
             #         content = log.warning_message(message="Error when trying to follow the link without authorization")
             #     )
-
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        user_id = request.headers.get("user_id")
+    print(user_id, 'че приходит на пользователя')
 
 
     # Проверяем, является ли текущий путь публичным

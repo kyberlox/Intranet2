@@ -41,18 +41,6 @@ export const useUserData = defineStore('userData', {
             this.user = userData;
         },
         setUserRoots(data: IRoots){
-        if(data == null){
-            this.roots = {
-            PeerAdmin: false,
-            PeerModer: false, 
-            EditorAdmin: false, 
-            VisionAdmin: false,
-            peerCurator: [],
-            EditorModer: [],
-            GPT_gen_access: false
-            }
-        }
-        else
             this.roots = data
         },
         logOut() {

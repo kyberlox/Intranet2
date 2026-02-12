@@ -280,7 +280,7 @@ class PeerUserModel:
         try:
             from .MerchStoreModel import MerchStoreModel
             
-            uuid_from = int(roots['user_id'])
+            uuid_from = 2
             uuid_to = int(data["uuid_to"])
             activities_id = int(data["activities_id"])
             description = data["description"]

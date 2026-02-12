@@ -93,11 +93,11 @@ export default defineComponent({
                 }
         }, { immediate: true, deep: true })
 
-        watch([route, noAdminRoots], () => {
-            if (route.fullPath.includes('admin') && noAdminRoots.value) {
-                router.push({ name: 'home' })
-            }
-        }, { immediate: true, deep: true })
+        // watch([route, noAdminRoots], () => {
+        //     if (route.fullPath.includes('admin') && noAdminRoots.value) {
+        //         router.push({ name: 'home' })
+        //     }
+        // }, { immediate: true, deep: true })
 
         onMounted(() => {
             userData.initKeyFromStorage();

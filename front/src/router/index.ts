@@ -1,8 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserData } from '@/stores/userData';
+import Api from '@/utils/Api';
 
 const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
+
+const checkIsAdmin = () => {
+  const userData = useUserData();
+  if(userData.getIsLogin){
+     Api.get('roots/get_root_token_by_uuid')
+      .then((res)=>{
+      useUserData().setUserRoots(res);
+      })
+      .finally(()=>{
+        if(userData.getNoRoots){
+          return false
+        }})
+  }
+  else return false;
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -546,6 +562,11 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/admin/components/AdminSidebar.vue'),
+      beforeEnter: (to, from) => {
+        if(!checkIsAdmin()){
+          return {name: 'home'}
+        }
+    },
     },
     {
       path: '/admin/:id',

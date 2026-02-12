@@ -7,28 +7,23 @@ const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 
 const checkIsAdmin = () => {
   const userData = useUserData();
-  if(userData.getIsLogin){
+  if(!userData.getIsLogin) {
+  console.log('ne zalog');
+    return false
+  };
     console.log('zalog');
-    
-    Api.get('roots/get_root_token_by_uuid')
+    return Api.get('roots/get_root_token_by_uuid')
       .then((res)=>{
          if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
           useUserData().setUserRoots(res);
+          console.log('est prava');
+          return true;
         }
-      })
-      .finally(()=>{
-        if(userData.getNoRoots){
-          console.log('netpraf');
-          
+        else{
+          console.log('net prav');
           return false
-        }
-      else {
-        console.log('est prava')
-        return true
-      }})
-      
-  }
-  else return false;
+          }
+      })  
 }
 
 const router = createRouter({
@@ -573,8 +568,8 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/admin/components/AdminSidebar.vue'),
-      beforeEnter: (to, from, next) => {
-        const isAdmin = checkIsAdmin()
+      beforeEnter: async (to, from, next) => {
+        const isAdmin = await Promise.resolve(checkIsAdmin());
         if(isAdmin){
           console.log('захожу')
           next()

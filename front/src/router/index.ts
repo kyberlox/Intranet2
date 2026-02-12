@@ -11,8 +11,8 @@ const checkIsAdmin = () => {
      Api.get('roots/get_root_token_by_uuid')
       .then((res)=>{
          if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
-        useUserData().setUserRoots(res);
-      }
+          useUserData().setUserRoots(res);
+        }
       })
       .finally(()=>{
         if(userData.getNoRoots){
@@ -568,6 +568,7 @@ const router = createRouter({
         if(!checkIsAdmin()){
           return {name: 'home'}
         }
+        else return {name: to.name}
     },
     },
     {

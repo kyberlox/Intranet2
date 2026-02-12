@@ -8,7 +8,9 @@ const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 const checkIsAdmin = () => {
   const userData = useUserData();
   if(userData.getIsLogin){
-     Api.get('roots/get_root_token_by_uuid')
+    console.log('zalog');
+    
+    Api.get('roots/get_root_token_by_uuid')
       .then((res)=>{
          if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
           useUserData().setUserRoots(res);
@@ -17,7 +19,9 @@ const checkIsAdmin = () => {
       .finally(()=>{
         if(userData.getNoRoots){
           return false
-        }})
+        }
+      else return true})
+      
   }
   else return false;
 }

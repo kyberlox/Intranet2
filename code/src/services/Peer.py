@@ -476,8 +476,8 @@ async def user_history(request: Request, session: AsyncSession = Depends(get_asy
 async def send_points(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
     from .SendMail import SendEmail
     user_uuid = await get_uuid_from_request(request, session)
-    email_data = {'sender': 'zelenina.a.a@emk.ru'}
-    SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
+    email_data = {'sender': 'danilochkin.m@nporeg.ru'}
+    SendEmail(data=email_data).send_to_birthday_notifications()
     return await Peer(user_uuid=user_uuid).send_points(data=data, session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 
 

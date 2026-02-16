@@ -2912,49 +2912,36 @@ async def get_article(ID: int, user_id: int = Depends(get_user_id_by_session_id)
 
 # найти статьи раздела
 @article_router.get("/find_by/{section_id}", tags=["Статьи"])
-async def get_articles(section_id, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = ""
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user_id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
-
-    if user_id == "undefind":
-        return {"err": "Undefined section_id!"}
-    else:
-        art = Article()
-        art.section_id = section_id
-        return await art.search_by_section_id(user_id=user_id, session=session)
+async def get_articles(section_id, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    art = Article()
+    art.section_id = section_id
+    return await art.search_by_section_id(user_id=user_id, session=session)
 
 
 @article_router.put("/add_or_remove_like/{article_id}", tags=["Статьи"])
-async def add_or_remove_like(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = ""
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user-id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+async def add_or_remove_like(article_id, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     art = Article()
     art.id = article_id
     return await art.add_like(user_id=user_id, session=session)
 
 
 @article_router.get("/has_user_liked/{article_id}", tags=["Статьи"])
-async def has_user_liked(article_id, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = ""
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user-id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+async def has_user_liked(article_id, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     art = Article()
     art.id = article_id
     return await art.has_user_liked(user_id=user_id, session=session)
@@ -3060,16 +3047,13 @@ async def get_recent_popular_articles(days: int, limit: int, session: AsyncSessi
 
 
 @article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}", tags=["Статьи"])
-async def get_articles_by_tag_id(section_id: int, tag_id: int, request: Request,
+async def get_articles_by_tag_id(section_id: int, tag_id: int, user_id: int = Depends(get_user_id_by_session_id),
                                  session: AsyncSession = Depends(get_async_db)):
-    user_id = ""
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user-id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     art = Article()
     art.section_id = section_id
     return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session)
@@ -3086,15 +3070,12 @@ async def remove_tag_from_art_id(art_id: int, tag_id: int, session: AsyncSession
 
 
 @article_router.post("/make_event_users_excel", summary="Скачать Excel со всеми участниками мероприятия", tags=["Статьи"])
-async def make_users_excel_list(request: Request, data: list = Body(), session: AsyncSession = Depends(get_async_db)):
-    user_id = None
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user-id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+async def make_users_excel_list(user_id: int = Depends(get_user_id_by_session_id), data: list = Body(), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
 
     art_class = Article()
     # user_id = await art_class.get_user_by_session_id(user_id=user_id, session=session)
@@ -3115,18 +3096,12 @@ async def upload_articles_to_es(session: AsyncSession = Depends(get_async_db)):
     return await ArticleSearchModel().dump(session)
 
 @article_router.get("/give_double")
-async def dubli(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = ""
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user_id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
-
-    if user_id == "undefind":
-        return {"err": "Undefined section_id!"}
+async def dubli(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     art_class = await Article().delete_duplicate_video(session=session, user_id=user_id)
     #по всем сатьями
     return art_class

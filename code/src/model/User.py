@@ -243,6 +243,7 @@ class User:
                 "activities_id": 0,
                 "description": ""
             }
+            print(123)
             self.UserModel.Id = 2112
             user = await self.UserModel.find_by_id(session)
             print(user)

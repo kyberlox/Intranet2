@@ -623,8 +623,9 @@ class User:
             ws['F1'] = 'Сеансы'
             ws['G1'] = 'Посещения'
             ws['H1'] = 'Время сеанса'
-            print(type(all_users))
+            
             for i, user_inf in enumerate(all_users, start=2):
+                print(type(user_inf))
                 if user_inf.active is True:
                     indirect_data = user_inf.indirect_data
 

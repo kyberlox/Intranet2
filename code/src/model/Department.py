@@ -6,7 +6,7 @@ from fastapi import APIRouter, Body, Request
 # from fastapi.templating import Jinja2Templates
 # from fastapi.staticfiles import StaticFiles
 
-from fastapi import Depends
+from fastapi import Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -51,6 +51,34 @@ class Department:
         self.department.id = self.id
         return await self.department.find_dep_by_id(session)
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 # Департаменты можно обновить
 @depart_router.put("",tags=["Департамент", "Битрикс24"])

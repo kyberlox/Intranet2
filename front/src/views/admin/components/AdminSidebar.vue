@@ -120,8 +120,11 @@ export default defineComponent({
                     title: g.title,
                     nav: [...g.nav],
                 }))
-            fullNavigation.value[0].nav.push(...sections.value)
+            fullNavigation.value[0].nav.push(...sections.value);
             fullNavigation.value = fullNavigation.value.filter((e) => checkByFlags(e));
+            if (!featureFlags.pointsModeration) {
+                fullNavigation.value.find(e => e.id == 3)?.nav.pop()
+            }
         }, { deep: true, immediate: true })
 
         const defineRoute = (typeId: number, section: { id: string | number, name: string }) => {

@@ -336,7 +336,7 @@ class ActiveUsersModel:
                 self.Activities.coast,
                 self.Activities.id,
             ).join(self.Activities).where(
-                self.ActiveUsers.uuid_to == self.uuid_to,
+                self.ActiveUsers.uuid_to == int(self.uuid_to),
                 self.ActiveUsers.valid == 1
             )
             
@@ -392,7 +392,7 @@ class ActiveUsersModel:
             
             # Получаем историю мерча
             stmt_merch = select(self.PeerHistory).where(
-                self.PeerHistory.user_uuid == self.uuid_to,
+                self.PeerHistory.user_uuid == int(self.uuid_to),
                 self.PeerHistory.info_type == 'merch'
             )
             result_merch = await session.execute(stmt_merch)

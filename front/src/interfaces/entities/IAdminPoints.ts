@@ -4,7 +4,8 @@ export interface IActivitiesList {
     name: string,
     coast: number,
     is_auto: boolean,
-    description: string
+    description: string,
+
 }
 
 export interface IActivityToSend {
@@ -15,6 +16,7 @@ export interface IActivityToSend {
 export interface IActivityStatistics{
     id_activeusers: number,
     uuid_from: number,
+    uuid_to_fio: string,
     fio_from: string,
     description: string,
     date_time: string,
@@ -65,5 +67,7 @@ id: number,
 uuid_to: number,
 user_to_fio:string,
 valid: number,
-action_id: number
+action_id: number,
+    activity_name: string,
+    uuid_to_fio: string
 }

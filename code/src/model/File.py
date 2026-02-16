@@ -13,7 +13,7 @@ from fastapi import File as webFile
 from bson.objectid import ObjectId
 import requests
 
-from fastapi import APIRouter, Body, UploadFile, HTTPException
+from fastapi import APIRouter, Body, UploadFile, HTTPException, status, Request
 
 import os
 from dotenv import load_dotenv
@@ -777,6 +777,34 @@ class File:
         #найти файл сделать его превью
         pass
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 @file_router.post("/upload/{art_id}")
 async def upload_file(file: UploadFile, art_id : int, session: AsyncSession=Depends(get_async_db)):

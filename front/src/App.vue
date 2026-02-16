@@ -47,6 +47,7 @@ import PageScrollArrow from "./components/layout/PageScrollArrow.vue";
 import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
+import Api from "./utils/Api";
 
 export default defineComponent({
     name: "app-layout",
@@ -64,10 +65,8 @@ export default defineComponent({
     },
     setup() {
         const route = useRoute();
-        const router = useRouter();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
-        const noAdminRoots = computed(() => userData.getNoRoots);
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
@@ -93,14 +92,11 @@ export default defineComponent({
                 }
         }, { immediate: true, deep: true })
 
-        // watch([route, noAdminRoots], () => {
-        //     if (route.fullPath.includes('admin') && noAdminRoots.value) {
-        //         router.push({ name: 'home' })
-        //     }
-        // }, { immediate: true, deep: true })
-
         onMounted(() => {
-            userData.initKeyFromStorage();
+            const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');
+            if (!cookieKey) return;
+            Api.get(`users/find_by_session_id/${cookieKey}`)
+                .then((data) => userData.initLogin('cookieKey', data))
         })
 
         return {

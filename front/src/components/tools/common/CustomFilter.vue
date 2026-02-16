@@ -3,7 +3,7 @@
     <div class="dropdown-wrapper tagDateNavBar__dropdown-wrapper">
         <ul class="dropdown__menu tagDateNavBar__dropdown__menu">
             <li class="dropdown__item-wrapper tagDateNavBar__dropdown__item-wrapper"
-                v-for="(param, index) in params"
+                v-for="(param, index) in newParams?.sort((a, b) => a.localeCompare(b))"
                 :key="index"
                 @click="pickFilter(param)">
                 <div class="dropdown__item tagDateNavBar__dropdown__item">
@@ -15,7 +15,6 @@
                 <div class="dropdown__item tagDateNavBar__dropdown__item">Очистить</div>
             </li>
         </ul>
-
     </div>
 </div>
 </template>
@@ -36,6 +35,7 @@ export default defineComponent({
     emits: ['pickFilter'],
     setup(props, { emit }) {
         const showparams = ref();
+        const newParams = props.params;
 
         const pickFilter = (param: string) => {
             emit('pickFilter', param);
@@ -45,6 +45,7 @@ export default defineComponent({
         return {
             tags,
             showparams,
+            newParams,
             pickFilter
         }
     }

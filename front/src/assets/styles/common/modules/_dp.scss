@@ -49,6 +49,11 @@
     &--clear-btn {
         right: 3% !important;
     }
+
+    &__range_end,
+    &__range_start {
+        background: var(--emk-brand-color) !important;
+    }
 }
 
 :root {

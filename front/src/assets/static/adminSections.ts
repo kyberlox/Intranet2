@@ -19,8 +19,8 @@ export const staticAdminSections: IAdminSections[] = [
         id: 3,
         title: 'Бальная система', nav: [
             { name: 'Администрирование', id: 'pointsAdministrator' },
-            { name: 'Модерирование баллов', id: 'pointsModeration' },
             { name: 'История начислений баллов', id: 'curatorHistory' },
+            { name: 'Модерирование баллов', id: 'pointsModeration' },
         ]
     },
     {

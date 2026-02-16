@@ -5,7 +5,7 @@ from ..services.SendMail import SendEmail
 
 from fastapi import APIRouter, Body
 # from fastapi.templating import Jinja2Templates
-from fastapi import Depends
+from fastapi import Depends, status, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -388,6 +388,7 @@ class User:
 
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
+        from datetime import datetime
         try:
             await asyncio.sleep(60)
             res = await B24().getUser(self.id)
@@ -396,6 +397,7 @@ class User:
                 # смотрим логи 
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False
+                
                 await self.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
@@ -407,6 +409,13 @@ class User:
                     # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
+                    if 'indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']:
+                        if 'date_register' in psql_user['indirect_data']['date_register']:
+                            convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
+                            date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                            usr_data['date_of_employment'] = date_of_employment
+                            await self.UserModel.upsert_user(user_data=usr_data, session=session)
+                            await session.commit()
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
                         b24_url = usr_data['PERSONAL_PHOTO']
@@ -604,8 +613,10 @@ class User:
         Время сеанса - среднее время на сайте 
         """
         from openpyxl import Workbook
+        import io
         import requests
         import json
+        from ..model.Department import Department
         try:
             # Вытягиваем всех пользователей
             all_users = await self.UserModel.all(session)
@@ -620,33 +631,35 @@ class User:
             ws['C1'] = 'Подразделение'
             ws['D1'] = 'Локация'
             ws['E1'] = 'Должность'
-            ws['F1'] = 'Сеансы'
+            ws['F1'] = 'Сеансы (уникальные)'
             ws['G1'] = 'Посещения'
-            ws['H1'] = 'Время сеанса'
-            
-            for i, user_inf in enumerate(all_users, start=2):
+            ws['H1'] = 'Время сеанса, минуты'
+            row_number = 1
+            for user_inf in all_users:
                 
                 if user_inf.active is True:
+                    row_number += 1
                     indirect_data = user_inf.indirect_data
 
-                    ws[f'A{i}'] = user_inf.id
+                    ws[f'A{row_number}'] = user_inf.id
                     # if "name" in user_inf and "last_name" in user_inf: 
-                    ws[f'B{i}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
+                    ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
 
                     if 'uf_department' in indirect_data:
-                        ws[f'C{i}'] = f'{indirect_data['uf_department']}'
+                        ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                        ws[f'C{row_number}'] = f'{ped_info[0].name}'
                     
                     # if 'personal_city' in user_inf:
-                    ws[f'D{i}'] = f'{user_inf.personal_city}'
+                    ws[f'D{row_number}'] = f'{user_inf.personal_city}'
                     
                     if 'work_position' in indirect_data:
-                        ws[f'E{i}'] = f'{indirect_data['work_position']}'
+                        ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
                     #заполняем сеансы
                     response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     visits = json.loads(res)
-                    ws[f'F{i}'] = f'{visits['totals']}'
+                    ws[f'F{row_number}'] = f'{visits['totals'][0]}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
@@ -655,7 +668,7 @@ class User:
                     response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     uniq_visits = json.loads(res)
-                    ws[f'G{i}'] = f'{uniq_visits['totals']}'
+                    ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
                     
                     #ставим таймаут
                     await asyncio.sleep(2)
@@ -664,11 +677,13 @@ class User:
                     response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     avg_time_sec = json.loads(res)
-                    avg_time_min = avg_time_sec['totals'][0] * 60
-                    ws[f'H{i}'] = f'{avg_time_min}'
+                    avg_time_min = avg_time_sec['totals'][0] / 60
+                    ws[f'H{row_number}'] = f'{avg_time_min}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
+                # if row_number == 10:
+                #     break
 
             excel_buffer = io.BytesIO()
             wb.save(excel_buffer)
@@ -707,6 +722,35 @@ class User:
 
     #     return (keys, result)
 '''
+
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 
 # Пользоваетелей можно обновить
@@ -810,6 +854,27 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
 @users_router.get("/find_by/{id}", tags=["Пользователь"])
 async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id).search_by_id(session)
+
+# Получить айди пользователя по session_id
+@users_router.get("/find_by_session_id/{session_id}", tags=["Пользователь"])
+async def find_by_user(session_id: str, session: AsyncSession = Depends(get_async_db)):
+    from ..base.RedisStorage import RedisStorage
+
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 # Пользователя можно выгрузить
 @users_router.get("/find_by_id_all/{id}", tags=["Пользователь"])

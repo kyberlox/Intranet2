@@ -636,7 +636,7 @@ class User:
                     ws[f'B{i}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
 
                     if 'uf_department' in indirect_data:
-                        ped_info = await UsDep(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                        ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
                         ws[f'C{i}'] = f'{ped_info[0]['name']}'
                     
                     # if 'personal_city' in user_inf:

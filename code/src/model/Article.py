@@ -19,7 +19,7 @@ from fastapi import APIRouter, Body, Request
 import os
 from dotenv import load_dotenv
 
-from fastapi import Depends
+from fastapi import Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..base.pSQL.objects.App import get_async_db
 
@@ -2761,6 +2761,34 @@ class Article:
         articles_info = await ArticleModel().all(session=session)
         return articles_info
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 
 # Получить данные инфоблока из Б24
@@ -2862,15 +2890,20 @@ async def upload_articles(session: AsyncSession = Depends(get_async_db)):
 
 # найти статью по id
 @article_router.get("/find_by_ID/{ID}", tags=["Статьи"])
-async def get_article(ID: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = ""
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.cookies.get("user_id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+async def get_article(ID: int, user_id: int = Depends(get_current_session), Request, session: AsyncSession = Depends(get_async_db)):
+    # user_id = ""
+    # token = request.cookies.get("user_id")
+    # if token is None:
+    #     token = request.cookies.get("user_id")
+    #     if token is not None:
+    #         user_id = token
+    # else:
+    #     user_id = token
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     art = Article()
     art.id = ID
     return await art.search_by_id(user_id=user_id, session=session)

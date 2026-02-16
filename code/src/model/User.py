@@ -388,6 +388,7 @@ class User:
 
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
+        from datetime import datetime
         try:
             await asyncio.sleep(60)
             res = await B24().getUser(self.id)

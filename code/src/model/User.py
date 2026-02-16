@@ -625,7 +625,7 @@ class User:
             ws['H1'] = 'Время сеанса'
             
             for i, user_inf in enumerate(all_users, start=2):
-                print(type(user_inf), user_inf.__dict__)
+                
                 if user_inf.active is True:
                     indirect_data = user_inf.indirect_data
 

@@ -625,32 +625,32 @@ class User:
             ws['F1'] = 'Сеансы'
             ws['G1'] = 'Посещения'
             ws['H1'] = 'Время сеанса'
-            
+            row_number = 2
             for i, user_inf in enumerate(all_users, start=2):
                 
                 if user_inf.active is True:
+                    row_number += 1
                     indirect_data = user_inf.indirect_data
 
-                    ws[f'A{i}'] = user_inf.id
+                    ws[f'A{row_number}'] = user_inf.id
                     # if "name" in user_inf and "last_name" in user_inf: 
-                    ws[f'B{i}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
+                    ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
 
                     if 'uf_department' in indirect_data:
                         ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
-                        print(ped_info)
-                        ws[f'C{i}'] = f'{ped_info[0].name}'
+                        ws[f'C{row_number}'] = f'{ped_info[0].name}'
                     
                     # if 'personal_city' in user_inf:
-                    ws[f'D{i}'] = f'{user_inf.personal_city}'
+                    ws[f'D{row_number}'] = f'{user_inf.personal_city}'
                     
                     if 'work_position' in indirect_data:
-                        ws[f'E{i}'] = f'{indirect_data['work_position']}'
+                        ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
                     #заполняем сеансы
                     response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     visits = json.loads(res)
-                    ws[f'F{i}'] = f'{visits['totals'][0]}'
+                    ws[f'F{row_number}'] = f'{visits['totals'][0]}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
@@ -659,7 +659,7 @@ class User:
                     response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     uniq_visits = json.loads(res)
-                    ws[f'G{i}'] = f'{uniq_visits['totals'][0]}'
+                    ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
                     
                     #ставим таймаут
                     await asyncio.sleep(2)
@@ -669,11 +669,11 @@ class User:
                     res = response.text
                     avg_time_sec = json.loads(res)
                     avg_time_min = avg_time_sec['totals'][0] / 60
-                    ws[f'H{i}'] = f'{avg_time_min}'
+                    ws[f'H{row_number}'] = f'{avg_time_min}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
-                if i == 10:
+                if row_number == 10:
                     break
 
             excel_buffer = io.BytesIO()

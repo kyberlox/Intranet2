@@ -10,6 +10,7 @@
                placeholder="Выберите дату"
                :format="format"
                :dark="dark"
+               :range=range
                :markers="markers"
                @cleared="$emit('clearValue')"
                @update:model-value="handleDate">
@@ -55,6 +56,10 @@ export default defineComponent({
         timePicker: {
             type: Boolean,
             default: () => false
+        },
+        range: {
+            type: Boolean,
+            default: () => false
         }
     },
     setup(props, { emit }) {
@@ -80,26 +85,37 @@ export default defineComponent({
         const imageInModal = ref();
 
         const date = ref(new Date());
-        const format = (date: Date = new Date()) => {
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear();
-            const time = date.getHours() + ':' + (date.getMinutes() > 9 ? date.getMinutes() : "0" + date.getMinutes());
+        const format = (date: Array<Date> | Date = new Date()) => {
+            const formatDate = (newDate: Date) => {
+                const day = newDate.getDate();
+                const month = newDate.getMonth() + 1;
+                const year = newDate.getFullYear();
+                const time = newDate.getHours() + ':' + (newDate.getMinutes() > 9 ? newDate.getMinutes() : "0" + newDate.getMinutes());
 
-            if (props.calendarType == 'dayAndMonth') {
-                return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}`;
+                if (props.calendarType == 'dayAndMonth') {
+                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}`;
+                }
+                else if (props.calendarType == 'monthAndYear') {
+                    return `${month > 9 ? month : "0" + month}.${year}`;
+                }
+                else if (props.calendarType == 'month') {
+                    const formatMonth = newDate.toLocaleString('ru', { 'month': 'long' })
+                    return formatMonth.charAt(0).toUpperCase() + formatMonth.slice(1);
+                }
+                else if (props.calendarType == 'fullNoYear') {
+                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
+                }
+                else if (props.calendarType == 'full') {
+                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time}`
+                }
             }
-            else if (props.calendarType == 'monthAndYear') {
-                return `${month > 9 ? month : "0" + month}.${year}`;
+            if (props.range && Array.isArray(date)) {
+                const from = formatDate(date[0]);
+                const to = formatDate(date[1]);
+                return from == to ? from : `${from}-${to}`
             }
-            else if (props.calendarType == 'month') {
-                const formatMonth = date.toLocaleString('ru', { 'month': 'long' })
-                return formatMonth.charAt(0).toUpperCase() + formatMonth.slice(1);
-            }
-            else if (props.calendarType == 'full') {
-                return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time}`
-            }
-        };
+            else return formatDate(date as Date)
+        }
 
         const handleDate = (date: Date) => {
             if (!date) return;
@@ -107,14 +123,16 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            if (props.defaultData) {
-                dateInput.value = new Date(props.defaultData);
-            }
-            else if (props.calendarType !== 'month') {
-                if (props.item?.field?.includes('publiction')) {
-                    dateInput.value = new Date();
+            if (!props.range) {
+                if (props.defaultData) {
+                    dateInput.value = new Date(props.defaultData);
                 }
-                else dateInput.value = null
+                else if (props.calendarType !== 'month') {
+                    if (props.item?.field?.includes('publiction')) {
+                        dateInput.value = new Date();
+                    }
+                    else dateInput.value = null
+                }
             }
             handleDate(dateInput.value);
         })

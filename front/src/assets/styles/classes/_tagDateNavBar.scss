@@ -14,6 +14,7 @@
         cursor: pointer;
         transition: var(--default-transition);
 
+
         &:hover {
             background: #ef7f1b;
             color: #ffffff;
@@ -27,9 +28,11 @@
         gap: 15px;
         align-items: flex-start;
 
+
         &-toggle {
             min-width: 100px;
             border: 1px solid rgb(205, 205, 205);
+
 
             &:hover {
                 border: 1px solid gray;
@@ -57,6 +60,8 @@
             width: fit-content;
             // transform: translate(0px, 40px);
             z-index: 20;
+            max-height: 500px;
+            overflow-y: auto;
         }
 
         &-wrapper {

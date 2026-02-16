@@ -630,14 +630,14 @@ class User:
                     indirect_data = user_inf.indirect_data
 
                     ws[f'A{i}'] = user_inf.id
-                    if "name" in user_inf and "last_name" in user_inf: 
-                        ws[f'B{i}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
+                    # if "name" in user_inf and "last_name" in user_inf: 
+                    ws[f'B{i}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
 
                     if 'uf_department' in indirect_data:
                         ws[f'C{i}'] = f'{indirect_data['uf_department']}'
                     
-                    if 'personal_city' in user_inf:
-                        ws[f'D{i}'] = f'{user_inf.personal_city}'
+                    # if 'personal_city' in user_inf:
+                    ws[f'D{i}'] = f'{user_inf.personal_city}'
                     
                     if 'work_position' in indirect_data:
                         ws[f'E{i}'] = f'{indirect_data['work_position']}'

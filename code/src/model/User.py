@@ -622,7 +622,7 @@ class User:
             ws['E1'] = 'Должность'
             ws['F1'] = 'Сеансы'
             ws['G1'] = 'Посещения'
-            ws['H1'] = 'Время сеанса
+            ws['H1'] = 'Время сеанса'
 
             for i, user_inf in enumerate(all_users, start=2):
                 if user_inf.active is True:

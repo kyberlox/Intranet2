@@ -412,9 +412,9 @@ class User:
                     if 'date_of_employment' not in psql_user['indirect_data']:
                         convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
                         date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
-                        print(date_of_employment, 'перед обновлением')
-                    else:
-                        print(psql_user['indirect_data']['date_of_employment'])
+                        usr_data['date_of_employment'] = date_of_employment
+                        await self.UserModel.upsert_user(user_data=usr_data, session=session)
+                        await session.commit()
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
                         b24_url = usr_data['PERSONAL_PHOTO']

@@ -2890,7 +2890,7 @@ async def upload_articles(session: AsyncSession = Depends(get_async_db)):
 
 # найти статью по id
 @article_router.get("/find_by_ID/{ID}", tags=["Статьи"])
-async def get_article(ID: int, user_id: int = Depends(get_current_session), session: AsyncSession = Depends(get_async_db)):
+async def get_article(ID: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
     # user_id = ""
     # token = request.cookies.get("user_id")
     # if token is None:

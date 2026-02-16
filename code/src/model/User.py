@@ -664,7 +664,7 @@ class User:
                     response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     avg_time_sec = json.loads(res)
-                    avg_time_min = int(avg_time_sec['totals']) * 60
+                    avg_time_min = avg_time_sec['totals'][0] * 60
                     ws[f'H{i}'] = f'{avg_time_min}'
 
                     #ставим таймаут

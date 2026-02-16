@@ -409,7 +409,9 @@ class User:
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
                     if 'date_of_employment' not in psql_user['indirect_data']:
-                        print(123)
+                        convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
+                        date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                        print(date_of_employment, 'перед обновлением')
                     else:
                         print(psql_user['indirect_data']['date_of_employment'])
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():

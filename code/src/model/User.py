@@ -626,7 +626,7 @@ class User:
 
             for i, user_inf in enumerate(all_users, start=2):
                 if user_inf.active is True:
-                    indirect_data = user_inf.indirect_data.__dict__
+                    indirect_data = user_inf.indirect_data
 
                     ws[f'A{i}'] = user_inf.id
                     if "name" in user_inf and "last_name" in user_inf: 

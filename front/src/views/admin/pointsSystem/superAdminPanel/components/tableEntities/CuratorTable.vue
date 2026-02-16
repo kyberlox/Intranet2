@@ -5,7 +5,8 @@
     <td class="activity-edit__cell activity-edit__cell--parameter">
         <div class="activity-edit__field">
             <span>
-                {{ curator.curator_last_name + ' ' + curator.curator_name + ' ' + curator.curator_second_name }}
+                {{ `${curator.curator_last_name || ''} ${curator.curator_name || ''} ${curator.curator_second_name ||
+                    ''}` }}
             </span>
         </div>
     </td>

@@ -396,6 +396,7 @@ class User:
                 # смотрим логи 
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False
+                
                 await self.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
@@ -407,6 +408,10 @@ class User:
                     # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
+                    if 'date_of_employment' not in psql_user['indirect_data']:
+                        print(123)
+                    else:
+                        print(psql_user['indirect_data']['date_of_employment'])
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
                         b24_url = usr_data['PERSONAL_PHOTO']

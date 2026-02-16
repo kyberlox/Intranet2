@@ -626,7 +626,7 @@ class User:
 
             for i, user_inf in enumerate(all_users, start=2):
                 if user_inf.active is True:
-                    indirect_data = user_inf.get("indirect_data", {})
+                    indirect_data = user_inf.indirect_data.__dict__
 
                     ws[f'A{i}'] = user_inf.id
                     if "name" in user_inf and "last_name" in user_inf: 
@@ -898,7 +898,7 @@ async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = D
     excel_buffer = await User().create_metrics_excel(session=session, date1=date1, date2=date2)
     return StreamingResponse(excel_buffer,
                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            headers={"Content-Disposition": "attachment; filename=participants.xlsx"})
+                            headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
 
 
 # @users_router.post("/search_indirect")

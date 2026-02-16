@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Body
 from .LogsMaker import LogsMaker
 from ..model.User import User
-from fastapi import Depends
+from fastapi import Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -101,6 +101,34 @@ async def get_editor_roots(user_uuid, session):
     # 'PeerAdmin': True, 'PeerModer': True, 'PeerCurator': [], 
     return editor_roots
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 @roots_router.put("/create_primary_admins")
 async def create_primary_admins(session: AsyncSession = Depends(get_async_db)):
@@ -108,9 +136,13 @@ async def create_primary_admins(session: AsyncSession = Depends(get_async_db)):
 
 
 @roots_router.put("/create_editor_moder/{user_uuid}/{sec_id}")
-async def create_editor_moder(user_uuid: int, sec_id: int, request: Request,
+async def create_editor_moder(user_uuid: int, sec_id: int, user_id: int = Depends(get_user_id_by_session_id),
                               session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots(user_uuid=user_uuid).create_editor_moder(sec_id, session=session)
@@ -118,9 +150,13 @@ async def create_editor_moder(user_uuid: int, sec_id: int, request: Request,
 
 
 @roots_router.delete("/delete_editor_moder/{user_uuid}/{sec_id}")
-async def delete_editor_moder(user_uuid: int, sec_id: int, request: Request,
+async def delete_editor_moder(user_uuid: int, sec_id: int, user_id: int = Depends(get_user_id_by_session_id),
                               session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots(user_uuid=user_uuid).delete_editor_moder(sec_id, session=session)
@@ -128,8 +164,12 @@ async def delete_editor_moder(user_uuid: int, sec_id: int, request: Request,
 
 
 @roots_router.put("/create_editor_admin/{user_uuid}")
-async def create_editor_admin(user_uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+async def create_editor_admin(user_uuid: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots(user_uuid=user_uuid).create_editor_admin(session=session)
@@ -137,8 +177,12 @@ async def create_editor_admin(user_uuid: int, request: Request, session: AsyncSe
 
 
 @roots_router.delete("/delete_editor_admin/{user_uuid}")
-async def delete_editor_admin(user_uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+async def delete_editor_admin(user_uuid: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots(user_uuid=user_uuid).delete_editor_admin(session=session)
@@ -146,8 +190,12 @@ async def delete_editor_admin(user_uuid: int, request: Request, session: AsyncSe
 
 
 @roots_router.get("/get_editors_list/{sec_id}")
-async def get_editors_list(sec_id: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+async def get_editors_list(sec_id: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots().get_editors_list(sec_id, session=session)
@@ -155,8 +203,12 @@ async def get_editors_list(sec_id: int, request: Request, session: AsyncSession 
 
 
 @roots_router.get("/get_root_token_by_uuid")
-async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+async def get_token_by_uuid(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     
     user_roots = await Roots(user_uuid=user_id).get_token_by_uuid(session=session)
     if user_id is None:
@@ -168,8 +220,12 @@ async def get_token_by_uuid(request: Request, session: AsyncSession = Depends(ge
 
 
 @roots_router.put("/give_gpt_gen_license")
-async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends(get_async_db), users_list: list = Body()):
-    user_id = await get_uuid_from_request(request, session=session)
+async def give_gpt_gen_license(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db), users_list: list = Body()):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         for user in users_list:
@@ -178,16 +234,24 @@ async def give_gpt_gen_license(request: Request, session: AsyncSession = Depends
     return LogsMaker().warning_message(f"Недостаточно прав")
 
 @roots_router.delete("/stop_gpt_gen_license/{user_uuid}")
-async def stop_gpt_gen_license(request: Request, user_uuid: int, session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+async def stop_gpt_gen_license(user_id: int = Depends(get_user_id_by_session_id), user_uuid: int, session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots(user_uuid=user_uuid).stop_gpt_gen_license(session=session)
     return LogsMaker().warning_message(f"Недостаточно прав")
 
 @roots_router.get("/get_gpt_gen_licenses")
-async def gpt_gen_licenses(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_id = await get_uuid_from_request(request, session=session)
+async def gpt_gen_licenses(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     editor_roots = await get_editor_roots(user_id, session=session)
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Roots().get_gpt_gen_licenses(session=session)

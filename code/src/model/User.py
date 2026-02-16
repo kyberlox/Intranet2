@@ -604,6 +604,7 @@ class User:
         Время сеанса - среднее время на сайте 
         """
         from openpyxl import Workbook
+        import io
         import requests
         import json
         try:

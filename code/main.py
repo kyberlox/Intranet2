@@ -196,20 +196,20 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         # Создаем экземпляр сервиса авторизации
         auth_service = AuthService()
 
-        if 'intranet.emk.ru' in os.getenv('HOST'):
-            user_id = request.cookies.get("user_id")
-            if not user_id:
-                user_id = request.headers.get("user_id")
-                if not user_id:
-                    log.warning_message(message="Пользователь без user_id")
-                    return JSONResponse(
-                        status_code=status.HTTP_401_UNAUTHORIZED,
-                        content={
-                            "status": "error",
-                            "message": "Authorization required. Please login first.",
-                            "auth_url": await auth_service.get_auth_url()
-                        }
-                    )
+        # if 'intranet.emk.ru' in os.getenv('HOST'):
+        #     user_id = request.cookies.get("user_id")
+        #     if not user_id:
+        #         user_id = request.headers.get("user_id")
+        #         if not user_id:
+        #             log.warning_message(message="Пользователь без user_id")
+        #             return JSONResponse(
+        #                 status_code=status.HTTP_401_UNAUTHORIZED,
+        #                 content={
+        #                     "status": "error",
+        #                     "message": "Authorization required. Please login first.",
+        #                     "auth_url": await auth_service.get_auth_url()
+        #                 }
+        #             )
         # Получаем session_id из куков или заголовков
         session_id = request.cookies.get("session_id")
         

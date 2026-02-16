@@ -9,7 +9,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
-
+from fastapi.responses import StreamingResponse
 import asyncio
 
 # templates = Jinja2Templates(directory="./front_jinja")
@@ -244,7 +244,7 @@ class User:
                 "description": ""
             }
             for user in all_users:
-                if user.active is True:
+                if user.active is True and user.id == 2112:
                     # Проверяем либо дату регистрации, либо дату трудоустройства
                     if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or ("date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != ''):
                         
@@ -365,9 +365,11 @@ class User:
                                 LogsMaker().info_message(f'разница меньше года {user.id}')
                         else:
                             continue
+                            # pass
                             # LogsMaker().info_message('Дата и месяц не совпадает')
                     else:
                         continue
+                        # pass
 
             await session.commit()
             return True
@@ -588,6 +590,94 @@ class User:
         await self.dump_users_data_es(session)
         return res
 
+    async def create_metrics_excel(self, session, date1, date2):
+        """
+        Функция проходит по всем активным пользователям и тянет по ним данные из яндекс метрики.
+        Данные сохраняет в эксель файл.
+        Колонки:
+        ID пользователя
+        ФИО пользователя
+        Подразделение пользователя
+        Локация пользователя (Опицонально)
+        Сеансы - общее количество посещений за указанный период
+        Посещения - уникальное колчисевто просмотров пользователя
+        Время сеанса - среднее время на сайте 
+        """
+        from openpyxl import Workbook
+        import requests
+        import json
+        try:
+            # Вытягиваем всех пользователей
+            all_users = await self.UserModel.all(session)
+
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Статистика Интранет"
+
+            # Запись данных
+            ws['A1'] = 'ID'
+            ws['B1'] = 'ФИО'
+            ws['C1'] = 'Подразделение'
+            ws['D1'] = 'Локация'
+            ws['E1'] = 'Должность'
+            ws['F1'] = 'Сеансы'
+            ws['G1'] = 'Посещения'
+            ws['H1'] = 'Время сеанса'
+            
+            for i, user_inf in enumerate(all_users, start=2):
+                
+                if user_inf.active is True:
+                    indirect_data = user_inf.indirect_data
+
+                    ws[f'A{i}'] = user_inf.id
+                    # if "name" in user_inf and "last_name" in user_inf: 
+                    ws[f'B{i}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
+
+                    if 'uf_department' in indirect_data:
+                        ws[f'C{i}'] = f'{indirect_data['uf_department']}'
+                    
+                    # if 'personal_city' in user_inf:
+                    ws[f'D{i}'] = f'{user_inf.personal_city}'
+                    
+                    if 'work_position' in indirect_data:
+                        ws[f'E{i}'] = f'{indirect_data['work_position']}'
+
+                    #заполняем сеансы
+                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                    res = response.text
+                    visits = json.loads(res)
+                    ws[f'F{i}'] = f'{visits['totals']}'
+
+                    #ставим таймаут
+                    await asyncio.sleep(2)
+
+                    #заполняем уникальные просмотры
+                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                    res = response.text
+                    uniq_visits = json.loads(res)
+                    ws[f'G{i}'] = f'{uniq_visits['totals']}'
+                    
+                    #ставим таймаут
+                    await asyncio.sleep(2)
+                    
+                    #заполняем среднее время сессии
+                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                    res = response.text
+                    avg_time_sec = json.loads(res)
+                    avg_time_min = avg_time_sec['totals'][0] * 60
+                    ws[f'H{i}'] = f'{avg_time_min}'
+
+                    #ставим таймаут
+                    await asyncio.sleep(2)
+
+            excel_buffer = io.BytesIO()
+            wb.save(excel_buffer)
+            excel_buffer.seek(0)
+
+            # Сохранение
+            return excel_buffer
+        except Exception as e:
+            return LogsMaker().error_message(f'Произошла ошибка при создании файла excel create_metrics_excel: {e}')
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -803,6 +893,13 @@ async def send_test_email(session: AsyncSession = Depends(get_async_db)):
     SendEmail(data=data).send_to_jubilee_in_company(year=5)
     return await User().create_intranet_admin(session=session)
 
+@users_router.post("/create_metrics_excel", summary="Скачать Excel со статистикой просмотра Интранета")
+async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = Depends(get_async_db)):
+    
+    excel_buffer = await User().create_metrics_excel(session=session, date1=date1, date2=date2)
+    return StreamingResponse(excel_buffer,
+                            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
 
 
 # @users_router.post("/search_indirect")

@@ -6,7 +6,7 @@ from .Auth import AuthService
 
 from .SendMail import SendEmail
 
-from fastapi import Depends, status
+from fastapi import Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db

@@ -657,11 +657,11 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
         max_age=int(AuthService().session_ttl.total_seconds())
     )
     # Устанавливаем session_id в куки
-    response.set_cookie(
-        key="user_id",
-        value=session["user"]['ID'],
-        max_age=int(AuthService().session_ttl.total_seconds())
-    )
+    # response.set_cookie(
+    #     key="user_id",
+    #     value=session["user"]['ID'],
+    #     max_age=int(AuthService().session_ttl.total_seconds())
+    # )
 
     return response
 
@@ -768,12 +768,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             detail="Failed to authenticate with Bitrix24"
         )
     
-    user_id = request.cookies.get('user_id')
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+    user_id = session_data['user_info']['ID']
     user_deps = await User(id=int(user_id)).search_by_id(session=sess)
     # получаю данные пользователя
     # user_info = {

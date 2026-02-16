@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Request
 from ..model import User
 from .Auth import AuthService
 
-from fastapi import Depends, status
+from fastapi import Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db

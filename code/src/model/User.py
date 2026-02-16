@@ -5,7 +5,7 @@ from ..services.SendMail import SendEmail
 
 from fastapi import APIRouter, Body
 # from fastapi.templating import Jinja2Templates
-from fastapi import Depends, status, Request
+from fastapi import Depends, status, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -752,6 +752,7 @@ async def get_user_id_by_session_id(request: Request) -> int:
     user_id = session_data['user_info']['ID']
     return user_id
 
+
 # Пользоваетелей можно обновить
 @users_router.put("/update", tags=["Пользователь", "Битрикс24"])
 async def update_user(session: AsyncSession = Depends(get_async_db)):
@@ -853,6 +854,27 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
 @users_router.get("/find_by/{id}", tags=["Пользователь"])
 async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id).search_by_id(session)
+
+# Получить айди пользователя по session_id
+@users_router.get("/find_by_session_id/{session_id}", tags=["Пользователь"])
+async def find_by_user(session_id: str, session: AsyncSession = Depends(get_async_db)):
+    from ..base.RedisStorage import RedisStorage
+
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 # Пользователя можно выгрузить
 @users_router.get("/find_by_id_all/{id}", tags=["Пользователь"])

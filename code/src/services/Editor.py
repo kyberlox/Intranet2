@@ -1294,7 +1294,7 @@ async def render(art_id: int, session: AsyncSession = Depends(get_async_db)):
 
 # рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
-async def sec_render(user_id: int = Depends(get_user_id_by_session_id), sec_id: int, session: AsyncSession = Depends(get_async_db)):
+async def sec_render(sec_id: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

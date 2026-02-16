@@ -245,7 +245,7 @@ class User:
             }
             print(123)
             # self.UserModel.Id = 2112
-            user = await self.UserModel(Id = 2112).find_by_id(session)
+            user = await UserModel(Id = 2112).find_by_id(session)
             print(user)
             # for user in all_users:
             #     if user.active is True:

@@ -234,7 +234,7 @@ async def give_gpt_gen_license(user_id: int = Depends(get_user_id_by_session_id)
     return LogsMaker().warning_message(f"Недостаточно прав")
 
 @roots_router.delete("/stop_gpt_gen_license/{user_uuid}")
-async def stop_gpt_gen_license(user_id: int = Depends(get_user_id_by_session_id), user_uuid: int, session: AsyncSession = Depends(get_async_db)):
+async def stop_gpt_gen_license(user_uuid: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

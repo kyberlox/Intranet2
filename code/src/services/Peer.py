@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Request
 from ..model import User
 from .Auth import AuthService
 
-from fastapi import Depends
+from fastapi import Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -318,7 +318,34 @@ async def get_uuid_from_request(request, session):
             return user_inf["id"]
     return None
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
 
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 # # дампит старые данные
 # @peer_router.put("/put_tables")
 # async def load_activities():
@@ -331,11 +358,13 @@ async def get_uuid_from_request(request, session):
 
 
 @peer_router.get("/sum")
-async def sum(request: Request, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid).sum(session)
+async def sum(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).sum(session)
 
 
 # @peer_router.get("/statistics")
@@ -344,11 +373,13 @@ async def sum(request: Request, session: AsyncSession = Depends(get_async_db)):
 #     return Peer(user_uuid=uuid).statistics()
 
 @peer_router.get("/actions")
-async def get_actions(request: Request, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid).actions(session)
+async def get_actions(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).actions(session)
 
 
 """"""
@@ -360,20 +391,24 @@ async def get_activities(session: AsyncSession = Depends(get_async_db)):
 
 
 @peer_router.post("/edit_activity")
-async def post_edit_activity(request: Request, session: AsyncSession = Depends(get_async_db), data=Body()):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid, id=data['id'], name=data['name'], coast=data['coast'],
+async def post_edit_activity(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db), data=Body()):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id, id=data['id'], name=data['name'], coast=data['coast'],
                       need_valid=data['need_valid'], active=data['active'], description=data['description']).edit_activity(session)
 
 
 @peer_router.delete("/remove_activity/{id}")
-async def del_remove_activity(request: Request, id: str, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    res = await Peer(id=id, user_uuid=uuid).remove_activity(session)
+async def del_remove_activity(id: str, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    res = await Peer(id=id, user_uuid=user_id).remove_activity(session)
     await session.commit()
     return res
 
@@ -382,28 +417,34 @@ async def del_remove_activity(request: Request, id: str, session: AsyncSession =
 
 
 @peer_router.post("/do_valid/{action_id}/{uuid_to}")
-async def post_do_valid(request: Request, action_id: int, uuid_to: int, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid).do_valid(action_id=action_id, uuid_to=uuid_to, session=session)
+async def post_do_valid(action_id: int, uuid_to: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).do_valid(action_id=action_id, uuid_to=uuid_to, session=session)
 
 
 @peer_router.post("/do_not_valid/{action_id}")
-async def post_do_not_valid(request: Request, action_id: int, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid).do_not_valid(action_id=action_id, session=session)
+async def post_do_not_valid(action_id: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).do_not_valid(action_id=action_id, session=session)
 
 
 @peer_router.get("/points_to_confirm/{activities_id}")
-async def get_points_to_confirm(request: Request, activities_id: int, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
+async def get_points_to_confirm(activities_id: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
 
-    return await Peer(activities_id=activities_id, user_uuid=uuid).points_to_confirm(session)
+    return await Peer(activities_id=activities_id, user_uuid=user_id).points_to_confirm(session)
 
 
 @peer_router.get("/get_curators")
@@ -412,30 +453,37 @@ async def get_req_curators(session: AsyncSession = Depends(get_async_db)):
 
 
 @peer_router.put("/add_curator/{uuid}/{activities_id}")
-async def add_curator(uuid: int, request: Request, activities_id: int, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid, activities_id=activities_id).add_curator(user_id=uuid, session=session)
+async def add_curator(uuid: int, activities_id: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    return await Peer(user_uuid=user_id, activities_id=activities_id).add_curator(user_id=uuid, session=session)
 
 
 @peer_router.delete("/delete_curator/{uuid}/{activities_id}")
-async def delete_curator(uuid: int, request: Request, activities_id: int,
+async def delete_curator(uuid: int, activities_id: int, user_id: int = Depends(get_user_id_by_session_id),
                          session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    res = await Peer(user_uuid=user_uuid, activities_id=activities_id).delete_curator(user_id=uuid, session=session)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    res = await Peer(user_uuid=user_id, activities_id=activities_id).delete_curator(user_id=uuid, session=session)
     await session.commit()
     return res
 
 
 @peer_router.put("/new_activity")
-async def put_new_activity(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid).new_activity(data=data,session=session)  # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
+async def put_new_activity(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).new_activity(data=data,session=session)  # {"name": str, "coast": int, "need_valid": bool, "uuid": str("*" или "4133")}
 
 
 """"""
@@ -462,79 +510,99 @@ async def put_new_activity(request: Request, data=Body(), session: AsyncSession 
 #     return Peer(user_uuid=uuid).new_a_week()
 
 @peer_router.get("/user_history")
-async def user_history(request: Request, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
-    if uuid is None:
-        uuid = 2366
-    return await Peer(user_uuid=uuid).user_history(session=session)
+async def user_history(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).user_history(session=session)
 
 
 """"""
 
 
 @peer_router.put("/send_points")
-async def send_points(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
+async def send_points(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
     from .SendMail import SendEmail
-    user_uuid = await get_uuid_from_request(request, session)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     # email_data = {'sender': 'danilochkin.m@nporeg.ru'}
     # SendEmail(data=email_data).send_to_birthday_notifications()
-    return await Peer(user_uuid=user_uuid).send_points(data=data, session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
+    return await Peer(user_uuid=user_id).send_points(data=data, session=session)  # {"uuid_to": "2375", "activities_id": 0, "description": "Крутой тип"}
 
 
 @peer_router.get("/get_admins_list")
-async def get_admins_list(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).get_admins_list(session=session)
+async def get_admins_list(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).get_admins_list(session=session)
 
 
 @peer_router.put("/add_peer_admin/{uuid}")
-async def add_peer_admin(uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).add_peer_admin(uuid=uuid, session=session)
+async def add_peer_admin(uuid: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).add_peer_admin(uuid=uuid, session=session)
 
 
 @peer_router.delete("/delete_admin/{uuid}")
-async def delete_admin(uuid: str, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).delete_admin(uuid=uuid, session=session)
+async def delete_admin(uuid: str, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).delete_admin(uuid=uuid, session=session)
 
 
 @peer_router.get("/get_moders_list")
-async def get_moders_list(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).get_moders_list(session)
+async def get_moders_list(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).get_moders_list(session)
 
 
 @peer_router.put("/add_peer_moder/{uuid}")
-async def add_peer_moder(uuid: int, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).add_peer_moder(uuid=uuid, session=session)
+async def add_peer_moder(uuid: int, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).add_peer_moder(uuid=uuid, session=session)
 
 
 @peer_router.delete("/delete_peer_moder/{uuid}")
-async def delete_peer_moder(uuid: str, request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).delete_peer_moder(uuid=uuid, session=session)
+async def delete_peer_moder(uuid: str, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).delete_peer_moder(uuid=uuid, session=session)
 
 
 @peer_router.get("/get_curators_history")
-async def get_curators_history(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).get_curators_history(session=session)
+async def get_curators_history(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).get_curators_history(session=session)
 
 
 @peer_router.post("/return_points_to_user/{user_uuid}/{note_id}")
@@ -543,18 +611,22 @@ async def return_points_to_user(user_uuid: int, note_id: int, session: AsyncSess
 
 
 @peer_router.post("/remove_user_points/{uuid}/{action_id}/{valid}")
-async def remove_user_points(request: Request, uuid: int, action_id: int, valid: int,
+async def remove_user_points(uuid: int, action_id: int, valid: int, user_id: int = Depends(get_user_id_by_session_id),
                              session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     if int(valid) == 3:
         return await Peer().return_points_to_user(note_id=action_id, user_uuid=uuid, session=session)
-    return await Peer(user_uuid=user_uuid).remove_user_points(action_id=action_id, user_uuid=uuid, session=session)
+    return await Peer(user_uuid=user_id).remove_user_points(action_id=action_id, user_uuid=uuid, session=session)
 
 @peer_router.post("/send_points_to_employee_of_the_year")
-async def send_points_to_employee_of_the_year(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await Peer(user_uuid=user_uuid).send_points_to_employee_of_the_year(session=session)
+async def send_points_to_employee_of_the_year(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return await Peer(user_uuid=user_id).send_points_to_employee_of_the_year(session=session)

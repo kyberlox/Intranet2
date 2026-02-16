@@ -6,7 +6,7 @@ from .Auth import AuthService
 
 from .SendMail import SendEmail
 
-from fastapi import Depends
+from fastapi import Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -73,17 +73,53 @@ async def get_uuid_from_request(request, session):
             return user_inf["id"]
     return None
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 @store_router.put("/create_purchase")
-async def create_purchase(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await MerchStore(user_uuid).create_purchase(data=data, session=session)
+async def create_purchase(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    # if user_id is None:
+    #     user_id = 2366
+    return await MerchStore(user_id).create_purchase(data=data, session=session)
 
 @store_router.put("/buy_split")
-async def buy_split(request: Request, data=Body(), session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
-    if user_uuid is None:
-        user_uuid = 2366
-    return await MerchStore(user_uuid).buy_split(data=data, session=session)
+async def buy_split(user_id: int = Depends(get_user_id_by_session_id), data=Body(), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    # if user_id is None:
+    #     user_id = 2366
+    return await MerchStore(user_id).buy_split(data=data, session=session)

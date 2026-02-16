@@ -5,7 +5,7 @@ from ..services.SendMail import SendEmail
 
 from fastapi import APIRouter, Body
 # from fastapi.templating import Jinja2Templates
-from fastapi import Depends
+from fastapi import Depends, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..base.pSQL.objects.App import get_async_db
@@ -388,6 +388,7 @@ class User:
 
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
+        from datetime import datetime
         try:
             await asyncio.sleep(60)
             res = await B24().getUser(self.id)
@@ -396,6 +397,7 @@ class User:
                 # смотрим логи 
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False
+                
                 await self.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
@@ -407,6 +409,13 @@ class User:
                     # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
+                    if 'indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']:
+                        if 'date_register' in psql_user['indirect_data']['date_register']:
+                            convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
+                            date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                            usr_data['date_of_employment'] = date_of_employment
+                            await self.UserModel.upsert_user(user_data=usr_data, session=session)
+                            await session.commit()
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
                         b24_url = usr_data['PERSONAL_PHOTO']
@@ -714,6 +723,34 @@ class User:
     #     return (keys, result)
 '''
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 # Пользоваетелей можно обновить
 @users_router.put("/update", tags=["Пользователь", "Битрикс24"])

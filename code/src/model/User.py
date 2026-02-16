@@ -244,7 +244,7 @@ class User:
                 "description": ""
             }
             self.UserModel.Id = 2112
-            user = self.UserModel.find_by_id(session)
+            user = await self.UserModel.find_by_id(session)
             # for user in all_users:
             #     if user.active is True:
                     # Проверяем либо дату регистрации, либо дату трудоустройства

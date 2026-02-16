@@ -622,11 +622,11 @@ class User:
             ws['C1'] = 'Подразделение'
             ws['D1'] = 'Локация'
             ws['E1'] = 'Должность'
-            ws['F1'] = 'Сеансы'
+            ws['F1'] = 'Сеансы (уникальные)'
             ws['G1'] = 'Посещения'
-            ws['H1'] = 'Время сеанса'
-            row_number = 2
-            for i, user_inf in enumerate(all_users, start=2):
+            ws['H1'] = 'Время сеанса, минуты'
+            row_number = 1
+            for user_inf in all_users:
                 
                 if user_inf.active is True:
                     row_number += 1

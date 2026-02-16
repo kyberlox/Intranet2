@@ -642,7 +642,7 @@ class User:
                         ws[f'E{i}'] = f'{indirect_data['work_position']}'
 
                     #заполняем сеансы
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=='{user_inf.id}'&include_undefined=true')
+                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     visits = json.loads(res)
                     ws[f'F{i}'] = f'{visits['totals']}'
@@ -651,7 +651,7 @@ class User:
                     await asyncio.sleep(2)
 
                     #заполняем уникальные просмотры
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=='{user_inf.id}'&include_undefined=true')
+                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     uniq_visits = json.loads(res)
                     ws[f'G{i}'] = f'{uniq_visits['totals']}'
@@ -659,8 +659,8 @@ class User:
                     #ставим таймаут
                     await asyncio.sleep(2)
                     
-                    #заполняем среднее время сессии 
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=='{user_inf.id}'&include_undefined=true')
+                    #заполняем среднее время сессии
+                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     avg_time_sec = json.loads(res)
                     avg_time_min = int(avg_time_sec['totals']) * 60

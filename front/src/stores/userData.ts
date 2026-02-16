@@ -29,19 +29,18 @@ export const useUserData = defineStore('userData', {
         setAuthKey(key: string) {
             this.authKey = key;
         },
-        initKeyFromStorage() {
-            const storedAuthKey = document?.cookie?.split(';')?.find((e)=> e.includes('session_id'))?.replace(' session_id=', '');
-            const storedId = document?.cookie?.split(';')?.find((e)=> e.includes('user_id'))?.replace(' user_id=', '');
-            if (!storedAuthKey) return
-            this.authKey = String(storedAuthKey);
-            this.myId = Number(storedId);
-            this.isLogin = true;
-        },
         setUserInfo(userData: IUser) {
             this.user = userData;
         },
         setUserRoots(data: IRoots){
-            this.roots = data
+            this.roots = data;
+        },
+        initLogin(key: string, myId: number){
+            if(key && myId){
+                this.authKey = key;
+                this.myId = myId;
+                this.isLogin = true;
+            }
         },
         logOut() {
             this.authKey = '';

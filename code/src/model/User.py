@@ -669,6 +669,8 @@ class User:
 
                     #ставим таймаут
                     await asyncio.sleep(2)
+                if i == 10:
+                    break
 
             excel_buffer = io.BytesIO()
             wb.save(excel_buffer)

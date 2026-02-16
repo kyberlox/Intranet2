@@ -38,8 +38,8 @@ export default defineComponent({
         const router = useRouter();
         const route = useRoute();
         const isLoading = ref(false);
-        const login = ref('gazinskii.i.v');
-        const pass = ref('B(tu0xm4)');
+        const login = ref();
+        const pass = ref();
 
         const tryLogin = () => {
             isLoading.value = true

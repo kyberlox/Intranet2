@@ -1195,6 +1195,35 @@ async def get_editor_roots(user_uuid, session):
     # 'PeerAdmin': True, 'PeerModer': True, 'PeerCurator': [], 
     return editor_roots
 
+# Dependency для получения айдишника пользователя
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
+
 
 @editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 async def set_user_info(section_id: int, art_id: int, user_id, session: AsyncSession = Depends(get_async_db)):
@@ -1239,10 +1268,14 @@ async def get_edit_sections():
 
 # вывод списка редактируемых секций
 @editor_router.get("/get_sections_list")
-async def get_sections_list(request: Request, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
+async def get_sections_list(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     # user_uuid = 261
-    editor_roots = await get_editor_roots(user_uuid, session)
+    editor_roots = await get_editor_roots(user_id, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
     if "EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True:
         return await Editor(session=session).get_sections_list()
@@ -1261,10 +1294,14 @@ async def render(art_id: int, session: AsyncSession = Depends(get_async_db)):
 
 # рендеринг статей по раздела
 @editor_router.get("/section_rendering/{sec_id}")
-async def sec_render(request: Request, sec_id: int, session: AsyncSession = Depends(get_async_db)):
-    user_uuid = await get_uuid_from_request(request, session)
+async def sec_render(user_id: int = Depends(get_user_id_by_session_id), sec_id: int, session: AsyncSession = Depends(get_async_db)):
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
     # user_uuid = 2366
-    editor_roots = await get_editor_roots(user_uuid, session)
+    editor_roots = await get_editor_roots(user_id, session)
     # editor_roots = {'user_id': 2366, 'EditorAdmin': False, 'EditorModer': []}
 
     if ("EditorAdmin" in editor_roots.keys() and editor_roots["EditorAdmin"] == True) or (

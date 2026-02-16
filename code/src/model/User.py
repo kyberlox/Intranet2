@@ -245,6 +245,7 @@ class User:
             }
             print(123)
             # self.UserModel.Id = 2112
+            from ..base.pSQL.objects.UserModel import UserModel
             user = await UserModel(Id = 2112).find_by_id(session)
             print(user)
             # for user in all_users:

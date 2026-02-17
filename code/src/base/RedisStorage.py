@@ -109,6 +109,14 @@ class RedisStorage:
             logging.error(f"Error adding to set: {e}")
             return False
 
+    # Поиск всех сессий пользователя
+    def find_in_set(self, key: str) -> list:
+        try:
+            return self.client.smembers(key)
+        except redis.RedisError as e:
+            logging.error(f"Error find_in_set: {e}")
+            return []
+
     def remove_from_set(self, key: str, value: str) -> bool:
         """
         Удаление значения из множества

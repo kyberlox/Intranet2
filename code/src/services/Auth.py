@@ -341,12 +341,27 @@ class AuthService:
         if 'UF_DEPARTMENT' in user_info and 112 in user_info['UF_DEPARTMENT']:
             return None
 
-        print(tokens, 'че в токенах')
+        
         # Создаем сессию
         # посмотреть есть ли такая сессия и если есть возвращать существующую
+        is_valid = await self.validate_users_sessions(user_id=tokens['user_id'])
+        
         session = await self.create_session(tokens, user_info)
         return session
+    
+    async def validate_users_sessions(self, user_id: int) -> bool:
         
+        user_sessions_key = f"user_sessions:{user_id}"
+        sessions_list = self.redis.find_in_set(key=user_sessions_key)
+
+        if not sessions_list:
+            return True 
+
+        for user_session in sessions_list:
+            self.delete_session(session_id=user_session)
+        return True
+
+
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)

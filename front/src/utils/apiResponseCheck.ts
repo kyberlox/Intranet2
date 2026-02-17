@@ -6,12 +6,16 @@ interface IToastMethods {
     showCustomToast: (type: string, text: string) => void
 }
 
-export const handleApiResponse = (data: AxiosResponse | {'status': string}, toast: IToastMethods, errorName: string, successName: string) => {
-    if ((!data || ((typeof data == 'object' && 'data' in data && Boolean(data.data) == false)) )) {
+export const handleApiResponse = (data: AxiosResponse | {'status': string} | true, toast: IToastMethods, errorName: string, successName: string) => {
+    if(data == true){
+        toast.showSuccess(successName);
+    }
+    if ((!data || ((typeof data == 'object' && 'data' in data && Boolean(data.data) == false)))) {
         toast.showError(errorName);        
     }
-    else if ((data?.status == 'warn' || data?.status == 'error') && typeof data.status == 'string' ){
-        toast.showCustomToast(data.status, errorName)
+    else if (((data as {'status': string})?.status == 'warn' || (data as {'status': string})?.status == 'error') 
+        && typeof (data as {'status': string}).status == 'string' ){
+        toast.showCustomToast((data as {'status': string}).status, errorName);
     }
     else
         toast.showSuccess(successName);

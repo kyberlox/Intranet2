@@ -305,11 +305,11 @@ class AuthService:
         """Удаление сессии"""
         session_data = self.redis.get_session(session_id)
         print('пытаемся удалить?')
-        if session_data and "user_id" in session_data:
-            print('удаляем?')
-            # Удаляем session_id из списка сессий пользователя
-            user_sessions_key = f"user_sessions:{session_data['user_id']}"
-            self.redis.remove_from_set(user_sessions_key, session_id)
+        # if session_data and "user_id" in session_data:
+        print('удаляем?')
+        # Удаляем session_id из списка сессий пользователя
+        user_sessions_key = f"user_sessions:{session_data['user_id']}"
+        self.redis.remove_from_set(user_sessions_key, session_id)
         
         self.redis.delete_session(session_id)
 

@@ -4,6 +4,7 @@
     <Loader />
 </div>
 <div v-else>
+    <div></div>
     <div v-if="workersLocations"
          class="tags">
         <div v-for="(location, index) in workersLocations"
@@ -27,9 +28,8 @@
     </div>
     <div class="row mb-5 mt20"
          v-if="awardTypes.length && currentYear && activeLocation">
-        <h2 class="page__title">
-
-            {{ activeLocation }}
+        <h2 class="page__title staff-result__title">
+            {{ "Доска почета " + activeLocation }}
             <span v-if="currentYear"
                   class="year">/ {{ currentYear }}</span>
         </h2>

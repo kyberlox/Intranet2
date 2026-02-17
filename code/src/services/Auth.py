@@ -304,7 +304,7 @@ class AuthService:
     def delete_session(self, session_id: str) -> None:
         """Удаление сессии"""
         session_data = self.redis.get_session(session_id)
-        
+        print('пытаемся удалить?')
         if session_data and "user_id" in session_data:
             print('удаляем?')
             # Удаляем session_id из списка сессий пользователя

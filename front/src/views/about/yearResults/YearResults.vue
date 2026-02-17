@@ -12,7 +12,7 @@
             <div class="tags__tag tags__tag--nohover tags__tag--inner section__item__link btn-air"
                  :class="{ 'tags__tag--active': activeLocation == location }"
                  @click="activeLocation = location">
-                {{ location }}
+                {{ 'Доска почета ' + location }}
             </div>
         </div>
     </div>

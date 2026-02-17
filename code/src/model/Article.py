@@ -2904,7 +2904,7 @@ async def get_article(ID: int, user_id: int = Depends(get_user_id_by_session_id)
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated"
         )
-    print(user_id, 'получилось')
+    
     art = Article()
     art.id = ID
     return await art.search_by_id(user_id=user_id, session=session)

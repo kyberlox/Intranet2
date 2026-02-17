@@ -301,15 +301,15 @@ class AuthService:
             LogsMaker().error_message(f"Token refresh failed: {str(e)}")
             return None
 
-    def delete_session(self, session_id: str) -> None:
+    def delete_session(self, session_id: str, key: Optional[str] = None) -> None:
         """Удаление сессии"""
         session_data = self.redis.get_session(session_id)
         print('пытаемся удалить?')
         # if session_data and "user_id" in session_data:
         print('удаляем?')
         # Удаляем session_id из списка сессий пользователя
-        user_sessions_key = f"user_sessions:{session_data['user_id']}"
-        self.redis.remove_from_set(user_sessions_key, session_id)
+        # user_sessions_key = f"user_sessions:{session_data['user_id']}"
+        self.redis.remove_from_set(key, session_id)
         
         self.redis.delete_session(session_id)
 
@@ -359,7 +359,7 @@ class AuthService:
             return True 
         print(sessions_list)
         for user_session in sessions_list:
-            self.delete_session(session_id=user_session)
+            self.delete_session(session_id=user_session, key=user_sessions_key)
         return True
 
 

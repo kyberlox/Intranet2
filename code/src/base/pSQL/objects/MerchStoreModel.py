@@ -104,7 +104,7 @@ class MerchStoreModel:
             total_price = total_count * merch_info.indirect_data.get('price', 0)
             
             # Проверяем баланс пользователя
-            stmt_user = select(Roots).where(Roots.user_uuid == self.user_id)
+            stmt_user = select(Roots).where(Roots.user_uuid == int(self.user_id))
             result_user = await session.execute(stmt_user)
             user = result_user.scalar_one_or_none()
 

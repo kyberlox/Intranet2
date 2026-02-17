@@ -259,9 +259,9 @@ class User:
                             continue
 
                         # print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
-                        test_today = datetime.strptime('16.02.2026', '%d.%m.%Y')
-                        # if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
-                        if test_today.day == convert_date_reg.day and test_today.month == convert_date_reg.month:
+                        # test_today = datetime.strptime('16.02.2026', '%d.%m.%Y')
+                        if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+                        # if test_today.day == convert_date_reg.day and test_today.month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 
                             # ставим для теста текущий год - 2027

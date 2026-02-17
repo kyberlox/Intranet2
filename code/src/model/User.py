@@ -644,7 +644,7 @@ class User:
             ws['H1'] = 'Время сеанса, минуты'
             row_number = 1
             for user_inf in all_users:
-                if 0 < row_number <= 200:
+                if 0 < row_number <= 10:
                     if user_inf.active is True:
                         row_number += 1
                         indirect_data = user_inf.indirect_data

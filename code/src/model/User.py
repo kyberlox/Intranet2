@@ -616,6 +616,7 @@ class User:
         Посещения - уникальное колчисевто просмотров пользователя
         Время сеанса - среднее время на сайте 
         """
+        import httpx
         from openpyxl import Workbook
         import io
         import requests
@@ -649,9 +650,11 @@ class User:
                     # if "name" in user_inf and "last_name" in user_inf: 
                     ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
 
-                    if 'uf_department' in indirect_data:
-                        ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
-                        ws[f'C{row_number}'] = f'{ped_info[0].name}'
+                    if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
+                        if len(indirect_data['uf_department']) >= 1:
+                            ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                            if ped_info:
+                                ws[f'C{row_number}'] = f'{ped_info[0].name}'
                     
                     # if 'personal_city' in user_inf:
                     ws[f'D{row_number}'] = f'{user_inf.personal_city}'
@@ -660,29 +663,35 @@ class User:
                         ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
                     #заполняем сеансы
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    res = response.text
-                    visits = json.loads(res)
-                    ws[f'F{row_number}'] = f'{visits['totals'][0]}'
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        if response.status_code == 200:
+                            res = response.text
+                            visits = json.loads(res)
+                            ws[f'F{row_number}'] = f'{visits['totals'][0]}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
 
+                    async with httpx.AsyncClient(timeout=30.0) as client:
                     #заполняем уникальные просмотры
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    res = response.text
-                    uniq_visits = json.loads(res)
-                    ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        if response.status_code == 200:
+                            res = response.text
+                            uniq_visits = json.loads(res)
+                            ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
                     
                     #ставим таймаут
                     await asyncio.sleep(2)
                     
+                    async with httpx.AsyncClient(timeout=30.0) as client:
                     #заполняем среднее время сессии
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    res = response.text
-                    avg_time_sec = json.loads(res)
-                    avg_time_min = avg_time_sec['totals'][0] / 60
-                    ws[f'H{row_number}'] = f'{avg_time_min}'
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        if response.status_code == 200:
+                            res = response.text
+                            avg_time_sec = json.loads(res)
+                            avg_time_min = avg_time_sec['totals'][0] / 60
+                            ws[f'H{row_number}'] = f'{avg_time_min}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
@@ -763,51 +772,51 @@ async def get_user_id_by_session_id(request: Request) -> int:
 
 
 # Пользоваетелей можно обновить
-@users_router.put("/update", tags=["Пользователь", "Битрикс24"])
-async def update_user(session: AsyncSession = Depends(get_async_db)):
-    """
-    ## Метод `user.get`
+# @users_router.put("/update", tags=["Пользователь", "Битрикс24"])
+# async def update_user(session: AsyncSession = Depends(get_async_db)):
+#     """
+#     ## Метод `user.get`
 
-    > Метода вызывается один раз, в момент запуска сервиса для загрузки данных с прошлой версии сайта
+#     > Метода вызывается один раз, в момент запуска сервиса для загрузки данных с прошлой версии сайта
 
-    Возвращает список всех пользователей из системы Битрикс24 через API метод `user.get`.
+#     Возвращает список всех пользователей из системы Битрикс24 через API метод `user.get`.
 
-    ### Входные параметры
-    Метод не принимает параметров.
+#     ### Входные параметры
+#     Метод не принимает параметров.
 
-    ### Возвращаемые данные
-    Возвращает список словарей с полными данными пользователей. Каждый пользователь содержит следующие поля (среди прочих):
-    - `ID` (int) — уникальный идентификатор пользователя
-    - `NAME` (string) — имя пользователя
-    - `LAST_NAME` (string) — фамилия пользователя
-    - `EMAIL` (string) — email адрес
-    - `PERSONAL_PHOTO` (string) — URL фотографии профиля
-    - `UF_DEPARTMENT` (list) — список ID подразделений
-    - `ACTIVE` (boolean) — статус активности
-    - Другие стандартные поля Битрикс24
+#     ### Возвращаемые данные
+#     Возвращает список словарей с полными данными пользователей. Каждый пользователь содержит следующие поля (среди прочих):
+#     - `ID` (int) — уникальный идентификатор пользователя
+#     - `NAME` (string) — имя пользователя
+#     - `LAST_NAME` (string) — фамилия пользователя
+#     - `EMAIL` (string) — email адрес
+#     - `PERSONAL_PHOTO` (string) — URL фотографии профиля
+#     - `UF_DEPARTMENT` (list) — список ID подразделений
+#     - `ACTIVE` (boolean) — статус активности
+#     - Другие стандартные поля Битрикс24
 
-    ---
+#     ---
 
-    ## Функция `fetch_users_data()`
+#     ## Функция `fetch_users_data()`
 
-    Асинхронная функция для полного обновления данных пользователей в системе. Выполняет синхронизацию данных из Битрикс24, включая фотографии профилей и индексацию в Elasticsearch.
+#     Асинхронная функция для полного обновления данных пользователей в системе. Выполняет синхронизацию данных из Битрикс24, включая фотографии профилей и индексацию в Elasticsearch.
 
-    ### Входные параметры
-    | Параметр | Тип | Описание | Обязательный |
-    |----------|-----|----------|--------------|
-    | `session` | `AsyncSession` | Сессия базы данных для выполнения транзакций | Да |
+#     ### Входные параметры
+#     | Параметр | Тип | Описание | Обязательный |
+#     |----------|-----|----------|--------------|
+#     | `session` | `AsyncSession` | Сессия базы данных для выполнения транзакций | Да |
 
-    ### Возвращаемые данные
-    ```
-    {
-        "status": true
-    }
-    ```
+#     ### Возвращаемые данные
+#     ```
+#     {
+#         "status": true
+#     }
+#     ```
 
-    """
+#     """
 
-    usr = User()
-    return await usr.fetch_users_data(session)
+#     usr = User()
+#     return await usr.fetch_users_data(session)
 
 @users_router.put("/update_user_info/{user_id}", tags=["Пользователь", "Битрикс24"])
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):

@@ -40,29 +40,29 @@ export default defineComponent({
         const isLoading = ref(false);
         const login = ref();
         const pass = ref();
+        const userData = useUserData();
 
         const tryLogin = () => {
-            isLoading.value = true
+            isLoading.value = true;
             if (testMode) {
-                testLogin()
+                testLogin();
             }
             else {
-                router.push({ name: 'oauthPage', params: { referrer: import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath } })
+                router.push({ name: 'oauthPage', params: { referrer: import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath } });
             }
-            isLoading.value = false
+            isLoading.value = false;
         }
 
         const testLogin = () => {
             Api.post("auth_router/root_auth", { login: login.value, password: pass.value })
                 .then((data) => {
-                    useUserData().setAuthKey(data.session_id)
-                    useUserData().setLogin(true)
-                    useUserData().setMyId(2366)
+                    userData.initLogin(data.session_id, 2366);
+                    userData.setLogin(true);
                 })
         }
 
         watch((route), () => {
-            if (!useUserData().getIsLogin && route.fullPath) {
+            if (!userData.getIsLogin && route.fullPath) {
                 if (route.name !== 'oauthPage') {
                     Cookies.set('referrer', String(route.fullPath), { expires: 365 });
                 }

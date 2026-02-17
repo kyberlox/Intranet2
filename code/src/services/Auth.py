@@ -224,11 +224,6 @@ class AuthService:
         access_token_expires_at = datetime.fromisoformat(
             session_data["access_token_expires_at"]
         )
-        # # Если access_token истек, удаляем сессию
-        # if now >= access_token_expires_at:
-        #     print('удаляем сессию')
-        #     self.delete_session(session_id)
-        #     return None
         
         # Если access_token скоро истекает (менее 5 минут), обновляем его
         # if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
@@ -306,14 +301,15 @@ class AuthService:
             LogsMaker().error_message(f"Token refresh failed: {str(e)}")
             return None
 
-    def delete_session(self, session_id: str) -> None:
+    def delete_session(self, session_id: str, key: Optional[str] = None) -> None:
         """Удаление сессии"""
         session_data = self.redis.get_session(session_id)
         
-        if session_data and "user_id" in session_data:
-            # Удаляем session_id из списка сессий пользователя
-            user_sessions_key = f"user_sessions:{session_data['user_id']}"
-            self.redis.remove_from_set(user_sessions_key, session_id)
+        # if session_data and "user_id" in session_data:
+        
+        # Удаляем session_id из списка сессий пользователя
+        # user_sessions_key = f"user_sessions:{session_data['user_id']}"
+        self.redis.remove_from_set(key, session_id)
         
         self.redis.delete_session(session_id)
 
@@ -346,11 +342,27 @@ class AuthService:
         if 'UF_DEPARTMENT' in user_info and 112 in user_info['UF_DEPARTMENT']:
             return None
 
-
+        
         # Создаем сессию
+        # посмотреть есть ли такая сессия и если есть возвращать существующую
+        is_valid = await self.validate_users_sessions(user_id=tokens['user_id'])
+        
         session = await self.create_session(tokens, user_info)
         return session
+    
+    async def validate_users_sessions(self, user_id: int) -> bool:
         
+        user_sessions_key = f"user_sessions:{user_id}"
+        sessions_list = self.redis.find_in_set(key=user_sessions_key)
+
+        if not sessions_list:
+            return True 
+        print(sessions_list)
+        for user_session in sessions_list:
+            self.delete_session(session_id=user_session, key=user_sessions_key)
+        return True
+
+
     #ROOT
     async def root_authenticate(self, username: str, password: str, sess) -> Optional[Dict[str, Any]]:
         b24_ans = try_b24(login=username, password=password)
@@ -656,7 +668,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
         value=session["session_id"],
         max_age=int(AuthService().session_ttl.total_seconds())
     )
-    print("session_id", session["session_id"])
+    
     # Устанавливаем session_id в куки
     # response.set_cookie(
     #     key="user_id",

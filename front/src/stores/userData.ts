@@ -18,7 +18,6 @@ export const useUserData = defineStore('userData', {
         } as IRoots,
         isLogin: false
     }),
-
     actions: {
         setMyId(id: number) {
              this.myId = id;
@@ -39,7 +38,6 @@ export const useUserData = defineStore('userData', {
             if(key && myId){
                 this.authKey = key;
                 this.myId = myId;
-                this.isLogin = true;
             }
         },
         logOut() {
@@ -61,8 +59,8 @@ export const useUserData = defineStore('userData', {
         getGptRoot: (state)=> state.roots.GPT_gen_access || state.roots.EditorAdmin ,
         getNeedAdminLink: (state) => Boolean(state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin || state.roots.EditorModer?.length  || state.roots.PeerModer || state.roots.peerCurator?.length),
         getUser: (state) => state.user,
-        getPhoto: (state) => state.user.photo_file_url,
-        getFio: (state) => state.user.last_name + ' ' + state.user.name + ' ' + state.user.second_name,
+        getPhoto: (state) => state.user.photo_file_url || 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png',
+        getFio: (state) => (state.user.last_name || '') + ' ' + (state.user.name || '') + ' ' + (state.user.second_name || ''),
         getNoRoots: (state) => !state.roots.EditorAdmin && !state.roots.EditorModer.length && !state.roots.PeerAdmin && !state.roots.PeerModer && !state.roots.peerCurator.length && !state.roots.VisionAdmin,
         getSignature: (state) => (`С уважением,
 ${(state.user.last_name ?? '') + ' ' + (state.user.name ?? '') + ' ' + (state.user.second_name ?? '')}

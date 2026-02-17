@@ -254,8 +254,10 @@ class User:
                         else:
                             date_register = user.indirect_data['date_register']
                             convert_date_reg = convert_date_reg = make_date_valid(date_register)
+
                         if convert_date_reg is None:
                             continue
+
                         # print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
                         if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
@@ -695,6 +697,11 @@ class User:
             return excel_buffer
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel create_metrics_excel: {e}')
+
+    async def check_date_of_employment(self, session):
+        import request
+        import json 
+        pass
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"

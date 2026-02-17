@@ -644,8 +644,17 @@ class User:
             ws['H1'] = 'Время сеанса, минуты'
             row_number = 1
             for user_inf in all_users:
-                if 0 < row_number <= 10:
-                    if user_inf.active is True:
+                
+                if user_inf.active is True:
+                    if 0 < row_number <= 200:
+                    # if 200 < row_number <= 400:
+                    # if 400 < row_number <= 600:
+                    # if 600 < row_number <= 800:
+                    # if 800 < row_number <= 1000:
+                    # if 1000 < row_number <= 1200:
+                    # if 1200 < row_number <= 1400:
+                    # if 1400 < row_number <= 1600:
+                    # if 1600 < row_number <= 1800:
                         row_number += 1
                         indirect_data = user_inf.indirect_data
 
@@ -674,7 +683,7 @@ class User:
                                 ws[f'F{row_number}'] = f'{visits['totals'][0]}'
 
                         #ставим таймаут
-                        await asyncio.sleep(2)
+                        # await asyncio.sleep(2)
 
                         async with httpx.AsyncClient(timeout=30.0) as client:
                         #заполняем уникальные просмотры
@@ -685,7 +694,7 @@ class User:
                                 ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
                         
                         #ставим таймаут
-                        await asyncio.sleep(2)
+                        # await asyncio.sleep(2)
                         
                         async with httpx.AsyncClient(timeout=30.0) as client:
                         #заполняем среднее время сессии
@@ -697,10 +706,10 @@ class User:
                                 ws[f'H{row_number}'] = f'{avg_time_min}'
 
                         #ставим таймаут
-                        await asyncio.sleep(2)
+                        # await asyncio.sleep(2)
                 # if row_number == 10:
-                else:
-                    break
+                    else:
+                        break
 
             excel_buffer = io.BytesIO()
             wb.save(excel_buffer)

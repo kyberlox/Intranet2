@@ -100,9 +100,8 @@ export default defineComponent({
                 .then((data) => {
                     userData.initLogin('cookieKey', data);
                     prefetchSection('user');
-                    console.log(userData.getIsLogin);
                 })
-            // .finally(() => userData.setLogin(true))
+                .finally(() => userData.setLogin(true))
         })
 
         return {

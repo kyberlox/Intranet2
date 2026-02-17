@@ -653,7 +653,8 @@ class User:
                     if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
                         if len(indirect_data['uf_department']) >= 1:
                             ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
-                            ws[f'C{row_number}'] = f'{ped_info[0].name}'
+                            if ped_info:
+                                ws[f'C{row_number}'] = f'{ped_info[0].name}'
                     
                     # if 'personal_city' in user_inf:
                     ws[f'D{row_number}'] = f'{user_inf.personal_city}'

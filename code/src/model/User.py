@@ -706,7 +706,7 @@ class User:
             wb.save(excel_buffer)
             excel_buffer.seek(0)
 
-            async with aiofiles.open('./model/intranet_statistic.xlsx', 'wb') as f:
+            async with aiofiles.open('./intranet_statistic.xlsx', 'wb') as f:
                 await f.write(excel_buffer.getvalue())
             
             # Сохранение

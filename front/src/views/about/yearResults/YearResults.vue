@@ -12,7 +12,7 @@
             <div class="tags__tag tags__tag--nohover tags__tag--inner section__item__link btn-air"
                  :class="{ 'tags__tag--active': activeLocation == location }"
                  @click="activeLocation = location">
-                {{ 'Доска почета ' + location }}
+                {{ location }}
             </div>
         </div>
     </div>
@@ -28,6 +28,7 @@
     <div class="row mb-5 mt20"
          v-if="awardTypes.length && currentYear && activeLocation">
         <h2 class="page__title">
+
             {{ activeLocation }}
             <span v-if="currentYear"
                   class="year">/ {{ currentYear }}</span>

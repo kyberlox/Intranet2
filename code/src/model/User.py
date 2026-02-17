@@ -616,6 +616,7 @@ class User:
         Посещения - уникальное колчисевто просмотров пользователя
         Время сеанса - среднее время на сайте 
         """
+        import httpx
         from openpyxl import Workbook
         import io
         import requests
@@ -660,29 +661,32 @@ class User:
                         ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
                     #заполняем сеансы
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    res = response.text
-                    visits = json.loads(res)
-                    ws[f'F{row_number}'] = f'{visits['totals'][0]}'
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        response = client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        res = response.text
+                        visits = json.loads(res)
+                        ws[f'F{row_number}'] = f'{visits['totals'][0]}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)
 
+                    async with httpx.AsyncClient(timeout=30.0) as client:
                     #заполняем уникальные просмотры
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    res = response.text
-                    uniq_visits = json.loads(res)
-                    ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
+                        response = client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        res = response.text
+                        uniq_visits = json.loads(res)
+                        ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
                     
                     #ставим таймаут
                     await asyncio.sleep(2)
                     
+                    async with httpx.AsyncClient(timeout=30.0) as client:
                     #заполняем среднее время сессии
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    res = response.text
-                    avg_time_sec = json.loads(res)
-                    avg_time_min = avg_time_sec['totals'][0] / 60
-                    ws[f'H{row_number}'] = f'{avg_time_min}'
+                        client = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        res = response.text
+                        avg_time_sec = json.loads(res)
+                        avg_time_min = avg_time_sec['totals'][0] / 60
+                        ws[f'H{row_number}'] = f'{avg_time_min}'
 
                     #ставим таймаут
                     await asyncio.sleep(2)

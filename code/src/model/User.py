@@ -254,7 +254,7 @@ class User:
                         else:
                             date_register = user.indirect_data['date_register']
                             convert_date_reg = convert_date_reg = make_date_valid(date_register)
-                        
+                        print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
                         if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 

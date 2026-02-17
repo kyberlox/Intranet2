@@ -646,7 +646,7 @@ class User:
             for user_inf in all_users:
                 
                 if user_inf.active is True:
-                    if 0 < row_number <= 200:
+                    if 0 < row_number <= 1000:
                     # if 200 < row_number <= 400:
                     # if 400 < row_number <= 600:
                     # if 600 < row_number <= 800:

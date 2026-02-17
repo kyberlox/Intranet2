@@ -244,17 +244,21 @@ class User:
                 "description": ""
             }
             for user in all_users:
-                if user.active is True and user.id == 2112:
+                if user.active is True:
                     # Проверяем либо дату регистрации, либо дату трудоустройства
                     if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or ("date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != ''):
                         
-                        if "date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != '':
+                        if "date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] is not None:
                             date_register = user.indirect_data['date_of_employment']
                             convert_date_reg = make_date_valid(date_register)
                         else:
                             date_register = user.indirect_data['date_register']
                             convert_date_reg = convert_date_reg = make_date_valid(date_register)
-                        
+
+                        if convert_date_reg is None:
+                            continue
+
+                        # print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
                         if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 
@@ -612,6 +616,7 @@ class User:
         Посещения - уникальное колчисевто просмотров пользователя
         Время сеанса - среднее время на сайте 
         """
+        import httpx
         from openpyxl import Workbook
         import io
         import requests
@@ -656,7 +661,8 @@ class User:
                         ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
                     #заполняем сеансы
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        response = client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     visits = json.loads(res)
                     ws[f'F{row_number}'] = f'{visits['totals'][0]}'
@@ -664,8 +670,9 @@ class User:
                     #ставим таймаут
                     await asyncio.sleep(2)
 
+                    async with httpx.AsyncClient(timeout=30.0) as client:
                     #заполняем уникальные просмотры
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        response = client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:pageviews&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     uniq_visits = json.loads(res)
                     ws[f'G{row_number}'] = f'{uniq_visits['totals'][0]}'
@@ -673,8 +680,9 @@ class User:
                     #ставим таймаут
                     await asyncio.sleep(2)
                     
+                    async with httpx.AsyncClient(timeout=30.0) as client:
                     #заполняем среднее время сессии
-                    response = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        client = requests.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
                     res = response.text
                     avg_time_sec = json.loads(res)
                     avg_time_min = avg_time_sec['totals'][0] / 60
@@ -682,8 +690,8 @@ class User:
 
                     #ставим таймаут
                     await asyncio.sleep(2)
-                if row_number == 10:
-                    break
+                # if row_number == 10:
+                #     break
 
             excel_buffer = io.BytesIO()
             wb.save(excel_buffer)
@@ -693,6 +701,11 @@ class User:
             return excel_buffer
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel create_metrics_excel: {e}')
+
+    async def check_date_of_employment(self, session):
+        import request
+        import json 
+        pass
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"

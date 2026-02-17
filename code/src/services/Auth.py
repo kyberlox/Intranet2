@@ -224,11 +224,6 @@ class AuthService:
         access_token_expires_at = datetime.fromisoformat(
             session_data["access_token_expires_at"]
         )
-        # # Если access_token истек, удаляем сессию
-        # if now >= access_token_expires_at:
-        #     print('удаляем сессию')
-        #     self.delete_session(session_id)
-        #     return None
         
         # Если access_token скоро истекает (менее 5 минут), обновляем его
         # if (access_token_expires_at - timedelta(minutes=1)) <= now <= access_token_expires_at:
@@ -346,8 +341,9 @@ class AuthService:
         if 'UF_DEPARTMENT' in user_info and 112 in user_info['UF_DEPARTMENT']:
             return None
 
-
+        print(tokens, 'че в токенах')
         # Создаем сессию
+        # посмотреть есть ли такая сессия и если есть возвращать существующую
         session = await self.create_session(tokens, user_info)
         return session
         
@@ -656,6 +652,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
         value=session["session_id"],
         max_age=int(AuthService().session_ttl.total_seconds())
     )
+    print("session_id", session["session_id"])
     # Устанавливаем session_id в куки
     # response.set_cookie(
     #     key="user_id",

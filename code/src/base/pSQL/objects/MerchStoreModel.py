@@ -126,7 +126,7 @@ class MerchStoreModel:
             # Добавляем запись в историю
             merch_description = f"{merch_info.name}, Куплено {total_count} штук(а)"
             add_history = PeerHistory(
-                user_uuid=self.user_id,
+                user_uuid=int(self.user_id),
                 merch_info=merch_description,
                 merch_coast=total_price,
                 info_type='merch',

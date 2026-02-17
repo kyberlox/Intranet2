@@ -95,8 +95,14 @@ export default defineComponent({
         onMounted(() => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');
             if (!cookieKey) return;
+
             Api.get(`users/find_by_session_id/${cookieKey}`)
-                .then((data) => userData.initLogin('cookieKey', data))
+                .then((data) => {
+                    userData.initLogin('cookieKey', data);
+                    prefetchSection('user');
+                    console.log(userData.getIsLogin);
+                })
+            // .finally(() => userData.setLogin(true))
         })
 
         return {

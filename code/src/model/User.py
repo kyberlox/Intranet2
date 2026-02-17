@@ -622,6 +622,7 @@ class User:
         import requests
         import json
         from ..model.Department import Department
+        import aiofiles
         try:
             # Вытягиваем всех пользователей
             all_users = await self.UserModel.all(session)
@@ -702,8 +703,11 @@ class User:
             wb.save(excel_buffer)
             excel_buffer.seek(0)
 
+            async with aiofiles.open('./model/intranet_statistic.xlsx', 'wb') as f:
+                await f.write(excel_buffer.getvalue())
+            
             # Сохранение
-            return excel_buffer
+            return True
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel create_metrics_excel: {e}')
 
@@ -980,9 +984,10 @@ async def send_test_email(session: AsyncSession = Depends(get_async_db)):
 async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = Depends(get_async_db)):
     
     excel_buffer = await User().create_metrics_excel(session=session, date1=date1, date2=date2)
-    return StreamingResponse(excel_buffer,
-                            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
+    # return StreamingResponse(excel_buffer,
+    #                         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    #                         headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
+    return excel_buffer
 
 
 # @users_router.post("/search_indirect")

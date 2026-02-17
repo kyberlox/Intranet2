@@ -104,7 +104,7 @@ class MerchStoreModel:
             total_price = total_count * merch_info.indirect_data.get('price', 0)
             
             # Проверяем баланс пользователя
-            stmt_user = select(Roots).where(Roots.user_uuid == self.user_id)
+            stmt_user = select(Roots).where(Roots.user_uuid == int(self.user_id))
             result_user = await session.execute(stmt_user)
             user = result_user.scalar_one_or_none()
 
@@ -126,7 +126,7 @@ class MerchStoreModel:
             # Добавляем запись в историю
             merch_description = f"{merch_info.name}, Куплено {total_count} штук(а)"
             add_history = PeerHistory(
-                user_uuid=self.user_id,
+                user_uuid=int(self.user_id),
                 merch_info=merch_description,
                 merch_coast=total_price,
                 info_type='merch',

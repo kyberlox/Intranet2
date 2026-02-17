@@ -248,12 +248,14 @@ class User:
                     # Проверяем либо дату регистрации, либо дату трудоустройства
                     if ('date_register' in user.indirect_data and user.indirect_data['date_register'] != '') or ("date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] != ''):
                         
-                        if "date_of_employment" in user.indirect_data and (user.indirect_data['date_of_employment'] != '' or user.indirect_data['date_of_employment'] is not None):
+                        if "date_of_employment" in user.indirect_data and user.indirect_data['date_of_employment'] is not None:
                             date_register = user.indirect_data['date_of_employment']
                             convert_date_reg = make_date_valid(date_register)
                         else:
                             date_register = user.indirect_data['date_register']
                             convert_date_reg = convert_date_reg = make_date_valid(date_register)
+                        if convert_date_reg is None:
+                            continue
                         # print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
                         if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК

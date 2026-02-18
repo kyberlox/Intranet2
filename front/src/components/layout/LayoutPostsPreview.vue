@@ -23,7 +23,13 @@
                  :plugImg="emptyPlug"
                  :plugText="emptyPageHtml" />
 
-    <SampleGallery v-else-if="!emptyTag"
+    <ComplexGallery v-else-if="!emptyTag && galleryType == 'complex'"
+                    class="mt20"
+                    :page="'postPreview'"
+                    :slides="(visibleNews as IBaseEntity[])"
+                    :routeTo="routeTo" />
+
+    <SampleGallery v-else-if="!emptyTag && galleryType == 'sample'"
                    :gallery="visibleNews"
                    :type="'postPreview'"
                    :routeTo="routeTo" />
@@ -35,7 +41,7 @@
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef, watch, type PropType } from 'vue';
-import type { INews } from '@/interfaces/IEntities';
+import type { IBaseEntity, INews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
@@ -45,16 +51,21 @@ import { useNewsFilterWatch } from '@/composables/useNewsFilterWatch';
 import { type DataStateKey } from "@/stores/viewsData";
 import { emptyPageHtml } from '@/assets/static/contentPlugs';
 import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
-import ContentPlug from "../ContentPlug.vue";
+import ContentPlug from "./ContentPlug.vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 
 export default defineComponent({
     components: {
         SampleGallery,
         DateFilter,
         TagsFilter,
-        ContentPlug
+        ContentPlug,
+        ComplexGallery
     },
     props: {
+        id: {
+            type: Number
+        },
         pageTitle: {
             type: String
         },
@@ -82,6 +93,10 @@ export default defineComponent({
         },
         routeTo: {
             type: String
+        },
+        galleryType: {
+            type: String,
+            default: () => 'sample'
         }
     },
     setup(props) {

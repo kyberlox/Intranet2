@@ -7,7 +7,8 @@
     <div v-if="isLogin">
         <LayoutHeader />
         <main>
-            <div class="container-fluid"
+            <div v-if="!isLoading"
+                 class="container-fluid"
                  :class="{ 'container-fluid--nopadding': !isLogin }">
                 <div class="row main-layout"
                      :class="{ 'row--nomargin': !isLogin }">
@@ -15,8 +16,7 @@
                         <Breadcrumbs />
                         <RouterView />
                     </div>
-                    <div v-if="isLogin"
-                         class="main-sidebar flex-shrink d-print-none">
+                    <div class="main-sidebar flex-shrink d-print-none">
                         <Sidebar />
                     </div>
                 </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onBeforeMount } from "vue";
+import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
@@ -64,13 +64,13 @@ export default defineComponent({
         YandexMetrika,
         SnowFlakes,
         VCard,
-        InService
+        InService,
     },
     setup() {
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
-
+        const isLoading = ref(true);
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (userData.getIsLogin && userData.getMyId == 0) {
@@ -78,6 +78,7 @@ export default defineComponent({
             }
             else
                 if (isLogin.value) {
+                    isLoading.value = false;
                     prefetchSection('score');
                     prefetchSection('calendar');
 
@@ -111,7 +112,8 @@ export default defineComponent({
             isLogin,
             userId: computed(() => useUserData().getMyId),
             isDarkMode: computed(() => useStyleModeStore().getDarkMode),
-            route
+            route,
+            isLoading
         }
     }
 })

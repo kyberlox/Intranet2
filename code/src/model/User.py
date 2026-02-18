@@ -746,16 +746,17 @@ class User:
             is_employment_str_count = []
             is_employment_exist_count = []
             for user in users:
-                if 'date_of_employment' not in user['indirect_data']:
-                    is_employment_exist_count.append(user['id'])
-                    continue
-                if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
-                    is_employment_str_count.append(user['id'])
-                    continue
-                
-                if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] is None:
-                    is_employment_none_count.append(user['id'])
-                    continue
+                if user['active'] is True:
+                    if 'date_of_employment' not in user['indirect_data']:
+                        is_employment_exist_count.append(user['id'])
+                        continue
+                    if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
+                        is_employment_str_count.append(user['id'])
+                        continue
+                    
+                    if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] is None:
+                        is_employment_none_count.append(user['id'])
+                        continue
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
 '''

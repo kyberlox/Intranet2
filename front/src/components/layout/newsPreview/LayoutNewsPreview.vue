@@ -18,7 +18,7 @@
                 :tagId="tagId" />
 </div>
 <div class="row">
-    <ContentPlug v-if="!isLoading && !visibleNews.length"
+    <ContentPlug v-if="!isLoading && (!visibleNews || !visibleNews.length)"
                  :needGptMark="true"
                  :plugImg="emptyPlug"
                  :plugText="emptyPageHtml" />
@@ -106,7 +106,7 @@ export default defineComponent({
         })
 
         onMounted(() => {
-            if (allNews.value.length && !props.tagId) {
+            if (allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
                 filterYears.value = extractYears(allNews.value);
             } else
@@ -117,7 +117,9 @@ export default defineComponent({
                     if (!props.tagId) visibleNews.value = res;
                 })
                 .finally(() => {
-                    filterYears.value = extractYears(visibleNews.value);
+                    if (visibleNews.value && visibleNews.value.length) {
+                        filterYears.value = extractYears(visibleNews.value);
+                    }
                     isLoading.value = false;
                 })
         })

@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, watch, onBeforeMount } from "vue";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
@@ -73,10 +73,8 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            if (userData.getMyId == 0) {
+            if (userData.getIsLogin && userData.getMyId == 0) {
                 userData.setLogin(false);
-                console.log(userData);
-
             }
             else
                 if (isLogin.value) {

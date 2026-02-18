@@ -71,13 +71,16 @@ export default class Api {
             onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
         }
     ) {
-        const req = api.post(url, data, config);
-        req.catch(e => {
-            if (e.status == '502') {
+      return api.post(url, data, config)
+       .then(resp=>config ? resp : resp.data)
+        .catch(e=>{
+             if (e.status == 502) {
                 window.location.href = 'https://intranet.emk.ru/inservice'
             }
-        })
-        return config ? (await req) : (await req).data
+            else if (e.status == 401) {
+                useUserData().logOut()
+                throw new Error('Сессия истекла. Необходимо войти в систему заново.')
+            }})
     }
 
     static async put(

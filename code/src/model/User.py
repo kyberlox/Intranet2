@@ -415,7 +415,7 @@ class User:
                     # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
-                    if 'indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']:
+                    if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
                         if 'date_register' in psql_user['indirect_data']['date_register']:
                             convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
                             date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
@@ -755,8 +755,15 @@ class User:
                         continue
                     
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] is None:
+                        if user['id'] in [2]:
+                            continue
+                        
                         is_employment_none_count.append(user['id'])
                         continue
+        for user_id in is_employment_exist_count:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.put(f'https://intranet.emk.ru/api/users/update_user_info/{user_id['id']}', cookies=cookies)
+
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
 '''

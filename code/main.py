@@ -158,7 +158,8 @@ open_links = [
     "/api/total_background_task_update",
     "/ws/progress",
     "/api/vcard/by_uuid/", "/api/vcard/get/",
-    "/api/idea_pdf/generate_pdf/"
+    "/api/idea_pdf/generate_pdf/",
+    "/api/health_check"
 ]
 
 #Проверка авторизации для ВСЕХ запросов
@@ -456,6 +457,12 @@ def get_info_message():
 def get_test_elastic(word: str):
     return StructureSearchModel().get_structure_by_name(word)
 
+@app.get("/api/health_check")
+async def health_check():
+    """
+    Ручка, которой фронт проверяет состояние сервера
+    """
+    return True
 
 
 

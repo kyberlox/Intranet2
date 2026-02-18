@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
+import axios, {  type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
 import { useUserData } from '@/stores/userData';
 import { computed } from 'vue';
 import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell, IPostIdeaPdf } from
@@ -6,7 +6,6 @@ import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell,
 import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData';
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
-import { useRouter } from 'vue-router';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL
 const api = axios.create({
@@ -34,7 +33,7 @@ vendorApi.interceptors.request.use((config) => {
 
 export default class Api {
     static async get(url: string, config?: AxiosRequestConfig) {
-        return api.get(url, config)
+        return await api.get(url, config)
         .then(resp=>resp.data)
         .catch(e=>{
              if (e.status == 502) {

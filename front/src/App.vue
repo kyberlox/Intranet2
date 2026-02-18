@@ -101,7 +101,7 @@ export default defineComponent({
 
             Api.get(`users/find_by_session_id/${cookieKey}`)
                 .then((data) => {
-                    userData.initLogin('cookieKey', data);
+                    userData.initLogin(cookieKey, data);
                     prefetchSection('user');
                 })
                 .finally(() => userData.setLogin(true))

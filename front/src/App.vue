@@ -4,7 +4,7 @@
 <div v-else
      :class="{ 'dark-mode': isDarkMode }">
     <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
-    <div v-if="isLogin">
+    <div v-if="isLogin && !isLoading">
         <LayoutHeader />
         <main>
             <div v-if="!isLoading"

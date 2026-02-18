@@ -4,11 +4,10 @@
 <div v-else
      :class="{ 'dark-mode': isDarkMode }">
     <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
-    <div v-if="isLogin && !isLoading">
+    <div v-if="isLogin">
         <LayoutHeader />
         <main>
-            <div v-if="!isLoading"
-                 class="container-fluid"
+            <div class="container-fluid"
                  :class="{ 'container-fluid--nopadding': !isLogin }">
                 <div class="row main-layout"
                      :class="{ 'row--nomargin': !isLogin }">
@@ -24,7 +23,7 @@
             <PageScrollArrow />
         </main>
     </div>
-    <div v-else>
+    <div>
         <AuthPage />
     </div>
 </div>
@@ -70,7 +69,6 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
-        const isLoading = ref(true);
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (userData.getIsLogin && userData.getMyId == 0) {
@@ -78,7 +76,6 @@ export default defineComponent({
             }
             else
                 if (isLogin.value) {
-                    isLoading.value = false;
                     prefetchSection('score');
                     prefetchSection('calendar');
 
@@ -113,7 +110,6 @@ export default defineComponent({
             userId: computed(() => useUserData().getMyId),
             isDarkMode: computed(() => useStyleModeStore().getDarkMode),
             route,
-            isLoading
         }
     }
 })

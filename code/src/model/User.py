@@ -724,7 +724,7 @@ class User:
             return LogsMaker().error_message(f'Произошла ошибка при создании файла excel create_metrics_excel: {e}')
 
     async def check_date_of_employment(self, session):
-        import request
+        import requests
         import json 
         import httpx
         session_id = '59eedb6e-906a-44db-a56e-fa51022dea34'

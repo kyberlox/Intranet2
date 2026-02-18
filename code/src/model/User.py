@@ -683,11 +683,11 @@ class User:
                                 visits = json.loads(res)
                                 data_stat = visits['totals']
 
-                        ws[f'F{row_number}'] = f'{data_stat['totals'][0]}'
-                        ws[f'G{row_number}'] = f'{data_stat['totals'][1]}'
+                                ws[f'F{row_number}'] = f'{data_stat['totals'][0]}'
+                                ws[f'G{row_number}'] = f'{data_stat['totals'][1]}'
 
-                        avg_time_min = data_stat['totals'][2] / 60
-                        ws[f'H{row_number}'] = f'{avg_time_min}'
+                                avg_time_min = data_stat['totals'][2] / 60
+                                ws[f'H{row_number}'] = f'{avg_time_min}'
                         #ставим таймаут
                         # await asyncio.sleep(2)
 

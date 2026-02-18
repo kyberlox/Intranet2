@@ -50,8 +50,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-html+.repair__wrapper,
-html {
+html:has(.repair__wrapper) {
     background-color: rgba(255, 218, 185, 0.307);
 }
 

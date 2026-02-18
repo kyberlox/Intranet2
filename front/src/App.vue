@@ -7,10 +7,8 @@
     <div v-if="isLogin">
         <LayoutHeader />
         <main>
-            <div class="container-fluid"
-                 :class="{ 'container-fluid--nopadding': !isLogin }">
-                <div class="row main-layout"
-                     :class="{ 'row--nomargin': !isLogin }">
+            <div class="container-fluid">
+                <div class="row main-layout">
                     <div class="main-content flex-grow">
                         <Breadcrumbs />
                         <RouterView />
@@ -23,7 +21,7 @@
             <PageScrollArrow />
         </main>
     </div>
-    <div>
+    <div v-else-if="!isLoading">
         <AuthPage />
     </div>
 </div>
@@ -69,6 +67,7 @@ export default defineComponent({
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
+        const isLoading = ref(true);
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (userData.getIsLogin && userData.getMyId == 0) {
@@ -95,14 +94,14 @@ export default defineComponent({
 
         onBeforeMount(() => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');
-            if (!cookieKey) return;
+            if (!cookieKey) return isLoading.value = false;
 
             Api.get(`users/find_by_session_id/${cookieKey}`)
                 .then((data) => {
                     userData.initLogin(cookieKey, data);
                     prefetchSection('user');
                 })
-                .finally(() => userData.setLogin(true))
+                .finally(() => { userData.setLogin(true); isLoading.value = false })
         })
 
         return {
@@ -110,6 +109,7 @@ export default defineComponent({
             userId: computed(() => useUserData().getMyId),
             isDarkMode: computed(() => useStyleModeStore().getDarkMode),
             route,
+            isLoading
         }
     }
 })

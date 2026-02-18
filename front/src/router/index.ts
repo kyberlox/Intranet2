@@ -719,6 +719,11 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
+    {
+    path: '/inservice',
+    name: 'inservice',
+      component: () => import('@/views/errors/InService.vue'),
+    }
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

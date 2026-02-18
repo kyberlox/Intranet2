@@ -1,10 +1,12 @@
-import axios, { AxiosError, type AxiosProgressEvent, type AxiosRequestConfig } from 'axios'
-import { useUserData } from '@/stores/userData'
-import { computed } from 'vue'
-import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell, IPostIdeaPdf } from '@/interfaces/IPostFetch'
-import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData'
-import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities'
-import type { IPostInner } from '@/components/tools/common/PostInner.vue'
+import axios, { AxiosError, type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
+import { useUserData } from '@/stores/userData';
+import { computed } from 'vue';
+import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell, IPostIdeaPdf } from
+    '@/interfaces/IPostFetch';
+import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData';
+import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
+import type { IPostInner } from '@/components/tools/common/PostInner.vue';
+import { useRouter } from 'vue-router';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL
 const api = axios.create({
@@ -17,30 +19,32 @@ const vendorApi = axios.create({
 })
 
 // добавляю токен
-const authCookie = computed(()=> useUserData().getAuthKey);
-const id = computed(()=>useUserData().getMyId);
+const authCookie = computed(() => useUserData().getAuthKey);
+const id = computed(() => useUserData().getMyId);
 
 api.interceptors.request.use((config) => {
     config.headers.session_id = authCookie.value || '';
     return config
 })
-vendorApi.interceptors.request.use((config)=> {
-    config.headers.session_id  = authCookie.value || '';
+vendorApi.interceptors.request.use((config) => {
+    config.headers.session_id = authCookie.value || '';
     config.headers.user_id = id.value;
     return config
 })
 
 export default class Api {
     static async get(url: string, config?: AxiosRequestConfig) {
-        try {
-            return (await api.get(url, config)).data
-        } catch (error) {
-            if (error instanceof AxiosError && error.response?.status == 401) {
+        return api.get(url, config)
+        .then(resp=>resp.data)
+        .catch(e=>{
+             if (e.status == 502) {
+                window.location.href = 'https://intranet.emk.ru/inservice'
+            }
+            else if (e.status == 401) {
                 useUserData().logOut()
                 throw new Error('Сессия истекла. Необходимо войти в систему заново.')
             }
-            throw error
-        }
+        })
     }
 
     static async postVendor(url: string, data: INeuroChat[] | null | FormData) {
@@ -61,14 +65,19 @@ export default class Api {
             | Array<IPostEventToExcell>
             | Array<string>
             | IPostIdeaPdf
-            |{ art_id: string | null | undefined; links: string[]; }
+            | { art_id: string | null | undefined; links: string[]; }
             | null,
-            config?: AxiosRequestConfig & {
-        onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
-    }
+        config?: AxiosRequestConfig & {
+            onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
+        }
     ) {
-    const req = api.post(url, data, config);
-    return config ? (await req) : (await req).data
+        const req = api.post(url, data, config);
+        req.catch(e => {
+            if (e.status == '502') {
+                window.location.href = 'https://intranet.emk.ru/inservice'
+            }
+        })
+        return config ? (await req) : (await req).data
     }
 
     static async put(

@@ -1,22 +1,22 @@
 <template>
-<LayoutNewsPreview :tagId="tagId"
-                   :needTags="false"
-                   :needYears="false"
-                   :pageTitle="pageTitle"
-                   :storeItemsName="storeItemsName"
-                   :sectionId="Number(sectionId)"
-                   :type="'postPreview'"
-                   :routeTo="'carePost'" />
+<LayoutPostsPreview :tagId="tagId"
+                    :needTags="false"
+                    :needYears="false"
+                    :pageTitle="pageTitle"
+                    :storeItemsName="storeItemsName"
+                    :sectionId="Number(sectionId)"
+                    :type="'postPreview'"
+                    :routeTo="'carePost'" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
 import { defineComponent } from 'vue';
-import LayoutNewsPreview from '@/components/layout/newsPreview/LayoutNewsPreview.vue';
+import LayoutPostsPreview from '@/components/layout/LayoutPostsPreview.vue';
 import type { DataState } from '@/stores/viewsData';
 
 export default defineComponent({
     components: {
-        LayoutNewsPreview,
+        LayoutPostsPreview,
     },
     props: {
         tagId: {

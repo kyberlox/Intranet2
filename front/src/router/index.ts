@@ -6,10 +6,6 @@ const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 
 const checkIsAdmin = () => {
-  const userData = useUserData();
-  if(!userData.getIsLogin) {
-    return false;
-  }
     return Api.get('roots/get_root_token_by_uuid')
       .then((res)=>{
          if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
@@ -723,6 +719,11 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
+    {
+    path: '/inservice',
+    name: 'inservice',
+      component: () => import('@/views/errors/InService.vue'),
+    }
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

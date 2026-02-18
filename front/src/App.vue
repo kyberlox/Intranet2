@@ -1,5 +1,7 @@
 <template>
-<div v-if="route.name !== 'vcard'"
+<VCard v-if="route.name == 'vcard'" />
+<InService v-else-if="route.name == 'inservice'" />
+<div v-else
      :class="{ 'dark-mode': isDarkMode }">
     <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
     <div v-if="isLogin">
@@ -26,15 +28,14 @@
         <AuthPage />
     </div>
 </div>
-<VCard v-else />
 <Toast :position="'bottom-right'" />
 <YandexMetrika v-if="userId"
                :uid="userId" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted } from "vue";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { defineComponent, computed, watch, onBeforeMount } from "vue";
+import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
@@ -48,6 +49,7 @@ import { useStyleModeStore } from "./stores/styleMode";
 import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
 import Api from "./utils/Api";
+import InService from "./views/errors/InService.vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -61,7 +63,8 @@ export default defineComponent({
         PageScrollArrow,
         YandexMetrika,
         SnowFlakes,
-        VCard
+        VCard,
+        InService
     },
     setup() {
         const route = useRoute();
@@ -70,7 +73,7 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            if (userData.getMyId == 0) {
+            if (userData.getIsLogin && userData.getMyId == 0) {
                 userData.setLogin(false);
             }
             else
@@ -92,13 +95,13 @@ export default defineComponent({
                 }
         }, { immediate: true, deep: true })
 
-        onMounted(() => {
+        onBeforeMount(() => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');
             if (!cookieKey) return;
 
             Api.get(`users/find_by_session_id/${cookieKey}`)
                 .then((data) => {
-                    userData.initLogin('cookieKey', data);
+                    userData.initLogin(cookieKey, data);
                     prefetchSection('user');
                 })
                 .finally(() => userData.setLogin(true))

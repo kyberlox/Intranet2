@@ -18,12 +18,18 @@
                 :tagId="tagId" />
 </div>
 <div class="row">
-    <ContentPlug v-if="!isLoading && !visibleNews.length"
+    <ContentPlug v-if="!isLoading && (!visibleNews || !visibleNews.length)"
                  :needGptMark="true"
                  :plugImg="emptyPlug"
                  :plugText="emptyPageHtml" />
 
-    <SampleGallery v-else-if="!emptyTag"
+    <ComplexGallery v-else-if="!emptyTag && galleryType == 'complex'"
+                    class="mt20"
+                    :page="'postPreview'"
+                    :slides="(visibleNews as IBaseEntity[])"
+                    :routeTo="routeTo" />
+
+    <SampleGallery v-else-if="!emptyTag && galleryType == 'sample'"
                    :gallery="visibleNews"
                    :type="'postPreview'"
                    :routeTo="routeTo" />
@@ -35,7 +41,7 @@
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from '@/utils/Api';
 import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef, watch, type PropType } from 'vue';
-import type { INews } from '@/interfaces/IEntities';
+import type { IBaseEntity, INews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
@@ -45,16 +51,21 @@ import { useNewsFilterWatch } from '@/composables/useNewsFilterWatch';
 import { type DataStateKey } from "@/stores/viewsData";
 import { emptyPageHtml } from '@/assets/static/contentPlugs';
 import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
-import ContentPlug from "../ContentPlug.vue";
+import ContentPlug from "./ContentPlug.vue";
+import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 
 export default defineComponent({
     components: {
         SampleGallery,
         DateFilter,
         TagsFilter,
-        ContentPlug
+        ContentPlug,
+        ComplexGallery
     },
     props: {
+        id: {
+            type: Number
+        },
         pageTitle: {
             type: String
         },
@@ -82,6 +93,10 @@ export default defineComponent({
         },
         routeTo: {
             type: String
+        },
+        galleryType: {
+            type: String,
+            default: () => 'sample'
         }
     },
     setup(props) {
@@ -106,7 +121,7 @@ export default defineComponent({
         })
 
         onMounted(() => {
-            if (allNews.value.length && !props.tagId) {
+            if (allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
                 filterYears.value = extractYears(allNews.value);
             } else
@@ -117,7 +132,9 @@ export default defineComponent({
                     if (!props.tagId) visibleNews.value = res;
                 })
                 .finally(() => {
-                    filterYears.value = extractYears(visibleNews.value);
+                    if (visibleNews.value && visibleNews.value.length) {
+                        filterYears.value = extractYears(visibleNews.value);
+                    }
                     isLoading.value = false;
                 })
         })

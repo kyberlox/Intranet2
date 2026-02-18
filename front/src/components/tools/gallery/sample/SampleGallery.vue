@@ -1,5 +1,5 @@
 <template>
-<div v-if="gallery.length"
+<div v-if="gallery && gallery.length"
      class="homeview__grid__gallery">
     <div class="homeview__grid">
         <div v-for="card in gallery"

@@ -726,7 +726,38 @@ class User:
     async def check_date_of_employment(self, session):
         import request
         import json 
-        pass
+        import httpx
+        session_id = '59eedb6e-906a-44db-a56e-fa51022dea34'
+        cookies = {'session_id': session_id}
+
+        def get_from_response(response):
+            #Конвертировать ответ сервера в словарь
+            result = response.text
+            return json.loads(result)
+
+        users = []
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await requests.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
+            if response.status_code == 200:
+                users = get_from_response(response)
+        
+        if users:
+            is_employment_none_count = []
+            is_employment_str_count = []
+            is_employment_exist_count = []
+            for user in users:
+                if 'date_of_employment' not in user['indirect_data']:
+                    is_employment_exist_count.append(user['id'])
+                    continue
+                if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
+                    is_employment_str_count.append(user['id'])
+                    continue
+                
+                if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] is None:
+                    is_employment_none_count.append(user['id'])
+                    continue
+        return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
+
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"
@@ -1001,7 +1032,9 @@ async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = D
     #                         headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
     return excel_buffer
 
-
+@users_router.get("/check_date_of_employment", tags=["Пользователь"])
+async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):
+    return await User().check_date_of_employment(session=session)
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

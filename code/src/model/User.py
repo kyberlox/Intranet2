@@ -737,7 +737,7 @@ class User:
 
         users = []
         async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await requests.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
+            response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
             if response.status_code == 200:
                 users = get_from_response(response)
         

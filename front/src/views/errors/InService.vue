@@ -15,15 +15,42 @@
     <div class="repair__img__wrapper">
         <img class="repair__img"
              src="./cat502.jpg">
-        <span class="repair__img__mark">
-            *изображение сгенерировано сервисом
-            <span class="orange">chatGPT</span> внутри корпоративного портала</span>
     </div>
+    <span class="repair__img__mark">
+        *изображение сгенерировано сервисом
+        <span class="orange">chatGPT</span> внутри корпоративного портала</span>
 </div>
 </template>
 
+<script lang="ts">
+import Api from '@/utils/Api';
+import { defineComponent, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+export default defineComponent({
+    setup() {
+        const router = useRouter();
+        onMounted(() => {
+            setInterval(() => {
+                Api.get('/health_check')
+                    .then((data) => {
+                        if (data) {
+                            router.push({ name: 'home' })
+                        }
+                    })
+                    .catch((error) => console.log(error))
+            }, 10000);
+        })
+
+        return {
+
+        }
+    }
+})
+</script>
+
 <style lang="scss">
-html {
+html:has(.repair__wrapper) {
     background-color: rgba(255, 218, 185, 0.307);
 }
 

@@ -1009,7 +1009,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         f"&position={quote(position)}"
     )
 
-    return f"""
+    return HTMLResponse(f"""
     <html>
         <body>
             <p>Переход в приложение...</p>
@@ -1019,4 +1019,4 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             <a href="{deep_link}">Нажмите, если не перешли</a>
         </body>
     </html>
-    """
+    """)

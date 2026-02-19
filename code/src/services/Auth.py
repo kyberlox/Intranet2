@@ -986,14 +986,14 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     ID = session_data['user_id']
     session_id = session_data["session_id"]
     position = session_data['user_info']['WORK_POSITION']
-    redirect_uri = f"contacts_app_emk://auth?id={ID}&session_id={session_id}&fio={fio}&department={department}&position={position}"
-    response = RedirectResponse(url=redirect_uri, status_code=302)
+    full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
 
-    
-    
-    # Создаем RedirectResponse на deep link с передачей данных
-    # user_info_json = json.dumps(user_info, ensure_ascii=False)
-    # redirect_url = f"exhibitions://auth?data={user_info_json}"
-    # response = RedirectResponse(url=redirect_url, status_code=302)
-
-    return response
+    redirect_uri = (
+    f"contacts_app_emk://auth"
+    f"?id={ID}"
+    f"&session_id={session_id}"
+    f"&fio={full_name}"
+    f"&department={department}"
+    f"&position={position}"
+)
+    return RedirectResponse(url=redirect_uri, status_code=302)

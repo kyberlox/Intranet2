@@ -688,7 +688,7 @@ class User:
 
                                 avg_time_min = data_stat[2] // 60
                                 avg_time_sec = data_stat[2] % 60
-                                ws[f'H{row_number}'] = f'{avg_time_min}:{avg_time_sec}'
+                                ws[f'H{row_number}'] = f'{int(avg_time_min)}:{int(avg_time_sec)}'
                     else:
                         break
 

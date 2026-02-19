@@ -997,5 +997,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
         f"&department={quote(department)}"
         f"&position={quote(position)}"
     )
-    
+
     return RedirectResponse(url=redirect_uri, status_code=302)
+    
+    #   return HTMLResponse(f"<script>window.location.href = '{deep_link}';</script>")

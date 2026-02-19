@@ -982,26 +982,26 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     # redirect_url = f"http://exhibitions.kuberlox.ru/login"
 
-    # Создаем RedirectResponse
-    response = RedirectResponse(url="contacts-app-emk://auth", status_code=302)
-    return response
+    # #Создаем RedirectResponse
+    # response = RedirectResponse(url="contacts-app-emk://auth", status_code=302)
+    # return response
 
 
-    # ID = session_data['user_id']
-    # session_id = session_data["session_id"]
-    # position = session_data['user_info']['WORK_POSITION']
-    # full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
+    ID = session_data['user_id']
+    session_id = session_data["session_id"]
+    position = session_data['user_info']['WORK_POSITION']
+    full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
 
-    # redirect_uri = (
-    #     f"contacts_app_emk://auth"
-    #     f"?id={user_id}"
-    #     f"&session_id={session_id}"
-    #     f"&fio={quote(full_name)}"
-    #     f"&department={quote(department)}"
-    #     f"&position={quote(position)}"
-    # )
+    redirect_uri = (
+        f"contacts_app_emk://auth"
+        f"?id={user_id}"
+        f"&session_id={session_id}"
+        f"&fio={quote(full_name)}"
+        f"&department={quote(department)}"
+        f"&position={quote(position)}"
+    )
 
-    #return RedirectResponse(url="contacts_app_emk://auth", status_code=302)
+    return RedirectResponse(url="contacts-app-emk://auth", status_code=302)
 
     # deep_link = (
     #     f"contacts_app_emk://auth"

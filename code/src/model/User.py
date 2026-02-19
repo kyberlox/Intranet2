@@ -798,8 +798,8 @@ async def get_user_id_by_session_id(request: Request) -> int:
 
 
 # Пользоваетелей можно обновить
-@users_router.put("/update", tags=["Пользователь", "Битрикс24"])
-async def update_user(session: AsyncSession = Depends(get_async_db)):
+# @users_router.put("/update", tags=["Пользователь", "Битрикс24"])
+# async def update_user(session: AsyncSession = Depends(get_async_db)):
 #     """
 #     ## Метод `user.get`
 
@@ -841,8 +841,8 @@ async def update_user(session: AsyncSession = Depends(get_async_db)):
 
 #     """
 
-    usr = User()
-    return await usr.fetch_users_data(session)
+    # usr = User()
+    # return await usr.fetch_users_data(session)
 
 @users_router.put("/update_user_info/{user_id}", tags=["Пользователь", "Битрикс24"])
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):

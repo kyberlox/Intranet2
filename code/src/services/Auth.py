@@ -989,11 +989,11 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
 
     redirect_uri = (
-    f"contacts_app_emk://auth"
-    f"?id={ID}"
-    f"&session_id={session_id}"
-    f"&fio={full_name}"
-    f"&department={department}"
-    f"&position={position}"
-)
+        f"contacts_app_emk://auth"
+        f"?id={ID}"
+        f"&session_id={session_id}"
+        f"&fio={full_name}"
+        f"&department={department}"
+        f"&position={position}"
+    )
     return RedirectResponse(url=redirect_uri, status_code=302)

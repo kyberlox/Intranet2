@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.14.3-trixie
 
 WORKDIR /data/app
 RUN mkdir files_db vcard_db

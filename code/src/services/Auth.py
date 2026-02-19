@@ -998,6 +998,25 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     f"&position={quote(position)}"
     # )
 
-    return RedirectResponse(url="contacts_app_emk://auth", status_code=302)
+    #return RedirectResponse(url="contacts_app_emk://auth", status_code=302)
 
-    # return HTMLResponse(f"<script>window.location.href = '{redirect_uri}';</script>")
+    deep_link = (
+        f"contacts_app_emk://auth"
+        f"?id={user_id}"
+        f"&session_id={quote(session_id)}"
+        f"&fio={quote(full_name)}"
+        f"&department={quote(department)}"
+        f"&position={quote(position)}"
+    )
+
+    return f"""
+    <html>
+        <body>
+            <p>Переход в приложение...</p>
+            <script>
+                window.location.href = "{deep_link}";
+            </script>
+            <a href="{deep_link}">Нажмите, если не перешли</a>
+        </body>
+    </html>
+    """

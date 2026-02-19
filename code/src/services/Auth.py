@@ -933,6 +933,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 @auth_router.get("/exhibition_app", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
     import httpx
+    from urllib.parse import quote
     #проверка на авторизацию
     if not session_data:
         raise HTTPException(

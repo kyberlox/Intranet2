@@ -983,9 +983,9 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # redirect_url = f"http://exhibitions.kuberlox.ru/login"
 
     # Создаем RedirectResponse
-    response = RedirectResponse(url="exhibitions://auth", status_code=302)
+    response = RedirectResponse(url="contacts-app-emk://auth", status_code=302)
     return response
-    
+
 
     # ID = session_data['user_id']
     # session_id = session_data["session_id"]

@@ -642,6 +642,7 @@ class User:
             ws['F1'] = 'Сеансы (уникальные)'
             ws['G1'] = 'Посещения'
             ws['H1'] = 'Время сеанса, минуты'
+            ws['I1'] = 'Активный ли пользователь'
             row_number = 1
             for user_inf in all_users:
                 row_number += 1
@@ -660,6 +661,11 @@ class User:
                 # if 'personal_city' in user_inf:
                 if user_inf.personal_city:
                     ws[f'D{row_number}'] = f'{user_inf.personal_city}'
+                
+                if user_inf.active is True:
+                    ws[f'I{row_number}'] = f'Да'
+                else:
+                    ws[f'I{row_number}'] = f'Нет'
                 
                 if 'work_position' in indirect_data and indirect_data['work_position']:
                     ws[f'E{row_number}'] = f'{indirect_data['work_position']}'

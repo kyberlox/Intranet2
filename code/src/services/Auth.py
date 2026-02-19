@@ -7,7 +7,7 @@ import json
 import logging
 
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 import requests
 
 from ..base.RedisStorage import RedisStorage

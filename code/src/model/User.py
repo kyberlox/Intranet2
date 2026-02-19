@@ -686,8 +686,9 @@ class User:
                             ws[f'F{row_number}'] = f'{data_stat[0]}'
                             ws[f'G{row_number}'] = f'{data_stat[1]}'
 
-                            avg_time_min = data_stat[2] / 60
-                            ws[f'H{row_number}'] = f'{avg_time_min}'
+                            avg_time_min = data_stat[2] // 60
+                            avg_time_sec = data_stat[2] % 60
+                            ws[f'H{row_number}'] = f'{avg_time_min}:{avg_time_sec}'
 
 
             excel_buffer = io.BytesIO()

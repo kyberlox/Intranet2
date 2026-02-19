@@ -683,8 +683,8 @@ class User:
                                 visits = json.loads(res)
                                 data_stat = visits['totals']
 
-                                ws[f'F{row_number}'] = f'{data_stat[0]}'
-                                ws[f'G{row_number}'] = f'{data_stat[1]}'
+                                ws[f'F{row_number}'] = f'{int(data_stat[0])}'
+                                ws[f'G{row_number}'] = f'{int(data_stat[1])}'
 
                                 avg_time_min = data_stat[2] // 60
                                 avg_time_sec = data_stat[2] % 60

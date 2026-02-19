@@ -987,18 +987,19 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # return response
 
 
-    ID = session_data['user_id']
-    session_id = session_data["session_id"]
-    position = session_data['user_info']['WORK_POSITION']
-    full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
+    # ID = session_data['user_id']
+    # session_id = session_data["session_id"]
+    # position = session_data['user_info']['WORK_POSITION']
+    # full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
 
-    redirect_uri = (
-        f"contacts_app_emk://auth"
-        f"?id={user_id}"
-        f"&session_id={session_id}"
-    )
+    # redirect_uri = (
+    #     f"contacts_app_emk://auth"
+    #     f"?id={user_id}"
+    #     f"&session_id={session_id}"
+    # )
 
-    return RedirectResponse(url="contacts-app-emk://auth", status_code=302)
+    redirect_uri = f"contacts-app-emk://auth?id={user_id}&session_id={session_id}"
+    return RedirectResponse(url=redirect_uri, status_code=302)
 
     # deep_link = (
     #     f"contacts_app_emk://auth"

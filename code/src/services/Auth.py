@@ -998,6 +998,8 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     f"&session_id={session_id}"
     # )
 
+    session_id=quote(session_id)}
+
     redirect_uri = f"contacts-app-emk://auth?id={user_id}&session_id={session_id}"
     return RedirectResponse(url=redirect_uri, status_code=302)
 

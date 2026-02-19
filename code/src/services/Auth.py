@@ -983,11 +983,13 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     # redirect_url = f"http://exhibitions.kuberlox.ru/login"
 
     # Создаем RedirectResponse
-    #response = RedirectResponse(url="exhibitions://auth", json=user_info, status_code=302)
-    ID = session_data['user_id']
-    session_id = session_data["session_id"]
-    position = session_data['user_info']['WORK_POSITION']
-    full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
+    response = RedirectResponse(url="exhibitions://auth", status_code=302)
+    return response
+
+    # ID = session_data['user_id']
+    # session_id = session_data["session_id"]
+    # position = session_data['user_info']['WORK_POSITION']
+    # full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
 
     # redirect_uri = (
     #     f"contacts_app_emk://auth"
@@ -1000,23 +1002,23 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     #return RedirectResponse(url="contacts_app_emk://auth", status_code=302)
 
-    deep_link = (
-        f"contacts_app_emk://auth"
-        f"?id={user_id}"
-        f"&session_id={quote(session_id)}"
-        f"&fio={quote(full_name)}"
-        f"&department={quote(department)}"
-        f"&position={quote(position)}"
-    )
+    # deep_link = (
+    #     f"contacts_app_emk://auth"
+    #     f"?id={user_id}"
+    #     f"&session_id={quote(session_id)}"
+    #     f"&fio={quote(full_name)}"
+    #     f"&department={quote(department)}"
+    #     f"&position={quote(position)}"
+    # )
 
-    return HTMLResponse(f"""
-    <html>
-        <body>
-            <p>Переход в приложение...</p>
-            <script>
-                window.location.href = "{deep_link}";
-            </script>
-            <a href="{deep_link}">Нажмите, если не перешли</a>
-        </body>
-    </html>
-    """)
+    # return HTMLResponse(f"""
+    # <html>
+    #     <body>
+    #         <p>Переход в приложение...</p>
+    #         <script>
+    #             window.location.href = "{deep_link}";
+    #         </script>
+    #         <a href="{deep_link}">Нажмите, если не перешли</a>
+    #     </body>
+    # </html>
+    # """)

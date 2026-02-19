@@ -670,7 +670,7 @@ class User:
                         
                         # if 'personal_city' in user_inf:
                         if user_inf.personal_city:
-                        ws[f'D{row_number}'] = f'{user_inf.personal_city}'
+                            ws[f'D{row_number}'] = f'{user_inf.personal_city}'
                         
                         if 'work_position' in indirect_data and indirect_data['work_position']:
                             ws[f'E{row_number}'] = f'{indirect_data['work_position']}'

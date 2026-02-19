@@ -991,13 +991,13 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     redirect_uri = (
         f"contacts_app_emk://auth"
-        f"?id={user_id}"
-        f"&session_id={session_id}"
-        f"&fio={quote(full_name)}"
-        f"&department={quote(department)}"
-        f"&position={quote(position)}"
+        # f"?id={user_id}"
+        # f"&session_id={session_id}"
+        # f"&fio={quote(full_name)}"
+        # f"&department={quote(department)}"
+        # f"&position={quote(position)}"
     )
 
-    # return RedirectResponse(url=redirect_uri, status_code=302)
+    return RedirectResponse(url=redirect_uri, status_code=302)
 
-    return HTMLResponse(f"<script>window.location.href = '{redirect_uri}';</script>")
+    # return HTMLResponse(f"<script>window.location.href = '{redirect_uri}';</script>")

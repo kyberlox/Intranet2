@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+     "android": "npm run build && npx cap sync && npx cap open android",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -36,6 +37,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.1.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/downloadjs": "^1.4.6",

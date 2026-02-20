@@ -1,6 +1,33 @@
 <template>
 <VCard v-if="route.name == 'vcard'" />
 <InService v-else-if="route.name == 'inservice'" />
+<PullToRefresh v-else-if="isMobile"
+               :refreshing="isRefreshing"
+               :on-refresh="handleRefresh">
+    <div :class="{ 'dark-mode': isDarkMode }">
+        <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
+        <div v-if="isLogin">
+            <LayoutHeader />
+            <main>
+                <div class="container-fluid">
+                    <div class="row main-layout">
+                        <div class="main-content flex-grow">
+                            <Breadcrumbs />
+                            <RouterView :key="routerViewKey" />
+                        </div>
+                        <div class="main-sidebar flex-shrink d-print-none">
+                            <Sidebar />
+                        </div>
+                    </div>
+                </div>
+                <PageScrollArrow />
+            </main>
+        </div>
+        <div v-else-if="!isLoading">
+            <AuthPage />
+        </div>
+    </div>
+</PullToRefresh>
 <div v-else
      :class="{ 'dark-mode': isDarkMode }">
     <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
@@ -11,7 +38,7 @@
                 <div class="row main-layout">
                     <div class="main-content flex-grow">
                         <Breadcrumbs />
-                        <RouterView />
+                        <RouterView :key="routerViewKey" />
                     </div>
                     <div class="main-sidebar flex-shrink d-print-none">
                         <Sidebar />
@@ -47,6 +74,7 @@ import SnowFlakes from "./components/layout/SnowFlakes.vue";
 import VCard from "./views/vcard/VCard.vue";
 import Api from "./utils/Api";
 import InService from "./views/errors/InService.vue";
+import PullToRefresh from "./components/tools/pullToRefresh/PullToRefresh.vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -62,12 +90,34 @@ export default defineComponent({
         SnowFlakes,
         VCard,
         InService,
+        PullToRefresh,
     },
     setup() {
         const route = useRoute();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
         const isLoading = ref(true);
+        const isRefreshing = ref(false);
+        const isMobile = ref(false);
+        const routerViewKey = ref(0);
+
+        onBeforeMount(() => {
+            isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        });
+
+        const handleRefresh = () => {
+            return new Promise<void>((resolve) => {
+                isRefreshing.value = true;
+
+                routerViewKey.value++;
+
+                setTimeout(() => {
+                    isRefreshing.value = false;
+                    resolve();
+                }, 500);
+            });
+        };
+
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
             if (userData.getIsLogin && userData.getMyId == 0) {
@@ -109,7 +159,11 @@ export default defineComponent({
             userId: computed(() => useUserData().getMyId),
             isDarkMode: computed(() => useStyleModeStore().getDarkMode),
             route,
-            isLoading
+            isLoading,
+            isRefreshing,
+            isMobile,
+            handleRefresh,
+            routerViewKey
         }
     }
 })

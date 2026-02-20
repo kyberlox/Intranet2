@@ -1,13 +1,11 @@
 @forward './animation';
 @forward './vars';
 @forward './classes';
-
 @forward './layout/_layout';
 @forward './common/_common';
 @forward './admin/admin';
 
 @use '/src/assets/styles/mixins' as *;
-
 
 .main {
     &-content {

@@ -1,7 +1,7 @@
 <template>
 <VCard v-if="route.name == 'vcard'" />
 <InService v-else-if="route.name == 'inservice'" />
-<PullToRefresh v-else-if="isMobile"
+<PullToRefresh v-else
                :refreshing="isRefreshing"
                :on-refresh="handleRefresh">
     <div :class="{ 'dark-mode': isDarkMode }">
@@ -28,30 +28,6 @@
         </div>
     </div>
 </PullToRefresh>
-<div v-else
-     :class="{ 'dark-mode': isDarkMode }">
-    <SnowFlakes v-if="[12, 1, 2].includes(new Date().getMonth() + 1)" />
-    <div v-if="isLogin">
-        <LayoutHeader />
-        <main>
-            <div class="container-fluid">
-                <div class="row main-layout">
-                    <div class="main-content flex-grow">
-                        <Breadcrumbs />
-                        <RouterView :key="routerViewKey" />
-                    </div>
-                    <div class="main-sidebar flex-shrink d-print-none">
-                        <Sidebar />
-                    </div>
-                </div>
-            </div>
-            <PageScrollArrow />
-        </main>
-    </div>
-    <div v-else-if="!isLoading">
-        <AuthPage />
-    </div>
-</div>
 <Toast :position="'bottom-right'" />
 <YandexMetrika v-if="userId"
                :uid="userId" />
@@ -98,12 +74,7 @@ export default defineComponent({
         const isLogin = computed(() => userData.getIsLogin);
         const isLoading = ref(true);
         const isRefreshing = ref(false);
-        const isMobile = ref(false);
         const routerViewKey = ref(0);
-
-        onBeforeMount(() => {
-            isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        });
 
         const handleRefresh = () => {
             return new Promise<void>((resolve) => {
@@ -161,7 +132,6 @@ export default defineComponent({
             route,
             isLoading,
             isRefreshing,
-            isMobile,
             handleRefresh,
             routerViewKey
         }

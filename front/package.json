@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-     "android": "npm run build && npx cap sync && npx cap open android",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -14,8 +13,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@capacitor/android": "^8.1.0",
-    "@capacitor/core": "^8.1.0",
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.15.1",
     "@vuepic/vue-datepicker": "^11.0.2",
@@ -37,8 +34,6 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^8.1.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/downloadjs": "^1.4.6",
     "@types/js-cookie": "^3.0.6",

@@ -2177,7 +2177,7 @@ class Article:
                     images.append(art_img)
             second_page = {
                 "id": 7, 
-                "type": "swiper", Важное
+                "type": "swiper", 
                 "title": "Важное",
                 "images": images
             }

@@ -1,0 +1,38 @@
+.pull-to-refresh {
+    position: relative;
+    min-height: 100vh;
+
+    &__indicator {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(0);
+        z-index: 1000;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease-out;
+    }
+
+    &__arrow {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--emk-brand-color);
+        border-right: none;
+        border-bottom: none;
+        transform: rotate(45deg);
+        transition: transform 0.2s ease;
+
+        &--rotated {
+            transform: rotate(225deg);
+        }
+    }
+
+    &--refreshing {
+        .pull-to-refresh__indicator {
+            transform: translateX(-50%) translateY(20px);
+        }
+    }
+}

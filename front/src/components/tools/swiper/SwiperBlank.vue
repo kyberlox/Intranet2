@@ -3,22 +3,6 @@
         @slideChange="needEmitIndex ? $emit('indexChanged', swiperInstance?.activeIndex) : ''"
         @swiper="swiperOn">
 
-    <!-- для img -->
-    <swiper-slide v-for="(image, index) in images"
-                  :key="'postImg' + index"
-                  :style="{
-                    background: type == 'postInner' ? `url(${typeof image == 'object' && 'file_url' in image
-                        ? image.file_url
-                        : (image as string)
-                        }) center center / cover no-repeat`
-                        : ''
-
-                }">
-        <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : (image as string)"
-             alt="изображение слайдера"
-             @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
-    </swiper-slide>
-
     <!-- для встроенных video -->
     <swiper-slide v-for="(video, index) in videosEmbed"
                   :key="'postVideoEmbed' + index">
@@ -44,6 +28,22 @@
                allowfullscreen>
             <source :src="String((video.file_url))">
         </video>
+    </swiper-slide>
+
+    <!-- для img -->
+    <swiper-slide v-for="(image, index) in images"
+                  :key="'postImg' + index"
+                  :style="{
+                    background: type == 'postInner' ? `url(${typeof image == 'object' && 'file_url' in image
+                        ? image.file_url
+                        : (image as string)
+                        }) center center / cover no-repeat`
+                        : ''
+
+                }">
+        <img :src="typeof image == 'object' && 'file_url' in image ? image.file_url : (image as string)"
+             alt="изображение слайдера"
+             @click.stop.prevent="activeIndex = index; modalIsVisible = true" />
     </swiper-slide>
 
     <SwiperButtons :isBeginning="isBeginning"

@@ -2176,9 +2176,9 @@ class Article:
                     }
                     images.append(art_img)
             second_page = {
-                "id": 7,
-                "type": "swiper",
-                "title": "Конкурсы ЭМК",
+                "id": 7, 
+                "type": "swiper", 
+                "title": "Важное",
                 "images": images
             }
 

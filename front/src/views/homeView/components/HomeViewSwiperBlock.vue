@@ -20,7 +20,6 @@
                     <RouterLink class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
                                 :to="{ name: card.href }"
-                                target="_blank"
                                 v-lazy-load="slide.image"></RouterLink>
                 </swiper-slide>
             </template>
@@ -34,7 +33,6 @@
                    class="homeview__grid__card__link
                                 homeview__grid__card__bg-image"
                    :href="slide.href"
-                   target="_blank"
                    v-lazy-load="slide.image"></a>
 
                 <RouterLink v-else-if="slide.image"

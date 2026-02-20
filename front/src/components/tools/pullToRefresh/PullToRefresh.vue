@@ -1,16 +1,21 @@
 <template>
-<div class="pull-to-refresh"
+<div v-if="isMobile"
+     class="pull-to-refresh"
      :class="{ 'pull-to-refresh--refreshing': isRefreshing }"
      @touchstart="handleTouchStart"
      @touchmove="handleTouchMove"
      @touchend="handleTouchEnd">
-    <Loader v-if="isRefreshing" />
+    <div class="pull-to-refresh__indicator"
+         :style="{ transform: `translate(-50%, ${pullDistance - 40}px)` }">
+        <Loader />
+    </div>
     <slot></slot>
 </div>
+<slot v-else></slot>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import Loader from '@/components/layout/Loader.vue';
 
 export default defineComponent({
@@ -33,6 +38,7 @@ export default defineComponent({
         const pullDistance = ref(0);
         const isRefreshing = ref(false);
         const isTracking = ref(false);
+        const isMobile = ref(false);
 
         const handleTouchStart = (e: TouchEvent) => {
             const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
@@ -74,9 +80,15 @@ export default defineComponent({
             }
         };
 
+        onMounted(() => {
+            const screen = window.screen.width;
+            isMobile.value = screen < 800 ? true : false
+        })
+
         return {
             pullDistance,
             isRefreshing,
+            isMobile,
             handleTouchStart,
             handleTouchMove,
             handleTouchEnd

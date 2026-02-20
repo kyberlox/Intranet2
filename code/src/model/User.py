@@ -642,53 +642,51 @@ class User:
             ws['F1'] = 'Сеансы (уникальные)'
             ws['G1'] = 'Посещения'
             ws['H1'] = 'Время сеанса, минуты'
+            ws['I1'] = 'Активный ли пользователь'
             row_number = 1
             for user_inf in all_users:
+                row_number += 1
+                indirect_data = user_inf.indirect_data
+
+                ws[f'A{row_number}'] = user_inf.id
+                # if "name" in user_inf and "last_name" in user_inf: 
+                ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
+
+                if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
+                    if len(indirect_data['uf_department']) >= 1:
+                        ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                        if ped_info:
+                            ws[f'C{row_number}'] = f'{ped_info[0].name}'
+                
+                # if 'personal_city' in user_inf:
+                if user_inf.personal_city:
+                    ws[f'D{row_number}'] = f'{user_inf.personal_city}'
                 
                 if user_inf.active is True:
-                    # if 0 < row_number <= 2000:
-                        # if 200 < row_number <= 400:
-                        # if 400 < row_number <= 600:
-                        # if 600 < row_number <= 800:
-                        # if 800 < row_number <= 1000:
-                        # if 1000 < row_number <= 1200:
-                        # if 1200 < row_number <= 1400:
-                        # if 1400 < row_number <= 1600:
-                        # if 1600 < row_number <= 1800: 
-                    row_number += 1
-                    indirect_data = user_inf.indirect_data
+                    ws[f'I{row_number}'] = f'Да'
+                else:
+                    ws[f'I{row_number}'] = f'Нет'
+                
+                if 'work_position' in indirect_data and indirect_data['work_position']:
+                    ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
-                    ws[f'A{row_number}'] = user_inf.id
-                    # if "name" in user_inf and "last_name" in user_inf: 
-                    ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
+                data_stat = []
+                #заполняем сеансы
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                    if response.status_code == 200:
+                        res = response.text
+                        visits = json.loads(res)
+                        data_stat = visits['totals']
 
-                    if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
-                        if len(indirect_data['uf_department']) >= 1:
-                            ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
-                            if ped_info:
-                                ws[f'C{row_number}'] = f'{ped_info[0].name}'
-                    
-                    # if 'personal_city' in user_inf:
-                    ws[f'D{row_number}'] = f'{user_inf.personal_city}'
-                    
-                    if 'work_position' in indirect_data:
-                        ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
+                        ws[f'F{row_number}'] = f'{int(data_stat[0])}'
+                        ws[f'G{row_number}'] = f'{int(data_stat[1])}'
 
-                    data_stat = []
-                    #заполняем сеансы
-                    async with httpx.AsyncClient(timeout=30.0) as client:
-                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                        if response.status_code == 200:
-                            res = response.text
-                            visits = json.loads(res)
-                            data_stat = visits['totals']
-
-                            ws[f'F{row_number}'] = f'{data_stat[0]}'
-                            ws[f'G{row_number}'] = f'{data_stat[1]}'
-
-                            avg_time_min = data_stat[2] / 60
-                            ws[f'H{row_number}'] = f'{avg_time_min}'
-
+                        avg_time_min = data_stat[2] // 60
+                        avg_time_sec = data_stat[2] % 60
+                        ws[f'H{row_number}'] = f'{int(avg_time_min)}:{int(avg_time_sec)}'
+                    # else:
+                    #     break
 
             excel_buffer = io.BytesIO()
             wb.save(excel_buffer)
@@ -849,8 +847,8 @@ async def get_user_id_by_session_id(request: Request) -> int:
 
 #     """
 
-#     usr = User()
-#     return await usr.fetch_users_data(session)
+    # usr = User()
+    # return await usr.fetch_users_data(session)
 
 @users_router.put("/update_user_info/{user_id}", tags=["Пользователь", "Битрикс24"])
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):

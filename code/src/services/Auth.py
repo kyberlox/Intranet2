@@ -7,7 +7,7 @@ import json
 import logging
 
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Response, Request, Cookie
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 import requests
 
 from ..base.RedisStorage import RedisStorage
@@ -933,6 +933,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 @auth_router.get("/exhibition_app", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
     import httpx
+    from urllib.parse import quote
     #проверка на авторизацию
     if not session_data:
         raise HTTPException(
@@ -940,7 +941,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             detail="Failed to authenticate with Bitrix24"
         )
     
-    user_id = request.cookies.get('user_id')
+    user_id = int(session_data['user_info']['ID'])
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -981,18 +982,44 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     # redirect_url = f"http://exhibitions.kuberlox.ru/login"
 
-    # Создаем RedirectResponse
-    #response = RedirectResponse(url="exhibitions://auth", json=user_info, status_code=302)
-    ID = session_data['user_id']
-    session_id = session_data["session_id"]
-    position = session_data['user_info']['WORK_POSITION']
-    response = RedirectResponse(url=f"contacts_app_emk://auth?id={ID}&session_id={session_id}&fio={fio}&department={department}&position={position}", status_code=302)
+    # #Создаем RedirectResponse
+    # response = RedirectResponse(url="contacts-app-emk://auth", status_code=302)
+    # return response
 
-    
-    
-    # Создаем RedirectResponse на deep link с передачей данных
-    # user_info_json = json.dumps(user_info, ensure_ascii=False)
-    # redirect_url = f"exhibitions://auth?data={user_info_json}"
-    # response = RedirectResponse(url=redirect_url, status_code=302)
 
-    return response
+    # ID = session_data['user_id']
+    # session_id = session_data["session_id"]
+    # position = session_data['user_info']['WORK_POSITION']
+    # full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
+
+    # redirect_uri = (
+    #     f"contacts_app_emk://auth"
+    #     f"?id={user_id}"
+    #     f"&session_id={session_id}"
+    # )
+
+    session_id=session_data["session_id"]
+
+    redirect_uri = f"contacts-app-emk://auth?id={user_id}&session_id={session_id}"
+    return RedirectResponse(url=redirect_uri, status_code=302)
+
+    # deep_link = (
+    #     f"contacts_app_emk://auth"
+    #     f"?id={user_id}"
+    #     f"&session_id={quote(session_id)}"
+    #     f"&fio={quote(full_name)}"
+    #     f"&department={quote(department)}"
+    #     f"&position={quote(position)}"
+    # )
+
+    # return HTMLResponse(f"""
+    # <html>
+    #     <body>
+    #         <p>Переход в приложение...</p>
+    #         <script>
+    #             window.location.href = "{deep_link}";
+    #         </script>
+    #         <a href="{deep_link}">Нажмите, если не перешли</a>
+    #     </body>
+    # </html>
+    # """)

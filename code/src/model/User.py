@@ -735,13 +735,13 @@ class User:
                         if user['id'] in [2]:
                             continue
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
-                        is_employment_none_count.append(user['id'])
+                        is_employment_none_count.append(user)
                         continue
-        # for user_id in is_employment_exist_count:
-        #     async with httpx.AsyncClient(timeout=30.0) as client:
-        #         response = await client.put(f'https://intranet.emk.ru/api/users/update_user_info/{user_id['id']}', cookies=cookies)
+        for user in is_employment_exist_count:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, body=user)
 
-        return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
+        return True
 
 '''
     # def get(self, method="user.get", params={}):

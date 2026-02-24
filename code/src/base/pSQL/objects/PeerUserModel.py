@@ -524,6 +524,7 @@ class PeerUserModel:
             stmt = select(self.ActiveUsers).where(
                 self.ActiveUsers.activities_id == activities_id, 
                 self.ActiveUsers.description == str(article_id),
+                self.ActiveUsers.uuid_to == int(uuid_to),
                 self.ActiveUsers.valid == 1
             )
             # stmt_count = select(func.count(self.ActiveUsers.id)).where(
@@ -533,23 +534,23 @@ class PeerUserModel:
             # )
             result = await session.execute(stmt)
             existing_node = result.scalar_one_or_none()
-
+            
             #Если баллы еще никому не назначались
             if not existing_node:
                 LogsMaker().info_message('Баллы за новость еще никому не назначались')
                 return True
 
             #Если баллы автору уже назначались баллы
-            if existing_node.uuid_to == uuid_to:
-                LogsMaker().info_message('Пользователь уже получил баллы за эту новость')
-                return False 
+            # if existing_node.uuid_to == uuid_to:
+            #     LogsMaker().info_message('Пользователь уже получил баллы за эту новость')
+            #     return False 
             
-            #Автора изменили и необходимо снять баллы у предыдущего автора, удалить запись и вернуть True
-            self.uuid = existing_node.uuid_to
-            LogsMaker().info_message('У статьи поменяли автора')
-            #Снимаем баллы
-            await self.remove_user_points(session=session, action_id=existing_node.id, roots=roots)
-            return True
+            # #Автора изменили и необходимо снять баллы у предыдущего автора, удалить запись и вернуть True
+            # self.uuid = existing_node.uuid_to
+            # LogsMaker().info_message('У статьи поменяли автора')
+            # #Снимаем баллы
+            # await self.remove_user_points(session=session, action_id=existing_node.id, roots=roots)
+            return False
         except Exception as e:
             return LogsMaker().error_message(f"Произошла ошибка в check_article_author: {e}")
 

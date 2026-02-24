@@ -494,13 +494,13 @@
         "disabled": true
       },
       {
-        "name": "ID автора",
-        "field": "author_uuid",
-        "data_type": "search_by_uuid"
+        "name": "ID пользователей",
+        "field": "uuids",
+        "data_type": "search_by_uuids"
       },
       {
-        "name": "Автор блога",
-        "field": "author",
+        "name": "Список пользователей",
+        "field": "users",
         "data_type": "str",
         "disabled": true
       },

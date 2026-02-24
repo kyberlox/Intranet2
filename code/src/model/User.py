@@ -416,7 +416,7 @@ class User:
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
                     if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
-                        if 'date_register' in psql_user['indirect_data']['date_register']:
+                        if 'date_register' in psql_user['indirect_data'] and psql_user['indirect_data']['date_register'] != "":
                             convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
                             date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                             usr_data['date_of_employment'] = date_of_employment
@@ -704,7 +704,8 @@ class User:
         import requests
         import json 
         import httpx
-        session_id = '59eedb6e-906a-44db-a56e-fa51022dea34'
+        from datetime import datetime
+        session_id = '5d74097d-f137-43ba-ae48-a742b9ecbb9e'
         cookies = {'session_id': session_id}
 
         def get_from_response(response):
@@ -717,30 +718,39 @@ class User:
             response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
             if response.status_code == 200:
                 users = get_from_response(response)
-        
+        is_employment_none_count = []
+        is_employment_str_count = []
+        is_employment_exist_count = []
         if users:
-            is_employment_none_count = []
-            is_employment_str_count = []
-            is_employment_exist_count = []
             for user in users:
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:
-                        is_employment_exist_count.append(user['id'])
+                        if user['id'] in [2, 508]:
+                            continue
+                        if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
+                            convert_date = make_date_valid(user['indirect_data']['date_register'])
+                            date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                            user['indirect_data']['date_of_employment'] = date_of_employment
+                            is_employment_exist_count.append(user)
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
                         is_employment_str_count.append(user['id'])
                         continue
                     
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] is None:
-                        if user['id'] in [2]:
+                        if user['id'] in [2, 508]:
                             continue
-                        
+                        # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        for user_id in is_employment_exist_count:
+        for user in is_employment_exist_count:
+            # if isinstance(user, int):
+            #     print(user)
             async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.put(f'https://intranet.emk.ru/api/users/update_user_info/{user_id['id']}', cookies=cookies)
+                data = json.dumps(user)
+                response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
 
+        # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
 '''

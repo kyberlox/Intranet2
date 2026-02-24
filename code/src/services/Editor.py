@@ -886,9 +886,9 @@ class Editor:
                 await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
 
         if user_id_list == []:
-            if art['section_id'] == 31:
-                for usr in art['indirect_data']['users']:
-                    await Peer(user_uuid=int(usr['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
+            # if art['section_id'] == 31:
+            #     for usr in art['indirect_data']['users']:
+            #         await Peer(user_uuid=int(usr['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
             art['indirect_data']['users'] = []
 
         

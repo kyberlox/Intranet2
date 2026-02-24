@@ -899,6 +899,7 @@ class Editor:
 
                     #если с какого то пользователя снимают авторство, убираем у него баллы
                     rem_users = [item['id'] for item in users if item['id'] not in user_id_list]
+                    print("отменяем баллы1", rem_users)
                     if art['section_id'] == 31:
                         print("отменяем баллы1")
                         if int(user_id) in rem_users:

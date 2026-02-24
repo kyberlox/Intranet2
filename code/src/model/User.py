@@ -746,6 +746,8 @@ class User:
         for user in is_employment_exist_count:
             # if isinstance(user, int):
             #     print(user)
+            ind_data = user['indirect_data']
+            
             async with httpx.AsyncClient(timeout=30.0) as client:
                 data = json.dumps(user)
                 response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)

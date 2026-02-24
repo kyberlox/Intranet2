@@ -878,12 +878,13 @@ class Editor:
         await self.validate()
         art = await Article(id=int(self.art_id)).find_by_id(self.session)
 
-        users_in_art = art['indirect_data']['users']
-        #если с какого то пользователя снимают авторство, убираем у него баллы
-        rem_users = [item['id'] for item in users_in_art if item['id'] not in user_id_list]
-        if art['section_id'] == 31:
-            for usr in rem_users:
-                await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
+        if 'users' in art['indirect_data']:
+            users_in_art = art['indirect_data']['users']
+            #если с какого то пользователя снимают авторство, убираем у него баллы
+            rem_users = [item['id'] for item in users_in_art if item['id'] not in user_id_list]
+            if art['section_id'] == 31:
+                for usr in rem_users:
+                    await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
 
         if user_id_list == []:
             art['indirect_data']['users'] = []

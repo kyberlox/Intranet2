@@ -704,7 +704,7 @@ class User:
         import requests
         import json 
         import httpx
-        session_id = '59eedb6e-906a-44db-a56e-fa51022dea34'
+        session_id = '5d74097d-f137-43ba-ae48-a742b9ecbb9e'
         cookies = {'session_id': session_id}
 
         def get_from_response(response):

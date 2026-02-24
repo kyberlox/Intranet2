@@ -717,11 +717,11 @@ class User:
             response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
             if response.status_code == 200:
                 users = get_from_response(response)
-        
+        is_employment_none_count = []
+        is_employment_str_count = []
+        is_employment_exist_count = []
         if users:
-            is_employment_none_count = []
-            is_employment_str_count = []
-            is_employment_exist_count = []
+            
             for user in users:
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:

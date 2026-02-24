@@ -534,7 +534,7 @@ class PeerUserModel:
             # )
             result = await session.execute(stmt)
             existing_node = result.scalar_one_or_none()
-
+            
             #Если баллы еще никому не назначались
             if not existing_node:
                 LogsMaker().info_message('Баллы за новость еще никому не назначались')

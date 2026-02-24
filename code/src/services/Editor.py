@@ -902,9 +902,9 @@ class Editor:
                     print("отменяем баллы1", rem_users)
                     if art['section_id'] == 31:
                         print("отменяем баллы1")
-                        if int(user_id) in rem_users:
+                        for usr in rem_users:
                             print("отменяем баллы2")
-                            await Peer(user_uuid=int(user_id)).remove_author_points(session=self.session, article_id=int(self.art_id))
+                            await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
 
                     art['indirect_data']['users'] = sorted_users
                     

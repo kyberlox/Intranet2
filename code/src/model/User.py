@@ -739,7 +739,8 @@ class User:
                         is_employment_none_count.append(user['id'])
                         continue
         for user in is_employment_none_count:
-            print(type(user))
+            if isinstance(user, int):
+                print(user)
             # async with httpx.AsyncClient(timeout=30.0) as client:
                 # response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=user)
 

@@ -879,6 +879,10 @@ class Editor:
         art = await Article(id=int(self.art_id)).find_by_id(self.session)
 
         if user_id_list == []:
+            if art['section_id'] == 31:
+                for usr in art['indirect_data']['users']:
+                    print("отменяем баллы2")
+                    await Peer(user_uuid=int(usr['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
             art['indirect_data']['users'] = []
         else:
 

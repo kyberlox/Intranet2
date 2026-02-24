@@ -738,9 +738,9 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        for user in is_employment_none_count:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=user)
+        # for user in is_employment_none_count:
+        #     async with httpx.AsyncClient(timeout=30.0) as client:
+        #         response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=user)
 
         # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]

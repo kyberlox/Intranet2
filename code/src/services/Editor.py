@@ -874,6 +874,7 @@ class Editor:
         return edited_sections
 
     async def get_users_info(self, user_id_list):
+        from .Peer import Peer
         await self.validate()
         art = await Article(id=int(self.art_id)).find_by_id(self.session)
 

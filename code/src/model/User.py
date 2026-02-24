@@ -721,7 +721,6 @@ class User:
         is_employment_str_count = []
         is_employment_exist_count = []
         if users:
-            
             for user in users:
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:
@@ -739,7 +738,7 @@ class User:
                         continue
         for user in is_employment_exist_count:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, body=user)
+                response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=user)
 
         return True
 

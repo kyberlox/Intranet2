@@ -896,6 +896,12 @@ class Editor:
                     #исключили тех кого нет в списке user_id_list, но были в бд
                     sorted_users = [item for item in users if item['id'] in user_id_list]
 
+                    #если с какого то пользователя снимают авторство, убираем у него баллы
+                    rem_users = [item['id'] for item in users if item['id'] not in user_id_list]
+                    if art['section_id'] == 31:
+                        for int(rem_user) == int(user_id):
+                            await Peer(user_uuid=int(rem_user)).remove_author_points(session=self.session, article_id=int(self.art_id))
+
                     art['indirect_data']['users'] = sorted_users
                     
                     # проверяю есть ли такой в списке статьи
@@ -951,6 +957,8 @@ class Editor:
                         }
                         # users.append(usr)
                         # записываю
+                        if art['section_id'] == 31:
+                            await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
                         art['indirect_data']['users'].append(usr)
                 else:
                     # хватаю ФИО
@@ -987,6 +995,8 @@ class Editor:
                         "photo_file_url": photo_file_url,
                         "position": position
                     }
+                    if art['section_id'] == 31:
+                        await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
 
                     # записываю
                     art['indirect_data']['users'] = [usr]

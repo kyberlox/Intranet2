@@ -704,6 +704,7 @@ class User:
         import requests
         import json 
         import httpx
+        from datetime import datetime
         session_id = '5d74097d-f137-43ba-ae48-a742b9ecbb9e'
         cookies = {'session_id': session_id}
 

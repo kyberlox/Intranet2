@@ -747,7 +747,8 @@ class User:
             # if isinstance(user, int):
             #     print(user)
             async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=user)
+                data = json.dumps(user)
+                response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
 
         # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]

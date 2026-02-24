@@ -416,7 +416,7 @@ class User:
                     self.UserModel.id = int(uuid)
                     psql_user = await self.UserModel.find_by_id_all(session)
                     if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
-                        if 'date_register' in psql_user['indirect_data']['date_register']:
+                        if 'date_register' in psql_user['indirect_data'] and psql_user['indirect_data']['date_register'] is not None:
                             convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
                             date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                             usr_data['date_of_employment'] = date_of_employment
@@ -734,7 +734,7 @@ class User:
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] is None:
                         if user['id'] in [2]:
                             continue
-                        
+                        # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
         for user_id in is_employment_exist_count:

@@ -899,8 +899,8 @@ class Editor:
                     #если с какого то пользователя снимают авторство, убираем у него баллы
                     rem_users = [item['id'] for item in users if item['id'] not in user_id_list]
                     if art['section_id'] == 31:
-                        for int(rem_user) == int(user_id):
-                            await Peer(user_uuid=int(rem_user)).remove_author_points(session=self.session, article_id=int(self.art_id))
+                        if int(user_id) in rem_users:
+                            await Peer(user_uuid=int(user_id)).remove_author_points(session=self.session, article_id=int(self.art_id))
 
                     art['indirect_data']['users'] = sorted_users
                     

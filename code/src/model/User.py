@@ -726,7 +726,7 @@ class User:
                     if 'date_of_employment' not in user['indirect_data']:
                         if user['id'] in [2, 508]:
                             continue
-                        is_employment_exist_count.append(user)
+                        is_employment_exist_count.append(user['id'])
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
                         is_employment_str_count.append(user['id'])
@@ -738,9 +738,9 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        for user in is_employment_none_count:
-            if isinstance(user, int):
-                print(user)
+        # for user in is_employment_none_count:
+        #     if isinstance(user, int):
+        #         print(user)
             # async with httpx.AsyncClient(timeout=30.0) as client:
                 # response = await client.put(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=user)
 

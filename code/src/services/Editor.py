@@ -886,9 +886,6 @@ class Editor:
                 await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
 
         if user_id_list == []:
-            # if art['section_id'] == 31:
-            #     for usr in art['indirect_data']['users']:
-            #         await Peer(user_uuid=int(usr['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
             art['indirect_data']['users'] = []
 
         
@@ -1016,7 +1013,6 @@ class Editor:
         return art['indirect_data']['users']
 
     async def get_user_info(self, user_id):
-        from .Peer import Peer
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1036,15 +1032,7 @@ class Editor:
                 "work_position",
                 "photo_file_url"
             ],
-            "31": [
-                "id",
-                "name",
-                "second_name",
-                "last_name",
-                "work_position",
-                "department",
-                "photo_file_url"
-            ],
+            
             "172": [
                 "name",
                 "second_name",
@@ -1060,18 +1048,27 @@ class Editor:
                 "department"
             ]
         }
+        # "31": [
+            #     "id",
+            #     "name",
+            #     "second_name",
+            #     "last_name",
+            #     "work_position",
+            #     "department",
+            #     "photo_file_url"
+            # ],
         if 'null' in user_id:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
             
-            if art['section_id'] == 31:
-                await Peer(user_uuid=int(art['indirect_data']['author']['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
+            # if art['section_id'] == 31:
+            #     await Peer(user_uuid=int(art['indirect_data']['author']['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
                 
-                art['indirect_data'].pop('author')
+            #     art['indirect_data'].pop('author')
                 
-                # сохранил
-                await Article(id=self.art_id).update(art, self.session)
-                return []
+            #     # сохранил
+            #     await Article(id=self.art_id).update(art, self.session)
+            #     return []
             for art_field in art_fields:
                 if art_field in art['indirect_data']:
                     art['indirect_data'].pop(art_field)
@@ -1137,23 +1134,23 @@ class Editor:
             result.pop("department")
             result.pop('position')
 
-        if self.section_id == 31:
-            if not art['indirect_data']:
-                art['indirect_data'] = {
-                    'author': {
-                        'id': user_id,
-                        'fio': result["fio"],
-                        'position': result["position"],
-                        'photo_file_url': result["photo_file_url"]
-                    }
-                }
-            else:
-                art['indirect_data']['author'] = {
-                    'id': user_id,
-                    'fio': result["fio"],
-                    'position': result["position"],
-                    'photo_file_url': result["photo_file_url"]
-                }
+        # if self.section_id == 31:
+        #     if not art['indirect_data']:
+        #         art['indirect_data'] = {
+        #             'author': {
+        #                 'id': user_id,
+        #                 'fio': result["fio"],
+        #                 'position': result["position"],
+        #                 'photo_file_url': result["photo_file_url"]
+        #             }
+        #         }
+        #     else:
+        #         art['indirect_data']['author'] = {
+        #             'id': user_id,
+        #             'fio': result["fio"],
+        #             'position': result["position"],
+        #             'photo_file_url': result["photo_file_url"]
+        #         }
         else:
             # вписываю в неё эти значения
             for key in result.keys():
@@ -1164,9 +1161,9 @@ class Editor:
         
 
         #Отправляем баллы пользователю на 31 раздел
-        if self.section_id == 31:
+        # if self.section_id == 31:
             
-            await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
+        #     await Peer().send_points_to_article_author(session=self.session, article_id=self.art_id, author_id=user_id)
 
         # сохранил
         await Article(id=self.art_id).update(art, self.session)

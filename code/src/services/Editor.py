@@ -878,12 +878,20 @@ class Editor:
         await self.validate()
         art = await Article(id=int(self.art_id)).find_by_id(self.session)
 
+        users_in_art = art['indirect_data']['users']
+        #если с какого то пользователя снимают авторство, убираем у него баллы
+        rem_users = [item['id'] for item in users_in_art if item['id'] not in user_id_list]
+        if art['section_id'] == 31:
+            for usr in rem_users:
+                await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
+
         if user_id_list == []:
             if art['section_id'] == 31:
                 for usr in art['indirect_data']['users']:
-                    print("отменяем баллы2")
                     await Peer(user_uuid=int(usr['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
             art['indirect_data']['users'] = []
+
+        
         else:
 
             # иду по списку user_id
@@ -900,15 +908,6 @@ class Editor:
                 if users != []:
                     #исключили тех кого нет в списке user_id_list, но были в бд
                     sorted_users = [item for item in users if item['id'] in user_id_list]
-
-                    #если с какого то пользователя снимают авторство, убираем у него баллы
-                    rem_users = [item['id'] for item in users if item['id'] not in user_id_list]
-                    print("отменяем баллы1", rem_users)
-                    if art['section_id'] == 31:
-                        print("отменяем баллы1")
-                        for usr in rem_users:
-                            print("отменяем баллы2")
-                            await Peer(user_uuid=int(usr)).remove_author_points(session=self.session, article_id=int(self.art_id))
 
                     art['indirect_data']['users'] = sorted_users
                     

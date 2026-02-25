@@ -927,7 +927,23 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     redirect_url = f"http://exhibitions.kyberlox.ru/docs"
     #  # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url) #, status_code=302
+    response.set_cookie(
+        key="session_id",
+        value=session_data["session_id"],
+        httponly=True,
+        secure=False,  # В продакшене установите True
+        samesite="lax",
+        max_age=30 * 24 * 60 * 60  # 30 дней
+    )
 
+    response.set_cookie(
+        key="user_id",
+        value=session_data['user_id'],
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=30 * 24 * 60 * 60
+    )
     return response
 
 @auth_router.get("/exhibition_app", tags=["Авторизация"])

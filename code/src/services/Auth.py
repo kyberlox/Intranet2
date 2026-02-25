@@ -916,7 +916,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     async with httpx.AsyncClient(timeout=30.0) as client:
         res = await client.post(url='http://exhibitions.kyberlox.ru/login', json=user_info)
     
-        try1 = json.loads(res)
+        try1 = json.loads(res.text)
         print(try1)
 
         if res.status_code != 200:

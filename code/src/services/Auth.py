@@ -924,7 +924,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             )
 
 
-    redirect_url = f"http://exhibitions.kuberlox.ru/docs"
+    redirect_url = f"http://exhibitions.kyberlox.ru/docs"
     #  # Создаем RedirectResponse
     response = RedirectResponse(url=redirect_url) #, status_code=302
 

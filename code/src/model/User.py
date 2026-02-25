@@ -752,7 +752,7 @@ class User:
             if 'indirect_data' in ind_data:
                 ind_data.pop('indirect_data')
             for key, value in ind_data.items():
-                user['key'] = value
+                user[key] = value
             
             async with httpx.AsyncClient(timeout=30.0) as client:
                 data = json.dumps(user)

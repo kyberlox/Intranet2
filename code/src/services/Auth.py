@@ -916,6 +916,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     async with httpx.AsyncClient(timeout=30.0) as client:
         res = await client.post(url='http://exhibitions.kyberlox.ru/login', json=user_info)
     
+        print(res)
 
         if res.status_code != 200:
             raise HTTPException(
@@ -925,7 +926,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     headers = {
         "session_id": session_data["session_id"],
-        "user_ud": str(session_data['user_id'])
+        "user_id": str(session_data['user_id'])
     }
     redirect_url = f"http://exhibitions.kyberlox.ru/docs"
     #  # Создаем RedirectResponse

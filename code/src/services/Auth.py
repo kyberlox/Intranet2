@@ -885,7 +885,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             detail="Failed to authenticate with Bitrix24"
         )
     
-    user_id = request.cookies.get('user_id')
+    user_id = int(session_data['user_info']['ID'])
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

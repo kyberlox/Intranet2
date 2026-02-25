@@ -744,19 +744,19 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        for user in is_employment_exist_count:
-            # if isinstance(user, int):
-            #     print(user)
-            ind_data = copy.deepcopy(user['indirect_data'])
-            user.pop('indirect_data')
-            if 'indirect_data' in ind_data:
-                ind_data.pop('indirect_data')
-            for key, value in ind_data.items():
-                user[key] = value
+        # for user in is_employment_exist_count:
+        #     # if isinstance(user, int):
+        #     #     print(user)
+        #     ind_data = copy.deepcopy(user['indirect_data'])
+        #     user.pop('indirect_data')
+        #     if 'indirect_data' in ind_data:
+        #         ind_data.pop('indirect_data')
+        #     for key, value in ind_data.items():
+        #         user[key] = value
             
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                data = json.dumps(user)
-                response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
+        #     async with httpx.AsyncClient(timeout=30.0) as client:
+        #         data = json.dumps(user)
+        #         response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
 
         # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]

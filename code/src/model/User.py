@@ -728,11 +728,11 @@ class User:
                     if 'date_of_employment' not in user['indirect_data']:
                         if user['id'] in [2, 508]:
                             continue
-                        if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
-                            convert_date = make_date_valid(user['indirect_data']['date_register'])
-                            date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
-                            user['indirect_data']['date_of_employment'] = date_of_employment
-                            is_employment_exist_count.append(user)
+                        # if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
+                        #     convert_date = make_date_valid(user['indirect_data']['date_register'])
+                        #     date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                        #     user['indirect_data']['date_of_employment'] = date_of_employment
+                        is_employment_exist_count.append(user['id'])
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
                         is_employment_str_count.append(user['id'])

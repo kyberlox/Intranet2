@@ -705,6 +705,7 @@ class User:
         import json 
         import httpx
         from datetime import datetime
+        import copy
         session_id = '5d74097d-f137-43ba-ae48-a742b9ecbb9e'
         cookies = {'session_id': session_id}
 
@@ -746,7 +747,12 @@ class User:
         for user in is_employment_exist_count:
             # if isinstance(user, int):
             #     print(user)
-            ind_data = user['indirect_data']
+            ind_data = copy.deepcopy(user['indirect_data'])
+            user.pop('indirect_data')
+            if 'indirect_data' in ind_data:
+                ind_data.pop('indirect_data')
+            for key, value in ind_data.items():
+                user['key'] = value
             
             async with httpx.AsyncClient(timeout=30.0) as client:
                 data = json.dumps(user)

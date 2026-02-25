@@ -913,43 +913,23 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     }
 
     print(user_info)
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        res = await client.get(url='http://exhibitions.kyberlox.ru/login', params=user_info)
+    from urllib.parse import urlencode
+    # async with httpx.AsyncClient(timeout=30.0) as client:
+    #     res = await client.get(url='http://exhibitions.kyberlox.ru/login_get', params=user_info)
     
-        # try1 = json.loads(res.text)
-        # print(try1)
+    #     # try1 = json.loads(res.text)
+    #     # print(try1)
 
-        if res.status_code != 200:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST ,
-                detail=f"Ошибка перехода на контакты с выставок: {res.text}"
-            )
+    #     if res.status_code != 200:
+    #         raise HTTPException(
+    #             status_code=status.HTTP_400_BAD_REQUEST ,
+    #             detail=f"Ошибка перехода на контакты с выставок: {res.text}"
+    #         )
+    redirect_url = f"http://exhibitions.kyberlox.ru/login_get?{urlencode(params)}"
 
-    # headers = {
-    #     "session_id": session_data["session_id"],
-    #     "user_id": str(session_data['user_id'])
-    # }
-    # redirect_url = f"http://exhibitions.kyberlox.ru/users/me"
-    # #  # Создаем RedirectResponse
-    # response = RedirectResponse(url=redirect_url) #, status_code=302
-    # response.set_cookie(
-    #     key="session_id",
-    #     value=session_data["session_id"],
-    #     httponly=True,
-    #     secure=False,  # В продакшене установите True
-    #     samesite="lax",
-    #     max_age=30 * 24 * 60 * 60  # 30 дней
-    # )
-
-    # response.set_cookie(
-    #     key="user_id",
-    #     value=session_data['user_id'],
-    #     httponly=True,
-    #     secure=False,
-    #     samesite="lax",
-    #     max_age=30 * 24 * 60 * 60
-    # )
-    return res
+    # Перенаправляем браузер на сервер 2
+    return RedirectResponse(url=redirect_url)
+    # return res
 
 @auth_router.get("/exhibition_app", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):

@@ -949,7 +949,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #     samesite="lax",
     #     max_age=30 * 24 * 60 * 60
     # )
-    return RedirectResponse(url=redirect_url, headers=headers)
+    return RedirectResponse(url=redirect_url, headers=headers, status_code=302)
 
 @auth_router.get("/exhibition_app", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):

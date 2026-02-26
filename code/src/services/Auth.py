@@ -925,7 +925,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #             status_code=status.HTTP_400_BAD_REQUEST ,
     #             detail=f"Ошибка перехода на контакты с выставок: {res.text}"
     #         )
-    redirect_url = f"http://exhibitions.emk.org.ru:8000/api/login_get?{urlencode(user_info)}"
+    redirect_url = f"http://exhibitions.emk.org.ru/api/login_get?{urlencode(user_info)}"
 
     # Перенаправляем браузер на сервер 2
     return RedirectResponse(url=redirect_url)

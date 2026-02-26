@@ -875,6 +875,12 @@ async def regconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
 
 
+@auth_router.get("/check_cookies", tags=["Авторизация"])
+async def check_cookies():
+    refresh_token = 'fd40b169007ecc8600325f14000010250000077c36bedcb2c9fb31f78061f5b96d1ebd'
+    AuthService().refresh_access_token_sync(refresh_token=refresh_token)
+    return True
+
 @auth_router.get("/exhibition", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
     import httpx
@@ -971,7 +977,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     print(user_info)
     
-    res = requests.post(url='http://exhibitions.emk.org.ru/api/login', json=user_info)
+    res = requests.post(url='http://exhibitions.emk.ru/api/login', json=user_info)
     print(res.status_code)
 
     if res.status_code != 200:

@@ -915,7 +915,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     print(user_info)
     from urllib.parse import urlencode
     # async with httpx.AsyncClient(timeout=30.0) as client:
-    #     res = await client.get(url='http://exhibitions.emk.org.ru/login_get', params=user_info)
+    #     res = await client.get(url='http://exhibitions.emk.org.ru/api/login_get', params=user_info)
     
     #     # try1 = json.loads(res.text)
     #     # print(try1)
@@ -925,7 +925,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     #             status_code=status.HTTP_400_BAD_REQUEST ,
     #             detail=f"Ошибка перехода на контакты с выставок: {res.text}"
     #         )
-    redirect_url = f"http://exhibitions.emk.org.ru/login_get?{urlencode(user_info)}"
+    redirect_url = f"http://exhibitions.emk.org.ru/api/login_get?{urlencode(user_info)}"
 
     # Перенаправляем браузер на сервер 2
     return RedirectResponse(url=redirect_url)
@@ -971,7 +971,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     print(user_info)
     
-    res = requests.post(url='http://exhibitions.emk.org.ru/login', json=user_info)
+    res = requests.post(url='http://exhibitions.emk.org.ru/api/login', json=user_info)
     print(res.status_code)
 
     if res.status_code != 200:

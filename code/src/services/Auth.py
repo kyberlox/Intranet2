@@ -885,7 +885,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             detail="Failed to authenticate with Bitrix24"
         )
     
-    user_id = request.cookies.get('user_id')
+    user_id = int(session_data['user_info']['ID'])
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -894,41 +894,42 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     user_deps = await User(id=int(user_id)).search_by_id(session=sess)
 
     
-    fio = {
-      "last_name": session_data['user_info']['LAST_NAME'],
-      "first_name": session_data['user_info']['NAME'], 
-      "middle_name": session_data['user_info']['SECOND_NAME']
-    }
+    # fio = {
+    #   "last_name": session_data['user_info']['LAST_NAME'],
+    #   "first_name": session_data['user_info']['NAME'], 
+    #   "middle_name": session_data['user_info']['SECOND_NAME']
+    # }
 
     department=""
     for dep in user_deps['indirect_data']['uf_department']:
         department += dep
     
     user_info = {
-        'id': session_data['user_id'],
+        'external_id': session_data['user_id'],
         'session_id': session_data["session_id"],
-        'fio': fio,
+        'full_name': f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}",
         'department': department,
         'position' : session_data['user_info']['WORK_POSITION']
     }
 
     print(user_info)
+    from urllib.parse import urlencode
+    # async with httpx.AsyncClient(timeout=30.0) as client:
+    #     res = await client.get(url='http://exhibitions.emk.org.ru/api/login_get', params=user_info)
     
-    res = requests.post(url='http://exhibitions.kyberlox.ru/login', json=user_info)
-    print(res.status_code)
+    #     # try1 = json.loads(res.text)
+    #     # print(try1)
 
-    if res.status_code != 200:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST ,
-            detail=f"Ошибка перехода на контакты с выставок: {res.text}"
-        )
+    #     if res.status_code != 200:
+    #         raise HTTPException(
+    #             status_code=status.HTTP_400_BAD_REQUEST ,
+    #             detail=f"Ошибка перехода на контакты с выставок: {res.text}"
+    #         )
+    redirect_url = f"https://exhibitions.emk.ru/api/login_get?{urlencode(user_info)}"
 
-
-    # redirect_url = f"http://exhibitions.kuberlox.ru/login"
-    #  # Создаем RedirectResponse
-    # response = RedirectResponse(url=redirect_url) #, status_code=302
-
-    return res.json
+    # Перенаправляем браузер на сервер 2
+    return RedirectResponse(url=redirect_url)
+    # return res
 
 @auth_router.get("/exhibition_app", tags=["Авторизация"])
 async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_current_session), response: Response = None, sess: AsyncSession = Depends(get_async_db)):
@@ -970,7 +971,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     print(user_info)
     
-    res = requests.post(url='http://exhibitions.kyberlox.ru/login', json=user_info)
+    res = requests.post(url='http://exhibitions.emk.org.ru/api/login', json=user_info)
     print(res.status_code)
 
     if res.status_code != 200:

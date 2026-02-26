@@ -921,7 +921,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
     print(user_info)
     from urllib.parse import urlencode
     # async with httpx.AsyncClient(timeout=30.0) as client:
-    #     res = await client.get(url='http://exhibitions.emk.org.ru/api/login_get', params=user_info)
+    #     res = await client.get(url='https://exhibitions.emk.org.ru/api/login_get', params=user_info)
     
     #     # try1 = json.loads(res.text)
     #     # print(try1)
@@ -977,7 +977,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     print(user_info)
     
-    res = requests.post(url='http://exhibitions.emk.ru/api/login', json=user_info)
+    res = requests.post(url='https://exhibitions.emk.ru/api/login', json=user_info)
     print(res.status_code)
 
     if res.status_code != 200:
@@ -986,47 +986,7 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
             detail=f"Ошибка перехода на контакты с выставок: {res.text}"
         )
 
-
-    # redirect_url = f"http://exhibitions.kuberlox.ru/login"
-
-    # #Создаем RedirectResponse
-    # response = RedirectResponse(url="contacts-app-emk://auth", status_code=302)
-    # return response
-
-
-    # ID = session_data['user_id']
-    # session_id = session_data["session_id"]
-    # position = session_data['user_info']['WORK_POSITION']
-    # full_name = f"{session_data['user_info']['LAST_NAME']} {session_data['user_info']['NAME']} {session_data['user_info']['SECOND_NAME']}".strip()
-
-    # redirect_uri = (
-    #     f"contacts_app_emk://auth"
-    #     f"?id={user_id}"
-    #     f"&session_id={session_id}"
-    # )
-
     session_id=session_data["session_id"]
 
     redirect_uri = f"contacts-app-emk://auth?id={user_id}&session_id={session_id}"
     return RedirectResponse(url=redirect_uri, status_code=302)
-
-    # deep_link = (
-    #     f"contacts_app_emk://auth"
-    #     f"?id={user_id}"
-    #     f"&session_id={quote(session_id)}"
-    #     f"&fio={quote(full_name)}"
-    #     f"&department={quote(department)}"
-    #     f"&position={quote(position)}"
-    # )
-
-    # return HTMLResponse(f"""
-    # <html>
-    #     <body>
-    #         <p>Переход в приложение...</p>
-    #         <script>
-    #             window.location.href = "{deep_link}";
-    #         </script>
-    #         <a href="{deep_link}">Нажмите, если не перешли</a>
-    #     </body>
-    # </html>
-    # """)

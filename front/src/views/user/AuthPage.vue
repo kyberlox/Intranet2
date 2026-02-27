@@ -34,12 +34,7 @@ export default defineComponent({
     components: {
         Loader
     },
-    props: {
-        reroute: {
-            type: String
-        }
-    },
-    setup(props) {
+    setup() {
         const router = useRouter();
         const route = useRoute();
         const isLoading = ref(false);
@@ -53,9 +48,7 @@ export default defineComponent({
                 testLogin();
             }
             else {
-                const referrer = props.reroute ? props.reroute.replace('/?reroute=', '') : import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath;
-                console.log(referrer);
-
+                const referrer = import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath.replace('/?reroute=', '');
                 router.push({ name: 'oauthPage', params: { referrer: referrer } });
             }
             isLoading.value = false;
@@ -72,9 +65,7 @@ export default defineComponent({
         watch((route), () => {
             if (!userData.getIsLogin && route.fullPath) {
                 if (route.name !== 'oauthPage') {
-                    console.log(props.reroute);
-
-                    Cookies.set('referrer', (props.reroute ? props.reroute.replace('/?reroute=', '') : String(route.fullPath).replace('/?reroute=https://intranet.emk.ru', '')), { expires: 365 });
+                    Cookies.set('referrer', String(route.fullPath).replace('/?reroute=https://intranet.emk.ru', ''), { expires: 365 });
                 }
             }
         }, { immediate: true, deep: true })

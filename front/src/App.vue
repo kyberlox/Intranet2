@@ -24,7 +24,7 @@
             </main>
         </div>
         <div v-else-if="!isLoading">
-            <AuthPage :reroute="reroute" />
+            <AuthPage />
         </div>
     </div>
 </PullToRefresh>
@@ -76,7 +76,6 @@ export default defineComponent({
         const isLoading = ref(true);
         const isRefreshing = ref(false);
         const routerViewKey = ref(0);
-        const reroute = ref();
 
         const handleRefresh = () => {
             return new Promise<void>((resolve) => {
@@ -126,11 +125,6 @@ export default defineComponent({
                 })
                 .finally(() => { userData.setLogin(true); isLoading.value = false })
 
-            console.log(useRoute());
-
-            if (useRoute().query.reroute) {
-                reroute.value = String(useRoute().query.reroute).replace('/?reroute=', '')
-            }
         })
 
         return {
@@ -142,7 +136,6 @@ export default defineComponent({
             isRefreshing,
             handleRefresh,
             routerViewKey,
-            reroute
         }
     }
 })

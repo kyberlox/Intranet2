@@ -68,11 +68,7 @@ export default defineComponent({
         InService,
         PullToRefresh,
     },
-    props: {
-        reroute: {
-            type: String
-        }
-    },
+
     setup() {
         const route = useRoute();
         const userData = useUserData();
@@ -80,6 +76,7 @@ export default defineComponent({
         const isLoading = ref(true);
         const isRefreshing = ref(false);
         const routerViewKey = ref(0);
+        const reroute = ref();
 
         const handleRefresh = () => {
             return new Promise<void>((resolve) => {
@@ -128,6 +125,10 @@ export default defineComponent({
                     prefetchSection('user');
                 })
                 .finally(() => { userData.setLogin(true); isLoading.value = false })
+
+            console.log(useRoute());
+
+            reroute.value = useRoute().query.reroute
         })
 
         return {
@@ -138,7 +139,8 @@ export default defineComponent({
             isLoading,
             isRefreshing,
             handleRefresh,
-            routerViewKey
+            routerViewKey,
+            reroute
         }
     }
 })

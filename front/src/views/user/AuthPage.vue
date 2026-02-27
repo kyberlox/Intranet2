@@ -70,8 +70,6 @@ export default defineComponent({
         }
 
         watch((route), () => {
-            console.log(props);
-
             if (!userData.getIsLogin && route.fullPath) {
                 if (route.name !== 'oauthPage') {
                     Cookies.set('referrer', (props.reroute ? props.reroute : String(route.fullPath)), { expires: 365 });

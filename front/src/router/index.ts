@@ -756,7 +756,7 @@ const router = createRouter({
           window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition_app'
         }
         else
-          next({ name: 'home', query: { reroute: 'https://intranet.emk.ru/api/auth_router/exhibition_app' } })
+          next({ name: 'home', query: { reroute: '/api/auth_router/exhibition_app' } })
       },
       redirect: '',
     },

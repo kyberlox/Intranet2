@@ -131,7 +131,6 @@ export default defineComponent({
             if (useRoute().query.reroute) {
                 reroute.value = String(useRoute().query.reroute).replace('/?reroute=', '')
             }
-
         })
 
         return {

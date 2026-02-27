@@ -732,6 +732,7 @@ const router = createRouter({
       path: '/exhibition',
       name: 'exhibition',
       beforeEnter: (to, from, next) => {
+        console.log(useUserData().getIsLogin)
         if (useUserData().getIsLogin) {
           window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition'
         }

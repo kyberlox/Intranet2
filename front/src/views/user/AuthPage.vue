@@ -56,8 +56,6 @@ export default defineComponent({
                 const referrer = props.reroute ? props.reroute : import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath;
                 console.log(referrer);
                 console.log(props.reroute);
-
-
                 router.push({ name: 'oauthPage', params: { referrer: referrer } });
             }
             isLoading.value = false;
@@ -72,9 +70,11 @@ export default defineComponent({
         }
 
         watch((route), () => {
+            console.log(props);
+
             if (!userData.getIsLogin && route.fullPath) {
                 if (route.name !== 'oauthPage') {
-                    Cookies.set('referrer', String(route.fullPath), { expires: 365 });
+                    Cookies.set('referrer', (props.reroute ? props.reroute : String(route.fullPath)), { expires: 365 });
                 }
             }
         }, { immediate: true, deep: true })

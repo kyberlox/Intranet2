@@ -53,7 +53,7 @@ export default defineComponent({
                 testLogin();
             }
             else {
-                const referrer = props.reroute ? props.reroute : import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath;
+                const referrer = props.reroute ? props.reroute.replace('/?reroute=', '') : import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath;
                 console.log(referrer);
                 console.log(props.reroute);
                 router.push({ name: 'oauthPage', params: { referrer: referrer } });

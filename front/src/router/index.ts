@@ -6,17 +6,18 @@ const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 
 const checkIsAdmin = () => {
-    return Api.get('roots/get_root_token_by_uuid')
-      .then((res)=>{
-         if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
-          useUserData().setUserRoots(res);
-          return true;
-        }
-        else{
-          return false;
-        }
-      })
+  return Api.get('roots/get_root_token_by_uuid')
+    .then((res) => {
+      if (res && typeof res == 'object' && (Object.keys(res).length !== 0)) {
+        useUserData().setUserRoots(res);
+        return true;
+      }
+      else {
+        return false;
+      }
+    })
 }
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,9 +59,9 @@ const router = createRouter({
       }
     },
     {
-    path: '/about/year-results',
-    name: 'year-results',
-    component: () => import('@/views/about/yearResults/YearResults.vue'),
+      path: '/about/year-results',
+      name: 'year-results',
+      component: () => import('@/views/about/yearResults/YearResults.vue'),
     },
     {
       path: '/about/blogs',
@@ -107,7 +108,7 @@ const router = createRouter({
     {
       path: '/gallery/videoreportsByTag/:tagId',
       name: 'videoReportsByTag',
-      props: (route) => ({ tagId: route.params.tagId}),
+      props: (route) => ({ tagId: route.params.tagId }),
       component: () => import('@/views/gallery/videoReports/VideoReports.vue'),
     },
     {
@@ -321,8 +322,8 @@ const router = createRouter({
       path: '/services/deepseek',
       name: 'deepseek',
       beforeEnter: (to, from, next) => {
-      window.open('https://webui1-a66.imp.int/', '_blank')
-      next(false)
+        window.open('https://webui1-a66.imp.int/', '_blank')
+        next(false)
       },
       redirect: '',
     },
@@ -375,7 +376,7 @@ const router = createRouter({
     {
       path: '/news/actual/tag/:tagId',
       name: 'actualNewsByTag',
-      props: (route) => ({ tagId: route.params.tagId}),
+      props: (route) => ({ tagId: route.params.tagId }),
       component: () => import('@/views/news/actualNews/ActualNews.vue')
     },
     {
@@ -469,7 +470,7 @@ const router = createRouter({
     {
       path: '/communications/corpevents/:tagId',
       name: 'corpEventsByTag',
-      props: (route) => ({ tagId: route.params.tagId}),
+      props: (route) => ({ tagId: route.params.tagId }),
       component: () => import('@/views/innerCommunications/CorpEvents.vue'),
     },
     {
@@ -562,12 +563,12 @@ const router = createRouter({
       component: () => import('@/views/admin/components/AdminSidebar.vue'),
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
     },
     {
       path: '/admin/:id',
@@ -576,26 +577,26 @@ const router = createRouter({
       props: (route) => ({ id: route.params.id }),
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
+      },
     },
-    },
- {
+    {
       path: '/admin/:id/new',
       name: 'adminElementInnerAdd',
       component: () => import('@/views/admin/editPanel/AdminElementEditor.vue'),
       props: (route) => ({ id: route.params.id, type: 'new' }),
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     {
@@ -608,12 +609,12 @@ const router = createRouter({
       },
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     {
@@ -625,12 +626,12 @@ const router = createRouter({
       },
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     {
@@ -642,12 +643,12 @@ const router = createRouter({
       },
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     {
@@ -659,12 +660,12 @@ const router = createRouter({
       },
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     {
@@ -676,12 +677,12 @@ const router = createRouter({
       },
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     {
@@ -693,12 +694,12 @@ const router = createRouter({
       },
       beforeEnter: async (to, from, next) => {
         const isAdmin = await Promise.resolve(checkIsAdmin());
-        if(isAdmin){
+        if (isAdmin) {
           next()
         } else {
-          next({name: 'home'})
+          next({ name: 'home' })
         };
-    },
+      },
 
     },
     // cтраница авторизации через б24
@@ -706,7 +707,8 @@ const router = createRouter({
       path: '/oauthRedir',
       name: 'oauthPage',
       beforeEnter: () => {
-      window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user`;      },
+        window.location.href = `https://${oauthDomen}/oauth/authorize/?client_id=${oauthClient}&amp;redirect_uri=https%3A%2F%2F${oauthDomen}%2Fintranet%2Frest%2Fauthuser.php&amp;response_type=code&amp;state=test_1765436150&amp;scope=user`;
+      },
       redirect: '',
     },
     // VCARD
@@ -714,15 +716,15 @@ const router = createRouter({
       path: '/vcard/:id',
       name: 'vcard',
       component: () => import('@/views/vcard/VCard.vue'),
-      props: (route) => ({ id: route.params.id}),
+      props: (route) => ({ id: route.params.id }),
       meta: {
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
     // Ошибка тех работ
     {
-    path: '/inservice',
-    name: 'inservice',
+      path: '/inservice',
+      name: 'inservice',
       component: () => import('@/views/errors/InService.vue'),
     },
     // Редирект на сервис для визиток
@@ -730,7 +732,11 @@ const router = createRouter({
       path: '/exhibition',
       name: 'exhibition',
       beforeEnter: (to, from, next) => {
-        window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition'
+        if (useUserData().getIsLogin) {
+          window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition'
+        }
+        else
+          next({ name: 'home', params: { reroute: 'https://intranet.emk.ru/api/auth_router/exhibition' } })
       },
       redirect: '',
     },
@@ -738,7 +744,11 @@ const router = createRouter({
       path: '/exhibition_app',
       name: 'exhibition_app',
       beforeEnter: (to, from, next) => {
-        window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition_app'
+        if (useUserData().getIsLogin) {
+          window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition_app'
+        }
+        else
+          next({ name: 'home', params: { reroute: 'https://intranet.emk.ru/api/auth_router/exhibition_app' } })
       },
       redirect: '',
     },

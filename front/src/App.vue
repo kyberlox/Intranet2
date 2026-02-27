@@ -24,7 +24,7 @@
             </main>
         </div>
         <div v-else-if="!isLoading">
-            <AuthPage />
+            <AuthPage :reroute="reroute" />
         </div>
     </div>
 </PullToRefresh>
@@ -67,6 +67,11 @@ export default defineComponent({
         VCard,
         InService,
         PullToRefresh,
+    },
+    props: {
+        reroute: {
+            type: String
+        }
     },
     setup() {
         const route = useRoute();

@@ -727,11 +727,21 @@ const router = createRouter({
     },
     // Редирект на сервис для визиток
     {
-      path: '/exhibition_app',
-      beforeEnter: () => {
-      window.location.href = `https://intranet.emk.ru/auth_router/exhibition`;      },
+      path: '/exhibition',
+      name: 'exhibition',
+      beforeEnter: (to, from, next) => {
+        window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition'
+      },
       redirect: '',
-    }
+    },
+    {
+      path: '/exhibition_app',
+      name: 'exhibition_app',
+      beforeEnter: (to, from, next) => {
+        window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition_app'
+      },
+      redirect: '',
+    },
   ],
   scrollBehavior() {
     return { top: 0, behavior: 'smooth' };

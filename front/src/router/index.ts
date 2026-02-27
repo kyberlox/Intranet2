@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserData } from '@/stores/userData';
 import Api from '@/utils/Api';
+import { nextTick } from 'vue';
 
 const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 
-const checkIsAdmin = () => {
+const checkIsAdmin = async () => {
   return Api.get('roots/get_root_token_by_uuid')
     .then((res) => {
       if (res && typeof res == 'object' && (Object.keys(res).length !== 0)) {
@@ -16,6 +17,11 @@ const checkIsAdmin = () => {
         return false;
       }
     })
+}
+
+const checkIsLogin = async () => {
+ await nextTick()
+  return useUserData().getIsLogin;
 }
 
 
@@ -731,9 +737,9 @@ const router = createRouter({
     {
       path: '/exhibition',
       name: 'exhibition',
-      beforeEnter: (to, from, next) => {
-        console.log(useUserData().getIsLogin)
-        if (useUserData().getIsLogin) {
+      beforeEnter: async (to, from, next) => {
+        const isLogin = await Promise.resolve(checkIsLogin())
+        if (isLogin) {
           window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition'
         }
         else
@@ -744,8 +750,8 @@ const router = createRouter({
     {
       path: '/exhibition_app',
       name: 'exhibition_app',
-      beforeEnter: (to, from, next) => {
-        if (useUserData().getIsLogin) {
+      beforeEnter: async (to, from, next) => {
+        if (await Promise.resolve(checkIsLogin())) {
           window.location.href = 'https://intranet.emk.ru/api/auth_router/exhibition_app'
         }
         else

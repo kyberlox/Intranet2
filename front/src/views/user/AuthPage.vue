@@ -54,6 +54,10 @@ export default defineComponent({
             }
             else {
                 const referrer = props.reroute ? props.reroute : import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath;
+                console.log(referrer);
+                console.log(props.reroute);
+
+
                 router.push({ name: 'oauthPage', params: { referrer: referrer } });
             }
             isLoading.value = false;

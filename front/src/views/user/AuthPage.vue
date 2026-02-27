@@ -34,7 +34,12 @@ export default defineComponent({
     components: {
         Loader
     },
-    setup() {
+    props: {
+        reroute: {
+            type: String
+        }
+    },
+    setup(props) {
         const router = useRouter();
         const route = useRoute();
         const isLoading = ref(false);
@@ -48,7 +53,8 @@ export default defineComponent({
                 testLogin();
             }
             else {
-                router.push({ name: 'oauthPage', params: { referrer: import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath } });
+                const referrer = props.reroute ? props.reroute : import.meta.env.VITE_API_URL.replace('/api', '') + route.fullPath;
+                router.push({ name: 'oauthPage', params: { referrer: referrer } });
             }
             isLoading.value = false;
         }

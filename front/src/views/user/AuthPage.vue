@@ -74,7 +74,7 @@ export default defineComponent({
                 if (route.name !== 'oauthPage') {
                     console.log(props.reroute);
 
-                    Cookies.set('referrer', (props.reroute ? props.reroute.replace('/?reroute=', '') : String(route.fullPath)), { expires: 365 });
+                    Cookies.set('referrer', (props.reroute ? props.reroute.replace('/?reroute=', '') : String(route.fullPath).replace('/?reroute=https://intranet.emk.ru', '')), { expires: 365 });
                 }
             }
         }, { immediate: true, deep: true })

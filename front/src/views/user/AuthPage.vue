@@ -72,7 +72,7 @@ export default defineComponent({
         watch((route), () => {
             if (!userData.getIsLogin && route.fullPath) {
                 if (route.name !== 'oauthPage') {
-                    Cookies.set('referrer', (props.reroute ? props.reroute : String(route.fullPath)), { expires: 365 });
+                    Cookies.set('referrer', (props.reroute ? props.reroute.replace('/?reroute=', '') : String(route.fullPath)), { expires: 365 });
                 }
             }
         }, { immediate: true, deep: true })

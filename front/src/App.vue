@@ -127,13 +127,13 @@ export default defineComponent({
 
         })
 
-        onMounted(() => {
+        watch((useRoute()), () => {
             console.log(useRoute().query.reroute);
             console.log(isLogin.value);
             if (useRoute().query.reroute && isLogin.value) {
                 window.location.href = String(useRoute().query.reroute).replace('?reroute=', '');
             }
-        })
+        }, { immediate: true, deep: true })
 
         return {
             isLogin,

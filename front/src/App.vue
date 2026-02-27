@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
+import { defineComponent, computed, watch, onBeforeMount, ref, onMounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
@@ -125,6 +125,14 @@ export default defineComponent({
                 })
                 .finally(() => { userData.setLogin(true); isLoading.value = false })
 
+        })
+
+        onMounted(() => {
+            console.log(useRoute().query.reroute);
+            console.log(isLogin.value);
+            if (useRoute().query.reroute && isLogin.value) {
+                window.location.href = String(useRoute().query.reroute).replace('?reroute=', '');
+            }
         })
 
         return {

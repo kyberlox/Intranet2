@@ -21,6 +21,7 @@ const checkIsAdmin = async () => {
 
 const checkIsLogin = async () => {
  await nextTick()
+ console.log(useUserData().getIsLogin)
   return useUserData().getIsLogin;
 }
 

@@ -128,7 +128,10 @@ export default defineComponent({
 
             console.log(useRoute());
 
-            reroute.value = useRoute().query.reroute
+            if (useRoute().query.reroute) {
+                reroute.value = String(useRoute().query.reroute).replace('/?reroute=', '')
+            }
+
         })
 
         return {

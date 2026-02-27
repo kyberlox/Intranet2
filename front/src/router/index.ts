@@ -719,10 +719,18 @@ const router = createRouter({
         breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Список редактора', route: 'admin' }]
       }
     },
+    // Ошибка тех работ
     {
     path: '/inservice',
     name: 'inservice',
       component: () => import('@/views/errors/InService.vue'),
+    },
+    // Редирект на сервис для визиток
+    {
+      path: '/exhibition_app',
+      beforeEnter: () => {
+      window.location.href = `https://intranet.emk.ru/auth_router/exhibition`;      },
+      redirect: '',
     }
   ],
   scrollBehavior() {

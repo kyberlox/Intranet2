@@ -92,6 +92,13 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
+            console.log(route);
+            if (route && route.query && route.query.reroute && isLogin.value) {
+                console.log(route.query.reroute);
+
+                window.location.href = String(route.query.reroute).replace('?reroute=', '');
+            }
+
             if (userData.getIsLogin && userData.getMyId == 0) {
                 userData.setLogin(false);
             }
@@ -126,14 +133,6 @@ export default defineComponent({
                 .finally(() => { userData.setLogin(true); isLoading.value = false })
 
         })
-
-        watch((useRoute()), () => {
-            console.log(useRoute().query.reroute);
-            console.log(isLogin.value);
-            if (useRoute().query.reroute && isLogin.value) {
-                window.location.href = String(useRoute().query.reroute).replace('?reroute=', '');
-            }
-        }, { immediate: true, deep: true })
 
         return {
             isLogin,

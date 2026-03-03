@@ -381,7 +381,7 @@ class PeerUserModel:
 
                 if flag:
                     add_history = self.PeerHistory(
-                        user_uuid=roots['user_id'],
+                        user_uuid=uuid_from,
                         user_to=uuid_to,
                         active_info=description,
                         active_coast=value,

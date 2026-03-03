@@ -92,10 +92,7 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch([route, isLogin], () => {
-            console.log(route);
             if (route && route.query && route.query.reroute && isLogin.value) {
-                console.log(route.query.reroute);
-
                 window.location.href = String(route.query.reroute).replace('?reroute=', '');
             }
 

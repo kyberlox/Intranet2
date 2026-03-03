@@ -638,7 +638,7 @@ async def bitrix24_callback(code: str, state: Optional[str] = None, referrer: st
     # redirect_url = f"https://intranet.emk.ru/" # auth/{code}/{session['member_id']} referrer: Optional[str] = None, 
     redirect_url = auth_service.main_redirect # auth/{code}/{session['member_id']}
     # print(redirect_url, 'до')
-    #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']}
+    #redirect_url = f"http://intranet.emk.org.ru/" # auth/{code}/{session['member_id']} 
     print(referrer)
     if referrer:
         redirect_url = redirect_url + f'{referrer}'

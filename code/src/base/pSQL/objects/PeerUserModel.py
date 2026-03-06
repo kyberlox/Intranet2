@@ -458,6 +458,7 @@ class PeerUserModel:
             #     year_diff = abs(datetime.today().year - convert_date_reg.year)
             #     if year_diff >= 1:
                     #проверяем была ли запись у пользователя в этом году 
+            print(uuid_to, activities_id)
             stmt = select(self.ActiveUsers).where(self.ActiveUsers.uuid_to == uuid_to, self.ActiveUsers.activities_id == activities_id, extract("year", self.ActiveUsers.date_time) == datetime.today().year)
             res = await session.execute(stmt) 
             exist_node = res.scalar_one_or_none()

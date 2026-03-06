@@ -532,7 +532,7 @@ async def send_points(user_id: int = Depends(get_user_id_by_session_id), data=Bo
         )
     # email_data = {'sender': 'danilochkin.m@nporeg.ru'}
     # SendEmail(data=email_data).send_to_birthday_notifications()
-    return await Peer(user_uuid=user_id).send_points(data=data, session=session)  # {"uuid_to": "293", "activities_id": 12, "description": "20 лет Вы с нами!"}
+    return await Peer(user_uuid=user_id).send_points(data=data, session=session)  # {"uuid_to": "150", "activities_id": 9, "description": "10 лет Вы с нами!"}
 
 
 @peer_router.get("/get_admins_list")

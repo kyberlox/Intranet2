@@ -259,9 +259,9 @@ class User:
                             continue
 
                         # print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
-                        test_today = datetime.strptime('01.03.2026', '%d.%m.%Y')
-                        # if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
-                        if test_today.day == convert_date_reg.day and test_today.month == convert_date_reg.month:
+                        # test_today = datetime.strptime('01.03.2026', '%d.%m.%Y')
+                        if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+                        # if test_today.day == convert_date_reg.day and test_today.month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 
                             # ставим для теста текущий год - 2027
@@ -311,7 +311,7 @@ class User:
                                 # Добавить письмо
                                 if send_point['status'] == 'info':
                                     email_data = {'sender': user.email}
-                                    # SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
+                                    SendEmail(data=email_data).send_to_jubilee_in_company(year=25)
                                 continue
                             elif year_diff == 20:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 20 лет')
@@ -322,7 +322,7 @@ class User:
                                 # Добавить письмо
                                 if send_point['status'] == 'info':
                                     email_data = {'sender': user.email}
-                                    # SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
+                                    SendEmail(data=email_data).send_to_jubilee_in_company(year=20)
                                 continue
                             elif year_diff == 15:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 15 лет')
@@ -333,7 +333,7 @@ class User:
                                 # Добавить письмо
                                 if send_point['status'] == 'info':
                                     email_data = {'sender': user.email}
-                                    # SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
+                                    SendEmail(data=email_data).send_to_jubilee_in_company(year=15)
                                 continue
                             elif year_diff == 10:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 10 лет')
@@ -344,7 +344,7 @@ class User:
                                 # Добавить письмо
                                 if send_point['status'] == 'info':
                                     email_data = {'sender': user.email}
-                                    # SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
+                                    SendEmail(data=email_data).send_to_jubilee_in_company(year=10)
                                 continue
                             elif year_diff == 5:
                                 LogsMaker().info_message(f'У пользователя {user.id} годовщина 5 лет')
@@ -355,7 +355,7 @@ class User:
                                 # Добавить письмо
                                 if send_point['status'] == 'info':
                                     email_data = {'sender': user.email}
-                                    # SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
+                                    SendEmail(data=email_data).send_to_jubilee_in_company(year=5)
                                 continue
                             elif year_diff >= 1:
                                 LogsMaker().info_message(f'Пользователь {user.id} с нами {year_diff} лет')
@@ -365,7 +365,7 @@ class User:
                                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
                                 if send_point['status'] == 'info':
                                     email_data = {'sender': user.email}
-                                    # SendEmail(data=email_data).send_to_anniversary_in_company(year=year_diff)
+                                    SendEmail(data=email_data).send_to_anniversary_in_company(year=year_diff)
                                 continue
                             else:
                                 LogsMaker().info_message(f'разница меньше года {user.id}')

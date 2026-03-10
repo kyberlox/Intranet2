@@ -2024,8 +2024,8 @@ class Article:
             if self.section_id == "111" or self.section_id == "14":
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             # отдельная сортировка Памятки новому сторуднику
-            # elif self.section_id == "18":
-            #     sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
+            elif self.section_id == "18":
+                sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             elif int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
             else:

@@ -176,7 +176,7 @@ class SendEmail:
         try:
             company = '«Капитал ЭМК»'
             msg = MIMEMultipart()
-            msg["From"] = server_mail_login
+            msg["From"] = "merch.store@emk.ru"
             msg["To"] = self.data['sender']
             msg['Subject'] = 'Приветственное письмо'
             text_msg = f'''<p>Дорогой(ая) коллега!</p>\
@@ -414,7 +414,7 @@ class SendEmail:
         try:
             company = '«Капитал ЭМК»'
             msg = MIMEMultipart()
-            msg["From"] = server_mail_login
+            msg["From"] = "merch.store@emk.ru"
             msg["To"] = self.data['sender']
             msg['Subject'] = 'С днем рождения!'
             text_msg = f'''<p>Дорогой(ая) коллега!</p>\
@@ -535,7 +535,7 @@ class SendEmail:
         try:
             company = '«Капитал ЭМК»'
             msg = MIMEMultipart()
-            msg["From"] = server_mail_login
+            msg["From"] = "merch.store@emk.ru"
             msg["To"] = self.data['sender']
             msg['Subject'] = 'С годовщиной!'
             text_msg = f'''<p>Дорогой(ая) коллега!</p>\
@@ -655,7 +655,7 @@ class SendEmail:
         try:
             company = '«Капитал ЭМК»'
             msg = MIMEMultipart()
-            msg["From"] = server_mail_login
+            msg["From"] = "merch.store@emk.ru"
             msg["To"] = self.data['sender']
             msg['Subject'] = 'С юбилеем!'
             text_msg = f'''<p>Дорогой(ая) коллега!</p>\

@@ -21,7 +21,7 @@ class MerchStore:
         self.user_uuid = user_uuid
 
     async def create_purchase(self, data, session):
-        res = await MerchStoreModel(user_id=self.user_uuid).create_purchase(data=data, session=session)
+        res = await MerchStoreModel(user_id=int(self.user_uuid)).create_purchase(data=data, session=session)
         if "not_enough" in res:
             return res
         #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"\
@@ -37,7 +37,7 @@ class MerchStore:
         return True
     
     async def buy_split(self, data, session):
-        res = await MerchStoreModel(user_id=self.user_uuid).buy_split(data=data, session=session)
+        res = await MerchStoreModel(user_id=int(self.user_uuid)).buy_split(data=data, session=session)
         #отправляем письмо о покупке res = f"{merch_info.name}, Куплено {total_count} штук(а)"
         if 'status' in res:
             return res

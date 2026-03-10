@@ -40,7 +40,7 @@ export default defineComponent({
         Loader
     },
     props: {},
-    setup() {
+    setup(_, { emit }) {
         const bugreport = ref<string>('');
         const isLoading = ref(false);
         const email = computed(() => useUserData().getUser.email);
@@ -62,7 +62,7 @@ export default defineComponent({
             Api.post('users/send_error', body)
                 .then((data) => handleApiResponse(data, toast, 'trySupportError', 'bugReportSuccess'))
                 .catch((e) => handleApiError(e, toast))
-                .finally(() => isLoading.value = false)
+                .finally(() => { isLoading.value = false; emit('closeModal') })
         }
 
         return {

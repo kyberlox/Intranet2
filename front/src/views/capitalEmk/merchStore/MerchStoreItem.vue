@@ -142,9 +142,9 @@ export default defineComponent({
                 isLoading.value = true;
                 Api.put('store/create_purchase', { [currentSize.value as string]: quantity!, 'art_id': Number(currentItem.value?.id)! })
                     .then((data) => {
-                        if ('not_enough' in data) {
+                        if (typeof data == 'object' && 'not_enough' in data) {
                             toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
-                        } else if ('message' in data) {
+                        } else if (typeof data == 'object' && 'message' in data) {
                             toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
                         }
                         else {

@@ -167,7 +167,7 @@ class SendEmail:
             server.login(server_mail_login, server_mail_pswd)
             server.send_message(msg)
             server.quit()
-            self.send_sucsesfell()
+            
             return {'status': True}
         except SMTPException as e:
             return LogsMaker().error_message(e)

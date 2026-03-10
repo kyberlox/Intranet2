@@ -2018,12 +2018,14 @@ class Article:
                         #         res['reactions'] = has_user_liked
 
                     active_articles.append(res)
-            SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42
+            SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42 18, 
             if not active_articles:
                 return active_articles
             if self.section_id == "111" or self.section_id == "14":
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             # отдельная сортировка Памятки новому сторуднику
+            # elif self.section_id == "18":
+            #     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=False)
             elif self.section_id == "18":
                 sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             elif int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:

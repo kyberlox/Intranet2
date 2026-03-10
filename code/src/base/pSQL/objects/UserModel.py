@@ -581,46 +581,51 @@ class UserModel:
         users = result.scalars().all()
         for usr in users:
             user = usr.__dict__
-            if 112 in user['indirect_data']['uf_department']:
-                pass
-            else:
+            # if 112 in user['indirect_data']['uf_department']:
+            #     pass
+            # else:
 
-                if user['active'] and user['photo_file_id'] is not None: #
-                # if user['active']:
-                    user_info = {}
-                    indirect_data = user['indirect_data']
-                    list_departs = []
-                    if len(indirect_data['uf_department']) != 0:
-                        for dep in indirect_data['uf_department']:
-                            if isinstance(dep, int):
+            if user['active']: #  and user['photo_file_id'] is not None
+            # if user['active']:
+                user_info = {}
+                indirect_data = user['indirect_data']
+                list_departs = []
+                if len(indirect_data['uf_department']) != 0:
+                    for dep in indirect_data['uf_department']:
+                        if isinstance(dep, int):
 
-                                dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
-                                for de in dep_str:
-                                    list_departs.append(de.__dict__['name'])
-                    
-                            
-                    indirect_data['uf_department'] = list_departs
-                    # добавляем только нужную информацию
-                    user_info = {}
-
+                            dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
+                            for de in dep_str:
+                                list_departs.append(de.__dict__['name'])
+                
+                        
+                indirect_data['uf_department'] = list_departs
+                # добавляем только нужную информацию
+                user_info = {}
+                
+                if user['photo_file_id'] is not None:
                     user_image = await File(id = user['photo_file_id']).get_users_photo(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
-                    user_info['id'] = user['id']
-                    if user['second_name'] == '' or user['second_name'] is None:
-                        if user['name'] == '' or user['name'] is None:
-                            user_info['user_fio'] = f'{user["last_name"]}'
-                        else:
-                            user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
-                    else:
-                        user_info['user_fio'] = f'{user["last_name"]} {user["name"]} {user["second_name"]}'
-                    user_info['position'] = indirect_data['work_position']
-                    user_info['department'] = indirect_data['uf_department']
-                    if "uf_usr_department_main" in indirect_data:
-
-                        dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id(session)
-                        user_info['uf_usr_department_main'] = dedep[0].name
                     user_info['image'] =  f'{DOMAIN}{user_image["URL"]}'
-                    
-                    normal_list.append(user_info)
+                else:
+                    user_info['image'] =  f'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png'
+
+                user_info['id'] = user['id']
+                if user['second_name'] == '' or user['second_name'] is None:
+                    if user['name'] == '' or user['name'] is None:
+                        user_info['user_fio'] = f'{user["last_name"]}'
+                    else:
+                        user_info['user_fio'] = f'{user["last_name"]} {user["name"]}'
+                else:
+                    user_info['user_fio'] = f'{user["last_name"]} {user["name"]} {user["second_name"]}'
+                user_info['position'] = indirect_data['work_position']
+                user_info['department'] = indirect_data['uf_department']
+                if "uf_usr_department_main" in indirect_data:
+
+                    dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id(session)
+                    user_info['uf_usr_department_main'] = dedep[0].name
+                
+                
+                normal_list.append(user_info)
 
         return normal_list
 

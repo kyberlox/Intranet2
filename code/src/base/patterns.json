@@ -360,6 +360,11 @@
         "disabled": true
       },
       {
+        "name": "Модуль",
+        "field": "module",
+        "data_type": "str"
+      },
+      {
         "name": "Тип форматирования",
         "field": "content_type",
         "data_type": "str",

@@ -31,11 +31,12 @@ export default defineComponent({
     setup() {
         const router = useRouter();
         onMounted(() => {
-            setInterval(() => {
+            const healthCheck = setInterval(() => {
                 Api.get('/health_check')
                     .then((data) => {
                         if (data) {
                             router.push({ name: 'home' })
+                            clearInterval(healthCheck);
                         }
                     })
                     .catch((error) => console.log(error))

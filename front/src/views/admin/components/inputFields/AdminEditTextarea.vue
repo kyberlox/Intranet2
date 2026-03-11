@@ -13,7 +13,6 @@ import { defineComponent, type PropType, ref, watch } from 'vue';
 import TextEditor from '@/components/tools/common/TextEditor.vue';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 import { parseMarkdown } from '@/utils/parseMarkdown';
-import sanitize from 'sanitize-html';
 
 export default defineComponent({
     components: {
@@ -32,16 +31,18 @@ export default defineComponent({
 
         watch((props), () => {
             if (!props.item?.value) return
-            value.value = String(props.item?.value)
+            value.value = String(props.item?.value).replaceAll('&nbsp;', ' ')
         }, { immediate: true, deep: true })
 
-        watch((value), () => {
-            value.value = sanitize(value.value as string).replaceAll('&nbsp;', ' ')
-        }, { immediate: true, deep: true })
+        // watch((value), () => {
+        //     value.value = (value.value as string).replaceAll('&nbsp;', ' ').replaceAll('img', 'img style="max-width: 200px"')
+        //     console.log(value.value);
+
+        // }, { immediate: true, deep: true })
 
         return {
             value,
-            handleValuePick: () => emit('pick', (value.value as string)?.replaceAll('&nbsp;', ' ')),
+            handleValuePick: () => emit('pick', (value.value as string)?.replaceAll('&nbsp;', ' ').replaceAll('img', 'img style="max-width: 200px"')),
             parseMarkdown
         }
     }

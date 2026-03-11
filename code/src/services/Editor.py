@@ -772,6 +772,9 @@ class Editor:
                 # если это часть indirect_data
                 else:
                     if "indirect_data" in art: #  and art["indirect_data"] is not None
+                        if art["indirect_data"] is None:
+                            art["indirect_data"] = {key: data[key]}
+                            continue
                         if key == "tags":
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             # ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info

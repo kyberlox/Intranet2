@@ -21,6 +21,7 @@
     "position" : "Должность",
     "department" : "Подразделение",
     "award" : "Награда",
+    "module" : "Модуль",
     "location" : "Локация",
     "organizer" : "Организатор",
     "phone_number" : "Номер телефона",

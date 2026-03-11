@@ -36,12 +36,15 @@ export default defineComponent({
         }, { immediate: true, deep: true });
 
         const sanitizeValue = (html: string): string => {
+            console.log(html);
+
             if (!html) return '';
 
             let cleanHtml = sanitizeHtml(html, {
-                allowedTags: ['b', 'i', 'u', 'strong', 'em', 'a', 'p', 'br', 'li', 'ol', 'ul'],
+                allowedTags: ['b', 'i', 'u', 'strong', 'em', 'a', 'p', 'br', 'li', 'ol', 'ul', 'img'],
                 allowedAttributes: {
-                    'a': ['href', 'target', 'rel']
+                    'a': ['href', 'target', 'rel'],
+                    'img': ['src']
                 },
                 allowedStyles: {},
                 transformTags: {
@@ -50,6 +53,7 @@ export default defineComponent({
                 },
                 disallowedTagsMode: 'discard'
             }).replaceAll('&nbsp;', ' ');
+            console.log(cleanHtml);
 
             cleanHtml = cleanHtml.replace(/<li>\s*<ul/g, '<ul');
             cleanHtml = cleanHtml.replace(/<li>\s*<ol/g, '<ol');
@@ -71,7 +75,7 @@ export default defineComponent({
                 ['bold', 'italic', 'underline'],
                 [{ 'color': [] }],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                ['link']
+                ['link', 'image']
             ],
             clipboard: {
                 matchVisual: false,

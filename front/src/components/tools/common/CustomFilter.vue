@@ -3,7 +3,7 @@
     <div class="dropdown-wrapper tagDateNavBar__dropdown-wrapper">
         <ul class="dropdown__menu tagDateNavBar__dropdown__menu">
             <li class="dropdown__item-wrapper tagDateNavBar__dropdown__item-wrapper"
-                v-for="(param, index) in newParams?.sort((a, b) => a.localeCompare(b))"
+                v-for="(param, index) in (modifiers?.includes('nosort') ? newParams : newParams?.sort((a, b) => a.localeCompare(b)))"
                 :key="index"
                 @click="pickFilter(param)">
                 <div class="dropdown__item tagDateNavBar__dropdown__item">
@@ -12,7 +12,9 @@
             </li>
             <li class="dropdown__item-wrapper tagDateNavBar__dropdown__item-wrapper"
                 @click="pickFilter('')">
-                <div class="dropdown__item tagDateNavBar__dropdown__item">Очистить</div>
+                <div class="dropdown__item tagDateNavBar__dropdown__item">
+                    {{ clearButtonText }}
+                </div>
             </li>
         </ul>
     </div>
@@ -24,12 +26,16 @@ import { tags } from '@/assets/static/newsTags';
 
 export default defineComponent({
     props: {
-        modifiers: String,
+        modifiers: Array<string>,
         params: Array<string>,
         buttonText: String,
         needButton: {
             type: Boolean,
             default: () => true
+        },
+        clearButtonText: {
+            type: String,
+            default: 'Очистить'
         }
     },
     emits: ['pickFilter'],

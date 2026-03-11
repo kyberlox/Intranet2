@@ -22,7 +22,7 @@
                         <div class="col-12 col-md-6 col-lg-6 col-xl-4">
                             <div class="memo__item__content">
                                 <div class="news__detail__discr"
-                                     v-html="item.content_text"></div>
+                                     v-html="item.content_text?.replaceAll('&nbsp;', ' ')"></div>
                             </div>
                         </div>
                     </div>

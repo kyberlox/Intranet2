@@ -281,6 +281,14 @@
                 -webkit-box-orient: vertical;
                 line-height: 1.3em;
                 font-size: 14px;
+
+                &>p:empty {
+                    display: none;
+                }
+
+                img {
+                    display: none;
+                }
             }
 
             &-meta {

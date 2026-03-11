@@ -1,7 +1,8 @@
 import type { IBaseIndirectData, IBaseEntity } from "./IBase"
 
 export interface IForNewWorkerData extends IBaseIndirectData {
-    sort?: string
+    sort?: string,
+    module?: string
 }
 
 export interface IForNewWorker extends IBaseEntity {

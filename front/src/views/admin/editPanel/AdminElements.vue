@@ -63,6 +63,11 @@
                             title="Редактировать">
                       <EditIcon />
                     </button>
+                    <button @click.stop.prevent="changeActive(item.id, Boolean(item.active))"
+                            class="admin-block-inner__card-btn admin-block-inner__card-btn--danger"
+                            title="Отключить">
+                      <StatusIcon />
+                    </button>
                     <button @click.stop.prevent="removeItem(item.id)"
                             class="admin-block-inner__card-btn admin-block-inner__card-btn--danger"
                             title="Удалить">
@@ -80,6 +85,10 @@
                       {{ getStatusText(Boolean(item.active)) }}
                     </span>
                     <div class="d-flex flex-column mt20">
+                      <span v-if="item.indirect_data && 'module' in item.indirect_data"
+                            class="admin-block-inner__card-date">
+                        {{ item.indirect_data.module }}
+                      </span>
                       <span v-if="item.indirect_data?.TITLE"
                             class="admin-block-inner__card-date">
                         {{ item.indirect_data?.TITLE }}
@@ -131,6 +140,7 @@ import { useDateFormat } from '@vueuse/core';
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
 import EditIcon from "@/assets/icons/admin/EditIcon.svg?component"
 import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component"
+import StatusIcon from "@/assets/icons/admin/StatusIcon.svg?component"
 
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
@@ -161,6 +171,7 @@ export default defineComponent({
     SearchIcon,
     EditIcon,
     RemoveIcon,
+    StatusIcon
   },
   props: {
     id: {
@@ -183,7 +194,8 @@ export default defineComponent({
       if (!searchQuery.value) return items.value;
       return items.value.filter(item =>
         item.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        item.content_text?.toLowerCase().includes(searchQuery.value.toLowerCase())
+        item.content_text?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        item.indirect_data && 'module' in item.indirect_data && (item.indirect_data.module as string).toLowerCase().includes(searchQuery.value.toLowerCase())
       );
     });
 
@@ -218,6 +230,12 @@ export default defineComponent({
         })
     }
 
+    const changeActive = (id: number, currentStatus: boolean) => {
+      Api.post(`editor/update/${id}`, { active: !currentStatus, id: id, section_id: Number(props.id) })
+        .catch(e => handleApiError(e, toast))
+        .finally(() => itemsInit())
+    }
+
     return {
       items,
       searchQuery,
@@ -229,6 +247,7 @@ export default defineComponent({
       getStatusText,
       removeItem,
       useDateFormat,
+      changeActive,
       PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin)
     };
   }

@@ -585,7 +585,7 @@ class UserModel:
             #     pass
             # else:
 
-            if user['active']: #  and user['photo_file_id'] is not None
+            if (user['active'] and user['photo_file_id'] is not None) or user['id'] == 179: 
             # if user['active']:
                 user_info = {}
                 indirect_data = user['indirect_data']

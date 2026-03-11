@@ -666,7 +666,7 @@ class Editor:
         indirect_data = dict()
         # валидировать данные data
         for key in data.keys():
-
+            print(key)
             # если это редактируемый параметр
             if key not in self.notEditble:
                 # если это один из основных параметров
@@ -676,6 +676,7 @@ class Editor:
 
                     # если это часть indirect_data
                 else:
+                    print(123)
                     # отдельно проверяю дату начала для афиши
                     # if "date_from" == key and data[key] is not None:
                     #     indirect_data[key] = make_date_valid(data[key])

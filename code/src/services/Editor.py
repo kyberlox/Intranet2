@@ -666,7 +666,6 @@ class Editor:
         indirect_data = dict()
         # валидировать данные data
         for key in data.keys():
-            print(key)
             # если это редактируемый параметр
             if key not in self.notEditble:
                 # если это один из основных параметров
@@ -676,7 +675,6 @@ class Editor:
 
                     # если это часть indirect_data
                 else:
-                    print(123)
                     # отдельно проверяю дату начала для афиши
                     # if "date_from" == key and data[key] is not None:
                     #     indirect_data[key] = make_date_valid(data[key])
@@ -773,7 +771,7 @@ class Editor:
 
                 # если это часть indirect_data
                 else:
-                    if "indirect_data" in art and art["indirect_data"] is not None:
+                    if "indirect_data" in art: #  and art["indirect_data"] is not None
                         if key == "tags":
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             # ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info

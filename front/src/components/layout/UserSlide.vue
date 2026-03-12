@@ -13,12 +13,10 @@
         <div class="birthday__page__slide__subtitle">
             {{ slide?.position }}
         </div>
-        <div class="birthday__page__slide__departments">
-            <div class="birthday__page__slide__department"
-                 v-for="(dep, index) in slide?.department"
-                 :key="'dep' + index">
-                {{ dep }}
-            </div>
+        <div class="birthday__page__slide__subtitle"
+             v-for="(dep, index) in slide?.department"
+             :key="'dep' + index">
+            {{ dep }}
         </div>
         <div v-if="slide?.location"
              class="birthday__page__slide__location">

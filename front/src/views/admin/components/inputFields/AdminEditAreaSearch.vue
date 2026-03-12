@@ -1,5 +1,5 @@
 <template>
-<AdminEditInput :item="{ name: 'ID предприятия', disabled: 'true', value: pickedId || idValue }"
+<AdminEditInput :item="{ name: 'ID предприятия', disabled: 'true', value: pickedId || idValue || '' }"
                 :placeholder="`Нажмите 'добавить' и выберите предприятие, чтобы сохранить его id `" />
 <div class="primary-button"
      @click="showSearchModal = true">
@@ -12,9 +12,9 @@
                     :item="{ name: 'Поиск по структуре' }"
                     :placeholder="'Выберите отдел, его данные сохранятся'" />
 
-    <AdminUsersList :users="departmentList"
-                    :type="'departments'"
-                    @pickUser="(user: IUserSearch) => handleDepIdPick(user)" />
+    <SearchList :searchList="departmentList"
+                :type="'departments'"
+                @pick="(user: IUserSearch) => handleDepIdPick(user)" />
 </SlotModal>
 </template>
 
@@ -28,7 +28,7 @@ import { handleApiError } from '@/utils/apiResponseCheck'
 import { useToastCompose } from '@/composables/useToastСompose'
 import { useToast } from 'primevue/usetoast'
 import SlotModal from '@/components/tools/modal/SlotModal.vue'
-import AdminUsersList from './AdminUsersList.vue'
+import SearchList from '@/components/tools/common/SearchList.vue'
 
 export interface IAreaDepartment {
     id: number,
@@ -39,7 +39,7 @@ export default defineComponent({
     components: {
         AdminEditInput,
         SlotModal,
-        AdminUsersList
+        SearchList
     },
     props: {
         type: {
@@ -52,7 +52,7 @@ export default defineComponent({
     name: 'adminEditUserSearch',
     emits: ['handleDepartmentPick'],
     setup(props, { emit }) {
-        const pickedId = ref()
+        const pickedId = ref('')
         const departmentList = ref<IAreaDepartment[]>([])
         const searchQuery = ref<string>()
 
@@ -62,7 +62,7 @@ export default defineComponent({
         const showSearchModal = ref(false)
 
         const handleDepIdPick = (dep: IAreaDepartment) => {
-            pickedId.value = dep.id;
+            pickedId.value = String(dep.id);
             emit('handleDepartmentPick', dep.id);
             showSearchModal.value = false;
         }

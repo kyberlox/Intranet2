@@ -28,9 +28,9 @@
                             :item="{ name: 'Куратор' }"
                             :placeholder="'Выберите сотрудника'" />
 
-            <UsersSearchList v-if="usersList.length && !newActivity.need_valid"
-                             :usersList="usersList"
-                             @pickUser="(user: IUserSearch) => handleUserPick(user)" />
+            <SearchList v-if="usersList.length && !newActivity.need_valid"
+                        :searchList="usersList"
+                        @pick="(user: IUserSearch) => handleUserPick(user)" />
 
         </div>
         <div v-else
@@ -44,9 +44,9 @@
                             :item="{ name: currentEntity == 'curator' ? 'Куратор' : currentEntity == 'moder' ? 'Модератор' : 'Администратор' }"
                             :placeholder="'Выберите сотрудника'" />
 
-            <UsersSearchList v-if="usersList.length"
-                             :usersList="usersList"
-                             @pickUser="(user: IUserSearch) => handleUserPick(user)" />
+            <SearchList v-if="usersList.length"
+                        :searchList="usersList"
+                        @pick="(user: IUserSearch) => handleUserPick(user)" />
         </div>
         <button class="primary-button"
                 @click="addActivity">Добавить</button>
@@ -63,7 +63,7 @@ import Api from '@/utils/Api';
 import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { useToast } from 'primevue/usetoast';
-import UsersSearchList from '@/components/tools/common/UsersSearchList.vue';
+import SearchList from '@/components/tools/common/SearchList.vue';
 import type { IUserSearch } from '@/interfaces/IEntities';
 import { watchDebounced } from '@vueuse/core';
 import { usePointsData } from '@/stores/pointsData';
@@ -75,7 +75,7 @@ export default defineComponent({
         SlotModal,
         AdminEditInput,
         AdminEditSelect,
-        UsersSearchList
+        SearchList
     },
     props: {
         currentEntity: {

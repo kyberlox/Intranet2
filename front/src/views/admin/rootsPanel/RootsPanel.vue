@@ -31,8 +31,9 @@
     <div v-if="activeSection && !isLoading"
          class="admin-panel__content admin-panel__content__add-user-btn">
         <AdminEditUserSearch @handleUserPick="addRootToUser" />
-        <AdminUsersList :users="activeSectionEditors"
-                        @removeUser="(id: number) => removeUsersRoot(id)" />
+        <SearchList :searchList="activeSectionEditors"
+                    :needDeleteButton="true"
+                    @remove="(id: number) => removeUsersRoot(id)" />
     </div>
     <div v-else-if="!activeSection && isLoading"
          class="admin-panel__content admin-panel__content__add-user-btn contest__page__loader">
@@ -48,7 +49,7 @@ import AdminSidebar from '../components/AdminSidebar.vue';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
 import Api from '@/utils/Api';
 import AdminEditUserSearch from '../components/inputFields/AdminEditUserSearch.vue';
-import AdminUsersList, { type IUserList } from '../components/inputFields/AdminUsersList.vue';
+import SearchList, { type IUserList } from '@/components/tools/common/SearchList.vue';
 import Loader from '@/components/layout/Loader.vue';
 import { useUserData } from '@/stores/userData';
 
@@ -58,7 +59,7 @@ export default defineComponent({
         AdminSidebar,
         NavArrow,
         AdminEditUserSearch,
-        AdminUsersList,
+        SearchList,
         Loader
     },
     setup() {

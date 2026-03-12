@@ -1,16 +1,23 @@
 <template>
 <div v-if="inPost"
      class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group">
-    <p class="admin-element-inner__field-title fs-l">заполнить данными о сотруднике</p>
+    <p class="admin-element-inner__field-title fs-l">
+        заполнить данными о сотруднике
+    </p>
     <div @click="showSearchModal = true"
          class="admin-element__reportage-group__add-button primary-button">
         <PlusIcon />
     </div>
 </div>
-<div v-else
-     class="primary-button"
-     @click="showSearchModal = true">
-    Добавить
+<div v-else>
+    <p v-if="title"
+       class="admin-element-inner__field-title fs-l">
+        {{ title }}
+    </p>
+    <div class="primary-button"
+         @click="showSearchModal = true">
+        Добавить
+    </div>
 </div>
 <SlotModal v-if="showSearchModal"
            @close="showSearchModal = false">
@@ -19,15 +26,15 @@
                     :item="{ name: 'Сотрудник' }"
                     :placeholder="'Выберите сотрудника'" />
 
-    <UsersSearchList v-if="usersList.length"
-                     :usersList="usersList"
-                     @pickUser="(user: IUserSearch) => handleUserPick(user)" />
+    <SearchList v-if="usersList.length"
+                :searchList="usersList"
+                @pick="(user: IUserSearch) => handleUserPick(user)" />
 </SlotModal>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import UsersSearchList from '@/components/tools/common/UsersSearchList.vue'
+import SearchList from '@/components/tools/common/SearchList.vue'
 import AdminEditInput from './AdminEditInput.vue'
 import type { IUserSearch } from '@/interfaces/IEntities'
 import { watchDebounced } from '@vueuse/core'
@@ -40,7 +47,7 @@ import PlusIcon from '@/assets/icons/admin/PlusIcon.svg?component'
 
 export default defineComponent({
     components: {
-        UsersSearchList,
+        SearchList,
         AdminEditInput,
         SlotModal,
         PlusIcon,
@@ -52,6 +59,9 @@ export default defineComponent({
         inPost: {
             type: Boolean,
             deafault: true
+        },
+        title: {
+            type: String
         }
     },
     name: 'adminEditUserSearch',

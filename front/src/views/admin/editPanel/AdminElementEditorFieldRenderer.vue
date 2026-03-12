@@ -10,6 +10,7 @@
 
         <!-- Для того чтобы вписать данные -->
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
+                             :title="item.name"
                              :type="item.data_type"
                              @handleUserPick="(e) => $emit('handleUserPick', e)"
                              @handleUsersPick="(e) => $emit('handleUsersPick', e)" />
@@ -20,9 +21,10 @@
                              @handleDepartmentPick="(value: string) => $emit('handleEmitValueChange', item, value)" />
 
         <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
-        <AdminUsersList v-if="item.field == 'users' || item.field == 'author'"
-                        :users="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
-                        @removeUser="(id: number) => $emit('handleUsersPick', String(id), item.field == 'users' ? 'remove' : 'fetchRemove')" />
+        <SearchList v-if="item.field == 'users' || item.field == 'author'"
+                    :needDeleteButton="true"
+                    :searchList="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
+                    @remove="(id: number) => $emit('handleUsersPick', String(id), item.field == 'users' ? 'remove' : 'fetchRemove')" />
 
         <AdminEditInputMulti v-else-if="item.field == 'reports'"
                              :item="(item.value as IReportage[])"
@@ -76,7 +78,6 @@ import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 
 import type { IAdminListItem, IReportage, INewFileData } from "@/interfaces/IEntities";
 import type { ITag } from "@/interfaces/entities/ITag";
-import type { IUserList } from "../components/inputFields/AdminUsersList.vue";
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';
 import AdminEditDatePicker from '@/views/admin/components/inputFields/AdminEditDatePicker.vue';
@@ -86,7 +87,7 @@ import AdminEditAreaSearch from '@/views/admin/components/inputFields/AdminEditA
 import AdminEditUserSearch from "../components/inputFields/AdminEditUserSearch.vue";
 import AdminEditInputMulti from "../components/inputFields/AdminEditInputMulti.vue";
 import FileUploader from "@/components/tools/common/FileUploader.vue";
-import AdminUsersList from "../components/inputFields/AdminUsersList.vue";
+import SearchList, { type IUserList } from "@/components/tools/common/SearchList.vue";
 import AdminEditTags from "../components/inputFields/AdminEditTags.vue";
 import Loader from "@/components/layout/Loader.vue";
 import { type IFileToUpload } from "@/interfaces/IEntities";
@@ -102,7 +103,7 @@ export default defineComponent({
         AdminEditUserSearch,
         FileUploader,
         AdminUploadingSection,
-        AdminUsersList,
+        SearchList,
         AdminEditTags,
         AdminEditAreaSearch
     },

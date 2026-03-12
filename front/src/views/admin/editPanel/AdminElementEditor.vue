@@ -63,7 +63,7 @@ import { findValInObject } from '@/utils/objectUtil';
 
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
-import type { IUserList } from '../components/inputFields/AdminUsersList.vue';
+import type { IUserList } from '@/components/tools/common/SearchList.vue';
 import type { IUsersLoad } from '@/interfaces/IPostFetch';
 import type { AxiosProgressEvent } from 'axios';
 

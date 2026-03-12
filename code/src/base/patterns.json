@@ -205,7 +205,7 @@
         "data_type": "str"
       },
       {
-        "name": "Заголовок",
+        "name": "ФИО автора",
         "field": "TITLE",
         "data_type": "str"
       },
@@ -1756,6 +1756,45 @@
     "files": {
       "images": [],
       "videos_native": []
+    }
+  },
+  "9" : {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
+        "name": "Название предприятия",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Индентификационный номер предприятия",
+        "field": "manufacture_id",
+        "data_type": "areaSearch"
+      }
+    ],
+    "files": {
+      "images": []
     }
   }
 

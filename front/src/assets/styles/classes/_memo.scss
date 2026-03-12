@@ -37,6 +37,8 @@
         position: fixed;
         // top: 150px;
         z-index: 0;
+        max-height: 70%;
+        overflow-y: auto;
 
         @include xxl {
             max-width: 275px;

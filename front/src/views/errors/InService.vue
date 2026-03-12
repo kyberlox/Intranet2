@@ -35,12 +35,12 @@ export default defineComponent({
                 Api.get('/health_check')
                     .then((data) => {
                         if (data) {
-                            router.push({ name: 'home' })
                             clearInterval(healthCheck);
+                            router.push({ name: 'home' })
                         }
                     })
                     .catch((error) => console.log(error))
-            }, 10000);
+            }, 4000);
         })
 
         return {

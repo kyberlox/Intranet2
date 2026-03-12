@@ -574,6 +574,7 @@ class UserModel:
         """
         normal_list = []
 
+        manufactures = await self.get_manufactures_id(session)
         # users = database.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         # async with AsyncSessionLocal() as session:
         stmt = select(self.user).where(func.to_char(self.user.personal_birthday, 'DD.MM') == date)
@@ -587,7 +588,9 @@ class UserModel:
 
             if (user['active'] and user['photo_file_id'] is not None) or user['id'] == 179: 
             # if user['active']:
+                # добавляем только нужную информацию
                 user_info = {}
+
                 indirect_data = user['indirect_data']
                 list_departs = []
                 if len(indirect_data['uf_department']) != 0:
@@ -596,12 +599,33 @@ class UserModel:
 
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                             for de in dep_str:
+                                if de.id in manufactures:
+                                    # user_info['location'] = manufactures[de.id]
+                                    if manufactures[de.id] not in list_departs:
+                                        list_departs.append(manufactures[de.id])
+                                        continue
+                                    
+                                elif de.father_id in manufactures:
+                                    if manufactures[de.father_id] not in list_departs:
+                                        list_departs.append(de.__dict__['name'])
+                                        user_info['location'] = manufactures[de.father_id]
+                                        continue
+                                
+                                res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
+                                
+                                if res_manufacture:
+                                    user_info['location'] = manufactures[int(res_manufacture)]
+
+
                                 list_departs.append(de.__dict__['name'])
+
+                                # if de.id in manufactures:
+                                #     user_info['location'] = manufactures[de.id]
+
                 
                         
                 indirect_data['uf_department'] = list_departs
-                # добавляем только нужную информацию
-                user_info = {}
+                
                 
                 if user['photo_file_id'] is not None:
                     user_image = await File(id = user['photo_file_id']).get_users_photo(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
@@ -635,7 +659,7 @@ class UserModel:
         from .App import DOMAIN
         from .App import NewUser
         # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
-
+        manufactures = await self.get_manufactures_id(session)
         # result = database.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
         # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id
         # async with AsyncSessionLocal() as session:
@@ -660,13 +684,33 @@ class UserModel:
 
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)
                             for de in dep_str:
+                                # list_departs.append(de.__dict__['name'])
+                                if de.id in manufactures:
+                                    # user_info['location'] = manufactures[de.id]
+                                    if manufactures[de.id] not in list_departs:
+                                        list_departs.append(manufactures[de.id])
+                                        continue
+                                    
+                                elif de.father_id in manufactures:
+                                    if manufactures[de.father_id] not in list_departs:
+                                        list_departs.append(de.__dict__['name'])
+                                        user_info['location'] = manufactures[de.father_id]
+                                        continue
+                                
+                                res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
+                                
+                                if res_manufacture:
+                                    user_info['location'] = manufactures[int(res_manufacture)]
+
+
                                 list_departs.append(de.__dict__['name'])
+
                     if "uf_usr_department_main" in indirect_data:
                         dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                         indirect_data["uf_usr_department_main"] = dedep[0].name
                     indirect_data['uf_department'] = list_departs
                     # добавляем только нужную информацию
-                    user_info = {}
+                    # user_info = {}
 
                     user_image = await File(user[7]).get_users_photo(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                     
@@ -682,7 +726,39 @@ class UserModel:
 
         return users
     
+    #функция для получения всех айдишников заводов
+    async def get_manufactures_id(self, session):
+        from ..models.Article import Article
+        try:
+            result = dict()
+            stmt = select(Article).where(Article.section_id == 9)
+            res = await session.execute(stmt)
+            nodes = res.scalars().all()
+            if not nodes:
+                return None 
+            for manufacture in nodes:
+                if manufacture.name is None or manufacture.indirect_data is None:
+                    continue
+                result[manufacture.indirect_data['manufacture_id']] = manufacture.name
+            return result
+        except Exception as e:
+            return f"{e}"
 
+
+    #функция для определения отношения пользователя к заводу
+    async def get_user_manufacture(self, dep_id, manufactures, session):
+        result = dep_id
+        
+        while True:
+            dep_str = await DepartmentModel(result).find_dep_by_id(session)
+            
+            father_id = dep_str[0].father_id
+            if father_id is None:
+                return None  # достигли корня, не нашли завод
+            if father_id in manufactures:
+                return father_id
+            result = father_id
+            
 
 
     """

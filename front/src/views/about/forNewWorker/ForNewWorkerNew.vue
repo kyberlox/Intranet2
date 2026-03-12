@@ -1,7 +1,7 @@
 <template>
 <div class="page__title mt20">Памятка новому сотруднику</div>
 <div class="memo__section row">
-    <div>
+    <!-- <div>
         <button @click="showLocations = !showLocations"
                 class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
             {{ activeLocation ? activeLocation : 'Я работаю в' }}
@@ -10,7 +10,7 @@
                       :params="locations"
                       :modifiers="['nosort']"
                       @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; console.log(filter) }" />
-    </div>
+    </div> -->
     <div class="col-12 col-lg-12 col-xl-9 col-xxl-9">
         <div class="memo__items">
             <div class="memo__item__group"
@@ -21,9 +21,9 @@
                      :id="`memo__item${item.id}`">
                     <ForNewWorkerCard :item="item" />
                 </div>
-                <div class="memo__item">
-                    <ForNewWorkerCard v-if="endingSlide(pageContent)"
-                                      :item="(endingSlide(pageContent) as IForNewWorker)" />
+                <div class="memo__item"
+                     v-if="endingSlide(pageContent)">
+                    <ForNewWorkerCard :item="(endingSlide(pageContent) as IForNewWorker)" />
                 </div>
             </div>
         </div>
@@ -49,13 +49,13 @@ import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
 import { defineComponent, onMounted, ref } from "vue";
 import type { IForNewWorker } from '@/interfaces/IEntities'
-import CustomFilter from "@/components/tools/common/CustomFilter.vue";
+// import CustomFilter from "@/components/tools/common/CustomFilter.vue";
 import ForNewWorkerCard from "./ForNewWorkerCard.vue";
 
 export default defineComponent({
     name: "ForNewWorker",
     components: {
-        CustomFilter,
+        // CustomFilter,
         ForNewWorkerCard
     },
     setup() {

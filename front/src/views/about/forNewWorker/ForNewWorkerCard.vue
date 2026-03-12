@@ -14,11 +14,11 @@
         'col-12': !item.preview_file_url || item.preview_file_url.includes('no-user')
     }">
         <div class="memo__item__content">
-            <div class="news__detail__discr">
+            <!-- <div class="news__detail__discr">
                 <b>{{
                     item.name
-                }}</b>
-            </div>
+                    }}</b>
+            </div> -->
             <div class="news__detail__discr"
                  v-html="item.content_text?.replaceAll('&nbsp;', ' ')"></div>
         </div>

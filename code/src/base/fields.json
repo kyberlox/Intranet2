@@ -11,7 +11,7 @@
     "content_text" : "Содержимое",
     
     "link" : "Ссылка",
-    "TITLE" : "Заголовок",
+    "TITLE" : "ФИО автора",
     "company" : "Предприятие",
     "author_uuid" : "ID автора",
     "youtube_link" : "Ссылка на YouTube",
@@ -51,5 +51,6 @@
     "bx_event" : "Событие из Битрикс24",
     "tags": "Тэги",
     "all_tags" : "Список доступных тэгов",
-    "multiple_preview" : "Несколько превью"
+    "multiple_preview" : "Несколько превью",
+    "manufacture_id": "Индентификационный номер предприятия"
 }

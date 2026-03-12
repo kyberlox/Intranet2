@@ -129,8 +129,15 @@
             }
 
             &__subtitle {
-                margin-top: 2px;
                 color: #666;
+
+                &:first-child {
+                    margin-top: 2px;
+                }
+            }
+
+            &__location {
+                margin-top: 2px;
             }
 
             &__info {

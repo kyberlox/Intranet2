@@ -1,4 +1,4 @@
-import type { IUserList } from "@/views/admin/components/inputFields/AdminUsersList.vue";
+import type { IUserList } from "@/components/tools/common/SearchList.vue";
 import type { IBXFileType } from "./IBase";
 
 export interface IReportage {

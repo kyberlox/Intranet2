@@ -1776,7 +1776,10 @@
         "field": "manufacture_id",
         "data_type": "areaSearch"
       }
-    ]
+    ],
+    "files": {
+      "images": []
+    }
   }
 
 }

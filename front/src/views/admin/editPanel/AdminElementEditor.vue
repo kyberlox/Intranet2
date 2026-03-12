@@ -139,8 +139,8 @@ export default defineComponent({
             newData.value.section_id = Number(props.id);
 
             // newData.value.images = data.files.images;
-            newData.value.videos_native = data.files.videos_native;
-            newData.value.documentation = data.files.documentation;
+            newData.value.videos_native = data.files.videos_native || [];
+            newData.value.documentation = data.files.documentation || [];
           })
       }
       else reloadElementData(false);
@@ -149,7 +149,7 @@ export default defineComponent({
     const reloadElementData = (onlyFiles: boolean = false) => {
       Api.get(`/editor/rendering/${newId.value}`)
         .then((data) => {
-          if (data.status) {
+          if (typeof data == 'object' && 'status' in data && data.status) {
             router.push({ name: 'admin' })
           }
           else {

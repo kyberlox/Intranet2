@@ -5,9 +5,9 @@
         :key="user.id"
         class="visibility-editor__area-user"
         @click="pickUser(user)">
-        <div class="visibility-editor__user-avatar">
-            <img v-if="user.image"
-                 :src="user.image"
+        <div v-if="user.image"
+             class="visibility-editor__user-avatar">
+            <img :src="user.image"
                  :alt="`${user.name}`"
                  class="visibility-editor__user-photo">
         </div>

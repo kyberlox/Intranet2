@@ -14,6 +14,11 @@
                              @handleUserPick="(e) => $emit('handleUserPick', e)"
                              @handleUsersPick="(e) => $emit('handleUsersPick', e)" />
 
+        <!-- Для поиска по структуре -->
+        <AdminEditAreaSearch v-if="item.data_type == 'areaSearch'"
+                             :idValue="Number(item.value)"
+                             @handleDepartmentPick="(value: string) => $emit('handleEmitValueChange', item, value)" />
+
         <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
         <AdminUsersList v-if="item.field == 'users' || item.field == 'author'"
                         :users="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
@@ -21,10 +26,10 @@
 
         <AdminEditInputMulti v-else-if="item.field == 'reports'"
                              :item="(item.value as IReportage[])"
-                             :sectionId="newData?.id"
                              @pick="(val) => $emit('reportageChanged', val)" />
 
-        <AdminEditTags v-if="item.field == 'all_tags'"
+
+        <AdminEditTags v-else-if="item.field == 'all_tags'"
                        :currentTags="(newElementSkeleton.find((e) => e.field == 'tags')?.value as number[])"
                        :allTags="(item.values as ITag[])"
                        @tagsChanged="(e: number[]) => $emit('tagsChanged', e)" />
@@ -77,6 +82,7 @@ import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTex
 import AdminEditDatePicker from '@/views/admin/components/inputFields/AdminEditDatePicker.vue';
 import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.vue';
 import AdminUploadingSection from "./elementInnerLayout/AdminUploadingSection.vue";
+import AdminEditAreaSearch from '@/views/admin/components/inputFields/AdminEditAreaSearch.vue';
 import AdminEditUserSearch from "../components/inputFields/AdminEditUserSearch.vue";
 import AdminEditInputMulti from "../components/inputFields/AdminEditInputMulti.vue";
 import FileUploader from "@/components/tools/common/FileUploader.vue";
@@ -98,6 +104,7 @@ export default defineComponent({
         AdminUploadingSection,
         AdminUsersList,
         AdminEditTags,
+        AdminEditAreaSearch
     },
     emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagsChanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
     props: {

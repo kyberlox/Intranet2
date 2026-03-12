@@ -612,7 +612,8 @@ class UserModel:
                                         user_info['location'] = manufactures[de.father_id]
                                         continue
                                 
-                                
+                                res_manufacture = await get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
+                                user_info['location'] = manufactures[int(res_manufacture)]
 
 
                                 list_departs.append(de.__dict__['name'])
@@ -725,8 +726,16 @@ class UserModel:
 
 
     #функция для определения отношения пользователя к заводу
-    async def get_user_manufacture(self, dep_id, session):
-        dep_str = await DepartmentModel(dep).find_dep_by_id(session)
+    async def get_user_manufacture(self, dep_id, manufactures, session):
+        result = dep_id
+        
+        while True:
+            dep_str = await DepartmentModel(result).find_dep_by_id(session)
+            father_id = dep_str['father_id']
+            if father_id in manufactures:
+                return father_id
+            result = father_id
+            
 
 
     """

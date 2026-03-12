@@ -608,7 +608,7 @@ class UserModel:
                                     
                                 elif de.father_id in manufactures:
                                     if manufactures[de.father_id] not in list_departs:
-                                        list_departs.append(manufactures[de.id])
+                                        list_departs.append(manufactures[de.father_id])
                                         continue
                                 
                                 

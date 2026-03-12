@@ -205,7 +205,7 @@
         "data_type": "str"
       },
       {
-        "name": "Заголовок",
+        "name": "ФИО автора",
         "field": "TITLE",
         "data_type": "str"
       },

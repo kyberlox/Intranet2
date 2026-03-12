@@ -691,7 +691,7 @@ class UserModel:
             result = dict()
             stmt = select(Article).where(Article.section_id == 9)
             res = await session.execute(stmt)
-            nodes = res.fetchall()
+            nodes = res.scalars().all()
             if not nodes:
                 return None 
             for manufacture in nodes:

@@ -602,7 +602,7 @@ class UserModel:
                             for de in dep_str:
                                 if de.id in manufactures or de.father_id in manufactures:
                                     # user_info['location'] = manufactures[de.id]
-                                    if manufactures[de.id] not in list_departs:
+                                    if manufactures[de.id] not in list_departs or manufactures[de.father_id] not in list_departs:
                                         list_departs.append(manufactures[de.id])
                                     continue
                                 

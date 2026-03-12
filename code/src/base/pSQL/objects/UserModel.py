@@ -600,10 +600,15 @@ class UserModel:
 
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                             for de in dep_str:
+                                if de.id in manufactures:
+                                    # user_info['location'] = manufactures[de.id]
+                                    list_departs.append(manufactures[de.id])
+                                    continue
+
                                 list_departs.append(de.__dict__['name'])
 
-                                if de.id in manufactures:
-                                    user_info['location'] = manufactures[de.id]
+                                # if de.id in manufactures:
+                                #     user_info['location'] = manufactures[de.id]
 
                 
                         

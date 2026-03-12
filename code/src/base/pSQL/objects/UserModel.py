@@ -574,6 +574,8 @@ class UserModel:
         """
         normal_list = []
 
+        manufactures = await self.get_manufactures_id(session)
+        print(manufactures)
         # users = database.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         # async with AsyncSessionLocal() as session:
         stmt = select(self.user).where(func.to_char(self.user.personal_birthday, 'DD.MM') == date)
@@ -587,7 +589,7 @@ class UserModel:
 
             if (user['active'] and user['photo_file_id'] is not None) or user['id'] == 179: 
             # if user['active']:
-                user_info = {}
+                
                 indirect_data = user['indirect_data']
                 list_departs = []
                 if len(indirect_data['uf_department']) != 0:
@@ -682,7 +684,28 @@ class UserModel:
 
         return users
     
+    #функция для получения всех айдишников заводов
+    async def get_manufactures_id(self, session):
+        from ..models.Article import Article
+        try:
+            result = dict()
+            stmt = select(Article).where(Article.section_id == 9)
+            res = await session.execute(stmt)
+            nodes = res.fetchall()
+            if not nodes:
+                return None 
+            for manufacture in nodes:
+                if manufacture.name is None or manufacture.indirect_data is None:
+                    continue
+                result[manufacture.indirect_data['manufacture_id']] = manufacture.name
+            return result
+        except Exception as e:
+            return f"{e}"
 
+
+    #функция для определения отношения пользователя к заводу
+    async def get_user_manufacture(self, dep_id, session):
+        dep_str = await DepartmentModel(dep).find_dep_by_id(session)
 
 
     """

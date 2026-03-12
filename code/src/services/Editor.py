@@ -880,7 +880,7 @@ class Editor:
         await self.validate()
         art = await Article(id=int(self.art_id)).find_by_id(self.session)
 
-        if 'users' in art['indirect_data']:
+        if art['indirect_data'] and 'users' in art['indirect_data']:
             users_in_art = art['indirect_data']['users']
             #если с какого то пользователя снимают авторство, убираем у него баллы
             rem_users = [item['id'] for item in users_in_art if item['id'] not in user_id_list]

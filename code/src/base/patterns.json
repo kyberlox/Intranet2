@@ -1757,6 +1757,26 @@
       "images": [],
       "videos_native": []
     }
+  },
+  "9" : {
+    "fields": [
+      {
+        "name": "ID",
+        "field": "id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
+        "name": "Название предприятия",
+        "field": "name",
+        "data_type": "str"
+      },
+      {
+        "name": "Индентификационный номер предприятия",
+        "field": "manufacture_id",
+        "data_type": "areaSearch"
+      }
+    ]
   }
 
 }

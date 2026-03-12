@@ -761,6 +761,8 @@ class User:
         # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
+    
+
 '''
     # def get(self, method="user.get", params={}):
     #     req = f"https://portal.emk.ru/rest/2158/qunp7dwdrwwhsh1w/{method}"

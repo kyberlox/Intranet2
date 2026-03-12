@@ -613,7 +613,9 @@ class UserModel:
                                         continue
                                 
                                 res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
-                                user_info['location'] = manufactures[int(res_manufacture)]
+                                
+                                if res_manufacture:
+                                    user_info['location'] = manufactures[int(res_manufacture)]
 
 
                                 list_departs.append(de.__dict__['name'])
@@ -731,7 +733,7 @@ class UserModel:
         
         while True:
             dep_str = await DepartmentModel(result).find_dep_by_id(session)
-            print(dep_str)
+            
             father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод

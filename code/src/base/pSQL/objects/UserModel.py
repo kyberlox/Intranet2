@@ -695,6 +695,7 @@ class UserModel:
             if not nodes:
                 return None 
             for manufacture in nodes:
+                print(manufacture)
                 if manufacture.name is None or manufacture.indirect_data is None:
                     continue
                 result[manufacture.indirect_data['manufacture_id']] = manufacture.name

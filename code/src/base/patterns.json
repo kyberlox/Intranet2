@@ -1767,6 +1767,16 @@
         "disabled": true
       },
       {
+        "name": "Активна",
+        "field": "active",
+        "data_type": "str",
+        "value": false,
+        "values": [
+          true,
+          false
+        ]
+      },
+      {
         "name": "Название предприятия",
         "field": "name",
         "data_type": "str"

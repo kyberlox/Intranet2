@@ -589,7 +589,9 @@ class UserModel:
 
             if (user['active'] and user['photo_file_id'] is not None) or user['id'] == 179: 
             # if user['active']:
-                
+                # добавляем только нужную информацию
+                user_info = {}
+
                 indirect_data = user['indirect_data']
                 list_departs = []
                 if len(indirect_data['uf_department']) != 0:
@@ -599,11 +601,14 @@ class UserModel:
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                             for de in dep_str:
                                 list_departs.append(de.__dict__['name'])
+
+                                if de.id in manufactures:
+                                    user_info['location'] = manufactures[de.id]
+
                 
                         
                 indirect_data['uf_department'] = list_departs
-                # добавляем только нужную информацию
-                user_info = {}
+                
                 
                 if user['photo_file_id'] is not None:
                     user_image = await File(id = user['photo_file_id']).get_users_photo(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!

@@ -612,7 +612,7 @@ class UserModel:
                                         user_info['location'] = manufactures[de.father_id]
                                         continue
                                 
-                                res_manufacture = await get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
+                                res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
                                 user_info['location'] = manufactures[int(res_manufacture)]
 
 

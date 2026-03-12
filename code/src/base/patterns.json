@@ -1767,6 +1767,12 @@
         "disabled": true
       },
       {
+        "name": "ID раздела",
+        "field": "section_id",
+        "data_type": "str",
+        "disabled": true
+      },
+      {
         "name": "Активна",
         "field": "active",
         "data_type": "str",

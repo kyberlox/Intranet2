@@ -732,7 +732,7 @@ class UserModel:
         while True:
             dep_str = await DepartmentModel(result).find_dep_by_id(session)
             print(dep_str)
-            father_id = dep_str['father_id']
+            father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод
             if father_id in manufactures:

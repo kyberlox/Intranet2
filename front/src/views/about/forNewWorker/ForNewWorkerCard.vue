@@ -14,11 +14,12 @@
         'col-12': !item.preview_file_url || item.preview_file_url.includes('no-user')
     }">
         <div class="memo__item__content">
-            <!-- <div class="news__detail__discr">
+            <div v-if="newMemo"
+                 class="news__detail__discr">
                 <b>{{
                     item.name
                     }}</b>
-            </div> -->
+            </div>
             <div class="news__detail__discr"
                  v-html="item.content_text?.replaceAll('&nbsp;', ' ')"></div>
         </div>
@@ -29,6 +30,7 @@
 <script lang="ts">
 import type { IForNewWorker } from "@/interfaces/IEntities";
 import { defineComponent, type PropType } from "vue";
+import { featureFlags } from "@/assets/static/featureFlags";
 
 export default defineComponent({
     name: "ForNewWorker",
@@ -38,5 +40,10 @@ export default defineComponent({
             required: true
         }
     },
+    setup() {
+        return {
+            newMemo: featureFlags.newWorkerMemo
+        }
+    }
 });
 </script>

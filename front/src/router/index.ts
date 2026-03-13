@@ -220,13 +220,8 @@ const router = createRouter({
     {
       path: '/about/fornewworker',
       name: 'forNewWorker',
-      component: () => import('@/views/about/forNewWorker/ForNewWorkerNew.vue')
+      component: () => import('@/views/about/forNewWorker/ForNewWorker.vue')
     },
-    // {
-    //   path: '/about/fornewworkernew',
-    //   name: 'forNewWorkerNew',
-    //   component: () => import('@/views/about/forNewWorker/ForNewWorkerNew.vue')
-    // },
     {
       path: '/about/birthdays',
       name: 'birthdays',

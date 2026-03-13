@@ -771,7 +771,7 @@ class User:
         from ..model.Department import Department
         import aiofiles
         try:
-            workbook = load_workbook("./code/вовлеченность.xlsx")
+            workbook = load_workbook("./вовлеченность.xlsx")
             ws = workbook.active
             for row in ws.iter_rows():
                 print(row)

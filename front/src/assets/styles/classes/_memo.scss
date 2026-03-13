@@ -76,9 +76,5 @@
         &:nth-child(2n) {
             background: #f5f2f2;
         }
-
-        &:first-child &__item {
-            // padding-top: 20px;
-        }
     }
 }

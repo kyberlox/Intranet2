@@ -777,6 +777,8 @@ class User:
             ws = workbook.active
             for i in range(2, ws.max_row + 1):
                 user_id = ws.cell(row=i, column=3).value
+                if i == 100:
+                    break
                 if not user_id:
                     print(i, 'цифры на которой остановились')
                     stopped_for = i
@@ -790,7 +792,7 @@ class User:
                         data_stat = visits['totals'][0]
                         ws.cell(row=i, column=7, value=data_stat)
             excel_buffer = io.BytesIO()
-            wb.save(excel_buffer)
+            ws.save(excel_buffer)
             excel_buffer.seek(0)
             return excel_buffer
         except Exception as e:
@@ -1077,7 +1079,7 @@ async def create_metrics_for_departments(session: AsyncSession = Depends(get_asy
     excel_buffer = await User().create_metrics_for_departments(session=session)
     return StreamingResponse(excel_buffer,
                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            headers={"Content-Disposition": "attachment; filename=test123.xlsx"})
+                            headers={"Content-Disposition": "attachment; filename=test.xlsx"})
     # return excel_buffer
 
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])

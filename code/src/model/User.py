@@ -792,7 +792,7 @@ class User:
                         data_stat = visits['totals'][0]
                         ws.cell(row=i, column=7, value=data_stat)
             excel_buffer = io.BytesIO()
-            ws.save(excel_buffer)
+            workbook.save(excel_buffer)
             excel_buffer.seek(0)
             return excel_buffer
         except Exception as e:

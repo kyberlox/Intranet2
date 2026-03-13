@@ -762,7 +762,22 @@ class User:
         # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
-    
+    async def create_metrics_for_departments(self, session):
+        import httpx
+        from openpyxl import Workbook, load_workbook
+        import io
+        import requests
+        import json
+        from ..model.Department import Department
+        import aiofiles
+        try:
+            workbook = load_workbook("./code/вовлеченность.xlsx")
+            ws = workbook.active
+            for row in ws.iter_rows():
+                print(row)
+        except Exception as e:
+            return f"Ошибка в экселе: {e}"
+
 
 '''
     # def get(self, method="user.get", params={}):
@@ -825,8 +840,8 @@ async def get_user_id_by_session_id(request: Request) -> int:
 
 
 # Пользоваетелей можно обновить
-@users_router.put("/update", tags=["Пользователь", "Битрикс24"])
-async def update_user(session: AsyncSession = Depends(get_async_db)):
+# @users_router.put("/update", tags=["Пользователь", "Битрикс24"])
+# async def update_user(session: AsyncSession = Depends(get_async_db)):
 #     """
 #     ## Метод `user.get`
 
@@ -868,8 +883,8 @@ async def update_user(session: AsyncSession = Depends(get_async_db)):
 
 #     """
 
-    usr = User()
-    return await usr.fetch_users_data(session)
+    # usr = User()
+    # return await usr.fetch_users_data(session)
 
 @users_router.put("/update_user_info/{user_id}", tags=["Пользователь", "Битрикс24"])
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):
@@ -1037,6 +1052,15 @@ async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = D
                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
     # return excel_buffer
+
+@users_router.post("/create_metrics_for_departments", summary="Скачать Excel со статистикой просмотра Интранета по департаментам")
+async def create_metrics_for_departments(session: AsyncSession = Depends(get_async_db)):
+    
+    excel_buffer = await User().create_metrics_for_departments(session=session)
+    # return StreamingResponse(excel_buffer,
+    #                         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    #                         headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
+    return excel_buffer
 
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])
 async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):

@@ -82,8 +82,8 @@ async def get_user_id_by_session_id(request: Request) -> int:
 
 
 # Департаменты можно обновить
-@depart_router.put("",tags=["Департамент", "Битрикс24"])
-async def get_department(session: AsyncSession=Depends(get_async_db)):
+# @depart_router.put("",tags=["Департамент", "Битрикс24"])
+# async def get_department(session: AsyncSession=Depends(get_async_db)):
 #     """
 #     ## Метод `department.get`
 
@@ -131,8 +131,8 @@ async def get_department(session: AsyncSession=Depends(get_async_db)):
 #     ```
     
 #     """
-    depart = Department()
-    return await depart.fetch_departments_data(session)
+    # depart = Department()
+    # return await depart.fetch_departments_data(session)
 
 # Департамент можно выгрузить
 @depart_router.get("/find_by/{id}", tags=["Департамент"])

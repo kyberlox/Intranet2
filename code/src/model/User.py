@@ -802,7 +802,7 @@ class User:
                     depart = ""
                     if 'uf_department' in user.indirect_data and isinstance(user.indirect_data['uf_department'], list):
                         if len(user.indirect_data['uf_department']) >= 1:
-                            ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                            ped_info = await Department(id=user.indirect_data['uf_department'][0]).search_dep_by_id(session)
                             if ped_info:
                                 depart = f'{ped_info[0].name}'
                     ws.cell(row=stopped_for, column=4, value=depart)

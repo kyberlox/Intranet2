@@ -771,19 +771,20 @@ class User:
         from ..model.Department import Department
         import aiofiles
         try:
+            all_users = await self.UserModel.all(session)
             user_in_excel = list()
             stopped_for = 0
             workbook = load_workbook("./вовлеченность.xlsx")
             ws = workbook.active
             for i in range(2, ws.max_row + 1):
                 user_id = ws.cell(row=i, column=3).value
-                if i == 100:
-                    break
+                # if i == 100:
+                #     break
                 if not user_id:
                     print(i, 'цифры на которой остановились')
                     stopped_for = i
                     break
-                user_in_excel.append(user_id)
+                user_in_excel.append(int(user_id))
                 async with httpx.AsyncClient(timeout=30.0) as client:
                     response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
                     if response.status_code == 200:
@@ -791,6 +792,38 @@ class User:
                         visits = json.loads(res)
                         data_stat = visits['totals'][0]
                         ws.cell(row=i, column=7, value=data_stat)
+
+            for user in all_users:
+                if user.active is True and user.id not in user_in_excel:
+                    ws.cell(row=stopped_for, column=1, value="ЭМК (ЦО)")
+                    ws.cell(row=stopped_for, column=2, value="53")
+                    ws.cell(row=stopped_for, column=3, value=user.id)
+
+                    depart = ""
+                    if 'uf_department' in user.indirect_data and isinstance(user.indirect_data['uf_department'], list):
+                        if len(user.indirect_data['uf_department']) >= 1:
+                            ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                            if ped_info:
+                                depart = f'{ped_info[0].name}'
+                    ws.cell(row=stopped_for, column=4, value=depart)
+                    ws.cell(row=stopped_for, column=5, value=f'{user.last_name} {user.name} {user.second_name}')
+
+                    position = ""
+                    if 'work_position' in user.indirect_data and user.indirect_data['work_position']:
+                        position = user.indirect_data['work_position']
+                    ws.cell(row=stopped_for, column=6, value=position)
+
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user.id}&include_undefined=true')
+                    if response.status_code == 200:
+                        res = response.text
+                        visits = json.loads(res)
+                        data_stat = visits['totals'][0]
+                        ws.cell(row=stopped_for, column=7, value=data_stat)
+
+                    stopped_for += 1
+
+
             excel_buffer = io.BytesIO()
             workbook.save(excel_buffer)
             excel_buffer.seek(0)

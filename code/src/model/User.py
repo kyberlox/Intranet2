@@ -771,11 +771,28 @@ class User:
         from ..model.Department import Department
         import aiofiles
         try:
+            user_in_excel = list()
+            stopped_for = 0
             workbook = load_workbook("./вовлеченность.xlsx")
             ws = workbook.active
             for i in range(2, ws.max_row + 1):
                 user_id = ws.cell(row=i, column=3).value
-                print(user_id)
+                if not user_id:
+                    print(i, 'цифры на которой остановились')
+                    stopped_for = i
+                    break
+                user_in_excel.append(user_id)
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
+                    if response.status_code == 200:
+                        res = response.text
+                        visits = json.loads(res)
+                        data_stat = visits['totals'][0]
+                        ws.cell(row=i, column=7, value=data_stat)
+            excel_buffer = io.BytesIO()
+            wb.save(excel_buffer)
+            excel_buffer.seek(0)
+            return excel_buffer
         except Exception as e:
             return f"Ошибка в экселе: {e}"
 
@@ -1058,10 +1075,10 @@ async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = D
 async def create_metrics_for_departments(session: AsyncSession = Depends(get_async_db)):
     
     excel_buffer = await User().create_metrics_for_departments(session=session)
-    # return StreamingResponse(excel_buffer,
-    #                         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    #                         headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
-    return excel_buffer
+    return StreamingResponse(excel_buffer,
+                            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            headers={"Content-Disposition": "attachment; filename=test123.xlsx"})
+    # return excel_buffer
 
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])
 async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):

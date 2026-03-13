@@ -773,8 +773,9 @@ class User:
         try:
             workbook = load_workbook("./вовлеченность.xlsx")
             ws = workbook.active
-            for row in ws.iter_rows():
-                print(row)
+            for i in range(2, ws.max_row + 1):
+                user_id = ws.cell(row=i, column=3).value
+                print(user_id)
         except Exception as e:
             return f"Ошибка в экселе: {e}"
 

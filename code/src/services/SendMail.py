@@ -91,7 +91,7 @@ class SendEmail:
             msg.attach(MIMEText(content, "html"))
             # file_id = self.data['file_url'].split('/') #/intranet/Intranet2/code/files_db
             # self.file_url = file_id[-1] # self.data['file_url'] 
-            self.file_url = '/' + self.data['file_url'] # self.data['file_url'] 
+            self.file_url = self.data['file_url'] # self.data['file_url'] 
             print(self.data['file_url'])
             file_path = os.path.join(STORAGE_PATH, self.file_url)
             print(file_path)

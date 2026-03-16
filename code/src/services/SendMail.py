@@ -92,7 +92,7 @@ class SendEmail:
             # file_id = self.data['file_url'].split('/') #/intranet/Intranet2/code/files_db
             # self.file_url = file_id[-1] # self.data['file_url'] 
             self.file_url = '/' + self.data['file_url'] # self.data['file_url'] 
-            # print(self.data['file_url'])
+            print(self.data['file_url'])
             file_path = os.path.join(STORAGE_PATH, self.file_url)
             with open(file_path, "rb") as img_file: 
                 logo = MIMEImage(img_file.read())

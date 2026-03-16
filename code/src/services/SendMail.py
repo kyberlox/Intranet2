@@ -94,6 +94,7 @@ class SendEmail:
             self.file_url = '/' + self.data['file_url'] # self.data['file_url'] 
             print(self.data['file_url'])
             file_path = os.path.join(STORAGE_PATH, self.file_url)
+            print(file_path)
             with open(file_path, "rb") as img_file: 
                 logo = MIMEImage(img_file.read())
                 logo.add_header("Content-ID", "<file_logo>")  

@@ -785,17 +785,21 @@ class User:
                     stopped_for = i
                     break
                 user_in_excel.append(int(user_id))
-                async with httpx.AsyncClient(timeout=30.0) as client:
-                    response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
-                    if response.status_code == 200:
-                        res = response.text
-                        visits = json.loads(res)
-                        data_stat = visits['totals'][0]
-                        ws.cell(row=i, column=7, value=data_stat)
+                # async with httpx.AsyncClient(timeout=30.0) as client:
+                #     response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
+                #     if response.status_code == 200:
+                #         res = response.text
+                #         visits = json.loads(res)
+                #         data_stat = visits['totals'][0]
+                #         ws.cell(row=i, column=7, value=data_stat)
 
             for user in all_users:
                 if user.active is True and user.id not in user_in_excel:
-                    ws.cell(row=stopped_for, column=1, value="ЭМК (ЦО)")
+                    if user.personal_city == "Москва":
+                        ws.cell(row=stopped_for, column=1, value="Москва")
+                        # ws.cell(row=stopped_for, column=2, value="53")
+                    else:
+                        ws.cell(row=stopped_for, column=1, value="ЭМК (ЦО)")
                     ws.cell(row=stopped_for, column=2, value="53")
                     ws.cell(row=stopped_for, column=3, value=user.id)
 

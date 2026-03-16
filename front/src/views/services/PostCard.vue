@@ -127,6 +127,7 @@ export default defineComponent({
         const isLoading = ref(false);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
+        const apiUrl = import.meta.env.VITE_API_URL;
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['открытки']}`)
@@ -162,7 +163,7 @@ export default defineComponent({
                 "reciever": msgReciever.value,
                 "title": mailTheme,
                 "text": mailText,
-                "file_url": imageInMsg.value.replace('https://intranet.emk.ru/api/files/', '')
+                "file_url": imageInMsg.value.replace(`${apiUrl}/files/`, '')
             }
             Api.post('/users/test_send_mail', body)
                 .then((data) => handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess'))

@@ -1,7 +1,6 @@
 import VkIcon from "@/assets/icons/layout/sidebar/socLinks/VkIcon.svg";
 import TelegramIcon from "@/assets/icons/layout/sidebar/socLinks/TelegramIcon.svg";
 import EmkLogo from "@/assets/icons/layout/sidebar/socLinks/EmkLogo.svg";
-import DocsIcon from "@/assets/icons/layout/sidebar/socLinks/DocsIcon.svg";
 import MotiwIcon from "@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg";
 import BitrixIcon from "@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg";
 import BugIcon from '@/assets/icons/layout/sidebar/socLinks/Bug.svg';
@@ -295,4 +294,16 @@ export const supportLinks: SupportLink[] = [
         description: "https://www.emk.ru",
         icon: EmkLogo,
     },
+    {
+        title: "Канал ЭМК",
+        href: "https://t.me/+fCbjwR18l9Q5NmJi",
+        description: "для сотрудников",
+        icon: TelegramIcon,
+    },
+    // {
+    //     title: "Доска объявлений",
+    //     href: "https://t.me/+NLJyLosstgFiZmI6",
+    //     description: "в телеграм",
+    //     icon: TelegramIcon,
+    // },
 ];

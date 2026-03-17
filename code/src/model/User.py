@@ -642,51 +642,52 @@ class User:
             ws['F1'] = 'Сеансы (уникальные)'
             ws['G1'] = 'Посещения'
             ws['H1'] = 'Время сеанса, минуты'
-            ws['I1'] = 'Активный ли пользователь'
+            # ws['I1'] = 'Активный ли пользователь'
             row_number = 1
             for user_inf in all_users:
-                row_number += 1
-                indirect_data = user_inf.indirect_data
-
-                ws[f'A{row_number}'] = user_inf.id
-                # if "name" in user_inf and "last_name" in user_inf: 
-                ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
-
-                if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
-                    if len(indirect_data['uf_department']) >= 1:
-                        ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
-                        if ped_info:
-                            ws[f'C{row_number}'] = f'{ped_info[0].name}'
-                
-                # if 'personal_city' in user_inf:
-                if user_inf.personal_city:
-                    ws[f'D{row_number}'] = f'{user_inf.personal_city}'
-                
                 if user_inf.active is True:
-                    ws[f'I{row_number}'] = f'Да'
-                else:
-                    ws[f'I{row_number}'] = f'Нет'
-                
-                if 'work_position' in indirect_data and indirect_data['work_position']:
-                    ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
+                    row_number += 1
+                    indirect_data = user_inf.indirect_data
 
-                data_stat = []
-                #заполняем сеансы
-                async with httpx.AsyncClient(timeout=30.0) as client:
-                    response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
-                    if response.status_code == 200:
-                        res = response.text
-                        visits = json.loads(res)
-                        data_stat = visits['totals']
+                    ws[f'A{row_number}'] = user_inf.id
+                    # if "name" in user_inf and "last_name" in user_inf: 
+                    ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
 
-                        ws[f'F{row_number}'] = f'{int(data_stat[0])}'
-                        ws[f'G{row_number}'] = f'{int(data_stat[1])}'
-
-                        avg_time_min = data_stat[2] // 60
-                        avg_time_sec = data_stat[2] % 60
-                        ws[f'H{row_number}'] = f'{int(avg_time_min)}:{int(avg_time_sec)}'
+                    if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
+                        if len(indirect_data['uf_department']) >= 1:
+                            ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
+                            if ped_info:
+                                ws[f'C{row_number}'] = f'{ped_info[0].name}'
+                    
+                    # if 'personal_city' in user_inf:
+                    if user_inf.personal_city:
+                        ws[f'D{row_number}'] = f'{user_inf.personal_city}'
+                    
+                    # if user_inf.active is True:
+                    #     ws[f'I{row_number}'] = f'Да'
                     # else:
-                    #     break
+                    #     ws[f'I{row_number}'] = f'Нет'
+                    
+                    if 'work_position' in indirect_data and indirect_data['work_position']:
+                        ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
+
+                    data_stat = []
+                    #заполняем сеансы
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        if response.status_code == 200:
+                            res = response.text
+                            visits = json.loads(res)
+                            data_stat = visits['totals']
+
+                            ws[f'F{row_number}'] = f'{int(data_stat[0])}'
+                            ws[f'G{row_number}'] = f'{int(data_stat[1])}'
+
+                            avg_time_min = data_stat[2] // 60
+                            avg_time_sec = data_stat[2] % 60
+                            ws[f'H{row_number}'] = f'{int(avg_time_min)}:{int(avg_time_sec)}'
+                        # else:
+                        #     break
 
             excel_buffer = io.BytesIO()
             wb.save(excel_buffer)
@@ -761,7 +762,79 @@ class User:
         # return True
         return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
-    
+    async def create_metrics_for_departments(self, session):
+        import httpx
+        from openpyxl import Workbook, load_workbook
+        import io
+        import requests
+        import json
+        from ..model.Department import Department
+        import aiofiles
+        try:
+            all_users = await self.UserModel.all(session)
+            user_in_excel = list()
+            stopped_for = 0
+            workbook = load_workbook("./вовлеченность.xlsx")
+            ws = workbook.active
+            for i in range(2, ws.max_row + 1):
+                user_id = ws.cell(row=i, column=3).value
+                # if i == 100:
+                #     break
+                if not user_id:
+                    print(i, 'цифры на которой остановились')
+                    stopped_for = i
+                    break
+                user_in_excel.append(int(user_id))
+                # async with httpx.AsyncClient(timeout=30.0) as client:
+                #     response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
+                #     if response.status_code == 200:
+                #         res = response.text
+                #         visits = json.loads(res)
+                #         data_stat = visits['totals'][0]
+                #         ws.cell(row=i, column=7, value=data_stat)
+
+            for user in all_users:
+                if user.active is True and user.id not in user_in_excel:
+                    if user.personal_city == "Москва":
+                        ws.cell(row=stopped_for, column=1, value="Москва")
+                        # ws.cell(row=stopped_for, column=2, value="53")
+                    else:
+                        ws.cell(row=stopped_for, column=1, value="ЭМК (ЦО)")
+                    ws.cell(row=stopped_for, column=2, value="53")
+                    ws.cell(row=stopped_for, column=3, value=user.id)
+
+                    depart = ""
+                    if 'uf_department' in user.indirect_data and isinstance(user.indirect_data['uf_department'], list):
+                        if len(user.indirect_data['uf_department']) >= 1:
+                            ped_info = await Department(id=user.indirect_data['uf_department'][0]).search_dep_by_id(session)
+                            if ped_info:
+                                depart = f'{ped_info[0].name}'
+                    ws.cell(row=stopped_for, column=4, value=depart)
+                    ws.cell(row=stopped_for, column=5, value=f'{user.last_name} {user.name} {user.second_name}')
+
+                    position = ""
+                    if 'work_position' in user.indirect_data and user.indirect_data['work_position']:
+                        position = user.indirect_data['work_position']
+                    ws.cell(row=stopped_for, column=6, value=position)
+
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user.id}&include_undefined=true')
+                        if response.status_code == 200:
+                            res = response.text
+                            visits = json.loads(res)
+                            data_stat = visits['totals'][0]
+                            ws.cell(row=stopped_for, column=7, value=data_stat)
+
+                    stopped_for += 1
+
+
+            excel_buffer = io.BytesIO()
+            workbook.save(excel_buffer)
+            excel_buffer.seek(0)
+            return excel_buffer
+        except Exception as e:
+            return f"Ошибка в экселе: {e}"
+
 
 '''
     # def get(self, method="user.get", params={}):
@@ -1035,6 +1108,15 @@ async def create_metrics_excel(date1: str, date2: str, session: AsyncSession = D
     return StreamingResponse(excel_buffer,
                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             headers={"Content-Disposition": "attachment; filename=statistics_intranet.xlsx"})
+    # return excel_buffer
+
+@users_router.post("/create_metrics_for_departments", summary="Скачать Excel со статистикой просмотра Интранета по департаментам")
+async def create_metrics_for_departments(session: AsyncSession = Depends(get_async_db)):
+    
+    excel_buffer = await User().create_metrics_for_departments(session=session)
+    return StreamingResponse(excel_buffer,
+                            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            headers={"Content-Disposition": "attachment; filename=test.xlsx"})
     # return excel_buffer
 
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])

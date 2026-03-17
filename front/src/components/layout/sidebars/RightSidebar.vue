@@ -66,7 +66,6 @@
 import { defineComponent, computed, ref } from "vue";
 import { workLinks, supportLinks } from "@/assets/static/navLinks";
 import Calendar from "./RightSidebarCalendar.vue";
-import { useUserData } from "@/stores/userData";
 import RightSidebarBugModalVue from "./RightSidebarBugModal.vue";
 
 export default defineComponent({

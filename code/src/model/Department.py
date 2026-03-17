@@ -131,8 +131,8 @@ async def get_user_id_by_session_id(request: Request) -> int:
 #     ```
     
 #     """
-#     depart = Department()
-#     return await depart.fetch_departments_data(session)
+    # depart = Department()
+    # return await depart.fetch_departments_data(session)
 
 # Департамент можно выгрузить
 @depart_router.get("/find_by/{id}", tags=["Департамент"])

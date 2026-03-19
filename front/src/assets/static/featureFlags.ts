@@ -4,3 +4,4 @@ export const featureFlags = {
     visibleArea: false,
     newWorkerMemo: false
 }
+

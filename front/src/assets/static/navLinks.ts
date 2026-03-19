@@ -4,7 +4,7 @@ import EmkLogo from "@/assets/icons/layout/sidebar/socLinks/EmkLogo.svg";
 import MotiwIcon from "@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg";
 import BitrixIcon from "@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg";
 import BugIcon from '@/assets/icons/layout/sidebar/socLinks/Bug.svg';
-
+import MaxIcon from '@/assets/icons/layout/sidebar/socLinks/Max.svg';
 import type { MainMenuPoints, WorkLink, SupportLink } from "@/interfaces/ILayout";
 
 export const mainMenuPoints: MainMenuPoints = [
@@ -289,6 +289,12 @@ export const supportLinks: SupportLink[] = [
         icon: TelegramIcon,
     },
     {
+        title: "Мы в MAX",
+        href: "https://max.ru/join/W4AndCka88YpXS6ic3VM8DFDdt0dEWa7iRpe-CV3RA0",
+        description: "ЭМК",
+        icon: MaxIcon,
+    },
+    {
         title: "Наш сайт",
         href: "https://www.emk.ru/",
         description: "https://www.emk.ru",
@@ -300,10 +306,5 @@ export const supportLinks: SupportLink[] = [
         description: "для сотрудников",
         icon: TelegramIcon,
     },
-    // {
-    //     title: "Доска объявлений",
-    //     href: "https://t.me/+NLJyLosstgFiZmI6",
-    //     description: "в телеграм",
-    //     icon: TelegramIcon,
-    // },
+
 ];

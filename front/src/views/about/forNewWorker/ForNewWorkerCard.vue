@@ -16,9 +16,7 @@
         <div class="memo__item__content">
             <div v-if="newMemo"
                  class="news__detail__discr">
-                <b>{{
-                    item.name
-                    }}</b>
+                <b>{{ item.name }}</b>
             </div>
             <div class="news__detail__discr"
                  v-html="item.content_text?.replaceAll('&nbsp;', ' ')"></div>

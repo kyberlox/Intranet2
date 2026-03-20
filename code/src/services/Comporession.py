@@ -90,7 +90,7 @@ def resize_image_yowai_mo_quality(input_path: str) -> BytesIO:
             if img.width / img.height < 1:
                 save_params = {
                     'format': original_format,
-                    'quality': QUALITY,
+                    'quality': YOWAIMO_QUALITY,
                     'optimize': True,
                     'subsampling': 0,  # Отключаем субдискретизацию для JPEG
                     'qtables': 'web_high'  # Используем высококачественные таблицы квантования

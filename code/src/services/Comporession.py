@@ -38,8 +38,17 @@ def resize_image_quality(input_path: str) -> BytesIO:
             print(img.width, img.height, input_path)
             if img.width / img.height < 1:
                 print(1223)
+                save_params = {
+                    'format': original_format,
+                    'quality': QUALITY,
+                    'optimize': True,
+                    'subsampling': 0,  # Отключаем субдискретизацию для JPEG
+                    'qtables': 'web_high'  # Используем высококачественные таблицы квантования
+                }
+                if exif:
+                    save_params['exif'] = exif
                 output_buffer = BytesIO()
-                img.save(output_buffer)
+                img.save(output_buffer, **save_params)
                 output_buffer.seek(0)
                 
                 return output_buffer

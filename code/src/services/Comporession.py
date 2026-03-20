@@ -34,14 +34,17 @@ def resize_image_quality(input_path: str) -> BytesIO:
         original_format = img.format
         exif = img.info.get('exif')
         
-        print(img.width, img.height, input_path)
-        if img.width / img.height < 1:
-            print(1223)
-            output_buffer = BytesIO()
-            img.save(output_buffer)
-            output_buffer.seek(0)
-            
-            return output_buffer
+        try:
+            print(img.width, img.height, input_path)
+            if img.width / img.height < 1:
+                print(1223)
+                output_buffer = BytesIO()
+                img.save(output_buffer)
+                output_buffer.seek(0)
+                
+                return output_buffer
+        except Exception as e:
+            print(str(e))
 
         # Пропорциональное уменьшение с лучшим алгоритмом
         img.thumbnail(

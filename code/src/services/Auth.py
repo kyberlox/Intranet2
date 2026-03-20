@@ -23,7 +23,7 @@ load_dotenv()
 
 auth_router = APIRouter(prefix="/auth_router")
 
-ADMIN_UUIDS = [2366, 2375, 4133, 3123, 2154, 3024] 
+ADMIN_UUIDS = [2366, 2375, 4133, 3123, 2154, 3024, 2349] 
 
 class AuthService: 
     def __init__(self):

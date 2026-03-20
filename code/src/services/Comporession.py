@@ -34,6 +34,25 @@ def resize_image_quality(input_path: str) -> BytesIO:
         original_format = img.format
         exif = img.info.get('exif')
         
+        try:
+            if img.width / img.height < 1:
+                save_params = {
+                    'format': original_format,
+                    'quality': QUALITY,
+                    'optimize': True,
+                    'subsampling': 0,  # Отключаем субдискретизацию для JPEG
+                    'qtables': 'web_high'  # Используем высококачественные таблицы квантования
+                }
+                if exif:
+                    save_params['exif'] = exif
+                output_buffer = BytesIO()
+                img.save(output_buffer, **save_params)
+                output_buffer.seek(0)
+                
+                return output_buffer
+        except Exception as e:
+            print(str(e))
+
         # Пропорциональное уменьшение с лучшим алгоритмом
         img.thumbnail(
             (TARGET_WIDTH, TARGET_HEIGHT),
@@ -67,6 +86,25 @@ def resize_image_yowai_mo_quality(input_path: str) -> BytesIO:
         original_format = img.format
         exif = img.info.get('exif')
         
+        try:
+            if img.width / img.height < 1:
+                save_params = {
+                    'format': original_format,
+                    'quality': QUALITY,
+                    'optimize': True,
+                    'subsampling': 0,  # Отключаем субдискретизацию для JPEG
+                    'qtables': 'web_high'  # Используем высококачественные таблицы квантования
+                }
+                if exif:
+                    save_params['exif'] = exif
+                output_buffer = BytesIO()
+                img.save(output_buffer, **save_params)
+                output_buffer.seek(0)
+                
+                return output_buffer
+        except Exception as e:
+            print(str(e))
+
         # Пропорциональное уменьшение с лучшим алгоритмом
         img.thumbnail(
             (YOWAIMO_TARGET_WIDTH, YOWAIMO_TARGET_HEIGHT),

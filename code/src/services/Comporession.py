@@ -67,6 +67,7 @@ def resize_image_yowai_mo_quality(input_path: str) -> BytesIO:
         original_format = img.format
         exif = img.info.get('exif')
         
+        print(img.width, img.height, input_path)
         if img.width / img.height < 1:
             print(1223)
             output_buffer = BytesIO()

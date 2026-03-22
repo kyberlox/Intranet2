@@ -495,7 +495,7 @@ class AioSchedulerManager:
             # Добавляем задачи по умолчанию
             
             # 1. Ежедневная проверка каждые 5 минут (исправленный метод)
-            # daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
+            daily_job_id = self.schedule_periodic_task(daily_check, interval_seconds=60)
             main_portal = os.getenv('HOST')
             if 'intranet.emk.ru' in main_portal:
                 # 2. Ежедневная проверка в 7 утра

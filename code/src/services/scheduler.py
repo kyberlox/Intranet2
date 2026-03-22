@@ -60,8 +60,8 @@ async def get_today_birthdays() -> List[int]:
     """
     from ..base.pSQL.models.User import User
     async with AsyncSessionLocal() as db:
-        today = datetime.now()
-        
+        # today = datetime.now()
+        today = datetime.strptime('21.03.2026', '%d.%m.%Y')
         query = select(User.id).where(
             (extract('month', User.personal_birthday) == today.month) &
             (extract('day', User.personal_birthday) == today.day) &

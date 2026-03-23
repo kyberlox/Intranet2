@@ -219,7 +219,7 @@ class UservisionsRootModel:
             return LogsMaker().info_message(f"Удаление пользователей из ОВ id = {self.vision_id} завершено успешно") 
         return LogsMaker().warning_message(f"Пользователей в ОВ с id = {self.vision_id} не существует")
 
-    async def get_descendant_ids_orm(session, father_id: int):
+    async def get_descendant_ids_orm(self, session, father_id: int):
         from .DepartmentModel import DepartmentModel
         from sqlalchemy import select
         from sqlalchemy.orm import aliased

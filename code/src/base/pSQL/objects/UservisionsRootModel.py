@@ -199,6 +199,7 @@ class UservisionsRootModel:
         
         #получить все id родителя
         father_deps = await get_descendant_ids_orm(session, dep_id)
+        print(father_deps, 'че получили')
         
         if users_in_vis:
             for user in users_in_vis:

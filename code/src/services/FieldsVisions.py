@@ -177,7 +177,7 @@ class Visions:
 #             return user_inf["id"]
 #     return None
 
-async def get_user_id_by_session_id(request: Request) -> int:
+async def get_user_id_by_session_id(request: Request, session) -> int:
     from ..base.RedisStorage import RedisStorage
     """Получение текущей сессии пользователя"""
     # Ищем session_id в куках или заголовках

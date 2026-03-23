@@ -137,12 +137,12 @@ class Visions:
     async def get_users_in_vision(self, session):
         return await UservisionsRootModel(vision_id=self.vision_id).find_users_in_vision(session=session)
 
-    async def remove_depart_in_vision(self, dep_id, session):
+    async def remove_depart_in_vision(self, dep_id, session, with_child):
         root_init = RootsModel(user_uuid=self.user_id)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_vision(roots_uuid)
         return await UservisionsRootModel(vision_id=self.vision_id).remove_depart_in_vision(dep_id=dep_id, roots=roots,
-                                                                                            session=session)
+                                                                                            session=session, with_child=with_child)
 
     async def set_art_to_vision(self, session):
         return await FieldvisionModel(id=self.vision_id, art_id=self.art_id).set_art_to_vision(session=session)
@@ -286,11 +286,11 @@ async def get_users_in_vision(request: Request, vision_id: int, session: AsyncSe
     return await Visions(vision_id=vision_id, user_id=uuid).get_users_in_vision(session=session)
 
 
-@fieldsvisions_router.delete("/remove_depart_in_vision/{vision_id}/{dep_id}")
-async def remove_depart_in_vision(request: Request, vision_id: int, dep_id: int,
+@fieldsvisions_router.delete("/remove_depart_in_vision/{vision_id}/{dep_id}/{with_child}")
+async def remove_depart_in_vision(request: Request, with_child: bool, vision_id: int, dep_id: int,
                                   session: AsyncSession = Depends(get_async_db)):
     uuid = await get_user_id_by_session_id(request, session)
-    return await Visions(vision_id=vision_id, user_id=uuid).remove_depart_in_vision(dep_id=dep_id, session=session)
+    return await Visions(vision_id=vision_id, user_id=uuid).remove_depart_in_vision(dep_id=dep_id, session=session, with_child=with_child)
 
 
 @fieldsvisions_router.put("/set_art_to_vision/{art_id}/{vis_id}")

@@ -188,23 +188,52 @@ class UservisionsRootModel:
             return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
 
 
-    async def remove_depart_in_vision(self, dep_id, roots, session):
+    async def remove_depart_in_vision(self, dep_id, roots, session, with_child):
         from .UserModel import UserModel
         query = select(self.Roots.user_uuid).where(
                 self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
         )
-
-
         res = await session.execute(query)
         users_in_vis = res.scalars().all()
+
+        
+        #получить все id родителя
+        father_deps = await get_descendant_ids_orm(session, dep_id)
         
         if users_in_vis:
             for user in users_in_vis:
                 user_info = await UserModel(Id=user).find_by_id(session=session)
                 usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                if with_child:
+                    if usdep in father_deps:
+                        await self.remove_user_from_vision(roots=roots, session=session)
+                        continue
+                
                 if usdep == dep_id:
                     self.user_id = user
 
                     await self.remove_user_from_vision(roots=roots, session=session)
+                    continue
+                    
             return LogsMaker().info_message(f"Удаление пользователей из ОВ id = {self.vision_id} завершено успешно") 
         return LogsMaker().warning_message(f"Пользователей в ОВ с id = {self.vision_id} не существует")
+
+    async def get_descendant_ids_orm(session, father_id: int):
+        from .DepartmentModel import DepartmentModel
+        from sqlalchemy import select
+        from sqlalchemy.orm import aliased
+        # Базовый CTE: выбираем корневой узел
+        dept_cte = select(Department.id).where(Department.id == father_id).cte(recursive=True)
+
+        # Алиас для таблицы departments в рекурсивной части
+        dept_alias = aliased(Department, name='d')
+
+        # Рекурсивная часть: присоединяем всех детей
+        dept_cte = dept_cte.union_all(
+            select(dept_alias.id).where(dept_alias.father_id == dept_cte.c.id)
+        )
+
+        # Финальный запрос: выбираем id из CTE
+        stmt = select(dept_cte.c.id).order_by(dept_cte.c.id)
+        result = session.execute(stmt)
+        return [row.id for row in result]

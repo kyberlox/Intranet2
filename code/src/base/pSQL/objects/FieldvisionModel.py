@@ -30,7 +30,7 @@ class FieldvisionModel:
             existing_vision = result.scalar_one_or_none()
             
             if existing_vision:
-                return LogsMaker().info_message(f"Области видимости с id = {self.id} уже существует")
+                return LogsMaker().info_message(f"Области видимости с названием = {self.vision_name} уже существует")
             
             # Находим максимальный ID
             stmt = select(func.max(self.Fieldvision.id))
@@ -42,11 +42,13 @@ class FieldvisionModel:
             new_vision = self.Fieldvision(id=new_id, vision_name=self.vision_name)
             session.add(new_vision)
             await session.commit()
+            await session.refresh(new_vision)
+            return new_vision
             
-            # Возвращаем созданную запись
-            stmt = select(self.Fieldvision).where(self.Fieldvision.vision_name == self.vision_name)
-            result = await session.execute(stmt)
-            return result.scalar_one()
+            # # Возвращаем созданную запись
+            # stmt = select(self.Fieldvision).where(self.Fieldvision.vision_name == self.vision_name)
+            # result = await session.execute(stmt)
+            # return result.scalar_one()
             
         except Exception as e:
             await session.rollback()
@@ -135,21 +137,21 @@ class FieldvisionModel:
 
     async def delete_art_from_vision(self, session):
         try:
-            # Проверяем существование области видимости
-            stmt_vision = select(self.Fieldvision).where(self.Fieldvision.id == self.id)
-            result_vision = await session.execute(stmt_vision)
-            existing_vision = result_vision.scalar_one_or_none()
+            # # Проверяем существование области видимости
+            # stmt_vision = select(self.Fieldvision).where(self.Fieldvision.id == self.id)
+            # result_vision = await session.execute(stmt_vision)
+            # existing_vision = result_vision.scalar_one_or_none()
             
-            if not existing_vision:
-                return LogsMaker().info_message(f"Области видимости с id = {self.id} не существует")
+            # if not existing_vision:
+            #     return LogsMaker().info_message(f"Области видимости с id = {self.id} не существует")
             
-            # Проверяем существование статьи
-            stmt_art = select(self.Article).where(self.Article.id == self.art_id)
-            result_art = await session.execute(stmt_art)
-            existing_art = result_art.scalar_one_or_none()
+            # # Проверяем существование статьи
+            # stmt_art = select(self.Article).where(self.Article.id == self.art_id)
+            # result_art = await session.execute(stmt_art)
+            # existing_art = result_art.scalar_one_or_none()
             
-            if not existing_art:
-                return LogsMaker().info_message(f"Статью с id = {self.art_id} невозможно удалить из ОВ с id = {self.id}, статьи не существует")
+            # if not existing_art:
+            #     return LogsMaker().info_message(f"Статью с id = {self.art_id} невозможно удалить из ОВ с id = {self.id}, статьи не существует")
 
             # Находим и удаляем связь
             stmt_link = select(self.ArtVis).where(

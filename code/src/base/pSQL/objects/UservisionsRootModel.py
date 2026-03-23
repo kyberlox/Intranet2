@@ -110,8 +110,42 @@ class UservisionsRootModel:
         except Exception as e:
             return LogsMaker().error_message(f"ошибка при удалении пользователей из ОВ {self.vision_id}: {e}")
 
+    #функция для получения всех айдишников заводов
+    async def get_manufactures_id(self, session):
+        from ..models.Article import Article
+        try:
+            result = dict()
+            stmt = select(Article).where(Article.section_id == 9)
+            res = await session.execute(stmt)
+            nodes = res.scalars().all()
+            if not nodes:
+                return None 
+            for manufacture in nodes:
+                if manufacture.name is None or manufacture.indirect_data is None:
+                    continue
+                result[manufacture.indirect_data['manufacture_id']] = manufacture.name
+            return result
+        except Exception as e:
+            return f"{e}"
+
+
+    #функция для определения отношения пользователя к заводу
+    async def get_user_manufacture(self, dep_id, manufactures, session):
+        from .DepartmentModel import DepartmentModel
+        result = dep_id
+        
+        while True:
+            dep_str = await DepartmentModel(result).find_dep_by_id(session)
+            
+            father_id = dep_str[0].father_id
+            if father_id is None:
+                return None  # достигли корня, не нашли завод
+            if father_id in manufactures:
+                return father_id
+            result = father_id
 
     async def find_users_in_vision(self, session):
+        manufactures = await self.get_manufactures_id(session)
         from .UserModel import UserModel
         try:
             result = []
@@ -138,6 +172,9 @@ class UservisionsRootModel:
                         general_info['name'] = last_name + ' ' + name + ' ' + second_name
                         general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
                         general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                        if general_info['depart_id']:
+                            res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
+                            general_info['father_depart_name'] = manufactures[int(res_manufacture)]
                         if 'work_position' in user_info['indirect_data'].keys():
                             general_info['post'] = user_info['indirect_data']['work_position']
                         general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None

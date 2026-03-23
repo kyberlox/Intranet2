@@ -207,6 +207,7 @@ class UservisionsRootModel:
                 usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
                 if with_child:
                     if usdep in father_deps:
+                        self.user_id = user
                         await self.remove_user_from_vision(roots=roots, session=session)
                         continue
                 

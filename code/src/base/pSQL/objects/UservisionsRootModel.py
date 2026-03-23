@@ -236,5 +236,5 @@ class UservisionsRootModel:
 
         # Финальный запрос: выбираем id из CTE
         stmt = select(dept_cte.c.id).order_by(dept_cte.c.id)
-        result = session.execute(stmt)
+        result = await session.execute(stmt)
         return [row.id for row in result]

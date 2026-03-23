@@ -203,7 +203,7 @@ class UservisionsRootModel:
                 user_info = await UserModel(Id=user).find_by_id(session=session)
                 usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
                 if usdep == dep_id:
-                    self.user_id = user['id']
+                    self.user_id = user
 
                     await self.remove_user_from_vision(roots=roots, session=session)
             return LogsMaker().info_message(f"Удаление пользователей из ОВ id = {self.vision_id} завершено успешно") 

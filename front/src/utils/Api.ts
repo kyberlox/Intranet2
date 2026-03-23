@@ -7,6 +7,8 @@ import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interf
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 
+const defaultUrl = (import.meta.env.VITE_API_URL).replace('/api', '');
+
 const VITE_API_URL = import.meta.env.VITE_API_URL
 const api = axios.create({
     baseURL: VITE_API_URL,
@@ -33,7 +35,6 @@ vendorApi.interceptors.request.use((config) => {
 
 export default class Api {
     static async get(url: string, config?: AxiosRequestConfig) {
-        const defaultUrl = (import.meta.env.VITE_API_URL).replace('/api', '');
         return await api.get(url, config)
         .then(resp=>resp.data)
         .catch(e=>{
@@ -75,7 +76,7 @@ export default class Api {
        .then(resp=>config ? resp : resp.data)
         .catch(e=>{
              if (e.status == 502) {
-                window.location.href = 'https://intranet.emk.ru/inservice'
+                window.location.href = `${defaultUrl}/inservice`
             }
             else if (e.status == 401) {
                 useUserData().logOut()

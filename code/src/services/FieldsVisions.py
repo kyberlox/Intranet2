@@ -157,25 +157,25 @@ class Visions:
         return await FieldvisionModel(art_id=self.art_id).check_user_root(user_id=self.user_id, session=session)
 
 
-async def get_user_id_by_session_id(request, session):
-    user_id = None
-    token = request.cookies.get("user_id")
-    if token is None:
-        token = request.headers.get("user_id")
-        if token is not None:
-            user_id = token
-    else:
-        user_id = token
+# async def get_user_id_by_session_id(request, session):
+#     user_id = None
+#     token = request.cookies.get("user_id")
+#     if token is None:
+#         token = request.headers.get("user_id")
+#         if token is not None:
+#             user_id = token
+#     else:
+#         user_id = token
 
-    if user_id is not None:
+#     if user_id is not None:
 
-        # получить и вывести его id
-        usr = User()
-        usr.id = int(user_id)
-        user_inf = await usr.search_by_id(session=session)
-        if user_inf is not None and "id" in user_inf.keys():
-            return user_inf["id"]
-    return None
+#         # получить и вывести его id
+#         usr = User()
+#         usr.id = int(user_id)
+#         user_inf = await usr.search_by_id(session=session)
+#         if user_inf is not None and "id" in user_inf.keys():
+#             return user_inf["id"]
+#     return None
 
 async def get_user_id_by_session_id(request: Request) -> int:
     from ..base.RedisStorage import RedisStorage

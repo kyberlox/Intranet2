@@ -356,9 +356,9 @@ export default defineComponent({
                 })
         }
 
-        const deleteDepFromVision = (id: number, withchilds: boolean) => {
+        const deleteDepFromVision = (id: number, withСhilds: boolean) => {
             isLoading.value = true;
-            Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}/${withchilds}`)
+            Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}/${withСhilds}`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)

@@ -101,7 +101,7 @@ export default defineComponent({
         return {
             showAllDepsUsers,
             showingDeps,
-            deleteDep: (id: number, withchilds: boolean) => emit('deleteDep', id, withchilds),
+            deleteDep: (id: number, withChilds: boolean) => emit('deleteDep', id, withChilds),
             pickUser: (user: IVisionUser) => emit('pickUser', user),
             showThisDep,
             depNeedToBeShown

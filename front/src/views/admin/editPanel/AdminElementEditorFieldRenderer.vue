@@ -8,6 +8,13 @@
          class="admin-element-inner__field"
          :key="index">
 
+        <div v-if="item.field == 'vision'">
+            <AdminEditTags :allTags="['s', 'd']"
+                           :currentTags="['s']"
+                           :tagsTitle="'Определите кому доступна эта новость'"
+                           @tagsChanged="(newVision) => { console.log(newVision); $emit('visibilityChanged', newVision) }" />
+        </div>
+
         <!-- Для того чтобы вписать данные -->
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
                              :title="item.name"
@@ -91,6 +98,8 @@ import SearchList, { type IUserList } from "@/components/tools/common/SearchList
 import AdminEditTags from "../components/inputFields/AdminEditTags.vue";
 import Loader from "@/components/layout/Loader.vue";
 import { type IFileToUpload } from "@/interfaces/IEntities";
+import CustomFilter from "@/components/tools/common/CustomFilter.vue";
+import { emit } from "process";
 
 export default defineComponent({
     components: {
@@ -105,9 +114,9 @@ export default defineComponent({
         AdminUploadingSection,
         SearchList,
         AdminEditTags,
-        AdminEditAreaSearch
+        AdminEditAreaSearch,
     },
-    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagsChanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
+    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagsChanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed', 'visibilityChanged'],
     props: {
         isMobileScreen: {
             type: Boolean

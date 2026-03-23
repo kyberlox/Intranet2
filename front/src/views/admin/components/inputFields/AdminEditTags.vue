@@ -1,13 +1,17 @@
 <template>
-<p class="admin-element-inner__field-title fs-l">Выберите тэги</p>
+<p class="admin-element-inner__field-title fs-l">
+    {{ tagsTitle }}
+</p>
 <div class="tags">
     <div v-for="tag in allTags"
-         :key="tag.id"
+         :key="typeof tag !== 'string' ? tag.id : tag"
          class="tag__wrapper ">
         <div class="tags__tag tags__tag--nohover tags__tag--inner section__item__link btn-air"
-             :class="{ 'tags__tag--active': typeof tag.id == 'number' && chosenTags.includes(tag.id) }"
-             @click="chooseTag(tag.id)">
-            #{{ tag.tag_name }}
+             :class="{
+                'tags__tag--active': chosenTags.includes(typeof tag == 'string' ? String(tag) : String((tag as ITag).id))
+            }"
+             @click="chooseTag(typeof tag == 'string' ? tag : tag.id)">
+            #{{ typeof tag == 'string' ? tag : tag.tag_name }}
         </div>
     </div>
 </div>
@@ -20,21 +24,27 @@ import type { ITag } from "@/interfaces/entities/ITag";
 export default defineComponent({
     props: {
         allTags: {
-            type: Array<ITag>
+            type: Array<ITag | string>
         },
         currentTags: {
-            type: Array<number>
+            type: Array<number | string>
+        },
+        tagsTitle: {
+            type: String,
+            default: () => 'Выберите тэги'
         }
     },
     emits: ['tagsChanged'],
     setup(props, { emit }) {
-        const chosenTags = ref<number[]>(props.currentTags ? props.currentTags : []);
+        const chosenTags = ref<(string | number)[]>(props.currentTags || []);
+        console.log(chosenTags.value);
+
         const chooseTag = (id: number | string) => {
-            if (chosenTags.value.find((e) => e == Number(id))) {
-                chosenTags.value = chosenTags.value.filter((e) => e !== id)
+            if (chosenTags.value.find((e) => e == String(id))) {
+                chosenTags.value = chosenTags.value.filter((e) => String(e) !== String(id)).map(e => String(e))
             }
             else {
-                chosenTags.value.push(Number(id))
+                chosenTags.value.push(String(id))
             }
             emit('tagsChanged', chosenTags.value)
         }

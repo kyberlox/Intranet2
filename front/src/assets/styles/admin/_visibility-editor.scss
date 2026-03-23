@@ -110,6 +110,18 @@
                     color: var(--emk-brand-color)
                 }
             }
+
+            &__remove {
+                &--withchilds {
+                    font-size: small;
+                    text-decoration: underline;
+                    cursor: pointer;
+
+                    &:hover {
+                        color: var(--emk-brand-color);
+                    }
+                }
+            }
         }
     }
 

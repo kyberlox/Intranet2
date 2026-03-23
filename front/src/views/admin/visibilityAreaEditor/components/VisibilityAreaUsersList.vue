@@ -10,6 +10,10 @@
                 </div>
                 <CloseIcon @click="deleteDep(userDep.depart_id)" />
             </div>
+            <div @click="deleteDep(userDep.depart_id, true)"
+                 class="visibility-editor__area-users__department__remove--withchilds">
+                Удалить с подразделениями
+            </div>
             <div class="visibility-editor__area-users"
                  v-if="showingDeps.includes(userDep.depart_id) || showAllDepsUsers">
                 <li v-for="user in userDep.users"
@@ -97,7 +101,7 @@ export default defineComponent({
         return {
             showAllDepsUsers,
             showingDeps,
-            deleteDep: (id: number) => emit('deleteDep', id),
+            deleteDep: (id: number, withchilds: boolean) => emit('deleteDep', id, withchilds),
             pickUser: (user: IVisionUser) => emit('pickUser', user),
             showThisDep,
             depNeedToBeShown

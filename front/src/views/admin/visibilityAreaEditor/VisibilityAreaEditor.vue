@@ -356,9 +356,9 @@ export default defineComponent({
                 })
         }
 
-        const deleteDepFromVision = (id: number) => {
+        const deleteDepFromVision = (id: number, withchilds: boolean) => {
             isLoading.value = true;
-            Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}`)
+            Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}/${withchilds}`)
                 .catch(error => {
                     if (error.response?.status == 500) {
                         handleApiError(error, toast)
@@ -394,16 +394,17 @@ export default defineComponent({
         })
 
         const getDepStructureByName = (word: string) => {
-            Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .then((data) => {
-                    filteredUsers.value = [];
-                    filteredDepartments.value = data;
-                })
+            if (editGroupMode.value)
+                Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                    .catch(error => {
+                        if (error.response?.status == 500) {
+                            handleApiError(error, toast)
+                        }
+                    })
+                    .then((data) => {
+                        filteredUsers.value = [];
+                        filteredDepartments.value = data;
+                    })
         }
 
         const getUserByName = (word: string) => {

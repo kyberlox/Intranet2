@@ -220,7 +220,7 @@ class UservisionsRootModel:
         return LogsMaker().warning_message(f"Пользователей в ОВ с id = {self.vision_id} не существует")
 
     async def get_descendant_ids_orm(self, session, father_id: int):
-        from .DepartmentModel import DepartmentModel
+        from ..model.Department import Department
         from sqlalchemy import select
         from sqlalchemy.orm import aliased
         # Базовый CTE: выбираем корневой узел

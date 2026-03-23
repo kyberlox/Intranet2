@@ -189,10 +189,19 @@ class UservisionsRootModel:
 
 
     async def remove_depart_in_vision(self, dep_id, roots, session):
-        users = await self.find_users_in_vision(session)
+        query = select(self.Roots.user_uuid).where(
+                self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
+        )
+
+
+        res = await session.execute(query)
+        users_in_vis = res.scalars().all()
+        
         if users:
-            for user in users:
-                if user['depart_id'] == dep_id:
+            for user in users_in_vis:
+                user_info = await UserModel(Id=user).find_by_id(session=session)
+                usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                if usdep == dep_id:
                     self.user_id = user['id']
 
                     await self.remove_user_from_vision(roots=roots, session=session)

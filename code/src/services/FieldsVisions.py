@@ -78,7 +78,7 @@ class Visions:
                     for user in de['users']:
                         all_dep_users.append(user['id'])
                 else:
-                    dep_n_1 = self.get_dep_structure(de['id'])
+                    dep_n_1 = await self.get_dep_structure(de['id'])
                     for dep_users in dep_n_1:
                         for user in dep_users['users']:
                             all_dep_users.append(user['id'])

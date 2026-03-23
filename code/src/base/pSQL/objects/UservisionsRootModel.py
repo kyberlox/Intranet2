@@ -189,6 +189,7 @@ class UservisionsRootModel:
 
 
     async def remove_depart_in_vision(self, dep_id, roots, session):
+        from .UserModel import UserModel
         query = select(self.Roots.user_uuid).where(
                 self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
         )

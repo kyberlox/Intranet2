@@ -287,7 +287,7 @@ async def get_users_in_vision(request: Request, vision_id: int, session: AsyncSe
 
 
 @fieldsvisions_router.delete("/remove_depart_in_vision/{vision_id}/{dep_id}/{with_child}")
-async def remove_depart_in_vision(request: Request, with_child: Optional[bool] = None, vision_id: int, dep_id: int,
+async def remove_depart_in_vision(request: Request, vision_id: int, dep_id: int, with_child: Optional[bool] = None, 
                                   session: AsyncSession = Depends(get_async_db)):
     uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).remove_depart_in_vision(dep_id=dep_id, session=session, with_child=with_child)

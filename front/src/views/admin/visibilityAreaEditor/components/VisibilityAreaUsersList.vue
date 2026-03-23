@@ -8,7 +8,7 @@
                      @click="showThisDep(userDep.depart_id)">
                     {{ userDep.depart }}
                 </div>
-                <CloseIcon @click="deleteDep(userDep.depart_id)" />
+                <CloseIcon @click="deleteDep(userDep.depart_id, false)" />
             </div>
             <div @click="deleteDep(userDep.depart_id, true)"
                  class="visibility-editor__area-users__department__remove--withchilds">

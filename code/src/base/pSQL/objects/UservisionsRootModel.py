@@ -110,8 +110,42 @@ class UservisionsRootModel:
         except Exception as e:
             return LogsMaker().error_message(f"ошибка при удалении пользователей из ОВ {self.vision_id}: {e}")
 
+    #функция для получения всех айдишников заводов
+    async def get_manufactures_id(self, session):
+        from ..models.Article import Article
+        try:
+            result = dict()
+            stmt = select(Article).where(Article.section_id == 9)
+            res = await session.execute(stmt)
+            nodes = res.scalars().all()
+            if not nodes:
+                return None 
+            for manufacture in nodes:
+                if manufacture.name is None or manufacture.indirect_data is None:
+                    continue
+                result[manufacture.indirect_data['manufacture_id']] = manufacture.name
+            return result
+        except Exception as e:
+            return f"{e}"
+
+
+    #функция для определения отношения пользователя к заводу
+    async def get_user_manufacture(self, dep_id, manufactures, session):
+        from .DepartmentModel import DepartmentModel
+        result = dep_id
+        
+        while True:
+            dep_str = await DepartmentModel(result).find_dep_by_id(session)
+            
+            father_id = dep_str[0].father_id
+            if father_id is None:
+                return None  # достигли корня, не нашли завод
+            if father_id in manufactures:
+                return father_id
+            result = father_id
 
     async def find_users_in_vision(self, session):
+        manufactures = await self.get_manufactures_id(session)
         from .UserModel import UserModel
         try:
             result = []
@@ -138,6 +172,11 @@ class UservisionsRootModel:
                         general_info['name'] = last_name + ' ' + name + ' ' + second_name
                         general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
                         general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                        if general_info['depart_id']:
+                            res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
+                            if res_manufacture:
+                                general_info['depart'] = f"{general_info['depart']} | {manufactures[int(res_manufacture)]}"
+                                # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
                         if 'work_position' in user_info['indirect_data'].keys():
                             general_info['post'] = user_info['indirect_data']['work_position']
                         general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
@@ -149,13 +188,53 @@ class UservisionsRootModel:
             return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
 
 
-    async def remove_depart_in_vision(self, dep_id, roots, session):
-        users = await self.find_users_in_vision(session)
-        if users:
-            for user in users:
-                if user['depart_id'] == dep_id:
-                    self.user_id = user['id']
+    async def remove_depart_in_vision(self, dep_id, roots, session, with_child):
+        from .UserModel import UserModel
+        query = select(self.Roots.user_uuid).where(
+                self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
+        )
+        res = await session.execute(query)
+        users_in_vis = res.scalars().all()
+
+        
+        #получить все id родителя
+        father_deps = await self.get_descendant_ids_orm(session, dep_id)
+        
+        if users_in_vis:
+            for user in users_in_vis:
+                user_info = await UserModel(Id=user).find_by_id(session=session)
+                usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                if with_child:
+                    if usdep in father_deps:
+                        self.user_id = user
+                        await self.remove_user_from_vision(roots=roots, session=session)
+                        continue
+                
+                if usdep == dep_id:
+                    self.user_id = user
 
                     await self.remove_user_from_vision(roots=roots, session=session)
+                    continue
+                    
             return LogsMaker().info_message(f"Удаление пользователей из ОВ id = {self.vision_id} завершено успешно") 
         return LogsMaker().warning_message(f"Пользователей в ОВ с id = {self.vision_id} не существует")
+
+    async def get_descendant_ids_orm(self, session, father_id: int):
+        from ..models.Department import Department
+        from sqlalchemy import select
+        from sqlalchemy.orm import aliased
+        # Базовый CTE: выбираем корневой узел
+        dept_cte = select(Department.id).where(Department.id == father_id).cte(recursive=True)
+
+        # Алиас для таблицы departments в рекурсивной части
+        dept_alias = aliased(Department, name='d')
+
+        # Рекурсивная часть: присоединяем всех детей
+        dept_cte = dept_cte.union_all(
+            select(dept_alias.id).where(dept_alias.father_id == dept_cte.c.id)
+        )
+
+        # Финальный запрос: выбираем id из CTE
+        stmt = select(dept_cte.c.id).order_by(dept_cte.c.id)
+        result = await session.execute(stmt)
+        return [row.id for row in result]

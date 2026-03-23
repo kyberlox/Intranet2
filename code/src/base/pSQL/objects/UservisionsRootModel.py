@@ -175,7 +175,8 @@ class UservisionsRootModel:
                         if general_info['depart_id']:
                             res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
                             if res_manufacture:
-                                general_info['father_depart_name'] = manufactures[int(res_manufacture)]
+                                general_info['depart'] = f"{general_info['depart']} | {manufactures[int(res_manufacture)]}"
+                                # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
                         if 'work_position' in user_info['indirect_data'].keys():
                             general_info['post'] = user_info['indirect_data']['work_position']
                         general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None

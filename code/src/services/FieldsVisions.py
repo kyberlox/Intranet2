@@ -157,7 +157,7 @@ class Visions:
         return await FieldvisionModel(art_id=self.art_id).check_user_root(user_id=self.user_id, session=session)
 
 
-async def get_uuid_from_request(request, session):
+async def get_user_id_by_session_id(request, session):
     user_id = None
     token = request.cookies.get("user_id")
     if token is None:
@@ -176,6 +176,34 @@ async def get_uuid_from_request(request, session):
         if user_inf is not None and "id" in user_inf.keys():
             return user_inf["id"]
     return None
+
+async def get_user_id_by_session_id(request: Request) -> int:
+    from ..base.RedisStorage import RedisStorage
+    """Получение текущей сессии пользователя"""
+    # Ищем session_id в куках или заголовках
+    session_id = request.cookies.get("session_id")
+    
+    if not session_id:
+        auth_header = request.headers.get("session_id")
+        if auth_header:# and auth_header.startswith("Bearer "):
+            session_id = auth_header#[7:]
+    
+    if not session_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+    session_data = RedisStorage().get_session(key=session_id)
+
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = session_data['user_info']['ID']
+    return user_id
 
 
 @fieldsvisions_router.get("/get_full_structure")
@@ -205,28 +233,28 @@ async def create_new_vision(vision_name: str, session: AsyncSession = Depends(ge
 
 @fieldsvisions_router.delete("/delete_vision/{vision_id}")
 async def delete_vision(request: Request, vision_id: int, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).delete_vision(session)
 
 
 @fieldsvisions_router.put("/add_user_to_vision/{vision_id}/{user_id}")
 async def add_user_to_vision(request: Request, vision_id: int, user_id: int,
                              session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).add_user_to_vision(user_to=user_id, session=session)
 
 
 @fieldsvisions_router.put("/add_dep_users_only/{vision_id}/{dep_id}")
 async def add_dep_users_only(request: Request, vision_id: int, dep_id: int,
                              session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).add_dep_users_only(dep_id=dep_id, session=session)
 
 
 @fieldsvisions_router.put("/add_full_usdep_list_to_vision/{vision_id}/{dep_id}")
 async def add_full_usdep_list_to_vision(request: Request, vision_id: int, dep_id: int,
                                         session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).add_full_usdep_list_to_vision(dep_id=dep_id,
                                                                                           session=session)
 
@@ -234,34 +262,34 @@ async def add_full_usdep_list_to_vision(request: Request, vision_id: int, dep_id
 @fieldsvisions_router.put("/add_users_list_to_vision/{vision_id}")
 async def add_users_list_to_vision(request: Request, vision_id: int, users=Body(),
                                    session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).add_users_list_to_vision(users=users, session=session)
 
 
 @fieldsvisions_router.delete("/delete_user_from_vision/{vision_id}/{user_id}")
 async def delete_user_from_vision(request: Request, vision_id: int, user_id: int,
                                   session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).delete_user_from_vision(user=user_id, session=session)
 
 
 @fieldsvisions_router.delete("/delete_users_from_vision/{vision_id}")
 async def delete_users_from_vision(request: Request, vision_id: int, users=Body(),
                                    session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).delete_users_from_vision(users=users, session=session)
 
 
 @fieldsvisions_router.get("/get_users_in_vision/{vision_id}")
 async def get_users_in_vision(request: Request, vision_id: int, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).get_users_in_vision(session=session)
 
 
 @fieldsvisions_router.delete("/remove_depart_in_vision/{vision_id}/{dep_id}")
 async def remove_depart_in_vision(request: Request, vision_id: int, dep_id: int,
                                   session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(vision_id=vision_id, user_id=uuid).remove_depart_in_vision(dep_id=dep_id, session=session)
 
 
@@ -282,5 +310,5 @@ async def get_all_vis_in_art(art_id: int, session: AsyncSession = Depends(get_as
 
 @fieldsvisions_router.get("/check_user_root/{art_id}")
 async def check_user_root(request: Request, art_id: int, session: AsyncSession = Depends(get_async_db)):
-    uuid = await get_uuid_from_request(request, session)
+    uuid = await get_user_id_by_session_id(request, session)
     return await Visions(art_id=art_id, user_id=uuid).check_user_root(session=session)

@@ -1027,13 +1027,13 @@
       },
       {
         "name" : "Список Областей Видимости",
-        "field" : "all_vissions",
-        "data_type" : "vission",
+        "field" : "all_visions",
+        "data_type" : "vision",
         "values": []
       },
       {
         "name": "Области Видимости",
-        "field": "vission",
+        "field": "vision",
         "data_type": "list",
         "values": []
       }
@@ -1193,13 +1193,13 @@
       },
       {
         "name" : "Список Областей Видимости",
-        "field" : "all_vissions",
-        "data_type" : "vission",
+        "field" : "all_visions",
+        "data_type" : "vision",
         "values": []
       },
       {
         "name": "Области Видимости",
-        "field": "vission",
+        "field": "vision",
         "data_type": "list",
         "values": []
       }

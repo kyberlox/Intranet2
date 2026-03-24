@@ -585,12 +585,12 @@ class Editor:
                     need_field["values"] = await Tag(art_id=self.art_id).get_art_tags(self.session)
                     # need_field.pop("value")
                 
-                if need_field["field"] == "all_vissions":
+                if need_field["field"] == "all_visions":
                     fields_list = await Visions().get_all_visions(self.session)
                     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                     need_field["values"] = fields_list
                 
-                if need_field["field"] == "vission":
+                if need_field["field"] == "vision":
                     fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
                     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                     need_field["values"] = fields_list
@@ -660,7 +660,7 @@ class Editor:
                 sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                 # записываешь в need_field["values"] и в need_field["values"]
                 field["values"] = sorted_tags
-            elif field["field"] == "all_vissions":
+            elif field["field"] == "all_visions":
                 fields_list = await Visions().get_all_visions(self.session)
                 # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                 field["values"] = fields_list

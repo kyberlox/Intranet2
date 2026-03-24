@@ -727,17 +727,24 @@ class UserModel:
         return users
     
     async def put_user_to_vis(self, session, usr_data):
+        from .models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
 
             #получаем родителя
             user_manufacture = await self.get_user_manufacture(dep_id=usr_data['UF_DEPARTMENT'], manufactures=manufactures, session=session)
             if not user_manufacture:
-                if usr_data:
+                if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
+
                     pass
                 #центральнгый офис, добавить в эту ОВ
                 # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
                 pass
+            stmt = select(Article.indirect_data['vision_select']).where(Article.section_id == 9, Article.indirect_data['manufacture_id'] == int(user_manufacture))
+            res_stmt = await session.execute()
+            vis_id = res_stmt.scalar()
+            return vis_id
+            
         except:
             pass
             

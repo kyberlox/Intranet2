@@ -449,7 +449,8 @@ class User:
             return LogsMaker().error_message(
                 f'Ошибка при обновлении инф о пользователе update_inf_from_b24 с id = {self.id}: {e}')
 
-    # async def put_user_to_vis(self, session, user_dep):
+    async def put_user_to_vis(self, session, usr_data):
+        return await self.UserModel.put_user_to_vis(session, usr_data)
     #     try:
     #         manufactures = await self.UserModel.get_manufactures_id(session)
 
@@ -1127,6 +1128,10 @@ async def create_metrics_for_departments(session: AsyncSession = Depends(get_asy
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])
 async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):
     return await User().check_date_of_employment(session=session)
+
+@users_router.get("/put_user_to_vis", tags=["Пользователь"])
+async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get_async_db)):
+    return await User().put_user_to_vis(session=session, usr_data=user_data)
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

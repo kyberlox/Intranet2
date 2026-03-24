@@ -513,6 +513,7 @@ class Editor:
         # Протащить через словарь полей
         field = []
         for k in art_keys:
+            print(self.fields, 'asda')
             if k in self.fields:
 
                 # забираю занчение

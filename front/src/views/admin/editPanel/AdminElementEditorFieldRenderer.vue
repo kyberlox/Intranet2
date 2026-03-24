@@ -8,7 +8,12 @@
          class="admin-element-inner__field"
          :key="index">
 
+        <!-- Привязать область видимости -->
+        <AdminEditSelect v-if="item.field == 'vision_select'"
+                         @pick="(value: string) => $emit('handleEmitValueChange', item, value)"
+                         :item="{ name: 'Привязать область видимости', values: newElementSkeleton.find((e) => e.field == 'all_visions')?.values }" />
 
+        <!-- Поле выбора областей видимости -->
         <AdminEditTags v-if="item.field == 'vision'"
                        :tagsTitle="'Определите кому доступна эта новость'"
                        :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.values as ITag[])?.map((e) => String(e.id)))"

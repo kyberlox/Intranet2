@@ -1825,7 +1825,7 @@
       {
         "name": "Область Видимости",
         "field": "vision_select",
-        "data_type": "int"
+        "data_type": "list"
       }
     ],
     "files": {

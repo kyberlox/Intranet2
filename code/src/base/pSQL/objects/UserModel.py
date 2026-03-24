@@ -740,6 +740,7 @@ class UserModel:
                 #центральнгый офис, добавить в эту ОВ
                 # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
                 pass
+            print(user_manufacture)
             stmt = select(Article.indirect_data['vision_select']).where(Article.section_id == 9, Article.indirect_data['manufacture_id'] == int(user_manufacture))
             res_stmt = await session.execute()
             vis_id = res_stmt.scalar()

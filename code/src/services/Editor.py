@@ -555,7 +555,7 @@ class Editor:
         for need_field in curr_patterns["fields"]:
             has_added = False
             for got_field in got_fields:
-
+                print(got_field["field"], 123)
                 # если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
 
@@ -590,11 +590,11 @@ class Editor:
                     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                     need_field["values"] = fields_list
                 
-                if need_field["field"] == "vision":
-                    fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
-                    # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
-                    need_field["values"] = fields_list
-
+                # if need_field["field"] == "vision":
+                #     fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
+                #     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
+                #     need_field["values"] = fields_list
+                print(need_field["field"])
                 result_fields.append(need_field)
 
         # вытащить файлы

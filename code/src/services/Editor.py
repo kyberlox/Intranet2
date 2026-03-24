@@ -520,7 +520,7 @@ class Editor:
                 if k in art:
                     val = art[k]
                 elif k in art["indirect_data"]:
-                    print(art["indirect_data"][k])
+                    print(art["indirect_data"][k], k)
                     val = art["indirect_data"][k]
 
                 data_type = get_type(val)

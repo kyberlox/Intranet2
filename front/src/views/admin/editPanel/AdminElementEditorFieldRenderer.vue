@@ -11,7 +11,10 @@
         <!-- Привязать область видимости -->
         <AdminEditSelect v-if="item.field == 'vision_select'"
                          @pick="(value: string) => $emit('handleEmitValueChange', item, value)"
-                         :item="{ name: 'Привязать область видимости', values: newElementSkeleton.find((e) => e.field == 'all_visions')?.values, value: 6 }" />
+                         :item="{
+                            name: 'Привязать область видимости', values: newElementSkeleton.find((e) => e.field == 'all_visions')?.values,
+                            value: newElementSkeleton.find((e) => e.field == 'vision_select')?.value || ''
+                        }" />
 
         <!-- Поле выбора областей видимости -->
         <AdminEditTags v-if="item.field == 'vision'"

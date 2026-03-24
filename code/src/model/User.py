@@ -1129,7 +1129,7 @@ async def create_metrics_for_departments(session: AsyncSession = Depends(get_asy
 async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):
     return await User().check_date_of_employment(session=session)
 
-@users_router.get("/put_user_to_vis", tags=["Пользователь"])
+@users_router.put("/put_user_to_vis", tags=["Пользователь"])
 async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get_async_db)):
     return await User().put_user_to_vis(session=session, usr_data=user_data)
 # @users_router.post("/search_indirect")

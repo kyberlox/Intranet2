@@ -155,7 +155,7 @@ class FieldvisionModel:
                 # Создаем новую связь
                 new_node = self.ArtVis(
                     id=new_id,
-                    vision_id=vis,
+                    vision_id=int(vis),
                     art_id=self.art_id
                 )
                 session.add(new_node)

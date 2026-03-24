@@ -520,6 +520,7 @@ class Editor:
                 if k in art:
                     val = art[k]
                 elif k in art["indirect_data"]:
+                    print(art["indirect_data"][k])
                     val = art["indirect_data"][k]
 
                 data_type = get_type(val)
@@ -802,7 +803,6 @@ class Editor:
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':
                         #     print(data[key])
-                        print(key)
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы

@@ -3,6 +3,8 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from typing import Annotated, List, Optional
 
+from .services.FieldsVisions import Visions
+
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.ArticleModel import ArticleModel
 # from ..base.mongodb import FileModel
@@ -582,6 +584,16 @@ class Editor:
                 if need_field["field"] == "tags":
                     need_field["values"] = await Tag(art_id=self.art_id).get_art_tags(self.session)
                     # need_field.pop("value")
+                
+                if need_field["field"] == "all_vissions":
+                    fields_list = await Visions().get_all_visions(self.session)
+                    # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
+                    need_field["values"] = fields_list
+                
+                if need_field["field"] == "vission":
+                    fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
+                    # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
+                    need_field["values"] = fields_list
 
                 result_fields.append(need_field)
 
@@ -648,6 +660,10 @@ class Editor:
                 sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                 # записываешь в need_field["values"] и в need_field["values"]
                 field["values"] = sorted_tags
+            elif field["field"] == "all_vissions":
+                fields_list = await Visions().get_all_visions(self.session)
+                # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
+                field["values"] = fields_list
 
         # Вношу изменеения
         self.pattern["fields"] = fields

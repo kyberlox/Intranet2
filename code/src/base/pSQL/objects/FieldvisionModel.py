@@ -135,6 +135,37 @@ class FieldvisionModel:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка при добавлении статьи с id = {self.art_id} в ОВ с id = {self.id}, {e}")
 
+    async def set_vissions_to_art(self, session, vissions):
+        try:
+            # Удаляем все предыдущие связи ОВ со статьтей
+            stmt_del = self.ArtVis.__tablename__,delete().where(
+                self.ArtVis.art_id == self.art_id
+            )
+            await session.execute(stmt_del)
+            await session.commit()
+            if not vissions:
+                return True
+            for vis in vissions:
+                # Находим максимальный ID
+                stmt_max = select(func.max(self.ArtVis.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
+                new_id = max_id + 1
+                
+                # Создаем новую связь
+                new_node = self.ArtVis(
+                    id=new_id,
+                    vision_id=vis,
+                    art_id=self.art_id
+                )
+                session.add(new_node)
+            await session.commit()
+            return True
+        except Exception as e:
+            await session.rollback()
+            LogsMaker().error_message(f"Ошибка при добавлении нескольких ОВ к статье с id={self.art_id}: {e}")
+            return True
+
     async def delete_art_from_vision(self, session):
         try:
             # # Проверяем существование области видимости

@@ -735,7 +735,7 @@ class UserModel:
             if usr_data['indirect_data']['uf_department_id'] in manufactures:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
-                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'], manufactures=manufactures, session=session)
+                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
             # if not user_manufacture:
             #     if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
 

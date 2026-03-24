@@ -1,6 +1,6 @@
 from src.services.LogsMaker import LogsMaker
 
-from .App import func, select #get_db, 
+from .App import func, select, delete #get_db, 
 LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 
 import asyncio
@@ -138,7 +138,7 @@ class FieldvisionModel:
     async def set_vissions_to_art(self, session, vissions):
         try:
             # Удаляем все предыдущие связи ОВ со статьтей
-            stmt_del = self.ArtVis.__tablename__,delete().where(
+            stmt_del = self.ArtVis.__tablename__.delete().where(
                 self.ArtVis.art_id == self.art_id
             )
             await session.execute(stmt_del)

@@ -736,13 +736,13 @@ class UserModel:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'], manufactures=manufactures, session=session)
-            if not user_manufacture:
-                if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
+            # if not user_manufacture:
+            #     if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
 
-                    pass
-                #центральнгый офис, добавить в эту ОВ
-                # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
-                pass
+            #         pass
+            #     #центральнгый офис, добавить в эту ОВ
+            #     # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+            #     pass
             print(user_manufacture, 234)
             stmt = select(Article.indirect_data['vision_select']).where(Article.section_id == 9, Article.indirect_data['manufacture_id'] == int(user_manufacture))
             res_stmt = await session.execute()

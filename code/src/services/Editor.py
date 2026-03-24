@@ -3,7 +3,7 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Body, Re
 from fastapi.responses import JSONResponse
 from typing import Annotated, List, Optional
 
-from .services.FieldsVisions import Visions
+from .FieldsVisions import Visions
 
 from .LogsMaker import LogsMaker
 from ..base.pSQL.objects.ArticleModel import ArticleModel

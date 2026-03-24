@@ -543,7 +543,6 @@ class Editor:
                 field.append(fl)
 
         got_fields = field
-
         # photo_file_url нужен только там, где он есть
         # for f, i in enumerate(field):
         #     if field["field"] == "photo_file_url" and field["value"] is None:
@@ -555,7 +554,7 @@ class Editor:
         for need_field in curr_patterns["fields"]:
             has_added = False
             for got_field in got_fields:
-
+                # print(got_field["field"], 123)
                 # если такое поле есть среди заполненных
                 if need_field["field"] == got_field["field"]:
 
@@ -590,11 +589,11 @@ class Editor:
                     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                     need_field["values"] = fields_list
                 
-                if need_field["field"] == "vision":
-                    fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
-                    # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
-                    need_field["values"] = fields_list
-
+                # if need_field["field"] == "vision_select":
+                #     # fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
+                #     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
+                #     need_field["values"] = fields_list
+                # print(need_field["field"], 234)
                 result_fields.append(need_field)
 
         # вытащить файлы
@@ -803,7 +802,6 @@ class Editor:
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':
                         #     print(data[key])
-                        print(key)
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы

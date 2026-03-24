@@ -727,7 +727,7 @@ class UserModel:
         return users
     
     async def put_user_to_vis(self, session, usr_data):
-        from .models.Article import Article
+        from ..models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
 

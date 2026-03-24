@@ -736,6 +736,8 @@ class UserModel:
                 #центральнгый офис, добавить в эту ОВ
                 # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
                 pass
+        except:
+            pass
             
             # дальше по айди завода найти  его ОВ
             # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel

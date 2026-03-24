@@ -1815,6 +1815,18 @@
         "name": "Индентификационный номер предприятия",
         "field": "manufacture_id",
         "data_type": "areaSearch"
+      },
+      {
+        "name" : "Список Областей Видимости",
+        "field" : "all_visions",
+        "data_type" : "vision",
+        "values": []
+      },
+      {
+        "name": "Область Видимости",
+        "field": "vision_select",
+        "data_type": "list",
+        "values": []
       }
     ],
     "files": {

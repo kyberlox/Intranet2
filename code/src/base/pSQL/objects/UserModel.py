@@ -726,6 +726,24 @@ class UserModel:
 
         return users
     
+    async def put_user_to_vis(self, session, usr_data):
+        try:
+            manufactures = await self.get_manufactures_id(session)
+
+            #получаем родителя
+            user_manufacture = await self.get_user_manufacture(dep_id=usr_data['UF_DEPARTMENT'], manufactures=manufactures, session=session)
+            if not user_manufacture:
+                if usr_data:
+                    pass
+                #центральнгый офис, добавить в эту ОВ
+                # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+                pass
+        except:
+            pass
+            
+            # дальше по айди завода найти  его ОВ
+            # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+
     #функция для получения всех айдишников заводов
     async def get_manufactures_id(self, session):
         from ..models.Article import Article

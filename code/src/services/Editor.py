@@ -803,6 +803,7 @@ class Editor:
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':
                         #     print(data[key])
+                        print(key)
                         art["indirect_data"][key] = data[key]
 
         # перезаписать файлы

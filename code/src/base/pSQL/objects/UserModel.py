@@ -727,24 +727,41 @@ class UserModel:
         return users
     
     async def put_user_to_vis(self, session, usr_data):
+        from sqlalchemy import select, cast, Integer
         from ..models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
-            print(usr_data['indirect_data']['uf_department_id'], 123)
+            
             #получаем родителя
             if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
-            # if not user_manufacture:
-            #     if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
-
-            #         pass
-            #     #центральнгый офис, добавить в эту ОВ
-            #     # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
-            #     pass
-            print(user_manufacture, 234)
-            from sqlalchemy import select, cast, Integer
+            if not user_manufacture:
+                if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
+                    # Выполняем запрос
+                    stmt = select(
+                        Article.indirect_data['vision_select']
+                    ).where(
+                        Article.section_id == 9,
+                        Article.name == 'Москва'
+                    )
+                    res_stmt = await session.execute(stmt)
+                    vis_id = res_stmt.scalar()
+                    return f"ОВ Москвы = {vis_id}"
+                
+                else:
+                    # Выполняем запрос
+                    stmt = select(
+                        Article.indirect_data['vision_select']
+                    ).where(
+                        Article.section_id == 9,
+                        Article.name == 'Центральный офис'
+                    )
+                    res_stmt = await session.execute(stmt)
+                    vis_id = res_stmt.scalar()
+                    return f"ОВ ЦО = {vis_id}"
+                       
 
             # Выполняем запрос
             stmt = select(
@@ -755,7 +772,7 @@ class UserModel:
             )
             res_stmt = await session.execute(stmt)
             vis_id = res_stmt.scalar()
-            return vis_id
+            return f"ОВ Предприятий = {vis_id}"
             
         except Exception as e:
             print(e)

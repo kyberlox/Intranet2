@@ -513,7 +513,6 @@ class Editor:
         # Протащить через словарь полей
         field = []
         for k in art_keys:
-            print(self.fields, 'asda')
             if k in self.fields:
 
                 # забираю занчение
@@ -521,7 +520,6 @@ class Editor:
                 if k in art:
                     val = art[k]
                 elif k in art["indirect_data"]:
-                    print(art["indirect_data"][k], k)
                     val = art["indirect_data"][k]
 
                 data_type = get_type(val)

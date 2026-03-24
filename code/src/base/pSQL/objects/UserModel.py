@@ -732,7 +732,7 @@ class UserModel:
             manufactures = await self.get_manufactures_id(session)
             print(usr_data['indirect_data']['uf_department_id'], 123)
             #получаем родителя
-            if usr_data['indirect_data']['uf_department_id'] in manufactures:
+            if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)

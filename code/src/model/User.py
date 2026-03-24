@@ -425,24 +425,8 @@ class User:
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
                         b24_url = usr_data['PERSONAL_PHOTO']
-                        # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
-                        # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
-                        # проверим url первоисточника текущей аватарки
-                        # if psql_user['photo_file_id'] is None:
-                        #     print('photo_file_id is Non')
-                        # if psql_user['photo_file_b24_url'] != b24_url:
-                        #     photo_file_id = psql_user['photo_file_id']
-                        #     print(f'{photo_file_id} != {b24_url}')
 
                         if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
-                            # срабатывает это условие и уходит в else
-                            print('РАЗНЫЕ ФОТКИ')
-                            # cтарую фотку - в архив
-                            # if psql_user['photo_file_b24_url'] is not None and psql_user[
-                            #     'photo_file_b24_url'] != b24_url:
-                            #     old_file_id = psql_user['photo_file_id']
-                            #     await File(id=old_file_id).go_user_photo_archive(session)
-                            # если есть несоответствие - скачать новую
                             file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
 
                             if file_data is not False:
@@ -451,6 +435,9 @@ class User:
                                 await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
                     await self.update_user_elastic(session)
+
+                    # закидываем в ОВ
+
                 else:
                     await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
                 return None
@@ -461,6 +448,24 @@ class User:
         except Exception as e:
             return LogsMaker().error_message(
                 f'Ошибка при обновлении инф о пользователе update_inf_from_b24 с id = {self.id}: {e}')
+
+    # async def put_user_to_vis(self, session, user_dep):
+    #     try:
+    #         manufactures = await self.UserModel.get_manufactures_id(session)
+
+    #         #получаем родителя
+    #         user_manufacture = await self.serModel.get_user_manufacture(dep_id=user_dep, manufactures=manufactures, session=session)
+    #         if not user_manufacture:
+    #             #центральнгый офис, добавить в эту ОВ
+    #             # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+    #             pass
+            
+            # дальше по айди завода найти  его ОВ
+            # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+
+            
+
+
 
     async def update_user_elastic(self, session):
         user_data = await self.search_by_id(session)

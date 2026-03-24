@@ -594,7 +594,7 @@ class Editor:
                 #     fields_list = await Visions(art_id=self.art_id).get_all_vis_in_art(self.session)
                 #     # sorted_tags = sorted(tags_list, key=lambda x: x.tag_name, reverse=False)
                 #     need_field["values"] = fields_list
-                print(need_field["field"])
+                print(need_field["field"], 234)
                 result_fields.append(need_field)
 
         # вытащить файлы

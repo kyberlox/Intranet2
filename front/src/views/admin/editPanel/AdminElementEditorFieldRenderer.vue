@@ -8,12 +8,12 @@
          class="admin-element-inner__field"
          :key="index">
 
-        <div v-if="item.field == 'vision'">
-            <AdminEditTags :allTags="['s', 'd']"
-                           :currentTags="['s']"
-                           :tagsTitle="'Определите кому доступна эта новость'"
-                           @tagsChanged="(newVision) => { console.log(newVision); $emit('visibilityChanged', newVision) }" />
-        </div>
+
+        <AdminEditTags v-if="item.field == 'vision'"
+                       :tagsTitle="'Определите кому доступна эта новость'"
+                       :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.values as ITag[])?.map((e) => String(e.id)))"
+                       :allTags="(newElementSkeleton.find((e) => e.field == 'all_visions')?.values as ITag[])"
+                       @tagsChanged="(newVision: number[]) => $emit('visibilityChanged', newVision)" />
 
         <!-- Для того чтобы вписать данные -->
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"

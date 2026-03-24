@@ -18,6 +18,7 @@
                                      @reloadElementData="(e: boolean) => reloadElementData(e)"
                                      @handleUpload="handleUpload"
                                      @uploadMany="(e) => uploadMany(e)"
+                                     @visibilityChanged="(newVision) => artVision = newVision"
                                      @saveEmbed="(e: string[]) => handleUpload(e, true)" />
 
     <AdminPostPreview :previewFullWidth="previewFullWidth"
@@ -119,6 +120,7 @@ export default defineComponent({
     const usersList = ref<IUserList[]>([]);
     const newEmbedList = ref<string[]>([]);
     const uploadProgress = ref<number>(0);
+    const artVision = ref([]);
 
     onMounted(() => {
       if (props.type == 'new') {
@@ -179,6 +181,16 @@ export default defineComponent({
     const applyNewData = () => {
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
+
+      if (artVision.value) {
+        Api.put(`/fields_visions/set_art_to_visions/${newId.value}`, artVision.value.map(e => Number(e)))
+          .then((data) => {
+            console.log(data)
+          })
+          .catch((error) => {
+            handleApiError(error, toast)
+          })
+      }
 
       Api.post('file/upload_link', { art_id: newId.value, links: newEmbedList.value })
         .then(() => Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
@@ -308,6 +320,7 @@ export default defineComponent({
       handleUpload,
       uploadMany,
       reloadElementData,
+      artVision
     };
   }
 });

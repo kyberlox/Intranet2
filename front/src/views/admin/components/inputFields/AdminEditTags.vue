@@ -8,10 +8,10 @@
          class="tag__wrapper ">
         <div class="tags__tag tags__tag--nohover tags__tag--inner section__item__link btn-air"
              :class="{
-                'tags__tag--active': chosenTags.includes(typeof tag == 'string' ? String(tag) : String((tag as ITag).id))
+                'tags__tag--active': chosenTags.includes(typeof tag !== 'object' ? tag as string : String((tag as ITag).id))
             }"
-             @click="chooseTag(typeof tag == 'string' ? tag : tag.id)">
-            #{{ typeof tag == 'string' ? tag : tag.tag_name }}
+             @click="console.log(chosenTags); chooseTag(typeof tag == 'string' ? tag : tag.id)">
+            #{{ typeof tag == 'string' ? tag : tag.tag_name || tag.vision_name }}
         </div>
     </div>
 </div>
@@ -37,7 +37,6 @@ export default defineComponent({
     emits: ['tagsChanged'],
     setup(props, { emit }) {
         const chosenTags = ref<(string | number)[]>(props.currentTags || []);
-        console.log(chosenTags.value);
 
         const chooseTag = (id: number | string) => {
             if (chosenTags.value.find((e) => e == String(id))) {
@@ -47,7 +46,10 @@ export default defineComponent({
                 chosenTags.value.push(String(id))
             }
             emit('tagsChanged', chosenTags.value)
+            console.log(chosenTags.value);
+
         }
+
         return {
             chosenTags,
             chooseTag

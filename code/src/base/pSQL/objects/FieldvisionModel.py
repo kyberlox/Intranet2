@@ -138,7 +138,7 @@ class FieldvisionModel:
     async def set_vissions_to_art(self, session, vissions):
         try:
             # Удаляем все предыдущие связи ОВ со статьтей
-            stmt_del = self.ArtVis.__tablename__.delete().where(
+            stmt_del = self.ArtVis.delete().where(
                 self.ArtVis.art_id == self.art_id
             )
             await session.execute(stmt_del)

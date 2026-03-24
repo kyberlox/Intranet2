@@ -182,7 +182,7 @@ export default defineComponent({
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
       buttonIsDisabled.value = true;
 
-      if (artVision.value) {
+      if (artVision.value && newElementSkeleton.value.find(e => e.field == 'vision')) {
         Api.put(`/fields_visions/set_art_to_visions/${newId.value}`, artVision.value.map(e => Number(e)))
           .then((data) => {
             console.log(data)

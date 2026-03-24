@@ -726,13 +726,15 @@ class UserModel:
 
         return users
     
-    async def put_user_to_vis(self, session, user_dep):
+    async def put_user_to_vis(self, session, usr_data):
         try:
             manufactures = await self.get_manufactures_id(session)
 
             #получаем родителя
-            user_manufacture = await self.get_user_manufacture(dep_id=user_dep, manufactures=manufactures, session=session)
+            user_manufacture = await self.get_user_manufacture(dep_id=usr_data['UF_DEPARTMENT'], manufactures=manufactures, session=session)
             if not user_manufacture:
+                if usr_data:
+                    pass
                 #центральнгый офис, добавить в эту ОВ
                 # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
                 pass

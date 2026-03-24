@@ -744,8 +744,16 @@ class UserModel:
             #     # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
             #     pass
             print(user_manufacture, 234)
-            stmt = select(Article.indirect_data['vision_select'].astext).where(Article.section_id == 9, Article.indirect_data['manufacture_id'].astext.cast(Integer) == int(user_manufacture))
-            res_stmt = await session.execute()
+            from sqlalchemy import select, cast, Integer
+
+            # Выполняем запрос
+            stmt = select(
+                Article.indirect_data['vision_select']
+            ).where(
+                Article.section_id == 9,
+                cast(Article.indirect_data['manufacture_id'], Integer) == int(user_manufacture)
+            )
+            res_stmt = await session.execute(stmt)
             vis_id = res_stmt.scalar()
             return vis_id
             

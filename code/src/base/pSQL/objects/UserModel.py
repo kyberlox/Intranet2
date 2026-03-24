@@ -749,7 +749,8 @@ class UserModel:
             vis_id = res_stmt.scalar()
             return vis_id
             
-        except:
+        except Exception as e:
+            print(e)
             pass
             
             # дальше по айди завода найти  его ОВ

@@ -146,6 +146,9 @@ class Visions:
 
     async def set_art_to_vision(self, session):
         return await FieldvisionModel(id=self.vision_id, art_id=self.art_id).set_art_to_vision(session=session)
+    
+    async def set_vissions_to_art(self, session, vissions):
+        return await FieldvisionModel(art_id=self.art_id).set_vissions_to_art(session=session, vissions=vissions)
 
     async def delete_art_from_vision(self, session):
         return await FieldvisionModel(id=self.vision_id, art_id=self.art_id).delete_art_from_vision(session=session)
@@ -296,6 +299,10 @@ async def remove_depart_in_vision(request: Request, vision_id: int, dep_id: int,
 @fieldsvisions_router.put("/set_art_to_vision/{art_id}/{vis_id}")
 async def set_art_to_vision(art_id: int, vis_id: int, session: AsyncSession = Depends(get_async_db)):
     return await Visions(vision_id=vis_id, art_id=art_id).set_art_to_vision(session=session)
+
+@fieldsvisions_router.put("/set_art_to_visions/{art_id}")
+async def set_art_to_vision(art_id: int, vissions = Body(), session: AsyncSession = Depends(get_async_db)):
+    return await Visions(art_id=art_id).set_vissions_to_art(session=session, vissions=vissions)
 
 
 @fieldsvisions_router.delete("/delete_art_from_vision/{art_id}/{vis_id}")

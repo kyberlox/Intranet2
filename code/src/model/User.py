@@ -542,7 +542,7 @@ class User:
                             elif field.lower() not in psql_data and field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
                             elif field.lower() not in psql_data:
-                                if field = 'UF_DEPARTMENT':
+                                if field == 'UF_DEPARTMENT':
                                     need_update_fv = True
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
                             elif field not in B24_data:

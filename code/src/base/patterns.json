@@ -1032,10 +1032,9 @@
         "values": []
       },
       {
-        "name": "Области Видимости",
-        "field": "vision",
-        "data_type": "list",
-        "values": []
+        "name": "Область Видимости",
+        "field": "vision_select",
+        "data_type": "list"
       }
     ],
     "files": {
@@ -1198,10 +1197,9 @@
         "values": []
       },
       {
-        "name": "Области Видимости",
-        "field": "vision",
-        "data_type": "list",
-        "values": []
+        "name": "Область Видимости",
+        "field": "vision_select",
+        "data_type": "list"
       }
     ],
     "files": {

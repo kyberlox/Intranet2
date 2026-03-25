@@ -232,6 +232,7 @@ class UservisionsRootModel:
                 users_in_vis = res.mappings().all()
                 for user in users_in_vis:
                     print(user, 123)
+                    user = user.__dict__
                     # general_info = {}
                     # user_info = await UserModel(Id=user).find_by_id(session=session)
                     # if user_info['active']:

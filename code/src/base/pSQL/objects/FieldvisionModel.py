@@ -235,12 +235,12 @@ class FieldvisionModel:
 
         try:
             # Получаем корни пользователя
-            stmt_roots = select(self.Roots.root_token['VisionRoots']).where(self.Roots.user_uuid == user_id)
+            stmt_roots = select(self.Roots.root_token['VisionRoots']).where(self.Roots.user_uuid == int(user_id))
             result_roots = await session.execute(stmt_roots)
             user_roots = result_roots.scalar_one_or_none() 
 
             # Получаем vision_id для статьи
-            stmt_art_vis = select(self.ArtVis.vision_id).where(self.ArtVis.art_id == self.art_id)
+            stmt_art_vis = select(self.ArtVis.vision_id).where(self.ArtVis.art_id == int(self.art_id))
             result_art_vis = await session.execute(stmt_art_vis)
             art_vis = result_art_vis.scalars().all()
             if not art_vis:

@@ -257,7 +257,7 @@ class UservisionsRootModel:
                     result.append(user)
                 time_fin = datetime.now()
                 deffer = time_fin - time_start
-                print(deffer)
+                print(deffer, 'разница')
                 return result
             return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
         except Exception as e:

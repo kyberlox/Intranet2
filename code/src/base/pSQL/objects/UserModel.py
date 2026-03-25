@@ -731,7 +731,7 @@ class UserModel:
         from ..models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
-            
+            print(manufactures.keys(), usr_data['indirect_data']['uf_department_id'][0])
             #получаем родителя
             if str(usr_data['indirect_data']['uf_department_id'][0]) in manufactures:
                 print(123)

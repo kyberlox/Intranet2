@@ -208,10 +208,12 @@ class UservisionsRootModel:
                     self.User.indirect_data['uf_department'][0],
                     self.User.indirect_data['work_position'],
                     Department.name                    
+                ).select_from(
+                    self.User
                 ).join(
-                    self.User, self.User.id == Roots.user_uuid
+                    Roots, Roots.user_uuid == self.User.id
                 ).join(
-                    Department, Department.id == self.User.indirect_data['uf_department'][0]
+                    Department, Department.id == cast(self.User.indirect_data['uf_department'][0], Integer)
                 ).where(
                     Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
                 )

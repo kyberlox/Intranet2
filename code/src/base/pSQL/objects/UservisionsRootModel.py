@@ -207,7 +207,6 @@ class UservisionsRootModel:
                     self.User.name,
                     self.User.last_name,
                     self.User.second_name,
-                    self.User.photo_file_url,
                     self.User.indirect_data['uf_department'][0].label('depart_id'),
                     self.User.indirect_data['work_position'].label('post'),
                     Department.name.label('depart'),
@@ -219,7 +218,7 @@ class UservisionsRootModel:
                 ).join(
                     Department, Department.id == cast(self.User.indirect_data['uf_department'][0], Integer)
                 ).join(
-                    UserFiles, UserFiles.user_id == self.User.id
+                    UserFiles, UserFiles.id == self.User.photo_file_id
                 ).where(
                     Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id]),
                     self.User.active == True

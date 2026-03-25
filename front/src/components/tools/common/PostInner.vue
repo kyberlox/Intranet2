@@ -145,7 +145,7 @@ export interface IPostInner extends IBaseEntity {
     // Блоги
     TITLE?: string,
     author?: string
-    vision: number[]
+    vision?: number[]
 
 }
 

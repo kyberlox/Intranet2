@@ -146,63 +146,9 @@ class UservisionsRootModel:
                 return father_id
             result = father_id
 
-    # async def find_users_in_vision(self, session):
-    #     manufactures = await self.get_manufactures_id(session)
-    #     from .UserModel import UserModel
-    #     from datetime import datetime
-    #     time_start = datetime.now()
-    #     try:
-    #         result = []
-    #         stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)
-    #         res = await session.execute(stmt)
-    #         existing_vision = res.scalar_one_or_none()
-    #         if existing_vision:
-    #             # users_in_vis = database.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
-    #             query = select(
-    #                 self.Roots.user_uuid
-    #             ).where(
-    #                 self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
-    #             )
-
-
-    #             res = await session.execute(query)
-    #             users_in_vis = res.scalars().all()
-    #             for user in users_in_vis:
-    #                 general_info = {}
-    #                 user_info = await UserModel(Id=user).find_by_id(session=session)
-    #                 if user_info['active']:
-    #                     general_info['id'] = user_info['id']
-    #                     name = user_info['name'] if user_info['name'] else ''
-    #                     last_name = user_info['last_name'] if user_info['last_name'] else ''
-    #                     second_name = user_info['second_name'] if user_info['second_name'] else ''
-    #                     general_info['name'] = last_name + ' ' + name + ' ' + second_name
-    #                     general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
-    #                     general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
-    #                     if general_info['depart_id']:
-    #                         res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
-    #                         if res_manufacture:
-    #                             general_info['depart'] = f"{general_info['depart']} | {manufactures[res_manufacture]}"
-    #                             # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
-    #                     if 'work_position' in user_info['indirect_data'].keys():
-    #                         general_info['post'] = user_info['indirect_data']['work_position']
-    #                     general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
-    #                     result.append(general_info)
-    #             time_fin = datetime.now()
-    #             deffer = time_fin - time_start
-    #             print(deffer, 'разница')
-    #             return result
-    #         return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
-    #     except Exception as e:
-
-    #         return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
-    
     async def find_users_in_vision(self, session):
         manufactures = await self.get_manufactures_id(session)
-        from ..models.Department import Department
         from .UserModel import UserModel
-        from ..models.Roots import Roots
-        from ..models.UserFiles import UserFiles
-        from sqlalchemy import select, cast, Integer
         from datetime import datetime
         time_start = datetime.now()
         try:
@@ -213,43 +159,34 @@ class UservisionsRootModel:
             if existing_vision:
                 # users_in_vis = database.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
                 query = select(
-                    self.User.id,
-                    self.User.name,
-                    self.User.last_name,
-                    self.User.second_name,
-                    self.User.indirect_data['uf_department'][0].label('depart_id'),
-                    self.User.indirect_data['work_position'].label('post'),
-                    Department.name.label('depart'),
-                    UserFiles.URL.label('photo_file_url')
-                ).select_from(
-                    self.User
-                ).join(
-                    Roots, Roots.user_uuid == self.User.id
-                ).join(
-                    Department, Department.id == cast(self.User.indirect_data['uf_department'][0], Integer)
-                ).join(
-                    UserFiles, UserFiles.id == self.User.photo_file_id
+                    self.Roots.user_uuid
                 ).where(
-                    Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id]),
-                    self.User.active == True
+                    self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
                 )
 
 
                 res = await session.execute(query)
-                users_in_vis = res.mappings().all()
+                users_in_vis = res.scalars().all()
                 for user in users_in_vis:
-                    user = dict(user)
-                    if user['depart_id']:
-                        res_manufacture = await self.get_user_manufacture(dep_id=user['depart_id'], manufactures=manufactures, session=session)
-                        if res_manufacture:
-                            user['depart'] = f"{user['depart']} | {manufactures[res_manufacture]}"
+                    general_info = {}
+                    user_info = await UserModel(Id=user).find_by_id(session=session)
+                    if user_info['active']:
+                        general_info['id'] = user_info['id']
+                        name = user_info['name'] if user_info['name'] else ''
+                        last_name = user_info['last_name'] if user_info['last_name'] else ''
+                        second_name = user_info['second_name'] if user_info['second_name'] else ''
+                        general_info['name'] = last_name + ' ' + name + ' ' + second_name
+                        general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
+                        general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                        if general_info['depart_id']:
+                            res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
+                            if res_manufacture:
+                                general_info['depart'] = f"{general_info['depart']} | {manufactures[res_manufacture]}"
                                 # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
-                    name = user.pop('name') or ''
-                    last_name = user.pop('last_name') or ''
-                    second_name = user.pop('second_name') or ''
-                    user['name'] = last_name + ' ' + name + ' ' + second_name
-                    user['image'] = HOST + user['photo_file_url']     
-                    result.append(user)
+                        if 'work_position' in user_info['indirect_data'].keys():
+                            general_info['post'] = user_info['indirect_data']['work_position']
+                        general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
+                        result.append(general_info)
                 time_fin = datetime.now()
                 deffer = time_fin - time_start
                 print(deffer, 'разница')
@@ -258,6 +195,69 @@ class UservisionsRootModel:
         except Exception as e:
 
             return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
+    
+    # async def find_users_in_vision(self, session):
+    #     manufactures = await self.get_manufactures_id(session)
+    #     from ..models.Department import Department
+    #     from .UserModel import UserModel
+    #     from ..models.Roots import Roots
+    #     from ..models.UserFiles import UserFiles
+    #     from sqlalchemy import select, cast, Integer
+    #     from datetime import datetime
+    #     time_start = datetime.now()
+    #     try:
+    #         result = []
+    #         stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)
+    #         res = await session.execute(stmt)
+    #         existing_vision = res.scalar_one_or_none()
+    #         if existing_vision:
+    #             # users_in_vis = database.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
+    #             query = select(
+    #                 self.User.id,
+    #                 self.User.name,
+    #                 self.User.last_name,
+    #                 self.User.second_name,
+    #                 self.User.indirect_data['uf_department'][0].label('depart_id'),
+    #                 self.User.indirect_data['work_position'].label('post'),
+    #                 Department.name.label('depart'),
+    #                 UserFiles.URL.label('photo_file_url')
+    #             ).select_from(
+    #                 self.User
+    #             ).join(
+    #                 Roots, Roots.user_uuid == self.User.id
+    #             ).join(
+    #                 Department, Department.id == cast(self.User.indirect_data['uf_department'][0], Integer)
+    #             ).outerjoin(
+    #                 UserFiles, UserFiles.id == self.User.photo_file_id
+    #             ).where(
+    #                 Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id]),
+    #                 self.User.active == True
+    #             )
+
+
+    #             res = await session.execute(query)
+    #             users_in_vis = res.mappings().all()
+    #             for user in users_in_vis:
+    #                 user = dict(user)
+    #                 if user['depart_id']:
+    #                     res_manufacture = await self.get_user_manufacture(dep_id=user['depart_id'], manufactures=manufactures, session=session)
+    #                     if res_manufacture:
+    #                         user['depart'] = f"{user['depart']} | {manufactures[res_manufacture]}"
+    #                             # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
+    #                 name = user.pop('name') or ''
+    #                 last_name = user.pop('last_name') or ''
+    #                 second_name = user.pop('second_name') or ''
+    #                 user['name'] = last_name + ' ' + name + ' ' + second_name
+    #                 user['image'] = HOST + user['photo_file_url']     
+    #                 result.append(user)
+    #             time_fin = datetime.now()
+    #             deffer = time_fin - time_start
+    #             print(deffer, 'разница')
+    #             return result
+    #         return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
+    #     except Exception as e:
+
+    #         return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
 
     async def remove_depart_in_vision(self, dep_id, roots, session, with_child):
         from .UserModel import UserModel

@@ -764,7 +764,7 @@ class UserModel:
                     vis_id = res_stmt.scalar()
                     # return f"ОВ ЦО = {vis_id}"
                        
-
+            print(user_manufacture, 123)
             # Выполняем запрос
             stmt = select(
                 Article.indirect_data['vision_select']

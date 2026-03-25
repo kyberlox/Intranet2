@@ -27,45 +27,44 @@ class UservisionsRootModel:
         self.User = User
 
 
-    async def upload_user_to_vision(self, roots, session):
+    async def upload_user_to_vision(self, session):
         try:
-            if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
-                res = await session.execute(select(self.Roots).where(self.Roots.user_uuid == self.user_id))
-                existing_user = res.scalar_one_or_none()
-                if existing_user:
-                    if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token['VisionRoots']:
-                        return LogsMaker().warning_message(f"Пользователь с id = {self.user_id} уже существует в ОВ id = {self.vision_id}")
-                    elif "VisionRoots" in existing_user.root_token.keys():
-                        existing_user.root_token["VisionRoots"].append(self.vision_id)
-                        flag_modified(existing_user, 'root_token')
+            # if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
+            res = await session.execute(select(self.Roots).where(self.Roots.user_uuid == self.user_id))
+            existing_user = res.scalar_one_or_none()
+            if existing_user:
+                if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token['VisionRoots']:
+                    return LogsMaker().warning_message(f"Пользователь с id = {self.user_id} уже существует в ОВ id = {self.vision_id}")
+                elif "VisionRoots" in existing_user.root_token.keys():
+                    existing_user.root_token["VisionRoots"].append(self.vision_id)
+                    flag_modified(existing_user, 'root_token')
 
-                        await session.commit()
-                        return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
-                    else:
-                        existing_user.root_token["VisionRoots"] = [self.vision_id]
-                        flag_modified(existing_user, 'root_token')
-
-                        await session.commit()
-                        return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
-                else:
-                    stmt = select(func.max(self.Roots.id))
-                    result = await session.execute(stmt)
-                    max_id = result.scalar() or 0
-                    new_id = max_id + 1
-                    new_user_vis = self.Roots(
-                        id=new_id,
-                        user_uuid=self.user_id,
-                        root_token={"VisionRoots": [self.vision_id]}
-                    )
-                    
-
-                    session.add(new_user_vis)
                     await session.commit()
-                    return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} завершено успешно")
-            else:
-                return LogsMaker().warning_message(f"У Вас недостаточно прав")
-        except Exception as e:
+                    return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
+                else:
+                    existing_user.root_token["VisionRoots"] = [self.vision_id]
+                    flag_modified(existing_user, 'root_token')
 
+                    await session.commit()
+                    return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
+            else:
+                stmt = select(func.max(self.Roots.id))
+                result = await session.execute(stmt)
+                max_id = result.scalar() or 0
+                new_id = max_id + 1
+                new_user_vis = self.Roots(
+                    id=new_id,
+                    user_uuid=self.user_id,
+                    root_token={"VisionRoots": [self.vision_id]}
+                )
+                
+
+                session.add(new_user_vis)
+                await session.commit()
+                return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} завершено успешно")
+            # else:
+            #     return LogsMaker().warning_message(f"У Вас недостаточно прав")
+        except Exception as e:
             return LogsMaker().error_message(f"ошибка при добавлении пользователя в ОВ: {e}")
 
     
@@ -73,7 +72,7 @@ class UservisionsRootModel:
         try:
             for user in user_data:
                 self.user_id = user
-                await self.upload_user_to_vision(roots=roots, session=session)
+                await self.upload_user_to_vision(session=session)
             return LogsMaker().info_message(f"Пользователи добавлены в ОВ id = {self.vision_id} звершено успешно")
         except Exception as e:
             return LogsMaker().error_message(f"ошибка при добавлении пользователей в ОВ: {e}")
@@ -121,7 +120,7 @@ class UservisionsRootModel:
             if not nodes:
                 return None 
             for manufacture in nodes:
-                if manufacture.name is None or manufacture.indirect_data is None:
+                if manufacture.name is None or manufacture.indirect_data is None or 'manufacture_id' not in manufacture.indirect_data:
                     continue
                 result[manufacture.indirect_data['manufacture_id']] = manufacture.name
             return result
@@ -140,7 +139,7 @@ class UservisionsRootModel:
             father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод
-            if father_id in manufactures:
+            if str(father_id) in manufactures:
                 return father_id
             result = father_id
 
@@ -175,7 +174,7 @@ class UservisionsRootModel:
                         if general_info['depart_id']:
                             res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
                             if res_manufacture:
-                                general_info['depart'] = f"{general_info['depart']} | {manufactures[int(res_manufacture)]}"
+                                general_info['depart'] = f"{general_info['depart']} | {manufactures[res_manufacture]}"
                                 # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
                         if 'work_position' in user_info['indirect_data'].keys():
                             general_info['post'] = user_info['indirect_data']['work_position']
@@ -186,7 +185,6 @@ class UservisionsRootModel:
         except Exception as e:
 
             return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
-
 
     async def remove_depart_in_vision(self, dep_id, roots, session, with_child):
         from .UserModel import UserModel

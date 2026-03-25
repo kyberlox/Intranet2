@@ -304,6 +304,28 @@ async def handle_inactive_users(user_ids: List[int]):
     # Например, отправка напоминания или изменение статуса
 
 # ==================== ОСНОВНАЯ ЗАДАЧА ====================
+async def weekly_check():
+    """
+    Основная задача, которая выполняется раз в неделю
+    Скачивает из битрикс данные о структуре
+    """
+    from ..model.Department import Department
+    from ..model.UsDep import UsDep
+    logger = LogsMaker()
+    logger.info_message("=" * 50)
+    logger.info_message(f"НАЧАЛО ЕЖЕНЕДЕЛЬНОГО СКАЧИВАНИЯ - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    try:
+        async with AsyncSessionLocal() as db:
+            await Department().fetch_departments_data(session=db)
+            await UsDep().get_usr_dep(session=db)
+
+        logger.info_message(f"ЗАВЕРШЕНИЕ ЕЖЕНЕДЕЛЬНОГО СКАЧИВАНИЯ - УСПЕХ")
+    except Exception as e:
+        logger.error_message(f"ОШИБКА в еженедельном скачивании: {e}")
+        import traceback
+        logger.error_message(traceback.format_exc())
+
 
 async def daily_check():
     """
@@ -475,6 +497,61 @@ class AioSchedulerManager:
         
         return job_id
     
+    def schedule_weekly_at_time(self, coro_func, days):
+        """
+        Запланировать выполнение задачи в определенное время каждый день
+        """
+        if not self.scheduler:
+            raise RuntimeError("Планировщик не инициализирован")
+        
+        async def daily_time_wrapper():
+            while True:
+                try:
+                    now = datetime.now()
+                    
+                    # Вычисляем время следующего запуска
+                    target_time = now.replace(day=(now.day + days), hour=2, minute=0, second=0, microsecond=0)
+                    
+                    # Если время уже прошло сегодня, планируем на завтра
+                    if now >= target_time:
+                        target_time += timedelta(days=1)
+                    
+                    # Ждем до целевого времени
+                    wait_seconds = (target_time - now).total_seconds()
+                    
+                    if wait_seconds > 0:
+                        logger = LogsMaker()
+                        logger.info_message(f"Задача '{coro_func.__name__}' будет выполнена в "
+                                           f"{target_time.strftime('%d:%H:%M')} "
+                                           f"(через {wait_seconds:.0f} секунд)")
+                        
+                        await asyncio.sleep(wait_seconds)
+                    
+                    # Выполняем задачу
+                    logger.info_message(f"Выполнение задачи '{coro_func.__name__}' в {datetime.now().strftime('%d:%H:%M')}")
+                    await coro_func()
+                    
+                    # Ждем минуту после выполнения, чтобы не запускать снова
+                    await asyncio.sleep(60)
+                    
+                except asyncio.CancelledError:
+                    break
+                except Exception as e:
+                    logger.error_message(f"Ошибка в ежедневной задаче: {e}")
+                    await asyncio.sleep(60)
+        
+        # Запускаем обертку
+        task = asyncio.create_task(daily_time_wrapper())
+        
+        # Сохраняем задачу
+        job_id = f"daily_{hour:02d}{minute:02d}_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        self.jobs[job_id] = task
+        
+        logger = LogsMaker()
+        logger.info_message(f"Задача '{coro_func.__name__}' запланирована раз в неделю в 02:00")
+        
+        return job_id
+    
     async def scheduler_worker(self):
         """
         Основной рабочий процесс планировщика
@@ -500,6 +577,9 @@ class AioSchedulerManager:
             if 'intranet.emk.ru' in main_portal:
                 # 2. Ежедневная проверка в 7 утра
                 daily_7am_job_id = self.schedule_daily_at_time(daily_check, hour=7, minute=0)
+
+                # 2. Раз в неделю скачиваем подразделения и связь подразделений и пользователей
+                weekly_job = self.schedule_weekly_at_time(weekly_check, days=6)
             
             # 3. Тестовая задача каждую минуту (для мониторинга)
             # test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)

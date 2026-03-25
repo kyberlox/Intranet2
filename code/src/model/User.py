@@ -395,6 +395,7 @@ class User:
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
         from datetime import datetime
+        
         try:
             await asyncio.sleep(60)
             res = await B24().getUser(self.id)
@@ -404,7 +405,7 @@ class User:
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False
                 
-                await self.check_fields_to_update(session=session, b24_data=usr_data)
+                need_update_fv = await self.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
                 await session.commit()
@@ -437,7 +438,8 @@ class User:
                     await self.update_user_elastic(session)
 
                     # закидываем в ОВ
-
+                    if need_update_fv:
+                        await self.put_user_to_vis(session, usr_data)
                 else:
                     await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
                 return None
@@ -449,7 +451,8 @@ class User:
             return LogsMaker().error_message(
                 f'Ошибка при обновлении инф о пользователе update_inf_from_b24 с id = {self.id}: {e}')
 
-    # async def put_user_to_vis(self, session, user_dep):
+    async def put_user_to_vis(self, session, usr_data):
+        return await self.UserModel.put_user_to_vis(session, usr_data)
     #     try:
     #         manufactures = await self.UserModel.get_manufactures_id(session)
 
@@ -489,6 +492,7 @@ class User:
             'UF_USR_1586853958167'
         ]
         import datetime
+        need_update_fv = False
         # time_now = datetime.now()
         LogsMaker().info_message(f'ОБНОВЛЯЕМ ИНФУ О ПОЛЬЗОВАТЕЛЕ User с id={self.id}')
         try:
@@ -500,6 +504,7 @@ class User:
                 B24_data = res
                 self.UserModel.id = int(self.id)
                 psql_data = await self.UserModel.find_by_id_all(session)
+                psql_data['indirect_data']['uf_department'] = psql_data['indirect_data']['uf_department_id']
                 if psql_data and psql_data != []:
                     for field in fields:
 
@@ -518,7 +523,10 @@ class User:
                                 if B24_data[field] == ind_data[field.lower()]:
                                     LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                                 elif B24_data[field] != ind_data[field.lower()]:
+                                    if field == 'UF_DEPARTMENT':
+                                        need_update_fv = True
                                     LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={ind_data[field.lower()]}')
+                                    # сюда закинуть в новую область видимости
                             elif field.lower() not in ind_data and field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
                             elif field.lower() not in ind_data:
@@ -534,12 +542,14 @@ class User:
                             elif field.lower() not in psql_data and field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
                             elif field.lower() not in psql_data:
+                                if field == 'UF_DEPARTMENT':
+                                    need_update_fv = True
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
                             elif field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
                 else:
                     LogsMaker().warning_message(f'Новый пользователь!')
-                  
+            return need_update_fv
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')
@@ -1127,6 +1137,10 @@ async def create_metrics_for_departments(session: AsyncSession = Depends(get_asy
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])
 async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):
     return await User().check_date_of_employment(session=session)
+
+@users_router.put("/put_user_to_vis", tags=["Пользователь"])
+async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get_async_db)):
+    return await User().put_user_to_vis(session=session, usr_data=usr_data)
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

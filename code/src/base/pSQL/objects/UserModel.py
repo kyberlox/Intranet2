@@ -599,13 +599,13 @@ class UserModel:
 
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                             for de in dep_str:
-                                if de.id in manufactures:
+                                if str(de.id) in manufactures:
                                     # user_info['location'] = manufactures[de.id]
                                     if manufactures[de.id] not in list_departs:
                                         list_departs.append(manufactures[de.id])
                                         continue
                                     
-                                elif de.father_id in manufactures:
+                                elif str(de.father_id) in manufactures:
                                     if manufactures[de.father_id] not in list_departs:
                                         list_departs.append(de.__dict__['name'])
                                         user_info['location'] = manufactures[de.father_id]
@@ -685,13 +685,13 @@ class UserModel:
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)
                             for de in dep_str:
                                 # list_departs.append(de.__dict__['name'])
-                                if de.id in manufactures:
+                                if str(de.id) in manufactures:
                                     # user_info['location'] = manufactures[de.id]
                                     if manufactures[de.id] not in list_departs:
                                         list_departs.append(manufactures[de.id])
                                         continue
                                     
-                                elif de.father_id in manufactures:
+                                elif str(de.father_id) in manufactures:
                                     if manufactures[de.father_id] not in list_departs:
                                         list_departs.append(de.__dict__['name'])
                                         user_info['location'] = manufactures[de.father_id]
@@ -727,18 +727,59 @@ class UserModel:
         return users
     
     async def put_user_to_vis(self, session, usr_data):
+        from .UservisionsRootModel import UservisionsRootModel
+        from sqlalchemy import select, cast, Integer
+        from ..models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
-
+            vis_id = None
             #получаем родителя
-            user_manufacture = await self.get_user_manufacture(dep_id=usr_data['UF_DEPARTMENT'], manufactures=manufactures, session=session)
+            if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
+                user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
+            else:
+                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
+            
             if not user_manufacture:
-                if usr_data:
-                    pass
-                #центральнгый офис, добавить в эту ОВ
-                # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
-                pass
-        except:
+                if usr_data['indirect_data'].get('work_city') and usr_data['indirect_data'].get('work_city') == 'Москва':
+                    # Выполняем запрос
+                    stmt = select(
+                        Article.indirect_data['vision_select']
+                    ).where(
+                        Article.section_id == 9,
+                        Article.name == 'Москва'
+                    )
+                    res_stmt = await session.execute(stmt)
+                    vis_id = res_stmt.scalar()
+                    # return f"ОВ Москвы = {vis_id}"
+                
+                else:
+                    # Выполняем запрос
+                    stmt = select(
+                        Article.indirect_data['vision_select']
+                    ).where(
+                        Article.section_id == 9,
+                        Article.name == 'Центральный офис'
+                    )
+                    res_stmt = await session.execute(stmt)
+                    vis_id = res_stmt.scalar()
+                    # return f"ОВ ЦО = {vis_id}"
+            else:           
+                # Выполняем запрос
+                stmt = select(
+                    Article.indirect_data['vision_select']
+                ).where(
+                    Article.section_id == 9,
+                    cast(Article.indirect_data['manufacture_id'], Integer) == int(user_manufacture)
+                )
+                res_stmt = await session.execute(stmt)
+                vis_id = res_stmt.scalar()
+            # return f"ОВ Предприятий = {vis_id}"
+            if vis_id:
+                await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)
+            return True
+            
+        except Exception as e:
+            LogsMaker().error_message(f"ошибка в UserModel в методе put_user_to_vis: {e}")
             pass
             
             # дальше по айди завода найти  его ОВ
@@ -755,7 +796,7 @@ class UserModel:
             if not nodes:
                 return None 
             for manufacture in nodes:
-                if manufacture.name is None or manufacture.indirect_data is None:
+                if manufacture.name is None or manufacture.indirect_data is None or 'manufacture_id' not in manufacture.indirect_data:
                     continue
                 result[manufacture.indirect_data['manufacture_id']] = manufacture.name
             return result
@@ -766,14 +807,14 @@ class UserModel:
     #функция для определения отношения пользователя к заводу
     async def get_user_manufacture(self, dep_id, manufactures, session):
         result = dep_id
-        
+        print(manufactures)
         while True:
             dep_str = await DepartmentModel(result).find_dep_by_id(session)
             
             father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод
-            if father_id in manufactures:
+            if str(father_id) in manufactures:
                 return father_id
             result = father_id
             

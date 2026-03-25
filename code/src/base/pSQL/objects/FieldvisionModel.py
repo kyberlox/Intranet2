@@ -237,12 +237,14 @@ class FieldvisionModel:
             # Получаем корни пользователя
             stmt_roots = select(self.Roots.root_token['VisionRoots']).where(self.Roots.user_uuid == user_id)
             result_roots = await session.execute(stmt_roots)
-            user_roots = result_roots.scalar_one_or_none()
+            user_roots = result_roots.scalar_one_or_none() 
 
             # Получаем vision_id для статьи
             stmt_art_vis = select(self.ArtVis.vision_id).where(self.ArtVis.art_id == self.art_id)
             result_art_vis = await session.execute(stmt_art_vis)
             art_vis = result_art_vis.scalars().all()
+            if not art_vis:
+                return True
 
             if user_roots is not None and art_vis:
                 for user_root in user_roots:
@@ -251,6 +253,6 @@ class FieldvisionModel:
             return False
             
         except Exception as e:
-            # Логируем ошибку, если нужно
+            LogsMaker().error_message(f"Ошибка в FieldvisionModel в методе check_user_root: {e}")
             return False
  

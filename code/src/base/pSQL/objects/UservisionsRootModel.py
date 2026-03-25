@@ -252,7 +252,7 @@ class UservisionsRootModel:
                     last_name = user.pop('last_name')
                     second_name = user.pop('second_name')
                     user['name'] = last_name + ' ' + name + ' ' + second_name
-                    user['photo_file_url'] = HOST / user['photo_file_url']     
+                    user['photo_file_url'] = HOST + '/' + user['photo_file_url']     
                     result.append(user)
                 return result
             return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")

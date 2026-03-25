@@ -727,11 +727,12 @@ class UserModel:
         return users
     
     async def put_user_to_vis(self, session, usr_data):
+        from .UservisionsRootModel import UservisionsRootModel
         from sqlalchemy import select, cast, Integer
         from ..models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
-
+            vis_id = None
             #получаем родителя
             if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
@@ -749,7 +750,7 @@ class UserModel:
                     )
                     res_stmt = await session.execute(stmt)
                     vis_id = res_stmt.scalar()
-                    return f"ОВ Москвы = {vis_id}"
+                    # return f"ОВ Москвы = {vis_id}"
                 
                 else:
                     # Выполняем запрос
@@ -761,7 +762,7 @@ class UserModel:
                     )
                     res_stmt = await session.execute(stmt)
                     vis_id = res_stmt.scalar()
-                    return f"ОВ ЦО = {vis_id}"
+                    # return f"ОВ ЦО = {vis_id}"
                        
 
             # Выполняем запрос
@@ -773,7 +774,10 @@ class UserModel:
             )
             res_stmt = await session.execute(stmt)
             vis_id = res_stmt.scalar()
-            return f"ОВ Предприятий = {vis_id}"
+            # return f"ОВ Предприятий = {vis_id}"
+            if vis_id:
+                await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)
+            return True
             
         except Exception as e:
             print(e)

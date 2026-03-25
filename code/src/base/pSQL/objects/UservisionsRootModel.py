@@ -206,9 +206,9 @@ class UservisionsRootModel:
                     self.User.name,
                     self.User.last_name,
                     self.User.second_name,
-                    self.User.indirect_data['uf_department'][0],
-                    self.User.indirect_data['work_position'],
-                    Department.name                    
+                    self.User.indirect_data['uf_department'][0].label('depart_id'),
+                    self.User.indirect_data['work_position'].label('post'),
+                    Department.name.label('depart')                    
                 ).select_from(
                     self.User
                 ).join(

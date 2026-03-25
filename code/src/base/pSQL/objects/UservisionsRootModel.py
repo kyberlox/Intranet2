@@ -193,6 +193,7 @@ class UservisionsRootModel:
         from ..models.Department import Department
         from .UserModel import UserModel
         from ..models.Roots import Roots
+        from sqlalchemy import select, cast, Integer
         try:
             result = []
             stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)

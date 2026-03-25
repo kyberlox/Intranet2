@@ -523,7 +523,7 @@ class User:
                                 if B24_data[field] == ind_data[field.lower()]:
                                     LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                                 elif B24_data[field] != ind_data[field.lower()]:
-                                    if field = 'UF_DEPARTMENT':
+                                    if field == 'UF_DEPARTMENT':
                                         need_update_fv = True
                                     LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={ind_data[field.lower()]}')
                                     # сюда закинуть в новую область видимости

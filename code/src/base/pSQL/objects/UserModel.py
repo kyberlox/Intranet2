@@ -731,17 +731,15 @@ class UserModel:
         from ..models.Article import Article
         try:
             manufactures = await self.get_manufactures_id(session)
-            print(manufactures, usr_data['indirect_data']['uf_department_id'][0], 8907)
+
             #получаем родителя
             if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
-                print(123)
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
-                print(234)
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
-            print(user_manufacture, 123)
+            
             if not user_manufacture:
-                if usr_data.get('PERSONAL_CITY') and usr_data.get('PERSONAL_CITY') == 'Москва':
+                if usr_data['indirect_data'].get('work_city') and usr_data.get('work_city') == 'Москва':
                     # Выполняем запрос
                     stmt = select(
                         Article.indirect_data['vision_select']

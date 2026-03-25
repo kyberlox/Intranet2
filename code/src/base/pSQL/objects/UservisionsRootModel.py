@@ -121,7 +121,7 @@ class UservisionsRootModel:
             if not nodes:
                 return None 
             for manufacture in nodes:
-                if manufacture.name is None or manufacture.indirect_data is None:
+                if manufacture.name is None or manufacture.indirect_data is None or 'manufacture_id' not in manufacture.indirect_data:
                     continue
                 result[manufacture.indirect_data['manufacture_id']] = manufacture.name
             return result

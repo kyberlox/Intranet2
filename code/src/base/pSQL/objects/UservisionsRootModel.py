@@ -221,7 +221,7 @@ class UservisionsRootModel:
 
 
                 res = await session.execute(query)
-                users_in_vis = res.fetchall()
+                users_in_vis = res.mappings().all()
                 for user in users_in_vis:
                     print(user, 123)
                     general_info = {}

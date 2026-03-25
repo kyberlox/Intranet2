@@ -198,6 +198,8 @@ class UservisionsRootModel:
         from ..models.Roots import Roots
         from ..models.UserFiles import UserFiles
         from sqlalchemy import select, cast, Integer
+        from datetime import datetime
+        time_start = datetime.now()
         try:
             result = []
             stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)
@@ -231,7 +233,6 @@ class UservisionsRootModel:
                 res = await session.execute(query)
                 users_in_vis = res.mappings().all()
                 for user in users_in_vis:
-                    print(user, 123)
                     user = dict(user)
                     # general_info = {}
                     # user_info = await UserModel(Id=user).find_by_id(session=session)
@@ -254,6 +255,9 @@ class UservisionsRootModel:
                     user['name'] = last_name + ' ' + name + ' ' + second_name
                     user['photo_file_url'] = HOST + user['photo_file_url']     
                     result.append(user)
+                time_fin = datetime.now()
+                deffer = time_fin - time_start
+                print(deffer)
                 return result
             return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
         except Exception as e:

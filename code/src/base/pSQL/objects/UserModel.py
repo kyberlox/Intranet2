@@ -780,7 +780,7 @@ class UserModel:
             return True
             
         except Exception as e:
-            print(e)
+            print(e, 123)
             pass
             
             # дальше по айди завода найти  его ОВ

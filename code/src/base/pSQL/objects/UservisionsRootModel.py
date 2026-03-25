@@ -192,6 +192,7 @@ class UservisionsRootModel:
         manufactures = await self.get_manufactures_id(session)
         from ..models.Department import Department
         from .UserModel import UserModel
+        from ..models.Roots import Roots
         try:
             result = []
             stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)
@@ -208,11 +209,11 @@ class UservisionsRootModel:
                     self.User.indirect_data['work_position'],
                     Department.name                    
                 ).join(
-                    self.User, self.User.id == self.Roots.user_uuid
+                    self.User, self.User.id == Roots.user_uuid
                 ).join(
                     Department, Department.id == self.User.indirect_data['uf_department'][0]
                 ).where(
-                    self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
+                    Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
                 )
 
 

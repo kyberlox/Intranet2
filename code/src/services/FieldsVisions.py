@@ -2,7 +2,7 @@ from ..base.pSQL.objects import FieldvisionModel, UservisionsRootModel, RootsMod
 from ..base.Elastic.StuctureSearchmodel import StructureSearchModel
 from .LogsMaker import LogsMaker
 from typing import Optional
-from .Auth import AuthService
+# from .Auth import AuthService
 from ..model.User import User
 # from fastapi import APIRouter
 

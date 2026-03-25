@@ -243,9 +243,9 @@ class UservisionsRootModel:
                     #     general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
                     #     general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
                     if user['depart_id']:
-                        res_manufacture = await self.get_user_manufacture(dep_id=general_info['depart_id'], manufactures=manufactures, session=session)
+                        res_manufacture = await self.get_user_manufacture(dep_id=user['depart_id'], manufactures=manufactures, session=session)
                         if res_manufacture:
-                            general_info['depart'] = f"{general_info['depart']} | {manufactures[res_manufacture]}"
+                            user['depart'] = f"{user['depart']} | {manufactures[res_manufacture]}"
                                 # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
                     name = user.pop('name')
                     last_name = user.pop('last_name')

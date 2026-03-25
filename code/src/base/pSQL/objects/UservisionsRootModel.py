@@ -149,6 +149,8 @@ class UservisionsRootModel:
     # async def find_users_in_vision(self, session):
     #     manufactures = await self.get_manufactures_id(session)
     #     from .UserModel import UserModel
+    #     from datetime import datetime
+    #     time_start = datetime.now()
     #     try:
     #         result = []
     #         stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)
@@ -185,6 +187,9 @@ class UservisionsRootModel:
     #                         general_info['post'] = user_info['indirect_data']['work_position']
     #                     general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
     #                     result.append(general_info)
+    #             time_fin = datetime.now()
+    #             deffer = time_fin - time_start
+    #             print(deffer, 'разница')
     #             return result
     #         return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
     #     except Exception as e:
@@ -234,24 +239,14 @@ class UservisionsRootModel:
                 users_in_vis = res.mappings().all()
                 for user in users_in_vis:
                     user = dict(user)
-                    # general_info = {}
-                    # user_info = await UserModel(Id=user).find_by_id(session=session)
-                    # if user_info['active']:
-                    #     general_info['id'] = user_info['id']
-                    #     name = user_info['name'] if user_info['name'] else ''
-                    #     last_name = user_info['last_name'] if user_info['last_name'] else ''
-                    #     second_name = user_info['second_name'] if user_info['second_name'] else ''
-                    #     general_info['name'] = last_name + ' ' + name + ' ' + second_name
-                    #     general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
-                    #     general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
                     if user['depart_id']:
                         res_manufacture = await self.get_user_manufacture(dep_id=user['depart_id'], manufactures=manufactures, session=session)
                         if res_manufacture:
                             user['depart'] = f"{user['depart']} | {manufactures[res_manufacture]}"
                                 # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
-                    name = user.pop('name')
-                    last_name = user.pop('last_name')
-                    second_name = user.pop('second_name')
+                    name = user.pop('name') or ''
+                    last_name = user.pop('last_name') or ''
+                    second_name = user.pop('second_name') or ''
                     user['name'] = last_name + ' ' + name + ' ' + second_name
                     user['photo_file_url'] = HOST + user['photo_file_url']     
                     result.append(user)

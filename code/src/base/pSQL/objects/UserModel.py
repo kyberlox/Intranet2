@@ -779,7 +779,7 @@ class UserModel:
             return True
             
         except Exception as e:
-            print(e, 123)
+            LogsMaker().error_message(f"ошибка в UserModel в методе put_user_to_vis: {e}")
             pass
             
             # дальше по айди завода найти  его ОВ

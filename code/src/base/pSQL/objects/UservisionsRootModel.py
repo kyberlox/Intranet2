@@ -140,7 +140,7 @@ class UservisionsRootModel:
             father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод
-            if int(father_id) in manufactures:
+            if str(father_id) in manufactures:
                 return father_id
             result = father_id
 

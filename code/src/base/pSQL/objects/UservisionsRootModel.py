@@ -193,6 +193,7 @@ class UservisionsRootModel:
         from ..models.Department import Department
         from .UserModel import UserModel
         from ..models.Roots import Roots
+        from ..models.UserFiles import UserFiles
         from sqlalchemy import select, cast, Integer
         try:
             result = []
@@ -206,17 +207,22 @@ class UservisionsRootModel:
                     self.User.name,
                     self.User.last_name,
                     self.User.second_name,
+                    self.User.photo_file_url,
                     self.User.indirect_data['uf_department'][0].label('depart_id'),
                     self.User.indirect_data['work_position'].label('post'),
-                    Department.name.label('depart')                    
+                    Department.name.label('depart'),
+                    UserFiles.URL.label('photo_file_url')
                 ).select_from(
                     self.User
                 ).join(
                     Roots, Roots.user_uuid == self.User.id
                 ).join(
                     Department, Department.id == cast(self.User.indirect_data['uf_department'][0], Integer)
+                ).join(
+                    UserFiles, UserFiles.user_id == self.User.id
                 ).where(
-                    Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
+                    Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id]),
+                    self.User.active == True
                 )
 
 

@@ -739,7 +739,7 @@ class UserModel:
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
             
             if not user_manufacture:
-                if usr_data['indirect_data'].get('work_city') and usr_data.get('work_city') == 'Москва':
+                if usr_data['indirect_data'].get('work_city') and usr_data['indirect_data'].get('work_city') == 'Москва':
                     # Выполняем запрос
                     stmt = select(
                         Article.indirect_data['vision_select']

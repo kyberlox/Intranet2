@@ -131,7 +131,7 @@ export interface IPostInner extends IBaseEntity {
         // афиша
         bx_event?: {
             [key: string]: string
-        }
+        },
     },
     department?: string,
     reports?: IReportage[],
@@ -145,6 +145,7 @@ export interface IPostInner extends IBaseEntity {
     // Блоги
     TITLE?: string,
     author?: string
+    vision: number[]
 
 }
 

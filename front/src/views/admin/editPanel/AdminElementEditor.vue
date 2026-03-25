@@ -183,6 +183,7 @@ export default defineComponent({
       buttonIsDisabled.value = true;
 
       if (artVision.value && newElementSkeleton.value.find(e => e.field == 'vision')) {
+        newData.value.vision = artVision.value
         Api.put(`/fields_visions/set_art_to_visions/${newId.value}`, artVision.value.map(e => Number(e)))
           .then((data) => {
             console.log(data)

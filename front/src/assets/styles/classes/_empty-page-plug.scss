@@ -19,11 +19,14 @@
     }
 
     &__img {
-        max-width: 630px;
         border-radius: 8px;
         height: 100%;
-        /* max-height: 350px; */
         border: 1px solid rgb(209, 209, 209);
+        max-width: 100%;
+
+        @include xxl {
+            max-height: 650px;
+        }
 
         &__wrapper {
             /* padding: 50px; */

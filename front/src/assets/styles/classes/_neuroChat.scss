@@ -2,6 +2,15 @@
 
 .neuroChat {
 
+    &__limit-warning {
+        font-size: 14px;
+
+        >b {
+            color: var(--emk-brand-color);
+
+        }
+    }
+
     &__messages {
         display: flex;
         flex-direction: column;

@@ -6,7 +6,7 @@
                           @typeChanged="handleChatTypeChange" />
         <div class="neuroChat-content__wrapper">
             <div class="neuroChat-content">
-                <div v-if="chatType == 'createImg' && !imageGenerationOn"
+                <div v-if="chatType == 'createImg' && (!imageGenerationOn)"
                      class="neuroChat__image-gen__plug">
                     <ContentPlug :plugImg="genOffPlug"
                                  :plugText="imageGenerationOff"
@@ -46,9 +46,11 @@
             <div v-if="imageGenerationOn || chatType == 'textChat'"
                  class="neuroChat__input-textarea__wrapper">
                 <div class="neuroChat__input-textarea">
-                    <label>Введите сообщение</label>
+                    <label v-if="!(genUsed >= (genLimitNumber) && chatType == 'createImg' && !unlimitedGen)">Введите
+                        сообщение</label>
                     <div class="neuroChat__input-container">
-                        <div class="neuroChat__textarea__wrapper">
+                        <div v-if="!(genUsed >= (genLimitNumber) && chatType == 'createImg' && !unlimitedGen)"
+                             class="neuroChat__textarea__wrapper">
                             <textarea @keydown="handleKeyDown"
                                       v-model="userInput"
                                       placeholder="Напишите ваше сообщение..."></textarea>
@@ -68,6 +70,15 @@
                                 </div>
                             </button>
                         </div>
+                        <span v-if="imageGenerationOn && chatType == 'createImg' && !unlimitedGen"
+                              class="neuroChat__limit-warning">
+                            Лимит генераций изображений -
+                            <b>
+                                {{
+                                    limitText
+                                }}
+                            </b>
+                        </span>
                         <div class="neuroChat__file-upload"
                              v-if="chatType == 'textChat'">
                             <input type="file"
@@ -130,19 +141,17 @@ export default defineComponent({
         AddFileIcon
     },
     setup() {
-        // const userGptRoots = computed(() => useUserData().getGptRoot);
         const imageGenerationOn = ref(true);
-
-        // watch((userGptRoots), (newVal) => {
-        //     imageGenerationOn.value = newVal;
-        // }, { immediate: true, deep: true })
-
+        const unlimitedUids = [174];
+        const genUsed = computed(() => useUserData().genCount);
+        const userId = computed(() => useUserData().getMyId);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
         const filesToUpload = ref<IUploadFile[]>([]);
         const chatHistory = ref();
         const firstMessage = ref();
         const analyzeMessage = ref(false);
+        const genLimitNumber = 3;
 
         const generatedImage = shallowRef<File>();
         const { base64: fileBase64 } = useBase64(generatedImage);
@@ -281,7 +290,9 @@ export default defineComponent({
                             role: 'assistant',
                             content: 'data:image/jpeg;base64,' + data.image_b64,
                             type: 'img'
-                        })
+                        });
+                        Api.getVendor('https://gpt.emk.ru/check_count')
+                            .then((genCount) => useUserData().setGenCount(genCount.count));
                     })
                     .catch((error) => {
                         handleApiError(error, toast)
@@ -322,6 +333,10 @@ export default defineComponent({
             firstMessage,
             genOffPlug,
             imageGenerationOff,
+            genUsed,
+            genLimitNumber,
+            unlimitedGen: unlimitedUids.includes(userId.value),
+            limitText: computed(() => (genLimitNumber - genUsed.value < 0 ? 0 : genLimitNumber - genUsed.value)),
             handleChatTypeChange,
             parseMarkdown,
             sendMsg,

@@ -8,7 +8,7 @@
                 Генерация изображений </span> <span class="orange">временно</span> <span> ограничена.</span>
             <br />
             <span>
-                Следите за обновлениями.</span >`;
+                Превышен лимит генераций изображений.</span >`;
 
     export const noWorkers = `
               <span class="orange">  Новых сотрудников </span><span> пока нет</span>

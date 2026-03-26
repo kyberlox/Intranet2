@@ -7,6 +7,7 @@ export const useUserData = defineStore('userData', {
         myId: 0,
         authKey: '',
         user: {} as IUser,
+        genCount: 1,
         roots: {
             PeerAdmin: false,
             PeerModer: false, 
@@ -39,6 +40,9 @@ export const useUserData = defineStore('userData', {
                 this.authKey = key;
                 this.myId = myId;
             }
+        },
+        setGenCount(count: number){
+            this.genCount = count;
         },
         logOut() {
             this.authKey = '';

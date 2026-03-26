@@ -48,6 +48,11 @@ export default class Api {
         })
     }
 
+    static async getVendor(url: string, config?: AxiosRequestConfig) {
+        return await vendorApi.get(url, config)
+        .then(resp=>resp.data)
+    }
+
     static async postVendor(url: string, data: INeuroChat[] | null | FormData) {
         return (await vendorApi.post(url, data)).data
     }

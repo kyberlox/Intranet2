@@ -1,6 +1,6 @@
 from src.services.LogsMaker import LogsMaker
 
-from .App import func, select #get_db, 
+from .App import func, select, delete #get_db, 
 LogsMaker().ready_status_message("Успешная инициализация таблицы Области Видимости")
 
 import asyncio
@@ -30,7 +30,7 @@ class FieldvisionModel:
             existing_vision = result.scalar_one_or_none()
             
             if existing_vision:
-                return LogsMaker().info_message(f"Области видимости с id = {self.id} уже существует")
+                return LogsMaker().info_message(f"Области видимости с названием = {self.vision_name} уже существует")
             
             # Находим максимальный ID
             stmt = select(func.max(self.Fieldvision.id))
@@ -42,11 +42,13 @@ class FieldvisionModel:
             new_vision = self.Fieldvision(id=new_id, vision_name=self.vision_name)
             session.add(new_vision)
             await session.commit()
+            await session.refresh(new_vision)
+            return new_vision
             
-            # Возвращаем созданную запись
-            stmt = select(self.Fieldvision).where(self.Fieldvision.vision_name == self.vision_name)
-            result = await session.execute(stmt)
-            return result.scalar_one()
+            # # Возвращаем созданную запись
+            # stmt = select(self.Fieldvision).where(self.Fieldvision.vision_name == self.vision_name)
+            # result = await session.execute(stmt)
+            # return result.scalar_one()
             
         except Exception as e:
             await session.rollback()
@@ -133,23 +135,54 @@ class FieldvisionModel:
             await session.rollback()
             return LogsMaker().error_message(f"Ошибка при добавлении статьи с id = {self.art_id} в ОВ с id = {self.id}, {e}")
 
+    async def set_vissions_to_art(self, session, vissions):
+        try:
+            # Удаляем все предыдущие связи ОВ со статьтей
+            stmt_del = delete(self.ArtVis).where(
+                self.ArtVis.art_id == self.art_id
+            )
+            await session.execute(stmt_del)
+            await session.commit()
+            if not vissions:
+                return True
+            for vis in vissions:
+                # Находим максимальный ID
+                stmt_max = select(func.max(self.ArtVis.id))
+                result_max = await session.execute(stmt_max)
+                max_id = result_max.scalar() or 0
+                new_id = max_id + 1
+                
+                # Создаем новую связь
+                new_node = self.ArtVis(
+                    id=new_id,
+                    vision_id=int(vis),
+                    art_id=self.art_id
+                )
+                session.add(new_node)
+            await session.commit()
+            return True
+        except Exception as e:
+            await session.rollback()
+            LogsMaker().error_message(f"Ошибка при добавлении нескольких ОВ к статье с id={self.art_id}: {e}")
+            return True
+
     async def delete_art_from_vision(self, session):
         try:
-            # Проверяем существование области видимости
-            stmt_vision = select(self.Fieldvision).where(self.Fieldvision.id == self.id)
-            result_vision = await session.execute(stmt_vision)
-            existing_vision = result_vision.scalar_one_or_none()
+            # # Проверяем существование области видимости
+            # stmt_vision = select(self.Fieldvision).where(self.Fieldvision.id == self.id)
+            # result_vision = await session.execute(stmt_vision)
+            # existing_vision = result_vision.scalar_one_or_none()
             
-            if not existing_vision:
-                return LogsMaker().info_message(f"Области видимости с id = {self.id} не существует")
+            # if not existing_vision:
+            #     return LogsMaker().info_message(f"Области видимости с id = {self.id} не существует")
             
-            # Проверяем существование статьи
-            stmt_art = select(self.Article).where(self.Article.id == self.art_id)
-            result_art = await session.execute(stmt_art)
-            existing_art = result_art.scalar_one_or_none()
+            # # Проверяем существование статьи
+            # stmt_art = select(self.Article).where(self.Article.id == self.art_id)
+            # result_art = await session.execute(stmt_art)
+            # existing_art = result_art.scalar_one_or_none()
             
-            if not existing_art:
-                return LogsMaker().info_message(f"Статью с id = {self.art_id} невозможно удалить из ОВ с id = {self.id}, статьи не существует")
+            # if not existing_art:
+            #     return LogsMaker().info_message(f"Статью с id = {self.art_id} невозможно удалить из ОВ с id = {self.id}, статьи не существует")
 
             # Находим и удаляем связь
             stmt_link = select(self.ArtVis).where(
@@ -202,14 +235,16 @@ class FieldvisionModel:
 
         try:
             # Получаем корни пользователя
-            stmt_roots = select(self.Roots.root_token['VisionRoots']).where(self.Roots.user_uuid == user_id)
+            stmt_roots = select(self.Roots.root_token['VisionRoots']).where(self.Roots.user_uuid == int(user_id))
             result_roots = await session.execute(stmt_roots)
-            user_roots = result_roots.scalar_one_or_none()
+            user_roots = result_roots.scalar_one_or_none() 
 
             # Получаем vision_id для статьи
-            stmt_art_vis = select(self.ArtVis.vision_id).where(self.ArtVis.art_id == self.art_id)
+            stmt_art_vis = select(self.ArtVis.vision_id).where(self.ArtVis.art_id == int(self.art_id))
             result_art_vis = await session.execute(stmt_art_vis)
             art_vis = result_art_vis.scalars().all()
+            if not art_vis:
+                return True
 
             if user_roots is not None and art_vis:
                 for user_root in user_roots:
@@ -218,6 +253,6 @@ class FieldvisionModel:
             return False
             
         except Exception as e:
-            # Логируем ошибку, если нужно
+            LogsMaker().error_message(f"Ошибка в FieldvisionModel в методе check_user_root: {e}")
             return False
  

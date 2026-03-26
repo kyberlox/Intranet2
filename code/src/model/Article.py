@@ -8,6 +8,7 @@ from ..base.pSQL.objects.LikesModel import LikesModel
 from ..base.pSQL.objects.ViewsModel import ViewsModel
 from ..services.Idea import Idea
 from ..services.LogsMaker import LogsMaker
+from ..services.FieldsVisions import Visions
 
 import re
 import json
@@ -1851,8 +1852,6 @@ class Article:
         elif self.section_id == "112":
             return await User().get_new_workers(session)
 
-
-
         elif self.section_id == "25" or self.section_id == "175":
             active_articles = []
             result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session)
@@ -2008,16 +2007,14 @@ class Article:
                                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                                 res['reactions'] = has_user_liked
 
-                        # обработаем конкурсы эмк где есть лайки, но нет просмотров
-                        # elif res['section_id'] == 7:
-                        #     del res['indirect_data']['likes_from_b24']
-                        #     # вызов количества лайков
-                        #     user_id = self.get_user_by_session_id(session_id=session_id)
-                        #     if user_id is not None:
-                        #         has_user_liked = User(id=user_id).has_liked(art_id=self.id)
-                        #         res['reactions'] = has_user_liked
-
+                        
+                    #сюда накинуть ограничение на афишу и корп события
+                    if int(self.section_id) in [51, 53]:
+                        user_access = await Visions(art_id=res["id"], user_id=user_id).check_user_root(session=session)
+                        if not user_access:
+                            continue
                     active_articles.append(res)
+
             SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42 18, 
             if not active_articles:
                 return active_articles
@@ -2025,9 +2022,9 @@ class Article:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['name'], reverse=False)
             # отдельная сортировка Памятки новому сторуднику
             elif self.section_id == "18":
-                # sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=False)
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=False)
             # elif self.section_id == "18":
-                sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
+                # sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             elif int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
             else:
@@ -2406,6 +2403,12 @@ class Article:
             date_list = []  # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
+
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
+
                 if values["active"] is False:
                     pass
                 else:
@@ -2459,6 +2462,7 @@ class Article:
 
                     news['id'] = row[0]
                     news['image'] = image_url
+                    # сюда проверку есть ли у пользователя права на статью
                     afisha_news.append(news)
 
             afisha['images'] = afisha_news
@@ -2470,6 +2474,11 @@ class Article:
             date_list = []  # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
+
                 if values["active"] is False:
                     pass
                 else:

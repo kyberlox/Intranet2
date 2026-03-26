@@ -15,8 +15,8 @@ export interface IAdminListItem {
     disabled?: string;
     data_type?: string;
     field?: string;
-    values?: string[] | { name: string, id?: string | number, value?: string }[];
-    value?: number | string | IReportage[] | IUserList[] | number[];
+    values?: string[] | { name: string, vision_name?: string, id?: string | number, value?: string }[];
+    value?: number | string | IReportage[] | IUserList[] | number[] | string[];
 }
 
 export interface IFileToUpload {

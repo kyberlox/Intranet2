@@ -101,6 +101,9 @@ export default defineComponent({
             }
             else
                 if (isLogin.value) {
+                    Api.getVendor('https://gpt.emk.ru/check_count')
+                        .then((genCount) => useUserData().setGenCount(genCount.count));
+
                     prefetchSection('score');
                     prefetchSection('calendar');
 
@@ -119,6 +122,7 @@ export default defineComponent({
         }, { immediate: true, deep: true })
 
         onBeforeMount(() => {
+
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');
             if (!cookieKey) return isLoading.value = false;
 
@@ -128,7 +132,6 @@ export default defineComponent({
                     prefetchSection('user');
                 })
                 .finally(() => { userData.setLogin(true); isLoading.value = false })
-
         })
 
         return {

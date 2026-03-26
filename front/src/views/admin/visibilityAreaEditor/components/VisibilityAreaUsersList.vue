@@ -8,7 +8,11 @@
                      @click="showThisDep(userDep.depart_id)">
                     {{ userDep.depart }}
                 </div>
-                <CloseIcon @click="deleteDep(userDep.depart_id)" />
+                <CloseIcon @click="deleteDep(userDep.depart_id, false)" />
+            </div>
+            <div @click="deleteDep(userDep.depart_id, true)"
+                 class="visibility-editor__area-users__department__remove--withchilds">
+                Удалить с подразделениями
             </div>
             <div class="visibility-editor__area-users"
                  v-if="showingDeps.includes(userDep.depart_id) || showAllDepsUsers">
@@ -97,7 +101,7 @@ export default defineComponent({
         return {
             showAllDepsUsers,
             showingDeps,
-            deleteDep: (id: number) => emit('deleteDep', id),
+            deleteDep: (id: number, withChilds: boolean) => emit('deleteDep', id, withChilds),
             pickUser: (user: IVisionUser) => emit('pickUser', user),
             showThisDep,
             depNeedToBeShown

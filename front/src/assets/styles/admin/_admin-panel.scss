@@ -18,7 +18,7 @@
         height: 82vh;
         overflow-y: auto;
         z-index: 9;
-        max-width: max-content;
+        max-width: 100%;
 
         @include lg {
             width: 100%;
@@ -91,7 +91,6 @@
 
                 &>.admin-panel__nav-text {
                     color: var(--emk-brand-color) !important;
-
                 }
 
                 &>.admin-panel__nav-icon>svg {

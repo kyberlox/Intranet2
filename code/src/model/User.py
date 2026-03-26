@@ -395,6 +395,7 @@ class User:
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
         from datetime import datetime
+        
         try:
             await asyncio.sleep(60)
             res = await B24().getUser(self.id)
@@ -404,7 +405,7 @@ class User:
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False
                 
-                await self.check_fields_to_update(session=session, b24_data=usr_data)
+                need_update_fv = await self.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await self.UserModel.upsert_user(user_data=usr_data, session=session)
                 await session.commit()
@@ -425,24 +426,8 @@ class User:
                     if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
 
                         b24_url = usr_data['PERSONAL_PHOTO']
-                        # print(b24_url, psql_user['photo_file_b24_url'], 'РАЗНЫЕ ФОТКИ')
-                        # b24_url = "https://portal.emk.ru/upload/main/b1c/32jhq9uakqf6z56wjku07klwpsde8cbt/Газинский И.В..jpg.png"
-                        # проверим url первоисточника текущей аватарки
-                        # if psql_user['photo_file_id'] is None:
-                        #     print('photo_file_id is Non')
-                        # if psql_user['photo_file_b24_url'] != b24_url:
-                        #     photo_file_id = psql_user['photo_file_id']
-                        #     print(f'{photo_file_id} != {b24_url}')
 
                         if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
-                            # срабатывает это условие и уходит в else
-                            print('РАЗНЫЕ ФОТКИ')
-                            # cтарую фотку - в архив
-                            # if psql_user['photo_file_b24_url'] is not None and psql_user[
-                            #     'photo_file_b24_url'] != b24_url:
-                            #     old_file_id = psql_user['photo_file_id']
-                            #     await File(id=old_file_id).go_user_photo_archive(session)
-                            # если есть несоответствие - скачать новую
                             file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
 
                             if file_data is not False:
@@ -451,6 +436,10 @@ class User:
                                 await self.UserModel.set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
                     await self.update_user_elastic(session)
+
+                    # закидываем в ОВ
+                    if need_update_fv:
+                        await self.put_user_to_vis(session, usr_data)
                 else:
                     await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
                 return None
@@ -461,6 +450,25 @@ class User:
         except Exception as e:
             return LogsMaker().error_message(
                 f'Ошибка при обновлении инф о пользователе update_inf_from_b24 с id = {self.id}: {e}')
+
+    async def put_user_to_vis(self, session, usr_data):
+        return await self.UserModel.put_user_to_vis(session, usr_data)
+    #     try:
+    #         manufactures = await self.UserModel.get_manufactures_id(session)
+
+    #         #получаем родителя
+    #         user_manufacture = await self.serModel.get_user_manufacture(dep_id=user_dep, manufactures=manufactures, session=session)
+    #         if not user_manufacture:
+    #             #центральнгый офис, добавить в эту ОВ
+    #             # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+    #             pass
+            
+            # дальше по айди завода найти  его ОВ
+            # и добавить туда пользователя по upload_user_to_vision из UservisionsRootModel
+
+            
+
+
 
     async def update_user_elastic(self, session):
         user_data = await self.search_by_id(session)
@@ -484,6 +492,7 @@ class User:
             'UF_USR_1586853958167'
         ]
         import datetime
+        need_update_fv = False
         # time_now = datetime.now()
         LogsMaker().info_message(f'ОБНОВЛЯЕМ ИНФУ О ПОЛЬЗОВАТЕЛЕ User с id={self.id}')
         try:
@@ -495,6 +504,7 @@ class User:
                 B24_data = res
                 self.UserModel.id = int(self.id)
                 psql_data = await self.UserModel.find_by_id_all(session)
+                psql_data['indirect_data']['uf_department'] = psql_data['indirect_data']['uf_department_id']
                 if psql_data and psql_data != []:
                     for field in fields:
 
@@ -513,7 +523,10 @@ class User:
                                 if B24_data[field] == ind_data[field.lower()]:
                                     LogsMaker().info_message(f'User с id={self.id} поле {field} не отличается')
                                 elif B24_data[field] != ind_data[field.lower()]:
+                                    if field == 'UF_DEPARTMENT':
+                                        need_update_fv = True
                                     LogsMaker().info_message(f'User с id={self.id} поле {field} отличается, B24={B24_data[field]}, pSQL={ind_data[field.lower()]}')
+                                    # сюда закинуть в новую область видимости
                             elif field.lower() not in ind_data and field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
                             elif field.lower() not in ind_data:
@@ -529,12 +542,14 @@ class User:
                             elif field.lower() not in psql_data and field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL и в B24_data')
                             elif field.lower() not in psql_data:
+                                if field == 'UF_DEPARTMENT':
+                                    need_update_fv = True
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в pSQL, B24 = {B24_data[field]}')
                             elif field not in B24_data:
                                 LogsMaker().warning_message(f'Поля {field} нет у User с id={self.id} в B24_data')
                 else:
                     LogsMaker().warning_message(f'Новый пользователь!')
-                  
+            return need_update_fv
             return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')
@@ -785,13 +800,13 @@ class User:
                     stopped_for = i
                     break
                 user_in_excel.append(int(user_id))
-                # async with httpx.AsyncClient(timeout=30.0) as client:
-                #     response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
-                #     if response.status_code == 200:
-                #         res = response.text
-                #         visits = json.loads(res)
-                #         data_stat = visits['totals'][0]
-                #         ws.cell(row=i, column=7, value=data_stat)
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_id}%27&include_undefined=true')
+                    if response.status_code == 200:
+                        res = response.text
+                        visits = json.loads(res)
+                        data_stat = visits['totals'][0]
+                        ws.cell(row=i, column=7, value=data_stat)
 
             for user in all_users:
                 if user.active is True and user.id not in user_in_excel:
@@ -816,9 +831,9 @@ class User:
                     if 'work_position' in user.indirect_data and user.indirect_data['work_position']:
                         position = user.indirect_data['work_position']
                     ws.cell(row=stopped_for, column=6, value=position)
-
+                    {user.id}
                     async with httpx.AsyncClient(timeout=30.0) as client:
-                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user.id}&include_undefined=true')
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user.id}%27&include_undefined=true')
                         if response.status_code == 200:
                             res = response.text
                             visits = json.loads(res)
@@ -1122,6 +1137,10 @@ async def create_metrics_for_departments(session: AsyncSession = Depends(get_asy
 @users_router.get("/check_date_of_employment", tags=["Пользователь"])
 async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)):
     return await User().check_date_of_employment(session=session)
+
+@users_router.put("/put_user_to_vis", tags=["Пользователь"])
+async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get_async_db)):
+    return await User().put_user_to_vis(session=session, usr_data=usr_data)
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

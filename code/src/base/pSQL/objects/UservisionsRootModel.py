@@ -7,10 +7,13 @@ import asyncio
 # db_gen = get_db()
 # database = next(db_gen)
 
+import os
 
 #!!!!!!!!!!!!!!! 
 from src.services.LogsMaker import LogsMaker
 #!!!!!!!!!!!!!!!
+
+HOST = os.getenv('HOST')
 
 class UservisionsRootModel:
     def __init__(self, id: int = 0, vision_id: int = 0, user_id: int = 0):
@@ -27,45 +30,44 @@ class UservisionsRootModel:
         self.User = User
 
 
-    async def upload_user_to_vision(self, roots, session):
+    async def upload_user_to_vision(self, session):
         try:
-            if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
-                res = await session.execute(select(self.Roots).where(self.Roots.user_uuid == self.user_id))
-                existing_user = res.scalar_one_or_none()
-                if existing_user:
-                    if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token['VisionRoots']:
-                        return LogsMaker().warning_message(f"Пользователь с id = {self.user_id} уже существует в ОВ id = {self.vision_id}")
-                    elif "VisionRoots" in existing_user.root_token.keys():
-                        existing_user.root_token["VisionRoots"].append(self.vision_id)
-                        flag_modified(existing_user, 'root_token')
+            # if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
+            res = await session.execute(select(self.Roots).where(self.Roots.user_uuid == self.user_id))
+            existing_user = res.scalar_one_or_none()
+            if existing_user:
+                if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token['VisionRoots']:
+                    return LogsMaker().warning_message(f"Пользователь с id = {self.user_id} уже существует в ОВ id = {self.vision_id}")
+                elif "VisionRoots" in existing_user.root_token.keys():
+                    existing_user.root_token["VisionRoots"].append(self.vision_id)
+                    flag_modified(existing_user, 'root_token')
 
-                        await session.commit()
-                        return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
-                    else:
-                        existing_user.root_token["VisionRoots"] = [self.vision_id]
-                        flag_modified(existing_user, 'root_token')
-
-                        await session.commit()
-                        return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
-                else:
-                    stmt = select(func.max(self.Roots.id))
-                    result = await session.execute(stmt)
-                    max_id = result.scalar() or 0
-                    new_id = max_id + 1
-                    new_user_vis = self.Roots(
-                        id=new_id,
-                        user_uuid=self.user_id,
-                        root_token={"VisionRoots": [self.vision_id]}
-                    )
-                    
-
-                    session.add(new_user_vis)
                     await session.commit()
-                    return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} завершено успешно")
-            else:
-                return LogsMaker().warning_message(f"У Вас недостаточно прав")
-        except Exception as e:
+                    return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
+                else:
+                    existing_user.root_token["VisionRoots"] = [self.vision_id]
+                    flag_modified(existing_user, 'root_token')
 
+                    await session.commit()
+                    return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} звершено успешно")
+            else:
+                stmt = select(func.max(self.Roots.id))
+                result = await session.execute(stmt)
+                max_id = result.scalar() or 0
+                new_id = max_id + 1
+                new_user_vis = self.Roots(
+                    id=new_id,
+                    user_uuid=self.user_id,
+                    root_token={"VisionRoots": [self.vision_id]}
+                )
+                
+
+                session.add(new_user_vis)
+                await session.commit()
+                return LogsMaker().info_message(f"Добавление пользователя с id = {self.user_id} в ОВ id = {self.vision_id} завершено успешно")
+            # else:
+            #     return LogsMaker().warning_message(f"У Вас недостаточно прав")
+        except Exception as e:
             return LogsMaker().error_message(f"ошибка при добавлении пользователя в ОВ: {e}")
 
     
@@ -73,7 +75,7 @@ class UservisionsRootModel:
         try:
             for user in user_data:
                 self.user_id = user
-                await self.upload_user_to_vision(roots=roots, session=session)
+                await self.upload_user_to_vision(session=session)
             return LogsMaker().info_message(f"Пользователи добавлены в ОВ id = {self.vision_id} звершено успешно")
         except Exception as e:
             return LogsMaker().error_message(f"ошибка при добавлении пользователей в ОВ: {e}")
@@ -110,9 +112,47 @@ class UservisionsRootModel:
         except Exception as e:
             return LogsMaker().error_message(f"ошибка при удалении пользователей из ОВ {self.vision_id}: {e}")
 
+    #функция для получения всех айдишников заводов
+    async def get_manufactures_id(self, session):
+        from ..models.Article import Article
+        try:
+            result = dict()
+            stmt = select(Article).where(Article.section_id == 9)
+            res = await session.execute(stmt)
+            nodes = res.scalars().all()
+            if not nodes:
+                return None 
+            for manufacture in nodes:
+                if manufacture.name is None or manufacture.indirect_data is None or 'manufacture_id' not in manufacture.indirect_data:
+                    continue
+                result[manufacture.indirect_data['manufacture_id']] = manufacture.name
+            return result
+        except Exception as e:
+            return f"{e}"
+
+
+    #функция для определения отношения пользователя к заводу
+    async def get_user_manufacture(self, dep_id, manufactures, session):
+        from .DepartmentModel import DepartmentModel
+        result = dep_id
+        
+        while True:
+            dep_str = await DepartmentModel(result).find_dep_by_id(session)
+            
+            father_id = dep_str[0].father_id
+            if father_id is None:
+                return None  # достигли корня, не нашли завод
+            if str(father_id) in manufactures:
+                return father_id
+            result = father_id
 
     async def find_users_in_vision(self, session):
+        manufactures = await self.get_manufactures_id(session)
+        from ..models.Department import Department
         from .UserModel import UserModel
+        from ..models.Roots import Roots
+        from ..models.UserFiles import UserFiles
+        from sqlalchemy import select, cast, Integer
         try:
             result = []
             stmt = select(self.Fieldvision).where(self.Fieldvision.id == self.vision_id)
@@ -120,42 +160,97 @@ class UservisionsRootModel:
             existing_vision = res.scalar_one_or_none()
             if existing_vision:
                 # users_in_vis = database.query(UservisionsRoot).filter(UservisionsRoot.vision_id == self.vision_id).all()
-                query = select(self.Roots.user_uuid).where(
-                        self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
+                query = select(
+                    self.User.id,
+                    self.User.name,
+                    self.User.last_name,
+                    self.User.second_name,
+                    self.User.indirect_data['uf_department'][0].label('depart_id'),
+                    self.User.indirect_data['work_position'].label('post'),
+                    Department.name.label('depart'),
+                    UserFiles.URL.label('photo_file_url')
+                ).select_from(
+                    self.User
+                ).join(
+                    Roots, Roots.user_uuid == self.User.id
+                ).join(
+                    Department, Department.id == cast(self.User.indirect_data['uf_department'][0], Integer)
+                ).outerjoin(
+                    UserFiles, UserFiles.id == self.User.photo_file_id
+                ).where(
+                    Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id]),
+                    self.User.active == True
                 )
 
 
                 res = await session.execute(query)
-                users_in_vis = res.scalars().all()
+                users_in_vis = res.mappings().all()
                 for user in users_in_vis:
-                    general_info = {}
-                    user_info = await UserModel(Id=user).find_by_id(session=session)
-                    if user_info['active']:
-                        general_info['id'] = user_info['id']
-                        name = user_info['name'] if user_info['name'] else ''
-                        last_name = user_info['last_name'] if user_info['last_name'] else ''
-                        second_name = user_info['second_name'] if user_info['second_name'] else ''
-                        general_info['name'] = last_name + ' ' + name + ' ' + second_name
-                        general_info['depart'] = user_info['indirect_data']['uf_department'][0] if 'uf_department' in user_info['indirect_data'].keys() else None
-                        general_info['depart_id'] = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
-                        if 'work_position' in user_info['indirect_data'].keys():
-                            general_info['post'] = user_info['indirect_data']['work_position']
-                        general_info['image'] = user_info['photo_file_url'] if 'photo_file_url' in user_info.keys() else None
-                        result.append(general_info)
+                    user = dict(user)
+                    if user['depart_id']:
+                        res_manufacture = await self.get_user_manufacture(dep_id=user['depart_id'], manufactures=manufactures, session=session)
+                        if res_manufacture:
+                            user['depart'] = f"{user['depart']} | {manufactures[res_manufacture]}"
+                                # general_info['father_depart_name'] = manufactures[int(res_manufacture)]
+                    name = user.pop('name') or ''
+                    last_name = user.pop('last_name') or ''
+                    second_name = user.pop('second_name') or ''
+                    user['name'] = last_name + ' ' + name + ' ' + second_name
+                    user['image'] = HOST + user['photo_file_url'] if user['photo_file_url'] else None     
+                    result.append(user)
                 return result
             return LogsMaker().warning_message(f"ОВ с id = {self.vision_id} не существует")
         except Exception as e:
 
             return LogsMaker().error_message(f"ошибка при выводе пользователей из ОВ {self.vision_id}: {e}")
 
+    async def remove_depart_in_vision(self, dep_id, roots, session, with_child):
+        from .UserModel import UserModel
+        query = select(self.Roots.user_uuid).where(
+                self.Roots.root_token['VisionRoots'].astext.cast(JSONB).contains([self.vision_id])
+        )
+        res = await session.execute(query)
+        users_in_vis = res.scalars().all()
 
-    async def remove_depart_in_vision(self, dep_id, roots, session):
-        users = await self.find_users_in_vision(session)
-        if users:
-            for user in users:
-                if user['depart_id'] == dep_id:
-                    self.user_id = user['id']
+        
+        #получить все id родителя
+        father_deps = await self.get_descendant_ids_orm(session, dep_id)
+        
+        if users_in_vis:
+            for user in users_in_vis:
+                user_info = await UserModel(Id=user).find_by_id(session=session)
+                usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                if with_child:
+                    if usdep in father_deps:
+                        self.user_id = user
+                        await self.remove_user_from_vision(roots=roots, session=session)
+                        continue
+                
+                if usdep == dep_id:
+                    self.user_id = user
 
                     await self.remove_user_from_vision(roots=roots, session=session)
+                    continue
+                    
             return LogsMaker().info_message(f"Удаление пользователей из ОВ id = {self.vision_id} завершено успешно") 
         return LogsMaker().warning_message(f"Пользователей в ОВ с id = {self.vision_id} не существует")
+
+    async def get_descendant_ids_orm(self, session, father_id: int):
+        from ..models.Department import Department
+        from sqlalchemy import select
+        from sqlalchemy.orm import aliased
+        # Базовый CTE: выбираем корневой узел
+        dept_cte = select(Department.id).where(Department.id == father_id).cte(recursive=True)
+
+        # Алиас для таблицы departments в рекурсивной части
+        dept_alias = aliased(Department, name='d')
+
+        # Рекурсивная часть: присоединяем всех детей
+        dept_cte = dept_cte.union_all(
+            select(dept_alias.id).where(dept_alias.father_id == dept_cte.c.id)
+        )
+
+        # Финальный запрос: выбираем id из CTE
+        stmt = select(dept_cte.c.id).order_by(dept_cte.c.id)
+        result = await session.execute(stmt)
+        return [row.id for row in result]

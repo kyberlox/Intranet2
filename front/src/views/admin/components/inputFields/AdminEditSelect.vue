@@ -13,7 +13,7 @@
                 :value="(typeof option === 'string' || typeof option === 'boolean') ? option : option.value ? option.value : option.id"
                 :key=index>
             {{ (typeof option === 'string' || typeof option === 'boolean' ? (yesOrNoFormat ?
-                renderOptionText(option) : option) : option.name) }}
+                renderOptionText(option) : option) : option.name || option.vision_name) }}
         </option>
     </select>
 

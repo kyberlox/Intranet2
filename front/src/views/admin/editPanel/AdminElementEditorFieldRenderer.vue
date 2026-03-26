@@ -8,6 +8,21 @@
          class="admin-element-inner__field"
          :key="index">
 
+        <!-- Привязать область видимости -->
+        <AdminEditSelect v-if="item.field == 'vision_select'"
+                         @pick="(value: string) => $emit('handleEmitValueChange', item, value)"
+                         :item="{
+                            name: 'Привязать область видимости', values: newElementSkeleton.find((e) => e.field == 'all_visions')?.values,
+                            value: newElementSkeleton.find((e) => e.field == 'vision_select')?.value || ''
+                        }" />
+
+        <!-- Поле выбора областей видимости -->
+        <AdminEditTags v-if="item.field == 'vision'"
+                       :tagsTitle="'Определите кому доступна эта новость'"
+                       :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.value as string[]))"
+                       :allTags="(newElementSkeleton.find((e) => e.field == 'all_visions')?.values as ITag[])"
+                       @tagsChanged="(newVision: number[]) => $emit('visibilityChanged', newVision)" />
+
         <!-- Для того чтобы вписать данные -->
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
                              :title="item.name"
@@ -105,9 +120,9 @@ export default defineComponent({
         AdminUploadingSection,
         SearchList,
         AdminEditTags,
-        AdminEditAreaSearch
+        AdminEditAreaSearch,
     },
-    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagsChanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed'],
+    emits: ['handleUserPick', 'uploadMany', 'handleUsersPick', 'reportageChanged', 'tagsChanged', 'handleEmitValueChange', 'reloadElementData', 'handleUpload', 'saveEmbed', 'visibilityChanged'],
     props: {
         isMobileScreen: {
             type: Boolean

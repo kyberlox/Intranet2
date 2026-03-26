@@ -92,7 +92,7 @@ export default defineComponent({
         const checkByFlags = (e: NavGroup) => {
             switch (true) {
                 // id == 2 у настройки областей видимости
-                case !featureFlags.visibleArea && e.id == 2:
+                case (!featureFlags.visibleArea || !userRoots.value.VisionAdmin) && e.id == 2:
                     return false
                 // id == 3 у бальной системы
                 case (e.id == 3 && (!PeerAdmin.value || !featureFlags.pointsSystem)):

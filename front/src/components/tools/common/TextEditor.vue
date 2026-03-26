@@ -36,8 +36,6 @@ export default defineComponent({
         }, { immediate: true, deep: true });
 
         const sanitizeValue = (html: string): string => {
-            console.log(html);
-
             if (!html) return '';
 
             let cleanHtml = sanitizeHtml(html, {

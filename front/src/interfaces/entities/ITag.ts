@@ -1,4 +1,5 @@
 export interface ITag{
-    id: number | '',
-    tag_name?: string
+    id: number | string,
+    tag_name?: string,
+    vision_name?: string
 }

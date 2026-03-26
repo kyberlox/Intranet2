@@ -800,13 +800,13 @@ class User:
                     stopped_for = i
                     break
                 user_in_excel.append(int(user_id))
-                # async with httpx.AsyncClient(timeout=30.0) as client:
-                #     response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user_id}&include_undefined=true')
-                #     if response.status_code == 200:
-                #         res = response.text
-                #         visits = json.loads(res)
-                #         data_stat = visits['totals'][0]
-                #         ws.cell(row=i, column=7, value=data_stat)
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_id}%27&include_undefined=true')
+                    if response.status_code == 200:
+                        res = response.text
+                        visits = json.loads(res)
+                        data_stat = visits['totals'][0]
+                        ws.cell(row=i, column=7, value=data_stat)
 
             for user in all_users:
                 if user.active is True and user.id not in user_in_excel:
@@ -831,9 +831,9 @@ class User:
                     if 'work_position' in user.indirect_data and user.indirect_data['work_position']:
                         position = user.indirect_data['work_position']
                     ws.cell(row=stopped_for, column=6, value=position)
-
+                    {user.id}
                     async with httpx.AsyncClient(timeout=30.0) as client:
-                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel2=={user.id}&include_undefined=true')
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user.id}%27&include_undefined=true')
                         if response.status_code == 200:
                             res = response.text
                             visits = json.loads(res)

@@ -10,7 +10,7 @@
              :class="{
                 'tags__tag--active': chosenTags.includes(typeof tag !== 'object' ? tag as string : String((tag as ITag).id))
             }"
-             @click="console.log(chosenTags); chooseTag(typeof tag == 'string' ? tag : tag.id)">
+             @click="console.log(String((tag as ITag).id)); chooseTag(typeof tag == 'string' ? tag : tag.id)">
             #{{ typeof tag == 'string' ? tag : tag.tag_name || tag.vision_name }}
         </div>
     </div>

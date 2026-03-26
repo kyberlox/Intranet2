@@ -19,7 +19,7 @@
         <!-- Поле выбора областей видимости -->
         <AdminEditTags v-if="item.field == 'vision'"
                        :tagsTitle="'Определите кому доступна эта новость'"
-                       :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.values as ITag[])?.map((e) => String(e.id)))"
+                       :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.value as string[]))"
                        :allTags="(newElementSkeleton.find((e) => e.field == 'all_visions')?.values as ITag[])"
                        @tagsChanged="(newVision: number[]) => $emit('visibilityChanged', newVision)" />
 

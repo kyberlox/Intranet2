@@ -16,7 +16,7 @@ export interface IAdminListItem {
     data_type?: string;
     field?: string;
     values?: string[] | { name: string, vision_name?: string, id?: string | number, value?: string }[];
-    value?: number | string | IReportage[] | IUserList[] | number[];
+    value?: number | string | IReportage[] | IUserList[] | number[] | string[];
 }
 
 export interface IFileToUpload {

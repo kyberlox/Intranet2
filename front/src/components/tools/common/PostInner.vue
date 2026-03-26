@@ -146,7 +146,6 @@ export interface IPostInner extends IBaseEntity {
     TITLE?: string,
     author?: string
     vision?: number[]
-
 }
 
 export default defineComponent({

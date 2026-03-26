@@ -807,7 +807,6 @@ class UserModel:
     #функция для определения отношения пользователя к заводу
     async def get_user_manufacture(self, dep_id, manufactures, session):
         result = dep_id
-        print(manufactures)
         while True:
             dep_str = await DepartmentModel(result).find_dep_by_id(session)
             

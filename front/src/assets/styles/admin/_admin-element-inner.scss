@@ -162,6 +162,13 @@
         background-position: right 12px center;
         background-size: 10px;
         padding-right: 30px;
+
+        &__loader {
+            &>.loader {
+                width: 40px;
+                height: 40px;
+            }
+        }
     }
 
     &__date-picker {

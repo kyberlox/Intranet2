@@ -106,8 +106,6 @@ import SearchList, { type IUserList } from "@/components/tools/common/SearchList
 import AdminEditTags from "../components/inputFields/AdminEditTags.vue";
 import Loader from "@/components/layout/Loader.vue";
 import { type IFileToUpload } from "@/interfaces/IEntities";
-import CustomFilter from "@/components/tools/common/CustomFilter.vue";
-import { emit } from "process";
 
 export default defineComponent({
     components: {

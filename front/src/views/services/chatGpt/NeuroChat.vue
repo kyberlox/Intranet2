@@ -27,10 +27,9 @@
                             <div class="neuroChat__message neuroChat__message--neuro">
                                 <img :src="chat.content" />
                             </div>
-                            <div class="neuroChat__message neuroChat__message--link neuroChat__message--neuro">
-                                <a :href="chat.content"
-                                   target="_blank">Открыть в новом окне</a>
-                            </div>
+                            <!-- <div class="neuroChat__message neuroChat__message--link neuroChat__message--neuro">
+                                <a :href="chat.content">Открыть в новом окне</a>
+                            </div> -->
                         </div>
                         <div v-else-if="chat.role == 'assistant'"
                              class="neuroChat__message neuroChat__message--neuro"
@@ -72,7 +71,7 @@
                         </div>
                         <span v-if="imageGenerationOn && chatType == 'createImg' && !unlimitedGen"
                               class="neuroChat__limit-warning">
-                            Лимит генераций изображений -
+                            Дневной лимит генераций изображений -
                             <b>
                                 {{
                                     limitText

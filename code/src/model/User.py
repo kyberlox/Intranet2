@@ -1144,43 +1144,22 @@ async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get
 
 @users_router.get('/get_new_users_ids', tags=["Пользователь"])
 async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
-    from sqlalchemy import select
+    from ..services.Peer import Peer
+    from datetime import datetime
+    from ..base.pSQL.models.User import User
+    DATE_START_MERCH = datetime.strptime("03.02.2026", "%d.%m.%Y")
+    from sqlalchemy import select, func
     
-    from ..base.pSQL.objects.App import NewUser
     
-    
-    # Выполняем запрос
-    stmt = select(NewUser)
+    stmt = select(
+        User
+    ).where(
+        func.to_date(
+            User.indirect_data['date_register'].astext,
+            'DD.MM.YYYY'
+        ) >= DATE_START_MERCH
+    )
+
     result = await session.execute(stmt)
-    ids = result.scalars().all()
-    return ids
-# @users_router.post("/search_indirect")
-# def search_indirect(key_word):
-#     #будет работать через elasticsearch
-#     return UserSearchModel().search_indirect(key_word)
-
-
-# @users_router.post("/search")
-# def search_user(jsn=Body()):
-#     #будет работать через elasticsearch
-#     return UserSearchModel().search_model(jsn)
-
-# Пользователя можно найти
-# @users_router.post("/search/{username}")
-# def search_user(username: str): # jsn=Body()
-#     return UserSearchModel().search_by_name(username)
-
-# загрузить дату в ES
-# @users_router.put("/elastic_data")
-# def upload_users_to_es():
-#     return UserSearchModel().dump()
-
-
-# лайки и просмотры для статистики
-# @users_router.post("/has_liked")
-# def has_liked(user_id: int, art_id: int):
-#     return User(id=user_id).has_liked(art_id)
-
-# @users_router.get("/get_user_uuid_likes")
-# def get_user_uuid_likes(user_uuid: str):
-#     return User(uuid=user_uuid).has_liked_by_uuid()
+    users = result.mappings().all()
+    return users

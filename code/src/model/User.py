@@ -1159,19 +1159,34 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
     from ..services.Peer import Peer
     from datetime import datetime
     from ..base.pSQL.models.User import User
-    DATE_START_MERCH = datetime.strptime("03.02.2026", "%d.%m.%Y")
-    from sqlalchemy import select, func, Date, cast
+    from sqlalchemy import select, func, case
     
+    DATE_START_MERCH = datetime.strptime("03.02.2026", "%d.%m.%Y").date()
+    
+    # Создаём выражение для преобразования даты в зависимости от формата
+    date_of_employment_expr = case(
+        # Если формат ISO (YYYY-MM-DD)
+        (
+            User.indirect_data['date_of_employment'].astext.op('~')('^\d{4}-\d{2}-\d{2}'),
+            func.date(User.indirect_data['date_of_employment'].astext)
+        ),
+        # Если формат DD.MM.YYYY
+        (
+            User.indirect_data['date_of_employment'].astext.op('~')('^\d{2}\.\d{2}\.\d{4}'),
+            func.to_date(User.indirect_data['date_of_employment'].astext, 'DD.MM.YYYY')
+        ),
+        # Для всех остальных - NULL
+        else_=None
+    )
     
     stmt = select(
         User
     ).where(
-        cast(
-            User.indirect_data['date_of_employment'].astext,
-            Date
-        ) >= DATE_START_MERCH
+        User.indirect_data['date_of_employment'].astext.isnot(None),
+        User.indirect_data['date_of_employment'].astext != '',
+        date_of_employment_expr >= DATE_START_MERCH
     )
-
+    
     result = await session.execute(stmt)
-    users = result.mappings().all()
+    users = result.scalars().all()
     return users

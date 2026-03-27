@@ -748,7 +748,7 @@ class User:
                         #     convert_date = make_date_valid(user['indirect_data']['date_register'])
                         #     date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                         #     user['indirect_data']['date_of_employment'] = date_of_employment
-                        is_employment_exist_count.append(user)
+                        is_employment_exist_count.append(user['id'])
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
                         is_employment_str_count.append(user['id'])
@@ -760,22 +760,22 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        for user in is_employment_exist_count:
-            # if isinstance(user, int):
-            #     print(user)
-            ind_data = copy.deepcopy(user['indirect_data'])
-            user.pop('indirect_data')
-            if 'indirect_data' in ind_data:
-                ind_data.pop('indirect_data')
-            for key, value in ind_data.items():
-                user[key] = value
+        # for user in is_employment_exist_count:
+        #     # if isinstance(user, int):
+        #     #     print(user)
+        #     ind_data = copy.deepcopy(user['indirect_data'])
+        #     user.pop('indirect_data')
+        #     if 'indirect_data' in ind_data:
+        #         ind_data.pop('indirect_data')
+        #     for key, value in ind_data.items():
+        #         user[key] = value
             
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                data = json.dumps(user)
-                response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
+        #     async with httpx.AsyncClient(timeout=30.0) as client:
+        #         data = json.dumps(user)
+        #         response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
 
-        return True
-        # return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
+        # return True
+        return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
     async def create_metrics_for_departments(self, session):
         import httpx

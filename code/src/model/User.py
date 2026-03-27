@@ -764,7 +764,7 @@ class User:
                         is_employment_none_count.append(user['id'])
                         continue
         for user in is_employment_exist_count:
-            
+            print(user)
         #     # if isinstance(user, int):
         #     #     print(user)
             # ind_data = copy.deepcopy(user['indirect_data'])

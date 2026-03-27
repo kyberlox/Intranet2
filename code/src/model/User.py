@@ -1148,14 +1148,15 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
     
     metadata = MetaData()
     
-    # Используем run_sync для синхронной загрузки метаданных
-    def load_table(connection):
+    # Функция, которая будет выполнена синхронно с соединением
+    def get_table(connection):
+        # autoload_with принимает синхронное соединение
         return Table('NewUser', metadata, autoload_with=connection)
     
-    # Получаем таблицу через run_sync
-    new_user_view = await session.run_sync(load_table)
+    # run_sync передаст в функцию синхронное соединение
+    new_user_view = await session.run_sync(get_table)
     
-    # Получаем все id
+    # Выполняем запрос
     stmt = select(new_user_view.c.id)
     result = await session.execute(stmt)
     ids = result.scalars().all()

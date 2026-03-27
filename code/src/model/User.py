@@ -739,7 +739,10 @@ class User:
         is_employment_str_count = []
         is_employment_exist_count = []
         if users:
+            
             for user in users:
+                if user['id'] == 5206:
+                    print(123214)
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:
                         if user['id'] in [2, 508]:

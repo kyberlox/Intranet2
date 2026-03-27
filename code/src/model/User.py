@@ -742,7 +742,7 @@ class User:
             
             for user in users:
                 if user['id'] == 5206:
-                    print(123214)
+                    print(123214, user)
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:
                         if user['id'] in [2, 508]:

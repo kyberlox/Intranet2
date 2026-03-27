@@ -748,6 +748,7 @@ class User:
                         #     convert_date = make_date_valid(user['indirect_data']['date_register'])
                         #     date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                         #     user['indirect_data']['date_of_employment'] = date_of_employment
+                        print(user['id'])
                         is_employment_exist_count.append(user['id'])
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':

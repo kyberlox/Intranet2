@@ -1144,20 +1144,13 @@ async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get
 
 @users_router.get('/get_new_users_ids', tags=["Пользователь"])
 async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
-    from sqlalchemy import Table, MetaData, select
+    from sqlalchemy import select
     
-    metadata = MetaData()
+    from ..base.pSQL.objects.App import NewUser
     
-    # Функция, которая будет выполнена синхронно с соединением
-    def get_table(connection):
-        # autoload_with принимает синхронное соединение
-        return Table('NewUser', metadata, autoload_with=connection)
-    
-    # run_sync передаст в функцию синхронное соединение
-    new_user_view = await session.run_sync(get_table)
     
     # Выполняем запрос
-    stmt = select(new_user_view.c.id)
+    stmt = select(NewUser.id)
     result = await session.execute(stmt)
     ids = result.scalars().all()
     return ids

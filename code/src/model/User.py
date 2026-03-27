@@ -1152,7 +1152,7 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
     # Выполняем запрос
     stmt = select(NewUser)
     result = await session.execute(stmt)
-    ids = result.mappings().all()
+    ids = result.scalars().all()
     return ids
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):

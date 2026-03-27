@@ -742,6 +742,7 @@ class User:
         if users:
             
             for user in users:
+                print(user)
                 user = user.__dict__
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:

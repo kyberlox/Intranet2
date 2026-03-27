@@ -1150,7 +1150,7 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
     
     
     # Выполняем запрос
-    stmt = select(NewUser.id)
+    stmt = select(NewUser)
     result = await session.execute(stmt)
     ids = result.scalars().all()
     return ids

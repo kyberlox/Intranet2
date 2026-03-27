@@ -1160,7 +1160,7 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
     from datetime import datetime
     from ..base.pSQL.models.User import User
     DATE_START_MERCH = datetime.strptime("03.02.2026", "%d.%m.%Y")
-    from sqlalchemy import select, func, Date
+    from sqlalchemy import select, func, Date, cast
     
     
     stmt = select(

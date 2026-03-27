@@ -1190,13 +1190,13 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
     result = await session.execute(stmt)
     users = result.scalars().all()
     for user_id in users:
-        print(user_id.id)
-        # send_data = {
-        #     "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-        #     # "uuid_to": int(user_id['id']),
-        #     "uuid_to": int(user_id['id']),
-        #     "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
-        #     "description": f"Добро пожаловать в ЭМК!"
-        # }
-        # send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
+        # print(user_id.id)
+        send_data = {
+            "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+            # "uuid_to": int(user_id['id']),
+            "uuid_to": int(user_id.id),
+            "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "description": f"Добро пожаловать в ЭМК!"
+        }
+        send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
     return users

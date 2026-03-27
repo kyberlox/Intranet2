@@ -1198,5 +1198,5 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
             "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
             "description": f"Добро пожаловать в ЭМК!"
         }
-        send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
+        send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
     return users

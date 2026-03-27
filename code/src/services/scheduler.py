@@ -557,7 +557,7 @@ class AioSchedulerManager:
         task = asyncio.create_task(daily_time_wrapper())
         
         # Сохраняем задачу
-        job_id = f"daily_{hour:02d}{minute:02d}_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        job_id = f"weekly_{2:}{00}_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.jobs[job_id] = task
         
         logger = LogsMaker()

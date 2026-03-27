@@ -776,7 +776,7 @@ class User:
                     date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                     user['indirect_data']['date_of_employment'] = date_of_employment
             res.append(user)
-        #     await self.upload_one_user(user, session)
+            await self.upload_one_user(user, session)
             # if 'indirect_data' in ind_data:
                 # ind_data.pop('indirect_data')
         #     for key, value in ind_data.items():

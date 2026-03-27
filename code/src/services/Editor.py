@@ -795,7 +795,7 @@ class Editor:
                             # ОТДЕЛЬНЫМ МЕТОДОМ ДОБАВИТЬ ВЫБРАННЫЕ ТЕГИ К ЭТОЙ СТАТЬЕ на подобии get_users_info
                             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                            tags_id = [int{tag} for tag in data["tags"]]
+                            tags_id = [int(tag) for tag in data["tags"]]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
                         

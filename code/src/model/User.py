@@ -764,16 +764,18 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        # for user in is_employment_exist_count:
+        res = []
+        for user in is_employment_exist_count:
         # #     # if isinstance(user, int):
         # #     #     print(user)
         #     # ind_data = copy.deepcopy(user['indirect_data'])
         #     # user.pop('indirect_data')
-        #     if ('indirect_data' in user and 'date_of_employment' not in user['indirect_data']) or ('indirect_data' in user and user['indirect_data']['date_of_employment'] is None):
-        #         if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
-        #             convert_date = make_date_valid(user['indirect_data']['date_register'])
-        #             date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
-        #             user['date_of_employment'] = date_of_employment
+            if ('indirect_data' in user and 'date_of_employment' not in user['indirect_data']) or ('indirect_data' in user and user['indirect_data']['date_of_employment'] is None):
+                if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
+                    convert_date = make_date_valid(user['indirect_data']['date_register'])
+                    date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                    user['indirect_data']['date_of_employment'] = date_of_employment
+            res.append(user)
         #     await self.upload_one_user(user, session)
             # if 'indirect_data' in ind_data:
                 # ind_data.pop('indirect_data')
@@ -783,9 +785,9 @@ class User:
         #     async with httpx.AsyncClient(timeout=30.0) as client:
         #         data = json.dumps(user)
         #         response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
-
+        return res
         # return True
-        return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
+        # return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
     async def create_metrics_for_departments(self, session):
         import httpx

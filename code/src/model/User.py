@@ -731,18 +731,17 @@ class User:
             return json.loads(result)
 
         users = []
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
-            if response.status_code == 200:
-                users = get_from_response(response)
+        # async with httpx.AsyncClient(timeout=30.0) as client:
+        #     response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
+        #     if response.status_code == 200:
+        #         users = get_from_response(response)
+        users = await self.UserModel.all(session)
         is_employment_none_count = []
         is_employment_str_count = []
         is_employment_exist_count = []
         if users:
             
             for user in users:
-                if user['id'] == 5206:
-                    print(123214, user)
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:
                         if user['id'] in [2, 508]:
@@ -751,8 +750,7 @@ class User:
                         #     convert_date = make_date_valid(user['indirect_data']['date_register'])
                         #     date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                         #     user['indirect_data']['date_of_employment'] = date_of_employment
-                        print(user['id'])
-                        is_employment_exist_count.append(user['id'])
+                        is_employment_exist_count.append(user)
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
                         is_employment_str_count.append(user['id'])
@@ -764,13 +762,20 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        # for user in is_employment_exist_count:
+        for user in is_employment_exist_count:
+            
         #     # if isinstance(user, int):
         #     #     print(user)
-        #     ind_data = copy.deepcopy(user['indirect_data'])
-        #     user.pop('indirect_data')
-        #     if 'indirect_data' in ind_data:
-        #         ind_data.pop('indirect_data')
+            # ind_data = copy.deepcopy(user['indirect_data'])
+            # user.pop('indirect_data')
+            if ('indirect_data' in user and 'date_of_employment' not in user['indirect_data']) or ('indirect_data' in user and user['indirect_data']['date_of_employment'] is None):
+                if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
+                    convert_date = make_date_valid(user['indirect_data']['date_register'])
+                    date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                    user['date_of_employment'] = date_of_employment
+            await self.upload_one_user(user, session)
+            # if 'indirect_data' in ind_data:
+                # ind_data.pop('indirect_data')
         #     for key, value in ind_data.items():
         #         user[key] = value
             
@@ -1159,7 +1164,7 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
         User
     ).where(
         func.to_date(
-            User.indirect_data['date_register'].astext,
+            User.indirect_data['date_of_employment'].astext,
             'DD.MM.YYYY'
         ) >= DATE_START_MERCH
     )

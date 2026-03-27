@@ -764,17 +764,17 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        for user in is_employment_exist_count:
-        #     # if isinstance(user, int):
-        #     #     print(user)
-            # ind_data = copy.deepcopy(user['indirect_data'])
-            # user.pop('indirect_data')
-            if ('indirect_data' in user and 'date_of_employment' not in user['indirect_data']) or ('indirect_data' in user and user['indirect_data']['date_of_employment'] is None):
-                if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
-                    convert_date = make_date_valid(user['indirect_data']['date_register'])
-                    date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
-                    user['date_of_employment'] = date_of_employment
-            await self.upload_one_user(user, session)
+        # for user in is_employment_exist_count:
+        # #     # if isinstance(user, int):
+        # #     #     print(user)
+        #     # ind_data = copy.deepcopy(user['indirect_data'])
+        #     # user.pop('indirect_data')
+        #     if ('indirect_data' in user and 'date_of_employment' not in user['indirect_data']) or ('indirect_data' in user and user['indirect_data']['date_of_employment'] is None):
+        #         if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
+        #             convert_date = make_date_valid(user['indirect_data']['date_register'])
+        #             date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+        #             user['date_of_employment'] = date_of_employment
+        #     await self.upload_one_user(user, session)
             # if 'indirect_data' in ind_data:
                 # ind_data.pop('indirect_data')
         #     for key, value in ind_data.items():

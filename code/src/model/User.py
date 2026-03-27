@@ -912,8 +912,8 @@ async def get_user_id_by_session_id(request: Request) -> int:
 
 
 # Пользоваетелей можно обновить
-@users_router.put("/update", tags=["Пользователь", "Битрикс24"])
-async def update_user(session: AsyncSession = Depends(get_async_db)):
+# @users_router.put("/update", tags=["Пользователь", "Битрикс24"])
+# async def update_user(session: AsyncSession = Depends(get_async_db)):
 #     """
 #     ## Метод `user.get`
 
@@ -955,8 +955,8 @@ async def update_user(session: AsyncSession = Depends(get_async_db)):
 
 #     """
 
-    usr = User()
-    return await usr.fetch_users_data(session)
+    # usr = User()
+    # return await usr.fetch_users_data(session)
 
 @users_router.put("/update_user_info/{user_id}", tags=["Пользователь", "Битрикс24"])
 async def update_user_info(user_id: int, session: AsyncSession = Depends(get_async_db)):
@@ -1141,6 +1141,20 @@ async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)
 @users_router.put("/put_user_to_vis", tags=["Пользователь"])
 async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get_async_db)):
     return await User().put_user_to_vis(session=session, usr_data=usr_data)
+
+@users_router.get('/get_new_users_ids', tags=["Пользователь"])
+async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
+    from sqlalchemy import Table, MetaData, select
+
+    # Создаем объект таблицы для представления
+    metadata = MetaData()
+    new_user_view = Table('NewUser', metadata, autoload_with=session.bind)
+
+    # Получаем все id
+    stmt = select(new_user_view.c.id)
+    result = await session.execute(stmt)
+    ids = result.scalars().all()
+    return ids
 # @users_router.post("/search_indirect")
 # def search_indirect(key_word):
 #     #будет работать через elasticsearch

@@ -3051,6 +3051,13 @@ async def get_article_likers(ID: int, session: AsyncSession = Depends(get_async_
     art.id = ID
     return await art.get_article_likers(session)
 
+# все кто видел новость
+@article_router.get("/get_article_views/{ID}", tags=["Статьи"])
+async def get_article_likers(ID: int, session: AsyncSession = Depends(get_async_db)):
+    art = Article()
+    art.id = ID
+    return await art.get_article_likers(session)
+
 
 @article_router.get("/get_popular_articles/{limit}", tags=["Статьи"])
 async def get_popular_articles(limit: int, session: AsyncSession = Depends(get_async_db)):

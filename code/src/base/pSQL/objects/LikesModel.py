@@ -214,7 +214,7 @@ class LikesModel:
 
         # async with AsyncSessionLocal() as session:
             # Проверяем, есть ли уже активный лайк
-        stmt = select(self.Likes.user_id).where(self.Likes.user_id == self.user_id, self.Likes.article_id == self.art_id)
+        stmt = select(self.Likes.user_id).where(self.Likes.article_id == self.art_id)
         result = await session.execute(stmt)
         likers = result.all()
         # likers = database.query(self.Likes.user_id).filter(

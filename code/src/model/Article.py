@@ -1685,7 +1685,7 @@ class Article:
                 tags = []
                 for tag_id in art['indirect_data']['tags']:
                     tag = {}
-                    res = await Tag(id=tag_id).get_tag_by_id(session)
+                    res = await Tag(id=int(tag_id)).get_tag_by_id(session)
                     tag_name = res.tag_name
                     if tag_name:
                         tag['id'] = tag_id

@@ -798,6 +798,7 @@ class Editor:
                             tags_id = [int(tag) for tag in data["tags"]]
                             # заменить старое значение новым
                             art["indirect_data"]["tags"] = tags_id
+                            continue
                         
                         #СЮДА ПОТОМ ЗАСУНУТЬ ФУНКЦИЮ ДЛЯ ОТПРАВКИ ПОЛЬЗОВАТЕЛЮ БАЛЛОВ ЗА НОВОСТЬ
                         # elif key == 'author_uuid':

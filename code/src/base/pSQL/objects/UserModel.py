@@ -602,7 +602,6 @@ class UserModel:
                                 if de.id in manufactures:
                                     # user_info['location'] = manufactures[de.id]
                                     if manufactures[de.id] not in list_departs:
-                                        print(899324)
                                         list_departs.append(manufactures[de.id])
                                         continue
                                     
@@ -613,7 +612,7 @@ class UserModel:
                                         continue
                                 
                                 res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
-                                print(123, user['id'], res_manufacture, manufactures.keys())
+                                
                                 if res_manufacture:
                                     user_info['location'] = manufactures[int(res_manufacture)]
 

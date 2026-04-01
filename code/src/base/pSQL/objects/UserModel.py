@@ -25,6 +25,16 @@ from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Пользователей")
 #!!!!!!!!!!!!!!!
 
+MANUFACTURES_IDS = {
+    96: 'ЗАО «Саратовский арматурный завод»', 
+    208: 'ООО «Пульсатор»', 
+    193: 'ООО «Техно-Сфера»', 
+    114: 'ООО «АРМАТОМ»', 
+    125: 'ООО «ТехПромАрма»', 
+    69: 'ЗАО «Курганспецарматура»', 
+    74: 'АО «НПО Регулятор»', 
+    206: 'АО «Тулаэлектропривод»'
+}
 
 
 class UserModel:
@@ -574,8 +584,8 @@ class UserModel:
         """
         normal_list = []
 
-        manufactures = await self.get_manufactures_id(session)
-        print(manufactures)
+        manufactures = MANUFACTURES_IDS
+        
         # users = database.query(self.user).filter(func.to_char(self.user.personal_birthday, 'DD.MM') == date).all()
         # async with AsyncSessionLocal() as session:
         stmt = select(self.user).where(func.to_char(self.user.personal_birthday, 'DD.MM') == date)
@@ -661,7 +671,7 @@ class UserModel:
         from .App import DOMAIN
         from .App import NewUser
         # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
-        manufactures = await self.get_manufactures_id(session)
+        manufactures = MANUFACTURES_IDS
         
         # result = database.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
         # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id

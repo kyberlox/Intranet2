@@ -32,6 +32,10 @@ class UservisionsRootModel:
 
     async def upload_user_to_vision(self, session):
         try:
+            is_active_user_stmt = await session.execute(select(self.User).where(self.User.id == self.user_id, self.User.active == True))
+            is_active_user = is_active_user_stmt.scalar_one_or_none()
+            if not is_active_user:
+                return None
             # if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
             res = await session.execute(select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_id, self.User.active == True))
             existing_user = res.scalar_one_or_none()

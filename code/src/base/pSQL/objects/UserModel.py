@@ -661,6 +661,7 @@ class UserModel:
         from .App import NewUser
         # query = select().select_from(demo_view).order_by(demo_view.c.created_at)
         manufactures = await self.get_manufactures_id(session)
+        print(manufactures)
         # result = database.execute(select(NewUser)).fetchall() # приносит кортеж, где индекс(0) - id, индекс(1) - active, индекс(2) - last_name, индекс(3) - name, индекс(4) - second_name,
         # индекс(5) - dat, индекс(6) - indirect_data, индекс(7) - photo_file_id
         # async with AsyncSessionLocal() as session:

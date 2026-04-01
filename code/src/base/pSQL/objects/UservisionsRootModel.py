@@ -219,8 +219,11 @@ class UservisionsRootModel:
         if users_in_vis:
             for user in users_in_vis:
                 user_info = await UserModel(Id=user).find_by_id(session=session)
-                print(user_info)
-                usdep = user_info['indirect_data']['uf_department_id'][0] if 'uf_department_id' in user_info['indirect_data'].keys() else None
+                if not user_info['indirect_data']:
+                    continue
+                
+                uf_dep = user_info['indirect_data'].get('uf_department_id')
+                usdep = uf_dep[0] if uf_dep else None
                 if with_child:
                     if usdep in father_deps:
                         self.user_id = user

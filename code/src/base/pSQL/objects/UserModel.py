@@ -642,7 +642,8 @@ class UserModel:
                 else:
                     user_info['user_fio'] = f'{user["last_name"]} {user["name"]} {user["second_name"]}'
                 user_info['position'] = indirect_data['work_position']
-                user_info['department'] = indirect_data['uf_department']
+                # user_info['department'] = indirect_data['uf_department']
+                user_info['department'] = list_departs
                 if "uf_usr_department_main" in indirect_data:
 
                     dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id(session)

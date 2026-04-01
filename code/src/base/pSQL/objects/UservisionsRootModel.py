@@ -33,7 +33,7 @@ class UservisionsRootModel:
     async def upload_user_to_vision(self, session):
         try:
             # if "VisionAdmin" in roots.keys() and roots["VisionAdmin"] == True:
-            res = await session.execute(select(self.Roots).where(self.Roots.user_uuid == self.user_id))
+            res = await session.execute(select(self.Roots).join(self.User, self.Roots.user_uuid == self.User.id).where(self.Roots.user_uuid == self.user_id, self.User.active == True))
             existing_user = res.scalar_one_or_none()
             if existing_user:
                 if "VisionRoots" in existing_user.root_token.keys() and self.vision_id in existing_user.root_token['VisionRoots']:
@@ -220,7 +220,6 @@ class UservisionsRootModel:
             for user in users_in_vis:
                 user_info = await UserModel(Id=user).find_by_id(session=session)
                 if not user_info:
-                    print(user, 'который отсутствует')
                     continue
                 if not user_info.get('indirect_data'):
                     continue

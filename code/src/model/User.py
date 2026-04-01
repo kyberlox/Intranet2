@@ -722,7 +722,7 @@ class User:
         import httpx
         from datetime import datetime
         import copy
-        session_id = '5d74097d-f137-43ba-ae48-a742b9ecbb9e'
+        session_id = '2bde2516-ba41-4370-9d68-cfa8292680eb'
         cookies = {'session_id': session_id}
 
         def get_from_response(response):
@@ -731,15 +731,19 @@ class User:
             return json.loads(result)
 
         users = []
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
-            if response.status_code == 200:
-                users = get_from_response(response)
+        # async with httpx.AsyncClient(timeout=30.0) as client:
+        #     response = await client.get('https://intranet.emk.ru/api/users/get_all_users', cookies=cookies)
+        #     if response.status_code == 200:
+        #         users = get_from_response(response)
+        users = await self.UserModel.all(session)
         is_employment_none_count = []
         is_employment_str_count = []
         is_employment_exist_count = []
         if users:
+            
             for user in users:
+                
+                user = user.__dict__
                 if user['active'] is True:
                     if 'date_of_employment' not in user['indirect_data']:
                         if user['id'] in [2, 508]:
@@ -748,7 +752,7 @@ class User:
                         #     convert_date = make_date_valid(user['indirect_data']['date_register'])
                         #     date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
                         #     user['indirect_data']['date_of_employment'] = date_of_employment
-                        is_employment_exist_count.append(user['id'])
+                        is_employment_exist_count.append(user)
                         continue
                     if 'date_of_employment' in user['indirect_data'] and user['indirect_data']['date_of_employment'] == '':
                         is_employment_str_count.append(user['id'])
@@ -760,22 +764,30 @@ class User:
                         # сюда добавить в инд дату трудоустройства и закинуть в функцию на обновление пользователя
                         is_employment_none_count.append(user['id'])
                         continue
-        # for user in is_employment_exist_count:
-        #     # if isinstance(user, int):
-        #     #     print(user)
-        #     ind_data = copy.deepcopy(user['indirect_data'])
-        #     user.pop('indirect_data')
-        #     if 'indirect_data' in ind_data:
-        #         ind_data.pop('indirect_data')
+        res = []
+        for user in is_employment_exist_count:
+        # #     # if isinstance(user, int):
+        # #     #     print(user)
+        #     # ind_data = copy.deepcopy(user['indirect_data'])
+        #     # user.pop('indirect_data')
+            if ('indirect_data' in user and 'date_of_employment' not in user['indirect_data']) or ('indirect_data' in user and user['indirect_data']['date_of_employment'] is None):
+                if 'date_register' in user['indirect_data'] and user['indirect_data']['date_register'] != "":
+                    convert_date = make_date_valid(user['indirect_data']['date_register'])
+                    date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                    user['indirect_data']['date_of_employment'] = date_of_employment
+            res.append(user)
+            await self.upload_one_user(user, session)
+            # if 'indirect_data' in ind_data:
+                # ind_data.pop('indirect_data')
         #     for key, value in ind_data.items():
         #         user[key] = value
             
         #     async with httpx.AsyncClient(timeout=30.0) as client:
         #         data = json.dumps(user)
         #         response = await client.post(f'https://intranet.emk.ru/api/users/upload_one_user', cookies=cookies, data=data)
-
+        return res
         # return True
-        return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
+        # return [is_employment_none_count, is_employment_str_count, is_employment_exist_count]
 
     async def create_metrics_for_departments(self, session):
         import httpx
@@ -1141,33 +1153,51 @@ async def check_date_of_employment(session: AsyncSession = Depends(get_async_db)
 @users_router.put("/put_user_to_vis", tags=["Пользователь"])
 async def put_user_to_vis(usr_data = Body(), session: AsyncSession = Depends(get_async_db)):
     return await User().put_user_to_vis(session=session, usr_data=usr_data)
-# @users_router.post("/search_indirect")
-# def search_indirect(key_word):
-#     #будет работать через elasticsearch
-#     return UserSearchModel().search_indirect(key_word)
 
-
-# @users_router.post("/search")
-# def search_user(jsn=Body()):
-#     #будет работать через elasticsearch
-#     return UserSearchModel().search_model(jsn)
-
-# Пользователя можно найти
-# @users_router.post("/search/{username}")
-# def search_user(username: str): # jsn=Body()
-#     return UserSearchModel().search_by_name(username)
-
-# загрузить дату в ES
-# @users_router.put("/elastic_data")
-# def upload_users_to_es():
-#     return UserSearchModel().dump()
-
-
-# лайки и просмотры для статистики
-# @users_router.post("/has_liked")
-# def has_liked(user_id: int, art_id: int):
-#     return User(id=user_id).has_liked(art_id)
-
-# @users_router.get("/get_user_uuid_likes")
-# def get_user_uuid_likes(user_uuid: str):
-#     return User(uuid=user_uuid).has_liked_by_uuid()
+@users_router.get('/get_new_users_ids', tags=["Пользователь"])
+async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
+    from ..services.Peer import Peer
+    from datetime import datetime
+    from ..base.pSQL.models.User import User
+    from sqlalchemy import select, func, case
+    
+    DATE_START_MERCH = datetime.strptime("03.02.2026", "%d.%m.%Y").date()
+    
+    # Используем raw-строки (r"...") для regex
+    date_of_employment_expr = case(
+        # Если формат ISO (YYYY-MM-DD)
+        (
+            User.indirect_data['date_of_employment'].astext.op('~')(r'^\d{4}-\d{2}-\d{2}'),
+            func.date(User.indirect_data['date_of_employment'].astext)
+        ),
+        # Если формат DD.MM.YYYY
+        (
+            User.indirect_data['date_of_employment'].astext.op('~')(r'^\d{2}\.\d{2}\.\d{4}'),
+            func.to_date(User.indirect_data['date_of_employment'].astext, 'DD.MM.YYYY')
+        ),
+        # Для всех остальных - NULL
+        else_=None
+    )
+    
+    stmt = select(
+        User
+    ).where(
+        User.indirect_data['date_of_employment'].astext.isnot(None),
+        User.indirect_data['date_of_employment'].astext != '',
+        date_of_employment_expr >= DATE_START_MERCH
+    )
+    
+    result = await session.execute(stmt)
+    users = result.scalars().all()
+    for user_id in users:
+        # print(user_id.id)
+        send_data = {
+            "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
+            # "uuid_to": int(user_id['id']),
+            "uuid_to": int(user_id.id),
+            "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
+            "description": f"Добро пожаловать в ЭМК!"
+        }
+        send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
+    await session.commit()
+    return users

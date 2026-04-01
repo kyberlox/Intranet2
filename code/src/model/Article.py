@@ -1685,7 +1685,7 @@ class Article:
                 tags = []
                 for tag_id in art['indirect_data']['tags']:
                     tag = {}
-                    res = await Tag(id=tag_id).get_tag_by_id(session)
+                    res = await Tag(id=int(tag_id)).get_tag_by_id(session)
                     tag_name = res.tag_name
                     if tag_name:
                         tag['id'] = tag_id
@@ -3046,6 +3046,13 @@ async def elastic_search(keyword: str):
 
 # лайки и просмотры для статистики
 @article_router.get("/get_article_likers/{ID}", tags=["Статьи"])
+async def get_article_likers(ID: int, session: AsyncSession = Depends(get_async_db)):
+    art = Article()
+    art.id = ID
+    return await art.get_article_likers(session)
+
+# все кто видел новость
+@article_router.get("/get_article_views/{ID}", tags=["Статьи"])
 async def get_article_likers(ID: int, session: AsyncSession = Depends(get_async_db)):
     art = Article()
     art.id = ID

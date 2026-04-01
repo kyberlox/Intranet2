@@ -74,6 +74,18 @@ async def get_today_birthdays() -> List[int]:
         LogsMaker().info_message(f"Найдено пользователей с днём рождения: {len(birthdays)}")
         return birthdays
 
+async def get_new_users(session) -> List[int]:
+    from sqlalchemy import select
+    
+    from ..base.pSQL.objects.App import NewUser
+    
+    
+    # Выполняем запрос
+    stmt = select(NewUser)
+    result = await session.execute(stmt)
+    ids = result.scalars().all()
+    return ids
+
 async def get_registration_anniversaries() -> List[Dict[str, Any]]:
     """
     Найти юбилеи регистрации (5, 10, 15, 20, 25, 30 лет)
@@ -206,18 +218,19 @@ async def send_to_new_users():
     from ..model.User import User
     try:
         async with AsyncSessionLocal() as db:
-            users = await User().get_new_workers(session=db)
+            users = await get_new_users(session=db)
             for user_id in users:
                 send_data = {
                     "uuid_from": 2, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК НАШЕГО АДМИНИСТРАТИВНОГО АККАУНТА
-                    "uuid_to": int(user_id['id']),
+                    # "uuid_to": int(user_id['id']),
+                    "uuid_to": int(user_id),
                     "activities_id": 3, #  В БУДУЩЕМ ПОСТАВИТЬ АЙДИИШНИК АКТИВНОСТИ 
                     "description": f"Добро пожаловать в ЭМК!"
                 }
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
 
                 if send_point['status'] == 'info':
-                    user_info = await User(id=int(user_id['id'])).search_by_id(session=db)
+                    user_info = await User(id=int(user_id)).search_by_id(session=db)
                     if 'email' in user_info and user_info['email']:
                         data = {'sender': user_info['email']}
                         SendEmail(data=data).send_to_new_wrokers()
@@ -544,7 +557,7 @@ class AioSchedulerManager:
         task = asyncio.create_task(daily_time_wrapper())
         
         # Сохраняем задачу
-        job_id = f"daily_{hour:02d}{minute:02d}_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        job_id = f"weekly_{2:}{00}_{coro_func.__name__}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         self.jobs[job_id] = task
         
         logger = LogsMaker()

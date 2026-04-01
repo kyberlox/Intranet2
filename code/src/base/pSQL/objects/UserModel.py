@@ -602,6 +602,7 @@ class UserModel:
                                 if str(de.id) in manufactures:
                                     # user_info['location'] = manufactures[de.id]
                                     if manufactures[de.id] not in list_departs:
+                                        print(899324)
                                         list_departs.append(manufactures[de.id])
                                         continue
                                     

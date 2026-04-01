@@ -612,7 +612,7 @@ class UserModel:
                                         continue
                                 
                                 res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
-                                
+                                print(123, user['id'])
                                 if res_manufacture:
                                     user_info['location'] = manufactures[int(res_manufacture)]
 

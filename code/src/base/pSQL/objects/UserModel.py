@@ -721,7 +721,7 @@ class UserModel:
                         user_info['user_fio'] = f'{user[2]} {user[3]}'
                     else:
                         user_info['user_fio'] = f'{user[2]} {user[3]} {user[4]}'
-                    user_info['position'] = indirect_data['work_position']
+                    user_info['position'] = indirect_data.get('work_position')
                     user_info['department'] = indirect_data['uf_department']
                     user_info['image'] = f'{DOMAIN}{user_image["URL"]}'
                     users.append(user_info)

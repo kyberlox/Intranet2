@@ -599,21 +599,21 @@ class UserModel:
 
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)  # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
                             for de in dep_str:
-                                if str(de.id) in manufactures:
+                                if de.id in manufactures:
                                     # user_info['location'] = manufactures[de.id]
                                     if manufactures[de.id] not in list_departs:
                                         print(899324)
                                         list_departs.append(manufactures[de.id])
                                         continue
                                     
-                                elif str(de.father_id) in manufactures:
+                                elif de.father_id in manufactures:
                                     if manufactures[de.father_id] not in list_departs:
                                         list_departs.append(de.__dict__['name'])
                                         user_info['location'] = manufactures[de.father_id]
                                         continue
                                 
                                 res_manufacture = await self.get_user_manufacture(dep_id=de.father_id, manufactures=manufactures, session=session)
-                                print(123, user['id'], res_manufacture, manufactures)
+                                print(123, user['id'], res_manufacture, manufactures.keys())
                                 if res_manufacture:
                                     user_info['location'] = manufactures[int(res_manufacture)]
 
@@ -687,13 +687,13 @@ class UserModel:
                             dep_str = await DepartmentModel(dep).find_dep_by_id(session)
                             for de in dep_str:
                                 # list_departs.append(de.__dict__['name'])
-                                if str(de.id) in manufactures:
+                                if de.id in manufactures:
                                     # user_info['location'] = manufactures[de.id]
                                     if manufactures[de.id] not in list_departs:
                                         list_departs.append(manufactures[de.id])
                                         continue
                                     
-                                elif str(de.father_id) in manufactures:
+                                elif de.father_id in manufactures:
                                     if manufactures[de.father_id] not in list_departs:
                                         list_departs.append(de.__dict__['name'])
                                         user_info['location'] = manufactures[de.father_id]

@@ -219,6 +219,9 @@ class UservisionsRootModel:
         if users_in_vis:
             for user in users_in_vis:
                 user_info = await UserModel(Id=user).find_by_id(session=session)
+                if not user_info:
+                    print(user, 'который отсутствует')
+                    continue
                 if not user_info.get('indirect_data'):
                     continue
                 if not user_info['indirect_data']:

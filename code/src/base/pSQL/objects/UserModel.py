@@ -744,6 +744,7 @@ class UserModel:
         from .UservisionsRootModel import UservisionsRootModel
         from sqlalchemy import select, cast, Integer
         from ..models.Article import Article
+        from ..models.Roots import Roots
         try:
             # manufactures = await self.get_manufactures_id(session)
             vis_id = None
@@ -791,12 +792,14 @@ class UserModel:
                
                 else:
                     # Смотрим в каких ОВ коллеги пользователя
-                    stmt = select(self.user.id).where(
+                    stmt = select(Roots.root_token['VisionRoots']).join(
+                        self.user, self.user.id = Roots.user_uuid
+                    ).where(
                         self.user.indirect_data['uf_department'].contains([usr_data['indirect_data']['uf_department_id'][0]])
                     )
                     res_stmt = await session.execute(stmt)
-                    worker = res_stmt.scalar()
-                    print(worker, 'получили коллегу по цеху')
+                    worker_roots = res_stmt.scalar()
+                    print(worker_roots, 'получили коллегу по цеху')
                     
                     # return f"ОВ ЦО = {vis_id}"
             # else:           

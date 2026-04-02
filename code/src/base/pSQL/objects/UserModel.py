@@ -815,7 +815,7 @@ class UserModel:
                 await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)
             else:
                 from ..models.Fieldvision import Fieldvision
-                stmt = await session.execute(select(Fieldvision.id).where(Fieldvision.name == 'Центральный офис'))
+                stmt = await session.execute(select(Fieldvision.id).where(Fieldvision.name == 'Для разработчиков'))
                 vision = stmt.scalar()
                 print(vision, 'куда засунем пользователя')
 

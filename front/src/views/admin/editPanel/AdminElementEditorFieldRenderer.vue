@@ -16,8 +16,9 @@
                             value: newElementSkeleton.find((e) => e.field == 'vision_select')?.value || ''
                         }" />
 
-        <!-- Поле выбора областей видимости -->
+        <!-- Поле выбора областей видимости  -->
         <AdminEditTags v-if="item.field == 'vision'"
+                       :needAllButton="Boolean(item.field == 'vision')"
                        :tagsTitle="'Определите кому доступна эта новость'"
                        :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.value as string[]))"
                        :allTags="(newElementSkeleton.find((e) => e.field == 'all_visions')?.values as ITag[])"

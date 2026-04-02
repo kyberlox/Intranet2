@@ -745,6 +745,7 @@ class UserModel:
         from sqlalchemy import select, cast, Integer
         from ..models.Article import Article
         from ..models.Roots import Roots
+        from ..models.User import User
         try:
             # manufactures = await self.get_manufactures_id(session)
             vis_id = None
@@ -793,11 +794,9 @@ class UserModel:
                 else:
                     # Смотрим в каких ОВ коллеги пользователя
                     stmt = select(Roots.root_token['VisionRoots']).join(
-                        self.user, self.user.id == Roots.user_uuid
-                    ).select_from(
-                        self.user
+                        User, User.id == Roots.user_uuid
                     ).where(
-                        self.user.indirect_data['uf_department'].contains([usr_data['indirect_data']['uf_department_id'][0]])
+                        User.indirect_data['uf_department'].contains([usr_data['indirect_data']['uf_department_id'][0]])
                     )
                     res_stmt = await session.execute(stmt)
                     worker_roots = res_stmt.scalar()

@@ -778,7 +778,7 @@ class UserModel:
                         )
                         res_stmt = await session.execute(stmt)
                         vis_id = res_stmt.scalar()
-                    elif  usr_data['indirect_data'].get('work_city') == 'г. Санкт-Петербург'
+                    elif  usr_data['indirect_data'].get('work_city') == 'г. Санкт-Петербург':
                         # Выполняем запрос
                         stmt = select(
                             Article.indirect_data['vision_select']

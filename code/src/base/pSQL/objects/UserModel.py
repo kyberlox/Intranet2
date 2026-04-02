@@ -748,10 +748,13 @@ class UserModel:
         try:
             # manufactures = await self.get_manufactures_id(session)
             vis_id = None
+            print(123)
             #получаем родителя
             if usr_data['indirect_data']['uf_department_id'][0] in MANUFACTURES_IDS:
+                print(1233)
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
+                print(1234)
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=MANUFACTURES_IDS, session=session)
             print(123)
             # Смотрим завод ли это
@@ -810,7 +813,6 @@ class UserModel:
             
 
             if vis_id:
-                print(123)
                 await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)
             else:
                 from ..models.Fieldvision import Fieldvision

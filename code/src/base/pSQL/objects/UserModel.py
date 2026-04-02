@@ -748,14 +748,12 @@ class UserModel:
         try:
             # manufactures = await self.get_manufactures_id(session)
             vis_id = None
-            print(123)
             #получаем родителя
             if usr_data['indirect_data']['uf_department_id'][0] in MANUFACTURES_IDS:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
-                print(1234)
                 user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=MANUFACTURES_IDS, session=session)
-            print(123)
+            
             # Смотрим завод ли это
             if user_manufacture:
                 # Выполняем запрос

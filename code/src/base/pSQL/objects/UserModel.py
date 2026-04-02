@@ -801,21 +801,23 @@ class UserModel:
                     res_stmt = await session.execute(stmt)
                     worker_roots = res_stmt.first()
                     print(worker_roots, 'получили коллегу по цеху')
+                    if worker_roots:
+                        for vision in worker_roots:
+                            await UservisionsRootModel(user_id=usr_data['id'], vision_id=vision).upload_user_to_vision(session)
+                        return True
                     
                     # return f"ОВ ЦО = {vis_id}"
-            # else:           
-            #     # Выполняем запрос
-            #     stmt = select(
-            #         Article.indirect_data['vision_select']
-            #     ).where(
-            #         Article.section_id == 9,
-            #         cast(Article.indirect_data['manufacture_id'], Integer) == int(user_manufacture)
-            #     )
-            #     res_stmt = await session.execute(stmt)
-            #     vis_id = res_stmt.scalar()
-            # return f"ОВ Предприятий = {vis_id}"
+            
+
             if vis_id:
                 await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)
+            else:
+                from ..models.Fieldvision import Fieldvision
+                stmt = await session.execute(select(Fieldvision.id).where(Fieldvision.name == 'Центральный офис'))
+                vision = stmt.scalar()
+                print(vision, 'куда засунем пользователя')
+
+
             return True
             
         except Exception as e:

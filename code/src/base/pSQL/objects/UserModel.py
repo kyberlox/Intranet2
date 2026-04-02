@@ -799,7 +799,7 @@ class UserModel:
                         User.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'])
                     )
                     res_stmt = await session.execute(stmt)
-                    worker_roots = res_stmt.scalar()
+                    worker_roots = res_stmt.first()
                     print(worker_roots, 'получили коллегу по цеху')
                     
                     # return f"ОВ ЦО = {vis_id}"

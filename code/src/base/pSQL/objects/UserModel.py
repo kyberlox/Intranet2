@@ -792,7 +792,7 @@ class UserModel:
                 else:
                     # Смотрим в каких ОВ коллеги пользователя
                     stmt = select(self.user.id).where(
-                        self.user.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'][0])
+                        cast(self.user.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'][0]))
                     )
                     res_stmt = await session.execute(stmt)
                     worker = res_stmt.scalar()

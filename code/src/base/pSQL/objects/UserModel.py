@@ -792,10 +792,11 @@ class UserModel:
                
                 else:
                     # Смотрим в каких ОВ коллеги пользователя
-                    stmt = select(Roots.root_token, self.user.id).join(
+                    stmt = select(Roots.root_token['VisionRoots'], self.user.id).join(
                         self.user, self.user.id == Roots.user_uuid
                     ).where(
-                        self.user.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'])
+                        self.user.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id']),
+                        Roots.root_token.has_key('VisionRoots')
                     )
                     res_stmt = await session.execute(stmt)
                     worker_roots = res_stmt.first()

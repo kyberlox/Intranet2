@@ -49,6 +49,11 @@
     display: flex;
     align-items: center;
 
+    &--active {
+        background-color: #ef7f1b;
+        color: #ffffff;
+    }
+
     &:hover {
         background-color: #ef7f1b;
         color: #ffffff;

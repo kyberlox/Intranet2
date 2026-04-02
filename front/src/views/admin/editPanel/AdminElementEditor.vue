@@ -40,7 +40,6 @@
       <span class="admin-element-inner__action-text">Назад</span>
     </button>
     <button @click="applyNewData"
-            :disabled="buttonIsDisabled"
             class="admin-element-inner__action-button admin-element-inner__action-button--save">
       <span class="admin-element-inner__action-text">Сохранить</span>
     </button>
@@ -67,6 +66,7 @@ import type { IAdminListItem, INewFileData, IBXFileType, IFileToUpload } from '@
 import type { IUserList } from '@/components/tools/common/SearchList.vue';
 import type { IUsersLoad } from '@/interfaces/IPostFetch';
 import type { AxiosProgressEvent } from 'axios';
+import { featureFlags } from '@/assets/static/featureFlags';
 
 type AdminElementValue = string | IBXFileType | number | string[] | number[] | boolean | undefined | Array<{ link: string; name: string } | IUserList>;
 
@@ -107,7 +107,6 @@ export default defineComponent({
     const events = ref<Event[]>([]);
     const previewFullWidth = ref(false);
     const activeType: Ref<"noPreview" | "news" | "interview" | "blogs"> = ref('news');
-    const buttonIsDisabled = ref(false);
     const isCreateNew = ref(true);
     const inputKey = ref(0);
     const users = ref<string[]>([]);
@@ -180,7 +179,6 @@ export default defineComponent({
 
     const applyNewData = () => {
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
-      buttonIsDisabled.value = true;
 
       if (artVision.value && newElementSkeleton.value.find(e => e.field == 'vision')) {
         newData.value.vision = artVision.value
@@ -192,19 +190,23 @@ export default defineComponent({
             handleApiError(error, toast)
           })
       }
+      console.log(newData);
 
-      Api.post('file/upload_link', { art_id: newId.value, links: newEmbedList.value })
-        .then(() => Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
-          .then((data) => {
-            handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
-            router.push({ name: 'adminBlockInner', params: { id: props.id } })
-          })
-          .catch((error) => {
-            handleApiError(error, toast)
-          })
-          .finally(() => {
-            buttonIsDisabled.value = false;
-          }))
+      // проверка на выставление областей видимости у афишы и корп событиях
+      if ((props.id == '53' || props.id == '51') && featureFlags.visibleArea && (!newData.value?.vision?.length || !('vision' in newData.value))) {
+        toast.showError('noVisionError');
+      }
+      else
+        Api.post('file/upload_link', { art_id: newId.value, links: newEmbedList.value })
+          .then(() => Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
+            .then((data) => {
+              handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
+              router.push({ name: 'adminBlockInner', params: { id: props.id } })
+            })
+            .catch((error) => {
+              handleApiError(error, toast)
+            })
+          )
     }
 
     const handleUpload = (e: IFileToUpload | string[], embed: boolean = false) => {
@@ -307,7 +309,6 @@ export default defineComponent({
       previewFullWidth,
       activeType,
       newElementSkeleton,
-      buttonIsDisabled,
       newData,
       newFileData,
       isMobileScreen,

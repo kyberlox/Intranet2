@@ -853,7 +853,8 @@ class UserModel:
         result = dep_id
         while True:
             dep_str = await DepartmentModel(result).find_dep_by_id(session)
-            print('че присылает', dep_str)
+            if not dep_str:
+                return None
             father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод

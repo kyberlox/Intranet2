@@ -30,8 +30,9 @@ MANUFACTURES_IDS = {
     208: 'ООО «Пульсатор»', 
     193: 'ООО «Техно-Сфера»', 
     114: 'ООО «АРМАТОМ»', 
-    125: 'ООО «ТехПромАрма»', 
+    # 125: 'ООО «ТехПромАрма»', 
     69: 'ЗАО «Курганспецарматура»', 
+    121: "ВАЗ", 
     74: 'АО «НПО Регулятор»', 
     206: 'АО «Тулаэлектропривод»'
 }
@@ -744,39 +745,16 @@ class UserModel:
         from sqlalchemy import select, cast, Integer
         from ..models.Article import Article
         try:
-            manufactures = await self.get_manufactures_id(session)
+            # manufactures = await self.get_manufactures_id(session)
             vis_id = None
             #получаем родителя
-            if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
+            if usr_data['indirect_data']['uf_department_id'][0] in MANUFACTURES_IDS:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
-                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
-            
-            if not user_manufacture:
-                if usr_data['indirect_data'].get('work_city') and usr_data['indirect_data'].get('work_city') == 'Москва':
-                    # Выполняем запрос
-                    stmt = select(
-                        Article.indirect_data['vision_select']
-                    ).where(
-                        Article.section_id == 9,
-                        Article.name == 'Москва'
-                    )
-                    res_stmt = await session.execute(stmt)
-                    vis_id = res_stmt.scalar()
-                    # return f"ОВ Москвы = {vis_id}"
-                
-                else:
-                    # Выполняем запрос
-                    stmt = select(
-                        Article.indirect_data['vision_select']
-                    ).where(
-                        Article.section_id == 9,
-                        Article.name == 'Центральный офис'
-                    )
-                    res_stmt = await session.execute(stmt)
-                    vis_id = res_stmt.scalar()
-                    # return f"ОВ ЦО = {vis_id}"
-            else:           
+                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=MANUFACTURES_IDS, session=session)
+
+            # Смотрим завод ли это
+            if user_manufacture:
                 # Выполняем запрос
                 stmt = select(
                     Article.indirect_data['vision_select']
@@ -786,6 +764,51 @@ class UserModel:
                 )
                 res_stmt = await session.execute(stmt)
                 vis_id = res_stmt.scalar()
+
+            else:  
+                # Смотрим Мо сква это или Питер
+                if usr_data['indirect_data'].get('work_city') and (usr_data['indirect_data'].get('work_city') == 'Москва' or usr_data['indirect_data'].get('work_city') == 'г. Санкт-Петербург'):
+                    if usr_data['indirect_data'].get('work_city') == 'Москва':
+                        # Выполняем запрос
+                        stmt = select(
+                            Article.indirect_data['vision_select']
+                        ).where(
+                            Article.section_id == 9,
+                            Article.name == 'Москва'
+                        )
+                        res_stmt = await session.execute(stmt)
+                        vis_id = res_stmt.scalar()
+                    elif  usr_data['indirect_data'].get('work_city') == 'г. Санкт-Петербург'
+                        # Выполняем запрос
+                        stmt = select(
+                            Article.indirect_data['vision_select']
+                        ).where(
+                            Article.section_id == 9,
+                            Article.name == 'Санкт-Петербург'
+                        )
+                        res_stmt = await session.execute(stmt)
+                        vis_id = res_stmt.scalar()
+               
+                else:
+                    # Смотрим в каких ОВ коллеги пользователя
+                    stmt = select(self.user.id).where(
+                        self.user.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'][0])
+                    )
+                    res_stmt = await session.execute(stmt)
+                    worker = res_stmt.scalar()
+                    print(worker, 'получили коллегу по цеху')
+                    
+                    # return f"ОВ ЦО = {vis_id}"
+            # else:           
+            #     # Выполняем запрос
+            #     stmt = select(
+            #         Article.indirect_data['vision_select']
+            #     ).where(
+            #         Article.section_id == 9,
+            #         cast(Article.indirect_data['manufacture_id'], Integer) == int(user_manufacture)
+            #     )
+            #     res_stmt = await session.execute(stmt)
+            #     vis_id = res_stmt.scalar()
             # return f"ОВ Предприятий = {vis_id}"
             if vis_id:
                 await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)

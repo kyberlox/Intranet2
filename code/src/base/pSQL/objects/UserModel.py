@@ -817,7 +817,7 @@ class UserModel:
                 from ..models.Fieldvision import Fieldvision
                 stmt = await session.execute(select(Fieldvision.id).where(Fieldvision.vision_name == 'Для разработчиков'))
                 vision = stmt.scalar()
-                print(vision, 'куда засунем пользователя')
+                await UservisionsRootModel(user_id=usr_data['id'], vision_id=vision).upload_user_to_vision(session)
 
 
             return True

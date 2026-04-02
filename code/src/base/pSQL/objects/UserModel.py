@@ -796,7 +796,7 @@ class UserModel:
                     stmt = select(Roots.root_token['VisionRoots']).join(
                         User, User.id == Roots.user_uuid
                     ).where(
-                        User.indirect_data['uf_department'].contains([usr_data['indirect_data']['uf_department_id'][0]])
+                        User.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'])
                     )
                     res_stmt = await session.execute(stmt)
                     worker_roots = res_stmt.scalar()

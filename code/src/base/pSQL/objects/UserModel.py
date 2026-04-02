@@ -793,7 +793,7 @@ class UserModel:
                
                 else:
                     # Смотрим в каких ОВ коллеги пользователя
-                    stmt = select(Roots.root_token['VisionRoots']).join(
+                    stmt = select(Roots.root_token).join(
                         User, User.id == Roots.user_uuid
                     ).where(
                         User.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id'])

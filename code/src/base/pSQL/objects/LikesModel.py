@@ -62,6 +62,8 @@ class LikesModel:
             self.reactions["views"] = views
             likes_count = await self.get_likes_count(session=session)
             self.reactions["likes"]["count"] = likes_count
+            
+            
             # async with AsyncSessionLocal() as session:
             #     views = await ViewsModel(art_id=self.art_id).get_art_viewes(session)
             #     self.reactions["views"] = views
@@ -102,6 +104,9 @@ class LikesModel:
 
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
                 await session.commit()
+
+            self.reactions["likes"]["users"] = await self.get_article_likers(session)
+            
             return self.reactions
         except Exception as e:
             # await session.rollback()
@@ -151,7 +156,8 @@ class LikesModel:
 
             if existing_like:
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
-            
+
+            self.reactions["likes"]["users"] = await self.get_article_likers(session)
             return self.reactions
 
         except Exception as e:
@@ -200,7 +206,7 @@ class LikesModel:
 
         return [like.article_id for like in likes]
 
-
+    
     async def get_article_likers(self, session):
         """
         Возвращает список пользователей, которые лайкнули статью.

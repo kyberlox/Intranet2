@@ -201,7 +201,7 @@ class LikesModel:
         return [like.article_id for like in likes]
 
 
-    async def get_article_likers(self, session) -> List[int]:
+    async def get_article_likers(self, session):
         """
         Возвращает список пользователей, которые лайкнули статью.
 

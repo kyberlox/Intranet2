@@ -689,7 +689,7 @@ class User:
                     data_stat = []
                     #заполняем сеансы
                     async with httpx.AsyncClient(timeout=30.0) as client:
-                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_inf.id}%27&include_undefined=true')
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_inf.id}%27&include_undefined=true')
                         if response.status_code == 200:
                             
                             res = response.text

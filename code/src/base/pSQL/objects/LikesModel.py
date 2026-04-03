@@ -226,7 +226,7 @@ class LikesModel:
             UserFiles, UserFiles.user_id == User.id
         ).where(
             self.Likes.article_id == self.art_id,
-            self.Likes.active == True
+            self.Likes.is_active == True
         )
         result = await session.execute(stmt)
         likers = result.mappings().all()

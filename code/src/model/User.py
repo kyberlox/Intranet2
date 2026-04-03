@@ -698,7 +698,7 @@ class User:
                             if not data_stat:
                                 continue
                             
-                            print(data_stat, 'че получили')
+                            
                             ws[f'F{row_number}'] = f'{int(data_stat[0])}'
                             ws[f'G{row_number}'] = f'{int(data_stat[1])}'
                             

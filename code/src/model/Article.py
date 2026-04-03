@@ -2207,6 +2207,11 @@ class Article:
             date_list = []  # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
             for values in articles_in_section:
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
+                    
                 if values["active"] is False:
                     pass
                 else:
@@ -2450,15 +2455,6 @@ class Article:
                     video_news.append(news)
             second_page['images'] = video_news
             return second_page
-
-        # # микс
-        # elif section_id == 9:
-        #     second_page = {
-        #         "id": 9,
-        #         "type": "mixedRowBlock",
-        #         "content": []
-        #     }
-        #     return second_page
 
         # Афиша
         elif section_id == 53:

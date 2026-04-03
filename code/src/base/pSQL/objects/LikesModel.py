@@ -203,20 +203,37 @@ class LikesModel:
 
     async def get_article_likers(self, session) -> List[int]:
         """
-        Возвращает список ID пользователей, которые лайкнули статью.
+        Возвращает список пользователей, которые лайкнули статью.
 
         Args:
             art_id: ID статьи
 
         Returns:
-            Список user_id пользователей, которые лайкнули статью
+            Список user пользователей, которые лайкнули статью
         """
+        from ..models.User import User
+        from ..models.UserFiles import UserFiles
 
-        # async with AsyncSessionLocal() as session:
-            # Проверяем, есть ли уже активный лайк
-        stmt = select(self.Likes.user_id).where(self.Likes.article_id == self.art_id)
+        stmt = select(
+            User.id,
+            User.name,
+            User.second_name,
+            User.last_name,
+            UserFiles.URL.label('photo_file_url')
+        ).join(
+            self.Likes, self.Likes.user_id == User.id
+        ).outerjoin(
+            UserFiles, UserFiles.user_id == User.id
+        ).where(
+            self.Likes.article_id == self.art_id,
+            self.Likes.active == True
+        )
         result = await session.execute(stmt)
-        likers = result.all()
+        likers = result.mappings().all()
+
+        # stmt = select(self.Likes.user_id).where(self.Likes.article_id == self.art_id)
+        # result = await session.execute(stmt)
+        # likers = result.all()
         # likers = database.query(self.Likes.user_id).filter(
         #     self.Likes.article_id == self.art_id,
         #     self.Likes.is_active == True
@@ -224,7 +241,7 @@ class LikesModel:
         
          
 
-        return [liker.user_id for liker in likers]
+        return likers
 
 
     async def add_like_from_b24(self, created_at, session) -> bool:

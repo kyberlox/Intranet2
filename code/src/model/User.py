@@ -683,13 +683,13 @@ class User:
                     # else:
                     #     ws[f'I{row_number}'] = f'Нет'
                     
-                    if 'work_position' in indirect_data and indirect_data['work_position']:
+                    if 'work_position' in indirect_data and indirect_data['work_position']: # metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds
                         ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
 
                     data_stat = []
                     #заполняем сеансы
                     async with httpx.AsyncClient(timeout=30.0) as client:
-                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1={date1}&date2={date2}&limit=500&filters=ym:s:userParamsLevel2=={user_inf.id}&include_undefined=true')
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_inf.id}%27&include_undefined=true')
                         if response.status_code == 200:
                             res = response.text
                             visits = json.loads(res)

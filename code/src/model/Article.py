@@ -2690,7 +2690,7 @@ class Article:
 
     # для статистики лайки и просмотры
     async def get_article_likers(self, session):
-        return LikesModel(art_id=self.id).get_article_likers(session=session)
+        return await LikesModel(art_id=self.id).get_article_likers(session=session)
 
     async def get_popular_articles(self, limit, session):
         return LikesModel().get_popular_articles(limit=limit, session=session)

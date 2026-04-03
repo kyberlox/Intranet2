@@ -694,7 +694,8 @@ class User:
                             res = response.text
                             visits = json.loads(res)
                             data_stat = visits['totals']
-
+                            if not data_stat:
+                                continue
                             ws[f'F{row_number}'] = f'{int(data_stat[0])}'
                             ws[f'G{row_number}'] = f'{int(data_stat[1])}'
 

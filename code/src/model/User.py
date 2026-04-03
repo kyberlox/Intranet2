@@ -663,11 +663,11 @@ class User:
                 if user_inf.active is True:
                     row_number += 1
                     indirect_data = user_inf.indirect_data
-
+                    
                     ws[f'A{row_number}'] = user_inf.id
                     # if "name" in user_inf and "last_name" in user_inf: 
                     ws[f'B{row_number}'] = f'{user_inf.last_name} {user_inf.name} {user_inf.second_name}'
-
+                    
                     if 'uf_department' in indirect_data and isinstance(indirect_data['uf_department'], list):
                         if len(indirect_data['uf_department']) >= 1:
                             ped_info = await Department(id=indirect_data['uf_department'][0]).search_dep_by_id(session)
@@ -685,23 +685,27 @@ class User:
                     
                     if 'work_position' in indirect_data and indirect_data['work_position']: # metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds
                         ws[f'E{row_number}'] = f'{indirect_data['work_position']}'
-
+                    
                     data_stat = []
                     #заполняем сеансы
                     async with httpx.AsyncClient(timeout=30.0) as client:
-                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_inf.id}%27&include_undefined=true')
+                        response = await client.get(f'https://api-metrika.yandex.net/stat/v1/data?ids=104472774&dimensions=ym:s:userParamsLevel1,ym:s:userParamsLevel2&metrics=ym:s:visits,ym:s:pageviews,ym:s:avgVisitDurationSeconds&date1=2026-02-01&date2=2026-02-28&limit=100&filters=ym:s:userParamsLevel1==%27UserID%27%20and%20ym:s:userParamsLevel2==%27{user_inf.id}%27&include_undefined=true')
                         if response.status_code == 200:
+                            
                             res = response.text
                             visits = json.loads(res)
                             data_stat = visits['totals']
                             if not data_stat:
                                 continue
+                            
+                            print(data_stat, 'че получили')
                             ws[f'F{row_number}'] = f'{int(data_stat[0])}'
                             ws[f'G{row_number}'] = f'{int(data_stat[1])}'
-
+                            
                             avg_time_min = data_stat[2] // 60
                             avg_time_sec = data_stat[2] % 60
                             ws[f'H{row_number}'] = f'{int(avg_time_min)}:{int(avg_time_sec)}'
+                           
                         # else:
                         #     break
 

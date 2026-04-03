@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, case
 from sqlalchemy.sql.expression import func
 
 from typing import List, Optional, Dict
@@ -8,11 +8,11 @@ from datetime import datetime, timedelta
 from .App import  AsyncSessionLocal, select, get_async_db
 
 import asyncio
-
+import os
 # db_gen = get_db()
 # database = next(db_gen) get_db,
 
-
+HOST = os.getenv('HOST')
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Лайков")
@@ -217,7 +217,10 @@ class LikesModel:
         stmt = select(
             User.id,
             (User.last_name + ' ' + User.name + ' ' + User.second_name).label('name'),
-            UserFiles.URL.label('photo_file_url')
+            case(
+                (UserFiles.URL.isnot(None), func.concat(HOST, UserFiles.URL)),
+                else_=None
+            ).label('photo_file_url')
         ).join(
             self.Likes, self.Likes.user_id == User.id
         ).outerjoin(

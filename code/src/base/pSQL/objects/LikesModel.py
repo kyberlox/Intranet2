@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, case
 from sqlalchemy.sql.expression import func
 
 from typing import List, Optional, Dict
@@ -8,11 +8,11 @@ from datetime import datetime, timedelta
 from .App import  AsyncSessionLocal, select, get_async_db
 
 import asyncio
-
+import os
 # db_gen = get_db()
 # database = next(db_gen) get_db,
 
-
+HOST = os.getenv('HOST')
 
 from src.services.LogsMaker import LogsMaker
 LogsMaker().ready_status_message("Успешная инициализация таблицы Лайков")
@@ -62,6 +62,8 @@ class LikesModel:
             self.reactions["views"] = views
             likes_count = await self.get_likes_count(session=session)
             self.reactions["likes"]["count"] = likes_count
+            
+            
             # async with AsyncSessionLocal() as session:
             #     views = await ViewsModel(art_id=self.art_id).get_art_viewes(session)
             #     self.reactions["views"] = views
@@ -102,6 +104,9 @@ class LikesModel:
 
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
                 await session.commit()
+
+            self.reactions["likes"]["users"] = await self.get_article_likers(session)
+            
             return self.reactions
         except Exception as e:
             # await session.rollback()
@@ -151,7 +156,8 @@ class LikesModel:
 
             if existing_like:
                 self.reactions["likes"]["likedByMe"] = existing_like.is_active
-            
+
+            self.reactions["likes"]["users"] = await self.get_article_likers(session)
             return self.reactions
 
         except Exception as e:
@@ -200,23 +206,41 @@ class LikesModel:
 
         return [like.article_id for like in likes]
 
-
-    async def get_article_likers(self, session) -> List[int]:
+    
+    async def get_article_likers(self, session):
         """
-        Возвращает список ID пользователей, которые лайкнули статью.
+        Возвращает список пользователей, которые лайкнули статью.
 
         Args:
             art_id: ID статьи
 
         Returns:
-            Список user_id пользователей, которые лайкнули статью
+            Список user пользователей, которые лайкнули статью
         """
+        from ..models.User import User
+        from ..models.UserFiles import UserFiles
 
-        # async with AsyncSessionLocal() as session:
-            # Проверяем, есть ли уже активный лайк
-        stmt = select(self.Likes.user_id).where(self.Likes.article_id == self.art_id)
+        stmt = select(
+            User.id,
+            (User.last_name + ' ' + User.name + ' ' + User.second_name).label('name'),
+            case(
+                (UserFiles.URL.isnot(None), func.concat(HOST, UserFiles.URL)),
+                else_=None
+            ).label('photo_file_url')
+        ).join(
+            self.Likes, self.Likes.user_id == User.id
+        ).outerjoin(
+            UserFiles, UserFiles.user_id == User.id
+        ).where(
+            self.Likes.article_id == int(self.art_id),
+            self.Likes.is_active == True
+        )
         result = await session.execute(stmt)
-        likers = result.all()
+        likers = result.mappings().all()
+
+        # stmt = select(self.Likes.user_id).where(self.Likes.article_id == self.art_id)
+        # result = await session.execute(stmt)
+        # likers = result.all()
         # likers = database.query(self.Likes.user_id).filter(
         #     self.Likes.article_id == self.art_id,
         #     self.Likes.is_active == True
@@ -224,7 +248,7 @@ class LikesModel:
         
          
 
-        return [liker.user_id for liker in likers]
+        return likers
 
 
     async def add_like_from_b24(self, created_at, session) -> bool:

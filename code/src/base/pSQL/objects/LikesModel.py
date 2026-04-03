@@ -216,9 +216,7 @@ class LikesModel:
 
         stmt = select(
             User.id,
-            User.name,
-            User.second_name,
-            User.last_name,
+            (User.last_name + ' ' + User.name + ' ' + User.second_name).label('name'),
             UserFiles.URL.label('photo_file_url')
         ).join(
             self.Likes, self.Likes.user_id == User.id

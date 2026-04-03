@@ -232,7 +232,7 @@ class LikesModel:
         ).outerjoin(
             UserFiles, UserFiles.user_id == User.id
         ).where(
-            self.Likes.article_id == self.art_id,
+            self.Likes.article_id == int(self.art_id),
             self.Likes.is_active == True
         )
         result = await session.execute(stmt)

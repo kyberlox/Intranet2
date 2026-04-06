@@ -65,6 +65,9 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.base.pSQL.objects.App import get_async_db
 
+#Пробуем метрики
+from prometheus_fastapi_instrumentator import Instrumentator
+
 # from contextlib import asynccontextmanager
 lifespan = create_lifespan_context()
 load_dotenv()
@@ -83,6 +86,8 @@ app = FastAPI(
     max_upload_size=1024 * 1024 * 1024 * 2,
     lifespan=lifespan  # Подключаем управление жизненным циклом
 )
+
+
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")
@@ -139,7 +144,8 @@ app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
                 
-
+#Пробуем метрики
+Instrumentator().instrument(app).expose(app)
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
 open_links = [

@@ -107,6 +107,20 @@ const router = createRouter({
       }
     },
     {
+      path: '/gallery/videoManagement',
+      name: 'videoInterviewsManagement',
+      component: () => import('@/views/gallery/videoManagement/VideoManagement.vue'),
+    },
+    {
+      path: '/gallery/videoManagement/:id',
+      name: 'videoInterviewManagement',
+      component: () => import('@/views/PostPreview.vue'),
+      props: (route) => ({ id: route.params.id, pageTitle: 'Видеоинтервью с руководством' }),
+      meta: {
+        breadcrumbs: [{ title: 'Главная', route: 'home' }, { title: 'Видеоинтервью', route: 'videoManagement' }]
+      }
+    },
+    {
       path: '/gallery/videoreports',
       name: 'videoReports',
       component: () => import('@/views/gallery/videoReports/VideoReports.vue'),

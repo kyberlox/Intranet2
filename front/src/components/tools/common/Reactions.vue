@@ -6,18 +6,31 @@
         {{ dateConvert(date, 'toStringType') }}
     </div>
     <div v-if="newTypeReaction"
-         class="homeview__grid__card__group-buttons__reaction-buttons">
+         class="homeview__grid__card__group-buttons__reaction-buttons"
+         @mouseleave="usersLikesVisible = false">
         <div v-if="!modifiers.includes('noViews')"
              class="homeview__grid__card__group-buttons__reaction-buttons--views">
             <ViewsIcon />
             {{ newTypeReaction.views }}
         </div>
         <div v-if="newTypeReaction.likes && !modifiers.includes('noLikes')"
+             @mouseenter="usersLikesVisible = true"
              @click.stop.prevent="setLike(id)"
              class="homeview__grid__card__group-buttons__reaction-buttons--like"
              :class="{ 'homeview__grid__card__group-buttons__reaction-buttons--like_active': newTypeReaction.likes.likedByMe }">
             <LikeIcon />
             {{ newTypeReaction.likes.count }}
+        </div>
+        <div v-if="newTypeReaction.likes.users.length && usersLikesVisible"
+             class="homeview__grid__card__group-buttons__reaction__likes-list">
+            <div @click.stop.prevent="$router.push({ name: 'userPage', params: { id: user.id } })"
+                 class="homeview__grid__card__group-buttons__reaction__likes-list__item"
+                 v-for="user in newTypeReaction.likes.users"
+                 :key="user.id">
+                <img class="homeview__grid__card__group-buttons__reaction__likes-list__item__photo"
+                     :src=user.photo_file_url />
+                <div class="homeview__grid__card__group-buttons__reaction__likes-list__item__name">{{ user.name }}</div>
+            </div>
         </div>
     </div>
 </div>
@@ -63,6 +76,8 @@ export default defineComponent({
     },
     setup(props) {
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
+        const usersLikesVisible = ref<boolean>(false);
+
         onMounted(() => {
             Api.get(`article/has_user_liked/${props.id}`)
                 .then(data => { newTypeReaction.value = data });
@@ -77,6 +92,7 @@ export default defineComponent({
 
         return {
             newTypeReaction,
+            usersLikesVisible,
             dateConvert,
             setLike,
         }

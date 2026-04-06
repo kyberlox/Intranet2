@@ -29,12 +29,11 @@
     </div>
 </PullToRefresh>
 <Toast :position="'bottom-right'" />
-<YandexMetrika v-if="userId && Number(userId) !== 1"
-               :uid="userId" />
+<YandexMetrika :uid="userId" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onBeforeMount, ref, onMounted } from "vue";
+import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";

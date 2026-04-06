@@ -304,7 +304,7 @@ class UserSearchModel:
                                     file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
                                     data_row[param] = f"{DOMAIN}{file_inf['URL']}"
                                 else:
-                                    data_row[param] = HOST + 'api/user_files/no_user_photo.jpg'
+                                    data_row[param] = HOST + '/api/user_files/no_user_photo.jpg'
                             else:
                                 data_row[param] = data[param]
                         else:

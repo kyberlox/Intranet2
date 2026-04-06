@@ -79,7 +79,7 @@ class ViewsModel:
             new_view = self.Views(
                 article_id=self.art_id,
                 viewes_count=1,
-                user_id=user_id
+                user_id=int(user_id)
             )
             # new_view.article_id=self.art_id,
             # new_view.viewes_count=1

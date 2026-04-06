@@ -2626,8 +2626,8 @@ class Article:
     # async def get_art_views(self):
     #     return await ViewsModel(art_id=self.id).get_art_viewes()
 
-    async def add_art_view(self, session):
-        return await ViewsModel(art_id=self.id).add_art_view(session=session)
+    async def add_art_view(self, user_id, session):
+        return await ViewsModel(art_id=self.id).add_art_view(user_id=user_id, session=session)
 
     # дамп данных по лайкам из Б24
     async def upload_likes(self, session):

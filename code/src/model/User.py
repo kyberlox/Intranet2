@@ -100,6 +100,8 @@ class User:
     async def search_by_id(self, session):
         self.UserModel.id = self.id
         res = await self.UserModel.find_by_id(session)
+        if not res:
+            return {'id': self.id, 'active': False}
         if res['uuid']:
             vcard_file_url = await self.get_user_qr(user_uuid=res['uuid'])
             res['vcard_file_url'] = vcard_file_url
@@ -108,6 +110,8 @@ class User:
     async def search_by_id_all(self, session):
         self.UserModel.id = self.id
         res = await self.UserModel.find_by_id_all(session)
+        if not res:
+            return {'id': self.id, 'active': False}
         return res
 
     # def get_dep_usrs(self):
@@ -472,6 +476,8 @@ class User:
 
     async def update_user_elastic(self, session):
         user_data = await self.search_by_id(session)
+        if not user_data.get('active'):
+            return LogsMaker().warning_message(f"ElasticSearch не обновил данные пользователя с ID = {self.id}, не актиный User")
         result = await self.UserSearchModel.update_user_el_index(user_data=user_data, session=session)
         if result:
             return LogsMaker().ready_status_message(

@@ -28,6 +28,7 @@ class User(Base):
 
     # Отношения для лайков и просмотров
     likes = relationship("Likes", back_populates="user")
+    views = relationship("Views", back_populates="user")
 
     usdep = relationship("UsDep", back_populates="user")
 

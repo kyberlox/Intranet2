@@ -224,7 +224,7 @@ class LikesModel:
             User.id,
             (User.last_name + ' ' + User.name + ' ' + User.second_name).label('name'),
             case(
-                (UserFiles.URL.isnot(None), func.concat(HOST, UserFiles.URL)),
+                (UserFiles.URL.isnot(None), func.concat(HOST, func.replace(UserFiles.URL, 'user_files', 'compress_image/user'))),
                 else_=None
             ).label('photo_file_url')
         ).join(

@@ -358,7 +358,7 @@ class UserModel:
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
-                result['photo_file_url'] = HOST + '/api/user_files/no_user_photo.jpg'
+                result['photo_file_url'] = HOST + '/api/user_files/no-user-photo.jpg'
                 result['photo_file_b24_url'] = None
 
             return result
@@ -441,7 +441,7 @@ class UserModel:
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
-                result['photo_file_url'] = HOST + '/api/user_files/no_user_photo.jpg'
+                result['photo_file_url'] = HOST + '/api/user_files/no-user-photo.jpg'
                 result['photo_file_b24_url'] = None
 
             return result

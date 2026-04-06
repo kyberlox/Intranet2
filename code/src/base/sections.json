@@ -47,6 +47,12 @@
     "sectionHref": "videoInterview"
   },
   {
+    "id" : 161,
+    "name" : "Видеоинтервью c руководством",
+    "parent_id" : 1,
+    "sectionHref": "videoInterviewManagement"
+  },
+  {
     "id" : 17,
     "name" : "Учебный центр",
     "parent_id" : 1,

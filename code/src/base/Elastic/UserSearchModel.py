@@ -5,6 +5,9 @@ from fastapi import HTTPException
 import asyncio
 from src.services.LogsMaker import LogsMaker
 
+import os 
+
+HOST = os.getenv('HOST')
 
 class UserSearchModel:
     def __init__(self):
@@ -301,7 +304,7 @@ class UserSearchModel:
                                     file_inf = await File(id=data['photo_file_id']).get_users_photo(session)
                                     data_row[param] = f"{DOMAIN}{file_inf['URL']}"
                                 else:
-                                    data_row[param] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                                    data_row[param] = HOST + '/api/user_files/no-user-photo.jpg'
                             else:
                                 data_row[param] = data[param]
                         else:

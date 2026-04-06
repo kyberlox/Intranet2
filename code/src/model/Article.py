@@ -1830,7 +1830,7 @@ class Article:
 
     async def search_by_section_id(self, session, user_id: int = None):
         if self.section_id == "0":
-            main_page = [112, 19, 32, 4, 7, 31, 16, 33, 53, 51]  # 111
+            main_page = [112, 19, 32, 4, 7, 31, 16, 161, 33, 53, 51]  # 111
             page_view = []
 
             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
@@ -1968,7 +1968,7 @@ class Article:
             for res in result:
 
                 if res['active']:
-                    if int(self.section_id) in [31, 16, 33]:
+                    if int(self.section_id) in [31, 16, 161, 33]:
                         # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
                         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
 
@@ -2009,13 +2009,13 @@ class Article:
 
                         
                     #сюда накинуть ограничение на афишу и корп события
-                    if int(self.section_id) in [51, 53]:
+                    if int(self.section_id) in [51, 53, 31, 32, 33, 16, 161, 14]:
                         user_access = await Visions(art_id=res["id"], user_id=user_id).check_user_root(session=session)
                         if not user_access:
                             continue
                     active_articles.append(res)
 
-            SECTIONS_WITH_DATE_PUBLICTION = [16, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42 18, 
+            SECTIONS_WITH_DATE_PUBLICTION = [16, 161, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42 18, 
             if not active_articles:
                 return active_articles
             if self.section_id == "111" or self.section_id == "14":
@@ -2088,6 +2088,11 @@ class Article:
                     continue
 
                 if values["active"] == False:
+                    continue
+                
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
                     continue
 
                 self.id = values["id"]
@@ -2207,6 +2212,11 @@ class Article:
             date_list = []  # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
             for values in articles_in_section:
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
+
                 if values["active"] is False:
                     pass
                 else:
@@ -2270,6 +2280,10 @@ class Article:
             data_list = []  # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
                 if values["active"] is not False:
                     date_value = []  # список для хранения необходимых данных
                     if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
@@ -2327,12 +2341,83 @@ class Article:
             second_page['images'] = interview_news
             return second_page
 
+        # Видеоитервью с руководством
+        elif section_id == 161:
+            current_datetime = datetime.datetime.now()
+            data_list = []  # список для сортировки по дате
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
+            for values in articles_in_section:
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
+                if values["active"] is not False:
+                    date_value = []  # список для хранения необходимых данных
+                    if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
+                        date_value.append(values["id"])
+                        date_value.append(values["name"])
+                        date_value.append(values["preview_text"])
+                        date_value.append(
+                            values["date_publiction"] if values["date_publiction"] is not None else values[
+                                "date_creation"])
+                        data_list.append(date_value)
+                    else:
+                        continue
+
+                    self.id = values["id"]
+
+                    # data_list.append(data_value) # получили список с необходимыми данными
+            # сортируем по дате
+            sorted_data = sorted(data_list, key=lambda x: x[3], reverse=True)
+
+            second_page = {
+                'id': section_id,
+                'type': 'section',
+                'title': 'Видеоинтервью с руководством',
+                'href': 'videoInterviewManagement',
+                'sectionId': 'videoInterviewsManagement',
+                'images': []
+            }
+
+            interview_news = []
+
+            image_url = ''
+            for i, row in enumerate(sorted_data):
+                if i < 5:
+                    news = {}
+                    self.id = row[0]
+                    preview_pict = await self.get_preview(session=session)
+                    # preview_pict = None
+                    if preview_pict is None:
+                        # image_url = None
+                        image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                    else:
+                        image_url = preview_pict
+
+                    news['id'] = row[0]
+                    news['title'] = row[1]
+                    news['description'] = row[2]
+                    news['date'] = row[3]
+                    news['image'] = image_url
+                    # сюда реакции
+                    if user_id is not None:
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
+
+                        news['reactions'] = has_user_liked
+                    interview_news.append(news)
+            second_page['images'] = interview_news
+            return second_page
+
         # Видеорепортажи
         elif section_id == 33:
             current_datetime = datetime.datetime.now()
             date_list = []  # список для сортировки по дате
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
+                #смотрим есть ли пользователь в этой группе ОВ статьи
+                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                if not user_access:
+                    continue
                 if values["active"] is False:
                     pass
                 else:
@@ -2387,15 +2472,6 @@ class Article:
                     video_news.append(news)
             second_page['images'] = video_news
             return second_page
-
-        # # микс
-        # elif section_id == 9:
-        #     second_page = {
-        #         "id": 9,
-        #         "type": "mixedRowBlock",
-        #         "content": []
-        #     }
-        #     return second_page
 
         # Афиша
         elif section_id == 53:
@@ -2627,7 +2703,7 @@ class Article:
 
     # для статистики лайки и просмотры
     async def get_article_likers(self, session):
-        return LikesModel(art_id=self.id).get_article_likers(session=session)
+        return await LikesModel(art_id=self.id).get_article_likers(session=session)
 
     async def get_popular_articles(self, limit, session):
         return LikesModel().get_popular_articles(limit=limit, session=session)

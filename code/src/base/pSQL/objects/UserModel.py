@@ -18,7 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 # from .App import get_db, AsyncSessionLocal
 # db_gen = get_db()
 # database = next(db_gen)
-
+import os
 #!!!!!!!!!!!!!!!
 #from src.model.File import File
 from src.services.LogsMaker import LogsMaker
@@ -30,11 +30,14 @@ MANUFACTURES_IDS = {
     208: 'ООО «Пульсатор»', 
     193: 'ООО «Техно-Сфера»', 
     114: 'ООО «АРМАТОМ»', 
-    125: 'ООО «ТехПромАрма»', 
+    # 125: 'ООО «ТехПромАрма»', 
     69: 'ЗАО «Курганспецарматура»', 
+    121: "ВАЗ", 
     74: 'АО «НПО Регулятор»', 
     206: 'АО «Тулаэлектропривод»'
 }
+
+HOST = os.getenv('HOST')
 
 
 class UserModel:
@@ -355,7 +358,7 @@ class UserModel:
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
-                result['photo_file_url'] = None
+                result['photo_file_url'] = HOST + '/api/user_files/no-user-photo.jpg'
                 result['photo_file_b24_url'] = None
 
             return result
@@ -438,7 +441,7 @@ class UserModel:
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
-                result['photo_file_url'] = None
+                result['photo_file_url'] = HOST + '/api/user_files/no-user-photo.jpg'
                 result['photo_file_b24_url'] = None
 
             return result
@@ -743,40 +746,18 @@ class UserModel:
         from .UservisionsRootModel import UservisionsRootModel
         from sqlalchemy import select, cast, Integer
         from ..models.Article import Article
+        from ..models.Roots import Roots
         try:
-            manufactures = await self.get_manufactures_id(session)
+            # manufactures = await self.get_manufactures_id(session)
             vis_id = None
             #получаем родителя
-            if usr_data['indirect_data']['uf_department_id'][0] in manufactures:
+            if usr_data['indirect_data']['uf_department_id'][0] in MANUFACTURES_IDS:
                 user_manufacture = usr_data['indirect_data']['uf_department_id'][0]
             else:
-                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=manufactures, session=session)
+                user_manufacture = await self.get_user_manufacture(dep_id=usr_data['indirect_data']['uf_department_id'][0], manufactures=MANUFACTURES_IDS, session=session)
             
-            if not user_manufacture:
-                if usr_data['indirect_data'].get('work_city') and usr_data['indirect_data'].get('work_city') == 'Москва':
-                    # Выполняем запрос
-                    stmt = select(
-                        Article.indirect_data['vision_select']
-                    ).where(
-                        Article.section_id == 9,
-                        Article.name == 'Москва'
-                    )
-                    res_stmt = await session.execute(stmt)
-                    vis_id = res_stmt.scalar()
-                    # return f"ОВ Москвы = {vis_id}"
-                
-                else:
-                    # Выполняем запрос
-                    stmt = select(
-                        Article.indirect_data['vision_select']
-                    ).where(
-                        Article.section_id == 9,
-                        Article.name == 'Центральный офис'
-                    )
-                    res_stmt = await session.execute(stmt)
-                    vis_id = res_stmt.scalar()
-                    # return f"ОВ ЦО = {vis_id}"
-            else:           
+            # Смотрим завод ли это
+            if user_manufacture:
                 # Выполняем запрос
                 stmt = select(
                     Article.indirect_data['vision_select']
@@ -786,9 +767,59 @@ class UserModel:
                 )
                 res_stmt = await session.execute(stmt)
                 vis_id = res_stmt.scalar()
-            # return f"ОВ Предприятий = {vis_id}"
+
+            else:  
+                # Смотрим Мо сква это или Питер
+                if usr_data['indirect_data'].get('work_city') and (usr_data['indirect_data'].get('work_city') == 'Москва' or usr_data['indirect_data'].get('work_city') == 'г. Санкт-Петербург'):
+                    if usr_data['indirect_data'].get('work_city') == 'Москва':
+                        # Выполняем запрос
+                        stmt = select(
+                            Article.indirect_data['vision_select']
+                        ).where(
+                            Article.section_id == 9,
+                            Article.name == 'Москва'
+                        )
+                        res_stmt = await session.execute(stmt)
+                        vis_id = res_stmt.scalar()
+                    elif  usr_data['indirect_data'].get('work_city') == 'г. Санкт-Петербург':
+                        # Выполняем запрос
+                        stmt = select(
+                            Article.indirect_data['vision_select']
+                        ).where(
+                            Article.section_id == 9,
+                            Article.name == 'Санкт-Петербург'
+                        )
+                        res_stmt = await session.execute(stmt)
+                        vis_id = res_stmt.scalar()
+               
+                else:
+                    # Смотрим в каких ОВ коллеги пользователя
+                    stmt = select(Roots.root_token['VisionRoots']).join(
+                        self.user, self.user.id == Roots.user_uuid
+                    ).where(
+                        self.user.indirect_data['uf_department'].contains(usr_data['indirect_data']['uf_department_id']),
+                        Roots.root_token.has_key('VisionRoots')
+                    )
+                    res_stmt = await session.execute(stmt)
+                    worker_roots = res_stmt.first()
+                    print(worker_roots, 'получили коллегу по цеху')
+                    if worker_roots:
+                        for vision in worker_roots:
+                            await UservisionsRootModel(user_id=usr_data['id'], vision_id=vision).upload_user_to_vision(session)
+                        return True
+                    
+                    # return f"ОВ ЦО = {vis_id}"
+            
+
             if vis_id:
                 await UservisionsRootModel(user_id=usr_data['id'], vision_id=vis_id).upload_user_to_vision(session)
+            else:
+                from ..models.Fieldvision import Fieldvision
+                stmt = await session.execute(select(Fieldvision.id).where(Fieldvision.vision_name == 'Для разработчиков'))
+                vision = stmt.scalar()
+                await UservisionsRootModel(user_id=usr_data['id'], vision_id=vision).upload_user_to_vision(session)
+
+
             return True
             
         except Exception as e:
@@ -822,7 +853,8 @@ class UserModel:
         result = dep_id
         while True:
             dep_str = await DepartmentModel(result).find_dep_by_id(session)
-            
+            if not dep_str:
+                return None
             father_id = dep_str[0].father_id
             if father_id is None:
                 return None  # достигли корня, не нашли завод

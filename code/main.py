@@ -471,26 +471,10 @@ async def health_check():
     return True
 
 @app.put("/api/create_tables")
-async def create_tables(session: AsyncSession=Depends(get_async_db)):
-    # from src.base.pSQL.models.App import create_tables
-    # res = await create_tables()
-    # return res
-    from sqlalchemy import text
-
-
-    # 1. Добавить колонку
-    await session.execute(text("ALTER TABLE views ADD COLUMN user_id INTEGER"))
-    # 2. Заполнить (если нужно)
-    # await session.execute(text("UPDATE views SET user_id = 1 WHERE user_id IS NULL"))
-    # 3. Создать индекс
-    await session.execute(text("CREATE INDEX IF NOT EXISTS idx_views_user_id ON views(user_id)"))
-    # 4. Добавить FK
-    await session.execute(text(
-        "ALTER TABLE views ADD CONSTRAINT fk_views_user "
-        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
-    ))
-    await session.commit()
-    return True
+async def create_tables():
+    from src.base.pSQL.models.App import create_tables
+    res = await create_tables()
+    return res
 
 @app.get("/get_sec_data/{section_id}")
 def test_sec_data(section_id):

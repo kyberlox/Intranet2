@@ -1,5 +1,5 @@
 from typing import Optional
-
+from sqlalchemy.sql.expression import func
 from ..models.Views import Views
 
 from .App import AsyncSessionLocal, select #db get_db,
@@ -49,7 +49,7 @@ class ViewsModel:
         Возвращает количество просмотров у данной статьи
         """
         # async with AsyncSessionLocal() as session:
-        stmt = select(self.Views.viewes_count).where(self.Views.article_id == int(self.art_id))
+        stmt = select(func.sum(self.Views.viewes_count)).where(self.Views.article_id == int(self.art_id))
         result = await session.execute(stmt)
         res = result.scalar()
         # res = database.query(self.Views.viewes_count).where(
@@ -58,12 +58,12 @@ class ViewsModel:
 
         return res
     
-    async def add_art_view(self, session):
+    async def add_art_view(self, user_id, session):
         """
         Добавляет просмотр к статье и возвращает итоговое количество просмотров у статьи
         """
         # async with AsyncSessionLocal() as session:
-        stmt = select(self.Views).where(self.Views.article_id == int(self.art_id))
+        stmt = select(self.Views).where(self.Views.article_id == int(self.art_id), self.Views.user_id == int(user_id))
         result = await session.execute(stmt)
         existing_view = result.scalar_one_or_none()
     # existing_view = database.query(self.Views).where(self.Views.article_id == self.art_id).first()
@@ -78,7 +78,8 @@ class ViewsModel:
         else:
             new_view = self.Views(
                 article_id=self.art_id,
-                viewes_count=1
+                viewes_count=1,
+                user_id=user_id
             )
             # new_view.article_id=self.art_id,
             # new_view.viewes_count=1

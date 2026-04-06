@@ -1698,7 +1698,7 @@ class Article:
         if art['section_id'] not in null_list:
             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
             if user_id is not None:
-                await self.add_art_view(session)
+                await self.add_art_view(user_id, session)
                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                 art['reactions'] = has_user_liked
 

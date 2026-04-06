@@ -100,6 +100,8 @@ class User:
     async def search_by_id(self, session):
         self.UserModel.id = self.id
         res = await self.UserModel.find_by_id(session)
+        if not res:
+            return {'id': self.id, 'active': False}
         if res['uuid']:
             vcard_file_url = await self.get_user_qr(user_uuid=res['uuid'])
             res['vcard_file_url'] = vcard_file_url

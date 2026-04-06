@@ -470,8 +470,6 @@ async def health_check():
     """
     return True
 
-
-
 @app.put("/api/create_tables")
 async def create_tables():
     from src.base.pSQL.models.App import create_tables

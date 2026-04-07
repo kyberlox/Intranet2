@@ -226,3 +226,5 @@ class ArticleModel:
                 new_data.append(art.__dict__)
 
         return new_data
+
+    

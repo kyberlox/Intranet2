@@ -1,5 +1,7 @@
 import logging
 from tqdm import tqdm
+import json
+from datetime import datetime
 
 
 
@@ -13,6 +15,20 @@ class LogsMaker:
             filename="./logs/fastapi-logs.log",
             filemode="a",
         )
+
+    # ---- новый метод для отправки JSON в stdout ----
+    def _log_to_loki(self, level: str, message: str, log_type: str = None) -> None:
+        """Отправляет структурированный лог в stdout для Loki"""
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "level": level.upper(),
+            "message": str(message),
+            "type": log_type or level.lower(),
+            "logger": "LogsMaker"
+        }
+        # Выводим JSON в stdout (без ANSI-кодов)
+        print(json.dumps(log_entry, ensure_ascii=False))
+        # Существующий цветной print и logging остаются нетронутыми
 
     def progress(self, this_list, title=None, **kwargs):
         #bar_format = "{l_bar}%s{bar}%s{r_bar}" % ("\033[33m", "\033[0m")
@@ -33,6 +49,7 @@ class LogsMaker:
         error_msg = str(message)
         logging.error(f"🔥 {error_msg}")
         print(f"🔥 \033[91m[FATAL ERROR] 🔥 {error_msg}\033[0m")  # 91 - красный цвет
+        self._log_to_loki("fatal", error_msg, log_type="fatal")
         return {"status" : "error", "message" : error_msg}
 
     def error_message(self, error: Exception) -> None:
@@ -40,12 +57,14 @@ class LogsMaker:
         error_msg = str(error)
         logging.error(f"❌ {error_msg}")
         print(f"❌ \033[91m[ERROR] ❌ {error_msg}\033[0m")  # 91 - красный цвет
+        self._log_to_loki("error", error_msg, log_type="error")
         return {"status" : "error", "message" : error_msg}
 
     def warning_message(self, message: str) -> None:
         """Выводит предупреждение/ошибку желтым цветом в консоль"""
         logging.warning(f"⚠️ {message}")
         print(f"⚠️ \033[93m[WARNING] ⚠️ {message}\033[0m")  # 93 - желтый цвет
+        self._log_to_loki("warning", msg, log_type="warning")
         return {"status" : "warning", "message" : message}
 
     def info_message(self, message: str) -> None:

@@ -147,7 +147,7 @@ app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_f
                 
 #Пробуем метрики
 instrumentator = Instrumentator()
-instrumentator.add(default.app_name("my_app"))  # добавление метки app_name
+instrumentator.add(lambda: {"app_name": "my_app"})  # добавляет метку ко всем метрикам
 instrumentator.instrument(app).expose(app)
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)

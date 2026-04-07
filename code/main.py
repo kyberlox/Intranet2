@@ -67,6 +67,7 @@ from src.base.pSQL.objects.App import get_async_db
 
 #Пробуем метрики
 from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_fastapi_instrumentator.metrics import default
 
 # from contextlib import asynccontextmanager
 lifespan = create_lifespan_context()
@@ -145,7 +146,8 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
                 
 #Пробуем метрики
-instrumentator = Instrumentator(app_name="my_app")  # задаём имя приложения
+instrumentator = Instrumentator()
+instrumentator.add(default.app_name("my_app"))  # добавление метки app_name
 instrumentator.instrument(app).expose(app)
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)

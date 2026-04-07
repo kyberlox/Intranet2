@@ -146,9 +146,7 @@ app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="use
 app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
                 
 #Пробуем метрики
-instrumentator = Instrumentator()
-instrumentator.add(lambda info: {"app_name": "my_app"})  # метка app_name
-instrumentator.instrument(app).expose(app)
+Instrumentator().instrument(app).expose(app)
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
 open_links = [

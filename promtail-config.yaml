@@ -16,8 +16,10 @@ scrape_configs:
     relabel_configs:
       # Оставляем только контейнер fastapi_async
       - source_labels: ['__meta_docker_container_name']
-        regex: '/fastapi_async.*'    # замените на имя вашего контейнера, если другое
-        action: keep
+        # regex: '/fastapi_async.*'    # замените на имя вашего контейнера, если другое
+        # action: keep
+        regex: '/(.*)'
+        target_label: 'container'
       # Добавляем полезные метки
       - source_labels: ['__meta_docker_container_name']
         target_label: 'container'

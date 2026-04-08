@@ -18,7 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 # from .App import get_db, AsyncSessionLocal
 # db_gen = get_db()
 # database = next(db_gen)
-
+import os
 #!!!!!!!!!!!!!!!
 #from src.model.File import File
 from src.services.LogsMaker import LogsMaker
@@ -36,6 +36,8 @@ MANUFACTURES_IDS = {
     74: 'АО «НПО Регулятор»', 
     206: 'АО «Тулаэлектропривод»'
 }
+
+HOST = os.getenv('HOST')
 
 
 class UserModel:
@@ -356,7 +358,7 @@ class UserModel:
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
-                result['photo_file_url'] = None
+                result['photo_file_url'] = HOST + '/api/user_files/no-user-photo.jpg'
                 result['photo_file_b24_url'] = None
 
             return result
@@ -439,7 +441,7 @@ class UserModel:
                 result['photo_file_b24_url'] = photo_inf['b24_url']
             else:
                 result['photo_file_id'] = None
-                result['photo_file_url'] = None
+                result['photo_file_url'] = HOST + '/api/user_files/no-user-photo.jpg'
                 result['photo_file_b24_url'] = None
 
             return result

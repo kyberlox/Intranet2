@@ -3,7 +3,12 @@ export interface IReaction {
     views: number,
     likes: {
         count: number,
-        likedByMe: boolean
+        likedByMe: boolean,
+        users:{
+            id: number,
+            name: string,
+            photo_file_url: string
+        }[]
     }
 }
 

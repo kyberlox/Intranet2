@@ -293,7 +293,7 @@ class SendEmail:
             server.quit()
             return {'status': True}
         except Exception as e:
-            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            LogsMaker().warning_message(f"Ошибка отправки письма новичку {self.data['sender']!r}: {e}")
             return {'status': False} 
     
     def send_active_purchase(self):
@@ -410,7 +410,7 @@ class SendEmail:
             server.quit()
             return {'status': True}
         except Exception as e:
-            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            LogsMaker().warning_message(f"Ошибка отправки письма о состоявшейся покупке {self.data['sender']!r}: {e}")
             return {'status': False} 
 
     def send_to_birthday_notifications(self):
@@ -531,7 +531,7 @@ class SendEmail:
             server.quit()
             return {'status': True}
         except Exception as e:
-            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            LogsMaker().warning_message(f"Ошибка отправки письма c ДР {self.data['sender']!r}: {e}")
             return {'status': False} 
     
     def send_to_anniversary_in_company(self, year):
@@ -651,7 +651,7 @@ class SendEmail:
             server.quit()
             return {'status': True}
         except Exception as e:
-            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            LogsMaker().warning_message(f"Ошибка отправки письма с годовщиной {self.data['sender']!r}: {e}")
             return {'status': False} 
     
     def send_to_jubilee_in_company(self, year):
@@ -771,6 +771,6 @@ class SendEmail:
             server.quit()
             return {'status': True}
         except Exception as e:
-            LogsMaker().warning_message(f"Ошибка отправки письма новичку: {e}")
+            LogsMaker().warning_message(f"Ошибка отправки письма с юбилейной датой {self.data['sender']!r}: {e}")
             return {'status': False} 
     

@@ -9,9 +9,9 @@
                          :src="user.photo_file_url"
                          alt="Игорь"
                          @click="modalIsOpen = true" />
-                    <img src="https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg"
-                         alt="Фото пользователя не найдено"
-                         v-else />
+                    <img v-else
+                         src="@/assets/imgs/plugs/userplug.jpg"
+                         alt="Фото пользователя не найдено" />
                 </div>
                 <div class="personal__user__about">
                 </div>
@@ -120,7 +120,7 @@
             <Loader />
         </div>
     </div>
-    <ZoomModal :image="[user.photo_file_url ?? 'https://portal.emk.ru/local/templates/intranet/img/no-user-photo.jpg']"
+    <ZoomModal :image="[user.photo_file_url ?? '@/assets/imgs/plugs/userplug.jpg']"
                v-if="modalIsOpen == true"
                @close="modalIsOpen = false" />
     <SendPoints v-if="isPointsModalOpen"

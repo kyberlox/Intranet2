@@ -65,6 +65,10 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.base.pSQL.objects.App import get_async_db
 
+#Пробуем метрики
+from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_fastapi_instrumentator.metrics import default
+
 # from contextlib import asynccontextmanager
 lifespan = create_lifespan_context()
 load_dotenv()
@@ -83,6 +87,8 @@ app = FastAPI(
     max_upload_size=1024 * 1024 * 1024 * 2,
     lifespan=lifespan  # Подключаем управление жизненным циклом
 )
+
+
 
 app.include_router(users_router, prefix="/api")
 app.include_router(depart_router, prefix="/api")
@@ -139,7 +145,8 @@ app.mount("/api/files", StaticFiles(directory=STORAGE_PATH), name="files")
 app.mount("/api/user_files", StaticFiles(directory=USER_STORAGE_PATH), name="user_files")
 app.mount("/api/vcard_files", StaticFiles(directory='./vcard_db'), name="vcard_files")
                 
-
+#Пробуем метрики
+Instrumentator().instrument(app).expose(app)
 
 # Исключаем эндпоинты, которые не требуют авторизации (например, сам эндпоинт авторизации)
 open_links = [
@@ -464,13 +471,27 @@ async def health_check():
     """
     return True
 
-
-
 @app.put("/api/create_tables")
 async def create_tables():
     from src.base.pSQL.models.App import create_tables
     res = await create_tables()
     return res
+
+    # from sqlalchemy import text
+
+
+    # # 1. Добавить колонку
+    # await session.execute(text("ALTER TABLE views ADD COLUMN user_id INTEGER"))
+    # # 2. Заполнить (если нужно)
+    # # await session.execute(text("UPDATE views SET user_id = 1 WHERE user_id IS NULL"))
+    # # 3. Создать индекс
+    # await session.execute(text("CREATE INDEX IF NOT EXISTS idx_views_user_id ON views(user_id)"))
+    # # 4. Добавить FK
+    # await session.execute(text(
+    #     "ALTER TABLE views ADD CONSTRAINT fk_views_user "
+    #     "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
+    # ))
+    # await session.commit()
 
 @app.get("/get_sec_data/{section_id}")
 def test_sec_data(section_id):

@@ -14,7 +14,8 @@ class Views(Base):
     #user_id = Column(Integer, ForeignKey('users.id'), nullable=False)  # ID пользователя
     article_id = Column(Integer, ForeignKey('article.id', ondelete="CASCADE"), nullable=False)  # ID статьи
     viewes_count = Column(Integer, nullable=False)  # Время просмотра
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable=True)  # ID пользователя
 
     # Опциональные отношения для удобства доступа
-    #user = relationship("User", back_populates="views")
+    user = relationship("User", back_populates="views")
     article = relationship("Article", back_populates="views")

@@ -23,7 +23,7 @@
         </div>
         <div v-if="newTypeReaction.likes.users.length && usersLikesVisible"
              class="homeview__grid__card__group-buttons__reaction__likes-list">
-            <div @click.stop.prevent="$router.push({ name: 'userPage', params: { id: user.id } })"
+            <div @click.stop.prevent="user.id ? $router.push({ name: 'userPage', params: { id: user.id } }) : ''"
                  class="homeview__grid__card__group-buttons__reaction__likes-list__item"
                  v-for="user in newTypeReaction.likes.users"
                  :key="user.id">

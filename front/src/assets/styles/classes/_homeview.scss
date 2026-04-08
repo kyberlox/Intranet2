@@ -28,6 +28,7 @@
         }
 
         &__rows {
+
             &>.homeview__grid__card:not(:first-child) {
                 &>.homeview__grid__card__group-title {
                     visibility: hidden;

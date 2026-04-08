@@ -171,7 +171,7 @@ class B24:
         else:
             url = f"https://portal.emk.ru/rest/4949/9jw7puct7jq63b07/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
             response = requests.post(url)
-        
+        print(response, 'че приходит ')
         ID = response.json()['result']
             
         bis_url = f"https://portal.emk.ru/rest/1/p6653nbau95j5a0h/bizproc.workflow.start?TEMPLATE_ID=2216&DOCUMENT_ID[]=lists&DOCUMENT_ID[]=Bitrix\\Lists\\BizprocDocumentLists&DOCUMENT_ID[]={ID}"

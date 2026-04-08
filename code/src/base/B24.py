@@ -132,45 +132,48 @@ class B24:
         name = fields["NAME"]
         cont_text = fields["DETAIL_TEXT"]
         uid = fields["CREATED_BY"]
+        # if "base" in fields:
+        '''
+        base = fields["base"]
+        base_name = fields["base_name"]
+        url = f"https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
+        headers = {
+            'Content-Type': "Multipart/form-data"
+        }
+
+        response = requests.post(url)
+        '''
+        base = ""
+        base_name = ""
         if "base" in fields:
-            '''
             base = fields["base"]
             base_name = fields["base_name"]
-            url = f"https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
-            headers = {
-                'Content-Type': "Multipart/form-data"
-            }
 
-            response = requests.post(url)
-            '''
+        api_url = "https://portal.emk.ru/rest/4949/9jw7puct7jq63b07/lists.element.add"
+        data = {
+            'IBLOCK_TYPE_ID': 'lists',
+            'IBLOCK_ID': '121',
+            "IBLOCK_SECTION_ID": "319",
+            'ELEMENT_CODE': el_code,
+            'FIELDS[NAME]': name,
+            'FIELDS[PROPERTY_1049]' : incr,
+            #'FIELDS[PROPERTY_1117]' : "909",
+            'FIELDS[DETAIL_TEXT]' : cont_text,
+            'FIELDS[CREATED_BY]'  : uid,
+            'FIELDS[PROPERTY_1027][fileName]'  : base_name,
+            'FIELDS[PROPERTY_1027][fileData]' : base
+        }
 
-            api_url = "https://portal.emk.ru/rest/4949/9jw7puct7jq63b07/lists.element.add"
-            base = fields["base"]
-            base_name = fields["base_name"]
-            data = {
-                'IBLOCK_TYPE_ID': 'lists',
-                'IBLOCK_ID': '121',
-                "IBLOCK_SECTION_ID": "319",
-                'ELEMENT_CODE': el_code,
-                'FIELDS[NAME]': name,
-                'FIELDS[PROPERTY_1049]' : incr,
-                #'FIELDS[PROPERTY_1117]' : "909",
-                'FIELDS[DETAIL_TEXT]' : cont_text,
-                'FIELDS[CREATED_BY]'  : uid,
-                'FIELDS[PROPERTY_1027][fileName]'  : base_name,
-                'FIELDS[PROPERTY_1027][fileData]' : base
-            }
-
-            headers = {
-                'Content-Type': "application/x-www-form-urlencoded"
-            }
-                            
-            response  = requests.post(api_url, data=data, headers=headers)
+        headers = {
+            'Content-Type': "application/x-www-form-urlencoded"
+        }
+                        
+        response  = requests.post(api_url, data=data, headers=headers)
             
 
-        else:
-            url = f"https://portal.emk.ru/rest/4949/9jw7puct7jq63b07/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
-            response = requests.post(url)
+        # else:
+        #     url = f"https://portal.emk.ru/rest/4949/9jw7puct7jq63b07/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&IBLOCK_SECTION_ID=319&ELEMENT_CODE={el_code}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}"
+        #     response = requests.post(url)
         
         ID = response.json()['result']
             

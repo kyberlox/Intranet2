@@ -1698,7 +1698,7 @@ class Article:
         if art['section_id'] not in null_list:
             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
             if user_id is not None:
-                await self.add_art_view(session)
+                await self.add_art_view(user_id, session)
                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                 art['reactions'] = has_user_liked
 
@@ -2626,8 +2626,8 @@ class Article:
     # async def get_art_views(self):
     #     return await ViewsModel(art_id=self.id).get_art_viewes()
 
-    async def add_art_view(self, session):
-        return await ViewsModel(art_id=self.id).add_art_view(session=session)
+    async def add_art_view(self, user_id, session):
+        return await ViewsModel(art_id=self.id).add_art_view(user_id=user_id, session=session)
 
     # дамп данных по лайкам из Б24
     async def upload_likes(self, session):

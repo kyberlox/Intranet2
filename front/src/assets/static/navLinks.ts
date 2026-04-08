@@ -170,6 +170,11 @@ export const mainMenuPoints: MainMenuPoints = [
             },
             {
                 id: 4.5,
+                name: "Видеоинтервью с руководством",
+                href: "videoInterviewsManagement",
+            },
+            {
+                id: 4.5,
                 name: "Фильмы ТО ЭМК",
                 href: 'filmsEmk'
             }

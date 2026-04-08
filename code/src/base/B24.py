@@ -133,16 +133,16 @@ class B24:
         cont_text = fields["DETAIL_TEXT"]
         uid = fields["CREATED_BY"]
         # if "base" in fields:
-            '''
-            base = fields["base"]
-            base_name = fields["base_name"]
-            url = f"https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
-            headers = {
-                'Content-Type': "Multipart/form-data"
-            }
+        '''
+        base = fields["base"]
+        base_name = fields["base_name"]
+        url = f"https://portal.emk.ru/rest/1/2f48iwx848fymuw2/lists.element.add?IBLOCK_TYPE_ID=lists&IBLOCK_ID=121&ELEMENT_CODE={incr}&FIELDS[PROPERTY_1049]={incr}&FIELDS[NAME]={name}&FIELDS[PROPERTY_1049]=909&FIELDS[DETAIL_TEXT]={cont_text}&FIELDS[CREATED_BY]={uid}&FIELDS[PROPERTY_1027][fileName]={base_name}&FIELDS[PROPERTY_1027][fileData]={base}"
+        headers = {
+            'Content-Type': "Multipart/form-data"
+        }
 
-            response = requests.post(url)
-            '''
+        response = requests.post(url)
+        '''
         base = ""
         base_name = ""
         if "base" in fields:

@@ -129,7 +129,7 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - loki_data:/loki
+      - ./loki_data:/loki
       - ./loki-config.yaml:/etc/loki/loki-config.yaml
     command: -config.file=/etc/loki/loki-config.yaml
     networks:

@@ -97,6 +97,15 @@
         border-color: #000000;
     }
 
+    .homeview__grid__card__group-buttons__reaction__likes-list {
+        background: #1d1d1d;
+        color: rgb(191, 191, 191);
+
+        &__item {
+            border-color: rgb(44, 44, 44);
+        }
+    }
+
 
     .modal__wrapper,
     .training-feedback {
@@ -411,4 +420,6 @@
     *::-webkit-scrollbar-corner {
         background: #2d3748;
     }
+
+
 }

@@ -233,19 +233,11 @@ class LikesModel:
             UserFiles, UserFiles.user_id == User.id
         ).where(
             self.Likes.article_id == int(self.art_id),
-            self.Likes.is_active == True
+            self.Likes.is_active == True,
+            UserFiles.active == True
         )
         result = await session.execute(stmt)
         likers = result.mappings().all()
-
-        # stmt = select(self.Likes.user_id).where(self.Likes.article_id == self.art_id)
-        # result = await session.execute(stmt)
-        # likers = result.all()
-        # likers = database.query(self.Likes.user_id).filter(
-        #     self.Likes.article_id == self.art_id,
-        #     self.Likes.is_active == True
-        # ).all()
-        
          
 
         return likers

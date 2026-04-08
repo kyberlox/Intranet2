@@ -472,7 +472,7 @@ async def health_check():
     return True
 
 @app.put("/api/create_tables")
-async def create_tables():
+async def create_tables(session: AsyncSession=Depends(get_async_db)):
     # from src.base.pSQL.models.App import create_tables
     # res = await create_tables()
     # return res

@@ -63,8 +63,9 @@ class LogsMaker:
     def warning_message(self, message: str) -> None:
         """Выводит предупреждение/ошибку желтым цветом в консоль"""
         logging.warning(f"⚠️ {message}")
+        error_msg = str(message)
         print(f"⚠️ \033[93m[WARNING] ⚠️ {message}\033[0m")  # 93 - желтый цвет
-        self._log_to_loki("warning", msg, log_type="warning")
+        self._log_to_loki("warning", error_msg, log_type="warning")
         return {"status" : "warning", "message" : message}
 
     def info_message(self, message: str) -> None:

@@ -16,7 +16,7 @@ import datetime
 import asyncio
 import types
 
-from fastapi import APIRouter, Body, Request
+from fastapi import APIRouter, Body, Request, HTTPException
 import os
 from dotenv import load_dotenv
 

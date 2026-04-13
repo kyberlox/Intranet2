@@ -16,7 +16,7 @@ import datetime
 import asyncio
 import types
 
-from fastapi import APIRouter, Body, Request
+from fastapi import APIRouter, Body, Request, HTTPException
 import os
 from dotenv import load_dotenv
 
@@ -1646,6 +1646,8 @@ class Article:
 
     async def search_by_id(self, session, user_id: int = None):
         art = await ArticleModel(id=self.id).find_by_id(session)
+        if not art:
+            raise HTTPException(status_code=404, detail="Not found")
         files = await File(art_id=int(self.id)).get_files_by_art_id(session)
         art['images'] = []
         art['videos_native'] = []
@@ -2989,6 +2991,7 @@ async def get_article(ID: int, user_id: int = Depends(get_user_id_by_session_id)
     #         user_id = token
     # else:
     #     user_id = token
+
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

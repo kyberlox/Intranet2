@@ -193,7 +193,7 @@ export default defineComponent({
       console.log(newData);
 
       // проверка на выставление областей видимости у афишы и корп событиях
-      if ((props.id == '53' || props.id == '51') && featureFlags.visibleArea && (!newData.value?.vision?.length || !('vision' in newData.value))) {
+      if ((props.id == '53' || props.id == '51' || props.id == '31') && featureFlags.visibleArea && (!newData.value?.vision?.length || !('vision' in newData.value))) {
         toast.showError('noVisionError');
       }
       else

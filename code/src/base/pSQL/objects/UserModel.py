@@ -801,7 +801,7 @@ class UserModel:
                         Roots.root_token.has_key('VisionRoots')
                     )
                     res_stmt = await session.execute(stmt)
-                    worker_roots = res_stmt.first()
+                    worker_roots = res_stmt.scalar()
                     print(worker_roots, 'получили коллегу по цеху')
                     if worker_roots:
                         for vision in worker_roots:

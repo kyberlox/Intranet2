@@ -24,6 +24,7 @@
                     <div class="order-3 order-lg-2 d-flex col-lg-8 align-items-center justify-content-center nav-menu">
                         <div class="navbar-collapse"
                              :class="{ 'collapse': !isMobileMenuOpen }">
+                            <!-- 1 уровень -->
                             <ul class="navbar-nav m-auto">
                                 <li class="nav-item dropdown"
                                     @mouseleave="isMobileScreen ? '' : handleDropdown('close', point.id)"
@@ -37,7 +38,8 @@
                                          @mouseenter="isMobileScreen ? '' : handleDropdown('open', point.id)">
                                         {{ point.name }}
                                     </div>
-                                    <ul class="dropdown-menu">
+                                    <!-- 2 уровень -->
+                                    <ul class="dropdown-menu dropdown dropdown--opened">
                                         <div v-for="subpoint in point.subPoints"
                                              :key="'subpoint' + point.name + subpoint.id">
                                             <!-- id письма -->
@@ -48,10 +50,26 @@
                                                     {{ subpoint.name }}</a>
                                             </li>
                                             <li v-else
-                                                class="dropdown__item"
-                                                :class="{ 'dropdown__item--active': currentRoute == subpoint.href }"
-                                                @click="handleDropDownItemClick(subpoint)">
+                                                class="dropdown__item dropdown "
+                                                :class="[{ 'dropdown__item--active': currentRoute == subpoint.href },
+                                                { 'dropdown--opened': activeSidepoints == subpoint.id }]"
+                                                @mouseenter="subpoint.subpoints?.length ? activeSidepoints = subpoint.id : ''"
+                                                @mouseleave="activeSidepoints = null"
+                                                @click="subpoint.subpoints?.length ? '' : handleDropDownItemClick(subpoint)">
                                                 {{ subpoint.name }}
+                                                <!-- Третий уровень -->
+                                                <ul v-if="'subpoints' in subpoint && subpoint.subpoints?.length"
+                                                    class="dropdown__item--side dropdown-menu"
+                                                    @mouseleave="activeSidepoints = null">
+                                                    <div v-for="point in subpoint.subpoints"
+                                                         :key="'subpoint' + point.name + subpoint.id">
+                                                        <li class="dropdown__item"
+                                                            :class="{ 'dropdown__item--active': currentRoute == point.href }"
+                                                            @click="handleDropDownItemClick(point)">
+                                                            {{ point.name }}
+                                                        </li>
+                                                    </div>
+                                                </ul>
                                             </li>
                                         </div>
                                     </ul>
@@ -112,7 +130,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from "vue";
+import { ref, computed, watch, defineComponent, watchEffect } from "vue";
 import { mainMenuPoints } from "@/assets/static/navLinks";
 import type { ISubPoint } from "@/interfaces/ILayout";
 import { usePageDataStore } from "@/stores/pageData";
@@ -148,6 +166,7 @@ export default defineComponent({
         const visibleSearchModal = ref(false);
         const router = useRouter();
         const activeDrop = ref<null | number>(null);
+        const activeSidepoints = ref<number | null>(null);
         const { width } = useWindowSize();
         const pointsModalIsOpen = ref(false);
 
@@ -174,6 +193,10 @@ export default defineComponent({
                 .then(() => isMobileMenuOpen.value = false);
         };
 
+        watchEffect(() => {
+            console.log(activeSidepoints.value)
+        })
+
         return {
             mainMenuPoints,
             activeDrop,
@@ -187,6 +210,7 @@ export default defineComponent({
             currentRoute: computed(() => pageDataStore.getCurrentRoute),
             isMobileScreen: computed(() => ['sm', 'md'].includes(screenCheck(width))),
             featureFlags,
+            activeSidepoints,
             handleDropdown,
             handleDropDownItemClick,
             toggleMobileMenu: () => isMobileMenuOpen.value = !isMobileMenuOpen.value,

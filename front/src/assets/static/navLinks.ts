@@ -134,8 +134,19 @@ export const mainMenuPoints: MainMenuPoints = [
             },
             {
                 id: 3.2,
-                name: "Новости организационного развития",
-                href: "corpNews",
+                name: "Организационное развитие",
+                subpoints: [
+                    {
+                        id: 3.21,
+                        name: "Организационные назначения",
+                        href: "corpNews",
+                    },
+                    {
+                        id: 3.22,
+                        name: "Организационное развитие",
+                        href: "sinerteam",
+                    },
+                ]
             },
             {
                 id: 3.4,
@@ -222,20 +233,20 @@ export const mainMenuPoints: MainMenuPoints = [
         ],
     },
     {
-    id: 6,
-    name: "Капитал ЭМК",
-    subPoints: [
-        {
-            id: 6.1,
-            name: 'О капитале',
-            href: 'merchAbout'
-        },
-        {
-            id: 6.2,
-            name: 'Магазин мерча',
-            href: 'merchStore'
-        }
-    ]
+        id: 6,
+        name: "Капитал ЭМК",
+        subPoints: [
+            {
+                id: 6.1,
+                name: 'О капитале',
+                href: 'merchAbout'
+            },
+            {
+                id: 6.2,
+                name: 'Магазин мерча',
+                href: 'merchStore'
+            }
+        ]
     }
 ];
 

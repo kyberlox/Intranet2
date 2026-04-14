@@ -182,6 +182,12 @@
         border: 0;
         cursor: pointer;
 
+        &--side {
+            position: absolute;
+            left: 235px;
+            top: 0;
+        }
+
         @include sm {
             white-space: break-spaces;
         }

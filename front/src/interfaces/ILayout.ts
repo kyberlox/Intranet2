@@ -18,7 +18,8 @@ export interface SupportLink {
 export interface ISubPoint {
     id: number;
     name: string;
-    href: string;
+    href?: string;
+    subpoints?: ISubPoint[],
     params?: {
         id: number;
     };

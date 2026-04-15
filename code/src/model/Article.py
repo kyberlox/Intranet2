@@ -1963,7 +1963,7 @@ class Article:
             return sorted_active_articles
 
         else:
-            null_list = [17, 19, 22, 111, 112, 14, 18, 25, 52, 54, 55, 56, 53, 7, 34, 42]  # список секций где нет лайков
+            null_list = [17, 19, 22, 111, 112, 14, 18, 25, 35, 52, 54, 55, 56, 53, 7, 34, 42]  # список секций где нет лайков
             active_articles = []
             result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session)
             current_datetime = datetime.datetime.now()

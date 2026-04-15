@@ -909,7 +909,6 @@ class Editor:
 
         
         else:
-
             # иду по списку user_id
             for user_id in user_id_list:
                 user_info = await User(id=user_id).search_by_id(self.session)
@@ -1065,6 +1064,15 @@ class Editor:
                 "last_name",
                 "work_position",
                 "department"
+            ],
+            "35": [
+                "id",
+                "name",
+                "second_name",
+                "last_name",
+                "work_position",
+                "department",
+                "photo_file_url"
             ]
         }
         # "31": [

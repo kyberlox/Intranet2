@@ -177,7 +177,7 @@ open_links = [
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
-
+    print(origin = request.headers.get("origin", ""), 'че приходит')
     # Внедряю свою отладку
     log = LogsMaker()
 

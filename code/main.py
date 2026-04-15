@@ -123,7 +123,7 @@ origins = ['*']
 if 'intranet.emk.org' in main_redirect:
     origins = [
         "http://intranet.emk.org.ru",
-        "http://localhost:5173",  # если разработка
+        "http://localhost:5173/",  # если разработка
     ]
 
 app.add_middleware(

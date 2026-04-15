@@ -951,13 +951,13 @@
       {
         "name": "Имплементор",
         "field": "implementer",
-        "data_type": "str",
+        "data_type": "search_by_uuids",
         "disabled": true
       },
       {
         "name": "Интегратор",
         "field": "integrator",
-        "data_type": "str",
+        "data_type": "search_by_uuids",
         "disabled": true
       },
       {

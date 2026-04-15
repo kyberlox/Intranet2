@@ -946,7 +946,7 @@
       {
         "name": "ID пользователей",
         "field": "uuids",
-        "data_type": "search_by_uuid"
+        "data_type": "search_by_uuids"
       },
       {
         "name": "Имплементор",

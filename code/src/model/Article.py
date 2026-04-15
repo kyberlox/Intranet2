@@ -1695,7 +1695,7 @@ class Article:
                         tags.append(tag)
                 art['indirect_data']['tags'] = tags
 
-        null_list = [17, 19, 111, 112, 14, 18, 25, 54, 55, 53, 56, 7, 71, 34, 175]  # список секций где нет лайков
+        null_list = [17, 19, 111, 112, 14, 18, 25, 35, 54, 55, 53, 56, 7, 71, 34, 175]  # список секций где нет лайков
 
         if art['section_id'] not in null_list:
             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)

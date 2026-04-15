@@ -123,7 +123,7 @@ origins = ['*']
 if 'intranet.emk.org' in main_redirect:
     origins = [
         "http://intranet.emk.org.ru",
-        "http://localhost:5173/",  # если разработка
+        "http://localhost:5173",  # если разработка
     ]
 
 app.add_middleware(
@@ -131,8 +131,8 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    allow_headers=["*"]
-    #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
+    # allow_headers=["*"]
+    allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials", "session_id"]
 )
 
 

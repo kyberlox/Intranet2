@@ -1030,7 +1030,7 @@ class Editor:
 
         return art['indirect_data']['users']
 
-    async def get_user_info(self, user_id):
+    async def get_user_info(self, user_id, ):
         await self.validate()
         result = {}
         fields_to_return = {

@@ -189,6 +189,12 @@
     "sectionHref": "gazette"
   },
   {
+    "id" : 35,
+    "name" : "Синертимы",
+    "parent_id" : 3,
+    "sectionHref": "sinerteam"
+  },
+  {
     "id" : 4,
     "name" : "Галерея",
     "parent_id" : 0

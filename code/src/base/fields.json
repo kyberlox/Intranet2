@@ -55,6 +55,12 @@
     "manufacture_id": "Индентификационный номер предприятия",
     "vision": "Области Видимости",
     "all_visions" : "Список Областей Видимости",
-    "vision_select" : "Область Видимости"
+    "vision_select" : "Область Видимости",
+    "sinerteam_number" : "Номер Синертима",
+    "implementer" : "Имплементор",
+    "integrator" : "Интегратор",
+    "sinerteam_status" : "Статус",
+    "date_status" : "Дата статуса",
+    "note_status" : "Комментарий статуса"
     
 }

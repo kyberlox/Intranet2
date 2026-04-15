@@ -945,14 +945,8 @@
       },
       {
         "name": "ID пользователей",
-        "field": "uuids",
-        "data_type": "search_by_uuids"
-      },
-      {
-        "name": "Список пользователей",
         "field": "users",
-        "data_type": "str",
-        "disabled": true
+        "data_type": "search_by_uuids"
       },
       {
         "name": "Имплементор",

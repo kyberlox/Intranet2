@@ -28,7 +28,9 @@
         <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
                              :title="item.name"
                              :type="item.data_type"
-                             @handleUserPick="(e) => $emit('handleUserPick', e)"
+                             :field="item.field"
+                             :users="(item.value as IUserList[])"
+                             @handleUserPick="(id, field) => $emit('handleUserPick', id, field)"
                              @handleUsersPick="(e) => $emit('handleUsersPick', e)" />
 
         <!-- Для поиска по структуре -->
@@ -92,7 +94,7 @@
 import { defineComponent, type PropType } from "vue";
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 
-import type { IAdminListItem, IReportage, INewFileData } from "@/interfaces/IEntities";
+import type { IAdminListItem, IReportage, INewFileData, IUserSearch } from "@/interfaces/IEntities";
 import type { ITag } from "@/interfaces/entities/ITag";
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';

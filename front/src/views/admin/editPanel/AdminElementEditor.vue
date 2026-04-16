@@ -257,8 +257,8 @@ export default defineComponent({
       }
     };
 
-    const handleUserPick = (userId: number) => {
-      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
+    const handleUserPick = (userId: number, field: string) => {
+      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field ?? 'base'}`}`)
         .then((data) => {
           if (data) {
             reloadElementData(false)
@@ -315,6 +315,7 @@ export default defineComponent({
       newId,
       inputKey,
       uploadProgress,
+      artVision,
       handleUsersPick,
       handleUserPick,
       applyNewData,
@@ -322,7 +323,6 @@ export default defineComponent({
       handleUpload,
       uploadMany,
       reloadElementData,
-      artVision
     };
   }
 });

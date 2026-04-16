@@ -1085,16 +1085,14 @@ class Editor:
         #     ],
         if 'null' in user_id:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
+
+            if field_user != 'base':
+                art['indirect_data'].pop(field_user)
+                await Article(id=self.art_id).update(art, self.session)
+                return []
+
             art_fields = fields_to_return[str(art['section_id'])]
             
-            # if art['section_id'] == 31:
-            #     await Peer(user_uuid=int(art['indirect_data']['author']['id'])).remove_author_points(session=self.session, article_id=int(self.art_id))
-                
-            #     art['indirect_data'].pop('author')
-                
-            #     # сохранил
-            #     await Article(id=self.art_id).update(art, self.session)
-            #     return []
             for art_field in art_fields:
                 if art_field in art['indirect_data']:
                     art['indirect_data'].pop(art_field)

@@ -1030,7 +1030,7 @@ class Editor:
 
         return art['indirect_data']['users']
 
-    async def get_user_info(self, user_id, field):
+    async def get_user_info(self, user_id, field_user):
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1148,11 +1148,11 @@ class Editor:
         # получаю статью
         art = await Article(id=self.art_id).find_by_id(self.session)
 
-        if field != 'base':
-            print(field, result)
+        if field_user != 'base':
+            print(field_user, result)
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
-            art['indirect_data'][field] = result
+            art['indirect_data'][field_user] = result
             await Article(id=self.art_id).update(art, self.session)
 
             return result

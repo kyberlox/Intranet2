@@ -1030,7 +1030,7 @@ class Editor:
 
         return art['indirect_data']['users']
 
-    async def get_user_info(self, user_id, ):
+    async def get_user_info(self, user_id, field):
         await self.validate()
         result = {}
         fields_to_return = {
@@ -1073,17 +1073,17 @@ class Editor:
                 "work_position",
                 "department",
                 "photo_file_url"
-            ]
+            ],
         }
         # "31": [
-            #     "id",
-            #     "name",
-            #     "second_name",
-            #     "last_name",
-            #     "work_position",
-            #     "department",
-            #     "photo_file_url"
-            # ],
+        #         "id",
+        #         "name",
+        #         "second_name",
+        #         "last_name",
+        #         "work_position",
+        #         "department",
+        #         "photo_file_url"
+        #     ],
         if 'null' in user_id:
             art = await Article(id=int(self.art_id)).find_by_id(self.session)
             art_fields = fields_to_return[str(art['section_id'])]
@@ -1103,6 +1103,8 @@ class Editor:
             return []
         # user_id = int(user_id)
         user_info = await User(id=user_id).search_by_id(self.session)
+
+        #Определяем куда засунуть пользователя
         if str(self.section_id) in fields_to_return.keys():
             fields = fields_to_return[str(self.section_id)]
             for field in fields:
@@ -1146,6 +1148,14 @@ class Editor:
         # получаю статью
         art = await Article(id=self.art_id).find_by_id(self.session)
 
+        if field != 'base':
+            if art['indirect_data'] is None:
+                art['indirect_data'] = dict()
+            art['indirect_data'][field] = result
+            await Article(id=self.art_id).update(art, self.session)
+
+            return result
+
         if self.section_id == 14:
             art["name"] = result["fio"]
 
@@ -1161,23 +1171,7 @@ class Editor:
             result.pop("department")
             result.pop('position')
 
-        # if self.section_id == 31:
-        #     if not art['indirect_data']:
-        #         art['indirect_data'] = {
-        #             'author': {
-        #                 'id': user_id,
-        #                 'fio': result["fio"],
-        #                 'position': result["position"],
-        #                 'photo_file_url': result["photo_file_url"]
-        #             }
-        #         }
-        #     else:
-        #         art['indirect_data']['author'] = {
-        #             'id': user_id,
-        #             'fio': result["fio"],
-        #             'position': result["position"],
-        #             'photo_file_url': result["photo_file_url"]
-        #         }
+
         else:
             # вписываю в неё эти значения
             for key in result.keys():
@@ -1266,9 +1260,9 @@ async def get_user_id_by_session_id(request: Request) -> int:
     return user_id
 
 
-@editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
-async def set_user_info(section_id: int, art_id: int, user_id, session: AsyncSession = Depends(get_async_db)):
-    return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id)
+@editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}/{field}")
+async def set_user_info(section_id: int, art_id: int, user_id, field, session: AsyncSession = Depends(get_async_db)):
+    return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id, field)
 
 
 @editor_router.post("/get_users_info")

@@ -944,11 +944,6 @@
         "disabled": true
       },
       {
-        "name": "ID пользователей",
-        "field": "users",
-        "data_type": "search_by_uuids"
-      },
-      {
         "name": "Имплементор",
         "field": "implementer",
         "data_type": "search_by_uuid",
@@ -963,6 +958,11 @@
       {
         "name": "Статус",
         "field": "sinerteam_status",
+        "data_type": "str"
+      },
+      {
+        "name": "Номер Синертима",
+        "field": "sinerteam_number",
         "data_type": "str"
       },
       {

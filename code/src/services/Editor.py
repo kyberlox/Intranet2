@@ -1149,6 +1149,7 @@ class Editor:
         art = await Article(id=self.art_id).find_by_id(self.session)
 
         if field != 'base':
+            print(field, result)
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
             art['indirect_data'][field] = result

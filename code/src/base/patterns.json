@@ -904,11 +904,6 @@
         "data_type": "str"
       },
       {
-        "name": "Содержимое",
-        "field": "content_text",
-        "data_type": "str"
-      },
-      {
         "name": "Тип форматирования",
         "field": "content_type",
         "data_type": "str",

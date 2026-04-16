@@ -1066,7 +1066,6 @@ class Editor:
                 "department"
             ],
             "35": [
-                "id",
                 "name",
                 "second_name",
                 "last_name",

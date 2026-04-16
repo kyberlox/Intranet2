@@ -30,6 +30,7 @@
                              :type="item.data_type"
                              :field="item.field"
                              :users="(item.value as IUserList[])"
+                             :needDeleteButton = "item.field==='implementer' || item.field === 'integrator'"
                              @handleUserPick="(id, field) => $emit('handleUserPick', id, field)"
                              @handleUsersPick="(e) => $emit('handleUsersPick', e)" />
 
@@ -93,8 +94,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
-
-import type { IAdminListItem, IReportage, INewFileData, IUserSearch } from "@/interfaces/IEntities";
+import type { IAdminListItem, IReportage, INewFileData,  } from "@/interfaces/IEntities";
 import type { ITag } from "@/interfaces/entities/ITag";
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';

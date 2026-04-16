@@ -9,7 +9,7 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody v-if="!loading">
                 <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
                     <td v-for="column in columns" :key="column.key">
                         <slot
@@ -34,12 +34,13 @@
                         </slot>
                     </td>
                 </tr>
+                <tr v-if="rows.length === 0">
+                    <td :colspan="columns.length" class="siner-table__empty-cell">
+                        {{ emptyMessage }}
+                    </td>
+                </tr>
             </tbody>
         </table>
-
-        <div v-if="!rows.length && !loading" class="siner-table__empty">
-            {{ emptyMessage }}
-        </div>
 
         <div v-if="loading" class="siner-table__loading">
             {{ loadingMessage }}
@@ -159,6 +160,7 @@ export default defineComponent({
         const handleCellClick = (value: unknown, row: TableRow, column: ColumnDefinition, index: number) => {
             emit('cell-click', { value, row, column, index })
         }
+
 
         return {
             getValue,

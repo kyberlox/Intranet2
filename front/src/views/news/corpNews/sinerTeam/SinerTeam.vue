@@ -9,22 +9,24 @@
             @row-click="handleRowClick"
         >
             <template #column-implementer="{ value }">
-                <div>
+                <div class="person-cell">
                     <img
                         v-if="value && value[0]?.photo_file_url"
                         :src="value[0].photo_file_url"
-                        :alt="value[0].fio"
+                        :alt="value[0]?.fio || 'Фото'"
+                        class="person-avatar"
                     />
-                    <span>{{ value[0].fio }}</span>
+                    <span>{{ value?.[0]?.fio || '' }}</span>
                 </div>
             </template>
 
             <template #column-integrator="{ value }">
-                <div>
+                <div class="person-cell">
                     <img
                         v-if="value && value[0]?.photo_file_url"
                         :src="value[0].photo_file_url"
-                        :alt="value[0]?.fio"
+                        :alt="value[0]?.fio || 'Фото'"
+                        class="person-avatar"
                     />
                     <span>{{ value?.[0]?.fio || 'Работа без интегратора' }}</span>
                 </div>
@@ -47,7 +49,7 @@
 
             <template #column-note_status="{ value }">
                 <div class="note-cell">
-                    {{ value }}
+                    {{ value || '—' }}
                 </div>
             </template>
         </SinerTable>
@@ -74,10 +76,14 @@ export default defineComponent({
         const tableData = ref<ISinerTableData[]>([])
 
         const tableRows = computed<TableRow[]>(() => {
+            if (!tableData.value || !Array.isArray(tableData.value)) {
+                return []
+            }
+
             return tableData.value.map((item) => ({
-                ...item.indirect_data,
                 id: item.id,
                 name: item.name,
+                ...item.indirect_data,
             }))
         })
 
@@ -91,10 +97,9 @@ export default defineComponent({
             {
                 key: 'sinerteam_name',
                 label: 'Название синертима',
-                field: 'name',
+                field: 'sinerteam_name',
                 sortable: true,
             },
-
             {
                 key: 'implementer',
                 label: 'Имплементер',
@@ -126,7 +131,12 @@ export default defineComponent({
 
         const formatDate = (date: string): string => {
             if (!date) return '—'
-            return new Date(date).toLocaleDateString('ru-RU')
+            try {
+                return new Date(date).toLocaleDateString('ru-RU')
+            } catch (error) {
+                console.error('Date formatting error:', error)
+                return '—'
+            }
         }
 
         const handleRowClick = ({ row, index }: { row: TableRow; index: number }) => {
@@ -135,18 +145,20 @@ export default defineComponent({
 
         const loadData = async () => {
             loading.value = true
-            Api.get(`article/find_by/${sectionTips['синертим']}`)
-                .then((data) => {
-                    tableData.value = data
-                    console.log(data)
-                })
-                .finally(() => (loading.value = false))
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['синертим']}`)
+                tableData.value = Array.isArray(data) ? data : []
+            } catch  {
+                tableData.value = []
+            } finally {
+                loading.value = false
+            }
         }
 
         onMounted(() => {
             loadData()
         })
-        loadData()
+
         return {
             tableRows,
             tableColumns,
@@ -157,3 +169,4 @@ export default defineComponent({
     },
 })
 </script>
+

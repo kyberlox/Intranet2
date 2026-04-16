@@ -97,7 +97,7 @@ export default defineComponent({
             {
                 key: 'sinerteam_name',
                 label: 'Название синертима',
-                field: 'sinerteam_name',
+                field: 'name',
                 sortable: true,
             },
             {

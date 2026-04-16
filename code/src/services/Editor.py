@@ -1261,7 +1261,7 @@ async def get_user_id_by_session_id(request: Request) -> int:
     return user_id
 
 
-@editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}/{field}")
+@editor_router.get("/get_user_info/{section_id}/{art_id}/{user_id}")
 async def set_user_info(section_id: int, art_id: int, user_id, field, session: AsyncSession = Depends(get_async_db)):
     return await Editor(art_id=art_id, section_id=section_id, session=session).get_user_info(user_id, field)
 

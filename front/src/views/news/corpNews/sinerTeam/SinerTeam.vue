@@ -61,7 +61,6 @@ import type { ISinerTableData } from '@/interfaces/entities/ISinerteam'
 import Api from '@/utils/Api'
 import { sectionTips } from '@/assets/static/sectionTips'
 import SinerTable from '@/components/layout/SinerTable.vue'
-import { log } from 'console'
 
 export default defineComponent({
     name: 'SinerTeam',
@@ -75,13 +74,11 @@ export default defineComponent({
         const tableData = ref<ISinerTableData[]>([])
 
         const tableRows = computed<TableRow[]>(() => {
-            let tmpRows = tableData.value.map((item) => ({
+            return tableData.value.map((item) => ({
                 ...item.indirect_data,
                 id: item.id,
                 name: item.name,
             }))
-            console.log(tmpRows)
-            return tmpRows
         })
 
         const tableColumns = computed<ColumnDefinition[]>(() => [

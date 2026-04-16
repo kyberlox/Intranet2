@@ -97,11 +97,8 @@ export default defineComponent({
         const showSearchModal = ref(false)
 
         const handleUserPick = (user: IUserSearch, type: string = '') => {
-            console.log(type)
             pickedUser.value = user
-            console.log(pickedUser.value)
             usersList.value = usersList.value.filter((e: IUserSearch) => e.id == user.id)
-            console.log(usersList.value)
             emit(
                 props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
                 type == 'remove' ? null : user.id ? user.id : user.user_id,

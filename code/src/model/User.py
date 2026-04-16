@@ -443,7 +443,7 @@ class User:
 
                     # закидываем в ОВ
                     if need_update_fv:
-                        await self.put_user_to_vis(session, usr_data)
+                        await self.put_user_to_vis(session, psql_user)
                 else:
                     await self.UserSearchModel.delete_user_from_el_index(user_id=self.id)
                 return None
@@ -556,7 +556,7 @@ class User:
                 else:
                     LogsMaker().warning_message(f'Новый пользователь!')
             return need_update_fv
-            return True 
+            # return True 
         except Exception as e:
             return LogsMaker().error_message(f'Произошла ошибка при обновлении пользователя с id={self.id} из Б24: {e}')
 

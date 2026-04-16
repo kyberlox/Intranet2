@@ -121,10 +121,10 @@ app.include_router(C_app, prefix="/api")
 main_redirect = os.getenv('HOST')
 
 if 'intranet.emk.ru' in main_redirect:
-    origins = [
-        "http://intranet.emk.org.ru",
-        "http://localhost:5173",  # если разработка
-    ]
+    # origins = [
+    #     "http://intranet.emk.org.ru",
+    #     "http://localhost:5173",  # если разработка
+    # ]
     origins = ['*']
 
     app.add_middleware(

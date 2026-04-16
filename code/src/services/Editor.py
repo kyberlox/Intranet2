@@ -1149,7 +1149,7 @@ class Editor:
             print(field_user, result)
             if art['indirect_data'] is None:
                 art['indirect_data'] = dict()
-            art['indirect_data'][field_user] = result
+            art['indirect_data'][field_user] = [result]
             await Article(id=self.art_id).update(art, self.session)
 
             return result

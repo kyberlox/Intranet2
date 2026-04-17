@@ -54,8 +54,14 @@
             transition: background 0.2s ease;
         }
     }
+
+}
     .person-cell {
         display: flex;
         justify-items: center;
+        span{
+            margin-left: 20px;
+        }
     }
-}
+
+

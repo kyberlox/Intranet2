@@ -969,7 +969,19 @@
         "name": "Комментарий статуса",
         "field": "note_status",
         "data_type": "str"
-      } 
+      },
+      {
+        "name" : "Список Областей Видимости",
+        "field" : "all_visions",
+        "data_type" : "vision",
+        "values": []
+      },
+      {
+        "name": "Области Видимости",
+        "field": "vision",
+        "data_type": "list",
+        "values": []
+      }  
     ],
     "files": {
       "images": [],

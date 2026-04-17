@@ -1,42 +1,52 @@
 <template>
-<div v-if="inPost"
-     class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group">
-    <p class="admin-element-inner__field-title fs-l">
-        заполнить данными о сотруднике
-    </p>
-    <div @click="showSearchModal = true"
-         class="admin-element__reportage-group__add-button primary-button">
-        <PlusIcon />
+    <div
+        v-if="inPost"
+        class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group"
+    >
+        <p class="admin-element-inner__field-title fs-l">заполнить данными о сотруднике</p>
+        <div
+            @click="showSearchModal = true"
+            class="admin-element__reportage-group__add-button primary-button"
+        >
+            <PlusIcon />
+        </div>
     </div>
-</div>
-<div v-else>
-    <p v-if="title"
-       class="admin-element-inner__field-title fs-l">
-        {{ title }}
-    </p>
-    <div class="primary-button"
-         @click="showSearchModal = true">
-        Добавить
+    <div v-else>
+        <p v-if="title" class="admin-element-inner__field-title fs-l">
+            {{ title }}
+        </p>
+        <div class="primary-button" @click="showSearchModal = true">Добавить</div>
     </div>
-</div>
-<SlotModal v-if="showSearchModal"
-           @close="showSearchModal = false">
-    <AdminEditInput v-if="!pickedUser"
-                    @pick="(value: string) => (searchQuery = value)"
-                    :item="{ name: 'Сотрудник' }"
-                    :placeholder="'Выберите сотрудника'" />
+    <SearchList
+        v-if="users.length && (field == 'implementer' || field == 'integrator')"
+        :searchList="users"
+        :needDeleteButton="needDeleteButton"
+        @remove="(user: IUserSearch) => handleUserPick(user, 'remove')"
+        @pick="(user: IUserSearch) => handleUserPick(user)"
+    />
+    <SlotModal v-if="showSearchModal" @close="showSearchModal = false">
+        <AdminEditInput
+            v-if="!pickedUser"
+            @pick="(value: string) => (searchQuery = value)"
+            :item="{ name: 'Сотрудник' }"
+            :placeholder="'Выберите сотрудника'"
+        />
 
-    <SearchList v-if="usersList.length"
-                :searchList="usersList"
-                @pick="(user: IUserSearch) => handleUserPick(user)" />
-</SlotModal>
+        <SearchList
+            v-if="usersList.length"
+            :searchList="usersList"
+            :needDeleteButton="needDeleteButton"
+            @remove="(user: IUserSearch) => handleUserPick(user, 'remove')"
+            @pick="(user: IUserSearch) => handleUserPick(user)"
+        />
+    </SlotModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import SearchList from '@/components/tools/common/SearchList.vue'
+import { defineComponent, ref, type PropType } from 'vue'
+import SearchList, { type IUserList } from '@/components/tools/common/SearchList.vue'
 import AdminEditInput from './AdminEditInput.vue'
-import type { IUserSearch } from '@/interfaces/IEntities'
+import type { IAdminListItem, IUserSearch } from '@/interfaces/IEntities'
 import { watchDebounced } from '@vueuse/core'
 import Api from '@/utils/Api'
 import { handleApiError } from '@/utils/apiResponseCheck'
@@ -54,15 +64,25 @@ export default defineComponent({
     },
     props: {
         type: {
-            type: String
+            type: String,
         },
         inPost: {
             type: Boolean,
-            deafault: true
+            deafault: true,
         },
         title: {
-            type: String
-        }
+            type: String,
+        },
+        field: {
+            type: String,
+        },
+        users: {
+            type: Array<IUserList>,
+            default: () => [],
+        },
+        needDeleteButton: {
+            type: Boolean,
+        },
     },
     name: 'adminEditUserSearch',
     emits: ['handleUserPick', 'handleUsersPick'],
@@ -76,13 +96,17 @@ export default defineComponent({
 
         const showSearchModal = ref(false)
 
-        const handleUserPick = (user: IUserSearch) => {
-            pickedUser.value = user;
-            usersList.value = usersList.value.filter((e: IUserSearch) => e.id == user.id);
-            emit((props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick'), user.id);
-            pickedUser.value = false;
-            showSearchModal.value = false;
-            usersList.value.length = 0;
+        const handleUserPick = (user: IUserSearch, type: string = '') => {
+            pickedUser.value = user
+            usersList.value = usersList.value.filter((e: IUserSearch) => e.id == user.id)
+            emit(
+                props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
+                type == 'remove' ? null : user.id ? user.id : user.user_id,
+                props.field,
+            )
+            pickedUser.value = false
+            showSearchModal.value = false
+            usersList.value.length = 0
         }
 
         watchDebounced(

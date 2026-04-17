@@ -414,6 +414,11 @@ const router = createRouter({
       component: () => import('@/views/news/corpNews/CorpNews.vue')
     },
     {
+        path:'/news/corpnews/sinerteam',
+        name:'sinerteam',
+        component: () => import('@/views/news/corpNews/sinerTeam/SinerTeam.vue')
+    },
+    {
       path: '/news/corpnews/:id',
       name: 'corpNewsArticle',
       component: () => import('@/views/PostPreview.vue'),

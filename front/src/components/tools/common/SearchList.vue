@@ -16,7 +16,8 @@
         </div>
         <div v-if="needDeleteButton"
              class="visibility-editor__user__remove-btn"
-             @click="$emit('remove', element.id)">
+             @click.prevent.stop="$emit('remove', element.id)">
+
             <Cancel />
         </div>
     </li>
@@ -32,6 +33,7 @@ import type { IAreaDepartment } from '@/views/admin/components/inputFields/Admin
 export interface IUserList {
     fio: string
     id: number
+    user_id:number
     name: string
     photo_file_url?: string
     image?: string
@@ -64,7 +66,7 @@ export default defineComponent({
             const formattedUsers: IUserSearch[] = [];
             if (props.type == 'users') {
                 (elements as IUserList[]).map((e) => {
-                    formattedUsers.push({ name: e.fio ? e.fio : e.name, user_position: e.position, image: e.photo_file_url || e.image, id: e.id })
+                    formattedUsers.push({ name: e.fio ? e.fio : e.name, user_position: e.position, image: e.photo_file_url || e.image, id: e.id ||e.user_id,  })
                 })
             }
             else if (props.type == 'departments') {

@@ -118,17 +118,23 @@ app.include_router(store_router, prefix="/api")
 app.include_router(C_app, prefix="/api")
 
 
+main_redirect = os.getenv('HOST')
 
-origins = ['*']
+if 'intranet.emk.ru' in main_redirect:
+    # origins = [
+    #     "http://intranet.emk.org.ru",
+    #     "http://localhost:5173",  # если разработка
+    # ]
+    origins = ['*']
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    allow_headers=["*"]
-    #allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials"],
-)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
+        # allow_headers=["*"]
+        allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials", "session_id"]
+    )
 
 
 
@@ -172,7 +178,7 @@ open_links = [
 #Проверка авторизации для ВСЕХ запросов
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next : Callable[[Request], Awaitable[Response]]):
-
+    # origin = request.headers.get("origin", "")
     # Внедряю свою отладку
     log = LogsMaker()
 

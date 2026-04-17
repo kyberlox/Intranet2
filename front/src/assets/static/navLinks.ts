@@ -1,110 +1,110 @@
-import VkIcon from "@/assets/icons/layout/sidebar/socLinks/VkIcon.svg";
-import TelegramIcon from "@/assets/icons/layout/sidebar/socLinks/TelegramIcon.svg";
-import EmkLogo from "@/assets/icons/layout/sidebar/socLinks/EmkLogo.svg";
-import MotiwIcon from "@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg";
-import BitrixIcon from "@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg";
-import BugIcon from '@/assets/icons/layout/sidebar/socLinks/Bug.svg';
-import MaxIcon from '@/assets/icons/layout/sidebar/socLinks/Max.svg';
-import type { MainMenuPoints, WorkLink, SupportLink } from "@/interfaces/ILayout";
+import VkIcon from '@/assets/icons/layout/sidebar/socLinks/VkIcon.svg'
+import TelegramIcon from '@/assets/icons/layout/sidebar/socLinks/TelegramIcon.svg'
+import EmkLogo from '@/assets/icons/layout/sidebar/socLinks/EmkLogo.svg'
+import MotiwIcon from '@/assets/icons/layout/sidebar/workLinks/MotiwIcon.svg'
+import BitrixIcon from '@/assets/icons/layout/sidebar/workLinks/BitrixIcon.svg'
+import BugIcon from '@/assets/icons/layout/sidebar/socLinks/Bug.svg'
+import MaxIcon from '@/assets/icons/layout/sidebar/socLinks/Max.svg'
+import type { MainMenuPoints, WorkLink, SupportLink } from '@/interfaces/ILayout'
 
 export const mainMenuPoints: MainMenuPoints = [
     {
         id: 1,
-        name: "О нас",
+        name: 'О нас',
         subPoints: [
             {
                 id: 1.1,
-                name: "Наша компания",
-                href: "personal",
+                name: 'Наша компания',
+                href: 'personal',
             },
             {
                 id: 1.2,
-                name: "История компании",
-                href: "book-emk",
+                name: 'История компании',
+                href: 'book-emk',
                 params: {
                     id: 0,
                 },
             },
             {
                 id: 1.3,
-                name: "Наши люди",
-                href: "our-people",
+                name: 'Наши люди',
+                href: 'our-people',
             },
             {
                 id: 1.4,
-                name: "Доска почета",
-                href: "year-results",
+                name: 'Доска почета',
+                href: 'year-results',
             },
             {
                 id: 1.5,
-                name: "Блоги",
-                href: "blogs",
+                name: 'Блоги',
+                href: 'blogs',
             },
             {
                 id: 1.7,
-                name: "Учебный центр",
-                href: "trainingcenter",
+                name: 'Учебный центр',
+                href: 'trainingcenter',
             },
             {
                 id: 1.8,
-                name: "Памятка новому сотруднику",
-                href: "forNewWorker",
+                name: 'Памятка новому сотруднику',
+                href: 'forNewWorker',
             },
             {
                 id: 1.9,
-                name: "Дни Рождения",
-                href: "birthdays",
+                name: 'Дни Рождения',
+                href: 'birthdays',
             },
             {
-                id: 1.10,
-                name: "Техника безопасности",
-                href: "safetytechnics",
+                id: 1.1,
+                name: 'Техника безопасности',
+                href: 'safetytechnics',
             },
             {
                 id: 1.11,
-                name: "Календарь событий",
-                href: "calendar",
+                name: 'Календарь событий',
+                href: 'calendar',
             },
             {
                 id: 1.13,
                 name: 'Новые сотрудники',
-                href: 'newWorkers'
-            }
+                href: 'newWorkers',
+            },
         ],
     },
     {
         id: 2,
-        name: "Сервисы",
+        name: 'Сервисы',
         subPoints: [
             {
                 id: 2.1,
-                name: "Подбор оборудования (ТЭП)",
-                href: "selectionTep",
+                name: 'Подбор оборудования (ТЭП)',
+                href: 'selectionTep',
             },
             {
                 id: 2.2,
-                name: "Подбор оборудования (Регулятор)",
-                href: "selectionReg",
+                name: 'Подбор оборудования (Регулятор)',
+                href: 'selectionReg',
             },
             {
                 id: 2.3,
-                name: "Поздравительная открытка",
-                href: "postcard",
+                name: 'Поздравительная открытка',
+                href: 'postcard',
             },
             {
                 id: 2.4,
-                name: "ChatGpt",
-                href: "chatgpt",
+                name: 'ChatGpt',
+                href: 'chatgpt',
             },
             {
                 id: 2.5,
-                name: "DeepSeek",
-                href: "deepseek",
+                name: 'DeepSeek',
+                href: 'deepseek',
             },
             {
                 id: 2.6,
-                name: "Разрешительная документация и сертификаты",
-                href: "cert",
+                name: 'Разрешительная документация и сертификаты',
+                href: 'cert',
             },
             // {
             //     id: 2.51,
@@ -113,142 +113,142 @@ export const mainMenuPoints: MainMenuPoints = [
             // },
             {
                 id: 2.7,
-                name: "Референсы и опыт поставок",
-                href: "experience",
+                name: 'Референсы и опыт поставок',
+                href: 'experience',
             },
             {
                 id: 2.8,
                 name: 'Информационное письмо о компании ЭМК',
                 href: 'https://intranet.emk.ru/api/files/Информационное_письмо_НПО_ЭМК.docx',
-            }
+            },
         ],
     },
     {
         id: 3,
-        name: "Новости",
+        name: 'Новости',
         subPoints: [
             {
                 id: 3.1,
-                name: "Актуальные новости",
-                href: "actualNews",
+                name: 'Актуальные новости',
+                href: 'actualNews',
             },
             {
                 id: 3.2,
-                name: "Организационное развитие",
+                name: 'Организационное развитие',
                 subpoints: [
                     {
                         id: 3.21,
-                        name: "Организационные назначения",
-                        href: "corpNews",
+                        name: 'Организационные назначения',
+                        href: 'corpNews',
                     },
                     {
                         id: 3.22,
-                        name: "Организационное развитие",
-                        href: "sinerteam",
+                        name: 'Организационное развитие',
+                        href: 'sinerteam',
                     },
-                ]
+                ],
             },
             {
                 id: 3.4,
-                name: "Корпоративная газета ЭМК",
-                href: "gazette",
+                name: 'Корпоративная газета ЭМК',
+                href: 'gazette',
             },
         ],
     },
     {
         id: 4,
-        name: "Галерея",
+        name: 'Галерея',
         subPoints: [
             {
                 id: 4.1,
-                name: "Гид по предприятиям",
-                href: "factories",
+                name: 'Гид по предприятиям',
+                href: 'factories',
             },
             {
                 id: 4.2,
-                name: "Фотоотчеты",
-                href: "officialEvents",
+                name: 'Фотоотчеты',
+                href: 'officialEvents',
             },
             {
                 id: 4.3,
-                name: "Видеорепортажи",
-                href: "videoReports",
+                name: 'Видеорепортажи',
+                href: 'videoReports',
             },
             {
                 id: 4.4,
-                name: "Видеоинтервью",
-                href: "videoInterviews",
+                name: 'Видеоинтервью',
+                href: 'videoInterviews',
             },
             {
                 id: 4.5,
-                name: "Видеоинтервью с руководством",
-                href: "videoInterviewsManagement",
+                name: 'Видеоинтервью с руководством',
+                href: 'videoInterviewsManagement',
             },
             {
                 id: 4.5,
-                name: "Фильмы ТО ЭМК",
-                href: 'filmsEmk'
-            }
+                name: 'Фильмы ТО ЭМК',
+                href: 'filmsEmk',
+            },
         ],
     },
     {
         id: 5,
-        name: "Внутренние коммуникации",
+        name: 'Внутренние коммуникации',
         subPoints: [
             {
                 id: 5.1,
-                name: "Корпоративные события",
-                href: "corpEvents",
+                name: 'Корпоративные события',
+                href: 'corpEvents',
             },
             {
                 id: 5.2,
-                name: "Корпоративная жизнь в фото",
-                href: "corpLife",
+                name: 'Корпоративная жизнь в фото',
+                href: 'corpLife',
             },
             {
                 id: 5.3,
-                name: "Афиша",
-                href: "eventAnnounces",
+                name: 'Афиша',
+                href: 'eventAnnounces',
             },
             {
                 id: 5.4,
-                name: "Предложения партнёров",
-                href: "partners",
+                name: 'Предложения партнёров',
+                href: 'partners',
             },
             {
                 id: 5.5,
-                name: "Благотворительные проекты",
-                href: "care",
+                name: 'Благотворительные проекты',
+                href: 'care',
             },
             {
                 id: 5.6,
-                name: "Открытые вакансии",
-                href: "vacancies",
+                name: 'Открытые вакансии',
+                href: 'vacancies',
             },
             {
                 id: 5.7,
-                name: "Конкурс",
-                href: "contest",
+                name: 'Конкурс',
+                href: 'contest',
             },
         ],
     },
     {
         id: 6,
-        name: "Капитал ЭМК",
+        name: 'Капитал ЭМК',
         subPoints: [
             {
                 id: 6.1,
                 name: 'О капитале',
-                href: 'merchAbout'
+                href: 'merchAbout',
             },
             {
                 id: 6.2,
                 name: 'Магазин мерча',
-                href: 'merchStore'
-            }
-        ]
-    }
-];
+                href: 'merchStore',
+            },
+        ],
+    },
+]
 
 export const points = [
     {
@@ -264,63 +264,62 @@ export const points = [
     {
         id: 3,
         name: 'Панель редактора',
-        href: 'admin'
+        href: 'admin',
     },
 ]
 
 export const workLinks: WorkLink[] = [
     {
-        title: "Мотив",
-        href: "http://motiw.imp.int/user/",
-        description: "Задачи",
-        linkTitle: "К задачам",
+        title: 'Мотив',
+        href: 'http://motiw.imp.int/user/',
+        description: 'Задачи',
+        linkTitle: 'К задачам',
         icon: MotiwIcon,
     },
     {
-        title: "Битрикс24",
-        href: "https://portal.emk.ru/company/personal/user/k/tasks/",
-        description: "Задачи",
-        linkTitle: "К задачам",
+        title: 'Битрикс24',
+        href: 'https://portal.emk.ru/company/personal/user/k/tasks/',
+        description: 'Задачи',
+        linkTitle: 'К задачам',
         icon: BitrixIcon,
     },
-];
+]
 
 export const supportLinks: SupportLink[] = [
     {
-        title: "Тех поддержка",
-        href: "bugReport",
-        description: "Сообщить о проблеме",
+        title: 'Тех поддержка',
+        href: 'bugReport',
+        description: 'Сообщить о проблеме',
         icon: BugIcon,
     },
     {
-        title: "Мы в VK",
-        href: "https://vk.com/npo_emk",
-        description: "https://vk.com/npo_emk",
+        title: 'Мы в VK',
+        href: 'https://vk.com/npo_emk',
+        description: 'https://vk.com/npo_emk',
         icon: VkIcon,
     },
     {
-        title: "Мы в Telegram",
-        href: "https://t.me/emk_emk",
-        description: "@emk_emk",
+        title: 'Мы в Telegram',
+        href: 'https://t.me/emk_emk',
+        description: '@emk_emk',
         icon: TelegramIcon,
     },
     {
-        title: "Мы в MAX",
-        href: "https://max.ru/join/W4AndCka88YpXS6ic3VM8DFDdt0dEWa7iRpe-CV3RA0",
-        description: "ЭМК",
+        title: 'Мы в MAX',
+        href: 'https://max.ru/join/W4AndCka88YpXS6ic3VM8DFDdt0dEWa7iRpe-CV3RA0',
+        description: 'ЭМК',
         icon: MaxIcon,
     },
     {
-        title: "Наш сайт",
-        href: "https://www.emk.ru/",
-        description: "https://www.emk.ru",
+        title: 'Наш сайт',
+        href: 'https://www.emk.ru/',
+        description: 'https://www.emk.ru',
         icon: EmkLogo,
     },
     {
-        title: "Канал ЭМК",
-        href: "https://t.me/+fCbjwR18l9Q5NmJi",
-        description: "для сотрудников",
+        title: 'Канал ЭМК',
+        href: 'https://t.me/+fCbjwR18l9Q5NmJi',
+        description: 'для сотрудников',
         icon: TelegramIcon,
     },
-
-];
+]

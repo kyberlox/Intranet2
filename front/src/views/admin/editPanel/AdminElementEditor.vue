@@ -1,50 +1,65 @@
 <template>
-<div class="admin-element-inner">
-  <div class="admin-element-inner__wrapper mt20"
-       :class="{ 'admin-element-inner__wrapper--preview-full-width': previewFullWidth || isMobileScreen }">
+  <div class="admin-element-inner">
+    <div
+      class="admin-element-inner__wrapper mt20"
+      :class="{
+        'admin-element-inner__wrapper--preview-full-width':
+          previewFullWidth || isMobileScreen,
+      }"
+    >
+      <AdminElementEditorFieldRenderer
+        :isMobileScreen="isMobileScreen"
+        :previewFullWidth="previewFullWidth"
+        :activeType="activeType"
+        :newElementSkeleton="newElementSkeleton"
+        :newData="newData"
+        :newFileData="newFileData"
+        :uploadProgress="uploadProgress"
+        @handleUserPick="handleUserPick"
+        @handleUsersPick="handleUsersPick"
+        @handleEmitValueChange="handleEmitValueChange"
+        @reportageChanged="
+          (e) => {
+            newData.reports = e;
+          }
+        "
+        @tagsChanged="(e: number[]) => newData.tags = e"
+        @reloadElementData="(e: boolean) => reloadElementData(e)"
+        @handleUpload="handleUpload"
+        @uploadMany="(e) => uploadMany(e)"
+        @visibilityChanged="(newVision) => (artVision = newVision)"
+        @saveEmbed="(e: string[]) => handleUpload(e, true)"
+      />
 
-    <AdminElementEditorFieldRenderer :isMobileScreen="isMobileScreen"
-                                     :previewFullWidth="previewFullWidth"
-                                     :activeType="activeType"
-                                     :newElementSkeleton="newElementSkeleton"
-                                     :newData="newData"
-                                     :newFileData="newFileData"
-                                     :uploadProgress="uploadProgress"
-                                     @handleUserPick="handleUserPick"
-                                     @handleUsersPick="handleUsersPick"
-                                     @handleEmitValueChange="handleEmitValueChange"
-                                     @reportageChanged="(e) => { newData.reports = e }"
-                                     @tagsChanged="(e: number[]) => newData.tags = e"
-                                     @reloadElementData="(e: boolean) => reloadElementData(e)"
-                                     @handleUpload="handleUpload"
-                                     @uploadMany="(e) => uploadMany(e)"
-                                     @visibilityChanged="(newVision) => artVision = newVision"
-                                     @saveEmbed="(e: string[]) => handleUpload(e, true)" />
+      <AdminPostPreview
+        :previewFullWidth="previewFullWidth"
+        :isMobileScreen="isMobileScreen"
+        :newFileData="newFileData"
+        :newData="newData"
+        :activeType="activeType"
+        :sectionId="id"
+        :newId="String(newId)"
+        :currentItem="currentItem"
+        @noPreview="previewFullWidth = true"
+        @changePreviewWidth="previewFullWidth = !previewFullWidth"
+      />
+    </div>
 
-    <AdminPostPreview :previewFullWidth="previewFullWidth"
-                      :isMobileScreen="isMobileScreen"
-                      :newFileData="newFileData"
-                      :newData="newData"
-                      :activeType="activeType"
-                      :sectionId="id"
-                      :newId="String(newId)"
-                      :currentItem="currentItem"
-                      @noPreview="previewFullWidth = true"
-                      @changePreviewWidth="previewFullWidth = !previewFullWidth" />
-
+    <div class="admin-element-inner__actions">
+      <button
+        class="primary-button"
+        @click="router.push({ name: 'adminBlockInner', params: { id: id } })"
+      >
+        <span class="admin-element-inner__action-text">Назад</span>
+      </button>
+      <button
+        @click="applyNewData"
+        class="admin-element-inner__action-button admin-element-inner__action-button--save"
+      >
+        <span class="admin-element-inner__action-text">Сохранить</span>
+      </button>
+    </div>
   </div>
-
-  <div class="admin-element-inner__actions">
-    <button class="primary-button"
-            @click="router.push({ name: 'adminBlockInner', params: { id: id } })">
-      <span class="admin-element-inner__action-text">Назад</span>
-    </button>
-    <button @click="applyNewData"
-            class="admin-element-inner__action-button admin-element-inner__action-button--save">
-      <span class="admin-element-inner__action-text">Сохранить</span>
-    </button>
-  </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -159,6 +174,9 @@ export default defineComponent({
               newElementSkeleton.value = data.fields;
             }
             users.value = findValInObject(data, 'users')?.map((e: IUserList) => e.id) || [];
+
+            newData.value.implementer = findValInObject(data, 'implementer') || [];
+            newData.value.integrator = findValInObject(data, 'integrator') || [];
             // для файлов
             newFileData.value = data.files;
             newData.value.videos_native = data.files.videos_native;
@@ -257,8 +275,8 @@ export default defineComponent({
       }
     };
 
-    const handleUserPick = (userId: number) => {
-      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}`)
+    const handleUserPick = (userId: number, field: string) => {
+      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field ?? 'base'}`}`)
         .then((data) => {
           if (data) {
             reloadElementData(false)
@@ -315,6 +333,7 @@ export default defineComponent({
       newId,
       inputKey,
       uploadProgress,
+      artVision,
       handleUsersPick,
       handleUserPick,
       applyNewData,
@@ -322,7 +341,6 @@ export default defineComponent({
       handleUpload,
       uploadMany,
       reloadElementData,
-      artVision
     };
   }
 });

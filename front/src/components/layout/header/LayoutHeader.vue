@@ -193,10 +193,6 @@ export default defineComponent({
                 .then(() => isMobileMenuOpen.value = false);
         };
 
-        watchEffect(() => {
-            console.log(activeSidepoints.value)
-        })
-
         return {
             mainMenuPoints,
             activeDrop,

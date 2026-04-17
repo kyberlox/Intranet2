@@ -1,98 +1,132 @@
 <template>
-<div v-if="newElementSkeleton?.length"
-     :class="['admin-element-inner__editor',
-        { 'admin-element-inner__editor--preview-full-width': previewFullWidth || isMobileScreen },
-        { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' }
-    ]">
-    <div v-for="(item, index) in newElementSkeleton"
-         class="admin-element-inner__field"
-         :key="index">
+  <div
+    v-if="newElementSkeleton?.length"
+    :class="[
+      'admin-element-inner__editor',
+      {
+        'admin-element-inner__editor--preview-full-width':
+          previewFullWidth || isMobileScreen,
+      },
+      { 'admin-element-inner__editor--no-preview': activeType == 'noPreview' },
+    ]"
+  >
+    <div
+      v-for="(item, index) in newElementSkeleton"
+      class="admin-element-inner__field"
+      :key="index"
+    >
+      <!-- Привязать область видимости -->
+      <AdminEditSelect
+        v-if="item.field == 'vision_select'"
+        @pick="(value: string) => $emit('handleEmitValueChange', item, value)"
+        :item="{
+          name: 'Привязать область видимости',
+          values: newElementSkeleton.find((e) => e.field == 'all_visions')?.values,
+          value: newElementSkeleton.find((e) => e.field == 'vision_select')?.value || '',
+        }"
+      />
 
-        <!-- Привязать область видимости -->
-        <AdminEditSelect v-if="item.field == 'vision_select'"
-                         @pick="(value: string) => $emit('handleEmitValueChange', item, value)"
-                         :item="{
-                            name: 'Привязать область видимости', values: newElementSkeleton.find((e) => e.field == 'all_visions')?.values,
-                            value: newElementSkeleton.find((e) => e.field == 'vision_select')?.value || ''
-                        }" />
+      <!-- Поле выбора областей видимости  -->
+      <AdminEditTags
+        v-if="item.field == 'vision'"
+        :needAllButton="Boolean(item.field == 'vision')"
+        :tagsTitle="'Определите кому доступна эта новость'"
+        :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.value as string[]))"
+        :allTags="(newElementSkeleton.find((e) => e.field == 'all_visions')?.values as ITag[])"
+        @tagsChanged="(newVision: number[]) => $emit('visibilityChanged', newVision)"
+      />
 
-        <!-- Поле выбора областей видимости  -->
-        <AdminEditTags v-if="item.field == 'vision'"
-                       :needAllButton="Boolean(item.field == 'vision')"
-                       :tagsTitle="'Определите кому доступна эта новость'"
-                       :currentTags="((newElementSkeleton.find((e) => e.field == 'vision')?.value as string[]))"
-                       :allTags="(newElementSkeleton.find((e) => e.field == 'all_visions')?.values as ITag[])"
-                       @tagsChanged="(newVision: number[]) => $emit('visibilityChanged', newVision)" />
+      <!-- Для того чтобы вписать данные -->
+      <AdminEditUserSearch
+        v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
+        :title="item.name"
+        :type="item.data_type"
+        :field="item.field"
+        :users="(item.value as IUserList[])"
+        :needDeleteButton="item.field === 'implementer' || item.field === 'integrator'"
+        @handleUserPick="
+          (id, field) => {
+            $emit('handleUserPick', id, field);
+          }
+        "
+        @handleUsersPick="
+          (e) => {
+            $emit('handleUsersPick', e);
+          }
+        "
+      />
 
-        <!-- Для того чтобы вписать данные -->
-        <AdminEditUserSearch v-if="item.data_type == 'search_by_uuids' || item.data_type == 'search_by_uuid'"
-                             :title="item.name"
-                             :type="item.data_type"
-                             @handleUserPick="(e) => $emit('handleUserPick', e)"
-                             @handleUsersPick="(e) => $emit('handleUsersPick', e)" />
+      <!-- Для поиска по структуре -->
+      <AdminEditAreaSearch
+        v-if="item.data_type == 'areaSearch'"
+        :idValue="Number(item.value)"
+        @handleDepartmentPick="(value: string) => $emit('handleEmitValueChange', item, value)"
+      />
 
-        <!-- Для поиска по структуре -->
-        <AdminEditAreaSearch v-if="item.data_type == 'areaSearch'"
-                             :idValue="Number(item.value)"
-                             @handleDepartmentPick="(value: string) => $emit('handleEmitValueChange', item, value)" />
+      <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
+      <SearchList
+        v-if="item.field == 'users' || item.field == 'author'"
+        :needDeleteButton="true"
+        :searchList="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
+        @remove="(id: number) => $emit('handleUsersPick', String(id), item.field == 'users' ? 'remove' : 'fetchRemove')"
+      />
 
-        <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
-        <SearchList v-if="item.field == 'users' || item.field == 'author'"
-                    :needDeleteButton="true"
-                    :searchList="Array.isArray(item.value) ? (item.value as IUserList[]) : (typeof item.value == 'object' ? [(item.value as IUserList)] : [])"
-                    @remove="(id: number) => $emit('handleUsersPick', String(id), item.field == 'users' ? 'remove' : 'fetchRemove')" />
+      <AdminEditInputMulti
+        v-else-if="item.field == 'reports'"
+        :item="(item.value as IReportage[])"
+        @pick="(val) => $emit('reportageChanged', val)"
+      />
 
-        <AdminEditInputMulti v-else-if="item.field == 'reports'"
-                             :item="(item.value as IReportage[])"
-                             @pick="(val) => $emit('reportageChanged', val)" />
+      <AdminEditTags
+        v-else-if="item.field == 'all_tags'"
+        :currentTags="(newElementSkeleton.find((e) => e.field == 'tags')?.value as number[])"
+        :allTags="(item.values as ITag[])"
+        @tagsChanged="(e: number[]) => $emit('tagsChanged', e)"
+      />
 
+      <Component
+        v-else
+        :is="inputComponentChecker(item)"
+        :item="item"
+        :type="item.data_type == 'int' ? 'number' : 'text'"
+        @pick="(value: string) => $emit('handleEmitValueChange', item, value)"
+      />
 
-        <AdminEditTags v-else-if="item.field == 'all_tags'"
-                       :currentTags="(newElementSkeleton.find((e) => e.field == 'tags')?.value as number[])"
-                       :allTags="(item.values as ITag[])"
-                       @tagsChanged="(e: number[]) => $emit('tagsChanged', e)" />
-
-        <Component v-else
-                   :is="inputComponentChecker(item)"
-                   :item="item"
-                   :type="item.data_type == 'int' ? 'number' : 'text'"
-                   @pick="(value: string) => $emit('handleEmitValueChange', item, value)" />
-
-        <img v-if="item.field == 'photo_file_url'"
-             :src="(item.value as string)" />
+      <img v-if="item.field == 'photo_file_url'" :src="(item.value as string)" />
     </div>
 
     <div class="admin-element-inner__field mt10">
-        <AdminEditInputMulti v-if="newFileData?.videos_embed"
-                             :title="'Видео с источников'"
-                             :item="newFileData?.videos_embed"
-                             :articleId="newData?.id"
-                             @saveEmbed="(value: string[]) => $emit('saveEmbed', value)"
-                             @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)" />
-
+      <AdminEditInputMulti
+        v-if="newFileData?.videos_embed"
+        :title="'Видео с источников'"
+        :item="newFileData?.videos_embed"
+        :articleId="newData?.id"
+        @saveEmbed="(value: string[]) => $emit('saveEmbed', value)"
+        @pick="(value: string) => $emit('handleEmitValueChange', { name: 'Видео с источников', field: 'videos_embed' }, value)"
+      />
     </div>
-    <AdminUploadingSection class="mt10"
-                           :newFileData="newFileData"
-                           :newData="newData"
-                           :uploadProgress="uploadProgress"
-                           @reloadData="$emit('reloadElementData', true)"
-                           @uploadMany="(e: IFileToUpload[]) => $emit('uploadMany', e)"
-                           @handleUpload="(e: IFileToUpload) => $emit('handleUpload', e)" />
-</div>
+    <AdminUploadingSection
+      class="mt10"
+      :newFileData="newFileData"
+      :newData="newData"
+      :uploadProgress="uploadProgress"
+      @reloadData="$emit('reloadElementData', true)"
+      @uploadMany="(e: IFileToUpload[]) => $emit('uploadMany', e)"
+      @handleUpload="(e: IFileToUpload) => $emit('handleUpload', e)"
+    />
+  </div>
 
-<div v-else
-     class="admin-element-inner__editor">
+  <div v-else class="admin-element-inner__editor">
     <div class="admin-element-inner__editor__loader">
-        <Loader />
+      <Loader />
     </div>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
-
-import type { IAdminListItem, IReportage, INewFileData } from "@/interfaces/IEntities";
+import type { IAdminListItem, IReportage, INewFileData,  } from "@/interfaces/IEntities";
 import type { ITag } from "@/interfaces/entities/ITag";
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
 import AdminEditTextarea from '@/views/admin/components/inputFields/AdminEditTextarea.vue';
@@ -107,6 +141,7 @@ import SearchList, { type IUserList } from "@/components/tools/common/SearchList
 import AdminEditTags from "../components/inputFields/AdminEditTags.vue";
 import Loader from "@/components/layout/Loader.vue";
 import { type IFileToUpload } from "@/interfaces/IEntities";
+import { identity } from "@vueuse/core";
 
 export default defineComponent({
     components: {

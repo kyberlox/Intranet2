@@ -104,11 +104,13 @@ export default defineComponent({
         key: "implementer",
         label: "Имплементер",
         field: "implementer",
+        sortable: true,
       },
       {
         key: "integrator",
         label: "Интегратор",
         field: "integrator",
+        sortable: true,
       },
       {
         key: "status",

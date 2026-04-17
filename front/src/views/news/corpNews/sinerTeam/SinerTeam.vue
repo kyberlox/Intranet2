@@ -137,12 +137,12 @@ export default defineComponent({
         const [hours, minutes, seconds] = timePart.split(":");
 
         return new Date(
-          year,
-          month - 1,
-          day,
-          hours,
-          minutes,
-          seconds
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          Number(hours),
+          Number(minutes),
+          Number(seconds)
         ).toLocaleDateString();
       } catch (error) {
         console.error("Date formatting error:", error);

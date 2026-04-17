@@ -26,6 +26,42 @@
         color: #334155;
         border-bottom: 1px solid #e2e8f0;
         white-space: nowrap;
+
+        // Sorting styles
+        &.sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #e2e8f0;
+            }
+        }
+
+        &.sorted-asc,
+        &.sorted-desc {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+    }
+
+    // Sort icon styles
+    .sort-icon {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 12px;
+        opacity: 0.5;
+        transition: opacity 0.2s ease;
+
+        .sorted-asc &,
+        .sorted-desc & {
+            opacity: 1;
+        }
+
+        .sortable:hover & {
+            opacity: 0.8;
+        }
     }
 
     td {
@@ -54,15 +90,27 @@
             transition: background 0.2s ease;
         }
     }
-
 }
-    .person-cell {
-        display: flex;
-        justify-items: center;
-        span{
-            margin-left: 20px;
-        }
-        align-items: center;
+
+.person-cell {
+    display: flex;
+    justify-items: center;
+    span{
+        margin-left: 20px;
     }
+    align-items: center;
+}
 
+@keyframes sortFade {
+    from {
+        background-color: #dbeafe;
+    }
+    to {
+        background-color: #dbeafe;
+    }
+}
 
+.sorted-asc,
+.sorted-desc {
+    animation: sortFade 0.3s ease;
+}

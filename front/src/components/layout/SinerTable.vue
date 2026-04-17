@@ -3,14 +3,36 @@
     <table class="siner-table">
       <thead>
         <tr>
-          <th v-for="column in columns" :key="column.key">
+          <th
+            v-for="column in columns"
+            :key="column.key"
+            :class="{
+              sortable: column.sortable,
+              'sorted-asc':
+                column.sortable && sortKey === column.key && sortDirection === 'asc',
+              'sorted-desc':
+                column.sortable && sortKey === column.key && sortDirection === 'desc',
+            }"
+            @click="column.sortable && handleSort(column.key)"
+          >
             {{ column.label }}
+            <span v-if="column.sortable" class="sort-icon">
+              <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
+              <span v-else-if="sortKey === column.key && sortDirection === 'desc'"
+                >↓</span
+              >
+              <span v-else>↕</span>
+            </span>
           </th>
         </tr>
       </thead>
 
       <tbody v-if="!loading">
-        <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+        <tr
+          v-for="(row, rowIndex) in sortedRows"
+          :key="rowIndex"
+          @click="handleRowClick(row, rowIndex)"
+        >
           <td v-for="column in columns" :key="column.key">
             <slot
               :name="`column-${column.key}`"
@@ -34,7 +56,7 @@
             </slot>
           </td>
         </tr>
-        <tr v-if="rows.length === 0">
+        <tr v-if="sortedRows.length === 0">
           <td :colspan="columns.length" class="siner-table__empty-cell">
             {{ emptyMessage }}
           </td>
@@ -49,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+import { defineComponent, type PropType, ref, computed } from 'vue'
 
 export type ColumnDefinition<T = Record<string, unknown>> = {
     key: string
@@ -98,6 +120,9 @@ export default defineComponent({
     emits: ['row-click', 'cell-click', 'sort'],
 
     setup(props, { emit }) {
+        const sortKey = ref<string | null>(null)
+        const sortDirection = ref<'asc' | 'desc'>('asc')
+
         const getValue = (row: TableRow, key: string): unknown => {
             const column = props.columns.find(col => col.key === key)
             const field = column?.field || key
@@ -113,6 +138,97 @@ export default defineComponent({
             }
 
             return row[field as string]
+        }
+
+        const compareValues = (a: unknown, b: unknown, sortKey: string): number => {
+            const column = props.columns.find(col => col.key === sortKey)
+            const valueA = getValue(a as TableRow, column?.key || '')
+            const valueB = getValue(b as TableRow, column?.key || '')
+
+            const getPrimitiveValue = (value: unknown): any => {
+                if (value === null || value === undefined) return ''
+
+                if (Array.isArray(value)) {
+                    if (value.length === 0) return ''
+                    const firstItem = value[0]
+                    if (firstItem && typeof firstItem === 'object' && 'fio' in firstItem) {
+                        return firstItem.fio || ''
+                    }
+                    return String(value[0] || '')
+                }
+
+                if (typeof value === 'object') {
+                    if ('fio' in value && typeof value.fio === 'string') {
+                        return value.fio
+                    }
+                    if ('name' in value && typeof value.name === 'string') {
+                        return value.name
+                    }
+                    return JSON.stringify(value)
+                }
+
+                if (typeof value === 'string' && column?.key === 'date_status') {
+                    return parseDateForComparison(value)
+                }
+
+                return value
+            }
+
+            let valA = getPrimitiveValue(valueA)
+            let valB = getPrimitiveValue(valueB)
+
+            valA = String(valA).toLowerCase()
+            valB = String(valB).toLowerCase()
+
+            if (valA < valB) return -1
+            if (valA > valB) return 1
+            return 0
+        }
+
+        const parseDateForComparison = (dateString: string): number => {
+            try {
+                const [datePart, timePart] = dateString.split(' ')
+                const [day, month, year] = datePart.split('.')
+                if (timePart) {
+                    const [hours, minutes, seconds] = timePart.split(':')
+                    return new Date(
+                        Number(year),
+                        Number(month) - 1,
+                        Number(day),
+                        Number(hours),
+                        Number(minutes),
+                        Number(seconds)
+                    ).getTime()
+                }
+                return new Date(Number(year), Number(month) - 1, Number(day)).getTime()
+            } catch (error) {
+                return 0
+            }
+        }
+
+        const sortedRows = computed(() => {
+            if (!sortKey.value || !props.rows.length) {
+                return props.rows
+            }
+
+            const sorted = [...props.rows]
+            sorted.sort((a, b) => {
+                const comparison = compareValues(a, b, sortKey.value!)
+                return sortDirection.value === 'asc' ? comparison : -comparison
+            })
+
+            return sorted
+        })
+
+        const handleSort = (key: string) => {
+            if (sortKey.value === key) {
+                sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+            } else {
+                sortKey.value = key
+                sortDirection.value = 'asc'
+            }
+
+            emit('sort', { sortKey: sortKey.value, sortDirection: sortDirection.value })
         }
 
         const getComponentProps = (column: ColumnDefinition, value: unknown, row: TableRow): Record<string, unknown> => {
@@ -161,13 +277,16 @@ export default defineComponent({
             emit('cell-click', { value, row, column, index })
         }
 
-
         return {
             getValue,
             getComponentProps,
             formatValue,
             handleRowClick,
-            handleCellClick
+            handleCellClick,
+            sortedRows,
+            handleSort,
+            sortKey,
+            sortDirection
         }
     }
 })

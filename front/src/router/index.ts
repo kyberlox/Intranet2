@@ -415,7 +415,7 @@ const router = createRouter({
     },
     {
         path:'/news/corpnews/sinerteam',
-        name:'sinerTeam',
+        name:'sinerteam',
         component: () => import('@/views/news/corpNews/sinerTeam/SinerTeam.vue')
     },
     {

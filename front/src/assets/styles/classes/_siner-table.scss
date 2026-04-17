@@ -54,4 +54,8 @@
             transition: background 0.2s ease;
         }
     }
+    .person-cell {
+        display: flex;
+        justify-items: center;
+    }
 }

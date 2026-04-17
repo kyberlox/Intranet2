@@ -1,51 +1,51 @@
 <template>
-    <div class="siner-table__wrapper">
-        <table class="siner-table">
-            <thead>
-                <tr>
-                    <th v-for="column in columns" :key="column.key">
-                        {{ column.label }}
-                    </th>
-                </tr>
-            </thead>
+  <div class="siner-table__wrapper">
+    <table class="siner-table">
+      <thead>
+        <tr>
+          <th v-for="column in columns" :key="column.key">
+            {{ column.label }}
+          </th>
+        </tr>
+      </thead>
 
-            <tbody v-if="!loading">
-                <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-                    <td v-for="column in columns" :key="column.key">
-                        <slot
-                            :name="`column-${column.key}`"
-                            :value="getValue(row, column.key)"
-                            :row="row"
-                            :column="column"
-                            :rowIndex="rowIndex"
-                        >
-                            <template v-if="column.formatter">
-                                {{ column.formatter(getValue(row, column.key)) }}
-                            </template>
-                            <span v-else-if="column.component">
-                                <component
-                                    :is="column.component"
-                                    v-bind="getComponentProps(column, getValue(row, column.key), row)"
-                                />
-                            </span>
-                            <template v-else>
-                                {{ formatValue(getValue(row, column.key)) }}
-                            </template>
-                        </slot>
-                    </td>
-                </tr>
-                <tr v-if="rows.length === 0">
-                    <td :colspan="columns.length" class="siner-table__empty-cell">
-                        {{ emptyMessage }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+      <tbody v-if="!loading">
+        <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+          <td v-for="column in columns" :key="column.key">
+            <slot
+              :name="`column-${column.key}`"
+              :value="getValue(row, column.key)"
+              :row="row"
+              :column="column"
+              :rowIndex="rowIndex"
+            >
+              <template v-if="column.formatter">
+                {{ column.formatter(getValue(row, column.key)) }}
+              </template>
+              <span v-else-if="column.component">
+                <component
+                  :is="column.component"
+                  v-bind="getComponentProps(column, getValue(row, column.key), row)"
+                />
+              </span>
+              <template v-else>
+                {{ formatValue(getValue(row, column.key)) }}
+              </template>
+            </slot>
+          </td>
+        </tr>
+        <tr v-if="rows.length === 0">
+          <td :colspan="columns.length" class="siner-table__empty-cell">
+            {{ emptyMessage }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-        <div v-if="loading" class="siner-table__loading">
-            {{ loadingMessage }}
-        </div>
+    <div v-if="loading" class="siner-table__loading">
+      {{ loadingMessage }}
     </div>
+  </div>
 </template>
 
 <script lang="ts">

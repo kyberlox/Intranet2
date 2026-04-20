@@ -1,73 +1,80 @@
 <template>
-  <div class="siner-table__wrapper">
-    <table class="siner-table">
-      <thead>
-        <tr>
-          <th
-            v-for="column in columns"
-            :key="column.key"
-            :class="{
-              sortable: column.sortable,
-              'sorted-asc':
-                column.sortable && sortKey === column.key && sortDirection === 'asc',
-              'sorted-desc':
-                column.sortable && sortKey === column.key && sortDirection === 'desc',
-            }"
-            @click="column.sortable && handleSort(column.key)"
-          >
-            {{ column.label }}
-            <span v-if="column.sortable" class="sort-icon">
-              <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
-              <span v-else-if="sortKey === column.key && sortDirection === 'desc'"
-                >↓</span
-              >
-              <span v-else>↕</span>
-            </span>
-          </th>
-        </tr>
-      </thead>
+    <div class="siner-table__wrapper">
+        <table class="siner-table">
+            <thead>
+                <tr>
+                    <th
+                        v-for="column in columns"
+                        :key="column.key"
+                        :class="{
+                            sortable: column.sortable,
+                            'sorted-asc':
+                                column.sortable &&
+                                sortKey === column.key &&
+                                sortDirection === 'asc',
+                            'sorted-desc':
+                                column.sortable &&
+                                sortKey === column.key &&
+                                sortDirection === 'desc',
+                        }"
+                        @click="column.sortable && handleSort(column.key)"
+                    >
+                        {{ column.label }}
+                        <span v-if="column.sortable" class="sort-icon">
+                            <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
+                            <span v-else-if="sortKey === column.key && sortDirection === 'desc'"
+                                >↓</span
+                            >
+                            <span v-else>↕</span>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
 
-      <tbody v-if="!loading">
-        <tr
-          v-for="(row, rowIndex) in sortedRows"
-          :key="rowIndex"
-          @click="handleRowClick(row, rowIndex)"
-        >
-          <td v-for="column in columns" :key="column.key">
-            <slot
-              :name="`column-${column.key}`"
-              :value="getValue(row, column.key)"
-              :row="row"
-              :column="column"
-              :rowIndex="rowIndex"
-            >
-              <template v-if="column.formatter">
-                {{ column.formatter(getValue(row, column.key)) }}
-              </template>
-              <span v-else-if="column.component">
-                <component
-                  :is="column.component"
-                  v-bind="getComponentProps(column, getValue(row, column.key), row)"
-                />
-              </span>
-              <template v-else>
-                {{ formatValue(getValue(row, column.key)) }}
-              </template>
-            </slot>
-          </td>
-        </tr>
-        <tr v-if="sortedRows.length === 0">
-          <td :colspan="columns.length" class="siner-table__empty-cell">
-            {{ emptyMessage }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div v-if="loading" class="siner-table__loading">
-      {{ loadingMessage }}
+            <tbody v-if="!loading">
+                <tr
+                    v-for="(row, rowIndex) in sortedRows"
+                    :key="rowIndex"
+                    @click="handleRowClick(row, rowIndex)"
+                >
+                    <td v-for="column in columns" :key="column.key">
+                        <slot
+                            :name="`column-${column.key}`"
+                            :value="getValue(row, column.key)"
+                            :row="row"
+                            :column="column"
+                            :rowIndex="rowIndex"
+                        >
+                            <template v-if="column.formatter">
+                                {{ column.formatter(getValue(row, column.key)) }}
+                            </template>
+                            <span v-else-if="column.component">
+                                <component
+                                    :is="column.component"
+                                    v-bind="
+                                        getComponentProps(column, getValue(row, column.key), row)
+                                    "
+                                />
+                            </span>
+                            <template v-else>
+                                {{ formatValue(getValue(row, column.key)) }}
+                            </template>
+                        </slot>
+                    </td>
+                </tr>
+                <tr v-if="sortedRows.length === 0">
+                    <td :colspan="columns.length" class="siner-table__empty-cell">
+                        {{ emptyMessage }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-  </div>
+    <div class="siner-table__loading-wrapper">
+        <div v-if="loading" class="siner-table__loading">
+            <div class="loader"></div>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -96,25 +103,25 @@ export default defineComponent({
         rows: {
             type: Array as PropType<TableRow[]>,
             required: true,
-            default: () => []
+            default: () => [],
         },
         columns: {
             type: Array as PropType<ColumnDefinition[]>,
             required: true,
-            validator: (value: ColumnDefinition[]) => value.length > 0
+            validator: (value: ColumnDefinition[]) => value.length > 0,
         },
         emptyMessage: {
             type: String,
-            default: 'Нет данных'
+            default: 'Нет данных',
         },
         loading: {
             type: Boolean,
-            default: false
+            default: false,
         },
         loadingMessage: {
             type: String,
-            default: 'Загрузка...'
-        }
+            default: 'Загрузка...',
+        },
     },
 
     emits: ['row-click', 'cell-click', 'sort'],
@@ -124,7 +131,7 @@ export default defineComponent({
         const sortDirection = ref<'asc' | 'desc'>('asc')
 
         const getValue = (row: TableRow, key: string): unknown => {
-            const column = props.columns.find(col => col.key === key)
+            const column = props.columns.find((col) => col.key === key)
             const field = column?.field || key
 
             if (typeof field === 'string' && field.includes('.')) {
@@ -141,7 +148,7 @@ export default defineComponent({
         }
 
         const compareValues = (a: unknown, b: unknown, sortKey: string): number => {
-            const column = props.columns.find(col => col.key === sortKey)
+            const column = props.columns.find((col) => col.key === sortKey)
             const valueA = getValue(a as TableRow, column?.key || '')
             const valueB = getValue(b as TableRow, column?.key || '')
 
@@ -197,11 +204,11 @@ export default defineComponent({
                         Number(day),
                         Number(hours),
                         Number(minutes),
-                        Number(seconds)
+                        Number(seconds),
                     ).getTime()
                 }
                 return new Date(Number(year), Number(month) - 1, Number(day)).getTime()
-            } catch (error) {
+            } catch {
                 return 0
             }
         }
@@ -231,14 +238,18 @@ export default defineComponent({
             emit('sort', { sortKey: sortKey.value, sortDirection: sortDirection.value })
         }
 
-        const getComponentProps = (column: ColumnDefinition, value: unknown, row: TableRow): Record<string, unknown> => {
+        const getComponentProps = (
+            column: ColumnDefinition,
+            value: unknown,
+            row: TableRow,
+        ): Record<string, unknown> => {
             if (typeof column.componentProps === 'function') {
                 return column.componentProps(value, row)
             }
             return {
                 value,
                 row,
-                ...(column.componentProps || {})
+                ...(column.componentProps || {}),
             }
         }
 
@@ -263,7 +274,12 @@ export default defineComponent({
         }
 
         const formatSingleArrayItem = (item: unknown): string => {
-            if (typeof item === 'object' && item !== null && 'fio' in item && typeof item.fio === 'string') {
+            if (
+                typeof item === 'object' &&
+                item !== null &&
+                'fio' in item &&
+                typeof item.fio === 'string'
+            ) {
                 return item.fio
             }
             return '[1 элемент]'
@@ -273,7 +289,12 @@ export default defineComponent({
             emit('row-click', { row, index })
         }
 
-        const handleCellClick = (value: unknown, row: TableRow, column: ColumnDefinition, index: number) => {
+        const handleCellClick = (
+            value: unknown,
+            row: TableRow,
+            column: ColumnDefinition,
+            index: number,
+        ) => {
             emit('cell-click', { value, row, column, index })
         }
 
@@ -286,8 +307,8 @@ export default defineComponent({
             sortedRows,
             handleSort,
             sortKey,
-            sortDirection
+            sortDirection,
         }
-    }
+    },
 })
 </script>

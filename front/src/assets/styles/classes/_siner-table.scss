@@ -95,7 +95,7 @@
 .person-cell {
     display: flex;
     justify-items: center;
-    span{
+    span {
         margin-left: 20px;
     }
     align-items: center;
@@ -113,4 +113,16 @@
 .sorted-asc,
 .sorted-desc {
     animation: sortFade 0.3s ease;
+}
+
+.siner-table__loading {
+    height: 200px;
+    width: 200px;
+    align-items: center;
+}
+
+.siner-table__loading-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
 }

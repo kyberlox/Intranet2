@@ -222,7 +222,7 @@ class LikesModel:
         from sqlalchemy import distinct
 
         stmt = select(
-            distinct(User.id),
+            distinct(User.id).label('id'),
             (User.last_name + ' ' + User.name + ' ' + User.second_name).label('name'),
             case(
                 (UserFiles.URL.isnot(None), func.concat(HOST, func.replace(UserFiles.URL, 'user_files', 'compress_image/user'))),

@@ -2011,8 +2011,8 @@ class Article:
 
                         
                     #сюда накинуть ограничение на афишу и корп события
-                    if int(self.section_id) in [51, 53, 31, 32, 33, 16, 161, 14]:
-                        user_access = await Visions(art_id=res["id"], user_id=user_id).check_user_root(session=session)
+                    if int(self.section_id) in [51, 53, 31, 32, 33, 16, 161, 14, 35]:
+                        user_access = await Visions(art_id=int(res["id"]), user_id=user_id).check_user_root(session=session)
                         if not user_access:
                             continue
                     active_articles.append(res)

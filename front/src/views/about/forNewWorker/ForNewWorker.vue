@@ -9,7 +9,7 @@
         <CustomFilter v-if="showLocations"
                       :params="locations"
                       :modifiers="['nosort']"
-                      @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; console.log(filter) }" />
+                      @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; cardKey++}" />
     </div>
     <div class="col-12 col-lg-12 col-xl-9 col-xxl-9">
         <div class="memo__items">
@@ -19,7 +19,7 @@
                      v-for="(item, index) in filterContent(pageContent)"
                      :key="index"
                      :id="`memo__item${item.id}`">
-                    <ForNewWorkerCard :item="item" />
+                    <ForNewWorkerCard :item="item" :key="cardKey" />
                 </div>
                 <div class="memo__item"
                      v-if="endingSlide(pageContent)">
@@ -64,6 +64,7 @@ export default defineComponent({
         const activeLocation = ref('');
         const showLocations = ref(false);
         const locations = ref<string[]>([]);
+        const cardKey = ref(0);
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`)
@@ -98,7 +99,8 @@ export default defineComponent({
             showLocations,
             locations,
             endingSlide: (pageContent: IForNewWorker[]) => pageContent.find((e: IForNewWorker) => e.indirect_data && e.indirect_data.module == 'Заключение') || undefined,
-            newMemo: featureFlags.newWorkerMemo
+            newMemo: featureFlags.newWorkerMemo,
+            cardKey
         };
     },
 });

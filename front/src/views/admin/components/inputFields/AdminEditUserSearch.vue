@@ -102,7 +102,7 @@ export default defineComponent({
             emit(
                 props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
                 type == 'remove' ? null : user.id ? user.id : user.user_id,
-                props.field,
+               (props.field == 'implementer' || props.field == 'integrator') ? props.field : 'base',
             )
             pickedUser.value = false
             showSearchModal.value = false

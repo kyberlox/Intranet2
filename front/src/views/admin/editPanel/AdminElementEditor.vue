@@ -276,7 +276,7 @@ export default defineComponent({
     };
 
     const handleUserPick = (userId: number, field: string) => {
-      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field ?? 'base'}`}`)
+      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field}`}`)
         .then((data) => {
           if (data) {
             reloadElementData(false)

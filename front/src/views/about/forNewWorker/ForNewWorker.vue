@@ -30,7 +30,7 @@
     </div>
     <div class="d-none d-lg-block col-xl-3 col-xxl-3">
         <ul class="memo__menu-dots sticky__menu">
-            <li v-for="item in filterContent(pageContent)"
+            <li v-for="item in filterContent(pageContent).filter(e=>e.name)"
                 :key="'mark' + item.id"
                 class="memo__menu-dot">
                 <div @click="navigate(item.id)"
@@ -98,7 +98,7 @@ export default defineComponent({
             activeLocation,
             showLocations,
             locations,
-            endingSlide: (pageContent: IForNewWorker[]) => pageContent.find((e: IForNewWorker) => e.indirect_data && e.indirect_data.module == 'Заключение') || undefined,
+            endingSlide: (pageContent: IForNewWorker[]) => pageContent.find((e: IForNewWorker) => activeLocation.value && e.indirect_data && e.indirect_data.module == 'Заключение') || undefined,
             newMemo: featureFlags.newWorkerMemo,
             cardKey
         };

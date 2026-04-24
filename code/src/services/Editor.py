@@ -1131,8 +1131,10 @@ class Editor:
 
         if "name" in result.keys():
             # result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
-            print(result.get('second_name', ' '), 'РАРОАОАООА')
-            result['fio'] = result.get('last_name', '') + " " + result.get('name', '') + " " + result.get('second_name', '')
+            def safe_str(value):
+                return value if value is not None else ''
+
+            result['fio'] = safe_str(result.get('last_name')) + " " + safe_str(result.get('name')) + " " + safe_str(result.get('second_name'))
             result.pop('name')
             result.pop('second_name')
             result.pop('last_name')

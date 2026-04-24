@@ -1130,7 +1130,8 @@ class Editor:
         result['user_id'] = user_id
 
         if "name" in result.keys():
-            result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
+            # result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
+            result['fio'] = result.get('last_name', '') + " " + result.get('name', '') + " " + result.get('second_name', '')
             result.pop('name')
             result.pop('second_name')
             result.pop('last_name')

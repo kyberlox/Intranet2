@@ -1,45 +1,38 @@
 <template>
-    <div
-        v-if="inPost"
-        class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group"
-    >
-        <p class="admin-element-inner__field-title fs-l">заполнить данными о сотруднике</p>
-        <div
-            @click="showSearchModal = true"
-            class="admin-element__reportage-group__add-button primary-button"
-        >
-            <PlusIcon />
-        </div>
+<div v-if="inPost"
+     class="admin-element__reportage-group__add-button__wrapper admin-element__add-user__button__group">
+    <p class="admin-element-inner__field-title fs-l">заполнить данными о сотруднике</p>
+    <div @click="showSearchModal = true"
+         class="admin-element__reportage-group__add-button primary-button">
+        <PlusIcon />
     </div>
-    <div v-else>
-        <p v-if="title" class="admin-element-inner__field-title fs-l">
-            {{ title }}
-        </p>
-        <div class="primary-button" @click="showSearchModal = true">Добавить</div>
-    </div>
-    <SearchList
-        v-if="users.length && (field == 'implementer' || field == 'integrator')"
-        :searchList="users"
-        :needDeleteButton="needDeleteButton"
-        @remove="(user: IUserSearch) => handleUserPick(user, 'remove')"
-        @pick="(user: IUserSearch) => handleUserPick(user)"
-    />
-    <SlotModal v-if="showSearchModal" @close="showSearchModal = false">
-        <AdminEditInput
-            v-if="!pickedUser"
-            @pick="(value: string) => (searchQuery = value)"
-            :item="{ name: 'Сотрудник' }"
-            :placeholder="'Выберите сотрудника'"
-        />
-
-        <SearchList
-            v-if="usersList.length"
-            :searchList="usersList"
+</div>
+<div v-else>
+    <p v-if="title"
+       class="admin-element-inner__field-title fs-l">
+        {{ title }}
+    </p>
+    <div class="primary-button"
+         @click="showSearchModal = true">Добавить</div>
+</div>
+<SearchList v-if="users.length && (field == 'implementer' || field == 'integrator')"
+            :searchList="users"
             :needDeleteButton="needDeleteButton"
             @remove="(user: IUserSearch) => handleUserPick(user, 'remove')"
-            @pick="(user: IUserSearch) => handleUserPick(user)"
-        />
-    </SlotModal>
+            @pick="(user: IUserSearch) => handleUserPick(user)" />
+<SlotModal v-if="showSearchModal"
+           @close="showSearchModal = false">
+    <AdminEditInput v-if="!pickedUser"
+                    @pick="(value: string) => (searchQuery = value)"
+                    :item="{ name: 'Сотрудник' }"
+                    :placeholder="'Выберите сотрудника'" />
+
+    <SearchList v-if="usersList.length"
+                :searchList="usersList"
+                :needDeleteButton="needDeleteButton"
+                @remove="(user: IUserSearch) => handleUserPick(user, 'remove')"
+                @pick="(user: IUserSearch) => handleUserPick(user)" />
+</SlotModal>
 </template>
 
 <script lang="ts">
@@ -102,7 +95,7 @@ export default defineComponent({
             emit(
                 props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
                 type == 'remove' ? null : user.id ? user.id : user.user_id,
-               (props.field == 'implementer' || props.field == 'integrator') ? props.field : 'base',
+                (props.field == 'implementer' || props.field == 'integrator') ? props.field : 'base',
             )
             pickedUser.value = false
             showSearchModal.value = false

@@ -95,9 +95,11 @@
 .person-cell {
     display: flex;
     justify-items: center;
+
     span {
         margin-left: 20px;
     }
+
     align-items: center;
 }
 
@@ -105,6 +107,7 @@
     from {
         background-color: #dbeafe;
     }
+
     to {
         background-color: #dbeafe;
     }
@@ -116,9 +119,9 @@
 }
 
 .siner-table__loading {
-    height: 200px;
-    width: 200px;
-    align-items: center;
+    margin: 20px auto auto auto;
+    width: 40px;
+    height: 40px;
 }
 
 .siner-table__loading-wrapper {

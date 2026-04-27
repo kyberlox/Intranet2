@@ -72,13 +72,14 @@
     </div>
     <div class="siner-table__loading-wrapper">
         <div v-if="loading" class="siner-table__loading">
-            <div class="loader"></div>
+            <Loader/>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType, ref, computed } from 'vue'
+import Loader from './Loader.vue'
 
 export type ColumnDefinition<T = Record<string, unknown>> = {
     key: string
@@ -125,6 +126,9 @@ export default defineComponent({
     },
 
     emits: ['row-click', 'cell-click', 'sort'],
+    components:{
+        Loader
+    },
 
     setup(props, { emit }) {
         const sortKey = ref<string | null>(null)

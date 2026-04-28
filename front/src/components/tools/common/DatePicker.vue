@@ -55,13 +55,14 @@ export default defineComponent({
         },
         timePicker: {
             type: Boolean,
-            default: () => false
+            default: false
         },
         range: {
             type: Boolean,
-            default: () => false
+            default: false
         }
     },
+
     setup(props, { emit }) {
         const dateInput = ref();
 
@@ -70,6 +71,16 @@ export default defineComponent({
                 dateInput.value = null;
             }
         }, { deep: true, immediate: true })
+        const handleDate = (date: Date) => {
+            if (!date) return;
+            emit('pickDate', date)
+        }
+
+        watch((props), () => {
+            if (props.item?.value) {
+                dateInput.value = props.item?.value
+            }
+        }, { immediate: true, deep: true })
 
         const searchValue = ref("");
 
@@ -86,6 +97,8 @@ export default defineComponent({
 
         const date = ref(new Date());
         const format = (date: Array<Date> | Date = new Date()) => {
+            console.log(date);
+
             const formatDate = (newDate: Date) => {
                 const day = newDate.getDate();
                 const month = newDate.getMonth() + 1;
@@ -106,7 +119,9 @@ export default defineComponent({
                     return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
                 }
                 else if (props.calendarType == 'full') {
-                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time}`
+                    console.log(`${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time}`);
+
+                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time ?? '00:00'}`
                 }
             }
             if (props.range && Array.isArray(date)) {
@@ -117,10 +132,7 @@ export default defineComponent({
             else return formatDate(date as Date)
         }
 
-        const handleDate = (date: Date) => {
-            if (!date) return;
-            emit('pickDate', date)
-        }
+
 
         onMounted(() => {
             if (!props.range) {
@@ -131,10 +143,10 @@ export default defineComponent({
                     if (props.item?.field?.includes('publiction')) {
                         dateInput.value = new Date();
                     }
-                    else dateInput.value = null
+                    // else dateInput.value = null
                 }
             }
-            handleDate(dateInput.value);
+            // handleDate(dateInput.value);
         })
 
         return {

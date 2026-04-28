@@ -10,7 +10,7 @@
 </div>
 <div class="tags"
      v-if="!chosenTags.includes('1')">
-    <div v-for="tag in allTags?.filter(e => typeof e !== 'string' && needAllButton ? e.id !== '1' : true)"
+    <div v-for="tag in allTags?.filter(e => (typeof e !== 'string' && needAllButton) ? e.id !== '1' : true)"
          :key="typeof tag !== 'string' ? tag.id : tag"
          class="tag__wrapper ">
         <div class="tags__tag tags__tag--nohover tags__tag--inner section__item__link btn-air"
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import type { ITag } from "@/interfaces/entities/ITag";
 
 export default defineComponent({
@@ -47,7 +47,14 @@ export default defineComponent({
     },
     emits: ['tagsChanged'],
     setup(props, { emit }) {
-        const chosenTags = ref<(string | number)[]>(props.currentTags || []);
+        const chosenTags = ref<(string | number)[]>([]);
+
+        watch((props), () => {
+            if (props.currentTags)
+                chosenTags.value = props.currentTags;
+            emit('tagsChanged', chosenTags.value)
+        }, { immediate: true, deep: true })
+
         const chooseTag = (id: number | string) => {
             if (chosenTags.value.includes('1') && id == '1') {
                 chosenTags.value = chosenTags.value.filter(e => e == '1')

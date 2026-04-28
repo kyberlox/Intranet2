@@ -51,7 +51,6 @@ export default defineComponent({
                 },
                 disallowedTagsMode: 'discard'
             }).replaceAll('&nbsp;', ' ');
-            console.log(cleanHtml);
 
             cleanHtml = cleanHtml.replace(/<li>\s*<ul/g, '<ul');
             cleanHtml = cleanHtml.replace(/<li>\s*<ol/g, '<ol');

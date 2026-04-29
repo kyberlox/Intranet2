@@ -13,7 +13,7 @@ from ..base.pSQL.objects.App import get_async_db
 
 open_router = APIRouter(prefix="/open")
 
-@open_router.get("/career", tags=["Открытая ссылка", "ЭМК Карьера"])
+@open_router.get("/career", tags=["Открытая ссылка", "ЭМК Карьера"], session: AsyncSession = Depends(get_async_db))
 async def career():
     # получить все статьи раздела
     active_articles = []

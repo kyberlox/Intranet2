@@ -9,6 +9,12 @@ import asyncio
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..base.pSQL.objects.App import get_async_db
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DOMAIN = os.getenv('HOST')
 
 
 open_router = APIRouter(prefix="/open")

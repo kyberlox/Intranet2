@@ -14,7 +14,7 @@ from ..base.pSQL.objects.App import get_async_db
 open_router = APIRouter(prefix="/open")
 
 @open_router.get("/career", tags=["Открытая ссылка", "ЭМК Карьера"])
-async def career(data = Body()):
+async def career():
     # получить все статьи раздела
     active_articles = []
     result = await ArticleModel(section_id=int(51)).find_by_section_id(session)

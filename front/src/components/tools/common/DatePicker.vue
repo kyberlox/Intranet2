@@ -80,7 +80,8 @@ export default defineComponent({
 
         watch((props), () => {
             if (props.defaultData) {
-                dateInput.value = dateConvert(props.defaultData, 'toDateType')
+                dateInput.value = dateConvert(props.defaultData, 'toDateType');
+                handleDate(dateInput.value);
             }
         }, { immediate: true, deep: true })
 
@@ -133,7 +134,7 @@ export default defineComponent({
                     }
                 }
             }
-            // handleDate(dateInput.value);
+
         })
 
         return {

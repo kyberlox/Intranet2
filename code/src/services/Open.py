@@ -31,8 +31,8 @@ async def career(session: AsyncSession = Depends(get_async_db)):
     arts_info = []
     for article in sorted_active_articles:
         art_id = article["id"]
-        art = await ArticleModel(id=self.id).find_by_id(session)
-        files = await File(art_id=int(self.id)).get_files_by_art_id(session)
+        art = await ArticleModel(art_id).find_by_id(session)
+        files = await File(art_id=int(art_id)).get_files_by_art_id(session)
         art['images'] = []
         art['videos_native'] = []
         art['videos_embed'] = []
@@ -61,8 +61,8 @@ async def career(session: AsyncSession = Depends(get_async_db)):
         # сортируем фотки по айдишникам
         sorted_images = sorted(art['images'], key=lambda x: int(x['id']), reverse=False)
         art['images'] = sorted_images
-        self.section_id = art['section_id']
-        prev = await self.get_preview(session)
+
+        # prev = await self.get_preview(session)
         art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
         arts_info.append(arts_info)

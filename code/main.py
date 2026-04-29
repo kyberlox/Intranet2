@@ -206,7 +206,8 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Проверяем, является ли текущий путь публичным
     for open_link in open_links:
         if open_link in request.url.path:
-            return await call_next(request)
+            response = await call_next(request)
+            return response
     
     # Проверяем авторизацию для всех остальных /api эндпоинтов
     if request.url.path.startswith("/api"):
@@ -228,6 +229,7 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
         #                 }
         #             )
         # Получаем session_id из куков или заголовков
+
         session_id = request.cookies.get("session_id")
         
         if not session_id:

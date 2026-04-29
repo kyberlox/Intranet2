@@ -69,7 +69,7 @@ async def career(session: AsyncSession = Depends(get_async_db)):
         art['images'] = sorted_images
 
         # prev = await self.get_preview(session)
-        art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+        # art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
         arts_info.append(arts_info)
 

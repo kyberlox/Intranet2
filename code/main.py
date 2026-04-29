@@ -172,7 +172,8 @@ open_links = [
     "/ws/progress",
     "/api/vcard/by_uuid/", "/api/vcard/get/",
     "/api/idea_pdf/generate_pdf/",
-    "/api/health_check"
+    "/api/health_check",
+    "career",
 ]
 
 #Проверка авторизации для ВСЕХ запросов

@@ -13,8 +13,8 @@ from ..base.pSQL.objects.App import get_async_db
 
 open_router = APIRouter(prefix="/open")
 
-@open_router.get("/career", tags=["Открытая ссылка", "ЭМК Карьера"], session: AsyncSession = Depends(get_async_db))
-async def career():
+@open_router.get("/career", tags=["Открытая ссылка", "ЭМК Карьера"])
+async def career(session: AsyncSession = Depends(get_async_db)):
     # получить все статьи раздела
     active_articles = []
     result = await ArticleModel(section_id=int(51)).find_by_section_id(session)

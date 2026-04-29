@@ -45,6 +45,7 @@ from src.services.scheduler import (
     start_background_scheduler,
     stop_background_scheduler
 )
+from src.services.Open import open_router
 
 from src.services.LogsMaker import LogsMaker
 
@@ -114,6 +115,7 @@ app.include_router(ai_router, prefix="/api")
 app.include_router(peer_router, prefix="/api")
 app.include_router(roots_router, prefix="/api")
 app.include_router(store_router, prefix="/api")
+app.include_router(open_router, prefix="/api")
 
 app.include_router(C_app, prefix="/api")
 

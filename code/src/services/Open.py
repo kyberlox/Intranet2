@@ -33,6 +33,7 @@ async def career(session: AsyncSession = Depends(get_async_db)):
     except:
         sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
 
+    print(sorted_active_articles)
     # собрать данные каждой статьи
     arts_info = []
     for article in sorted_active_articles:

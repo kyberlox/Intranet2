@@ -902,7 +902,33 @@ class User:
         except Exception as e:
             return LogsMaker().error_message(f'Ошибка при создании комментария:{e}')
 
+    async def delete_congratulation(data, session):
+        from copy import deepcopy
+        try:
+            self.id = int(data['celeba_id'])
+            celebrant_info = await self.search_by_id(session)
 
+            if not celebrant_info['active']:
+                return LogsMaker().error_message(f'Ошибка при удалении комментария: Не удалось найти именинника с id = {self.id}')
+            
+            if 'indirect_data' not in celebrant_info or celebrant_info['indirect_data'] is None or 'congratulations' not in celebrant_info['indirect_data']:
+                return LogsMaker().warning_message(f'Ошибка при удалении комментария: Отсутствуют комментарии у именинника с id = {self.id}')
+
+            elif not celebrant_info['indirect_data']['congratulations']:
+                return LogsMaker().warning_message(f'Ошибка при удалении комментария: Отсутствуют комментарии у именинника с id = {self.id}')
+            
+            congratulations = deepcopy(celebrant_info['indirect_data']['congratulations'])
+
+            for i, comments in enumerate(congratulations):
+                if comments['user_id'] == data['commentator_id'] and comments['user_comment'] == data['user_comment']:
+                    celebrant_info['indirect_data']['congratulations'].pop(i)
+
+            has_delete = await self.UserModel.upload_comment_to_celebrant(session, self.id, celebrant_info)
+            if has_added:
+                return True 
+            return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при удалении комментария:{e}')
 
 
 
@@ -1252,3 +1278,11 @@ async def create_congratulation_to_celeba(data = Body(), session: AsyncSession =
     if not user_id:
         return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
     return await User().create_congratulation(user_id, data, session)
+
+@users_router.delete("/delete_congratulation", tags=["Пользователь"])
+async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession = Depends(get_async_db), user_id=Depends(get_user_id_by_session_id)):
+    if not user_id:
+        return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
+    if user_id != data['celeba_id'] or user_id != data['commentator_id']:
+        return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
+    return await User().delete_congratulation(data, session)

@@ -1283,6 +1283,8 @@ async def create_congratulation_to_celeba(data = Body(), session: AsyncSession =
 async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession = Depends(get_async_db), user_id=Depends(get_user_id_by_session_id)):
     if not user_id:
         return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
-    if int(user_id) != data['celeba_id'] or int(user_id) != data['commentator_id']:
+    if int(user_id) != data['celeba_id']:
+        return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
+    elif int(user_id) != data['commentator_id']:
         return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
     return await User().delete_congratulation(data, session)

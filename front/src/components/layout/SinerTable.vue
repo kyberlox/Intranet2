@@ -63,7 +63,7 @@
         </tbody>
     </table>
 </div>
-<div class="siner-table__loading">
+<div class="siner-table__loading" v-if="loading">
     <Loader />
 </div>
 =======

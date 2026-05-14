@@ -149,14 +149,14 @@ export default defineComponent({
         }
 
         const handleRowClick = ({ row, index }: { row: TableRow; index: number }) => {
-            console.log('Clicked row:', row, index)
+            // console.log('Clicked row:', row, index)
         }
 
         const loadData = async () => {
             loading.value = true
             try {
                 const data = await Api.get(`article/find_by/${sectionTips['синертим']}`)
-                console.log(data)
+                // console.log(data)
                 tableData.value = Array.isArray(data) ? data : []
             } catch {
                 tableData.value = []

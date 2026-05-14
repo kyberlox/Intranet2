@@ -28,10 +28,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch, computed, type PropType } from 'vue';
+import { defineComponent, onMounted, ref, watch, computed, type PropType, watchEffect } from 'vue';
 import { type ICalendarMarker } from '@/components/layout/sidebars/RightSidebarCalendar.vue';
 import { useStyleModeStore } from '@/stores/styleMode';
 import type { IAdminListItem } from '@/interfaces/IEntities';
+import { dateConvert } from '@/utils/dateConvert';
 
 export default defineComponent({
     name: 'DatePicker',
@@ -55,13 +56,14 @@ export default defineComponent({
         },
         timePicker: {
             type: Boolean,
-            default: () => false
+            default: false
         },
         range: {
             type: Boolean,
-            default: () => false
+            default: false
         }
     },
+
     setup(props, { emit }) {
         const dateInput = ref();
 
@@ -71,11 +73,17 @@ export default defineComponent({
             }
         }, { deep: true, immediate: true })
 
-        const searchValue = ref("");
+        const handleDate = (date: Date) => {
+            if (!date) return;
+            emit('pickDate', date)
+        }
 
-        const pickDate = (date: string) => {
-            searchValue.value = date;
-        };
+        watch((props), () => {
+            if (props.defaultData) {
+                dateInput.value = dateConvert(props.defaultData, 'toDateType');
+                handleDate(dateInput.value);
+            }
+        }, { immediate: true, deep: true })
 
         const openDatePicker = () => {
             if (!dateInput.value) return;
@@ -106,7 +114,7 @@ export default defineComponent({
                     return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
                 }
                 else if (props.calendarType == 'full') {
-                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time}`
+                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time ?? '00:00'}`
                 }
             }
             if (props.range && Array.isArray(date)) {
@@ -114,35 +122,25 @@ export default defineComponent({
                 const to = formatDate(date[1]);
                 return from == to ? from : `${from}-${to}`
             }
-            else return formatDate(date as Date)
-        }
-
-        const handleDate = (date: Date) => {
-            if (!date) return;
-            emit('pickDate', date)
+            else
+                return formatDate(date as Date)
         }
 
         onMounted(() => {
             if (!props.range) {
-                if (props.defaultData) {
-                    dateInput.value = new Date(props.defaultData);
-                }
-                else if (props.calendarType !== 'month') {
+                if (props.calendarType !== 'month') {
                     if (props.item?.field?.includes('publiction')) {
                         dateInput.value = new Date();
                     }
-                    else dateInput.value = null
                 }
             }
-            handleDate(dateInput.value);
+
         })
 
         return {
             dateInput,
             imageInModal,
-            searchValue,
             date,
-            pickDate,
             openDatePicker,
             format,
             handleDate,

@@ -41,6 +41,14 @@
     .training-feedback__wrapper,
     .points-admin-panel__wrapper,
     .points-admin-panel__navigation__wrapper,
+    .siner-table__wrapper,
+    .siner-table thead,
+    .siner-table tbody tr,
+    .siner-table tbody tr:hover,
+    .siner-table tbody tr:hover td,
+    .siner-table tbody tr:hover th,
+    .siner-table tbody tr:hover td:first-child,
+    .siner-table tbody tr:hover th:first-child,
     .point-info__table thead {
         background: #1b1b1b;
 
@@ -184,6 +192,8 @@
     .staff__filter__link--active,
     .modal__description,
     .news__detail__discr,
+    .siner-table th,
+    .siner-table td,
     label,
     figcaption {
         color: #b2b0b0;

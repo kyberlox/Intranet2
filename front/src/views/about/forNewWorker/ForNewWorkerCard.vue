@@ -1,6 +1,6 @@
 <template>
 <div class="row">
-    <div class="col-12 col-md-6 col-lg-6 col-xl-8"
+    <div class="col-12 col-md-4"
          v-if="item.preview_file_url && !(item.preview_file_url.includes('no-user'))">
         <div class="memo__item__main__img__wrapper">
             <div class="memo__item__main__img"
@@ -10,7 +10,7 @@
         </div>
     </div>
     <div :class="{
-        'col-12 col-md-6 col-lg-6 col-xl-4': item.preview_file_url && !item.preview_file_url.includes('no-user'),
+        'col-12 col-md-8': item.preview_file_url && !item.preview_file_url.includes('no-user'),
         'col-12': !item.preview_file_url || item.preview_file_url.includes('no-user')
     }">
         <div class="memo__item__content">

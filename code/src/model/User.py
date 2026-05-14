@@ -986,6 +986,8 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
     """
         ## Метод `user.get?ID={ID}`
 
+    Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/220/
+
     Получает данные конкретного пользователя из Битрикс24 по его ID через API метод `user.get`.
 
     ### Входные параметры

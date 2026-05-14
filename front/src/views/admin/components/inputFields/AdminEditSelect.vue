@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, type PropType, ref, computed } from 'vue';
+import { defineComponent, onMounted, type PropType, ref, computed, watch } from 'vue';
 import type { IAdminListItem, ICalendar } from '@/interfaces/IEntities';
 import { useViewsDataStore } from '@/stores/viewsData';
 import Loader from '@/components/layout/Loader.vue';
@@ -59,10 +59,10 @@ export default defineComponent({
         const DataStore = useViewsDataStore();
         const value = ref(props.item?.value);
 
-        onMounted(() => {
+        watch((value), () => {
             if (value.value)
                 emit('pick', value.value)
-        })
+        }, { immediate: true, deep: true })
 
         return {
             value,

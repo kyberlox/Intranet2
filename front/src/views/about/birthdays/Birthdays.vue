@@ -1,38 +1,43 @@
 <template>
-<div class="page__title mt20">Дни рождения</div>
-<div class="row">
+  <div class="page__title mt20">Дни рождения</div>
+  <div class="row">
     <div class="col-12">
-        <ul class="birthday__chain-nav">
-            <li v-for="nav in fastDayNavigation"
-                :key="'picker' + nav.id"
-                class="birthday__chain-nav__item"
-                :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
-                @click="pickDate(nav.value, true)">{{ nav.text }}</li>
-        </ul>
+      <ul class="birthday__chain-nav">
+        <li
+          v-for="nav in fastDayNavigation"
+          :key="'picker' + nav.id"
+          class="birthday__chain-nav__item"
+          :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
+          @click="pickDate(nav.value, true)"
+        >
+          {{ nav.text }}
+        </li>
+      </ul>
     </div>
-</div>
-<div class="birthday__date-picker-wrapper mt20">
+  </div>
+  <div class="birthday__date-picker-wrapper mt20">
     <div class="col-12 col-md-2 mb-3">
-        <DatePicker @pickDate="(date: string) => pickDate(date)"
-                    :calendarType="'dayAndMonth'"
-                    :nullifyDateInput="nullifyDateInput" />
+      <DatePicker
+        @pickDate="(date: string) => pickDate(date)"
+        :calendarType="'dayAndMonth'"
+        :nullifyDateInput="nullifyDateInput"
+      />
     </div>
-</div>
-<div class="birthday__workers-grid"
-     v-if="slidesForBirthday.length && !isLoading">
-    <div v-for="(slide, index) in slidesForBirthday"
-         :key="'vertSlide' + index">
-        <UserSlide :needCakeIcon="true"
-                   :slide="slide" />
+  </div>
+  <div class="birthday__workers-grid" v-if="slidesForBirthday.length && !isLoading">
+    <div v-for="slide in slidesForBirthday" :key="'vertSlide' + slide.id">
+      <UserSlide
+        :needCakeIcon="true"
+        :slide="slide"
+        :needComments="true"
+        @sendComment="refreshBirthdayComments"
+      />
     </div>
-</div>
-<div v-else-if="isLoading"
-     class="contest__page__loader">
+  </div>
+  <div v-else-if="isLoading" class="contest__page__loader">
     <Loader />
-</div>
-<ContentPlug :plugText="noBirthdays"
-             :plugImg="noBirthImage"
-             v-else />
+  </div>
+  <ContentPlug :plugText="noBirthdays" :plugImg="noBirthImage" v-else />
 </template>
 
 <script lang="ts">
@@ -47,93 +52,128 @@ import { noBirthdays } from "@/assets/static/contentPlugs";
 import ContentPlug from "@/components/layout/ContentPlug.vue";
 import noBirthImage from "@/assets/imgs/plugs/contentPlugBirthdays.jpg";
 
+interface IBirthdaySlide {
+  department: string[];
+  id: number;
+  image: string;
+  position: string;
+  location: string;
+  user_fio: string;
+  congratulations: {
+    user_id: number;
+    user_fio: string;
+    user_comment: string;
+    user_photo: string;
+  }[];
+}
+
 export default defineComponent({
-    components: {
-        DatePicker,
-        UserSlide,
-        Loader,
-        ContentPlug
-    },
-    setup() {
-        const isLoading = ref(false);
-        const today = new Date();
-        const yesterday = new Date(today);
-        const tomorrow = new Date(today);
+  components: {
+    DatePicker,
+    UserSlide,
+    Loader,
+    ContentPlug,
+  },
+  setup() {
+    const isLoading = ref(false);
+    const today = new Date();
+    const yesterday = new Date(today);
+    const tomorrow = new Date(today);
 
-        const formatDate = (date: Date) => {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            return `${day}.${month}`;
-        };
+    const formatDate = (date: Date) => {
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${day}.${month}`;
+    };
 
-        const slidesForBirthday = ref([]);
-        const searchValue = ref(formatDate(today));
-        const imageInModal = ref();
-        const hiddenModal = ref(true);
+    const slidesForBirthday = ref<IBirthdaySlide[]>([]);
+    const searchValue = ref(formatDate(today));
+    const imageInModal = ref();
+    const hiddenModal = ref(true);
 
-        const openModal = (url: [string]) => {
-            imageInModal.value = url;
-            hiddenModal.value = false;
-        };
+    const openModal = (url: [string]) => {
+      imageInModal.value = url;
+      hiddenModal.value = false;
+    };
 
-        const pickDate = (target: string | Date, needNulify: boolean = false) => {
-            searchValue.value = String(target).length > 5 ? formatDate(target as Date) : String(target);
-            if (needNulify) {
-                nullifyDateInput.value = true;
-            }
-            nextTick(() => {
-                nullifyDateInput.value = false;
-            });
-        }
+    const pickDate = (target: string | Date, needNulify: boolean = false) => {
+      searchValue.value =
+        String(target).length > 5 ? formatDate(target as Date) : String(target);
+      if (needNulify) {
+        nullifyDateInput.value = true;
+      }
+      nextTick(() => {
+        nullifyDateInput.value = false;
+      });
+    };
 
-        yesterday.setDate(today.getDate() - 1);
-        tomorrow.setDate(today.getDate() + 1);
+    yesterday.setDate(today.getDate() - 1);
+    tomorrow.setDate(today.getDate() + 1);
 
-        const fastDayNavigation = [
-            {
-                id: 1,
-                text: "Дни Рождения вчера",
-                value: formatDate(yesterday),
-            },
-            {
-                id: 2,
-                text: "Сегодня День Рождения отмечают",
-                value: formatDate(today),
-            },
-            {
-                id: 3,
-                text: "Дни Рождения завтра",
-                value: formatDate(tomorrow),
-            },
-        ];
+    const fastDayNavigation = [
+      {
+        id: 1,
+        text: "Дни Рождения вчера",
+        value: formatDate(yesterday),
+      },
+      {
+        id: 2,
+        text: "Сегодня День Рождения отмечают",
+        value: formatDate(today),
+      },
+      {
+        id: 3,
+        text: "Дни Рождения завтра",
+        value: formatDate(tomorrow),
+      },
+    ];
 
-        watch((searchValue), (newVal) => {
-            if (!newVal) return;
-            isLoading.value = true;
-            Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
-                .then((data) => slidesForBirthday.value = data)
-                .finally(() => isLoading.value = false)
-        }, { immediate: true, deep: true })
+    const loadBirthdayCelebrants = (withLoader = true) => {
+      if (!searchValue.value) return;
+      if (withLoader) {
+        isLoading.value = true;
+      }
+      Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
+        .then((data) => (slidesForBirthday.value = data || []))
+        .finally(() => {
+          if (withLoader) {
+            isLoading.value = false;
+          }
+        });
+    };
 
-        const dateFromDatepicker = ref();
-        const nullifyDateInput = ref(false);
+    const refreshBirthdayComments = () => {
+      loadBirthdayCelebrants(false);
+    };
 
+    watch(
+      searchValue,
+      (newVal) => {
+        if (!newVal) return;
+        loadBirthdayCelebrants();
+      },
+      { immediate: true, deep: true }
+    );
 
-        return {
-            slidesForBirthday,
-            imageInModal,
-            hiddenModal,
-            fastDayNavigation,
-            searchValue,
-            dateFromDatepicker,
-            isLoading,
-            nullifyDateInput,
-            openModal,
-            pickDate,
-            birthdayPageImg,
-            noBirthdays,
-            noBirthImage,
-        };
-    },
+    const dateFromDatepicker = ref();
+    const nullifyDateInput = ref(false);
+
+    return {
+      slidesForBirthday,
+      imageInModal,
+      hiddenModal,
+      fastDayNavigation,
+      searchValue,
+      dateFromDatepicker,
+      isLoading,
+      nullifyDateInput,
+      openModal,
+      pickDate,
+      refreshBirthdayComments,
+      birthdayPageImg,
+      noBirthdays,
+      noBirthImage,
+    };
+  },
 });
 </script>

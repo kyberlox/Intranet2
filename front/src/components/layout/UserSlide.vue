@@ -203,6 +203,7 @@ export default defineComponent({
 
       isSendingComment.value = true;
       commentError.value = "";
+      //lorem
 
       try {
         const response = await Api.post(

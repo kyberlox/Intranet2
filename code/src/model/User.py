@@ -94,8 +94,6 @@ class User:
         await self.UserModel.upsert_user_some_data(user_data=user_data, session=session)
         await session.commit()
         return {"status": True}
-
-
       
     async def search_by_id(self, session):
         self.UserModel.id = self.id
@@ -873,6 +871,66 @@ class User:
         except Exception as e:
             return f"Ошибка в экселе: {e}"
 
+    async def create_congratulation(self, user_id : int, data: str, session):
+        try:
+            self.id = int(user_id)
+            user_info = await self.search_by_id(session)
+            if not user_info['active']:
+                return LogsMaker().error_message(f'Ошибка при создании комментария: Не удалось найти пользователя с id = {self.id}')
+
+            self.id = int(data['celebrant_id'])
+            celebrant_info = await self.search_by_id(session)
+            if not celebrant_info['active']:
+                return LogsMaker().error_message(f'Ошибка при создании комментария: Не удалось найти именинника с id = {self.id}')
+
+            comment_info = {
+                'user_id': user_info['id'],
+                'user_fio': f"{user_info['last_name']} {user_info['name']} {user_info['second_name']}",
+                'user_photo': user_info['photo_file_url'],
+                'user_comment': data['comment'],
+            }
+            if 'indirect_data' not in celebrant_info or celebrant_info['indirect_data'] is None or 'congratulations' not in celebrant_info['indirect_data']:
+                celebrant_info['indirect_data']['congratulations'] = [comment_info]
+
+            elif 'congratulations' in celebrant_info['indirect_data']:
+                celebrant_info['indirect_data']['congratulations'].append(comment_info)
+            
+            has_added = await self.UserModel.upload_comment_to_celebrant(session, self.id, celebrant_info)
+            if has_added:
+                return True 
+            return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при создании комментария:{e}')
+
+    async def delete_congratulation(data, session):
+        from copy import deepcopy
+        try:
+            self.id = int(data['celeba_id'])
+            celebrant_info = await self.search_by_id(session)
+
+            if not celebrant_info['active']:
+                return LogsMaker().error_message(f'Ошибка при удалении комментария: Не удалось найти именинника с id = {self.id}')
+            
+            if 'indirect_data' not in celebrant_info or celebrant_info['indirect_data'] is None or 'congratulations' not in celebrant_info['indirect_data']:
+                return LogsMaker().warning_message(f'Ошибка при удалении комментария: Отсутствуют комментарии у именинника с id = {self.id}')
+
+            elif not celebrant_info['indirect_data']['congratulations']:
+                return LogsMaker().warning_message(f'Ошибка при удалении комментария: Отсутствуют комментарии у именинника с id = {self.id}')
+            
+            congratulations = deepcopy(celebrant_info['indirect_data']['congratulations'])
+
+            for i, comments in enumerate(congratulations):
+                if comments['user_id'] == data['commentator_id'] and comments['user_comment'] == data['user_comment']:
+                    celebrant_info['indirect_data']['congratulations'].pop(i)
+
+            has_delete = await self.UserModel.upload_comment_to_celebrant(session, self.id, celebrant_info)
+            if has_added:
+                return True 
+            return False
+        except Exception as e:
+            return LogsMaker().error_message(f'Ошибка при удалении комментария:{e}')
+
+
 
 '''
     # def get(self, method="user.get", params={}):
@@ -1214,3 +1272,17 @@ async def get_new_users_ids(session: AsyncSession = Depends(get_async_db)):
         send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=session)
     await session.commit()
     return users
+
+@users_router.post("/create_congratulation", tags=["Пользователь"])
+async def create_congratulation_to_celeba(data = Body(), session: AsyncSession = Depends(get_async_db), user_id=Depends(get_user_id_by_session_id)):
+    if not user_id:
+        return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
+    return await User().create_congratulation(user_id, data, session)
+
+@users_router.delete("/delete_congratulation", tags=["Пользователь"])
+async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession = Depends(get_async_db), user_id=Depends(get_user_id_by_session_id)):
+    if not user_id:
+        return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
+    if user_id != data['celeba_id'] or user_id != data['commentator_id']:
+        return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
+    return await User().delete_congratulation(data, session)

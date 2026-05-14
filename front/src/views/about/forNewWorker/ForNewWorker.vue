@@ -9,7 +9,7 @@
         <CustomFilter v-if="showLocations"
                       :params="locations"
                       :modifiers="['nosort']"
-                      @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; console.log(filter) }" />
+                      @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; cardKey++}" />
     </div>
     <div class="col-12 col-lg-12 col-xl-9 col-xxl-9">
         <div class="memo__items">
@@ -19,7 +19,7 @@
                      v-for="(item, index) in filterContent(pageContent)"
                      :key="index"
                      :id="`memo__item${item.id}`">
-                    <ForNewWorkerCard :item="item" />
+                    <ForNewWorkerCard :item="item" :key="cardKey" />
                 </div>
                 <div class="memo__item"
                      v-if="endingSlide(pageContent)">
@@ -30,7 +30,7 @@
     </div>
     <div class="d-none d-lg-block col-xl-3 col-xxl-3">
         <ul class="memo__menu-dots sticky__menu">
-            <li v-for="item in filterContent(pageContent)"
+            <li v-for="item in filterContent(pageContent).filter(e=>e.name)"
                 :key="'mark' + item.id"
                 class="memo__menu-dot">
                 <div @click="navigate(item.id)"
@@ -64,6 +64,7 @@ export default defineComponent({
         const activeLocation = ref('');
         const showLocations = ref(false);
         const locations = ref<string[]>([]);
+        const cardKey = ref(0);
 
         onMounted(() => {
             Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`)
@@ -97,8 +98,9 @@ export default defineComponent({
             activeLocation,
             showLocations,
             locations,
-            endingSlide: (pageContent: IForNewWorker[]) => pageContent.find((e: IForNewWorker) => e.indirect_data && e.indirect_data.module == 'Заключение') || undefined,
-            newMemo: featureFlags.newWorkerMemo
+            endingSlide: (pageContent: IForNewWorker[]) => pageContent.find((e: IForNewWorker) => activeLocation.value && e.indirect_data && e.indirect_data.module == 'Заключение') || undefined,
+            newMemo: featureFlags.newWorkerMemo,
+            cardKey
         };
     },
 });

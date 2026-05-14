@@ -41,6 +41,14 @@
     .training-feedback__wrapper,
     .points-admin-panel__wrapper,
     .points-admin-panel__navigation__wrapper,
+    .siner-table__wrapper,
+    .siner-table thead,
+    .siner-table tbody tr,
+    .siner-table tbody tr:hover,
+    .siner-table tbody tr:hover td,
+    .siner-table tbody tr:hover th,
+    .siner-table tbody tr:hover td:first-child,
+    .siner-table tbody tr:hover th:first-child,
     .point-info__table thead {
         background: #1b1b1b;
 
@@ -184,6 +192,8 @@
     .staff__filter__link--active,
     .modal__description,
     .news__detail__discr,
+    .siner-table th,
+    .siner-table td,
     label,
     figcaption {
         color: #b2b0b0;
@@ -272,6 +282,92 @@
     .birthday {
         &__slide__info {
             border: 1px solid #1b1b1b;
+        }
+
+        &__comments-preview,
+        &__comments-controls,
+        &__comments-modal {
+            background: rgb(19, 19, 19);
+            border-color: #1b1b1b;
+        }
+
+        &__comments-action,
+        &__comments-count {
+            background: rgb(32, 32, 32);
+            border-color: #383838;
+            color: #d2d2d2;
+
+            &:hover {
+                background: var(--emk-brand-color);
+                border-color: var(--emk-brand-color);
+                color: #ffffff;
+            }
+        }
+
+        &__comments-modal {
+            &__title {
+                color: #d2d2d2;
+            }
+
+            &__subtitle {
+                color: #9b9b9b;
+            }
+        }
+
+        &__comments {
+            background: rgb(19, 19, 19);
+            border-color: #1b1b1b;
+
+            &-toggle {
+                background: rgb(19, 19, 19);
+                border-color: #1b1b1b;
+                color: #d2d2d2;
+
+                &:hover {
+                    background: var(--emk-brand-color);
+                    color: #ffffff;
+                }
+
+                &__counter {
+                    background: rgb(32, 32, 32);
+                    color: #d2d2d2;
+                }
+            }
+
+            &__avatar {
+                background-color: rgb(32, 32, 32);
+            }
+
+            &__author {
+                color: #d2d2d2;
+
+                &:hover {
+                    color: var(--emk-brand-color);
+                }
+            }
+
+            &__text,
+            &__empty {
+                color: #d2d2d2;
+            }
+
+            &__delete {
+                color: #ff8d8d;
+
+                &:hover {
+                    color: #ffb3b3;
+                }
+
+                &:disabled {
+                    color: #777777;
+                }
+            }
+
+            &__textarea {
+                background: rgb(32, 32, 32);
+                border-color: #383838;
+                color: #d2d2d2;
+            }
         }
 
         &__chain-nav {

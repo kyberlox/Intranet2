@@ -24,7 +24,7 @@
                     </div>
                     <div class="modal__right">
                         <div class="modal__description"
-                             v-html="parseMarkdown(worker.content_text)"></div>
+                             v-html="parseMarkdown(worker.content_text).replaceAll('&nbsp;', ' ')"></div>
                     </div>
                 </div>
             </div>

@@ -34,12 +34,6 @@ export default defineComponent({
             value.value = String(props.item?.value).replaceAll('&nbsp;', ' ')
         }, { immediate: true, deep: true })
 
-        // watch((value), () => {
-        //     value.value = (value.value as string).replaceAll('&nbsp;', ' ').replaceAll('img', 'img style="max-width: 200px"')
-        //     console.log(value.value);
-
-        // }, { immediate: true, deep: true })
-
         return {
             value,
             handleValuePick: () => emit('pick', (value.value as string)?.replaceAll('&nbsp;', ' ').replaceAll('img', 'img style="max-width: 200px"')),

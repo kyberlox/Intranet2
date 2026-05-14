@@ -1,63 +1,55 @@
 <template>
-    <div>
-        <h1 class="page__title mt20">Организационное Развитие</h1>
+<div>
+    <h1 class="page__title mt20">Организационное Развитие</h1>
 
-        <SinerTable
-            :rows="tableRows"
-            :columns="tableColumns"
-            :loading="loading"
-            @row-click="handleRowClick"
-        >
-            <template #column-implementer="{ value }">
-                <div class="person-cell">
-                    <img
-                        v-if="value && value[0]?.photo_file_url"
-                        :src="value[0].photo_file_url"
-                        :alt="value[0]?.fio || 'Фото'"
-                        class="person-avatar"
-                    />
-                    <span>{{ value?.[0]?.fio || '' }}</span>
-                </div>
-            </template>
+    <SinerTable :rows="tableRows"
+                :columns="tableColumns"
+                :loading="loading"
+                @row-click="handleRowClick">
+        <template #column-implementer="{ value }">
+            <div class="person-cell">
+                <img v-if="value && value[0]?.photo_file_url"
+                     :src="value[0].photo_file_url"
+                     :alt="value[0]?.fio || 'Фото'"
+                     class="person-avatar" />
+                <span>{{ value?.[0]?.fio || '' }}</span>
+            </div>
+        </template>
 
-            <template #column-integrator="{ value }">
-                <div class="person-cell">
-                    <img
-                        v-if="value && value[0]?.photo_file_url"
-                        :src="value[0].photo_file_url"
-                        :alt="value[0]?.fio || 'Фото'"
-                        class="person-avatar"
-                    />
-                    <span>{{ value?.[0]?.fio || 'Работа без интегратора' }}</span>
-                </div>
-            </template>
+        <template #column-integrator="{ value }">
+            <div class="person-cell">
+                <img v-if="value && value[0]?.photo_file_url"
+                     :src="value[0].photo_file_url"
+                     :alt="value[0]?.fio || 'Фото'"
+                     class="person-avatar" />
+                <span>{{ value?.[0]?.fio || 'Работа без интегратора' }}</span>
+            </div>
+        </template>
 
-            <template #column-status="{ value }">
-                <span
-                    :class="[
-                        'status-badge',
-                        value === 'Запущен'
-                            ? 'status-active'
-                            : value === 'Закрыт' || value === 'Не запущен'
-                              ? 'status-closed'
-                              : '',
-                    ]"
-                >
-                    {{ value }}
-                </span>
-            </template>
+        <template #column-status="{ value }">
+            <span :class="[
+                'status-badge',
+                value === 'Запущен'
+                    ? 'status-active'
+                    : value === 'Закрыт' || value === 'Не запущен'
+                        ? 'status-closed'
+                        : '',
+            ]">
+                {{ value }}
+            </span>
+        </template>
 
-            <template #column-date_status="{ value }">
-                {{ formatDate(value as string) }}
-            </template>
+        <template #column-date_status="{ value }">
+            {{ formatDate(value as string) }}
+        </template>
 
-            <template #column-note_status="{ value }">
-                <div class="note-cell">
-                    {{ value || '—' }}
-                </div>
-            </template>
-        </SinerTable>
-    </div>
+        <template #column-note_status="{ value }">
+            <div class="note-cell">
+                {{ value || '—' }}
+            </div>
+        </template>
+    </SinerTable>
+</div>
 </template>
 
 <script lang="ts">
@@ -157,14 +149,14 @@ export default defineComponent({
         }
 
         const handleRowClick = ({ row, index }: { row: TableRow; index: number }) => {
-            console.log('Clicked row:', row, index)
+            // console.log('Clicked row:', row, index)
         }
 
         const loadData = async () => {
             loading.value = true
             try {
                 const data = await Api.get(`article/find_by/${sectionTips['синертим']}`)
-                console.log(data)
+                // console.log(data)
                 tableData.value = Array.isArray(data) ? data : []
             } catch {
                 tableData.value = []

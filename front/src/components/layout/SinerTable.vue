@@ -1,36 +1,72 @@
 <template>
-    <div class="siner-table__wrapper">
-        <table class="siner-table">
-            <thead>
-                <tr>
-                    <th
-                        v-for="column in columns"
-                        :key="column.key"
-                        :class="{
-                            sortable: column.sortable,
-                            'sorted-asc':
-                                column.sortable &&
-                                sortKey === column.key &&
-                                sortDirection === 'asc',
-                            'sorted-desc':
-                                column.sortable &&
-                                sortKey === column.key &&
-                                sortDirection === 'desc',
-                        }"
-                        @click="column.sortable && handleSort(column.key)"
-                    >
-                        {{ column.label }}
-                        <span v-if="column.sortable" class="sort-icon">
-                            <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
-                            <span v-else-if="sortKey === column.key && sortDirection === 'desc'"
-                                >↓</span
-                            >
-                            <span v-else>↕</span>
-                        </span>
-                    </th>
-                </tr>
-            </thead>
+<div class="siner-table__wrapper">
+    <table class="siner-table">
+        <thead>
+            <tr>
+                <th v-for="column in columns"
+                    :key="column.key"
+                    :class="{
+                        sortable: column.sortable,
+                        'sorted-asc':
+                            column.sortable &&
+                            sortKey === column.key &&
+                            sortDirection === 'asc',
+                        'sorted-desc':
+                            column.sortable &&
+                            sortKey === column.key &&
+                            sortDirection === 'desc',
+                    }"
+                    @click="column.sortable && handleSort(column.key)">
+                    {{ column.label }}
+                    <span v-if="column.sortable"
+                          class="sort-icon">
+                        <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
+                        <span v-else-if="sortKey === column.key && sortDirection === 'desc'">↓</span>
+                        <span v-else>↕</span>
+                    </span>
+                </th>
+            </tr>
+        </thead>
 
+<<<<<<< HEAD
+        <tbody v-if="!loading">
+            <tr v-for="(row, rowIndex) in sortedRows"
+                :key="rowIndex"
+                @click="handleRowClick(row, rowIndex)">
+                <td v-for="column in columns"
+                    :key="column.key">
+                    <slot :name="`column-${column.key}`"
+                          :value="getValue(row, column.key)"
+                          :row="row"
+                          :column="column"
+                          :rowIndex="rowIndex">
+                        <template v-if="column.formatter">
+                            {{ column.formatter(getValue(row, column.key)) }}
+                        </template>
+                        <span v-else-if="column.component">
+                            <component :is="column.component"
+                                       v-bind="getComponentProps(column, getValue(row, column.key), row)
+                                        " />
+                        </span>
+                        <template v-else>
+                            {{ formatValue(getValue(row, column.key)) }}
+                        </template>
+                    </slot>
+                </td>
+            </tr>
+            <tr v-if="sortedRows.length === 0">
+                <td :colspan="columns.length"
+                    class="siner-table__empty-cell">
+                    {{ emptyMessage }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="siner-table__loading" v-if="loading">
+    <Loader />
+</div>
+=======
             <tbody v-if="!loading">
                 <tr
                     v-for="(row, rowIndex) in sortedRows"
@@ -75,6 +111,7 @@
             <Loader/>
         </div>
     </div>
+>>>>>>> d01ca02b (FEAT: Заменил Loader в синертим)
 </template>
 
 <script lang="ts">
@@ -123,6 +160,9 @@ export default defineComponent({
             type: String,
             default: 'Загрузка...',
         },
+    },
+    components: {
+        Loader
     },
 
     emits: ['row-click', 'cell-click', 'sort'],

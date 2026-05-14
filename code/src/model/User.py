@@ -94,8 +94,6 @@ class User:
         await self.UserModel.upsert_user_some_data(user_data=user_data, session=session)
         await session.commit()
         return {"status": True}
-
-
       
     async def search_by_id(self, session):
         self.UserModel.id = self.id
@@ -872,6 +870,12 @@ class User:
             return excel_buffer
         except Exception as e:
             return f"Ошибка в экселе: {e}"
+
+    # async def create_congratulation(self, user_id : int, data: str, session):
+    #     self.id = user_id
+    #     user_info = self.search_by_id(session)
+
+    #     self.id = data['celebrant_id']
 
 
 '''

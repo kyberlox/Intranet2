@@ -402,7 +402,7 @@ class UserModel:
             list_departs = []
             list_departs_id = []
             if isinstance(indirect_data['uf_department'], list) and len(indirect_data['uf_department']) != 0:
-                print(indirect_data['uf_department'], 'asdasdas')
+                print(indirect_data['uf_department'], 'asdasdas', indirect_data)
                 for dep in indirect_data['uf_department']:
 
                     dedep = await DepartmentModel(int(dep)).find_dep_by_id(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!

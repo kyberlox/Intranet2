@@ -988,7 +988,7 @@ async def get_user_id_by_session_id(request: Request) -> int:
             detail="Not authenticated"
         )
     
-    user_id = session_data['user_info']['ID']
+    user_id = int(session_data['user_info']['ID'])
     return user_id
 
 
@@ -1284,6 +1284,5 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     if not user_id:
         return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
     if user_id != data['celeba_id'] or user_id != data['commentator_id']:
-        print(type(user_id), type(data['celeba_id']), type(data['commentator_id']), data['celeba_id'], data['commentator_id'], 'что приходит на чужой коммент')
         return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
     return await User().delete_congratulation(data, session)

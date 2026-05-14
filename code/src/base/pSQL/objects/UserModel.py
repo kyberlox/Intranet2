@@ -665,7 +665,7 @@ class UserModel:
                 if "congratulations" in indirect_data:
                     user_info["congratulations"] = indirect_data["congratulations"]
                 else:
-                    ser_info["congratulations"] = []
+                    user_info["congratulations"] = []
                 
                 
                 normal_list.append(user_info)

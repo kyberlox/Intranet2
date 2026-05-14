@@ -874,12 +874,12 @@ class User:
     async def create_congratulation(self, user_id : int, data: str, session):
         try:
             self.id = int(user_id)
-            user_info = self.search_by_id(session)
+            user_info = await self.search_by_id(session)
             if not user_info['active']:
                 return LogsMaker().error_message(f'Ошибка при создании комментария: Не удалось найти пользователя с id = {self.id}')
 
             self.id = int(data['celebrant_id'])
-            celebrant_info = self.search_by_id(session)
+            celebrant_info = await self.search_by_id(session)
             if not celebrant_info['active']:
                 return LogsMaker().error_message(f'Ошибка при создании комментария: Не удалось найти именинника с id = {self.id}')
 

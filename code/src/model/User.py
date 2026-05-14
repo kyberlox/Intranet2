@@ -924,7 +924,7 @@ class User:
                     celebrant_info['indirect_data']['congratulations'].pop(i)
 
             has_delete = await self.UserModel.upload_comment_to_celebrant(session, self.id, celebrant_info)
-            if has_added:
+            if has_delete:
                 return True 
             return False
         except Exception as e:

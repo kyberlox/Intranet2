@@ -39,7 +39,7 @@ import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
 import Breadcrumbs from "./components/layout/Breadcrumbs.vue";
-import AuthPage from "./views/user/AuthPage.vue";
+import AuthPage from "@/views/user/AuthPage.vue";
 import YandexMetrika from "./components/tools/common/YandexMetrika.vue";
 import { useUserData } from "./stores/userData";
 import { prefetchSection } from "./composables/usePrefetchSection";

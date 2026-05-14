@@ -31,7 +31,6 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const value = ref(props.item?.value);
-        console.log(value.value);
 
         const handleValuePick = (date: string | null) => {
             if (date == null) {

@@ -402,7 +402,10 @@ class UserModel:
             list_departs = []
             list_departs_id = []
             if isinstance(indirect_data['uf_department'], list) and len(indirect_data['uf_department']) != 0:
-                for dep in indirect_data['uf_department']:
+                departs = indirect_data['uf_department']
+                if isinstance(indirect_data['uf_department'][0], str):
+                    departs = indirect_data['uf_department_id']
+                for dep in departs:
 
                     dedep = await DepartmentModel(int(dep)).find_dep_by_id(session) # как обложим асинхронностью добавить эвэйт!!!!!!!!!!!!!!!!!!!
 
@@ -662,6 +665,10 @@ class UserModel:
 
                     dedep = await DepartmentModel(indirect_data["uf_usr_department_main"]).find_dep_by_id(session)
                     user_info['uf_usr_department_main'] = dedep[0].name
+                if "congratulations" in indirect_data:
+                    user_info["congratulations"] = indirect_data["congratulations"]
+                else:
+                    user_info["congratulations"] = []
                 
                 
                 normal_list.append(user_info)
@@ -864,7 +871,16 @@ class UserModel:
                 return father_id
             result = father_id
             
-
+    async def upload_comment_to_celebrant(self, session, celebrant_id, data):
+        user = await session.get(self.user, celebrant_id)
+        if user is None:
+            return None
+        # Обновляем только переданные поля
+        for key, value in data.items():
+            setattr(user, key, value)
+        await session.commit()
+        await session.refresh(user)  # чтобы получить обновлённую запись
+        return user
 
     """
     def put_uf_depart(self, usr_dep):

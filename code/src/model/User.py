@@ -902,7 +902,7 @@ class User:
         except Exception as e:
             return LogsMaker().error_message(f'Ошибка при создании комментария:{e}')
 
-    async def delete_congratulation(data, session):
+    async def delete_congratulation(self, data, session):
         from copy import deepcopy
         try:
             self.id = int(data['celeba_id'])

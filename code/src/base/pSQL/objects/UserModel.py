@@ -402,7 +402,6 @@ class UserModel:
             list_departs = []
             list_departs_id = []
             if isinstance(indirect_data['uf_department'], list) and len(indirect_data['uf_department']) != 0:
-                print(indirect_data['uf_department'], 'asdasdas', indirect_data)
                 departs = indirect_data['uf_department']
                 if isinstance(indirect_data['uf_department'][0], str):
                     departs = indirect_data['uf_department_id']

@@ -133,7 +133,6 @@ async def current_news(session: AsyncSession = Depends(get_async_db)):
 
 @open_router.get("/video_report", tags=["Открытая ссылка", "Видео репортажи"])
 async def video_report(session: AsyncSession = Depends(get_async_db)):
-    async def current_news(session: AsyncSession = Depends(get_async_db)):
     # получить все статьи раздела
     active_articles = []
     result = await ArticleModel(section_id=int(33)).find_by_section_id(session)

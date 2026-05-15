@@ -78,7 +78,7 @@ async def career(session: AsyncSession = Depends(get_async_db)):
 
     return arts_info
 
-@open_router.get("current_news", tags=["Открытая ссылка", "Актуальные новости"])
+@open_router.get("/current_news", tags=["Открытая ссылка", "Актуальные новости"])
 async def current_news(session: AsyncSession = Depends(get_async_db)):
     # получить все статьи раздела
     active_articles = []
@@ -96,5 +96,5 @@ async def current_news(session: AsyncSession = Depends(get_async_db)):
     return sorted_active_articles
 
 
-# @open_router.get("video_report", tags=["Открытая ссылка", "Видео репортажи"])
+# @open_router.get("/video_report", tags=["Открытая ссылка", "Видео репортажи"])
 # async def video_report(session: AsyncSession = Depends(get_async_db)):

@@ -58,7 +58,7 @@
               Поздравления для {{ slide?.user_fio }}
             </div>
             <div class="birthday__comments-modal__subtitle">
-              {{ commentsCount ? `Всего: ${commentsCount}` : "" }}
+              {{ commentsCount ? `Всего: ${commentsCount}` : " " }}
             </div>
           </div>
           <div class="birthday__comments__list" v-if="commentsCount">

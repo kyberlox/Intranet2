@@ -77,3 +77,21 @@ async def career(session: AsyncSession = Depends(get_async_db)):
     print(arts_info)
 
     return arts_info
+
+@open_router.get("current_news", tags=["Открытая ссылка", "Актуальные новости"])
+async def current_news(session: AsyncSession = Depends(get_async_db)):
+    # получить все статьи раздела
+    active_articles = []
+    result = await ArticleModel(section_id=int(51)).find_by_section_id(session)
+    for res in result:
+        if res['active']:
+            active_articles.append(res)
+    
+    try:
+        sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
+    except:
+        sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
+
+
+@open_router.get("video_report", tags=["Открытая ссылка", "Видео репортажи"])
+async def video_report(session: AsyncSession = Depends(get_async_db)):

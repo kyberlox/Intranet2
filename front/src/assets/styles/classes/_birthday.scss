@@ -408,6 +408,8 @@
 
         &__body {
             min-width: 0;
+            padding-right: 32px;
+            position: relative;
         }
 
         &__author {
@@ -432,26 +434,39 @@
         }
 
         &__delete {
-            width: fit-content;
-            margin-top: 6px;
+            position: absolute;
+            top: -4px;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
             padding: 0;
             border: none;
+            border-radius: 50%;
             background: transparent;
-            color: #c73535;
-            font-size: 12px;
-            line-height: 16px;
+            color: #999999;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 1;
             cursor: pointer;
             transition: var(--default-transition);
 
             &:hover {
-                color: #8f1d1d;
-                text-decoration: underline;
+                background: #f7e8e8;
+                color: #c73535;
             }
 
             &:disabled {
-                color: #999999;
+                opacity: 0.5;
                 cursor: wait;
-                text-decoration: none;
+            }
+
+            &>span {
+                display: block;
+                height: 22px;
+                line-height: 20px;
             }
         }
 

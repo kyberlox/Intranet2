@@ -30,7 +30,26 @@
       </div>
     </RouterLink>
     <template v-if="needComments">
-
+      <div class="birthday__comments-preview" v-if="firstComment">
+        <div class="birthday__comments__item birthday__comments__item--preview">
+          <RouterLink
+            :to="{ name: 'userPage', params: { id: firstComment.user_id } }"
+            class="birthday__comments__avatar"
+            :style="{ backgroundImage: `url('${firstComment.user_photo}')` }"
+          />
+          <div class="birthday__comments__body">
+            <RouterLink
+              :to="{ name: 'userPage', params: { id: firstComment.user_id } }"
+              class="birthday__comments__author"
+            >
+              {{ firstComment.user_fio }}
+            </RouterLink>
+            <div class="birthday__comments__text">
+              {{ firstComment.user_comment }}
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="birthday__comments-controls">
         <button
           class="birthday__comments-action"
@@ -51,83 +70,19 @@
           </span>
         </button>
       </div>
-      <SlotModal v-if="commentsModalOpen" @close="commentsModalOpen = false">
-        <div class="modal__text__content modal__text__content--birthday-comments birthday__comments-modal">
-          <div class="birthday__comments-modal__header">
-            <div class="birthday__comments-modal__title">
-              Поздравления для {{ slide?.user_fio }}
-            </div>
-            <div class="birthday__comments-modal__subtitle">
-              {{ commentsCount ? `Всего: ${commentsCount}` : " " }}
-            </div>
-          </div>
-          <div class="birthday__comments__list" v-if="commentsCount">
-            <div
-              class="birthday__comments__item"
-              v-for="(congratulation, index) in slide?.congratulations"
-              :key="`${congratulation.user_id}-${index}`"
-            >
-              <RouterLink
-                :to="{ name: 'userPage', params: { id: congratulation.user_id } }"
-                class="birthday__comments__avatar"
-                :style="{ backgroundImage: `url('${congratulation.user_photo}')` }"
-              />
-              <div class="birthday__comments__body">
-                <RouterLink
-                  :to="{ name: 'userPage', params: { id: congratulation.user_id } }"
-                  class="birthday__comments__author"
-                >
-                  {{ congratulation.user_fio }}
-                </RouterLink>
-                <div class="birthday__comments__text">
-                  {{ congratulation.user_comment }}
-                </div>
-                <button
-                  class="birthday__comments__delete"
-                  type="button"
-                  :disabled="deletingCommentIndex == index"
-                  @click="deleteComment(congratulation, index)"
-                >
-                  {{ deletingCommentIndex == index ? "Удаление..." : "Удалить" }}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="birthday__comments__empty" v-else>
-            Поздравлений пока нет
-          </div>
-          <form class="birthday__comments__form" @submit.prevent="sendComment">
-            <textarea
-              class="birthday__comments__textarea"
-              v-model="commentText"
-              :disabled="isSendingComment"
-              placeholder="Напишите поздравление..."
-              rows="3"
-            />
-            <div class="birthday__comments__actions">
-              <span class="birthday__comments__error" v-if="commentError">
-                {{ commentError }}
-              </span>
-              <button
-                class="primary-button birthday__comments__submit"
-                type="submit"
-                :disabled="!canSendComment"
-              >
-                {{ isSendingComment ? "Отправка..." : "Отправить" }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </SlotModal>
+      <BirthdaysModal
+        v-if="commentsModalOpen && slide"
+        :slide="slide"
+        @close="commentsModalOpen = false"
+        @refresh="refreshComments"
+      />
     </template>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, ref, type PropType } from "vue";
-import Api from "@/utils/Api";
-import SlotModal from "@/components/tools/modal/SlotModal.vue";
-import { useUserData } from "@/stores/userData";
+import BirthdaysModal from "@/views/about/birthdays/BirthdaysModal.vue";
 import BirthdayCake from "@/assets/icons/birthdayCake.svg?component";
 import CommentIcon from "@/assets/icons/commentIcon.svg?component";
 
@@ -164,118 +119,31 @@ export default defineComponent({
     },
   },
   components: {
+    BirthdaysModal,
     BirthdayCake,
     CommentIcon,
-    SlotModal,
   },
   emits: ["sendComment"],
   setup(props, { emit }) {
     const commentsModalOpen = ref(false);
-    const commentText = ref("");
-    const commentError = ref("");
-    const isSendingComment = ref(false);
-    const deletingCommentIndex = ref<number | null>(null);
 
-    const currentUserId = computed(() => useUserData().getMyId);
     const commentsCount = computed(() => props.slide?.congratulations?.length || 0);
     const firstComment = computed(() => props.slide?.congratulations?.[0]);
-    const canSendComment = computed(
-      () => Boolean(commentText.value.trim()) && !isSendingComment.value
-    );
-
-    const canDeleteComment = (congratulation: ICongratulation) => {
-      return (
-        currentUserId.value == props.slide?.id ||
-        currentUserId.value == congratulation.user_id
-      );
-    };
 
     const openCommentsModal = () => {
       commentsModalOpen.value = true;
     };
 
-    const sendComment = async () => {
-      const comment = commentText.value.trim();
-      if (!props.slide?.id || !comment) {
-        commentError.value = "Введите текст поздравления";
-        return;
-      }
-
-      isSendingComment.value = true;
-      commentError.value = "";
-      //lorem
-
-      try {
-        const response = await Api.post(
-          "users/create_congratulation",
-          {
-            celebrant_id: props.slide.id,
-            comment,
-          } as never
-        );
-        const status = (response as { status?: string })?.status;
-
-        if (!response || status == "error" || status == "warn") {
-          commentError.value = "Не удалось отправить поздравление";
-          return;
-        }
-
-        commentText.value = "";
-        emit("sendComment");
-      } catch {
-        commentError.value = "Не удалось отправить поздравление";
-        return;
-      } finally {
-        isSendingComment.value = false;
-      }
-    };
-
-    const deleteComment = async (
-      congratulation: ICongratulation,
-      commentIndex: number
-    ) => {
-      if (!props.slide?.id) return;
-
-      deletingCommentIndex.value = commentIndex;
-      commentError.value = "";
-
-      try {
-        const response = await Api.delete(
-          "users/delete_congratulation",
-          {
-            celeba_id: props.slide.id,
-            commentator_id: congratulation.user_id,
-            user_comment: congratulation.user_comment,
-          } as never
-        );
-
-        if (!response || status == "error" || status == "warn") {
-          commentError.value = "Не удалось удалить поздравление";
-          return;
-        }
-
-        emit("sendComment");
-      } catch {
-        commentError.value = "Не удалось удалить поздравление";
-        return;
-      } finally {
-        deletingCommentIndex.value = null;
-      }
+    const refreshComments = () => {
+      emit("sendComment");
     };
 
     return {
       commentsModalOpen,
-      commentText,
-      commentError,
-      isSendingComment,
-      deletingCommentIndex,
       commentsCount,
       firstComment,
-      canSendComment,
-      canDeleteComment,
       openCommentsModal,
-      sendComment,
-      deleteComment,
+      refreshComments,
     };
   },
 });

@@ -902,7 +902,7 @@ class User:
         except Exception as e:
             return LogsMaker().error_message(f'Ошибка при создании комментария:{e}')
 
-    async def delete_congratulation(data, session):
+    async def delete_congratulation(self, data, session):
         from copy import deepcopy
         try:
             self.id = int(data['celeba_id'])
@@ -924,7 +924,7 @@ class User:
                     celebrant_info['indirect_data']['congratulations'].pop(i)
 
             has_delete = await self.UserModel.upload_comment_to_celebrant(session, self.id, celebrant_info)
-            if has_added:
+            if has_delete:
                 return True 
             return False
         except Exception as e:
@@ -988,7 +988,7 @@ async def get_user_id_by_session_id(request: Request) -> int:
             detail="Not authenticated"
         )
     
-    user_id = session_data['user_info']['ID']
+    user_id = int(session_data['user_info']['ID'])
     return user_id
 
 
@@ -1283,6 +1283,8 @@ async def create_congratulation_to_celeba(data = Body(), session: AsyncSession =
 async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession = Depends(get_async_db), user_id=Depends(get_user_id_by_session_id)):
     if not user_id:
         return LogsMaker().error_message(f'Ошибка при создании комментария: не найден user_id')
-    if user_id != data['celeba_id'] or user_id != data['commentator_id']:
-        return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
-    return await User().delete_congratulation(data, session)
+    if int(user_id) == data['celeba_id'] or int(user_id) == data['commentator_id']:
+        return await User().delete_congratulation(data, session)
+    # elif int(user_id) != data['commentator_id']:
+    #     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
+    return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 

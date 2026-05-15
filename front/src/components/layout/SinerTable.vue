@@ -126,9 +126,6 @@ export default defineComponent({
     },
 
     emits: ['row-click', 'cell-click', 'sort'],
-    components:{
-        Loader
-    },
 
     setup(props, { emit }) {
         const sortKey = ref<string | null>(null)

@@ -408,7 +408,7 @@
 
         &__body {
             min-width: 0;
-            padding-right: 32px;
+            padding-right: 64px;
             position: relative;
         }
 
@@ -435,38 +435,31 @@
 
         &__delete {
             position: absolute;
-            top: -4px;
+            top: 0;
             right: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 24px;
-            height: 24px;
+            min-width: 54px;
+            min-height: 22px;
             padding: 0;
             border: none;
-            border-radius: 50%;
             background: transparent;
             color: #999999;
-            font-size: 20px;
+            font-size: 12px;
             font-weight: 400;
-            line-height: 1;
+            line-height: 16px;
             cursor: pointer;
             transition: var(--default-transition);
 
             &:hover {
-                background: #f7e8e8;
                 color: #c73535;
+                text-decoration: underline;
             }
 
             &:disabled {
                 opacity: 0.5;
                 cursor: wait;
-            }
-
-            &>span {
-                display: block;
-                height: 22px;
-                line-height: 20px;
             }
         }
 

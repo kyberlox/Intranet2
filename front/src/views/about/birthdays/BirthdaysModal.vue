@@ -41,7 +41,7 @@
               :disabled="deletingCommentIndex == index"
               @click="deleteComment(congratulation, index)"
             >
-              <span aria-hidden="true">×</span>
+              Удалить
             </button>
           </div>
         </div>

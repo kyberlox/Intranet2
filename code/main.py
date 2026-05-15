@@ -175,7 +175,7 @@ open_links = [
     "/api/vcard/by_uuid/", "/api/vcard/get/",
     "/api/idea_pdf/generate_pdf/",
     "/api/health_check",
-    "career",
+    "/open",
 ]
 
 #Проверка авторизации для ВСЕХ запросов

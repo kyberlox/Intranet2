@@ -121,6 +121,7 @@ async def current_news(session: AsyncSession = Depends(get_async_db)):
                     url = file["file_url"]
                     file["file_url"] = f"{DOMAIN}{url}"
                     art['documentation'].append(file)
+        arts_info.append(art)
 
 
         # сортируем фотки по айдишникам

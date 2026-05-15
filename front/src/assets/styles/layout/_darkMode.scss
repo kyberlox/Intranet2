@@ -352,14 +352,15 @@
             }
 
             &__delete {
-                color: #ff8d8d;
+                color: #9b9b9b;
 
                 &:hover {
-                    color: #ffb3b3;
+                    background: #3a2424;
+                    color: #ff8d8d;
                 }
 
                 &:disabled {
-                    color: #777777;
+                    opacity: 0.5;
                 }
             }
 

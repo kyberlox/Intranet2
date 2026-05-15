@@ -36,10 +36,12 @@
               class="birthday__comments__delete"
               type="button"
               v-if="canDeleteComment(congratulation)"
+              aria-label="Удалить поздравление"
+              title="Удалить поздравление"
               :disabled="deletingCommentIndex == index"
               @click="deleteComment(congratulation, index)"
             >
-              {{ deletingCommentIndex == index ? "Удаление..." : "Удалить" }}
+              <span aria-hidden="true">×</span>
             </button>
           </div>
         </div>

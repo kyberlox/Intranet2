@@ -134,7 +134,7 @@ export default defineComponent({
         isLoading.value = true;
       }
       Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
-        .then((data) => (slidesForBirthday.value = data || []))
+        .then((data) => (slidesForBirthday.value = data.sort((x:{id:number},y:{id:number})=>x.id-y.id) || []))
         .finally(() => {
           if (withLoader) {
             isLoading.value = false;

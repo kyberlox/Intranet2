@@ -1098,7 +1098,7 @@ async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
 
 @users_router.get("/error_msg_test")
 async def get_error_msg():
-    a = 0 / 5
+    a = 5 / 0
     return 123
 
 # Получить айди пользователя по session_id

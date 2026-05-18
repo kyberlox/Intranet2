@@ -1096,7 +1096,7 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
 async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
     return await User(id).search_by_id(session)
 
-@users_router.get("/error_msg_test")
+@users_router.get("/error_msg_test", tags=["Пользователь"])
 async def get_error_msg():
     a = 5 / 0
     return 123

@@ -53,6 +53,7 @@ import { emptyPageHtml } from '@/assets/static/contentPlugs';
 import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
 import ContentPlug from "./ContentPlug.vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
+import { featureFlags } from "@/assets/static/featureFlags";
 
 export default defineComponent({
     components: {
@@ -126,6 +127,7 @@ export default defineComponent({
                 filterYears.value = extractYears(allNews.value);
             } else
                 isLoading.value = true;
+            if(!featureFlags.pagination)
             Api.get(`article/find_by/${props.sectionId}`)
                 .then((res) => {
                     viewsData.setData(res, props.storeItemsName);
@@ -152,6 +154,7 @@ export default defineComponent({
             isLoading,
             extractYears,
             showEventsByYear,
+
         };
     },
 });

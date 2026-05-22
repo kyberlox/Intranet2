@@ -44,7 +44,6 @@ from src.services.scheduler import (
     remove_scheduler_job,
     start_background_scheduler,
     stop_background_scheduler,
-    send_to_new_idea
 )
 from src.services.Open import open_router
 
@@ -177,7 +176,6 @@ open_links = [
     "/api/idea_pdf/generate_pdf/",
     "/api/health_check",
     "/open",
-    "/get_idea_points"
 ]
 
 #Проверка авторизации для ВСЕХ запросов
@@ -458,10 +456,6 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
 #         return progress
 #     else:
 #         return f'нет такого upload_id = {upload_id}'
-
-@app.get("/api/get_idea_points", tags=['Есть Идея!'])
-async def get_idea_points():
-    return await send_to_new_idea()
 
 @app.get("/get_info_message")
 def get_info_message():

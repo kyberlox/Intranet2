@@ -520,6 +520,8 @@ class Editor:
                 if k in art:
                     print(k, 'ищем дату публикации')
                     val = art[k]
+                    if k == 'date_publiction':
+                        print(art[k], type(art[k]))
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]
 

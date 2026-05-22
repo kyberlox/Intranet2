@@ -177,6 +177,7 @@ open_links = [
     "/api/idea_pdf/generate_pdf/",
     "/api/health_check",
     "/open",
+    "/get_idea_points"
 ]
 
 #Проверка авторизации для ВСЕХ запросов

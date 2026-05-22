@@ -519,8 +519,8 @@ class Editor:
                 val = None
                 if k in art:
                     val = art[k]
-                    if k == 'date_publiction':
-                        val = datetime.datetime.strftime(art[k], "%d.%m.%Y %H:%M")
+                    if k == 'date_publiction' and art[k]:
+                        val = datetime.datetime.strftime(art[k], "%d.%m.%Y %H:%M:%S")
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]
 
@@ -650,7 +650,7 @@ class Editor:
                 art["active"] = False
                 art["section_id"] = self.section_id
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
-                # art["date_publiction"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+                art["date_publiction"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
                 # добавить статью
                 await Article().set_new(art, self.session)

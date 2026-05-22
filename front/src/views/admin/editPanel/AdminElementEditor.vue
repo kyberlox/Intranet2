@@ -174,6 +174,7 @@ export default defineComponent({
             if (data.files?.images && data.files?.images[0]?.file_url) {
               newData.value.preview_file_url = data.files?.images[0]?.file_url
             }
+
             data.fields.forEach((e: INewDataElement) => {
               if ('value' in e && e.value && e.field) {
                 (newData.value as PostInnerWithDynamic)[e.field] = e.value;
@@ -193,6 +194,8 @@ export default defineComponent({
             handleApiError(error, toast)
           })
       }
+
+      if (!newData.value.date_publiction) { newData.value.date_publiction = newData.value.date_creation }
 
       // проверка на выставление областей видимости у афишы и корп событиях
       if ((props.id == '53' || props.id == '51' || props.id == '31') && featureFlags.visibleArea && (!newData.value?.vision?.length || !('vision' in newData.value))) {

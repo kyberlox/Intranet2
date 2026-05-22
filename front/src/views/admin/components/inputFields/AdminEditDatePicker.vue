@@ -30,8 +30,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const value = ref(props.item?.value);
-
+        const value = ref((props.item?.value as string).replaceAll('-', '.'));
         const handleValuePick = (date: string | null) => {
             if (date == null) {
                 emit('pick', date)

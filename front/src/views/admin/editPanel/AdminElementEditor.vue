@@ -133,12 +133,12 @@ export default defineComponent({
             newElementSkeleton.value.map((e) => {
               handleEmitValueChange(e, e.value as AdminElementValue)
             })
-            newId.value = findValInObject(data, 'id');
+            newId.value = (findValInObject(data, 'id') as string);
             newFileData.value = data.files;
             if (!('section_id' in newData.value)) {
-              newData.value.section_id = findValInObject(data, 'section_id');
+              newData.value.section_id = Number(findValInObject(data, 'section_id'));
             }
-            newData.value.date_publiction = findValInObject(data, 'date_publiction');
+            // newData.value.date_publiction = findValInObject(data, 'date_publiction') as string;
             usersList.value = data.users;
             newData.value.section_id = Number(props.id);
 
@@ -161,10 +161,10 @@ export default defineComponent({
               isCreateNew.value = false;
               newElementSkeleton.value = data.fields;
             }
-            users.value = findValInObject(data, 'users')?.map((e: IUserList) => e.id) || [];
+            users.value = (findValInObject(data, 'users') as IUserList[])?.map((e: IUserList) => String(e.id)) || [];
 
-            newData.value.implementer = findValInObject(data, 'implementer') || [];
-            newData.value.integrator = findValInObject(data, 'integrator') || [];
+            newData.value.implementer = findValInObject(data, 'implementer') as string[] || [];
+            newData.value.integrator = findValInObject(data, 'integrator') as string[] || [];
             // для файлов
             newFileData.value = data.files;
             newData.value.videos_native = data.files.videos_native;
@@ -195,7 +195,7 @@ export default defineComponent({
           })
       }
 
-      if (!newData.value.date_publiction) { newData.value.date_publiction = newData.value.date_creation }
+      // if (!newData.value.date_publiction) { newData.value.date_publiction = newData.value.date_creation }
 
       // проверка на выставление областей видимости у афишы и корп событиях
       if ((props.id == '53' || props.id == '51' || props.id == '31') && featureFlags.visibleArea && (!newData.value?.vision?.length || !('vision' in newData.value))) {

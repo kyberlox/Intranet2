@@ -282,6 +282,7 @@ async def send_to_new_idea():
                 send_point = await Peer(user_uuid=send_data['uuid_from']).send_auto_points(data=send_data, session=db)
                 
             await db.commit()
+        return True
     except Exception as e:
         LogsMaker().error_message(f"Ошибка при отправке баллов за идею: {e}")
         # Откатываем изменения в случае ошибки

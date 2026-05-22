@@ -74,6 +74,110 @@ async def career(session: AsyncSession = Depends(get_async_db)):
         # art["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
         arts_info.append(art)
-    print(arts_info)
+    # print(arts_info)
 
+    return arts_info
+
+@open_router.get("/current_news", tags=["Открытая ссылка", "Актуальные новости"])
+async def current_news(session: AsyncSession = Depends(get_async_db)):
+    # получить все статьи раздела
+    active_articles = []
+    result = await ArticleModel(section_id=int(31)).find_by_section_id(session)
+    for res in result:
+        if res['active']:
+            active_articles.append(res)
+    
+    try:
+        sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
+    except:
+        sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
+    
+    arts_info = []
+    for article in sorted_active_articles:
+        art_id = article["id"]
+        art = await ArticleModel(art_id).find_by_id(session)
+        files = await File(art_id=int(art_id)).get_files_by_art_id(session)
+        art['images'] = []
+        art['videos_native'] = []
+        art['videos_embed'] = []
+        art['documentation'] = []
+        if files:
+            for file in files:
+                # файлы делятся по категориям
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image/yowai_mo"
+                    url = '/'.join(preview_link)
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['images'].append(file)
+                elif "video" in file["content_type"]:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['videos_native'].append(file)
+                elif "link" in file["content_type"]:
+                    art['videos_embed'].append(file)
+                else:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['documentation'].append(file)
+        arts_info.append(art)
+
+
+        # сортируем фотки по айдишникам
+        sorted_images = sorted(art['images'], key=lambda x: int(x['id']), reverse=False)
+        art['images'] = sorted_images
+    
+    return arts_info
+
+
+@open_router.get("/video_report", tags=["Открытая ссылка", "Видео репортажи"])
+async def video_report(session: AsyncSession = Depends(get_async_db)):
+    # получить все статьи раздела
+    active_articles = []
+    result = await ArticleModel(section_id=int(33)).find_by_section_id(session)
+    for res in result:
+        if res['active']:
+            active_articles.append(res)
+    
+    try:
+        sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
+    except:
+        sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
+    
+    arts_info = []
+    for article in sorted_active_articles:
+        art_id = article["id"]
+        art = await ArticleModel(art_id).find_by_id(session)
+        files = await File(art_id=int(art_id)).get_files_by_art_id(session)
+        art['images'] = []
+        art['videos_native'] = []
+        art['videos_embed'] = []
+        art['documentation'] = []
+        if files:
+            for file in files:
+                # файлы делятся по категориям
+                if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                    url = file["file_url"]
+                    preview_link = url.split("/")
+                    preview_link[-2] = "compress_image/yowai_mo"
+                    url = '/'.join(preview_link)
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['images'].append(file)
+                elif "video" in file["content_type"]:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['videos_native'].append(file)
+                elif "link" in file["content_type"]:
+                    art['videos_embed'].append(file)
+                else:
+                    url = file["file_url"]
+                    file["file_url"] = f"{DOMAIN}{url}"
+                    art['documentation'].append(file)
+        arts_info.append(art)
+
+        # сортируем фотки по айдишникам
+        sorted_images = sorted(art['images'], key=lambda x: int(x['id']), reverse=False)
+        art['images'] = sorted_images
+    
     return arts_info

@@ -230,6 +230,7 @@
     h6,
     .page__title,
     .breadcrumb-item+.breadcrumb-item::before,
+    .merch-store-item__info__size,
     li,
     p {
         color: #d3d3d3;
@@ -352,14 +353,14 @@
             }
 
             &__delete {
-                color: #ff8d8d;
+                color: #9b9b9b;
 
                 &:hover {
-                    color: #ffb3b3;
+                    color: #ff8d8d;
                 }
 
                 &:disabled {
-                    color: #777777;
+                    opacity: 0.5;
                 }
             }
 

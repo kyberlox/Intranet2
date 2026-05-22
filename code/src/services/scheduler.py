@@ -246,7 +246,7 @@ async def send_to_new_users():
 
 async def send_to_new_idea():
     """
-    Функция отправляет баллы за идеи со статусом "Принято"
+    Функция отправляет баллы за идеи со статусом "В работе", "Реализовано"
     """
     try:
         from .Idea import Idea
@@ -255,7 +255,8 @@ async def send_to_new_idea():
         LAUNCH_DATE_OF_CAPITAL_EMK = datetime.strptime("03.02.2026", '%d.%m.%Y')
 
         #Статус с которым выдаем баллы
-        STATUS_IDEA = "Принято"
+        # STATUS_IDEA = "Принято"
+        STATUS_IDEA = ["В работе", "Реализовано"]
         #Получаем все идеи
         all_ideas = await Idea().validate_ideas()
         async with AsyncSessionLocal() as db:
@@ -268,7 +269,8 @@ async def send_to_new_idea():
                 if date_idea < LAUNCH_DATE_OF_CAPITAL_EMK:
                     continue
                 #пропускаем идеи у которых статус не соответствует 
-                if idea['status'] != STATUS_IDEA:
+                # if idea['status'] != STATUS_IDEA:
+                if idea['status'] not in STATUS_IDEA:
                     continue
                 
                 send_data = {

@@ -30,26 +30,6 @@
       </div>
     </RouterLink>
     <template v-if="needComments">
-      <div class="birthday__comments-preview" v-if="firstComment">
-        <div class="birthday__comments__item birthday__comments__item--preview">
-          <RouterLink
-            :to="{ name: 'userPage', params: { id: firstComment.user_id } }"
-            class="birthday__comments__avatar"
-            :style="{ backgroundImage: `url('${firstComment.user_photo}')` }"
-          />
-          <div class="birthday__comments__body">
-            <RouterLink
-              :to="{ name: 'userPage', params: { id: firstComment.user_id } }"
-              class="birthday__comments__author"
-            >
-              {{ firstComment.user_fio }}
-            </RouterLink>
-            <div class="birthday__comments__text">
-              {{ firstComment.user_comment }}
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="birthday__comments-controls">
         <button
           class="birthday__comments-action"

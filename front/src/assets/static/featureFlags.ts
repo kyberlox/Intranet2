@@ -2,6 +2,7 @@ export const featureFlags = {
     pointsSystem: true,
     pointsModeration: false,
     visibleArea: true,
-    newWorkerMemo: true
+    newWorkerMemo: true,
+    pagination: false
 }
 

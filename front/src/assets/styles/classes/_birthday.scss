@@ -408,6 +408,8 @@
 
         &__body {
             min-width: 0;
+            padding-right: 64px;
+            position: relative;
         }
 
         &__author {
@@ -432,26 +434,32 @@
         }
 
         &__delete {
-            width: fit-content;
-            margin-top: 6px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 54px;
+            min-height: 22px;
             padding: 0;
             border: none;
             background: transparent;
-            color: #c73535;
+            color: #999999;
             font-size: 12px;
+            font-weight: 400;
             line-height: 16px;
             cursor: pointer;
             transition: var(--default-transition);
 
             &:hover {
-                color: #8f1d1d;
+                color: #c73535;
                 text-decoration: underline;
             }
 
             &:disabled {
-                color: #999999;
+                opacity: 0.5;
                 cursor: wait;
-                text-decoration: none;
             }
         }
 

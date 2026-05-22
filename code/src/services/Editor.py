@@ -648,6 +648,7 @@ class Editor:
                 art["active"] = False
                 art["section_id"] = self.section_id
                 art["date_creation"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+                art["date_publiction"] = make_date_valid(datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 
                 # добавить статью
                 await Article().set_new(art, self.session)

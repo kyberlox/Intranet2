@@ -520,7 +520,7 @@ class Editor:
                 if k in art:
                     val = art[k]
                     if k == 'date_publiction':
-                        val = datetime.strftime(art[k], "%d.%m.%Y %H:%M")
+                        val = datetime.datetime.strftime(art[k], "%d.%m.%Y %H:%M")
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]
 

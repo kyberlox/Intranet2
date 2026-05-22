@@ -518,6 +518,7 @@ class Editor:
                 # забираю занчение
                 val = None
                 if k in art:
+                    print(k, 'ищем дату публикации')
                     val = art[k]
                 elif k in art["indirect_data"]:
                     val = art["indirect_data"][k]

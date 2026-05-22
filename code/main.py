@@ -459,7 +459,7 @@ async def websocket_endpoint(websocket: WebSocket, upload_id: int):
 #     else:
 #         return f'нет такого upload_id = {upload_id}'
 
-@app.get("/get_idea_points", tags=['Есть Идея!'])
+@app.get("/api/get_idea_points", tags=['Есть Идея!'])
 async def get_idea_points():
     return await send_to_new_idea()
 

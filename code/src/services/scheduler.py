@@ -246,7 +246,7 @@ async def send_to_new_users():
 
 async def send_to_new_idea():
     """
-    Функция отправляет баллы за идеи со статусом "Принято"
+    Функция отправляет баллы за идеи со статусом "В работе", "Реализовано"
     """
     try:
         from .Idea import Idea

@@ -154,8 +154,8 @@ export interface IPostInner extends IBaseEntity {
   vision?: number[]
 
   //Синертим
-  implementer?: []
-  integrator?: []
+  implementer?: string[]
+  integrator?: string[]
 }
 
 export default defineComponent({

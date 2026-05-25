@@ -119,7 +119,6 @@ import SearchList, { type IUserList } from "@/components/tools/common/SearchList
 import AdminEditTags from "../components/inputFields/AdminEditTags.vue";
 import Loader from "@/components/layout/Loader.vue";
 import { type IFileToUpload } from "@/interfaces/IEntities";
-import { identity } from "@vueuse/core";
 
 export default defineComponent({
   components: {

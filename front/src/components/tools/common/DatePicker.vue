@@ -80,7 +80,13 @@ export default defineComponent({
 
         watch((props), () => {
             if (props.defaultData) {
-                dateInput.value = dateConvert(props.defaultData, 'toDateType');
+                if (props.defaultData.includes(":")) {
+                    const formattedPropsData = props.defaultData.split(' ')[0];
+                    dateInput.value = dateConvert(formattedPropsData, 'toDateType');
+                }
+                else {
+                    dateInput.value = dateConvert(props.defaultData, 'toDateType');
+                }
                 handleDate(dateInput.value);
             }
         }, { immediate: true, deep: true })
@@ -130,7 +136,8 @@ export default defineComponent({
             if (!props.range) {
                 if (props.calendarType !== 'month') {
                     if (props.item?.field?.includes('publiction')) {
-                        dateInput.value = new Date();
+                        if (!props.defaultData) { dateInput.value = new Date() }
+                        // handleDate(dateInput.value);
                     }
                 }
             }

@@ -30,7 +30,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const value = ref((props.item?.value as string)?.includes('Z') ? props.item?.value?.split('T')[0] : (props.item?.value as string));
+        const value = ref((props.item?.value));
 
         const handleValuePick = (date: string | null) => {
             if (date == null) {

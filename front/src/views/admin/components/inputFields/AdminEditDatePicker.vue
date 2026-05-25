@@ -30,17 +30,21 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const value = ref((props.item?.value as string).replaceAll('-', '.'));
+        const value = ref((props.item?.value as string)?.includes('Z') ? props.item?.value?.split('T')[0] : (props.item?.value as string));
+
         const handleValuePick = (date: string | null) => {
             if (date == null) {
                 emit('pick', date)
             }
             else
                 if (props.item?.field?.includes('from') || props.item?.field?.includes('to')) {
-                    emit('pick', useDateFormat(date as string, 'DD.MM.YYYY'))
+                    const newDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+                    if (!String(newDate).includes('NaN')) {
+                        emit('pick', date)
+                    }
                 }
                 else {
-                    emit('pick', useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss'))
+                    emit('pick', String(useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss')).replaceAll('', ''))
                 }
         }
 

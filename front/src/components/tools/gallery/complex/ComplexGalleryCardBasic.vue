@@ -59,12 +59,17 @@ export default defineComponent({
     },
     setup() {
         const isDark = computed(() => useStyleModeStore().getDarkMode);
+
         const checkCardDate = (slide: IComplexGalleryCardBasic) => {
             if (!slide.indirect_data?.date_from) return;
-            if (slide.indirect_data.date_to && slide.indirect_data.date_to !== slide.indirect_data.date_from) {
-                return `${slide.indirect_data.date_from} - ${slide.indirect_data.date_to}`
+            const newSlideTo = (slide.indirect_data?.date_to?.split(" ").length == 2) ? slide.indirect_data?.date_to.split(" ")[0] : slide.indirect_data.date_to;
+            const newSlideFrom = (slide.indirect_data?.date_from.split(" ").length == 2) ? slide.indirect_data?.date_from.split(" ")[0] : slide.indirect_data.date_from;
+            if (newSlideTo && newSlideTo !== slide.indirect_data.date_from) {
+                return `${newSlideFrom} - ${newSlideTo}`
             }
-            else return slide.indirect_data.date_from
+            else return newSlideFrom
+
+
         }
 
         const getPreview = (slide: IComplexGalleryCardBasic) => {

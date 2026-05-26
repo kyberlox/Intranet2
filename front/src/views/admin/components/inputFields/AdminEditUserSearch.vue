@@ -36,10 +36,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType } from 'vue'
+import { defineComponent, ref } from 'vue'
 import SearchList, { type IUserList } from '@/components/tools/common/SearchList.vue'
 import AdminEditInput from './AdminEditInput.vue'
-import type { IAdminListItem, IUserSearch } from '@/interfaces/IEntities'
+import type { IUserSearch } from '@/interfaces/IEntities'
 import { watchDebounced } from '@vueuse/core'
 import Api from '@/utils/Api'
 import { handleApiError } from '@/utils/apiResponseCheck'
@@ -93,6 +93,7 @@ export default defineComponent({
         const handleUserPick = (user: IUserSearch, type: string = '') => {
             pickedUser.value = user
             usersList.value = usersList.value.filter((e: IUserSearch) => e.id == user.id)
+
             emit(
                 props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
                 type == 'remove' ? null : user.id ? user.id : user.user_id,

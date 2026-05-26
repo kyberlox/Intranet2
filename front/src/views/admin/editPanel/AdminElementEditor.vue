@@ -292,35 +292,33 @@ export default defineComponent({
         catch (error) {
           console.error(error)
         }
-        if (type == 'add') {
-          if (!users.value.includes(String(uuid))) {
-            users.value.push(String(uuid));
-            updateUsersInfo();
-          }
-        }
-        else if (type == 'remove') {
-          users.value = users.value.filter((e) => e !== uuid);
-          updateUsersInfo();
-        }
-        else if (type == 'fetchRemove') {
-          try {
-            const data = await Api.get(`editor/get_user_info/${props.id}/${newId.value}/null`)
-            if (data) {
-              reloadElementData(false)
-            }
-          } catch (error) {
-            console.error(error)
-          }
-        }
       }
 
-      onUnmounted(async () => {
+      if (type == 'add') {
+        if (!users.value.includes(String(uuid))) {
+          users.value.push(String(uuid));
+          updateUsersInfo();
+        }
+      }
+      else if (type == 'remove') {
+        users.value = users.value.filter((e) => e !== uuid);
+        updateUsersInfo();
+      }
+      else if (type == 'fetchRemove') {
         try {
-          if (!newData.value.name && !newData.value.content_text && newData.value.content_text?.length == 0 && !newData.value.videos_embed?.length && !newData.value.videos_native?.length && isCreateNew.value) {
-            await Api.delete(`editor/del/${newId.value}`)
+          const data = await Api.get(`editor/get_user_info/${props.id}/${newId.value}/null`)
+          if (data) {
+            reloadElementData(false)
           }
         } catch (error) {
           console.error(error)
+        }
+      }
+
+
+      onUnmounted(() => {
+        if (!newData.value.name && !newData.value.content_text && newData.value.content_text?.length == 0 && !newData.value.videos_embed?.length && !newData.value.videos_native?.length && isCreateNew.value) {
+          Api.delete(`editor/del/${newId.value}`)
         }
       })
     }

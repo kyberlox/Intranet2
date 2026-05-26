@@ -30,6 +30,7 @@ import { defineComponent, type PropType, computed } from "vue";
 import { uniqueRoutesHandle } from "@/router/uniqueRoutesHandle";
 import type { IFactoryDataTours, IFactoryDataReports, IBaseEntity } from "@/interfaces/IEntities";
 import { useStyleModeStore } from "@/stores/styleMode";
+import { dateConvert } from "@/utils/dateConvert";
 
 interface IComplexGalleryCardBasic extends IBaseEntity {
     indirect_data?: {
@@ -61,15 +62,12 @@ export default defineComponent({
         const isDark = computed(() => useStyleModeStore().getDarkMode);
 
         const checkCardDate = (slide: IComplexGalleryCardBasic) => {
-            if (!slide.indirect_data?.date_from) return;
-            const newSlideTo = (slide.indirect_data?.date_to?.split(" ").length == 2) ? slide.indirect_data?.date_to.split(" ")[0] : slide.indirect_data.date_to;
-            const newSlideFrom = (slide.indirect_data?.date_from.split(" ").length == 2) ? slide.indirect_data?.date_from.split(" ")[0] : slide.indirect_data.date_from;
-            if (newSlideTo && newSlideTo !== slide.indirect_data.date_from) {
+            const newSlideTo = slide.indirect_data?.date_to ? dateConvert(slide.indirect_data.date_to, 'toStringType') : null;
+            const newSlideFrom = slide?.indirect_data?.date_from ? dateConvert(slide.indirect_data.date_from, 'toStringType') : null
+            if (newSlideTo && newSlideTo !== newSlideFrom) {
                 return `${newSlideFrom} - ${newSlideTo}`
             }
             else return newSlideFrom
-
-
         }
 
         const getPreview = (slide: IComplexGalleryCardBasic) => {

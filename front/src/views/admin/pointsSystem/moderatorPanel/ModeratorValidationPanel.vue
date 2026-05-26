@@ -56,8 +56,10 @@ export default defineComponent({
             try {
                 await Api.post(`/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}/${rowId}${type == 'accept' ? '/' + uuidTo : ''}`)
                 tableInit()
+            } catch (error) {
+                console.error(error)
             }
-}
+        }
 
         return {
             activitiesToConfirm,

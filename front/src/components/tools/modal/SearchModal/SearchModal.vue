@@ -116,7 +116,7 @@ export default defineComponent({
                 searchResult.value = data
             }
             catch (error) {
-                console.log(error)
+                console.error(error)
             }
             finally { isLoading.value = false }
         }

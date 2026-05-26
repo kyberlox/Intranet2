@@ -1,11 +1,10 @@
 export const dateConvert = (dateString: string, convertType: 'toStringType' | 'toDateType') => {
     if (convertType == 'toDateType') {
-        console.log(dateString);
-        
+
         const [day, month, year] = dateString.replaceAll('-', '.').split('.');
 
-        const date = new Date(Number(year), Number(month) - 1, Number(day), 11, 35, 26);        
-        
+        const date = new Date(Number(year), Number(month) - 1, Number(day), 11, 35, 26);
+
         return date;
     }
     else if (convertType == 'toStringType') {

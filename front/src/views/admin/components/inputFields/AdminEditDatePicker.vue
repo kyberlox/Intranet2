@@ -38,8 +38,12 @@ export default defineComponent({
             }
             else
                 if (props.item?.field?.includes('from') || props.item?.field?.includes('to')) {
+                    console.log(date);
+
                     const newDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
                     if (!String(newDate).includes('NaN')) {
+                        console.log(date);
+
                         emit('pick', date)
                     }
                 }

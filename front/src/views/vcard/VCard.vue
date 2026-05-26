@@ -90,6 +90,7 @@ import Loader from '@/components/layout/Loader.vue';
 import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
+import type { AxiosError } from 'axios';
 
 export default defineComponent({
     components: {
@@ -106,37 +107,40 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
 
-        watch((uid), () => {
+        watch((uid), async () => {
             if (!uid.value) return;
-            Api.get(`vcard/by_uuid/${uid.value}`)
-                .then((res: IUser) => {
-                    if (!res) {
-                        toast.showWarning('noUserVCard');
-                    } else
-                        user.value = res;
-                })
-                .finally(() => {
-                    isLoading.value = false;
-                })
-                .catch((e) => handleApiError(e, toast));
+            try {
+                const res: IUser = await Api.get(`vcard/by_uuid/${uid.value}`)
+                if (res) {
+                    user.value = res
+                } else
+                    toast.showWarning('noUserVCard')
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                isLoading.value = false;
+            }
         }, { immediate: true, deep: true })
 
         const downloadContact = async () => {
             isDownloading.value = true;
-            Api.post(`/vcard/get/${uid.value}`, null, { responseType: 'blob' })
-                .then((data) => {
-                    download(data.data, user.value.LAST_NAME + " " + user.value.NAME + " s" + user.value.SECOND_NAME + '.vcf')
-                    isLoading.value = false
-                })
-                .finally(() => isDownloading.value = false)
-                .catch((e) => handleApiError(e, toast));
+            try {
+                const data = await Api.post(`/vcard/get/${uid.value}`, null, { responseType: 'blob' })
+                download(data.data, user.value.LAST_NAME + " " + user.value.NAME + " s" + user.value.SECOND_NAME + '.vcf')
+
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                isDownloading.value = false
+                isLoading.value = false
+            }
         }
 
         return {
             user,
             isLoading,
+            isDownloading,
             downloadContact,
-            isDownloading
         }
     }
 })

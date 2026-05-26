@@ -85,6 +85,7 @@ import { useToastCompose } from '@/composables/useToastСompose';
 
 import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import Loader from '@/components/layout/Loader.vue';
+import type { AxiosError } from 'axios';
 
 
 export default defineComponent({
@@ -118,7 +119,7 @@ export default defineComponent({
 
         const buttonsIsDisabled = ref(false);
 
-        const sendIdea = (values: GenericObject) => {
+        const sendIdea = async (values: GenericObject) => {
             buttonsIsDisabled.value = true;
 
             const formData: IPostIdea = {};
@@ -131,17 +132,15 @@ export default defineComponent({
                 formData.base = fileBase64.value.split(',')[1];
             }
 
-            Api.post('/idea/new/', formData)
-                .then((data) => {
-                    handleApiResponse(data, toast, 'trySupportError', 'ideaSendSuccess')
-                })
-                .catch((error) => {
-                    handleApiError(error, toast)
-                })
-                .finally(() => {
-                    buttonsIsDisabled.value = false;
-                    clearForm()
-                })
+            try {
+                const data = await Api.post('/idea/new/', formData)
+                handleApiResponse(data, toast, 'trySupportError', 'ideaSendSuccess')
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                buttonsIsDisabled.value = false;
+                clearForm()
+            }
         };
 
         const clearForm = () => {

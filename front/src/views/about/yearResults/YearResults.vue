@@ -71,28 +71,29 @@ export default defineComponent({
         const chosenYearAwards: Ref<IWorkerOfTheYear[]> = ref([]);
         const actualYears: Ref<string[]> = ref([]);
 
-        onMounted(() => {
+        onMounted(async () => {
             isLoading.value = true;
-            Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`)
-                .then(res => {
-                    allTimeAwards.value.length = 0;
-                    actualYears.value.length = 0;
-                    allTimeAwards.value = res;
-                    res.map((item: IWorkerOfTheYear) => {
-                        if (item.indirect_data?.location && !workersLocations.value.includes(item.indirect_data?.location)) {
-                            workersLocations.value.push(item.indirect_data.location);
-                        }
-                        activeLocation.value = workersLocations.value[0];
-                        if (item.indirect_data?.year && !actualYears.value.includes(item.indirect_data.year)) {
-                            actualYears.value.push(item.indirect_data.year)
-                        }
-                    })
-                    currentYear.value = actualYears.value.sort((a, b) => Number(b) - Number(a))[0];
+            try {
+                const res = await Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`)
+                allTimeAwards.value.length = 0;
+                actualYears.value.length = 0;
+                allTimeAwards.value = res;
+                res.map((item: IWorkerOfTheYear) => {
+                    if (item.indirect_data?.location && !workersLocations.value.includes(item.indirect_data?.location)) {
+                        workersLocations.value.push(item.indirect_data.location);
+                    }
+                    activeLocation.value = workersLocations.value[0];
+                    if (item.indirect_data?.year && !actualYears.value.includes(item.indirect_data.year)) {
+                        actualYears.value.push(item.indirect_data.year)
+                    }
                 })
-                .finally(() => {
-                    initWorkers();
-                    isLoading.value = false;
-                })
+                currentYear.value = actualYears.value.sort((a, b) => Number(b) - Number(a))[0];
+                initWorkers();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                isLoading.value = false;
+            }
         })
 
         const initWorkers = (changeYear: boolean = false) => {

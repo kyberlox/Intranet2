@@ -149,6 +149,7 @@ import { handleApiError } from '@/utils/apiResponseCheck';
 import AdminTagsModal from './AdminTagsModal.vue';
 import { useUserData } from '@/stores/userData';
 import { featureFlags } from '@/assets/static/featureFlags';
+import type { AxiosError } from 'axios';
 
 interface SectionItem {
   id: number;
@@ -203,37 +204,43 @@ export default defineComponent({
       return status ? 'Активен' : 'В архиве'
     };
 
-    const itemsInit = () => {
+    const itemsInit = async () => {
       items.value.length = 0;
       isLoading.value = true;
       sectionId.value = route.params.id;
       if (sectionId.value == 'gpt') return
-      Api.get(`/editor/section_rendering/${sectionId.value}`)
-        .then((data) => items.value = data)
-        .finally(() => isLoading.value = false)
+      try {
+        const data = await Api.get(`/editor/section_rendering/${sectionId.value}`)
+        items.value = data
+      } finally {
+        isLoading.value = false
+      }
     }
 
     watch((props), () => {
       itemsInit();
     }, { immediate: true, deep: true });
 
-    const removeItem = (id: number) => {
-      Api.delete(`editor/del/${id}`)
-        .then((data) => {
-          handleApiResponse(data, toast, 'trySupportError', 'adminDeleteSuccess')
-        })
-        .catch((error) => {
-          handleApiError(error, toast)
-        })
-        .finally(() => {
-          itemsInit();
-        })
+    const removeItem = async (id: number) => {
+      try {
+        const data = await Api.delete(`editor/del/${id}`)
+        handleApiResponse(data, toast, 'trySupportError', 'adminDeleteSuccess')
+      } catch (error) {
+        handleApiError((error as AxiosError), toast)
+      } finally {
+        itemsInit();
+      }
     }
 
-    const changeActive = (id: number, currentStatus: boolean) => {
-      Api.post(`editor/update/${id}`, { active: !currentStatus, id: id, section_id: Number(props.id) })
-        .catch(e => handleApiError(e, toast))
-        .finally(() => itemsInit())
+    const changeActive = async (id: number, currentStatus: boolean) => {
+      try {
+        const res = await Api.post(`editor/update/${id}`, { active: !currentStatus, id: id, section_id: Number(props.id) })
+        handleApiError(res, toast)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        itemsInit()
+      }
     }
 
     return {

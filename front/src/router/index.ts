@@ -7,7 +7,7 @@ const oauthDomen = import.meta.env.VITE_OAUTH_DOMEN;
 const oauthClient = import.meta.env.VITE_OAUTH_CLIENT_ID;
 
 const checkIsAdmin = async () => {
-  return Api.get('roots/get_root_token_by_uuid')
+  return await Api.get('roots/get_root_token_by_uuid')
     .then((res) => {
       if (res && typeof res == 'object' && (Object.keys(res).length !== 0)) {
         useUserData().setUserRoots(res);
@@ -20,7 +20,7 @@ const checkIsAdmin = async () => {
 }
 
 const checkIsLogin = async () => {
- await nextTick()
+  await nextTick()
   return useUserData().getIsLogin;
 }
 
@@ -414,9 +414,9 @@ const router = createRouter({
       component: () => import('@/views/news/corpNews/CorpNews.vue')
     },
     {
-        path:'/news/corpnews/sinerteam',
-        name:'sinerteam',
-        component: () => import('@/views/news/corpNews/sinerTeam/SinerTeam.vue')
+      path: '/news/corpnews/sinerteam',
+      name: 'sinerteam',
+      component: () => import('@/views/news/corpNews/sinerTeam/SinerTeam.vue')
     },
     {
       path: '/news/corpnews/:id',

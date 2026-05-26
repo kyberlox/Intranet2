@@ -106,6 +106,7 @@ import Api from '@/utils/Api';
 import { handleApiError } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
+import type { AxiosError } from 'axios';
 
 export default defineComponent({
     components: {
@@ -170,13 +171,14 @@ export default defineComponent({
             })
         }
 
-        const handleExcelDownload = (event: ICalendar) => {
+        const handleExcelDownload = async (event: ICalendar) => {
             const reqBody = event.ATTENDEE_LIST.filter((e) => e.status == 'Y');
-            Api.post('article/make_event_users_excel', reqBody, { responseType: 'blob' })
-                .then((data) => {
-                    download(data.data, event.NAME + '.xlsx')
-                })
-                .catch((e) => handleApiError(e, toast));
+            try {
+                const data = await Api.post('article/make_event_users_excel', reqBody, { responseType: 'blob' })
+                download(data.data, event.NAME + '.xlsx')
+            } catch (error: unknown) {
+                handleApiError(error as AxiosError, toast)
+            };
         }
 
         return {

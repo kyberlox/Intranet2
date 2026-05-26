@@ -131,56 +131,50 @@ export default defineComponent({
             currentSize.value = size;
         }
 
-        const acceptBuy = (quantity: number, customPrice: boolean = false) => {
+        const acceptBuy = async (quantity: number, customPrice: boolean = false) => {
+            const routes = [
+                {
+                    route: 'store/create_purchase',
+                    body: {
+                        [currentSize.value as string]: quantity!,
+                        'art_id': Number(currentItem.value?.id)!
+                    }
+                }, {
+                    route: 'store/buy_split',
+                    body: { 'art_id': Number(currentItem.value?.id)!, 'user_points': quantity }
+                }]
+
             if (!featureFlags.pointsSystem) {
                 toast.showWarning('merchBuyWarning');
             }
             else if ((customPrice && currentScore.value < quantity) || (!customPrice && currentItem.value?.indirect_data?.price && currentScore.value < currentItem.value?.indirect_data?.price)) {
                 toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
-            }
-            else if (quantity > 0 && !customPrice) {
-                isLoading.value = true;
-                Api.put('store/create_purchase', { [currentSize.value as string]: quantity!, 'art_id': Number(currentItem.value?.id)! })
-                    .then((data) => {
-                        if (typeof data == 'object' && 'not_enough' in data) {
-                            toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
-                        } else if (typeof data == 'object' && 'message' in data) {
-                            toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
-                        }
-                        else {
-                            handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
-                        }
-                    })
-                    .catch((error) => {
-                        handleApiError(error, toast)
-                    })
-                    .finally(() => {
-                        isLoading.value = false;
-                        callModal(false);
-                        Api.get('/peer/user_history')
-                            .then((e) => useUserScore().setStatistics(e))
-                    })
-            }
-            else if (customPrice) {
-                isLoading.value = true;
-                Api.put('store/buy_split', { 'art_id': Number(currentItem.value?.id)!, 'user_points': quantity })
-                    .then((data) => {
-                        if (data !== true && 'status' in data) {
-                            toast.showCustomToast('warn', 'К сожалению у вас не хватает баллов')
-                        }
-                        else {
-                            handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
-                        }
-                    })
-                    .catch((error) => {
-                        handleApiError(error, toast)
-                    })
-                    .finally(() => {
-                        isLoading.value = false;
-                        callModal(false);
-                        Api.get('/peer/user_history')
-                            .then((e) => useUserScore().setStatistics(e))
-                    })
+            } else {
+                const needRoute = quantity > 0 && !customPrice ? routes[0] : routes[1]
+                try {
+                    const data = await Api.put(needRoute.route, needRoute.body)
+                    if (typeof data == 'object' && 'not_enough' in data) {
+                        toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
+                    } else if (typeof data == 'object' && 'message' in data) {
+                        toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
+                    } else if (data !== true && 'status' in data) {
+                        toast.showCustomToast('warn', 'К сожалению у вас не хватает баллов')
+                    }
+                    else {
+                        handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+                    }
+                    try {
+                        const points = await Api.get('/peer/user_history')
+                        useUserScore().setStatistics(points)
+                    } catch (error) {
+                        console.error(error)
+                    }
+                } catch (error) {
+                    console.error(error)
+                } finally {
+                    isLoading.value = false;
+                    callModal(false);
+                }
             }
         }
 
@@ -199,9 +193,13 @@ export default defineComponent({
             return notNullSizes
         }
 
-        onMounted(() => {
-            Api.get(`article/find_by_ID/${props.id}`)
-                .then((data) => currentItem.value = data)
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by_ID/${props.id}`)
+                currentItem.value = data
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const callModal = (status: boolean) => {

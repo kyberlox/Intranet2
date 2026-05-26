@@ -43,9 +43,11 @@ export default defineComponent({
         const tagsVisible = ref(false);
         const activeTag: Ref<ITag | undefined> = ref();
 
-        onMounted(() => {
-            Api.get('/tags/get_tags')
-                .then((data) => tags.value = data)
+        onMounted(async () => {
+            try {
+                const data = await Api.get('/tags/get_tags')
+                tags.value = data
+            } catch (error) { console.error(error) }
         })
 
         const setActiveTag = (tag: ITag) => {

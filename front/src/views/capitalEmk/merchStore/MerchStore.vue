@@ -94,11 +94,14 @@ export default defineComponent({
             });
         });
 
-        onMounted(() => {
+        onMounted(async () => {
             isLoading.value = true;
-            Api.get(`article/find_by/${sectionTips['МагазинМерча']}`)
-                .then((data) => merchItems.value = data)
-                .finally(() => isLoading.value = false)
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['МагазинМерча']}`)
+                merchItems.value = data
+            } finally {
+                isLoading.value = false
+            }
         })
 
         return {

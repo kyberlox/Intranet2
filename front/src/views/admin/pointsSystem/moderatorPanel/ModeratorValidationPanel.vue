@@ -38,11 +38,13 @@ export default defineComponent({
             activeId.value = id;
         }
 
-        const tableInit = () => {
-            Api.get(`peer/points_to_confirm/${activeId.value}`)
-                .then((data) => {
-                    activitiesInTable.value = data
-                })
+        const tableInit = async () => {
+            try {
+                const data = await Api.get(`peer/points_to_confirm/${activeId.value}`)
+                activitiesInTable.value = data
+            } catch (error) {
+                console.error(error)
+            }
         }
 
         watch((activeId), () => {
@@ -50,10 +52,12 @@ export default defineComponent({
             tableInit();
         }, { immediate: true, deep: true });
 
-        const moderate = (type: 'accept' | 'cancel', rowId: number, uuidTo: number) => {
-            Api.post(`/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}/${rowId}${type == 'accept' ? '/' + uuidTo : ''}`)
-                .finally(() => tableInit())
-        }
+        const moderate = async (type: 'accept' | 'cancel', rowId: number, uuidTo: number) => {
+            try {
+                await Api.post(`/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}/${rowId}${type == 'accept' ? '/' + uuidTo : ''}`)
+                tableInit()
+            }
+}
 
         return {
             activitiesToConfirm,

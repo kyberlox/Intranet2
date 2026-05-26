@@ -108,14 +108,17 @@ export default defineComponent({
             getSearchResult();
         }, { deep: true });
 
-        const getSearchResult = () => {
+        const getSearchResult = async () => {
             isLoading.value = true;
             searchResult.value.length = 0;
-            Api.get(`/${selectedSearchType.value}/${searchTargetText.value}`)
-                .then((data) => {
-                    searchResult.value = data
-                })
-                .finally(() => isLoading.value = false)
+            try {
+                const data = await Api.get(`/${selectedSearchType.value}/${searchTargetText.value}`)
+                searchResult.value = data
+            }
+            catch (error) {
+                console.log(error)
+            }
+            finally { isLoading.value = false }
         }
 
         const searchTypes = [

@@ -54,18 +54,20 @@ export default defineComponent({
             activeGazete.value = gazette;
         }
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['газетта']}`)
-                .then((data) => {
-                    gazettes.value = data;
-                })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['газетта']}`)
+                gazettes.value = data;
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         return {
             gazettes,
             modalActive,
+            activeGazete,
             openModal,
-            activeGazete
         };
     },
 });

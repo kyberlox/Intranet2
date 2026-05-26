@@ -101,6 +101,7 @@ import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import Loader from "@/components/layout/Loader.vue";
+import type { AxiosError } from "axios";
 
 export default defineComponent({
     name: "PostCard",
@@ -129,23 +130,29 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
         const apiUrl = import.meta.env.VITE_API_URL;
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['открытки']}`)
-                .then((data: IPostCard[]) => postCards.value = data)
+        onMounted(async () => {
+            try {
+                const data: IPostCard[] = await Api.get(`article/find_by/${sectionTips['открытки']}`)
+                postCards.value = data
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const changeActiveHoliday = (id: number) => {
             activeHoliday.value = id;
         }
 
-        watch((activeHoliday), (newVal) => {
+        watch((activeHoliday), async (newVal) => {
             if (!newVal) { return }
             currentSlides.value = [];
-            Api.get(`article/find_by_ID/${newVal}`)
-                .then((data) => {
-                    currentSlides.value = data.images;
-                    changeMsgCardIndex(0);
-                })
+            try {
+                const data = await Api.get(`article/find_by_ID/${newVal}`)
+                currentSlides.value = data.images;
+                changeMsgCardIndex(0);
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const changeMsgCardIndex = async (newIndex: number) => {
@@ -153,7 +160,7 @@ export default defineComponent({
             imageInMsg.value = currentSlides.value[newIndex]?.file_url
         }
 
-        const sendMsg = () => {
+        const sendMsg = async () => {
             isLoading.value = true;
             if (!msgSender.value || !msgReciever.value || !imageInMsg.value) return;
             const mailText = createMail(msgText.value, signature.value, true);
@@ -165,10 +172,14 @@ export default defineComponent({
                 "text": mailText,
                 "file_url": imageInMsg.value.replace(`${apiUrl}/files/`, '')
             }
-            Api.post('/users/test_send_mail', body)
-                .then((data) => handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess'))
-                .catch((e) => handleApiError(e, toast))
-                .finally(() => isLoading.value = false)
+            try {
+                const data = await Api.post('/users/test_send_mail', body)
+                handleApiResponse(data, toast, 'trySupportError', 'sendPostCardSuccess')
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                isLoading.value = false
+            }
         }
         const validateEmail = (value: unknown): boolean | string => {
             if (typeof value !== 'string' || value.trim() === '') {

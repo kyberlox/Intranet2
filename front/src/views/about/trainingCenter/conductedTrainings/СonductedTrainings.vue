@@ -1,15 +1,15 @@
 <template>
-    <div class="conducted-training__page mt20">
-        <div class="page__title">Проведённые тренинги</div>
-        <TrainingTable :tableElements="trainings"
-                       :page="'conductedTrainings'"
-                       @openModal="(item: IConductedTrainings) => handleModal('open', item)" />
+<div class="conducted-training__page mt20">
+    <div class="page__title">Проведённые тренинги</div>
+    <TrainingTable :tableElements="trainings"
+                   :page="'conductedTrainings'"
+                   @openModal="(item: IConductedTrainings) => handleModal('open', item)" />
 
-        <SlotModal v-if="modalIsVisible"
-                   @close="handleModal('close', null)">
-            <FeedBackModalInner :trainingInModal="trainingInModal" />
-        </SlotModal>
-    </div>
+    <SlotModal v-if="modalIsVisible"
+               @close="handleModal('close', null)">
+        <FeedBackModalInner :trainingInModal="trainingInModal" />
+    </SlotModal>
+</div>
 </template>
 
 <script lang="ts">
@@ -32,11 +32,13 @@ export default defineComponent({
         const trainingInModal: Ref<IConductedTrainings> = ref({} as IConductedTrainings);
         const modalIsVisible = ref(false);
 
-        onMounted(() => {
-            Api.get(`/article/find_by/${sectionTips['проведенныеТренинги']}`)
-                .then((data) => {
-                    trainings.value = data;
-                })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`/article/find_by/${sectionTips['проведенныеТренинги']}`)
+                trainings.value = data;
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const handleModal = (type: string, item: IConductedTrainings | null) => {

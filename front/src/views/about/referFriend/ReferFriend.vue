@@ -49,14 +49,16 @@ export default defineComponent({
         const jobList = ref<IOpenVacancy[]>();
         const noVac = ref(false);
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips["ОткрытыеВакансии"]}`)
-                .then((data) => {
-                    if (data.length) {
-                        jobList.value = data;
-                    }
-                    else noVac.value = true;
-                })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips["ОткрытыеВакансии"]}`)
+                if (data.length) {
+                    jobList.value = data;
+                }
+                else noVac.value = true;
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         return {

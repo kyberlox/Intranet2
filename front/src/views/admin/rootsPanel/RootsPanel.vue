@@ -86,38 +86,53 @@ export default defineComponent({
             editorsInit()
         }, { immediate: true })
 
-        const editorsInit = () => {
+        const editorsInit = async () => {
             isLoading.value = true;
             if (activeSection.value.id == 'gpt') {
-                Api.get('roots/get_gpt_gen_licenses')
-                    .then((data) => activeSectionEditors.value = data)
-                    .finally(() => isLoading.value = false)
+                try {
+                    const data = await Api.get('roots/get_gpt_gen_licenses')
+                    activeSectionEditors.value = data
+                } finally {
+                    isLoading.value = false
+                }
             }
             else
-                Api.get(`roots/get_editors_list/${activeSection.value.id}`)
-                    .then((data) => Array.isArray(data) ? activeSectionEditors.value = data : activeSectionEditors.value = [])
-                    .finally(() => isLoading.value = false)
+                try {
+                    const data = await Api.get(`roots/get_editors_list/${activeSection.value.id}`)
+                    activeSectionEditors.value = Array.isArray(data) ? data : []
+                } finally {
+                    isLoading.value = false
+                }
         }
 
-        const addRootToUser = (id: number) => {
-            if (activeSection.value.id == 'gpt') {
-                Api.put('roots/give_gpt_gen_license', [id])
-                    .then(() => editorsInit())
-                    .finally(() => isLoading.value = false)
+        const addRootToUser = async (id: number) => {
+            try {
+                if (activeSection.value.id == 'gpt') {
+                    await Api.put('roots/give_gpt_gen_license', [id])
+                }
+                else {
+                    await Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
+                }
+                editorsInit()
+            } catch (error) {
+                console.error(error)
+            } finally {
+                isLoading.value = false
             }
-            else
-                Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
-                    .then(() => editorsInit())
         }
 
-        const removeUsersRoot = (id: number) => {
-            if (activeSection.value.id == 'gpt') {
-                Api.delete(`/roots/stop_gpt_gen_license/${id}`)
-                    .finally(() => editorsInit())
+        const removeUsersRoot = async (id: number) => {
+            try {
+                if (activeSection.value.id == 'gpt') {
+                    await Api.delete(`/roots/stop_gpt_gen_license/${id}`)
+                }
+                else {
+                    await Api.delete(`roots/delete_editor_moder/${id}/${activeSection.value.id}`)
+                }
+                editorsInit()
+            } catch (error) {
+                console.error(error)
             }
-            else
-                Api.delete(`roots/delete_editor_moder/${id}/${activeSection.value.id}`)
-                    .then(() => editorsInit())
         }
 
         return {

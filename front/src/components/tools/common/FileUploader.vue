@@ -184,12 +184,17 @@ export default defineComponent({
             fileInput.value?.click();
         };
 
-        const removeItem = (id: string) => {
-            Api.delete(`editor/delete_file/${id}`)
-                .then(() => {
-                    emit('reloadData');
-                });
-        };
+        const removeItem = async (id: string) => {
+            try {
+                await Api.delete(`editor/delete_file/${id}`)
+            }
+            catch (error) {
+                console.error(error)
+            }
+            finally {
+                emit('reloadData');
+            }
+        }
 
         const startWatchForUpload = () => {
             const existFilesState = props.existFiles?.length;

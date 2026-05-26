@@ -74,12 +74,13 @@ export default defineComponent({
             modalIsVisible.value = true;
         }
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['ЕстьИдея']}`)
-                .then((data) => {
-                    ideas.value = data;
-                })
-                .finally(() => isLoading.value = false)
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['ЕстьИдея']}`)
+                ideas.value = data;
+            } finally {
+                isLoading.value = false
+            }
         })
 
         return {

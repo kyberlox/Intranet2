@@ -121,25 +121,28 @@ export default defineComponent({
             showFilter.value = false;
         })
 
-        onMounted(() => {
+        onMounted(async () => {
             if (allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
                 filterYears.value = extractYears(allNews.value);
             } else
                 isLoading.value = true;
-            if(!featureFlags.pagination)
-            Api.get(`article/find_by/${props.sectionId}`)
-                .then((res) => {
+            if (!featureFlags.pagination)
+                try {
+                    const res = await Api.get(`article/find_by/${props.sectionId}`)
                     viewsData.setData(res, props.storeItemsName);
                     if (!props.tagId) visibleNews.value = res;
-                })
-                .finally(() => {
+                } catch (error) {
+                    console.error(error)
+                }
+                finally {
                     if (visibleNews.value && visibleNews.value.length) {
                         filterYears.value = extractYears(visibleNews.value);
                     }
                     isLoading.value = false;
-                })
+                }
         })
+
 
         return {
             allNews,

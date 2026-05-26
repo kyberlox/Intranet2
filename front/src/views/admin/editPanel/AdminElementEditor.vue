@@ -68,7 +68,7 @@ import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, INewFileData, IBXFileType, IFileToUpload } from '@/interfaces/IEntities';
 import type { IUserList } from '@/components/tools/common/SearchList.vue';
 import type { IUsersLoad } from '@/interfaces/IPostFetch';
-import type { AxiosProgressEvent } from 'axios';
+import type { AxiosError, AxiosProgressEvent } from 'axios';
 import { featureFlags } from '@/assets/static/featureFlags';
 
 type AdminElementValue = string | IBXFileType | number | string[] | number[] | boolean | undefined | Array<{ link: string; name: string } | IUserList>;
@@ -124,97 +124,98 @@ export default defineComponent({
     const uploadProgress = ref<number>(0);
     const artVision = ref([]);
 
-    onMounted(() => {
+    onMounted(async () => {
       if (props.type == 'new') {
-        Api.get(`/editor/add/${props.id}`)
-          .then((data) => {
-            isCreateNew.value = true;
-            newElementSkeleton.value = data.fields;
-            newElementSkeleton.value.map((e) => {
-              handleEmitValueChange(e, e.value as AdminElementValue)
-            })
-            newId.value = (findValInObject(data, 'id') as string);
-            newFileData.value = data.files;
-            if (!('section_id' in newData.value)) {
-              newData.value.section_id = Number(findValInObject(data, 'section_id'));
-            }
-            // newData.value.date_publiction = findValInObject(data, 'date_publiction') as string;
-            usersList.value = data.users;
-            newData.value.section_id = Number(props.id);
-
-            // newData.value.images = data.files.images;
-            newData.value.videos_native = data.files.videos_native || [];
-            newData.value.documentation = data.files.documentation || [];
+        try {
+          const data = await Api.get(`/editor/add/${props.id}`)
+          isCreateNew.value = true;
+          newElementSkeleton.value = data.fields;
+          newElementSkeleton.value.map((e) => {
+            handleEmitValueChange(e, e.value as AdminElementValue)
           })
+          newId.value = (findValInObject(data, 'id') as string);
+          newFileData.value = data.files;
+          if (!('section_id' in newData.value)) {
+            newData.value.section_id = Number(findValInObject(data, 'section_id'));
+          }
+          // newData.value.date_publiction = findValInObject(data, 'date_publiction') as string;
+          usersList.value = data.users;
+          newData.value.section_id = Number(props.id);
+
+          // newData.value.images = data.files.images;
+          newData.value.videos_native = data.files.videos_native || [];
+          newData.value.documentation = data.files.documentation || [];
+        }
+        catch (error) {
+          console.error(error);
+        }
       }
       else reloadElementData(false);
     })
 
-    const reloadElementData = (onlyFiles: boolean = false) => {
-      Api.get(`/editor/rendering/${newId.value}`)
-        .then((data) => {
-          if (typeof data == 'object' && 'status' in data && data.status) {
-            router.push({ name: 'admin' })
+    const reloadElementData = async (onlyFiles: boolean = false) => {
+      try {
+        const data = await Api.get(`/editor/rendering/${newId.value}`)
+        if (typeof data == 'object' && 'status' in data && data.status) {
+          router.push({ name: 'admin' })
+        }
+        else {
+          if (!onlyFiles) {
+            isCreateNew.value = false;
+            newElementSkeleton.value = data.fields;
           }
-          else {
-            if (!onlyFiles) {
-              isCreateNew.value = false;
-              newElementSkeleton.value = data.fields;
-            }
-            users.value = (findValInObject(data, 'users') as IUserList[])?.map((e: IUserList) => String(e.id)) || [];
+          users.value = (findValInObject(data, 'users') as IUserList[])?.map((e: IUserList) => String(e.id)) || [];
 
-            newData.value.implementer = findValInObject(data, 'implementer') as string[] || [];
-            newData.value.integrator = findValInObject(data, 'integrator') as string[] || [];
-            // для файлов
-            newFileData.value = data.files;
-            newData.value.videos_native = data.files.videos_native;
-            newData.value.videos_embed = data.files.videos_embed;
-            newData.value.documentation = data.files.documentation;
-            // для превьюх
-            if (data.files?.images && data.files?.images[0]?.file_url) {
-              newData.value.preview_file_url = data.files?.images[0]?.file_url
-            }
-
-            data.fields.forEach((e: INewDataElement) => {
-              if ('value' in e && e.value && e.field) {
-                (newData.value as PostInnerWithDynamic)[e.field] = e.value;
-              }
-            })
+          newData.value.implementer = findValInObject(data, 'implementer') as string[] || [];
+          newData.value.integrator = findValInObject(data, 'integrator') as string[] || [];
+          // для файлов
+          newFileData.value = data.files;
+          newData.value.videos_native = data.files.videos_native;
+          newData.value.videos_embed = data.files.videos_embed;
+          newData.value.documentation = data.files.documentation;
+          // для превьюх
+          if (data.files?.images && data.files?.images[0]?.file_url) {
+            newData.value.preview_file_url = data.files?.images[0]?.file_url
           }
-        })
+
+          data.fields.forEach((e: INewDataElement) => {
+            if ('value' in e && e.value && e.field) {
+              (newData.value as PostInnerWithDynamic)[e.field] = e.value;
+            }
+          })
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    const applyNewData = () => {
+    const applyNewData = async () => {
       const apiRoutePrefix = isCreateNew.value ? `/editor/add` : `editor/update`;
 
       if (artVision.value && newElementSkeleton.value.find(e => e.field == 'vision')) {
         newData.value.vision = artVision.value
-        Api.put(`/fields_visions/set_art_to_visions/${newId.value}`, artVision.value.map(e => Number(e)))
-          .catch((error) => {
-            handleApiError(error, toast)
-          })
+        try {
+          await Api.put(`/fields_visions/set_art_to_visions/${newId.value}`, artVision.value.map(e => Number(e)))
+        } catch (error) {
+          handleApiError((error as AxiosError), toast)
+        }
       }
-
-      // if (!newData.value.date_publiction) { newData.value.date_publiction = newData.value.date_creation }
-
       // проверка на выставление областей видимости у афишы и корп событиях
       if ((props.id == '53' || props.id == '51' || props.id == '31') && featureFlags.visibleArea && (!newData.value?.vision?.length || !('vision' in newData.value))) {
         toast.showError('noVisionError');
       }
       else
-        Api.post('file/upload_link', { art_id: newId.value, links: newEmbedList.value })
-          .then(() => Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
-            .then((data) => {
-              handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
-              router.push({ name: 'adminBlockInner', params: { id: props.id } })
-            })
-            .catch((error) => {
-              handleApiError(error, toast)
-            })
-          )
+        try {
+          await Api.post('file/upload_link', { art_id: newId.value, links: newEmbedList.value })
+          const data = await Api.post((`${apiRoutePrefix}/${newId.value}`), newData.value)
+          handleApiResponse(data, toast, 'trySupportError', isCreateNew.value ? 'adminAddElementSuccess' : 'adminUpdateElementSuccess')
+          router.push({ name: 'adminBlockInner', params: { id: props.id } })
+        } catch (error) {
+          handleApiError((error as AxiosError), toast)
+        }
     }
 
-    const handleUpload = (e: IFileToUpload | string[], embed: boolean = false) => {
+    const handleUpload = async (e: IFileToUpload | string[], embed: boolean = false) => {
       const idToUpload = newId.value;
 
       if (embed) {
@@ -225,8 +226,11 @@ export default defineComponent({
         if (!embed && 'file' in e) {
           const formData = new FormData()
           formData.append('file', e.file);
-          Api.post(`/editor/upload_file/${idToUpload}`, formData)
-            .finally(() => reloadElementData(true))
+          try {
+            await Api.post(`/editor/upload_file/${idToUpload}`, formData)
+          } finally {
+            reloadElementData(true)
+          }
         }
       }
     }
@@ -239,18 +243,21 @@ export default defineComponent({
       }
     }
 
-    const uploadMany = (e: IFileToUpload[]) => {
+    const uploadMany = async (e: IFileToUpload[]) => {
       const idToUpload = newId.value;
       const formData = new FormData()
       e.forEach((e) => {
         formData.append('files', e.file);
       })
+      try {
+        await Api.post(`/editor/upload_files/${idToUpload}`, formData, { onUploadProgress: checkUploadProgress })
 
-      Api.post(`/editor/upload_files/${idToUpload}`, formData, { onUploadProgress: checkUploadProgress })
-        .finally(() => {
-          uploadProgress.value = 0;
-          reloadElementData(true);
-        })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        uploadProgress.value = 0;
+        reloadElementData(true);
+      }
     }
 
     const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
@@ -262,73 +269,83 @@ export default defineComponent({
       }
     };
 
-    const handleUserPick = (userId: number, field: string) => {
-      Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field}`}`)
-        .then((data) => {
+    const handleUserPick = async (userId: number, field: string) => {
+      try {
+        const data = await Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field}`}`)
+        if (data) {
+          reloadElementData(false)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    const handleUsersPick = async (uuid: string | number, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
+      const updateUsersInfo = async () => {
+        const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
+        try {
+          const data = await Api.post(`editor/get_users_info`, usersBody)
           if (data) {
             reloadElementData(false)
           }
-        })
-    }
-
-    const handleUsersPick = (uuid: string | number, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
-      const updateUsersInfo = () => {
-        const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
-        Api.post(`editor/get_users_info`, usersBody)
-          .then((data) => {
-            if (data) {
-              reloadElementData(false)
-            }
-          })
-      }
-      if (type == 'add') {
-        if (!users.value.includes(String(uuid))) {
-          users.value.push(String(uuid));
+        }
+        catch (error) {
+          console.error(error)
+        }
+        if (type == 'add') {
+          if (!users.value.includes(String(uuid))) {
+            users.value.push(String(uuid));
+            updateUsersInfo();
+          }
+        }
+        else if (type == 'remove') {
+          users.value = users.value.filter((e) => e !== uuid);
           updateUsersInfo();
         }
-      }
-      else if (type == 'remove') {
-        users.value = users.value.filter((e) => e !== uuid);
-        updateUsersInfo();
-      }
-      else if (type == 'fetchRemove') {
-        Api.get(`editor/get_user_info/${props.id}/${newId.value}/null`)
-          .then((data) => {
+        else if (type == 'fetchRemove') {
+          try {
+            const data = await Api.get(`editor/get_user_info/${props.id}/${newId.value}/null`)
             if (data) {
               reloadElementData(false)
             }
-          })
+          } catch (error) {
+            console.error(error)
+          }
+        }
       }
+
+      onUnmounted(async () => {
+        try {
+          if (!newData.value.name && !newData.value.content_text && newData.value.content_text?.length == 0 && !newData.value.videos_embed?.length && !newData.value.videos_native?.length && isCreateNew.value) {
+            await Api.delete(`editor/del/${newId.value}`)
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      })
+
+      return {
+        events,
+        router,
+        currentItem,
+        previewFullWidth,
+        activeType,
+        newElementSkeleton,
+        newData,
+        newFileData,
+        isMobileScreen,
+        newId,
+        inputKey,
+        uploadProgress,
+        artVision,
+        handleUsersPick,
+        handleUserPick,
+        applyNewData,
+        handleEmitValueChange,
+        handleUpload,
+        uploadMany,
+        reloadElementData,
+      };
     }
-
-    onUnmounted(() => {
-      if (!newData.value.name && !newData.value.content_text && newData.value.content_text?.length == 0 && !newData.value.videos_embed?.length && !newData.value.videos_native?.length && isCreateNew.value) {
-        Api.delete(`editor/del/${newId.value}`)
-      }
-    })
-
-    return {
-      events,
-      router,
-      currentItem,
-      previewFullWidth,
-      activeType,
-      newElementSkeleton,
-      newData,
-      newFileData,
-      isMobileScreen,
-      newId,
-      inputKey,
-      uploadProgress,
-      artVision,
-      handleUsersPick,
-      handleUserPick,
-      applyNewData,
-      handleEmitValueChange,
-      handleUpload,
-      uploadMany,
-      reloadElementData,
-    };
-  }
-});
+  });
 </script>

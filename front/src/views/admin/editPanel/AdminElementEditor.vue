@@ -323,29 +323,30 @@ export default defineComponent({
           console.error(error)
         }
       })
-
-      return {
-        events,
-        router,
-        currentItem,
-        previewFullWidth,
-        activeType,
-        newElementSkeleton,
-        newData,
-        newFileData,
-        isMobileScreen,
-        newId,
-        inputKey,
-        uploadProgress,
-        artVision,
-        handleUsersPick,
-        handleUserPick,
-        applyNewData,
-        handleEmitValueChange,
-        handleUpload,
-        uploadMany,
-        reloadElementData,
-      };
     }
-  });
+
+    return {
+      events,
+      router,
+      currentItem,
+      previewFullWidth,
+      activeType,
+      newElementSkeleton,
+      newData,
+      newFileData,
+      isMobileScreen,
+      newId,
+      inputKey,
+      uploadProgress,
+      artVision,
+      handleUsersPick,
+      handleUserPick,
+      applyNewData,
+      handleEmitValueChange,
+      handleUpload,
+      uploadMany,
+      reloadElementData,
+    };
+  }
+});
 </script>

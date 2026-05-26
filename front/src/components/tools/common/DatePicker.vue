@@ -81,14 +81,10 @@ export default defineComponent({
         watch((props), () => {
             if (props.defaultData) {
                 if (props.defaultData.includes(":")) {
-                    console.log(1);
-                    console.log(props.defaultData);
-
                     const formattedPropsData = props.defaultData.split(props.defaultData.includes('T') ? 'T' : ' ')[0];
                     dateInput.value = dateConvert(formattedPropsData, 'toDateType');
                 }
                 else {
-                    console.log(2);
                     dateInput.value = dateConvert(props.defaultData, 'toDateType');
                 }
                 handleDate(dateInput.value);

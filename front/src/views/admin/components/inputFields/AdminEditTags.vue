@@ -51,7 +51,7 @@ export default defineComponent({
 
         watch((props), () => {
             if (props.currentTags)
-                chosenTags.value = props.currentTags;
+                chosenTags.value = props.currentTags.map(e => String(e));
             emit('tagsChanged', chosenTags.value)
         }, { immediate: true, deep: true })
 

@@ -9,63 +9,68 @@ import { useUserScore } from "@/stores/userScoreData";
 import { usePointsData } from "@/stores/pointsData";
 import { featureFlags } from "@/assets/static/featureFlags";
 
-export const prefetchSection = (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {    
+export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {
     if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
         case 'user':
-            Api.get(`users/find_by/${useUserData().getMyId}`)
-                .then((res) => {
-                    useUserData().setUserInfo(res);
-                })
-                Api.get('roots/get_root_token_by_uuid')
-                .then((res)=>{
-                    if (res && typeof res == 'object' && (Object.keys(res).length !== 0)){
-                    useUserData().setUserRoots(res);
-                    }
-                })
+            try {
+                const res = await Api.get(`users/find_by/${useUserData().getMyId}`)
+                useUserData().setUserInfo(res);
+                const userRes = await Api.get('roots/get_root_token_by_uuid')
+                if (userRes && typeof userRes == 'object' && (Object.keys(userRes).length !== 0)) {
+                    useUserData().setUserRoots(userRes);
+                }
+            }
+            catch (error) {
+                console.error(error)
+            }
             break;
         case 'factoryGuid':
             if (!factoryGuidData.getAllFactories.length)
-                Api.get(`article/find_by/${sectionTips['гидПредприятиям']}`)
-                    .then((data) => {
-                        factoryGuidData.setAllFactories(data)
-                    })
+                try {
+                    const data = await Api.get(`article/find_by/${sectionTips['гидПредприятиям']}`)
+                    factoryGuidData.setAllFactories(data)
+                } catch (error) {
+                    console.error(error)
+                }
             break;
         case 'blogs':
             if (!useblogDataStore().getAllAuthors.length)
                 getBlogAuthorsToStore();
             break;
-        case 'calendar':            
-                const currentYear = new Date().getFullYear();
-                Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
-                    .then((data) => {
-                        useViewsDataStore().setData(data.result, 'calendarData');
-                    });  
+        case 'calendar':
+            const currentYear = new Date().getFullYear();
+            try {
+                const data = await Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
+                useViewsDataStore().setData(data.result, 'calendarData');
+            } catch (error) {
+                console.error(error)
+            }
             break;
         case 'score':
-        if(featureFlags.pointsSystem){     
-            const scoreRoutes = [
-            {
-                route: '/peer/actions',
-                functionName: useUserScore().setActions
-            },
-            {
-                route: '/peer/user_history',
-                functionName: useUserScore().setStatistics
-            },
-            {
-                route: '/peer/get_all_activities',
-                functionName: usePointsData().setAllActivities
-            }
-            ]
- 
-            scoreRoutes.map((e) => {
-                Api.get(e.route)
-                    .then((data) => {                        
-                        e.functionName(data);
-                    });
-            })
+            if (featureFlags.pointsSystem) {
+                const scoreRoutes = [
+                    {
+                        route: '/peer/actions',
+                        functionName: useUserScore().setActions
+                    },
+                    {
+                        route: '/peer/user_history',
+                        functionName: useUserScore().setStatistics
+                    },
+                    {
+                        route: '/peer/get_all_activities',
+                        functionName: usePointsData().setAllActivities
+                    }
+                ]
+
+                scoreRoutes.map(async (e) => {
+                    await Api.get(e.route)
+                        .then((data) => {
+                            e.functionName(data);
+                        });
+                })
             }
             break;
     }

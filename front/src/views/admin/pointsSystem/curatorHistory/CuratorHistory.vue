@@ -68,15 +68,22 @@ export default defineComponent({
             tableInit();
         })
 
-        const moderate = (a: string, actionId: number, uuid: number, valid?: number) => {
-            Api.post(`peer/remove_user_points/${uuid}/${actionId}/${valid}`)
-                .finally(() => tableInit())
+        const moderate = async (_: string, actionId: number, uuid: number, valid?: number) => {
+            try {
+                await Api.post(`peer/remove_user_points/${uuid}/${actionId}/${valid}`)
+            } finally {
+                tableInit()
+            }
         }
 
-        const tableInit = () => {
-            Api.get('peer/get_curators_history')
-                .then((data: ICuratorActivityHistory[]) => activitiesInTable.value = data)
-                .finally(() => filters.value = getFilterTypes(activitiesInTable.value))
+        const tableInit = async () => {
+            try {
+                const data: ICuratorActivityHistory[] = await Api.get('peer/get_curators_history')
+                activitiesInTable.value = data
+                filters.value = getFilterTypes(activitiesInTable.value)
+            } catch (error) {
+                console.error(error)
+            }
         }
 
         const getFilterTypes = (data: ICuratorActivityHistory[]) => {

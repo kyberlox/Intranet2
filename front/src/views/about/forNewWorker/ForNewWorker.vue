@@ -9,7 +9,7 @@
         <CustomFilter v-if="showLocations"
                       :params="locations"
                       :modifiers="['nosort']"
-                      @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; cardKey++}" />
+                      @pickFilter="(filter: string) => { showLocations = false; activeLocation = filter; cardKey++ }" />
     </div>
     <div class="col-12 col-lg-12 col-xl-9 col-xxl-9">
         <div class="memo__items">
@@ -19,7 +19,8 @@
                      v-for="(item, index) in filterContent(pageContent)"
                      :key="index"
                      :id="`memo__item${item.id}`">
-                    <ForNewWorkerCard :item="item" :key="cardKey" />
+                    <ForNewWorkerCard :item="item"
+                                      :key="cardKey" />
                 </div>
                 <div class="memo__item"
                      v-if="endingSlide(pageContent)">
@@ -30,7 +31,7 @@
     </div>
     <div class="d-none d-lg-block col-xl-3 col-xxl-3">
         <ul class="memo__menu-dots sticky__menu">
-            <li v-for="item in filterContent(pageContent).filter(e=>e.name)"
+            <li v-for="item in filterContent(pageContent).filter(e => e.name)"
                 :key="'mark' + item.id"
                 class="memo__menu-dot">
                 <div @click="navigate(item.id)"
@@ -66,16 +67,18 @@ export default defineComponent({
         const locations = ref<string[]>([]);
         const cardKey = ref(0);
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`)
-                .then((res: IForNewWorker[]) => {
-                    res.forEach(e => {
-                        if (e.indirect_data && 'module' in e.indirect_data && e.indirect_data.module && !locations.value.includes(e.indirect_data.module) && e.indirect_data.module !== 'Заключение') {
-                            locations.value.push(e.indirect_data.module)
-                        }
-                    })
-                    pageContent.value = res;
+        onMounted(async () => {
+            try {
+                const res = await Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`)
+                res.forEach((e: IForNewWorker) => {
+                    if (e.indirect_data && 'module' in e.indirect_data && e.indirect_data.module && !locations.value.includes(e.indirect_data.module) && e.indirect_data.module !== 'Заключение') {
+                        locations.value.push(e.indirect_data.module)
+                    }
                 })
+                pageContent.value = res;
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const navigate = (id: number) => {

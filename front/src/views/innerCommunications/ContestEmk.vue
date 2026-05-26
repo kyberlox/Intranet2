@@ -78,19 +78,20 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['Конкурсы']}`)
-                .then((data) => {
-                    slides.value.images = data.filter((e: IContest) => e.indirect_data.nomination);
-                    if (!slides.value.images) return
-                    slides.value.images.map((e) => {
-                        const target = e.indirect_data?.nomination;
-                        if (!target || navigation.value.find((e) => e == target)) return
-                        navigation.value.push(target)
-                        activeNav.value = navigation.value[0]
-                    })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['Конкурсы']}`)
+                slides.value.images = data.filter((e: IContest) => e.indirect_data.nomination);
+                if (!slides.value.images) return
+                slides.value.images.map((e) => {
+                    const target = e.indirect_data?.nomination;
+                    if (!target || navigation.value.find((e) => e == target)) return
+                    navigation.value.push(target)
+                    activeNav.value = navigation.value[0]
                 })
-                .finally(() => isLoading.value = false)
+            } finally {
+                isLoading.value = false
+            }
         })
 
         const pickSection = (nav: string) => {

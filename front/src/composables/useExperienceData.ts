@@ -43,7 +43,7 @@ export const useExperienceData = () => {
     };
 
 
-    const loadExperienceData = () => {
+    const loadExperienceData = async () => {
         const existingData = useReferencesAndExpDataStore().getAllFactories;
 
         if (Object.keys(existingData).length > 0) {
@@ -51,11 +51,13 @@ export const useExperienceData = () => {
         }
 
         const formattedData: Ref<IFormattedData> = ref({});
-
-        Api.get(`article/find_by/${sectionTips['референсы']}`)
-            .then((data: IExperience[]) => data.forEach(item => formatExperienceItem(item, formattedData)));
-
-        useReferencesAndExpDataStore().setFactories(formattedData.value);
+        try {
+            const data: IExperience[] = await Api.get(`article/find_by/${sectionTips['референсы']}`)
+            data.forEach(item => formatExperienceItem(item, formattedData));
+            useReferencesAndExpDataStore().setFactories(formattedData.value);
+        } catch (error) {
+            console.error(error)
+        }
 
         return formattedData.value;
     }

@@ -54,12 +54,14 @@ export default defineComponent({
             isLoading.value = false;
         }
 
-        const testLogin = () => {
-            Api.post("auth_router/root_auth", { login: login.value, password: pass.value })
-                .then((data) => {
-                    userData.initLogin(data.session_id, 2366);
-                    userData.setLogin(true);
-                })
+        const testLogin = async () => {
+            try {
+                const data: { session_id: string } = await Api.post("auth_router/root_auth", { login: login.value, password: pass.value })
+                userData.initLogin(data.session_id, 2366);
+                userData.setLogin(true);
+            } catch (error) {
+                console.error(error)
+            }
         }
 
         watch((route), () => {

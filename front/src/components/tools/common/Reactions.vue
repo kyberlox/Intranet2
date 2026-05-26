@@ -78,16 +78,19 @@ export default defineComponent({
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
         const usersLikesVisible = ref<boolean>(false);
 
-        onMounted(() => {
-            Api.get(`article/has_user_liked/${props.id}`)
-                .then(data => { newTypeReaction.value = data });
+        onMounted(async () => {
+            const data = await Api.get(`article/has_user_liked/${props.id}`)
+            newTypeReaction.value = data
         })
 
-        const setLike = (id: number) => {
-            Api.put(`article/add_or_remove_like/${id}`)
-                .then((data: IReaction) => {
-                    newTypeReaction.value = data;
-                })
+        const setLike = async (id: number) => {
+            try {
+                const data = await Api.put(`article/add_or_remove_like/${id}`)
+                newTypeReaction.value = data
+            }
+            catch (error) {
+                console.error(error)
+            }
         }
 
         return {

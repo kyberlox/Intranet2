@@ -185,7 +185,7 @@ export default defineComponent({
   },
   setup(props) {
     const currentPost = ref<IPostInner>();
-    watch((props), () => {
+    watch((props), async () => {
       if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
         if (props.previewElement == null) {
           currentPost.value = undefined;
@@ -194,12 +194,13 @@ export default defineComponent({
       }
       else
         if (props.id && typeof props.id == 'string')
-          Api.get(`article/find_by_ID/${props.id}`)
-            .then((res) => {
-              currentPost.value = res;
-              if (!currentPost.value) return;
-              changeToPostStandart(currentPost as Ref<IPostInner>);
-            })
+          try {
+            const res = await Api.get(`article/find_by_ID/${props.id}`)
+            currentPost.value = res;
+            if (!currentPost.value) return;
+            changeToPostStandart(currentPost as Ref<IPostInner>);
+          }
+          catch (error) { console.error(error) }
     }, { immediate: true, deep: true })
 
     const changeToPostStandart = (target: Ref<IPostInner>) => {

@@ -33,6 +33,7 @@ import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import Loader from '../Loader.vue';
+import type { AxiosError } from 'axios';
 
 export default defineComponent({
     components: {
@@ -48,7 +49,7 @@ export default defineComponent({
         const toast = useToastCompose(toastInstance);
         const emptyInput = ref(false);
 
-        const sendReport = () => {
+        const sendReport = async () => {
             if (!email.value || !bugreport.value) return emptyInput.value = true;;
             isLoading.value = true;
             const mailText = createMail(bugreport.value, '', false);
@@ -59,10 +60,14 @@ export default defineComponent({
                 "text": mailText,
                 "file_url": ''
             }
-            Api.post('users/send_error', body)
-                .then((data) => handleApiResponse(data, toast, 'trySupportError', 'bugReportSuccess'))
-                .catch((e) => handleApiError(e, toast))
-                .finally(() => { isLoading.value = false; emit('closeModal') })
+            try {
+                const data = await Api.post('users/send_error', body)
+                handleApiResponse(data, toast, 'trySupportError', 'bugReportSuccess')
+            }
+            catch (error) {
+                handleApiError(error as AxiosError, toast)
+            }
+            finally { isLoading.value = false; emit('closeModal') }
         }
 
         return {

@@ -1,6 +1,6 @@
 <template>
-    <Interview v-if="interviewFromOurPeople"
-               :interviewInner="interviewFromOurPeople" />
+<Interview v-if="interviewFromOurPeople"
+           :interviewInner="interviewFromOurPeople" />
 </template>
 <script lang="ts">
 import Interview from "./components/Interview.vue";
@@ -19,11 +19,13 @@ export default defineComponent({
     },
     setup(props) {
         const interviewFromOurPeople = ref();
-        onMounted(() => {
-            Api.get(`article/find_by_ID/${props.id}`)
-                .then((data) => {
-                    interviewFromOurPeople.value = data
-                })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by_ID/${props.id}`)
+                interviewFromOurPeople.value = data
+            } catch (error) {
+                console.error(error)
+            }
         })
         return {
             interviewFromOurPeople

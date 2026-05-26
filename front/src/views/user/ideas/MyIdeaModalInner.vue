@@ -93,14 +93,18 @@ export default defineComponent({
     },
     setup(props) {
         const isLoading = ref(false);
-        const savePdf = (id: string) => {
+        const savePdf = async (id: string) => {
             isLoading.value = true;
-            Api.get(`/idea_pdf/generate_pdf/${id}`, { responseType: 'blob' })
-                .then((data) => {
-                    download(new Blob([data]), props.textContent?.name.replaceAll('&quot;', '"') + '.pdf', 'application/pdf')
-                })
-                .finally(() => isLoading.value = false)
+            try {
+                const data = await Api.get(`/idea_pdf/generate_pdf/${id}`, { responseType: 'blob' })
+                download(new Blob([data]), props.textContent?.name.replaceAll('&quot;', '"') + '.pdf', 'application/pdf')
+            } catch (error) {
+                console.error(error)
+            } finally {
+                isLoading.value = false
+            }
         }
+
         return {
             isLoading,
             savePdf

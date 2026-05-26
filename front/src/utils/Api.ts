@@ -1,4 +1,4 @@
-import axios, {  type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
 import { useUserData } from '@/stores/userData';
 import { computed } from 'vue';
 import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell, IPostIdeaPdf } from
@@ -36,21 +36,21 @@ vendorApi.interceptors.request.use((config) => {
 export default class Api {
     static async get(url: string, config?: AxiosRequestConfig) {
         return await api.get(url, config)
-        .then(resp=>resp.data)
-        .catch(e=>{
-             if (e.status == 502) {
-                window.location.href = `${defaultUrl}/inservice`
-            }
-            else if (e.status == 401) {
-                useUserData().logOut()
-                throw new Error('Сессия истекла. Необходимо войти в систему заново.')
-            }
-        })
+            .then(resp => resp.data)
+            .catch(e => {
+                if (e.status == 502) {
+                    window.location.href = `${defaultUrl}/inservice`
+                }
+                else if (e.status == 401) {
+                    useUserData().logOut()
+                    throw new Error('Сессия истекла. Необходимо войти в систему заново.')
+                }
+            })
     }
 
     static async getVendor(url: string, config?: AxiosRequestConfig) {
         return await vendorApi.get(url, config)
-        .then(resp=>resp.data)
+            .then(resp => resp.data)
     }
 
     static async postVendor(url: string, data: INeuroChat[] | null | FormData) {
@@ -77,16 +77,17 @@ export default class Api {
             onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
         }
     ) {
-      return api.post(url, data, config)
-       .then(resp=>config ? resp : resp.data)
-        .catch(e=>{
-             if (e.status == 502) {
-                window.location.href = `${defaultUrl}/inservice`
-            }
-            else if (e.status == 401) {
-                useUserData().logOut()
-                throw new Error('Сессия истекла. Необходимо войти в систему заново.')
-            }})
+        return await api.post(url, data, config)
+            .then(resp => config ? resp : resp.data)
+            .catch(e => {
+                if (e.status == 502) {
+                    window.location.href = `${defaultUrl}/inservice`
+                }
+                else if (e.status == 401) {
+                    useUserData().logOut()
+                    throw new Error('Сессия истекла. Необходимо войти в систему заново.')
+                }
+            })
     }
 
     static async put(

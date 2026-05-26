@@ -90,7 +90,7 @@ export default defineComponent({
         };
 
         // предзагрузка данных в стор
-        watch([route, isLogin], () => {
+        watch([route, isLogin], async () => {
             if (route && route.query && route.query.reroute && isLogin.value) {
                 window.location.href = String(route.query.reroute).replace('?reroute=', '');
             }
@@ -100,12 +100,13 @@ export default defineComponent({
             }
             else
                 if (isLogin.value) {
-                    Api.getVendor('https://gpt.emk.ru/check_count')
-                        .then((genCount) => useUserData().setGenCount(genCount.count));
-
+                    try {
+                        const res = await Api.getVendor('https://gpt.emk.ru/check_count')
+                        useUserData().setGenCount(res);
+                    }
+                    catch (error) { console.error(error) }
                     prefetchSection('score');
                     prefetchSection('calendar');
-
                     if (userData.getAuthKey) {
                         prefetchSection('user');
                     }
@@ -120,17 +121,23 @@ export default defineComponent({
                 }
         }, { immediate: true, deep: true })
 
-        onBeforeMount(() => {
-
+        onBeforeMount(async () => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');
             if (!cookieKey) return isLoading.value = false;
 
-            Api.get(`users/find_by_session_id/${cookieKey}`)
-                .then((data) => {
-                    userData.initLogin(cookieKey, data);
-                    prefetchSection('user');
-                })
-                .finally(() => { userData.setLogin(true); isLoading.value = false })
+            try {
+                const data = await Api.get(`users/find_by_session_id/${cookieKey}`)
+                userData.initLogin(cookieKey, data);
+                prefetchSection('user');
+                userData.setLogin(true);
+            }
+            catch (error) {
+                console.error(error)
+            }
+            finally {
+                isLoading.value = false
+
+            }
         })
 
         return {
@@ -140,8 +147,8 @@ export default defineComponent({
             route,
             isLoading,
             isRefreshing,
-            handleRefresh,
             routerViewKey,
+            handleRefresh,
         }
     }
 })

@@ -29,6 +29,7 @@ import { useToastCompose } from '@/composables/useToastСompose'
 import { useToast } from 'primevue/usetoast'
 import SlotModal from '@/components/tools/modal/SlotModal.vue'
 import SearchList from '@/components/tools/common/SearchList.vue'
+import type { AxiosError } from 'axios'
 
 export interface IAreaDepartment {
     id: number,
@@ -76,16 +77,16 @@ export default defineComponent({
             { debounce: 500, maxWait: 1500 },
         )
 
-        const getDepStructureByName = (word: string) => {
-            Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .then((data) => {
-                    departmentList.value = data;
-                })
+        const getDepStructureByName = async (word: string) => {
+            try {
+                const data = await Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                departmentList.value = data;
+            }
+            catch (error: unknown) {
+                if ((error as AxiosError).response?.status == 500) {
+                    handleApiError(error as AxiosError, toast)
+                }
+            }
         }
 
         return {

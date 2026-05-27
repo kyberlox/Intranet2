@@ -13,7 +13,7 @@ from .App import update, select, delete
 
 from .App import AsyncSessionLocal
 import asyncio
-
+from typing import Optional
 # db_gen = get_db() get_db, 
 # database = next(db_gen)
 

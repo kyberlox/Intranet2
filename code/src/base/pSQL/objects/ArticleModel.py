@@ -187,9 +187,11 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session):
+    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None):
         # async with AsyncSessionLocal() as session:
         stmt = select(self.article).where(self.article.section_id == self.section_id)
+        if skip and limit:
+            stmt = stmt.offset(skip).limit(limit)
         result = await session.execute(stmt)
         data = result.scalars().all()
         # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()

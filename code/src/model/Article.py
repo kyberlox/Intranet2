@@ -1832,17 +1832,20 @@ class Article:
 
     async def search_by_section_id(self, session, user_id: int = None):
         if self.section_id == "0":
+            import time
             main_page = [112, 19, 32, 4, 7, 31, 16, 161, 33, 53, 51]  # 111
             page_view = []
 
             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
-
+            print("НАЧИНАЮ ЗАМЕРЯТЬ ВРЕМЯ ПРОГРУЗКИ ГЛАВНОЙ")
+            start = time.time()
             for page in main_page:  # проходимся по каждой секции
                 sec = await self.main_page(page, user_id, session)
                 page_view.append(sec)
                 # page_view[-3]['content'] = [page_view[-2], page_view[-1]]
             # del page_view[-2:]
-
+            fin = time.time()
+            print(f'ГЛАВНУЮ ОТДАЛИ ЗА {fin - start}')
             return page_view
 
         elif self.section_id == "19":
@@ -2116,26 +2119,6 @@ class Article:
                     image_URL = values['indirect_data']['users'][0]['photo_file_url']
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
-
-            #         date_value = [] # список для хранения необходимых данных
-            #         date_value.append(values["id"])
-            #         date_value.append(values["name"])
-            #         date_value.append(values["preview_text"])
-            #         date_value.append(values["date_publiction"] if values["date_publiction"] is not None else values["date_creation"])
-            #         date_list.append(date_value) # получили список с необходимыми данными
-            # # сортируем по дате
-            # sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
-
-            # for news in sorted_data
-            # news_id = sorted_data[0][0]
-
-            # self.id = news_id
-            # # image_URL = self.get_preview()
-            # files = File(art_id = int(self.id)).get_files_by_art_id()
-            # for file in files:
-            #     if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
-            #         url = file["file_url"]
-            #         image_URL = DOMAIN + url
 
             second_page = {
                 'id': section_id,

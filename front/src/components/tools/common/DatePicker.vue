@@ -132,18 +132,6 @@ export default defineComponent({
                 return formatDate(date as Date)
         }
 
-        onMounted(() => {
-            if (!props.range) {
-                if (props.calendarType !== 'month') {
-                    if (props.item?.field?.includes('publiction')) {
-                        if (!props.defaultData) { dateInput.value = new Date() }
-                        // handleDate(dateInput.value);
-                    }
-                }
-            }
-
-        })
-
         return {
             dateInput,
             imageInModal,

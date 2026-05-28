@@ -44,7 +44,7 @@ export default defineComponent({
                     }
                 }
                 else {
-                    emit('pick', String(useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss')).replaceAll('', ''))
+                    emit('pick', String(useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss').value).replaceAll('', ''))
                 }
         }
 

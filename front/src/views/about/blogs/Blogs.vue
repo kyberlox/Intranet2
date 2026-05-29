@@ -10,7 +10,7 @@
         <div class="blogs__list">
             <div v-if="authors"
                  class="blogs__items">
-                <BlogAvatar v-for="item in authors.sort((a, b) => a.authorTitle ? a.authorTitle.localeCompare(b.authorTitle!) : 0)"
+                <BlogAvatar v-for="item in authors"
                             :key="item.authorId"
                             :from="'blogs'"
                             :author="item" />
@@ -19,7 +19,7 @@
                 class="page__title mt20">Блоги от подразделений</h2>
             <div v-if="factoryAuthors"
                  class="blogs__items">
-                <BlogAvatar v-for="item in factoryAuthors.sort((a, b) => a.authorTitle ? a.authorTitle.localeCompare(b.authorTitle!) : 0)"
+                <BlogAvatar v-for="item in factoryAuthors"
                             :key="item.authorId"
                             :from="'blogs'"
                             :author="item" />

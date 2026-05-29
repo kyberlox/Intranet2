@@ -10,8 +10,6 @@ import { usePointsData } from "@/stores/pointsData";
 import { featureFlags } from "@/assets/static/featureFlags";
 
 export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {
-    console.log(dataType);
-
     if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
     switch (dataType) {
@@ -38,7 +36,6 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
                 }
             break;
         case 'blogs':
-            console.log(useblogDataStore().setAllBlogs)
             if (!useblogDataStore().getAllAuthors.length)
                 getBlogAuthorsToStore();
             break;

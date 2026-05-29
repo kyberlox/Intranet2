@@ -2823,16 +2823,21 @@ class Article:
 
     async def get_author_and_sort_blogs(self, session):
         res = list()
+        uuid = 0
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            res.append(
-                {
-                    'user_fio': art['indirect_data']['author'],
-                    'user_id': art['indirect_data']['author_uuid'],
-                    'user_photo': art['indirect_data']['photo_file_url'],
-                    'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0
-                }
-            )
+            if uuid != art['indirect_data']['author_uuid']:
+                uuid = art['indirect_data']['author_uuid']
+                res.append(
+                    {
+                        'user_fio': art['indirect_data']['author'],
+                        'user_id': art['indirect_data']['author_uuid'],
+                        'user_photo': art['indirect_data']['photo_file_url'],
+                        'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0
+                    }
+                )
+            else:
+                continue
         return res
 
 # Dependency для получения айдишника пользователя

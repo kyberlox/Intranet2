@@ -243,6 +243,7 @@ class ArticleModel:
             if not is_sort:
                 continue
             art.indirect_data['sort'] = int(is_sort[0])
+            session.add(art)
         await session.commit()
         return True
 

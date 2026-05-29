@@ -234,4 +234,18 @@ class ArticleModel:
 
         return new_data
 
-    
+    async def sort_to_blogs(self, session, data):
+        """Добавляем поле sort для авторов блогов"""
+        stmt = select(self.article).where(self.article.section_id == 15)
+        result = await session.execute(stmt)
+        articles = result.scalars().all()
+        for art in articles:
+            is_sort = [athor_info['sort'] for athor_info in data if athor_info['user_id'] == art.indirect_data['author_uuid']]
+            if not is_sort:
+                art.indirect_data['sort'] = 100
+            else:
+                art.indirect_data['sort'] = int(is_sort[0])
+            flag_modified(art, 'indirect_data')
+        await session.commit()
+        return True
+

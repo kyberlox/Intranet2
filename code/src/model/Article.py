@@ -2840,6 +2840,9 @@ class Article:
                 continue
         return res
 
+    async def upload_sort_to_blogs(self, session, data):
+        return await ArticleModel().sort_to_blogs(session, data)
+
 # Dependency для получения айдишника пользователя
 async def get_user_id_by_session_id(request: Request) -> int:
     from ..base.RedisStorage import RedisStorage

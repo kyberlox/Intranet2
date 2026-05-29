@@ -234,4 +234,13 @@ class ArticleModel:
 
         return new_data
 
-    
+    async def sort_to_blogs(self, session, data):
+        stmt = select(self.article).where(self.article.section_id == 15)
+        result = await session.execute(stmt)
+        articles = result.scalars().all()
+        for art in articles:
+            is_sort = [athor_info['sort'] for athor_info in data if athor_info['author_uuid'] == art.indirect_data['author_uuid']]
+            art.indirect_data['sort'] = int(is_sort[0])
+        await session.commit()
+        return True
+

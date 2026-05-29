@@ -8,7 +8,7 @@
         </div>
         <div class="blog-list__item-wrapper col-sm-9">
             <div class="blog-list__item"
-                 v-for="article in blogsArticles"
+                 v-for="article in blogsArticles.sort((a, b) => b.id - a.id)"
                  :key="'article' + article.id">
                 <div v-if="article.indirect_data">
                     <RouterLink :to="{ name: 'certainBlog', params: { id: article.id, authorId: targetAuthor?.authorId } }"

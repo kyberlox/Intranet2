@@ -2826,7 +2826,7 @@ class Article:
         uuid = 0
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            if uuid != art['indirect_data']['author_uuid']:
+            if uuid != art['indirect_data']['author_uuid'] and art['indirect_data'].get('author'):
                 uuid = art['indirect_data']['author_uuid']
                 res.append(
                     {

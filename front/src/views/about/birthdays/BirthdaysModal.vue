@@ -1,77 +1,71 @@
 <template>
-  <SlotModal @close="closeModal">
-    <div
-      class="modal__text__content modal__text__content--birthday-comments birthday__comments-modal"
-    >
-      <div class="birthday__comments-modal__header">
-        <div class="birthday__comments-modal__title">
-          Поздравления для {{ slide.user_fio }}
-        </div>
-        <div class="birthday__comments-modal__subtitle">
-          {{ commentsCount ? `Всего: ${commentsCount}` : "" }}
-        </div>
+<SlotModal @close="closeModal">
+  <div class="modal__text__content modal__text__content--birthday-comments birthday__comments-modal">
+    <div class="birthday__comments-modal__header">
+      <div class="birthday__comments-modal__title">
+        Поздравления для {{ slide.user_fio }}
       </div>
-      <div class="birthday__comments__list" v-if="commentsCount">
-        <div
-          class="birthday__comments__item"
-          v-for="(congratulation, index) in slide.congratulations"
-          :key="`${congratulation.user_id}-${index}`"
-        >
-          <RouterLink
-            :to="{ name: 'userPage', params: { id: congratulation.user_id } }"
-            class="birthday__comments__avatar"
-            :style="{ backgroundImage: `url('${congratulation.user_photo}')` }"
-          />
+      <div v-if="commentsCount"
+           class="birthday__comments__list">
+        <div class="birthday__comments__item"
+             v-for="(congratulation, index) in slide.congratulations"
+             :key="`${congratulation.user_id}-${index}`">
+          <RouterLink :to="{ name: 'userPage', params: { id: congratulation.user_id } }"
+                      class="birthday__comments__avatar"
+                      :style="{ backgroundImage: `url('${congratulation.user_photo}')` }" />
           <div class="birthday__comments__body">
-            <RouterLink
-              :to="{ name: 'userPage', params: { id: congratulation.user_id } }"
-              class="birthday__comments__author"
-            >
+            <RouterLink :to="{ name: 'userPage', params: { id: congratulation.user_id } }"
+                        class="birthday__comments__author">
               {{ congratulation.user_fio }}
             </RouterLink>
             <div class="birthday__comments__text">
               {{ congratulation.user_comment }}
             </div>
-            <button
-              class="birthday__comments__delete"
-              type="button"
-              v-if="canDeleteComment(congratulation)"
-              aria-label="Удалить поздравление"
-              title="Удалить поздравление"
-              :disabled="deletingCommentIndex == index"
-              @click="deleteComment(congratulation, index)"
-            >
+            <button v-if="canDeleteComment(congratulation)"
+                    class="birthday__comments__delete"
+                    type="button"
+                    aria-label="Удалить поздравление"
+                    title="Удалить поздравление"
+                    :disabled="deletingCommentIndex == index"
+                    @click="deleteComment(congratulation, index)">
               Удалить
             </button>
           </div>
-        </div>
-      </div>
-      <div class="birthday__comments__empty" v-else>
-        Поздравлений пока нет
-      </div>
-      <form class="birthday__comments__form" @submit.prevent="sendComment">
-        <textarea
-          class="birthday__comments__textarea"
-          v-model="commentText"
-          :disabled="isSendingComment"
-          placeholder="Напишите поздравление..."
-          rows="3"
-        />
-        <div class="birthday__comments__actions">
-          <span class="birthday__comments__error" v-if="commentError">
-            {{ commentError }}
-          </span>
-          <button
-            class="primary-button birthday__comments__submit"
-            type="submit"
-            :disabled="!canSendComment"
-          >
-            {{ isSendingComment ? "Отправка..." : "Отправить" }}
+          <button v-if="canDeleteComment(congratulation)"
+                  class="birthday__comments__delete"
+                  type="button"
+                  :disabled="deletingCommentIndex == index"
+                  @click="deleteComment(congratulation, index)">
+            {{ deletingCommentIndex == index ? "Удаление..." : "Удалить" }}
           </button>
         </div>
-      </form>
+      </div>
+      <div v-else
+           class="birthday__comments__empty">
+        Поздравлений пока нет
+      </div>
     </div>
-  </SlotModal>
+    <form class="birthday__comments__form"
+          @submit.prevent="sendComment">
+      <textarea class="birthday__comments__textarea"
+                v-model="commentText"
+                :disabled="isSendingComment"
+                placeholder="Напишите поздравление..."
+                rows="3" />
+      <div class="birthday__comments__actions">
+        <span v-if="commentError"
+              class="birthday__comments__error">
+          {{ commentError }}
+        </span>
+        <button class="primary-button birthday__comments__submit"
+                type="submit"
+                :disabled="!canSendComment">
+          {{ isSendingComment ? "Отправка..." : "Отправить" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</SlotModal>
 </template>
 
 <script lang="ts">
@@ -203,6 +197,13 @@ export default defineComponent({
       }
     };
 
+    const emkCongratPlug = {
+      "user_id": 2743,
+      "user_fio": "Энергомашкомплект",
+      "user_photo": "http://intranet.emk.org.ru/api/user_files/no-user-photo.jpg",
+      "user_comment": "Поздравляем с днем рождения!"
+    }
+
     return {
       commentText,
       commentError,
@@ -210,6 +211,7 @@ export default defineComponent({
       deletingCommentIndex,
       commentsCount,
       canSendComment,
+      emkCongratPlug,
       canDeleteComment,
       closeModal,
       sendComment,

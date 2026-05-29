@@ -56,13 +56,15 @@ export default defineComponent({
             })
         }
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['УчЛитература']}`)
-                .then((e) => {
-                    setFilterData(e);
-                    literature.value = e;
-                    renderedLiterature.value = e;
-                })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['УчЛитература']}`)
+                setFilterData(data);
+                literature.value = data;
+                renderedLiterature.value = data;
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const pickFilter = (param: string, type: string) => {

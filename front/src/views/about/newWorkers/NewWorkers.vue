@@ -50,10 +50,13 @@ export default defineComponent({
             hiddenModal.value = false;
         };
 
-        onMounted(() => {
-            Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
-                .then((data) => slidesForBirthday.value = data)
-                .finally(() => isLoading.value = false)
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
+                slidesForBirthday.value = data
+            } finally {
+                isLoading.value = false
+            }
         })
 
         return {

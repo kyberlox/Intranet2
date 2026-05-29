@@ -21,12 +21,15 @@ export default defineComponent({
 
         const ourPeople = computed((): IOurPeople[] => ViewsDataStore.getData('ourPeopleData') as IOurPeople[])
 
-        onMounted(() => {
+        onMounted(async () => {
             if (ourPeople.value.length) return;
-            Api.get(`article/find_by/${sectionTips['НашиЛюди']}`)
-                .then((data) => {
-                    ViewsDataStore.setData(data, 'ourPeopleData');
-                });
+            try {
+                const data = await Api.get(`article/find_by/${sectionTips['НашиЛюди']}`)
+                ViewsDataStore.setData(data, 'ourPeopleData');
+            }
+            catch (error) {
+                console.error(error)
+            }
         })
         return {
             ourPeople

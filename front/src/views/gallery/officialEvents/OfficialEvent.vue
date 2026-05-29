@@ -45,15 +45,17 @@ export default defineComponent({
             modalIsOpen.value = true;
         }
 
-        onMounted(() => {
-            Api.get(`article/find_by_ID/${props.id}`)
-                .then((data) => {
-                    slide.value = data;
-                    formattedSlides.value.images = data.images;
-                    formattedSlides.value.videos_embed = data.videos_embed;
-                    formattedSlides.value.videos_native = data.videos_native;
-                    formattedSlides.value.id = data.id
-                })
+        onMounted(async () => {
+            try {
+                const data = await Api.get(`article/find_by_ID/${props.id}`)
+                slide.value = data;
+                formattedSlides.value.images = data.images;
+                formattedSlides.value.videos_embed = data.videos_embed;
+                formattedSlides.value.videos_native = data.videos_native;
+                formattedSlides.value.id = data.id
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         return {

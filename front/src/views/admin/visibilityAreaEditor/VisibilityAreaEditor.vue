@@ -71,6 +71,7 @@ import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import { handleApiError } from '@/utils/apiResponseCheck';
 import VisibilityAreaSlotLeftSidebar from './components/VisibilityAreaSlotLeftSidebar.vue';
+import type { AxiosError } from 'axios';
 
 export default defineComponent({
     name: 'VisibilityAreaEditor',
@@ -124,112 +125,95 @@ export default defineComponent({
             getVisionUser(id);
         }
 
-        const getAllVisions = () => {
-            Api.get(`fields_visions/get_all_visions`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .then((data) => { allAreas.value = data })
+        const getAllVisions = async () => {
+            try {
+                const data = await Api.get(`fields_visions/get_all_visions`)
+                allAreas.value = data
+            } catch (error) {
+                handleApiError((error as AxiosError), toast)
+            }
         }
 
-        const getVisionUser = (visionId: number) => {
+        const getVisionUser = async (visionId: number) => {
             isLoading.value = true
-            Api.get(`fields_visions/get_users_in_vision/${visionId}`)
-                .then((data) => {
-                    if ('msg' in data) return;
-                    activeAreaUsers.value = data;
-                    changeEditMode(false);
-                })
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    isLoading.value = false;
-                })
+            try {
+                const data = await Api.get(`fields_visions/get_users_in_vision/${visionId}`)
+                if ('msg' in data) return;
+                activeAreaUsers.value = data;
+                changeEditMode(false);
+
+            } catch (error) {
+                handleApiError((error as AxiosError), toast)
+
+            } finally {
+                isLoading.value = false;
+            }
         }
 
-        const getDepStructureAll = () => {
-            Api.get(`fields_visions/get_full_structure`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .then((data) => {
-                    createDepartmentTree(data);
-                })
+        const getDepStructureAll = async () => {
+            try {
+                const data = await Api.get(`fields_visions/get_full_structure`)
+                createDepartmentTree(data);
+            } catch (error) {
+                handleApiError((error as AxiosError), toast)
+
+            }
         }
 
-        const addOneDepartmentToArea = (visionId: number, departmentId: number) => {
-            Api.put((`fields_visions/add_dep_users_only/${visionId}/${departmentId}`))
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    getVisionUser(visionId)
-                })
+        const addOneDepartmentToArea = async (visionId: number, departmentId: number) => {
+            try {
+                await Api.put((`fields_visions/add_dep_users_only/${visionId}/${departmentId}`))
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                getVisionUser(visionId)
+            }
         }
 
-        const addFullDepartmentToArea = (visionId: number, departmentId: number) => {
+        const addFullDepartmentToArea = async (visionId: number, departmentId: number) => {
             isLoading.value = true;
-            Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    getVisionUser(visionId);
-                })
+            try {
+                await Api.put((`fields_visions/add_full_usdep_list_to_vision/${visionId}/${departmentId}`))
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                getVisionUser(visionId);
+            }
         }
 
-        const addUsersToArea = (visionId: number, userIds: number[]) => {
+        const addUsersToArea = async (visionId: number, userIds: number[]) => {
             isLoading.value = true
-            Api.put(`fields_visions/add_users_list_to_vision/${visionId}`, userIds)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    getVisionUser(visionId)
-                    isLoading.value = false
-                })
+            try {
+                await Api.put(`fields_visions/add_users_list_to_vision/${visionId}`, userIds)
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                getVisionUser(visionId)
+                isLoading.value = false
+            }
         }
 
-        const createNewArea = (newAreaName: string) => {
-            Api.put(`fields_visions/create_new_vision/${newAreaName}`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    modalIsOpen.value = false;
-                    getAllVisions();
-                    changeEditMode(false);
-                })
+        const createNewArea = async (newAreaName: string) => {
+            try {
+                await Api.put(`fields_visions/create_new_vision/${newAreaName}`)
+                modalIsOpen.value = false;
+                getAllVisions();
+                changeEditMode(false);
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            }
         }
 
-        const deleteArea = (id: number) => {
+        const deleteArea = async (id: number) => {
             changeEditMode(false);
-            Api.delete(`fields_visions/delete_vision/${id}`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    activeArea.value = Number('');
-                    activeAreaUsers.value.length = 0;
-                    getAllVisions();
-                })
+            try {
+                await Api.delete(`fields_visions/delete_vision/${id}`)
+                activeArea.value = Number('');
+                activeAreaUsers.value.length = 0;
+                getAllVisions();
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            }
         }
 
         const createDepartmentTree = (depStructure: IDepartment[]): void => {
@@ -337,36 +321,32 @@ export default defineComponent({
             choices.value.push(user)
         }
 
-        const deleteMultipleUsers = () => {
+        const deleteMultipleUsers = async () => {
             const userIds: number[] = [];
             choices.value.map((e) => {
                 userIds.push(e.id)
             })
 
             isLoading.value = true
-            Api.delete(`fields_visions/delete_users_from_vision/${activeArea.value}`, userIds)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    isLoading.value = false
-                    getVisionUser(activeArea.value!);
-                })
+            try {
+                await Api.delete(`fields_visions/delete_users_from_vision/${activeArea.value}`, userIds)
+                getVisionUser(activeArea.value!);
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                isLoading.value = false
+            }
         }
 
-        const deleteDepFromVision = (id: number, withСhilds: boolean) => {
+        const deleteDepFromVision = async (id: number, withСhilds: boolean) => {
             isLoading.value = true;
-            Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}/${withСhilds}`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .finally(() => {
-                    getVisionUser(activeArea.value!);
-                })
+            try {
+                await Api.delete(`fields_visions/remove_depart_in_vision/${activeArea.value}/${id}/${withСhilds}`)
+                getVisionUser(activeArea.value!);
+
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            }
         }
 
         const handleFilterChanged = (value: string, type: 'dep' | 'fio') => {
@@ -393,31 +373,25 @@ export default defineComponent({
             getDepStructureAll();
         })
 
-        const getDepStructureByName = (word: string) => {
-            if (editGroupMode.value)
-                Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
-                    .catch(error => {
-                        if (error.response?.status == 500) {
-                            handleApiError(error, toast)
-                        }
-                    })
-                    .then((data) => {
-                        filteredUsers.value = [];
-                        filteredDepartments.value = data;
-                    })
+        const getDepStructureByName = async (word: string) => {
+            if (!editGroupMode.value) return
+            try {
+                const data = await Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                filteredUsers.value = [];
+                filteredDepartments.value = data;
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            }
         }
 
-        const getUserByName = (word: string) => {
-            Api.get(`users/search/full_search_users_for_editor/${word}/10`)
-                .catch(error => {
-                    if (error.response?.status == 500) {
-                        handleApiError(error, toast)
-                    }
-                })
-                .then((data) => {
-                    filteredDepartments.value.length = 0;
-                    filteredUsers.value = data[0].content;
-                });
+        const getUserByName = async (word: string) => {
+            try {
+                const data = await Api.get(`users/search/full_search_users_for_editor/${word}/10`)
+                filteredDepartments.value.length = 0;
+                filteredUsers.value = data[0].content;
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            }
         }
 
         return {

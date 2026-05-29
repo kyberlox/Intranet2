@@ -1,11 +1,11 @@
 <template>
-    <div class="experience__page mt20">
-        <div class="page__title">Референсы и опыт поставок</div>
-        <ComplexGallery :page="page"
-                        :slides="slides"
-                        :modifiers="['noFullWidthImg']"
-                        :routeTo="'experienceTypes'" />
-    </div>
+<div class="experience__page mt20">
+    <div class="page__title">Референсы и опыт поставок</div>
+    <ComplexGallery :page="page"
+                    :slides="slides"
+                    :modifiers="['noFullWidthImg']"
+                    :routeTo="'experienceTypes'" />
+</div>
 </template>
 
 <script lang="ts">
@@ -27,8 +27,8 @@ export default defineComponent({
 
         const { loadExperienceData, generateSlides } = useExperienceData();
 
-        const initializeData = () => {
-            const data = loadExperienceData();
+        const initializeData = async () => {
+            const data = await loadExperienceData();
 
             watch(data, (newValue) => {
                 if (Object.keys(newValue).length) {

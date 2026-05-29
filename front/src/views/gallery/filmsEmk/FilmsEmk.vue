@@ -37,13 +37,15 @@ export default defineComponent({
         const visibleEvents: Ref<IBaseEntity[]> = ref(allSlides.value);
         const buttonText: Ref<string> = ref('Год публикации');
         const showFilter = ref(false);
-        onMounted(() => {
+        onMounted(async () => {
             if (allSlides.value.length) return;
-            Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`)
-                .then((res) => {
-                    useViewsDataStore().setData(res, 'filmsEmk');
-                    visibleEvents.value = res;
-                })
+            try {
+                const res = await Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`)
+                useViewsDataStore().setData(res, 'filmsEmk');
+                visibleEvents.value = res;
+            } catch (error) {
+                console.error(error)
+            }
         })
 
         const filterYear = (year: string) => {

@@ -52,14 +52,14 @@ export default defineComponent({
             const data = useViewsData.getData('homeData') as MainPageCards;
             return Array.isArray(data) ? data : [];
         });
-        onBeforeMount(() => {
+        onBeforeMount(async () => {
             if (mainPageCards.value.length) return;
-            Api.get(`article/find_by/${sectionTips['Главная']}`)
-                .then((data: MainPageCards) => {
-                    const result = data;
-                    if (!result) return;
-                    useViewsData.setData(result, 'homeData');
-                })
+            try {
+                const data: MainPageCards = await Api.get(`article/find_by/${sectionTips['Главная']}`)
+                const result = data;
+                if (!result) return;
+                useViewsData.setData(result, 'homeData');
+            } catch (error) { console.error(error) }
         })
 
         setInterval(() => {

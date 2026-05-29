@@ -145,6 +145,7 @@ import { featureFlags } from '@/assets/static/featureFlags';
 import Loader from '@/components/layout/Loader.vue';
 import { useUserScore } from '@/stores/userScoreData';
 import { createUniqueArr } from '@/utils/stringUtils';
+import type { AxiosError } from 'axios';
 
 export default defineComponent({
     props: {
@@ -165,17 +166,18 @@ export default defineComponent({
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);
 
-        watch(props, (newVal) => {
+        watch(props, async (newVal) => {
             if (newVal) {
                 user.value = '';
-                Api.get(`users/find_by/${newVal.id}`)
-                    .then((res: IUser) => {
-                        user.value = res;
-                        if (user.value && user.value.last_name && user.value.name && user.value.second_name) {
-                            user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
-                        }
-                    })
-
+                try {
+                    const res = await Api.get(`users/find_by/${newVal.id}`)
+                    user.value = res;
+                    if (user.value && user.value.last_name && user.value.name && user.value.second_name) {
+                        user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
+                    }
+                } catch (error) {
+                    console.error(error)
+                }
             }
         }, { immediate: true, deep: true })
 
@@ -197,23 +199,27 @@ export default defineComponent({
 
         const senderId = computed(() => useUserData().getMyId);
 
-        const sendPoints = (comment: string, activityId: number) => {
+        const sendPoints = async (comment: string, activityId: number) => {
             const sendingData: IPointsForm = {
                 "uuid_from": senderId.value,
                 "uuid_to": Number(props.id),
                 "activities_id": activityId,
                 "description": comment
             };
-            Api.put('peer/send_points', sendingData)
-                .catch((error) => handleApiError(error, toast))
-                .then((data) => {
-                    handleApiResponse(data, toast, 'trySupportError', 'pointsSendSuccess');
-                })
-                .finally(() => {
-                    isPointsModalOpen.value = false
-                    Api.get('peer/actions')
-                        .then((data) => useUserScore().setActions(data))
-                })
+            try {
+                const data = await Api.put('peer/send_points', sendingData)
+                handleApiResponse(data, toast, 'trySupportError', 'pointsSendSuccess');
+                try {
+                    const data = await Api.get('peer/actions')
+                    useUserScore().setActions(data)
+                } catch (error) {
+                    handleApiError(error as AxiosError, toast)
+                }
+            } catch (error) {
+                handleApiError(error as AxiosError, toast)
+            } finally {
+                isPointsModalOpen.value = false
+            }
         }
 
         const formatDate = (date: string) => {

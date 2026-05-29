@@ -1,43 +1,42 @@
 <template>
-  <div class="page__title mt20">Дни рождения</div>
-  <div class="row">
-    <div class="col-12">
-      <ul class="birthday__chain-nav">
-        <li
-          v-for="nav in fastDayNavigation"
+<div class="page__title mt20">Дни рождения</div>
+<div class="row">
+  <div class="col-12">
+    <ul class="birthday__chain-nav">
+      <li v-for="nav in fastDayNavigation"
           :key="'picker' + nav.id"
           class="birthday__chain-nav__item"
           :class="{ 'birthday__chain-nav__item--active': searchValue == nav.value }"
-          @click="pickDate(nav.value, true)"
-        >
-          {{ nav.text }}
-        </li>
-      </ul>
-    </div>
+          @click="pickDate(nav.value, true)">
+        {{ nav.text }}
+      </li>
+    </ul>
   </div>
-  <div class="birthday__date-picker-wrapper mt20">
-    <div class="col-12 col-md-2 mb-3">
-      <DatePicker
-        @pickDate="(date: string) => pickDate(date)"
-        :calendarType="'dayAndMonth'"
-        :nullifyDateInput="nullifyDateInput"
-      />
-    </div>
+</div>
+<div class="birthday__date-picker-wrapper mt20">
+  <div class="col-12 col-md-2 mb-3">
+    <DatePicker @pickDate="(date: string) => pickDate(date)"
+                :calendarType="'dayAndMonth'"
+                :nullifyDateInput="nullifyDateInput" />
   </div>
-  <div class="birthday__workers-grid" v-if="slidesForBirthday.length && !isLoading">
-    <div v-for="slide in slidesForBirthday" :key="'vertSlide' + slide.id">
-      <UserSlide
-        :needCakeIcon="true"
-        :slide="slide"
-        :needComments="true"
-        @sendComment="refreshBirthdayComments"
-      />
-    </div>
+</div>
+<div class="birthday__workers-grid"
+     v-if="slidesForBirthday.length && !isLoading">
+  <div v-for="slide in slidesForBirthday"
+       :key="'vertSlide' + slide.id">
+    <UserSlide :needCakeIcon="true"
+               :slide="slide"
+               :needComments="true"
+               @sendComment="refreshBirthdayComments" />
   </div>
-  <div v-else-if="isLoading" class="contest__page__loader">
-    <Loader />
-  </div>
-  <ContentPlug :plugText="noBirthdays" :plugImg="noBirthImage" v-else />
+</div>
+<div v-else-if="isLoading"
+     class="contest__page__loader">
+  <Loader />
+</div>
+<ContentPlug :plugText="noBirthdays"
+             :plugImg="noBirthImage"
+             v-else />
 </template>
 
 <script lang="ts">
@@ -128,19 +127,22 @@ export default defineComponent({
       },
     ];
 
-    const loadBirthdayCelebrants = (withLoader = true) => {
+    const loadBirthdayCelebrants = async (withLoader = true) => {
       if (!searchValue.value) return;
       if (withLoader) {
         isLoading.value = true;
       }
-      Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
-        .then((data) => (slidesForBirthday.value = data.sort((x:{id:number},y:{id:number})=>x.id-y.id) || []))
-        .finally(() => {
-          if (withLoader) {
-            isLoading.value = false;
-          }
-        });
-    };
+      try {
+        const data = await Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
+        slidesForBirthday.value = data.sort((x: { id: number }, y: { id: number }) => x.id - y.id) || []
+      } catch (error) {
+        console.error(error)
+      } finally {
+        if (withLoader) {
+          isLoading.value = false;
+        }
+      }
+    }
 
     const refreshBirthdayComments = () => {
       loadBirthdayCelebrants(false);

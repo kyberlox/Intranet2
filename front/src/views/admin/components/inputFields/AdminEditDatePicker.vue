@@ -30,7 +30,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const value = ref(props.item?.value);
+        const value = ref((props.item?.value));
 
         const handleValuePick = (date: string | null) => {
             if (date == null) {
@@ -38,10 +38,13 @@ export default defineComponent({
             }
             else
                 if (props.item?.field?.includes('from') || props.item?.field?.includes('to')) {
-                    emit('pick', useDateFormat(date as string, 'DD.MM.YYYY'))
+                    const newDate = useDateFormat(new Date(date), 'DD.MM.YYYY')
+                    if (!String(newDate).includes('NaN')) {
+                        emit('pick', date)
+                    }
                 }
                 else {
-                    emit('pick', useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss'))
+                    emit('pick', String(useDateFormat(date as string, 'DD.MM.YYYY HH:mm:ss').value).replaceAll('', ''))
                 }
         }
 

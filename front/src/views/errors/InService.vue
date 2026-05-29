@@ -39,7 +39,7 @@ export default defineComponent({
                             router.push({ name: 'home' })
                         }
                     })
-                    .catch((error) => console.log(error))
+                    .catch((error) => console.error(error))
             }, 4000);
         })
 

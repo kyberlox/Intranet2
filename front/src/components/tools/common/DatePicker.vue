@@ -80,7 +80,13 @@ export default defineComponent({
 
         watch((props), () => {
             if (props.defaultData) {
-                dateInput.value = dateConvert(props.defaultData, 'toDateType');
+                if (props.defaultData.includes(":")) {
+                    const formattedPropsData = props.defaultData.split(props.defaultData.includes('T') ? 'T' : ' ')[0];
+                    dateInput.value = dateConvert(formattedPropsData, 'toDateType');
+                }
+                else {
+                    dateInput.value = dateConvert(props.defaultData, 'toDateType');
+                }
                 handleDate(dateInput.value);
             }
         }, { immediate: true, deep: true })
@@ -125,17 +131,6 @@ export default defineComponent({
             else
                 return formatDate(date as Date)
         }
-
-        onMounted(() => {
-            if (!props.range) {
-                if (props.calendarType !== 'month') {
-                    if (props.item?.field?.includes('publiction')) {
-                        dateInput.value = new Date();
-                    }
-                }
-            }
-
-        })
 
         return {
             dateInput,

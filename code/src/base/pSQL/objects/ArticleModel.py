@@ -13,7 +13,7 @@ from .App import update, select, delete
 
 from .App import AsyncSessionLocal
 import asyncio
-
+from typing import Optional
 # db_gen = get_db() get_db, 
 # database = next(db_gen)
 
@@ -187,9 +187,14 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session):
+    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None):
+        # import time
+        # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
+        # start = time.time()
         stmt = select(self.article).where(self.article.section_id == self.section_id)
+        if skip and limit:
+            stmt = stmt.offset(skip).limit(limit)
         result = await session.execute(stmt)
         data = result.scalars().all()
         # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
@@ -206,7 +211,9 @@ class ArticleModel:
                 if art is not None:
                     art.__dict__["indirect_data"] = art.indirect_data
                     new_data.append(art.__dict__)
-
+        # fin = time.time()
+        
+        # print(f"КОНЕЦ ВЫПОЛНЕНИЯ ЗАПРОСА В БД НА РАЗДЕЛ {self.section_id} = {fin - start}")
         return new_data
     
 

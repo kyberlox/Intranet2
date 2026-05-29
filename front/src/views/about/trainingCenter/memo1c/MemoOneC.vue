@@ -56,13 +56,15 @@ export default defineComponent({
         const currentContent = ref<IMemo[]>([]);
         const currentNav = ref<string>();
 
-        onMounted(() => {
-            Api.get('1c-help/menu_plus')
-                .then((data) => {
-                    memoData.value = data;
-                    navigation.value = Object.keys(data);
-                    showContent(navigation.value[0]);
-                });
+        onMounted(async () => {
+            try {
+                const data = await Api.get('1c-help/menu_plus')
+                memoData.value = data;
+                navigation.value = Object.keys(data);
+                showContent(navigation.value[0]);
+            } catch (error) {
+                console.error(error);
+            }
         });
 
         const showContent = (nav: string) => {

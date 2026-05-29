@@ -19,11 +19,14 @@ export default defineComponent({
     },
     setup() {
         const bonusesSlides: ComputedRef<IBaseEntity[]> = computed(() => useViewsDataStore().getData('partnerBonusData') as IBaseEntity[]);
-        onMounted(() => {
+        onMounted(async () => {
             if (bonusesSlides.value.length) return;
-            Api.get(`article/find_by/${sectionTips['БонусыПартнеров']}`)
-                .then((res) => useViewsDataStore().setData(res, "partnerBonusData"))
-
+            try {
+                const res = await Api.get(`article/find_by/${sectionTips['БонусыПартнеров']}`)
+                useViewsDataStore().setData(res, "partnerBonusData")
+            } catch (error) {
+                console.error(error)
+            }
         })
         return {
             page: 'officialEvents',

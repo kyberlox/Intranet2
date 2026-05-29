@@ -108,99 +108,72 @@ export default defineComponent({
 
         const currentEntity = computed(() => entitiesHeaders.find((item) => item.id === props.activeId))
 
-        const addNewHandle = (newEntity: INewActivityData) => {
-            addNewModalVisible.value = false;
+        const addNewHandle = async (newEntity: INewActivityData) => {
             isLoading.value = true;
+            addNewModalVisible.value = false;
+            const cases = [
+                { name: 'activity', route: 'peer/new_activity' },
+                { name: 'curator', route: `peer/add_curator/${newEntity.uuid}/${newEntity.activity_id}` },
+                { name: 'moder', route: `peer/add_peer_moder/${newEntity.uuid}` },
+                { name: 'admin', route: `peer/add_peer_admin/${newEntity.uuid}` }
+            ]
+            const name = cases.find(e => e.name == currentEntity?.value?.name)?.name
+            const route = cases.find(e => e.name == currentEntity?.value?.name)?.route
+            if (!route) return
 
-            switch (currentEntity.value?.name) {
-                case 'activity':
-                    if (!newEntity) return;
-                    Api.put('peer/new_activity', newEntity)
-                        .finally(() =>
-                            setTimeout(() => {
-                                reloadTable(('activity'))
-                            }, 1000));
-                    break;
-                case 'curator':
-                    Api.put(`peer/add_curator/${newEntity.uuid}/${newEntity.activity_id}`)
-                        .then((data) => console.log(data))
-                        .finally(() =>
-                            setTimeout(() => {
-                                reloadTable(('curator'))
-                            }, 1000));
-                    break;
-                case 'moder':
-                    Api.put(`peer/add_peer_moder/${newEntity.uuid}`)
-                        .then((data) => console.log(data))
-                        .finally(() =>
-                            setTimeout(() => {
-                                reloadTable(('moder'))
-                            }, 1000));
-                    break;
-                case 'admin':
-                    Api.put(`peer/add_peer_admin/${newEntity.uuid}`)
-                        .then((data) => console.log(data))
-                        .finally(() =>
-                            setTimeout(() => {
-                                reloadTable(('admin'))
-                            }, 1000));
-                    break;
-                default:
-                    break;
+            try {
+                await Api.put(route, newEntity)
+                setTimeout(() => {
+                    reloadTable(name as "activity" | "curator" | "moder" | "admin")
+                }, 1000);
+            } catch (error) {
+                console.error(error);
             }
         }
 
-        const deleteItem = (type: 'activity' | 'admin' | 'moder' | 'curator', uid: number, activity_uid?: number) => {
+        const deleteItem = async (type: 'activity' | 'admin' | 'moder' | 'curator', uid: number, activity_uid?: number) => {
             const prefixes = { activity: 'remove_activity', admin: 'delete_admin', moder: 'delete_peer_moder', curator: `delete_curator` }
-            Api.delete(`peer/${prefixes[type]}/${uid}` + (activity_uid ? '/' + activity_uid : ''))
-            setTimeout(() => {
-                reloadTable((type))
-            }, 1000);
-        }
-
-        const reloadTable = (table: 'curator' | 'moder' | 'admin' | 'activity') => {
-            switch (table) {
-                case 'activity':
-                    Api.get('/peer/get_all_activities')
-                        .then((data) => usePointsData().setAllActivities(data))
-                        .finally(() => isLoading.value = false)
-                case 'curator':
-                    Api.get('peer/get_curators')
-                        .then((data) => {
-                            if (!data.status)
-                                curators.value = data
-                        })
-                        .finally(() => isLoading.value = false)
-                    break;
-                case 'moder':
-                    Api.get('peer/get_moders_list')
-                        .then((data) => {
-                            if (!data.status)
-                                moders.value = data
-                        })
-                        .finally(() => isLoading.value = false)
-                    break;
-                case 'admin':
-                    Api.get('peer/get_admins_list')
-                        .then((data) => {
-                            if (!data.status) admins.value = data
-                        })
-                        .finally(() => isLoading.value = false)
-                    break;
-
-                default:
-                    break;
+            try {
+                await Api.delete(`peer/${prefixes[type]}/${uid}` + (activity_uid ? '/' + activity_uid : ''))
+                setTimeout(() => {
+                    reloadTable((type))
+                }, 1000);
+            } catch (error) {
+                console.error(error)
             }
-
         }
+
+        const reloadTable = async (table: 'curator' | 'moder' | 'admin' | 'activity') => {
+            const cases = [
+                { name: 'activity', route: '/peer/get_all_activities' },
+                { name: 'curator', route: `peer/get_curators` },
+                { name: 'moder', route: `peer/get_moders_list` },
+                { name: 'admin', route: `peer/get_admins_list` }
+            ]
+            const route = cases.find(e => e.name == table)?.route
+            if (!route) return
+            try {
+                const data = await Api.get(route)
+                if (table == 'activity') usePointsData().setAllActivities(data)
+                else if (table == 'curator') curators.value = data
+                else if (table == 'moder') moders.value = data
+                else if (table == 'admin') admins.value = data
+            } finally {
+                isLoading.value = false
+            }
+        }
+
         watch((currentEntity), () => {
             if (!currentEntity.value?.name) return
             reloadTable(currentEntity.value?.name)
         }, { deep: true, immediate: true })
 
-        const editActivity = (active: INewActivityData) => {
-            Api.post('peer/edit_activity', active)
-                .then((data) => console.log(data))
+        const editActivity = async (active: INewActivityData) => {
+            try {
+                await Api.post('peer/edit_activity', active)
+            } catch (error) {
+                console.error(error)
+            }
         }
 
         return {

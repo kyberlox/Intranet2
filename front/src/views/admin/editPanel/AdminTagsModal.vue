@@ -68,23 +68,34 @@ export default defineComponent({
         const tags = ref<ITag[]>([]);
         const isLoading = ref<boolean>(true);
         const newTagName = ref<string>();
-        const tagsInit = () => {
-            Api.get('tags/get_tags')
-                .then((data) => tags.value = data)
-                .finally(() => isLoading.value = false)
+
+        const tagsInit = async () => {
+            try {
+                const data = await Api.get('tags/get_tags')
+                tags.value = data
+            } finally {
+                isLoading.value = false
+            }
         }
 
-        const addTag = () => {
+        const addTag = async () => {
             if (!newTagName.value) return
-            Api.put(`tags/add_tag/${newTagName.value}`)
-                .then(() => { tagsInit(); newTagName.value = ''; })
-                .finally(() => isLoading.value = false)
+            try {
+                await Api.put(`tags/add_tag/${newTagName.value}`)
+                tagsInit(); newTagName.value = '';
+            }
+            finally {
+                isLoading.value = false
+            }
         }
 
-        const deleteTag = (id: number) => {
-            Api.delete(`tags/delete_tag/${id}`)
-                .then(() => tagsInit())
-                .finally(() => isLoading.value = false)
+        const deleteTag = async (id: number) => {
+            try {
+                await Api.delete(`tags/delete_tag/${id}`)
+                tagsInit()
+            } finally {
+                isLoading.value = false
+            }
         }
 
         onMounted(() => {

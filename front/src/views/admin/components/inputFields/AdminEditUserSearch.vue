@@ -36,10 +36,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType } from 'vue'
+import { defineComponent, ref } from 'vue'
 import SearchList, { type IUserList } from '@/components/tools/common/SearchList.vue'
 import AdminEditInput from './AdminEditInput.vue'
-import type { IAdminListItem, IUserSearch } from '@/interfaces/IEntities'
+import type { IUserSearch } from '@/interfaces/IEntities'
 import { watchDebounced } from '@vueuse/core'
 import Api from '@/utils/Api'
 import { handleApiError } from '@/utils/apiResponseCheck'
@@ -47,6 +47,7 @@ import { useToastCompose } from '@/composables/useToastСompose'
 import { useToast } from 'primevue/usetoast'
 import SlotModal from '@/components/tools/modal/SlotModal.vue'
 import PlusIcon from '@/assets/icons/admin/PlusIcon.svg?component'
+import type { AxiosError } from 'axios'
 
 export default defineComponent({
     components: {
@@ -92,6 +93,7 @@ export default defineComponent({
         const handleUserPick = (user: IUserSearch, type: string = '') => {
             pickedUser.value = user
             usersList.value = usersList.value.filter((e: IUserSearch) => e.id == user.id)
+
             emit(
                 props.type == 'search_by_uuids' ? 'handleUsersPick' : 'handleUserPick',
                 type == 'remove' ? null : user.id ? user.id : user.user_id,
@@ -104,17 +106,16 @@ export default defineComponent({
 
         watchDebounced(
             searchQuery,
-            () => {
+            async () => {
                 if (!searchQuery.value) return
-                Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/5`)
-                    .catch((error) => {
-                        if (error.response?.status == 500) {
-                            handleApiError(error, toast)
-                        }
-                    })
-                    .then((data) => {
-                        usersList.value = data[0].content
-                    })
+                try {
+                    const data = await Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/5`)
+                    usersList.value = data[0].content
+                } catch (error) {
+                    if ((error as AxiosError).response?.status == 500) {
+                        handleApiError(error as AxiosError, toast)
+                    }
+                }
             },
             { debounce: 500, maxWait: 1500 },
         )

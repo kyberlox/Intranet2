@@ -10,16 +10,16 @@
         <div class="blogs__list">
             <div v-if="authors"
                  class="blogs__items">
-                <BlogAvatar v-for="item in authors"
+                <BlogAvatar v-for="item in authors.sort((a, b) => a.authorTitle ? a.authorTitle.localeCompare(b.authorTitle!) : 0)"
                             :key="item.authorId"
                             :from="'blogs'"
                             :author="item" />
             </div>
             <h2 v-if="factoryAuthors"
-                class="page__title mt20">Блоги от предприятий</h2>
+                class="page__title mt20">Блоги от подразделений</h2>
             <div v-if="factoryAuthors"
                  class="blogs__items">
-                <BlogAvatar v-for="item in factoryAuthors"
+                <BlogAvatar v-for="item in factoryAuthors.sort((a, b) => a.authorTitle ? a.authorTitle.localeCompare(b.authorTitle!) : 0)"
                             :key="item.authorId"
                             :from="'blogs'"
                             :author="item" />
@@ -49,7 +49,7 @@ export default defineComponent({
         watch(allAuthors, () => {
             if (!allAuthors.value.length) return
             allAuthors.value.map((e) => {
-                if (e.title == 'Новая техника АО «САЗ»' || e.title == 'Новая техника ЗАО «НПО «Регулятор»') {
+                if (e.title == 'АО «САЗ»' || e.title == 'ЗАО «НПО «Регулятор»') {
                     factoryAuthors.value.push(e);
                 } else {
                     authors.value.push(e);

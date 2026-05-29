@@ -3197,7 +3197,7 @@ async def dubli(user_id: int = Depends(get_user_id_by_session_id), session: Asyn
     #показать
     #удалить пока они не кончаться
 
-@article_router.get("/sort_and_blogs")
+@article_router.get("/sort_and_blogs", tags=["Статьи"])
 async def sort_and_blogs(session: AsyncSession = Depends(get_async_db)):
     res = await Article().get_author_and_sort_blogs(session)
     return res

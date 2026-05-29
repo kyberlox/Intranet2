@@ -4,8 +4,6 @@ export const dateConvert = (dateString: string, convertType: 'toStringType' | 't
         const [day, month, year] = dateString.replaceAll('-', '.').split('.');
 
         const date = new Date(Number(year), Number(month) - 1, Number(day), 11, 35, 26);
-        console.log(date);
-
         return date;
     }
     else if (convertType == 'toStringType') {

@@ -30,7 +30,7 @@
 </template>
 <script lang="ts">
 import BlogAvatar from "./components/BlogAvatar.vue";
-import { defineComponent, ref, type Ref, computed, watch, watchEffect } from "vue";
+import { defineComponent, ref, type Ref, computed, watch } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import type { IBlogAuthors } from "@/interfaces/IEntities";
 import Loader from "@/components/layout/Loader.vue";
@@ -45,8 +45,6 @@ export default defineComponent({
         const factoryAuthors: Ref<IBlogAuthors[]> = ref([]);
         const blogDataStore = useblogDataStore();
         const allAuthors = computed(() => blogDataStore.getAllAuthors);
-
-        watchEffect(() => console.log(allAuthors.value))
 
         watch(allAuthors, () => {
             if (!allAuthors.value.length) return

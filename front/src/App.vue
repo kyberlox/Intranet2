@@ -29,7 +29,8 @@
     </div>
 </PullToRefresh>
 <Toast :position="'bottom-right'" />
-<YandexMetrika :uid="userId" />
+<YandexMetrika v-if="userId"
+               :uid="userId" />
 </template>
 
 <script lang="ts">

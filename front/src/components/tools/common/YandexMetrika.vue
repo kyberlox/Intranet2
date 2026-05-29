@@ -6,8 +6,7 @@
 </template>
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent, computed } from "vue";
-import { useUserData } from "@/stores/userData";
+import { defineComponent } from "vue";
 export default defineComponent({
     props: {
         uid: {

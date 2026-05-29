@@ -2816,11 +2816,24 @@ class Article:
             return True
         except Exception as e:
             return {"error": str(e)}
-
                     
     async def get_all(self, session):
         articles_info = await ArticleModel().all(session=session)
         return articles_info
+
+    async def get_author_and_sort_blogs(self, session):
+        res = list()
+        articles = await ArticleModel(section_id=15).find_by_section_id(session)
+        for art in articles:
+            res.append(
+                {
+                    'user_fio': art['indirect_data']['author'],
+                    'user_id': art['indirect_data']['author_uuid'],
+                    'user_photo': art['indirect_data']['photo_file_url'],
+                    'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0
+                }
+            )
+        return res
 
 # Dependency для получения айдишника пользователя
 async def get_user_id_by_session_id(request: Request) -> int:
@@ -3184,29 +3197,7 @@ async def dubli(user_id: int = Depends(get_user_id_by_session_id), session: Asyn
     #показать
     #удалить пока они не кончаться
 
-
-
-# #найти статьи раздела по названию
-# @article_router.post("/search/title/{title}")
-# async def search_articles_by_title(title): # data = Body()
-#     return ArticleSearchModel().search_by_title(title)
-
-# #найти статьи раздела по заголовку
-# @article_router.post("/search/preview/{preview}")
-# async def search_articles_by_preview(preview): # data = Body()
-#     return ArticleSearchModel().search_by_preview(preview)
-
-# #найти статьи раздела по тексту
-# @article_router.post("/search/text/{text}")
-# async def search_articles_by_text(text): # data = Body()
-#     return ArticleSearchModel().search_by_text(text)
-
-# лайки и просмотры для статистики
-# @article_router.get("/get_all_likes/{ID}")
-# async def get_all_likes(ID: int):
-#     return Article(id = ID).get_all_likes()
-
-# @article_router.get("/get_viewers/{ID}")
-# async def get_viewers(ID: int):
-#     return Article(id = ID).get_art_views()
-
+@article_router.get("/sort_and_blogs")
+async def sort_and_blogs(session: AsyncSession = Depends(get_async_db)):
+    res = await Article().get_author_and_sort_blogs(session)
+    return res

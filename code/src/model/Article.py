@@ -2823,10 +2823,10 @@ class Article:
 
     async def get_author_and_sort_blogs(self, session):
         res = list()
-        uuid = 0
+        uuids = set()
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            if uuid != art['indirect_data']['author_uuid'] and art['indirect_data'].get('author'):
+            if art['indirect_data']['author_uuid'] not in uuids and art['indirect_data'].get('author'):
                 uuid = art['indirect_data']['author_uuid']
                 res.append(
                     {
@@ -2837,6 +2837,7 @@ class Article:
                     }
                 )
             else:
+                uuids.append(art['indirect_data']['author_uuid'])
                 continue
         return res
 

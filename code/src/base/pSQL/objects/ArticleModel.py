@@ -235,6 +235,7 @@ class ArticleModel:
         return new_data
 
     async def sort_to_blogs(self, session, data):
+        """Добавляем поле sort для авторов блогов"""
         stmt = select(self.article).where(self.article.section_id == 15)
         result = await session.execute(stmt)
         articles = result.scalars().all()

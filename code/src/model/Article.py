@@ -2837,7 +2837,7 @@ class Article:
                     }
                 )
             else:
-                uuids.append(art['indirect_data']['author_uuid'])
+                uuids.add(art['indirect_data']['author_uuid'])
                 continue
         return res
 

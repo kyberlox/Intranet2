@@ -2039,7 +2039,7 @@ class Article:
                 except:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
             elif int(self.section_id) == 15:
-                sorted_active_articles = sorted(active_articles, key=lambda x: x['indirect_data']['sort'], reverse=True)
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['indirect_data']['sort'])
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
 

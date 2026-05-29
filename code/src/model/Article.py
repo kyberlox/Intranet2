@@ -2581,11 +2581,6 @@ class Article:
             corpevents['images'] = corpevents_news
             return corpevents
 
-    # лайки
-    # если раскомиттить - вызовет ошибку, нет глобальной сессии внутри функции get_likes_count()
-    # async def get_all_likes(self):
-    #     return await LikesModel(art_id=self.id).get_likes_count()
-
     async def add_like(self, user_id, session):
         # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
         if user_id is not None:
@@ -2828,12 +2823,12 @@ class Article:
         uuids = set()
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            if art['indirect_data']['author_uuid'] not in uuids and art['indirect_data'].get('author'):
+            if int(art['indirect_data']['author_uuid']) not in uuids and art['indirect_data'].get('author'):
                 uuids.add(art['indirect_data']['author_uuid'])
                 res.append(
                     {
                         'user_fio': art['indirect_data']['author'].split(";")[0],
-                        'user_id': art['indirect_data']['author_uuid'],
+                        'user_id': int(art['indirect_data']['author_uuid']),
                         'user_photo': art['indirect_data']['photo_file_url'],
                         'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0
                     }

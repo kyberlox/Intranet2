@@ -249,3 +249,29 @@ class ArticleModel:
         await session.commit()
         return True
 
+    async def get_month_statistic(self, session, date1, date2):
+        from ..models.User import User
+        from ..models.Likes import Likes
+        from ..models.Views import Views
+        from datetime import datetime
+        date1 = datetime.strptime(date1, "%d.%m.%Y")
+        date2 = datetime.strptime(date2, "%d.%m.%Y")
+
+        #ТОП 5 статей по лайкам
+        stmt_popular_likes = (
+            select(
+                self.article.name,
+                func.count(Likes.id).label('likes_count')
+            )
+            .join(Likes, Likes.article_id == self.article.id)
+            .where(Likes.created_at.between(date1, date2))
+            .group_by(self.article.id, self.article.name)
+            .order_by(func.count(Likes.id).desc())
+            .limit(5) 
+        )
+        res_stmt = await session.execute(stmt_popular_likes)
+        top5_articles_likes = res_stmt.mappings().all()
+        pass
+
+
+        

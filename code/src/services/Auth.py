@@ -991,3 +991,12 @@ async def tepconf(request: Request, session_data: Dict[str, Any] = Depends(get_c
 
     redirect_uri = f"contacts-app-emk://auth?id={user_id}&session_id={session_id}"
     return RedirectResponse(url=redirect_uri, status_code=302)
+
+@auth_router.get("/argconf")
+def generate_redirect(session_data: Dict[str, Any] = Depends(get_current_session)):   # session_id из куки текущего пользователя
+    session_id = session_data["session_id"]
+    user_info = session_data.get('user_info')
+    if int(user_info['ID']) not in ADMIN_UUIDS:
+        raise HTTPException(status_code=403, detail='Доступ закрыт')
+    redirect_url = f"http://agrofconf.emk.org.ru/api/auth/redirect?session_id={session_id}"
+    return RedirectResponse(redirect_url)

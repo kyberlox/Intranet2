@@ -90,7 +90,7 @@ export default defineComponent({
         };
 
         // предзагрузка данных в стор
-        watch([route, isLogin], async () => {
+        watch((isLogin), async () => {
             if (route && route.query && route.query.reroute && isLogin.value) {
                 window.location.href = String(route.query.reroute).replace('?reroute=', '');
             }
@@ -119,7 +119,7 @@ export default defineComponent({
                         prefetchSection('factoryGuid')
                     }
                 }
-        }, { immediate: true, deep: true })
+        }, { deep: true })
 
         onBeforeMount(async () => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');

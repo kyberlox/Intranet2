@@ -30,3 +30,10 @@ export interface IBlog extends IBaseEntity {
 export interface IBlogArticle extends IBaseEntity {
     indirect_data?: IBlogArticleData
 }
+
+export interface ISortItems {
+    user_fio: string,
+    user_id: number,
+    user_photo: string,
+    sort: number
+}

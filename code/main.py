@@ -185,24 +185,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     # Внедряю свою отладку
     log = LogsMaker()
 
-    
-
-    # for open_link in open_links:
-    #     if open_link in request.url.path:
-    #         return await call_next(request)
-
-            # try:
-            #     #return call_next(request)
-            #     print('тут')
-            #     return await call_next(request)
-            # except:
-            #     return JSONResponse(
-            #         status_code = status.HTTP_401_UNAUTHORIZED,
-            #         content = log.warning_message(message="Error when trying to follow the link without authorization")
-            #     )
-    
-
-
     # Проверяем, является ли текущий путь публичным
     for open_link in open_links:
         if open_link in request.url.path:
@@ -213,22 +195,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
     if request.url.path.startswith("/api"):
         # Создаем экземпляр сервиса авторизации
         auth_service = AuthService()
-
-        # if 'intranet.emk.ru' in os.getenv('HOST'):
-        #     user_id = request.cookies.get("user_id")
-        #     if not user_id:
-        #         user_id = request.headers.get("user_id")
-        #         if not user_id:
-        #             log.warning_message(message="Пользователь без user_id")
-        #             return JSONResponse(
-        #                 status_code=status.HTTP_401_UNAUTHORIZED,
-        #                 content={
-        #                     "status": "error",
-        #                     "message": "Authorization required. Please login first.",
-        #                     "auth_url": await auth_service.get_auth_url()
-        #                 }
-        #             )
-        # Получаем session_id из куков или заголовков
 
         session_id = request.cookies.get("session_id")
         
@@ -265,44 +231,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                     }
                 )
             
-            # # Проверяем, что access_token еще валиден
-            # access_token_expires_at = datetime.fromisoformat(
-            #     session_data.get("access_token_expires_at")
-            # )
-            # now = datetime.now()
-            
-            # if now > access_token_expires_at:
-            #     # Попытка обновить токен
-            #     refreshed = await auth_service.refresh_access_token(
-            #         session_data.get("refresh_token")
-            #     )
-                
-            #     if not refreshed:
-            #         log.warning_message(message="Failed to refresh access token")
-            #         return JSONResponse(
-            #             status_code=status.HTTP_401_UNAUTHORIZED,
-            #             content={
-            #                 "status": "error",
-            #                 "message": "Authentication failed. Please login again.",
-            #                 "auth_url": await auth_service.get_auth_url()
-            #             }
-            #         )
-                
-            #     # Обновляем данные сессии
-            #     session_data["access_token"] = refreshed["access_token"]
-            #     session_data["access_token_expires_at"] = refreshed["access_token_expires_at"]
-            #     session_data["member_id"] = refreshed["member_id"]
-                
-            #     if "refresh_token" in refreshed:
-            #         session_data["refresh_token"] = refreshed["refresh_token"]
-            #         session_data["refresh_token_expires_at"] = refreshed["refresh_token_expires_at"]
-                
-            #     # Сохраняем обновленную сессию
-            #     auth_service.redis.save_session(
-            #         key=session_id,
-            #         data=session_data,
-            #         ttl=int(auth_service.session_ttl.total_seconds())
-            #     )
             
             # Добавляем информацию о пользователе в request.state для использования в эндпоинтах
             request.state.user_id = session_data.get("user_id")
@@ -359,15 +287,6 @@ async def auth_middleware(request: Request, call_next : Callable[[Request], Awai
                         samesite="lax",
                         max_age=int(auth_service.session_ttl.total_seconds())
                     )
-                    # response.set_cookie(
-                    #     key="has",
-                    #     value=session_id,
-                    #     httponly=True,
-                    #     secure=True,  # Использовать только с HTTPS
-                    #     samesite="lax",
-                    #     max_age=int(auth_service.session_ttl.total_seconds())
-                    # )
-    
     
     return response
 

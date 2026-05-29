@@ -1,36 +1,39 @@
 <template>
-<div class="siner-table__wrapper">
-    <table class="siner-table">
-        <thead>
-            <tr>
-                <th v-for="column in columns"
-                    :key="column.key"
-                    :class="{
-                        sortable: column.sortable,
-                        'sorted-asc':
-                            column.sortable &&
-                            sortKey === column.key &&
-                            sortDirection === 'asc',
-                        'sorted-desc':
-                            column.sortable &&
-                            sortKey === column.key &&
-                            sortDirection === 'desc',
-                    }"
-                    @click="column.sortable && handleSort(column.key)">
-                    {{ column.label }}
-                    <span v-if="column.sortable"
-                          class="sort-icon">
-                        <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
-                        <span v-else-if="sortKey === column.key && sortDirection === 'desc'">↓</span>
-                        <span v-else>↕</span>
-                    </span>
-                </th>
-            </tr>
-        </thead>
+    <div class="siner-table__wrapper">
+        <table class="siner-table">
+            <thead>
+                <tr>
+                    <th
+                        v-for="column in columns"
+                        :key="column.key"
+                        :class="{
+                            sortable: column.sortable,
+                            'sorted-asc':
+                                column.sortable &&
+                                sortKey === column.key &&
+                                sortDirection === 'asc',
+                            'sorted-desc':
+                                column.sortable &&
+                                sortKey === column.key &&
+                                sortDirection === 'desc',
+                        }"
+                        @click="column.sortable && handleSort(column.key)"
+                    >
+                        {{ column.label }}
+                        <span v-if="column.sortable" class="sort-icon">
+                            <span v-if="sortKey === column.key && sortDirection === 'asc'">↑</span>
+                            <span v-else-if="sortKey === column.key && sortDirection === 'desc'"
+                                >↓</span
+                            >
+                            <span v-else>↕</span>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
 
             <tbody v-if="!loading">
                 <tr
-                    v-for="(row, rowIndex) in sortedRows"
+                    v-for="(row, rowIndex) in visibleRows"
                     :key="rowIndex"
                     @click="handleRowClick(row, rowIndex)"
                 >
@@ -59,7 +62,7 @@
                         </slot>
                     </td>
                 </tr>
-                <tr v-if="sortedRows.length === 0">
+                <tr v-if="visibleRows.length === 0">
                     <td :colspan="columns.length" class="siner-table__empty-cell">
                         {{ emptyMessage }}
                     </td>
@@ -67,15 +70,20 @@
             </tbody>
         </table>
     </div>
+    <div v-if="hasMoreRows && !loading" class="siner-table__actions">
+        <button type="button" class="primary-button siner-table__show-more" @click="handleShowMore">
+            {{ showMoreLabel }}
+        </button>
+    </div>
     <div class="siner-table__loading-wrapper">
         <div v-if="loading" class="siner-table__loading">
-            <Loader/>
+            <Loader />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, ref, computed } from 'vue'
+import { defineComponent, type PropType, ref, computed, watch } from 'vue'
 import Loader from './Loader.vue'
 
 export type ColumnDefinition<T = Record<string, unknown>> = {
@@ -120,9 +128,22 @@ export default defineComponent({
             type: String,
             default: 'Загрузка...',
         },
+        showMore: {
+            type: Boolean,
+            default: false,
+        },
+        rowsPerPage: {
+            type: Number,
+            default: 10,
+            validator: (value: number) => value > 0,
+        },
+        showMoreLabel: {
+            type: String,
+            default: 'Показать еще',
+        },
     },
     components: {
-        Loader
+        Loader,
     },
 
     emits: ['row-click', 'cell-click', 'sort'],
@@ -130,6 +151,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const sortKey = ref<string | null>(null)
         const sortDirection = ref<'asc' | 'desc'>('asc')
+        const visibleRowsCount = ref(props.rowsPerPage)
 
         const getValue = (row: TableRow, key: string): unknown => {
             const column = props.columns.find((col) => col.key === key)
@@ -228,6 +250,18 @@ export default defineComponent({
             return sorted
         })
 
+        const visibleRows = computed(() => {
+            if (!props.showMore) {
+                return sortedRows.value
+            }
+
+            return sortedRows.value.slice(0, visibleRowsCount.value)
+        })
+
+        const hasMoreRows = computed(
+            () => props.showMore && visibleRowsCount.value < sortedRows.value.length,
+        )
+
         const handleSort = (key: string) => {
             if (sortKey.value === key) {
                 sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
@@ -238,6 +272,20 @@ export default defineComponent({
 
             emit('sort', { sortKey: sortKey.value, sortDirection: sortDirection.value })
         }
+
+        const handleShowMore = () => {
+            visibleRowsCount.value = Math.min(
+                visibleRowsCount.value + props.rowsPerPage,
+                sortedRows.value.length,
+            )
+        }
+
+        watch(
+            () => [props.rows, props.rowsPerPage],
+            () => {
+                visibleRowsCount.value = props.rowsPerPage
+            },
+        )
 
         const getComponentProps = (
             column: ColumnDefinition,
@@ -306,6 +354,9 @@ export default defineComponent({
             handleRowClick,
             handleCellClick,
             sortedRows,
+            visibleRows,
+            hasMoreRows,
+            handleShowMore,
             handleSort,
             sortKey,
             sortDirection,

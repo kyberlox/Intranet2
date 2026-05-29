@@ -2038,6 +2038,8 @@ class Article:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
                 except:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
+            elif int(self.section_id) == 15:
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['indirect_data']['sort'])
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
 
@@ -2816,11 +2818,32 @@ class Article:
             return True
         except Exception as e:
             return {"error": str(e)}
-
                     
     async def get_all(self, session):
         articles_info = await ArticleModel().all(session=session)
         return articles_info
+
+    async def get_author_and_sort_blogs(self, session):
+        res = list()
+        uuids = set()
+        articles = await ArticleModel(section_id=15).find_by_section_id(session)
+        for art in articles:
+            if art['indirect_data']['author_uuid'] not in uuids and art['indirect_data'].get('author'):
+                uuids.add(art['indirect_data']['author_uuid'])
+                res.append(
+                    {
+                        'user_fio': art['indirect_data']['author'].split(";")[0],
+                        'user_id': art['indirect_data']['author_uuid'],
+                        'user_photo': art['indirect_data']['photo_file_url'],
+                        'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0
+                    }
+                )
+            else:
+                continue
+        return res
+
+    async def upload_sort_to_blogs(self, session, data):
+        return await ArticleModel().sort_to_blogs(session, data)
 
 # Dependency для получения айдишника пользователя
 async def get_user_id_by_session_id(request: Request) -> int:
@@ -3184,29 +3207,11 @@ async def dubli(user_id: int = Depends(get_user_id_by_session_id), session: Asyn
     #показать
     #удалить пока они не кончаться
 
+@article_router.get("/sort_and_blogs", tags=["Статьи"])
+async def sort_and_blogs(session: AsyncSession = Depends(get_async_db)):
+    res = await Article().get_author_and_sort_blogs(session)
+    return res
 
-
-# #найти статьи раздела по названию
-# @article_router.post("/search/title/{title}")
-# async def search_articles_by_title(title): # data = Body()
-#     return ArticleSearchModel().search_by_title(title)
-
-# #найти статьи раздела по заголовку
-# @article_router.post("/search/preview/{preview}")
-# async def search_articles_by_preview(preview): # data = Body()
-#     return ArticleSearchModel().search_by_preview(preview)
-
-# #найти статьи раздела по тексту
-# @article_router.post("/search/text/{text}")
-# async def search_articles_by_text(text): # data = Body()
-#     return ArticleSearchModel().search_by_text(text)
-
-# лайки и просмотры для статистики
-# @article_router.get("/get_all_likes/{ID}")
-# async def get_all_likes(ID: int):
-#     return Article(id = ID).get_all_likes()
-
-# @article_router.get("/get_viewers/{ID}")
-# async def get_viewers(ID: int):
-#     return Article(id = ID).get_art_views()
-
+@article_router.put("/sort_to_blogs", tags=["Статьи"])
+async def upload_sort_to_blogs(data: list = Body(), session: AsyncSession = Depends(get_async_db)):
+    return await Article().upload_sort_to_blogs(session, data)

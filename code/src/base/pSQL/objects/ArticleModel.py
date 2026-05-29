@@ -239,7 +239,7 @@ class ArticleModel:
         result = await session.execute(stmt)
         articles = result.scalars().all()
         for art in articles:
-            is_sort = [athor_info['sort'] for athor_info in data if athor_info['author_uuid'] == art.indirect_data['author_uuid']]
+            is_sort = [athor_info['sort'] for athor_info in data if athor_info['user_id'] == art.indirect_data['author_uuid']]
             art.indirect_data['sort'] = int(is_sort[0])
         await session.commit()
         return True

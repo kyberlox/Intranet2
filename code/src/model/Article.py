@@ -2826,8 +2826,10 @@ class Article:
         uuids = set()
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
+            # if art['indirect_data']['author_uuid'] in uuids:
+
             if art['indirect_data']['author_uuid'] not in uuids and art['indirect_data'].get('author'):
-                uuid = art['indirect_data']['author_uuid']
+                uuids.add(art['indirect_data']['author_uuid'])
                 res.append(
                     {
                         'user_fio': art['indirect_data']['author'].split(";")[0],
@@ -2837,7 +2839,7 @@ class Article:
                     }
                 )
             else:
-                uuids.add(art['indirect_data']['author_uuid'])
+                
                 continue
         return res
 

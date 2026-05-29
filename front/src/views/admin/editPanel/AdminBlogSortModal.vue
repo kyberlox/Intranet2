@@ -40,10 +40,11 @@ export default defineComponent({
     },
     props: {},
     setup(_, { emit }) {
-        const sortData = ref<ISortItems[]>();
+        const sortData = ref<ISortItems[]>([]);
         const isLoading = ref(true);
 
         onMounted(async () => {
+            sortData.value.length = 0;
             try {
                 sortData.value = await Api.get('article/sort_and_blogs')
             } catch (error) {

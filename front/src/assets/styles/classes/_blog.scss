@@ -76,4 +76,54 @@
             }
         }
     }
+
+    &__sort {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        &__button {
+            align-self: flex-end;
+            justify-self: flex-end;
+
+            &__wrapper {
+                margin-top: 10px;
+            }
+        }
+
+        &__loader {
+            width: 64px;
+            height: 64px;
+            margin: auto;
+        }
+
+        &__wrapper {
+            max-height: 750px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__user {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+
+            & img {
+                width: 40px;
+                height: 40px;
+                border-radius: 40px
+            }
+        }
+    }
+
+    &__loader {
+        width: 64px;
+        height: 64px;
+        margin: auto;
+    }
+
+
 }

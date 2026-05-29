@@ -26,11 +26,17 @@
                     class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">
               # Список тэгов
             </button>
+            <!-- Заификсировать баллы за новости  -->
             <button class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--green"
                     v-else-if="id == '14' && PeerAdmin && featureFlags.pointsSystem">
               Зафиксировать баллы
             </button>
-
+            <!--  Кнопка сортировки блогов -->
+            <button v-else-if="id == '15'"
+                    @click="showBlogSortModal = true"
+                    class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">
+              Сортировка блогов
+            </button>
           </div>
         </div>
         <div class="admin-block-inner__toolbar-right">
@@ -127,6 +133,8 @@
   </div>
   <AdminTagsModal v-if="showTagsModal"
                   @close="showTagsModal = false" />
+  <AdminBlogSortModal v-if="showBlogSortModal"
+                      @close="showBlogSortModal = false" />
 </div>
 </template>
 
@@ -150,6 +158,7 @@ import AdminTagsModal from './AdminTagsModal.vue';
 import { useUserData } from '@/stores/userData';
 import { featureFlags } from '@/assets/static/featureFlags';
 import type { AxiosError } from 'axios';
+import AdminBlogSortModal from './AdminBlogSortModal.vue';
 
 interface SectionItem {
   id: number;
@@ -169,6 +178,7 @@ export default defineComponent({
     AdminSidebar,
     Loader,
     AdminTagsModal,
+    AdminBlogSortModal,
     SearchIcon,
     EditIcon,
     RemoveIcon,
@@ -185,6 +195,7 @@ export default defineComponent({
     const searchQuery = ref('');
     const isLoading = ref(false);
     const sectionId = ref();
+    const showBlogSortModal = ref(false);
 
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
@@ -255,6 +266,7 @@ export default defineComponent({
       removeItem,
       useDateFormat,
       changeActive,
+      showBlogSortModal,
       PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin)
     };
   }

@@ -6,6 +6,7 @@ import type { IPostIdea, IAuth, IValidatePoints, IUsersLoad, IPostEventToExcell,
 import type { IPointsForm, INewActivityData, IPurchaseMerchData } from '@/interfaces/IPutFetchData';
 import type { IPostCardMsg, INeuroChat } from '@/interfaces/IEntities';
 import type { IPostInner } from '@/components/tools/common/PostInner.vue';
+import { type ISortItems } from '@/interfaces/IEntities';
 
 const defaultUrl = (import.meta.env.VITE_API_URL).replace('/api', '');
 
@@ -92,7 +93,7 @@ export default class Api {
 
     static async put(
         url: string,
-        data?: number[] | IPointsForm | INewActivityData | IPurchaseMerchData,
+        data?: number[] | IPointsForm | INewActivityData | IPurchaseMerchData | ISortItems[],
     ) {
         return (await api.put(url, data)).data
     }

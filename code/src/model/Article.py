@@ -3212,4 +3212,5 @@ async def sort_and_blogs(session: AsyncSession = Depends(get_async_db)):
 
 @article_router.put("/sort_to_blogs", tags=["Статьи"])
 async def upload_sort_to_blogs(data, session: AsyncSession = Depends(get_async_db)):
-    return await Article().upload_sort_to_blogs(session, data)
+    info = data['data']
+    return await Article().upload_sort_to_blogs(session, info)

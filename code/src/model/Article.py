@@ -2038,6 +2038,8 @@ class Article:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=True)
                 except:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=True)
+            elif int(self.section_id) == 15:
+                sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
             else:
                 sorted_active_articles = sorted(active_articles, key=lambda x: x['id'], reverse=True)
 
@@ -2826,8 +2828,6 @@ class Article:
         uuids = set()
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            # if art['indirect_data']['author_uuid'] in uuids:
-
             if art['indirect_data']['author_uuid'] not in uuids and art['indirect_data'].get('author'):
                 uuids.add(art['indirect_data']['author_uuid'])
                 res.append(
@@ -2839,7 +2839,6 @@ class Article:
                     }
                 )
             else:
-                
                 continue
         return res
 

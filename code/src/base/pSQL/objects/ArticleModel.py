@@ -242,8 +242,9 @@ class ArticleModel:
         for art in articles:
             is_sort = [athor_info['sort'] for athor_info in data if athor_info['user_id'] == art.indirect_data['author_uuid']]
             if not is_sort:
-                continue
-            art.indirect_data['sort'] = int(is_sort[0])
+                art.indirect_data['sort'] = 100
+            else:
+                art.indirect_data['sort'] = int(is_sort[0])
             flag_modified(art, 'indirect_data')
         await session.commit()
         return True

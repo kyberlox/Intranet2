@@ -240,6 +240,8 @@ class ArticleModel:
         articles = result.scalars().all()
         for art in articles:
             is_sort = [athor_info['sort'] for athor_info in data if athor_info['user_id'] == art.indirect_data['author_uuid']]
+            if not sort:
+                continue
             art.indirect_data['sort'] = int(is_sort[0])
         await session.commit()
         return True

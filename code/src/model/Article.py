@@ -2823,7 +2823,7 @@ class Article:
         uuids = set()
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            if int(art['indirect_data']['author_uuid']) not in uuids and art['indirect_data'].get('author'):
+            if art['indirect_data'].get('author') and int(art['indirect_data']['author_uuid']) not in uuids:
                 uuids.add(art['indirect_data']['author_uuid'])
                 res.append(
                     {

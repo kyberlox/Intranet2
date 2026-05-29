@@ -3209,3 +3209,7 @@ async def dubli(user_id: int = Depends(get_user_id_by_session_id), session: Asyn
 async def sort_and_blogs(session: AsyncSession = Depends(get_async_db)):
     res = await Article().get_author_and_sort_blogs(session)
     return res
+
+@article_router.put("/upload_sort_to_blogs", tags=["Статьи"])
+async def upload_sort_to_blogs(data: dict, session: AsyncSession = Depends(get_async_db)):
+    return await Article().upload_sort_to_blogs(session, data)

@@ -6,7 +6,7 @@
 </template>
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 export default defineComponent({
     props: {
         uid: {

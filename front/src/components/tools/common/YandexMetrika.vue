@@ -32,8 +32,15 @@ export default defineComponent({
             }
         });
 
-        return {
+        watch((props), () => {
+            if (props.uid) {
+                ym(104472774, 'setUserID', "12345");
+            }
+            console.log('ym', props.uid);
 
+        })
+
+        return {
         }
     }
 })

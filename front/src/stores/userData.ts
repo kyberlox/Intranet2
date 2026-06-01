@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { IUser } from "@/interfaces/IEntities";
-import type{ IRoots } from "@/interfaces/IEntities";
+import type { IRoots } from "@/interfaces/IEntities";
 
 export const useUserData = defineStore('userData', {
     state: () => ({
@@ -10,8 +10,8 @@ export const useUserData = defineStore('userData', {
         genCount: 1,
         roots: {
             PeerAdmin: false,
-            PeerModer: false, 
-            EditorAdmin: false, 
+            PeerModer: false,
+            EditorAdmin: false,
             VisionAdmin: false,
             peerCurator: [],
             EditorModer: [],
@@ -21,7 +21,7 @@ export const useUserData = defineStore('userData', {
     }),
     actions: {
         setMyId(id: number) {
-             this.myId = id;
+            this.myId = id;
         },
         setLogin(login: boolean) {
             this.isLogin = login;
@@ -32,16 +32,16 @@ export const useUserData = defineStore('userData', {
         setUserInfo(userData: IUser) {
             this.user = userData;
         },
-        setUserRoots(data: IRoots){
+        setUserRoots(data: IRoots) {
             this.roots = data;
         },
-        initLogin(key: string, myId: number){
-            if(key && myId){
+        initLogin(key: string, myId: number) {
+            if (key && myId) {
                 this.authKey = key;
                 this.myId = myId;
             }
         },
-        setGenCount(count: number){
+        setGenCount(count: number) {
             this.genCount = count;
         },
         logOut() {
@@ -49,9 +49,9 @@ export const useUserData = defineStore('userData', {
             this.isLogin = false;
             this.user = {} as IUser;
             this.myId = 0;
-            document.cookie.split(';').forEach(function(c) {
-            document.cookie = c.trim().split('=')[0] + '=;' + 'expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-        });
+            document.cookie.split(';').forEach(function (c) {
+                document.cookie = c.trim().split('=')[0] + '=;' + 'expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+            });
         }
     },
 
@@ -59,9 +59,9 @@ export const useUserData = defineStore('userData', {
         getMyId: (state) => state.myId,
         getIsLogin: (state) => state.isLogin,
         getAuthKey: (state) => state.authKey,
-        getUserRoots: (state)=> state.roots,
-        getGptRoot: (state)=> state.roots.GPT_gen_access || state.roots.EditorAdmin ,
-        getNeedAdminLink: (state) => Boolean(state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin || state.roots.EditorModer?.length  || state.roots.PeerModer || state.roots.peerCurator?.length),
+        getUserRoots: (state) => state.roots,
+        getGptRoot: (state) => state.roots.GPT_gen_access || state.roots.EditorAdmin,
+        getNeedAdminLink: (state) => Boolean(state.roots.EditorAdmin || state.roots.PeerAdmin || state.roots.VisionAdmin || state.roots.EditorModer?.length || state.roots.PeerModer || state.roots.peerCurator?.length),
         getUser: (state) => state.user,
         getPhoto: (state) => state.user.photo_file_url || '@/assets/imgs/plugs/userplug.jpg',
         getFio: (state) => (state.user.last_name || '') + ' ' + (state.user.name || '') + ' ' + (state.user.second_name || ''),
@@ -72,5 +72,6 @@ ${(state.user.last_name ?? '') + ' ' + (state.user.name ?? '') + ' ' + (state.us
 АО «НПО «ЭМК»
 ${(state.user.uf_usr_1753418205828 ? "Тел.:" + state.user.uf_usr_1753418205828 : '')}
 ${(state.user.personal_mobile ? "Моб.:" + state.user.personal_mobile : '')}
-${(state.user.email ? "Эл. почта:" + state.user.email : '')}`)}
+${(state.user.email ? "Эл. почта:" + state.user.email : '')}`)
+    }
 });

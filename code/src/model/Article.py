@@ -2215,7 +2215,7 @@ class Article:
                     # получили список с необходимыми данными
             # сортируем по дате
             # sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
-            sorted_data = sorted(articles_in_section, key=lambda x: x[3], reverse=True)
+            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
 
             second_page = {
                 'id': section_id,

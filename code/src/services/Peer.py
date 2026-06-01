@@ -598,7 +598,7 @@ async def delete_peer_moder(uuid: str, user_id: int = Depends(get_user_id_by_ses
 @peer_router.get("/get_curators_history")
 async def get_curators_history(
     ofset: int = 0,
-    limit: int = 10
+    limit: int = 10,
     user_id: int = Depends(get_user_id_by_session_id), 
     session: AsyncSession = Depends(get_async_db)
 ):

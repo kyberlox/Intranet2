@@ -6,8 +6,7 @@
 </template>
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent, computed } from "vue";
-import { useUserData } from "@/stores/userData";
+import { defineComponent } from "vue";
 export default defineComponent({
     props: {
         uid: {
@@ -15,6 +14,7 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const ymKey = Number(import.meta.env.YMETRIKA_KEY);
         (function (m, e, t, r, i, k, a) {
             m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
             m[i].l = 1 * new Date();
@@ -23,7 +23,7 @@ export default defineComponent({
         })
             (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-        ym(104472774, "init", {
+        ym(ymKey, "init", {
             clickmap: true,
             trackLinks: true,
             accurateTrackBounce: true,
@@ -33,8 +33,14 @@ export default defineComponent({
             }
         });
 
-        return {
+        watch((props), () => {
+            if (props.uid) {
+                ym(ymKey, 'setUserID', props.uid);
+            }
+            console.log('ym', props.uid);
+        })
 
+        return {
         }
     }
 })

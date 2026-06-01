@@ -35,7 +35,11 @@ export default defineComponent({
 
         watch((props), () => {
             if (props.uid) {
-                ym(ymKey, 'setUserID', props.uid);
+                // ym(ymKey, 'setUserID', props.uid);
+                console.log(props.uid);
+                ym(ymKey, 'userParams', {
+                    UserID: props.uid
+                });
             }
         })
 

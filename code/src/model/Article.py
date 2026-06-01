@@ -2185,8 +2185,10 @@ class Article:
         # Актуальные новости
         elif section_id == 31:
             current_datetime = datetime.datetime.now()
+            
             date_list = []  # список для сортировки по дате
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
+            # articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, limit=5, main=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
                 user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
@@ -2211,7 +2213,8 @@ class Article:
 
                     # получили список с необходимыми данными
             # сортируем по дате
-            sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
+            # sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
+            sorted_data = sorted(articles_in_section, key=lambda x: x[3], reverse=True)
 
             second_page = {
                 'id': section_id,
@@ -2225,6 +2228,26 @@ class Article:
             business_news = []
 
             image_url = ''
+            # for art in sorted_data:
+            #     self.id = art['id']
+            #     preview_pict = await self.get_preview(session)
+            #     # preview_pict = None
+            #     if preview_pict is None:
+            #         # image_url = None
+            #         image_url = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+            #     else:
+            #         image_url = preview_pict
+            #     news = {
+            #         'id': art['id'],
+            #         'title': art['name'],
+            #         'date': art['date_publiction'],
+            #         'image': image_url
+            #     }
+            #     if user_id is not None:
+            #         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
+
+            #         news['reactions'] = has_user_liked
+            #     business_news.append(news)
             for i, row in enumerate(sorted_data):
                 if i < 5:
                     news = {}
@@ -2248,12 +2271,15 @@ class Article:
                         news['reactions'] = has_user_liked
                     business_news.append(news)
             second_page['images'] = business_news
+            # fin = datetime.datetime.now()
+            # print(f"Собираем главную за {fin-start}")
             return second_page
 
         # Видеоитервью
         elif section_id == 16:
             current_datetime = datetime.datetime.now()
             data_list = []  # список для сортировки по дате
+            # articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, limit=5, main=True)
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи

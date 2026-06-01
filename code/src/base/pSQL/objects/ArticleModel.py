@@ -187,7 +187,7 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None):
+    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None, main=False):
         # import time
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
@@ -195,26 +195,32 @@ class ArticleModel:
         stmt = select(self.article).where(self.article.section_id == self.section_id)
         if skip and limit:
             stmt = stmt.offset(skip).limit(limit)
+        if main:
+            from datetime import datetime
+            current_day = datetime.now()
+            stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
         result = await session.execute(stmt)
-        data = result.scalars().all()
+        # data = result.scalars().all()
+        data = result.mappings().all()
         # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
 
         
-        try:
-            new_data = []
-            for art in data:
-                art.__dict__["indirect_data"] = json.loads(art.indirect_data)
-                new_data.append(art.__dict__)
-        except:
-            new_data = []
-            for art in data:
-                if art is not None:
-                    art.__dict__["indirect_data"] = art.indirect_data
-                    new_data.append(art.__dict__)
+        # try:
+        #     new_data = []
+        #     for art in data:
+        #         art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+        #         new_data.append(art.__dict__)
+        # except:
+        #     new_data = []
+        #     for art in data:
+        #         if art is not None:
+        #             art.__dict__["indirect_data"] = art.indirect_data
+        #             new_data.append(art.__dict__)
         # fin = time.time()
         
         # print(f"КОНЕЦ ВЫПОЛНЕНИЯ ЗАПРОСА В БД НА РАЗДЕЛ {self.section_id} = {fin - start}")
-        return new_data
+        # return new_data
+        return data
     
 
     async def all(self, session):
@@ -271,6 +277,17 @@ class ArticleModel:
         )
         res_stmt = await session.execute(stmt_popular_likes)
         top5_articles_likes = res_stmt.mappings().all()
+
+        stmt_popular_views = (
+            select(
+                self.article.name,
+                func.sum(Views.viewes_count).label('views_total')
+            )
+            .join(Views, Views.article_id == self.article.id)
+            .group_by(self.article.id, self.article.name)
+            .order_by(func.sum(Views.viewes_count).desc())
+            .limit(5)
+        )
         pass
 
 

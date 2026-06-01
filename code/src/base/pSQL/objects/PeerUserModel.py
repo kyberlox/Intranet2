@@ -357,7 +357,6 @@ class PeerUserModel:
                 
                 if activities_id in roots.get("PeerCurator", []):
                     session.add(new_action)
-                    await session.commit()
                     
                     stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
                     result_coast = await session.execute(stmt_coast)
@@ -369,7 +368,6 @@ class PeerUserModel:
                     
                 elif roots.get("PeerAdmin") == True:
                     session.add(new_action)
-                    await session.commit()
                     
                     stmt_coast = select(self.Activities.coast).where(self.Activities.id == activities_id)
                     result_coast = await session.execute(stmt_coast)

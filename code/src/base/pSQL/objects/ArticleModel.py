@@ -200,27 +200,27 @@ class ArticleModel:
         #     current_day = datetime.now()
         #     stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
         result = await session.execute(stmt)
-        # data = result.scalars().all()
-        data = result.mappings().all()
+        data = result.scalars().all()
+        # data = result.mappings().all()
         # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
 
         
-        # try:
-        #     new_data = []
-        #     for art in data:
-        #         art.__dict__["indirect_data"] = json.loads(art.indirect_data)
-        #         new_data.append(art.__dict__)
-        # except:
-        #     new_data = []
-        #     for art in data:
-        #         if art is not None:
-        #             art.__dict__["indirect_data"] = art.indirect_data
-        #             new_data.append(art.__dict__)
+        try:
+            new_data = []
+            for art in data:
+                art.__dict__["indirect_data"] = json.loads(art.indirect_data)
+                new_data.append(art.__dict__)
+        except:
+            new_data = []
+            for art in data:
+                if art is not None:
+                    art.__dict__["indirect_data"] = art.indirect_data
+                    new_data.append(art.__dict__)
         # fin = time.time()
         
         # print(f"КОНЕЦ ВЫПОЛНЕНИЯ ЗАПРОСА В БД НА РАЗДЕЛ {self.section_id} = {fin - start}")
-        # return new_data
-        return data
+        return new_data
+        # return data
     
 
     async def all(self, session):

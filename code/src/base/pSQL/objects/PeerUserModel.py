@@ -823,7 +823,7 @@ class PeerUserModel:
         except Exception as e:
             return LogsMaker().error_message(f"Ошибка в get_moders_list при получении списка модераторов: {e}")
 
-    async def get_curators_history(self, session, roots: dict):
+    async def get_curators_history(self, session, roots: dict, ofset, limit):
         YEARS_ID = [7, 8, 9, 10, 11, 12, 13, 14, 15] # менять значеняи к годам если поменялись айдишники
         try:
             if "PeerAdmin" in roots.keys() or "PeerCurator" in roots.keys():
@@ -920,7 +920,7 @@ class PeerUserModel:
                         activity_history.append(info)
                 sorted_result = sorted(activity_history, key=lambda x: x['date_time'], reverse=True)
                 # print(sorted_result)
-                return sorted_result
+                return sorted_result[ofset: ofset + limit]
             else:
                 return LogsMaker().warning_message(f"Недостаточно прав для просмотра истории кураторов")
                 

@@ -24,7 +24,7 @@ COPY ./requirements.txt /data/app/requirements.txt
 #     && pip install --no-cache-dir pyvips
 
 RUN pip install --upgrade pip
-
+ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
 RUN apt-get update && apt-get install -y libreoffice
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt

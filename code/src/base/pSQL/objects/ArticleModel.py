@@ -193,12 +193,12 @@ class ArticleModel:
         # async with AsyncSessionLocal() as session:
         # start = time.time()
         stmt = select(self.article).where(self.article.section_id == self.section_id)
-        if skip and limit:
-            stmt = stmt.offset(skip).limit(limit)
-        if main:
-            from datetime import datetime
-            current_day = datetime.now()
-            stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
+        # if skip and limit:
+        #     stmt = stmt.offset(skip).limit(limit)
+        # if main:
+        #     from datetime import datetime
+        #     current_day = datetime.now()
+        #     stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
         result = await session.execute(stmt)
         # data = result.scalars().all()
         data = result.mappings().all()

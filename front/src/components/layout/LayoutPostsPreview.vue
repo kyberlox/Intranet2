@@ -36,30 +36,10 @@
     <p v-else
        class="mt20">Нет новостей в этой категории</p>
 </div>
-<div v-if="paginationEnabled"
-     class="posts-preview-pagination">
-    <button type="button"
-            class="btn posts-preview-pagination__button"
-            :disabled="page === 0 || isLoading"
-            @click="setPage(page)">
-        Назад
-    </button>
-    <label class="posts-preview-pagination__selector">
-        <span>Страница</span>
-        <input v-model.number="selectedPage"
-               class="posts-preview-pagination__input"
-               type="number"
-               min="1"
-               :disabled="isLoading"
-               @change="setPage(selectedPage)" />
-    </label>
-    <button type="button"
-            class="btn posts-preview-pagination__button"
-            :disabled="isLoading"
-            @click="setPage(page + 2)">
-        Вперед
-    </button>
-</div>
+<PageSelector v-if="paginationEnabled"
+              :page="page"
+              :isLoading="isLoading"
+              @changePage="setPage" />
 </template>
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
@@ -78,6 +58,7 @@ import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
 import ContentPlug from "./ContentPlug.vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { featureFlags } from "@/assets/static/featureFlags";
+import PageSelector from "@/components/tools/common/PageSelector.vue";
 
 export default defineComponent({
     components: {
@@ -85,7 +66,8 @@ export default defineComponent({
         DateFilter,
         TagsFilter,
         ContentPlug,
-        ComplexGallery
+        ComplexGallery,
+        PageSelector
     },
     props: {
         id: {
@@ -139,7 +121,6 @@ export default defineComponent({
         const showFilter = ref(false);
         const isLoading = ref(true);
         const page = ref(0);
-        const selectedPage = ref(1);
         const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
 
         const fetchNews = async () => {
@@ -163,7 +144,6 @@ export default defineComponent({
 
         const setPage = (newPage: number) => {
             const normalizedPage = Math.max(1, Number(newPage) || 1);
-            selectedPage.value = normalizedPage;
             page.value = normalizedPage - 1;
         }
 
@@ -205,38 +185,9 @@ export default defineComponent({
             extractYears,
             showEventsByYear,
             page,
-            selectedPage,
             paginationEnabled,
             setPage,
         };
     },
 });
 </script>
-<style scoped>
-.posts-preview-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 28px 0 8px;
-}
-
-.posts-preview-pagination__button {
-    border: 1px solid #d7d7d7;
-}
-
-.posts-preview-pagination__selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
-}
-
-.posts-preview-pagination__input {
-    width: 72px;
-    height: 38px;
-    padding: 6px 10px;
-    border: 1px solid #d7d7d7;
-    border-radius: 4px;
-}
-</style>

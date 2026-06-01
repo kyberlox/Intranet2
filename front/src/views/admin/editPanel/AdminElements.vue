@@ -128,30 +128,11 @@
             <Loader />
           </div>
         </div>
-        <div v-if="paginationEnabled"
-             class="admin-elements-pagination">
-          <button type="button"
-                  class="admin-block-inner__btn admin-elements-pagination__button"
-                  :disabled="page === 0 || isLoading"
-                  @click="setPage(page)">
-            РќР°Р·Р°Рґ
-          </button>
-          <label class="admin-elements-pagination__selector">
-            <span>РЎС‚СЂР°РЅРёС†Р°</span>
-            <input v-model.number="selectedPage"
-                   class="admin-elements-pagination__input"
-                   type="number"
-                   min="1"
-                   :disabled="isLoading"
-                   @change="setPage(selectedPage)" />
-          </label>
-          <button type="button"
-                  class="admin-block-inner__btn admin-elements-pagination__button"
-                  :disabled="isLoading"
-                  @click="setPage(page + 2)">
-            Р’РїРµСЂРµРґ
-          </button>
-        </div>
+        <PageSelector v-if="paginationEnabled"
+                      :page="page"
+                      :isLoading="isLoading"
+                      buttonClass="admin-block-inner__btn"
+                      @changePage="setPage" />
       </div>
     </div>
   </div>
@@ -183,6 +164,7 @@ import { useUserData } from '@/stores/userData';
 import { featureFlags } from '@/assets/static/featureFlags';
 import type { AxiosError } from 'axios';
 import AdminBlogSortModal from './AdminBlogSortModal.vue';
+import PageSelector from "@/components/tools/common/PageSelector.vue";
 
 interface SectionItem {
   id: number;
@@ -206,7 +188,8 @@ export default defineComponent({
     SearchIcon,
     EditIcon,
     RemoveIcon,
-    StatusIcon
+    StatusIcon,
+    PageSelector
   },
   props: {
     id: {
@@ -221,7 +204,6 @@ export default defineComponent({
     const sectionId = ref();
     const showBlogSortModal = ref(false);
     const page = ref(0);
-    const selectedPage = ref(1);
     const paginationEnabled = computed(() => featureFlags.pagination);
 
     const toastInstance = useToast();
@@ -258,14 +240,12 @@ export default defineComponent({
 
     const setPage = (newPage: number) => {
       const normalizedPage = Math.max(1, Number(newPage) || 1);
-      selectedPage.value = normalizedPage;
       page.value = normalizedPage - 1;
       itemsInit();
     }
 
     watch((props), () => {
       page.value = 0;
-      selectedPage.value = 1;
       itemsInit();
     }, { immediate: true, deep: true });
 
@@ -300,7 +280,6 @@ export default defineComponent({
       showTagsModal,
       featureFlags,
       page,
-      selectedPage,
       paginationEnabled,
       getStatusText,
       removeItem,
@@ -313,31 +292,3 @@ export default defineComponent({
   }
 });
 </script>
-<style scoped>
-.admin-elements-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.admin-elements-pagination__button {
-  min-width: 92px;
-}
-
-.admin-elements-pagination__selector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-}
-
-.admin-elements-pagination__input {
-  width: 72px;
-  height: 38px;
-  padding: 6px 10px;
-  border: 1px solid #d7d7d7;
-  border-radius: 4px;
-}
-</style>

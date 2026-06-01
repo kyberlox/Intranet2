@@ -36,6 +36,30 @@
     <p v-else
        class="mt20">Нет новостей в этой категории</p>
 </div>
+<div v-if="paginationEnabled"
+     class="posts-preview-pagination">
+    <button type="button"
+            class="btn posts-preview-pagination__button"
+            :disabled="page === 0 || isLoading"
+            @click="setPage(page)">
+        Назад
+    </button>
+    <label class="posts-preview-pagination__selector">
+        <span>Страница</span>
+        <input v-model.number="selectedPage"
+               class="posts-preview-pagination__input"
+               type="number"
+               min="1"
+               :disabled="isLoading"
+               @change="setPage(selectedPage)" />
+    </label>
+    <button type="button"
+            class="btn posts-preview-pagination__button"
+            :disabled="isLoading"
+            @click="setPage(page + 2)">
+        Вперед
+    </button>
+</div>
 </template>
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
@@ -98,6 +122,10 @@ export default defineComponent({
         galleryType: {
             type: String,
             default: () => 'sample'
+        },
+        needPagination: {
+            type: Boolean,
+            default: false
         }
     },
     setup(props) {
@@ -110,6 +138,34 @@ export default defineComponent({
         const emptyTag: Ref<boolean> = ref(false);
         const showFilter = ref(false);
         const isLoading = ref(true);
+        const page = ref(0);
+        const selectedPage = ref(1);
+        const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
+
+        const fetchNews = async () => {
+            isLoading.value = true;
+            const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
+
+            try {
+                const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`)
+                viewsData.setData(res, props.storeItemsName);
+                if (!props.tagId) visibleNews.value = res;
+            } catch (error) {
+                console.error(error)
+            }
+            finally {
+                if (visibleNews.value && visibleNews.value.length) {
+                    filterYears.value = extractYears(visibleNews.value);
+                }
+                isLoading.value = false;
+            }
+        }
+
+        const setPage = (newPage: number) => {
+            const normalizedPage = Math.max(1, Number(newPage) || 1);
+            selectedPage.value = normalizedPage;
+            page.value = normalizedPage - 1;
+        }
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
@@ -121,26 +177,17 @@ export default defineComponent({
             showFilter.value = false;
         })
 
+        watch(page, () => {
+            if (paginationEnabled.value) fetchNews();
+        })
+
         onMounted(async () => {
-            if (allNews.value && allNews.value.length && !props.tagId) {
+            if (!paginationEnabled.value && allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
                 filterYears.value = extractYears(allNews.value);
             } else
                 isLoading.value = true;
-            if (!featureFlags.pagination)
-                try {
-                    const res = await Api.get(`article/find_by/${props.sectionId}`)
-                    viewsData.setData(res, props.storeItemsName);
-                    if (!props.tagId) visibleNews.value = res;
-                } catch (error) {
-                    console.error(error)
-                }
-                finally {
-                    if (visibleNews.value && visibleNews.value.length) {
-                        filterYears.value = extractYears(visibleNews.value);
-                    }
-                    isLoading.value = false;
-                }
+            await fetchNews();
         })
 
 
@@ -157,8 +204,39 @@ export default defineComponent({
             isLoading,
             extractYears,
             showEventsByYear,
-
+            page,
+            selectedPage,
+            paginationEnabled,
+            setPage,
         };
     },
 });
 </script>
+<style scoped>
+.posts-preview-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 28px 0 8px;
+}
+
+.posts-preview-pagination__button {
+    border: 1px solid #d7d7d7;
+}
+
+.posts-preview-pagination__selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.posts-preview-pagination__input {
+    width: 72px;
+    height: 38px;
+    padding: 6px 10px;
+    border: 1px solid #d7d7d7;
+    border-radius: 4px;
+}
+</style>

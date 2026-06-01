@@ -252,14 +252,14 @@ class Peer:
         self.PeerUserModel.uuid = uuid
         return await self.PeerUserModel.delete_peer_moder(roots=roots, session=session)
 
-    async def get_curators_history(self, session):
+    async def get_curators_history(self, session, ofset, limit):
         from ..base.pSQL.objects.RootsModel import RootsModel
         root_init = RootsModel(user_uuid=self.user_uuid)
         roots_uuid = await root_init.get_token_by_uuid(session=session)
         roots = await root_init.token_processing_for_peer(roots_uuid)
         if self.user_uuid is None:
             roots = {'user_id': 2366, 'EditorAdmin': True, "PeerAdmin": True}
-        return await self.PeerUserModel.get_curators_history(roots=roots, session=session)
+        return await self.PeerUserModel.get_curators_history(roots=roots, session=session, ofset=ofset, limit=limit)
 
     async def return_points_to_user(self, note_id, user_uuid, session):
         return await self.PeerUserModel.return_points_to_user(session=session, note_id=note_id, user_uuid=user_uuid)
@@ -596,13 +596,18 @@ async def delete_peer_moder(uuid: str, user_id: int = Depends(get_user_id_by_ses
 
 
 @peer_router.get("/get_curators_history")
-async def get_curators_history(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+async def get_curators_history(
+    ofset: int = 0,
+    limit: int = 10
+    user_id: int = Depends(get_user_id_by_session_id), 
+    session: AsyncSession = Depends(get_async_db)
+):
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated"
         )
-    return await Peer(user_uuid=user_id).get_curators_history(session=session)
+    return await Peer(user_uuid=user_id).get_curators_history(session=session, ofset=ofset, limit=limit)
 
 
 @peer_router.post("/return_points_to_user/{user_uuid}/{note_id}")

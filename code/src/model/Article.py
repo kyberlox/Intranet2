@@ -2851,7 +2851,7 @@ class Article:
         uuids = set()
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            if 'users' in art['indirect_data']:
+            if 'users' in art['indirect_data'] and art['indirect_data']['users']['id'] not in uuids:
                 res.append(
                     {
                        'user_fio': art['indirect_data']['users']['fio'],
@@ -2860,6 +2860,7 @@ class Article:
                        'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0
                     }
                 )
+                uuids.add(art['indirect_data']['users']['id'])
         sorted_res = sorted(res, key=lambda x: x['sort'])
         return sorted_res
 

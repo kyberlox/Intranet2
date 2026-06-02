@@ -167,7 +167,7 @@ def resize_user_image_quality(input_path: str) -> BytesIO:
 @compress_router.get("/{filename}")
 def get_resized_image(filename: str):
     file_path = os.path.join(STORAGE_PATH, filename)
-    print("https://intranet.emk.ru" + file_path)
+    print("https://intranet.emk.ru" + "/api/compress_image/" + filename)
     if not os.path.exists(file_path):
         raise HTTPException(404, "File not found")
     
@@ -193,7 +193,7 @@ def get_resized_image(filename: str):
 @compress_router.get("/yowai_mo/{filename}")
 def get_resized_yowai_mo_image(filename: str):
     file_path = os.path.join(STORAGE_PATH, filename)
-    
+    print("https://intranet.emk.ru" + "/api/compress_image/yowai_mo/" + filename)
     if not os.path.exists(file_path):
         raise HTTPException(404, "File not found")
     

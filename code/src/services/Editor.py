@@ -1169,7 +1169,7 @@ class Editor:
             result.pop("fio")
             result.pop('position')
             result.pop('photo_file_url')
-            if 'indirect_data' in art and 'sort' in art['indirect_data']:
+            if art['indirect_data'] and 'sort' in art['indirect_data']:
                 result['sort'] = art['indirect_data']['sort']
 
         if self.section_id == 71:

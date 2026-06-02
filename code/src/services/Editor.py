@@ -1151,6 +1151,21 @@ class Editor:
 
         # получаю статью
         art = await Article(id=self.art_id).find_by_id(self.session)
+        
+        if self.section_id == 14:
+            art["name"] = result["fio"]
+
+        if self.section_id == 15:
+            result["author"] = result["fio"] + "; " + result['position']
+            result["TITLE"] = result["fio"]
+            result.pop("fio")
+            result.pop('position')
+
+        if self.section_id == 71:
+            result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
+            result.pop("fio")
+            result.pop("department")
+            result.pop('position')
 
         if field_user != 'base':
             print(field_user, result)
@@ -1160,21 +1175,6 @@ class Editor:
             await Article(id=self.art_id).update(art, self.session)
 
             return result
-
-        if self.section_id == 14:
-            art["name"] = result["fio"]
-
-        elif self.section_id == 15:
-            result["author"] = result["fio"] + "; " + result['position']
-            result["TITLE"] = result["fio"]
-            result.pop("fio")
-            result.pop('position')
-
-        elif self.section_id == 71:
-            result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
-            result.pop("fio")
-            result.pop("department")
-            result.pop('position')
 
 
         else:

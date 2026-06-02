@@ -2886,7 +2886,7 @@ class Article:
             art['indirect_data'].pop("photo_file_url")
             art['indirect_data']["user_id"] = art['indirect_data']["author_uuid"]
             art['indirect_data']['users'] = users
-            self.art_id = art['id']
+            self.id = art['id']
             await self.update(art, session)  
         return True  
             

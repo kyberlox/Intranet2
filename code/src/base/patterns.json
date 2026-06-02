@@ -198,7 +198,7 @@
       },
       {
         "name": "Автор блога",
-        "field": "user",
+        "field": "users",
         "data_type": "str",
         "disabled": true
       },

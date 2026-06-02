@@ -636,7 +636,8 @@ async def send_points_to_employee_of_the_year(user_id: int = Depends(get_user_id
         )
     return await Peer(user_uuid=user_id).send_points_to_employee_of_the_year(session=session)
 
-@peer_router.put("/send_points_to_dit")
+
+@peer_router.put("/send_points_to_dit", tags=['Пользователь'])
 async def send_points_to_dit(user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
     if not user_id:
         raise HTTPException(
@@ -645,7 +646,7 @@ async def send_points_to_dit(user_id: int = Depends(get_user_id_by_session_id), 
         )
     users = [120, 964, 173, 5296, 96, 3409, 3741, 4724, 63, 3490, 66, 75, 58, 3811, 1260, 936, 1410, 11, 77, 3664]
     data = {
-        "activities_id": 0, #ЗАВТРА ПРОСТАПВИТЬТ айдишник
+        "activities_id": 17, #ЗАВТРА ПРОСТАПВИТЬТ айдишник
         "description": "За профессиональные достижения"
     }
     for user in users:

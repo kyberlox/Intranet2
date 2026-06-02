@@ -2873,7 +2873,7 @@ class Article:
         from copy import deepcopy
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-            if not art['indirect_data']["author_uuid"]:
+            if not art['indirect_data']["author_uuid"] or "author" not in art['indirect_data']:
                 continue
             users = {
                 "id": art['indirect_data']["author_uuid"],

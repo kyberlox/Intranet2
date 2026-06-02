@@ -1160,14 +1160,13 @@ class Editor:
                 "id": result['user_id'],
                 "fio": result["fio"],
                 "position": result["position"], 
-                "TITLE": result["fio"],
+                "TITLE": result["fio"] + ';' + esult["position"],
                 "photo_file_url": result["photo_file_url"]
             }
             # result["author"] = result["fio"] + "; " + result['position']
             # result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
-            result.pop('TITLE')
             result.pop('photo_file_url')
             result.pop('author')
 

@@ -1157,7 +1157,7 @@ class Editor:
 
         if self.section_id == 15:
             result['user'] = {
-                "id": result['user_id']
+                "id": result['user_id'],
                 "fio": result["fio"],
                 "position": result["position"], 
                 "TITLE": result["fio"],

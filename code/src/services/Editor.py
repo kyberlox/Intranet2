@@ -1121,7 +1121,7 @@ class Editor:
                     photo_file_url = photo_replace
                     result[field] = photo_file_url
                 elif field == "id":
-                    result["author_uuid"] = user_id
+                    result["author_uuid"] = int(user_id)
                 else:
                     if field in user_info:
                         result[field] = user_info[field]
@@ -1130,7 +1130,7 @@ class Editor:
                     else:
                         result[field] = ""
 
-        result['user_id'] = user_id
+        result['user_id'] = int(user_id)
 
         if "name" in result.keys():
             # result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
@@ -1164,13 +1164,13 @@ class Editor:
         if self.section_id == 14:
             art["name"] = result["fio"]
 
-        if self.section_id == 15:
+        elif self.section_id == 15:
             result["author"] = result["fio"] + "; " + result['position']
             result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
 
-        if self.section_id == 71:
+        elif self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
             result.pop("fio")
             result.pop("department")

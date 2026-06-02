@@ -2863,7 +2863,8 @@ class Article:
                 )
             else:
                 continue
-        return res
+        sorted_res = sorted(res, key=lambda x: x['sort'])
+        return sorted_res
 
     async def upload_sort_to_blogs(self, session, data):
         return await ArticleModel().sort_to_blogs(session, data)

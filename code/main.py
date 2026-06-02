@@ -450,14 +450,14 @@ def elastic_search(keyword: str):
     from src.base.Elastic.App import search_everywhere
     return search_everywhere(key_word=keyword)
 
-@app.put("/api/full_elastic_dump")
+@app.put("/api/full_elastic_dump", tags=['Пользователи'])
 async def elastic_dump(session: AsyncSession=Depends(get_async_db)):
     from src.base.Elastic.UserSearchModel import UserSearchModel
     from src.base.Elastic.StuctureSearchmodel import StructureSearchModel
     from src.base.Elastic.ArticleSearchModel import ArticleSearchModel
-    # await UserSearchModel().dump(session)
+    await UserSearchModel().dump(session)
     await StructureSearchModel().dump(session)
-    # await ArticleSearchModel().dump(session)
+    await ArticleSearchModel().dump(session)
     return {"status": True}
 
 @app.get("/down_file/{inf_id}/{art_id}/{property}")

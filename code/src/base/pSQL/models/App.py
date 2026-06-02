@@ -43,7 +43,8 @@ def create_async_db_engine():
                 max_overflow=25,   # дополнительных при пиковой нагрузке
                 pool_timeout=30,   # ждать соединения (сек.)
                 pool_recycle=3600, # пересоздавать соединения каждый час
-                pool_pre_ping=True 
+                pool_pre_ping=True,
+                echo_pool=True
             )
             LogsMaker().ready_status_message("Асинхронный pSQL движок успешно создан!")
             return engine

@@ -1157,13 +1157,19 @@ class Editor:
 
         if self.section_id == 15:
             result['user'] = {
-                "author": result["fio"] + "; " + result['position'],
-                "TITLE": result["fio"]
+                "id": result['user_id']
+                "fio": result["fio"],
+                "position": result["position"], 
+                "TITLE": result["fio"],
+                "photo_file_url": result["photo_file_url"]
             }
             # result["author"] = result["fio"] + "; " + result['position']
             # result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
+            result.pop('TITLE')
+            result.pop('photo_file_url')
+            result.pop('author')
 
         if self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]

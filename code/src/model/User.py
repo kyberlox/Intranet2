@@ -1094,7 +1094,12 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
 # Пользователя можно выгрузить
 @users_router.get("/find_by/{id}", tags=["Пользователь"])
 async def find_by_user(id: int, session: AsyncSession = Depends(get_async_db)):
-    return await User(id).search_by_id(session)
+    import time 
+    start = time.time()
+    res = await User(id).search_by_id(session)
+    fin = start = time.time()
+    print(f"Загружаем {id} за {fin - start}")
+    return res
 
 
 # Получить айди пользователя по session_id

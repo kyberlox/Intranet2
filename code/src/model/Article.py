@@ -2855,7 +2855,7 @@ class Article:
                 uuids.add(art['indirect_data']['author_uuid'])
                 res.append(
                     {
-                        'user_fio': art['indirect_data']['author'].split(";")[0],
+                        'user_fio': art['indirect_data']['author'].split(";")[0] if 'user' not in art['indirect_data'] else art['indirect_data']['user']['author'].split(";")[0],
                         'user_id': int(art['indirect_data']['author_uuid']),
                         'user_photo': art['indirect_data']['photo_file_url'],
                         'sort': art['indirect_data']['sort'] if 'sort' in art['indirect_data'] else 0

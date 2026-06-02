@@ -128,6 +128,11 @@
             <Loader />
           </div>
         </div>
+        <PageSelector v-if="paginationEnabled"
+                      :page="page"
+                      :isLoading="isLoading"
+                      buttonClass="admin-block-inner__btn"
+                      @changePage="setPage" />
       </div>
     </div>
   </div>
@@ -159,6 +164,7 @@ import { useUserData } from '@/stores/userData';
 import { featureFlags } from '@/assets/static/featureFlags';
 import type { AxiosError } from 'axios';
 import AdminBlogSortModal from './AdminBlogSortModal.vue';
+import PageSelector from "@/components/tools/common/PageSelector.vue";
 
 interface SectionItem {
   id: number;
@@ -182,7 +188,8 @@ export default defineComponent({
     SearchIcon,
     EditIcon,
     RemoveIcon,
-    StatusIcon
+    StatusIcon,
+    PageSelector
   },
   props: {
     id: {
@@ -196,6 +203,8 @@ export default defineComponent({
     const isLoading = ref(false);
     const sectionId = ref();
     const showBlogSortModal = ref(false);
+    const page = ref(0);
+    const paginationEnabled = computed(() => featureFlags.pagination);
 
     const toastInstance = useToast();
     const toast = useToastCompose(toastInstance);
@@ -220,15 +229,23 @@ export default defineComponent({
       isLoading.value = true;
       sectionId.value = route.params.id;
       if (sectionId.value == 'gpt') return
+      const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
       try {
-        const data = await Api.get(`/editor/section_rendering/${sectionId.value}`)
+        const data = await Api.get(`/editor/section_rendering/${sectionId.value}${paginationQuery}`)
         items.value = data
       } finally {
         isLoading.value = false
       }
     }
 
+    const setPage = (newPage: number) => {
+      const normalizedPage = Math.max(1, Number(newPage) || 1);
+      page.value = normalizedPage - 1;
+      itemsInit();
+    }
+
     watch((props), () => {
+      page.value = 0;
       itemsInit();
     }, { immediate: true, deep: true });
 
@@ -262,10 +279,13 @@ export default defineComponent({
       sectionId,
       showTagsModal,
       featureFlags,
+      page,
+      paginationEnabled,
       getStatusText,
       removeItem,
       useDateFormat,
       changeActive,
+      setPage,
       showBlogSortModal,
       PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin)
     };

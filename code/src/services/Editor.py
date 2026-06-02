@@ -1121,7 +1121,7 @@ class Editor:
                     photo_file_url = photo_replace
                     result[field] = photo_file_url
                 elif field == "id":
-                    result["author_uuid"] = user_id
+                    result["author_uuid"] = int(user_id)
                 else:
                     if field in user_info:
                         result[field] = user_info[field]
@@ -1130,7 +1130,7 @@ class Editor:
                     else:
                         result[field] = ""
 
-        result['user_id'] = user_id
+        result['user_id'] = int(user_id)
 
         if "name" in result.keys():
             # result['fio'] = result['last_name'] + " " + result['name'] + " " + result['second_name']
@@ -1152,6 +1152,32 @@ class Editor:
         # получаю статью
         art = await Article(id=self.art_id).find_by_id(self.session)
 
+        if self.section_id == 14:
+            art["name"] = result["fio"]
+
+        if self.section_id == 15:
+            result['users'] = {
+                "id": result['user_id'],
+                "fio": result["fio"],
+                "position": result["position"], 
+                "TITLE": result["fio"] + ';' + result["position"],
+                "photo_file_url": result["photo_file_url"]
+            }
+            result['sort'] = 11
+            # result["author"] = result["fio"] + "; " + result['position']
+            # result["TITLE"] = result["fio"]
+            result.pop("fio")
+            result.pop('position')
+            result.pop('photo_file_url')
+            if art['indirect_data'] and 'sort' in art['indirect_data']:
+                result['sort'] = art['indirect_data']['sort']
+
+        if self.section_id == 71:
+            result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
+            result.pop("fio")
+            result.pop("department")
+            result.pop('position')
+
         if field_user != 'base':
             print(field_user, result)
             if art['indirect_data'] is None:
@@ -1160,21 +1186,6 @@ class Editor:
             await Article(id=self.art_id).update(art, self.session)
 
             return result
-
-        if self.section_id == 14:
-            art["name"] = result["fio"]
-
-        if self.section_id == 15:
-            result["author"] = result["fio"] + "; " + result['position']
-            result["TITLE"] = result["fio"]
-            result.pop("fio")
-            result.pop('position')
-
-        if self.section_id == 71:
-            result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]
-            result.pop("fio")
-            result.pop("department")
-            result.pop('position')
 
 
         else:

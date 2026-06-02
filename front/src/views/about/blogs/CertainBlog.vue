@@ -11,7 +11,7 @@
 			<h2>{{ currentArticle.name }}</h2>
 			<div v-if="currentArticle.content_text"
 				 class="mt20 blog__article__content blog__content"
-				 v-html="parseMarkdown(currentArticle.content_text)">
+				 v-html="parseMarkdown(currentArticle.content_text).replaceAll('&nbsp', ' ')">
 			</div>
 			<div v-if="(currentArticle.indirect_data?.youtube_link || currentArticle.videos_embed)"
 				 class="blog-list__video__wrapper">

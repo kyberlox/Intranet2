@@ -36,6 +36,10 @@
     <p v-else
        class="mt20">Нет новостей в этой категории</p>
 </div>
+<PageSelector v-if="paginationEnabled"
+              :page="page"
+              :isLoading="isLoading"
+              @changePage="setPage" />
 </template>
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
@@ -54,6 +58,7 @@ import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
 import ContentPlug from "./ContentPlug.vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { featureFlags } from "@/assets/static/featureFlags";
+import PageSelector from "@/components/tools/common/PageSelector.vue";
 
 export default defineComponent({
     components: {
@@ -61,7 +66,8 @@ export default defineComponent({
         DateFilter,
         TagsFilter,
         ContentPlug,
-        ComplexGallery
+        ComplexGallery,
+        PageSelector
     },
     props: {
         id: {
@@ -98,6 +104,10 @@ export default defineComponent({
         galleryType: {
             type: String,
             default: () => 'sample'
+        },
+        needPagination: {
+            type: Boolean,
+            default: false
         }
     },
     setup(props) {
@@ -110,6 +120,32 @@ export default defineComponent({
         const emptyTag: Ref<boolean> = ref(false);
         const showFilter = ref(false);
         const isLoading = ref(true);
+        const page = ref(0);
+        const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
+
+        const fetchNews = async () => {
+            isLoading.value = true;
+            const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
+
+            try {
+                const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`)
+                viewsData.setData(res, props.storeItemsName);
+                if (!props.tagId) visibleNews.value = res;
+            } catch (error) {
+                console.error(error)
+            }
+            finally {
+                if (visibleNews.value && visibleNews.value.length) {
+                    filterYears.value = extractYears(visibleNews.value);
+                }
+                isLoading.value = false;
+            }
+        }
+
+        const setPage = (newPage: number) => {
+            const normalizedPage = Math.max(1, Number(newPage) || 1);
+            page.value = normalizedPage - 1;
+        }
 
         watch(([currentTag, currentYear]), async () => {
             const { newVisibleNews, newEmptyTag, newFilterYears } =
@@ -121,26 +157,17 @@ export default defineComponent({
             showFilter.value = false;
         })
 
+        watch(page, () => {
+            if (paginationEnabled.value) fetchNews();
+        })
+
         onMounted(async () => {
-            if (allNews.value && allNews.value.length && !props.tagId) {
+            if (!paginationEnabled.value && allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
                 filterYears.value = extractYears(allNews.value);
             } else
                 isLoading.value = true;
-            if (!featureFlags.pagination)
-                try {
-                    const res = await Api.get(`article/find_by/${props.sectionId}`)
-                    viewsData.setData(res, props.storeItemsName);
-                    if (!props.tagId) visibleNews.value = res;
-                } catch (error) {
-                    console.error(error)
-                }
-                finally {
-                    if (visibleNews.value && visibleNews.value.length) {
-                        filterYears.value = extractYears(visibleNews.value);
-                    }
-                    isLoading.value = false;
-                }
+            await fetchNews();
         })
 
 
@@ -157,7 +184,9 @@ export default defineComponent({
             isLoading,
             extractYears,
             showEventsByYear,
-
+            page,
+            paginationEnabled,
+            setPage,
         };
     },
 });

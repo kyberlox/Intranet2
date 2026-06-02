@@ -1168,7 +1168,6 @@ class Editor:
             result.pop("fio")
             result.pop('position')
             result.pop('photo_file_url')
-            result.pop('author')
 
         if self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]

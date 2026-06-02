@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DOMAIN = os.getenv('HOST')
+DOMAIN = "https://intranet.emk.ru"
 
 metadata = MetaData()
 

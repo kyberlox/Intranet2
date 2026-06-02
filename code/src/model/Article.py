@@ -2869,6 +2869,28 @@ class Article:
     async def upload_sort_to_blogs(self, session, data):
         return await ArticleModel().sort_to_blogs(session, data)
 
+    async def rebuild_blogs(self, session):
+        from copy import deepcopy
+        articles = await ArticleModel(section_id=15).find_by_section_id(session)
+        for art in articles:
+
+            users = {
+                "id": art['indirect_data']["author_uuid"],
+                "fio": art['indirect_data']["author"].split(";")[0],
+                "TITLE": art['indirect_data']["author"],
+                "position": art['indirect_data']["author"].split(";")[1],
+                "photo_file_url": art['indirect_data']["photo_file_url"]
+            }
+            art['indirect_data'].pop("author")
+            art['indirect_data'].pop("TITLE")
+            art['indirect_data'].pop("photo_file_url")
+            art['indirect_data']["user_id"] = art['indirect_data']["author_uuid"]
+            art['indirect_data']['users'] = users
+            self.art_id = art['id']
+            await self.update(art, session)  
+        return True  
+            
+
 # Dependency для получения айдишника пользователя
 async def get_user_id_by_session_id(request: Request) -> int:
     from ..base.RedisStorage import RedisStorage
@@ -3239,3 +3261,8 @@ async def sort_and_blogs(session: AsyncSession = Depends(get_async_db)):
 @article_router.put("/sort_to_blogs", tags=["Статьи"])
 async def upload_sort_to_blogs(data: list = Body(), session: AsyncSession = Depends(get_async_db)):
     return await Article().upload_sort_to_blogs(session, data)
+
+@article_router.put("/rebuild_blogs_all", tags=["Статьи"])
+async def rebuild_blogs_all(session: AsyncSession = Depends(get_async_db)):
+    return await Article().rebuild_blogs(session)
+

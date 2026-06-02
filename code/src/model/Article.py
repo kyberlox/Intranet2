@@ -2105,9 +2105,9 @@ class Article:
                     continue
                 
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
 
                 self.id = values["id"]
 
@@ -2192,9 +2192,9 @@ class Article:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
 
                 if values["active"] is False:
                     pass
@@ -2284,9 +2284,9 @@ class Article:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
                 if values["active"] is not False:
                     date_value = []  # список для хранения необходимых данных
                     if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
@@ -2351,9 +2351,9 @@ class Article:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
                 if values["active"] is not False:
                     date_value = []  # список для хранения необходимых данных
                     if values["date_publiction"] is None or values["date_publiction"] <= current_datetime:
@@ -2418,9 +2418,9 @@ class Article:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
                 if values["active"] is False:
                     pass
                 else:
@@ -2484,9 +2484,9 @@ class Article:
             for values in articles_in_section:
 
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
 
                 if values["active"] is False:
                     pass
@@ -2554,9 +2554,9 @@ class Article:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
-                user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                if not user_access:
-                    continue
+                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
+                # if not user_access:
+                #     continue
 
                 if values["active"] is False:
                     pass

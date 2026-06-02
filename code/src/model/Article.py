@@ -2873,7 +2873,8 @@ class Article:
         from copy import deepcopy
         articles = await ArticleModel(section_id=15).find_by_section_id(session)
         for art in articles:
-
+            if not art['indirect_data']["author_uuid"]:
+                continue
             users = {
                 "id": art['indirect_data']["author_uuid"],
                 "fio": art['indirect_data']["author"].split(";")[0],
@@ -2888,6 +2889,7 @@ class Article:
             art['indirect_data']['users'] = users
             self.id = art['id']
             await self.update(art, session)  
+
         return True  
             
 

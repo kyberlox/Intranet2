@@ -51,9 +51,21 @@ AsyncSessionLocal = async_sessionmaker(
 #         db.close()
 
 
+# async def get_async_db():
+#     async with AsyncSessionLocal() as session:
+#         try:
+#             yield session
+#         finally:
+#             await session.close()
+
 async def get_async_db():
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+    session = AsyncSessionLocal()
+    try:
+        yield session
+        # Для read-only эндпоинтов — всегда откат
+        await session.rollback()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()

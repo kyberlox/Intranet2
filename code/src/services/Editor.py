@@ -1163,11 +1163,14 @@ class Editor:
                 "TITLE": result["fio"] + ';' + result["position"],
                 "photo_file_url": result["photo_file_url"]
             }
+            result['sort'] = 11
             # result["author"] = result["fio"] + "; " + result['position']
             # result["TITLE"] = result["fio"]
             result.pop("fio")
             result.pop('position')
             result.pop('photo_file_url')
+            if 'indirect_data' in art and 'sort' in art['indirect_data']:
+                result['sort'] = art['indirect_data']['sort']
 
         if self.section_id == 71:
             result["representative_text"] = result["fio"] + ", " + result['position'] + ", " + result["department"]

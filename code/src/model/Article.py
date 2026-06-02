@@ -31,7 +31,8 @@ from urllib.parse import quote
 
 load_dotenv()
 
-DOMAIN = os.getenv('HOST')
+# DOMAIN = os.getenv('HOST')
+DOMAIN = "https://intranet.emk.ru"
 
 article_router = APIRouter(prefix="/article")
 

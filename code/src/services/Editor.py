@@ -1160,7 +1160,7 @@ class Editor:
                 "id": result['user_id'],
                 "fio": result["fio"],
                 "position": result["position"], 
-                "TITLE": result["fio"] + ';' + esult["position"],
+                "TITLE": result["fio"] + ';' + result["position"],
                 "photo_file_url": result["photo_file_url"]
             }
             # result["author"] = result["fio"] + "; " + result['position']

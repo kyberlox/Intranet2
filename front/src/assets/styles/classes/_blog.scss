@@ -88,6 +88,8 @@
 
             &__wrapper {
                 margin-top: 10px;
+                max-height: 450px;
+                overflow-y: auto;
             }
         }
 

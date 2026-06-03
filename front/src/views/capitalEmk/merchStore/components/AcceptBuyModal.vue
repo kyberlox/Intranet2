@@ -27,6 +27,8 @@
 
         </div>
         <button @click="accept"
+                type="button"
+                :disabled="isLoading"
                 class="merch-store__accept-buy-modal__button"
                 :class="{ 'merch-store__accept-buy-modal__button--loading': isLoading }">
             <Loader v-if="isLoading" />
@@ -67,7 +69,10 @@ export default defineComponent({
         return {
             quantity,
             currentScore: computed(() => useUserScore().getCurrentScore),
-            accept: () => emit('acceptBuy', quantity.value, props.customPrice)
+            accept: () => {
+                if (props.isLoading) return;
+                emit('acceptBuy', quantity.value, props.customPrice);
+            }
         }
     }
 })

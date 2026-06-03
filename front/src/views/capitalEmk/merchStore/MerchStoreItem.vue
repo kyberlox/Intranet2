@@ -79,6 +79,9 @@
                     :isLoading="isLoading"
                     :customPrice="currentItem?.indirect_data?.price ? false : true"
                     @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
+    <PurchaseSuccessModal v-if="purchaseSuccessModalOpen"
+                          :itemName="currentItem?.name"
+                          @close="purchaseSuccessModalOpen = false" />
 </div>
 </template>
 
@@ -87,20 +90,23 @@ import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { computed, defineComponent, onMounted, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
 import AcceptBuyModal from './components/AcceptBuyModal.vue';
+import PurchaseSuccessModal from './components/PurchaseSuccessModal.vue';
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
 import Api from '@/utils/Api';
 import type { IMerchItem } from '@/interfaces/entities/IMerch';
-import { handleApiError, handleApiResponse } from '@/utils/apiResponseCheck';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 import { featureFlags } from '@/assets/static/featureFlags';
 import { useUserScore } from '@/stores/userScoreData';
+
+const isResponseObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 
 export default defineComponent({
     components: {
         ZoomModal,
         ZoomInIcon,
         AcceptBuyModal,
+        PurchaseSuccessModal,
         HoverGallerySkeleton,
     },
     props: {
@@ -114,6 +120,7 @@ export default defineComponent({
         const modalIsOpen = ref(false);
         const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
         const acceptBuyModalOpen = ref(false);
+        const purchaseSuccessModalOpen = ref(false);
         const isLoading = ref(false);
         const currentScore = computed(() => useUserScore().getCurrentScore);
 
@@ -153,15 +160,17 @@ export default defineComponent({
                 const needRoute = quantity > 0 && !customPrice ? routes[0] : routes[1]
                 try {
                     const data = await Api.put(needRoute.route, needRoute.body)
-                    if (typeof data == 'object' && 'not_enough' in data) {
+                    if (isResponseObject(data) && 'not_enough' in data) {
                         toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')
-                    } else if (typeof data == 'object' && 'message' in data) {
+                    } else if (isResponseObject(data) && 'message' in data) {
                         toast.showCustomToast('warn', 'К сожалению у вас недостаточно баллов')
-                    } else if (data !== true && 'status' in data) {
+                    } else if (isResponseObject(data) && 'status' in data) {
                         toast.showCustomToast('warn', 'К сожалению у вас не хватает баллов')
+                    } else if (!data) {
+                        toast.showError('trySupportError');
                     }
                     else {
-                        handleApiResponse(data, toast, 'trySupportError', 'merchBuySuccess')
+                        purchaseSuccessModalOpen.value = true;
                     }
                     try {
                         const points = await Api.get('/peer/user_history')
@@ -213,6 +222,7 @@ export default defineComponent({
             modalIsOpen,
             currentSize,
             acceptBuyModalOpen,
+            purchaseSuccessModalOpen,
             currentItem,
             isLoading,
             setZoomImg,

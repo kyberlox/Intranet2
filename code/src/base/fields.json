@@ -61,5 +61,7 @@
     "integrator" : "Интегратор",
     "sinerteam_status" : "Статус",
     "date_status" : "Дата статуса",
-    "note_status" : "Комментарий статуса"
+    "note_status" : "Комментарий статуса",
+    "manufacture_name" : "Название предприятия"
+    
 }

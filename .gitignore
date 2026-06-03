@@ -31,3 +31,6 @@
 
 /code/*.pdf
 /code/*.docx
+
+/loki_data
+/grafana_data

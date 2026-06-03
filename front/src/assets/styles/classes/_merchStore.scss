@@ -1,6 +1,23 @@
 @use '/src/assets/styles/mixins' as *;
 
 .merch-store {
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 14px;
+
+        @include sm {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    &__history-button {
+        flex-shrink: 0;
+    }
+
     &__title {
         width: 100%;
         background: white;

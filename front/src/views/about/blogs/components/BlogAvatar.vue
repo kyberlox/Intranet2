@@ -46,7 +46,7 @@ export default defineComponent({
     },
     setup(props) {
         const formatTitle = () => {
-            if (props.author?.authorTitle) {
+            if (props.author?.authorTitle && props.author?.authorTitle.includes(';')) {
                 return `${props.author?.authorTitle.split(';')[0]}<div class="blogs__item-title--small">${props.author?.authorTitle.split(';')[1]}</div>`
             }
             else return props.author?.title

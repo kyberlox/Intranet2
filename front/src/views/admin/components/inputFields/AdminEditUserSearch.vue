@@ -15,7 +15,7 @@
     <div class="primary-button"
          @click="showSearchModal = true">Добавить</div>
 </div>
-<SearchList v-if="users.length && (field == 'implementer' || field == 'integrator')"
+<SearchList v-if="Array.isArray(users) && users.length && (field == 'implementer' || field == 'integrator')"
             :searchList="users"
             :needDeleteButton="needDeleteButton"
             @remove="(user: IUserSearch) => handleUserPick(user, 'remove')"

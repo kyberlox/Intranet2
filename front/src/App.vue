@@ -104,14 +104,6 @@ export default defineComponent({
                 if (userData.getAuthKey) {
                     prefetchSection('user');
                 }
-                const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
-                const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
-
-                if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
-                    prefetchSection('blogs')
-                } else if (factoryGuidRoutes.includes(String(route.name))) {
-                    prefetchSection('factoryGuid')
-                }
 
                 try {
                     const res = await Api.getVendor('https://gpt.emk.ru/check_count')
@@ -120,6 +112,21 @@ export default defineComponent({
                 catch (error) { console.error(error) }
             }
         }, { deep: true })
+
+        watch([route, isLogin], () => {
+            if (!isLogin.value) return;
+            const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
+            const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
+            console.log(blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15'))
+            if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
+                console.log('readeyToPrefetch');
+
+                prefetchSection('blogs')
+            } else if (factoryGuidRoutes.includes(String(route.name))) {
+                prefetchSection('factoryGuid')
+            }
+            console.log('her')
+        }, { immediate: true, deep: true })
 
         onBeforeMount(async () => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');

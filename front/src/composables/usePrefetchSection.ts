@@ -12,7 +12,10 @@ import { featureFlags } from "@/assets/static/featureFlags";
 export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calendar' | 'user' | 'score') => {
     if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
+    const blogStore = useblogDataStore();
+    console.log(dataType);
     switch (dataType) {
+
         case 'user':
             try {
                 const res = await Api.get(`users/find_by/${useUserData().getMyId}`)
@@ -36,8 +39,11 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
                 }
             break;
         case 'blogs':
-            if (!useblogDataStore().getAllAuthors.length)
-                getBlogAuthorsToStore();
+            console.log('blog1');
+            if (!blogStore.getAllAuthors.length)
+                console.log('blog2');
+
+            getBlogAuthorsToStore();
             break;
         case 'calendar':
             const currentYear = new Date().getFullYear();

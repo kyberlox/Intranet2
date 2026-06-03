@@ -123,22 +123,21 @@ app.include_router(C_app, prefix="/api")
 
 main_redirect = os.getenv('HOST')
 
-# if 'intranet.emk.ru' in main_redirect:
+if 'intranet.emk.ru' in main_redirect:
     # origins = [
     #     "http://intranet.emk.org.ru",
     #     "http://localhost:5173",  # если разработка
     # ]
-origins = ["http://intranet.emk.org.ru", "http://localhost:5173", "*"]
+    origins = ["*"]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
-    # allow_headers=["*"]
-    # allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials", "session_id"]
-    allow_headers=["*"]
-)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
+        # allow_headers=["*"]
+        allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials", "session_id"]
+    )
 
 
 

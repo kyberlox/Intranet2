@@ -128,7 +128,7 @@ main_redirect = os.getenv('HOST')
     #     "http://intranet.emk.org.ru",
     #     "http://localhost:5173",  # если разработка
     # ]
-origins = ['*']
+origins = ['*', "http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,

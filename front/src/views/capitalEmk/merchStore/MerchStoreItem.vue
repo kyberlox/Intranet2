@@ -73,12 +73,14 @@
                :image="[activeImage]"
                @close="modalIsOpen = false" />
 
+    <!-- Подтверждение + кол-во -->
     <AcceptBuyModal v-if="acceptBuyModalOpen"
                     @closeModal="callModal(false)"
                     :price="currentItem?.indirect_data?.price"
                     :isLoading="isLoading"
                     :customPrice="currentItem?.indirect_data?.price ? false : true"
                     @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
+    <!-- Уведомление об успешной покупке -->
     <PurchaseSuccessModal v-if="purchaseSuccessModalOpen"
                           :itemName="currentItem?.name"
                           @close="purchaseSuccessModalOpen = false" />
@@ -139,6 +141,7 @@ export default defineComponent({
         }
 
         const acceptBuy = async (quantity: number, customPrice: boolean = false) => {
+            isLoading.value = true;
             const routes = [
                 {
                     route: 'store/create_purchase',

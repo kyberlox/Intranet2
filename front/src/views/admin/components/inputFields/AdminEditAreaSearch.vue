@@ -64,7 +64,7 @@ export default defineComponent({
 
         const handleDepIdPick = (dep: IAreaDepartment) => {
             pickedId.value = String(dep.id);
-            emit('handleDepartmentPick', dep.id);
+            emit('handleDepartmentPick', dep.id, dep.name);
             showSearchModal.value = false;
         }
 

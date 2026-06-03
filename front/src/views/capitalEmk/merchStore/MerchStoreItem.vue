@@ -29,9 +29,9 @@
             <div v-if="currentItem.content_text"
                  class="merch-store-item__info__description"
                  v-html="currentItem.content_text.replaceAll('&nbsp;', ' ')"></div>
-            <div v-if="checkSizes(currentItem as IMerchItem).length !== 0 && !checkSizes(currentItem as IMerchItem).includes('no_size')"
+            <div v-if="checkSizes(currentItem as IMerchItem).length !== 0"
                  class="merch-store-item__info__sizes__title">
-                <span>Размер</span>
+                <!-- <span>Размер</span> -->
                 <div class="merch-store-item__info__sizes">
                     <div class="merch-store-item__info__size"
                          :class="{ 'merch-store-item__info__size--active': item == currentSize }"

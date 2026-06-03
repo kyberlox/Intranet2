@@ -33,7 +33,7 @@
                          :title="item.name"
                          :type="item.data_type"
                          :field="item.field"
-                         :users="(item.value as IUserList[])"
+                         :users="Array.isArray(item.value) ? (item.value as IUserList[]) : [item.value as IUserList]"
                          :needDeleteButton="item.field === 'implementer' || item.field === 'integrator'"
                          @handleUserPick="
                           (id, field) => {
@@ -49,7 +49,7 @@
     <!-- Для поиска по структуре -->
     <AdminEditAreaSearch v-if="item.data_type == 'areaSearch'"
                          :idValue="Number(item.value)"
-                         @handleDepartmentPick="(value: string) => $emit('handleEmitValueChange', item, value)" />
+                         @handleDepartmentPick="(value: string, name: string = '') => $emit('handleEmitValueChange', item, value, name)" />
 
     <!-- Для того чтобы сразу вывести блоки с юзерамиы -->
     <SearchList v-if="item.field == 'users' || item.field == 'author'"
@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import { defineComponent, type PropType, watch } from "vue";
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, IReportage, INewFileData, } from "@/interfaces/IEntities";
 import type { ITag } from "@/interfaces/entities/ITag";
@@ -159,7 +159,7 @@ export default defineComponent({
       type: Number
     }
   },
-  setup() {
+  setup(props) {
     const inputComponentChecker = (item: IAdminListItem) => {
       if (item.disabled) return;
       switch (true) {
@@ -173,6 +173,8 @@ export default defineComponent({
           return AdminEditInput
       }
     }
+
+    watch(props, () => { console.log(props) })
 
     return {
       inputComponentChecker

@@ -43,11 +43,6 @@
 </template>
 
 <script lang="ts">
-import type { Swiper as SwiperType } from 'swiper';
-import { Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import { defineComponent, onMounted, ref, computed } from 'vue';
 import HoverGallery from './components/HoverGallery.vue';
 import Api from '@/utils/Api';
@@ -68,15 +63,8 @@ export default defineComponent({
         const pointsAboutOpen = ref(false);
         const merchItems = ref<IMerch[]>([]);
         const isLoading = ref<boolean>(false);
-        const sliderConfig = {
-            modules: [Pagination],
-            slidesPerView: 1,
-        };
 
-        const swiperInstance = ref<SwiperType | null>(null);
-        const swiperOn = (swiper: SwiperType) => {
-            swiperInstance.value = swiper;
-        }
+
         const sortedMerchItems = computed(() => {
             return [...merchItems.value].sort((a, b) => {
                 const priceA = a.indirect_data?.price;
@@ -105,14 +93,12 @@ export default defineComponent({
         })
 
         return {
-            sliderConfig,
             merchItems,
             isLoading,
             allActivities,
             pointsAboutOpen,
             featureFlags,
             sortedMerchItems,
-            swiperOn
         }
     }
 })

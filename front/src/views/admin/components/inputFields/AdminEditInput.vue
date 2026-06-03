@@ -35,7 +35,7 @@ export default defineComponent({
         }
         watch((props), () => {
             if (props.item?.value) value.value = props.item.value
-        })
+        }, { deep: true, immediate: true })
         onMounted(() => {
             handleValuePick();
         })

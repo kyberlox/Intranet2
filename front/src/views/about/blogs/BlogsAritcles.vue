@@ -22,10 +22,13 @@
                                    :date="article.date_creation"
                                    :type="'blog'" />
                     </div>
+                    <div v-if="'company' in article.indirect_data && article.indirect_data.company && 'fio' in article.indirect_data"
+                         class="news__detail__date">
+                        <span> Автор: </span><span class="underline">{{ article.indirect_data.users.fio }}</span>
+                    </div>
                     <div class="blog__short__desc"
                          v-if="article?.preview_text"
                          v-html="parseMarkdown(article.preview_text)">
-
                     </div>
                 </div>
             </div>
@@ -56,7 +59,6 @@ export default defineComponent({
         const blogData = useblogDataStore();
 
         const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id));
-
         const blogsArticles = computed(() => blogData.getCurrentArticles(Number(props.id)));
 
         return {

@@ -2,6 +2,18 @@ import Api from "../utils/Api"
 import { sectionTips } from "@/assets/static/sectionTips"
 import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
 import { useblogDataStore } from "@/stores/blogData"
+import avatarPlug from '@/assets/imgs/plugs/userplug.jpg'
+
+const createAuthor = (isCompany: boolean, inner: boolean) => {
+    return {
+        title: isCompany ? 'Компания' : 'Пользователь',
+        authorId: isCompany ? null : 1,
+        authorAvatar: avatarPlug,
+        authorTitle: isCompany ? 'Компания' : 'Пользователь',
+        isCompany: isCompany,
+        companyId: isCompany ? 1 : null,
+    }
+}
 
 export const getBlogAuthorsToStore = async () => {
     const blogsData = useblogDataStore();
@@ -15,11 +27,13 @@ export const getBlogAuthorsToStore = async () => {
                     // console.log(e)
                     console.log(isUser ? '' : e)
                     const newAuthor: IBlogAuthors = {
-                        title: isUser ? e.indirect_data.users.TITLE : e.indirect_data.TITLE,
-                        authorId: isUser ? e.indirect_data.users?.id : e.indirect_data.company,
-                        authorAvatar: isUser ? e.indirect_data.users.photo_file_url : e.preview_file_url,
-                        authorTitle: isUser ? e.indirect_data.users.TITLE : e.indirect_data.author,
+                        title: isUser ? e.indirect_data.users.TITLE : e.indirect_data.company,
+                        authorId: e.indirect_data.users?.id ?? e.indirect_data.manufacture_id,
+                        authorAvatar: isUser ? e.indirect_data.users.photo_file_url : e.preview_file_url ? e.preview_file_url : avatarPlug,
+                        authorTitle: isUser ? String(e.indirect_data.users.TITLE) : String(e.indirect_data.company),
                         isCompany: !isUser,
+                        companyId: isUser ? null : e.indirect_data.manufacture_id,
+                        users: !isUser ? e.indirect_data.users : null
                         // link: e.indirect_data.users.link ?? null,
                         // !!! Сечас в preview_file_url приходят заводы, а в photo_file_url - фото людей, у земской приходит и preview, в нем QR !!!
                         // telegramQr: e.preview_file_url && e.indirect_data.photo_file_url ? e.preview_file_url : ''

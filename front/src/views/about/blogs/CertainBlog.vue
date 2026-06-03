@@ -1,10 +1,11 @@
 <template>
 <div class="page__wrapper mt20">
 	<div class="row d-flex mt20 blog__articles-wrapper">
-		<div class="blog__avatar__wrapper col-sm-4">
-			<BlogAvatar :author="targetAuthor"
+		<div class="blog__avatar__wrapper col-sm-3">
+			<BlogAvatar :author="renderedAuthor"
 						:from="'blogsArticles'"
-						:needLink="true" />
+						:needLink="true"
+						:noRoute="true" />
 		</div>
 		<div v-if="currentArticle && 'name' in currentArticle"
 			 class="col-sm-8">
@@ -48,12 +49,12 @@ export default defineComponent({
 	},
 	setup(props) {
 		const blogData = useblogDataStore();
-
 		const currentArticle = computed(() => props.id ? blogData.getBlogById(props.id) : props.previewPost);
 		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId));
+		const renderedAuthor = targetAuthor.value?.users ? targetAuthor.value.users : targetAuthor.value;
 
 		return {
-			targetAuthor,
+			renderedAuthor,
 			currentArticle,
 			parseMarkdown,
 		};

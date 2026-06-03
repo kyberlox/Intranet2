@@ -1,6 +1,6 @@
 <template>
 <div class="modal__text__content modal__text__content--user-points">
-    <PointsInfoTable />
+    <PointsInfoTable historyType="addition" />
     <div class="modal__text__content__points-info__list">
         <a href="/about/capitalEmk/about"
            target="_blank"
@@ -12,9 +12,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent } from 'vue';
 import PointsInfoTable from '@/views/user/userPointsComponents/PointsInfoTable.vue';
-import { usePointsData } from '@/stores/pointsData';
 
 export default defineComponent({
     components: {
@@ -26,15 +25,5 @@ export default defineComponent({
             default: () => false
         }
     },
-    setup() {
-        const pointsAboutOpen = ref(false);
-        const pointsData = usePointsData();
-        const allActivities = computed(() => pointsData.getActivities);
-
-        return {
-            allActivities,
-            pointsAboutOpen
-        }
-    }
 })
 </script>

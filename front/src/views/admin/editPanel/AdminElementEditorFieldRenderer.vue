@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, watch } from "vue";
+import { defineComponent, type PropType } from "vue";
 import { type IPostInner } from '@/components/tools/common/PostInner.vue';
 import type { IAdminListItem, IReportage, INewFileData, } from "@/interfaces/IEntities";
 import type { ITag } from "@/interfaces/entities/ITag";
@@ -173,8 +173,6 @@ export default defineComponent({
           return AdminEditInput
       }
     }
-
-    watch(props, () => { console.log(props) })
 
     return {
       inputComponentChecker

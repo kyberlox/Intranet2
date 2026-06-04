@@ -24,8 +24,6 @@ export const getBlogAuthorsToStore = async () => {
             res.map((e: IBlog) => {
                 if (e.indirect_data) {
                     const isUser = 'users' in e.indirect_data && !(('company' in e.indirect_data) && e.indirect_data.company);
-                    // console.log(e)
-                    console.log(isUser ? '' : e)
                     const newAuthor: IBlogAuthors = {
                         title: isUser ? e.indirect_data.users.TITLE : e.indirect_data.company,
                         authorId: e.indirect_data.users?.id ?? e.indirect_data.manufacture_id,

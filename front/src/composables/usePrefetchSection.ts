@@ -13,7 +13,6 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
     if (!useUserData().isLogin) return;
     const factoryGuidData = useFactoryGuidDataStore();
     const blogStore = useblogDataStore();
-    console.log(dataType);
     switch (dataType) {
 
         case 'user':
@@ -39,11 +38,8 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
                 }
             break;
         case 'blogs':
-            console.log('blog1');
             if (!blogStore.getAllAuthors.length)
-                console.log('blog2');
-
-            getBlogAuthorsToStore();
+                getBlogAuthorsToStore();
             break;
         case 'calendar':
             const currentYear = new Date().getFullYear();

@@ -50,6 +50,7 @@ import VCard from "./views/vcard/VCard.vue";
 import Api from "./utils/Api";
 import InService from "./views/errors/InService.vue";
 import PullToRefresh from "./components/tools/pullToRefresh/PullToRefresh.vue";
+import { onUnmounted } from "vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -117,15 +118,11 @@ export default defineComponent({
             if (!isLogin.value) return;
             const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
             const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
-            console.log(blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15'))
             if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
-                console.log('readeyToPrefetch');
-
                 prefetchSection('blogs')
             } else if (factoryGuidRoutes.includes(String(route.name))) {
                 prefetchSection('factoryGuid')
             }
-            console.log('her')
         }, { immediate: true, deep: true })
 
         onBeforeMount(async () => {
@@ -146,6 +143,8 @@ export default defineComponent({
 
             }
         })
+
+        onUnmounted(() => console.log('ger'))
 
         return {
             isLogin,

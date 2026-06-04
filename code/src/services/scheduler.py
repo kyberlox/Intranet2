@@ -853,7 +853,19 @@ class AioSchedulerManager:
             return
 
         # Запускаем обработчик в фоне (чтобы не блокировать воркер)
-        asyncio.create_task(handler(*args, **kwargs))
+        async def safe_executor():
+            try:
+                logger.info_message(f"▶ Старт задачи {task_id}: {task_name}, args={args}, kwargs={kwargs}")
+                await handler(*args, **kwargs)
+                logger.info_message(f"✔ Задача {task_id} ({task_name}) успешно завершена")
+            except Exception as e:
+                import traceback, sys
+                err_msg = f"✖ Ошибка в задаче {task_id} ({task_name}): {e}\n{traceback.format_exc()}"
+                logger.error_message(err_msg)
+                # Дублируем в stderr для гарантированной видимости при любых настройках логирования
+                print(err_msg, file=sys.stderr)
+
+        asyncio.create_task(safe_executor())
         logger.info_message(f"Задача {task_id} ('{task_name}') запущена из Redis")
 
 # ==================== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ ИМПОРТА ====================

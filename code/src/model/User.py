@@ -882,13 +882,14 @@ async def update_inf_from_b24(user_id):
         async with AsyncSessionLocal() as session:
             # await asyncio.sleep(60)
             res = await B24().getUser(user_id)
+            user_class = User(id=user_id)
             if res:
                 usr_data = res[0]
                 # смотрим логи 
                 if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                     usr_data["ACTIVE"] = False
                 
-                need_update_fv = await User(id=user_id).check_fields_to_update(session=session, b24_data=usr_data)
+                need_update_fv = await user_class.check_fields_to_update(session=session, b24_data=usr_data)
             
                 await UserModel().upsert_user(user_data=usr_data, session=session)
                 await session.commit()
@@ -916,11 +917,11 @@ async def update_inf_from_b24(user_id):
                                 # обновить данные в pSQL
                                 await UserModel(Id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
-                    await self.update_user_elastic(session)
+                    await user_class.update_user_elastic(session)
 
                     # закидываем в ОВ
                     if need_update_fv:
-                        await User().put_user_to_vis(session, psql_user)
+                        await user_class.put_user_to_vis(session, psql_user)
                 else:
                     await UserSearchModel().delete_user_from_el_index(user_id=user_id)
                 return None

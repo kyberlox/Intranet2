@@ -1,14 +1,14 @@
 <template>
 <div class="blogs__avatar-wrapper">
     <RouterLink v-if="author"
-                :to="{
+                :to="!noRoute ? {
                     name: 'blogOf',
                     params: { id: author?.authorId }
-                }"
+                } : ''"
                 class="blogs__item col-12 col-md"
-                :title="`Блог | ${author?.title}`">
+                :title="`Блог | ${author?.title ?? author?.TITLE}`">
         <div class="blogs__item__img-wrapper">
-            <div v-lazy-load="author?.authorAvatar"
+            <div v-lazy-load="author?.authorAvatar ?? author.photo_file_url"
                  class="blogs__item__img img-fluid  rounded-circle"></div>
         </div>
         <div class="blogs__item-text text-center">
@@ -16,7 +16,7 @@
                  v-html="formatTitle()"></div>
         </div>
     </RouterLink>
-    <a v-if="needLink && author?.link"
+    <!-- <a v-if="needLink && author?.link"
        class="blogs__item-contact"
        :href=author.link
        target="_blank">
@@ -24,7 +24,7 @@
     </a>
     <img v-if="author?.telegramQr && needLink"
          :src="author?.telegramQr"
-         alt="Ссылка на ресурс" />
+         alt="Ссылка на ресурс" /> -->
 </div>
 </template>
 
@@ -43,11 +43,16 @@ export default defineComponent({
             type: Boolean,
             default: false
         },
+        noRoute: {
+            type: Boolean,
+            default: false
+        }
     },
     setup(props) {
         const formatTitle = () => {
-            if (props.author?.authorTitle) {
-                return `${props.author?.authorTitle.split(';')[0]}<div class="blogs__item-title--small">${props.author?.authorTitle.split(';')[1]}</div>`
+            const newTitle = props.author?.authorTitle ?? props.author?.TITLE;
+            if (newTitle && newTitle.includes(';')) {
+                return `${newTitle.split(';')[0]}<div class="blogs__item-title--small">${newTitle.split(';')[1]}</div>`
             }
             else return props.author?.title
         }

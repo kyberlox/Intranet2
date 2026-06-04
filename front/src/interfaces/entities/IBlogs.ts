@@ -2,12 +2,20 @@ import type { IBaseIndirectData, IBaseEntity } from "./IBase"
 
 export interface IBlogData extends IBaseIndirectData {
     author_uuid: number,
-    company: number,
+    company: string,
     TITLE?: string,
     photo_file_url: string,
     link: string,
     youtube_link: string,
     author: string
+    users: {
+        id: number,
+        fio: string,
+        TITLE: string,
+        position: string,
+        photo_file_url: string
+    },
+    manufacture_id: number
 }
 
 export interface IBlogArticleData extends IBaseIndirectData {
@@ -21,6 +29,15 @@ export interface IBlogAuthors {
     link?: string,
     telegramQr?: string
     authorTitle?: string
+    isCompany?: boolean,
+    companyId?: number | null,
+    users: {
+        id: number,
+        fio: string,
+        TITLE: string,
+        position: string,
+        photo_file_url: string
+    } | null
 }
 
 export interface IBlog extends IBaseEntity {

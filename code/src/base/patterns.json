@@ -203,6 +203,16 @@
         "disabled": true
       },
       {
+        "name": "Индентификационный номер предприятия",
+        "field": "manufacture_id",
+        "data_type": "areaSearch"
+      },
+      {
+        "name": "Предприятие",
+        "field": "company",
+        "data_type": "str"
+      },
+      {
         "name": "Содержимое",
         "field": "content_text",
         "data_type": "str"
@@ -215,11 +225,6 @@
       {
         "name": "Ссылка",
         "field": "link",
-        "data_type": "str"
-      },
-      {
-        "name": "Предприятие",
-        "field": "company",
         "data_type": "str"
       },
       {

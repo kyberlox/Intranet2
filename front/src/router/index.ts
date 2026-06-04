@@ -24,7 +24,6 @@ const checkIsLogin = async () => {
   return useUserData().getIsLogin;
 }
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: 'router-link-active',
@@ -783,6 +782,5 @@ const router = createRouter({
     return { top: 0, behavior: 'smooth' };
   }
 })
-
 
 export default router

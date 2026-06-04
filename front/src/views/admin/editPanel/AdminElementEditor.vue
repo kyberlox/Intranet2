@@ -260,12 +260,17 @@ export default defineComponent({
       }
     }
 
-    const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue) => {
+    const handleEmitValueChange = (item: IAdminListItem, value: AdminElementValue, name: string = '') => {
       if (item.field) {
         newData.value = {
           ...newData.value,
           [item.field]: value
         };
+        if (item.field == 'manufacture_id') {
+          const targetEl = newElementSkeleton.value.find(e => e.field == 'company');
+          if (targetEl)
+            targetEl.value = name;
+        }
       }
     };
 

@@ -112,7 +112,7 @@ class MerchStoreModel:
                 return LogsMaker().warning_message(f"Недостаточно средств у пользователя с id = {self.user_id} для покупки мерча art_id = {art_id}")
             elif total_price > user.user_points:
                 return LogsMaker().warning_message(f"Недостаточно средств у пользователя с id = {self.user_id} для покупки мерча art_id = {art_id}. Нужно: {total_price}, есть: {user.user_points}")
-
+            print(f"Итоговая стоимость: {total_price}, у пользователя = {user.user_points}")
             # Выполняем покупку
             for size, request_value in shop_cart.items():
                 merch_info.indirect_data[size] = merch_info.indirect_data[size] - request_value

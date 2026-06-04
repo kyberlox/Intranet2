@@ -127,7 +127,7 @@ if 'intranet.emk.ru' in main_redirect:
     #     "http://intranet.emk.org.ru",
     #     "http://localhost:5173",  # если разработка
     # ]
-    origins = ['*']
+    origins = ["*"]
 
     app.add_middleware(
         CORSMiddleware,

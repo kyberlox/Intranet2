@@ -1,6 +1,14 @@
 <template>
 <div class="mt20">
-    <div class="page__title">Магазин "Капитал ЭМК"</div>
+    <div class="merch-store__header">
+        <div class="page__title">Магазин "Капитал ЭМК"</div>
+        <button v-if="featureFlags.pointsSystem"
+                class="primary-button merch-store__history-button"
+                type="button"
+                @click="purchaseHistoryOpen = true">
+            История покупок
+        </button>
+    </div>
     <div class="merch-store__grid__wrapper">
         <div class="merch-store__grid"
              v-if="merchItems.length && !isLoading">
@@ -39,15 +47,16 @@
             <span>Тут пока пусто, следите за обновлениями</span>
         </div>
     </div>
+    <SlotModal v-if="purchaseHistoryOpen && featureFlags.pointsSystem"
+               @close="purchaseHistoryOpen = false">
+        <div class="modal__text__content modal__text__content--user-points">
+            <PointsInfoTable historyType="purchase" />
+        </div>
+    </SlotModal>
 </div>
 </template>
 
 <script lang="ts">
-import type { Swiper as SwiperType } from 'swiper';
-import { Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import { defineComponent, onMounted, ref, computed } from 'vue';
 import HoverGallery from './components/HoverGallery.vue';
 import Api from '@/utils/Api';
@@ -57,26 +66,24 @@ import type { IBXFileType } from '@/interfaces/IEntities';
 import HoverGallerySkeleton from './components/HoverGallerySkeleton.vue';
 import { usePointsData } from '@/stores/pointsData';
 import { featureFlags } from '@/assets/static/featureFlags';
+import SlotModal from '@/components/tools/modal/SlotModal.vue';
+import PointsInfoTable from '@/views/user/userPointsComponents/PointsInfoTable.vue';
 
 export default defineComponent({
     components: {
         HoverGallery,
         HoverGallerySkeleton,
+        SlotModal,
+        PointsInfoTable,
     },
     setup() {
         const allActivities = computed(() => usePointsData().getActivities);
         const pointsAboutOpen = ref(false);
+        const purchaseHistoryOpen = ref(false);
         const merchItems = ref<IMerch[]>([]);
         const isLoading = ref<boolean>(false);
-        const sliderConfig = {
-            modules: [Pagination],
-            slidesPerView: 1,
-        };
 
-        const swiperInstance = ref<SwiperType | null>(null);
-        const swiperOn = (swiper: SwiperType) => {
-            swiperInstance.value = swiper;
-        }
+
         const sortedMerchItems = computed(() => {
             return [...merchItems.value].sort((a, b) => {
                 const priceA = a.indirect_data?.price;
@@ -105,14 +112,13 @@ export default defineComponent({
         })
 
         return {
-            sliderConfig,
             merchItems,
             isLoading,
             allActivities,
             pointsAboutOpen,
+            purchaseHistoryOpen,
             featureFlags,
             sortedMerchItems,
-            swiperOn
         }
     }
 })

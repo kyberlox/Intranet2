@@ -16,7 +16,7 @@ export interface IAdminListItem {
     data_type?: string;
     field?: string;
     values?: string[] | { name: string, vision_name?: string, id?: string | number, value?: string }[];
-    value?: number | string | IReportage[] | IUserList[] | number[] | string[];
+    value?: number | string | IReportage[] | IUserList[] | number[] | string[] | IUserList;
 }
 
 export interface IFileToUpload {
@@ -33,12 +33,12 @@ export interface INewFileData {
     videos_native?: IBXFileType[]
 }
 
-export interface IRoots{
-    PeerAdmin:boolean,
-    EditorAdmin:boolean,
-    VisionAdmin:boolean,
+export interface IRoots {
+    PeerAdmin: boolean,
+    EditorAdmin: boolean,
+    VisionAdmin: boolean,
     GPT_gen_access: boolean,
     PeerModer: boolean,
-    EditorModer: number[], 
+    EditorModer: number[],
     peerCurator: boolean[]
 }

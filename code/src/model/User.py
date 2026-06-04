@@ -873,7 +873,7 @@ class User:
 # Обновляет данные конкретного пользователя
 async def update_inf_from_b24(user_id):
     from datetime import datetime
-    from .App import AsyncSessionLocal
+    from ..base.pSQL.objects.App import AsyncSessionLocal
     from ..base.pSQL.objects.UserModel import UserModel
 
     from ..base.Elastic.UserSearchModel import UserSearchModel

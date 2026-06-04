@@ -897,7 +897,7 @@ async def update_inf_from_b24(user_id):
                     # загружаем фотку:
                     uuid = user_id
                     # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
-                    psql_user = await UserModel(id = int(uuid)).find_by_id_all(session)
+                    psql_user = await UserModel(Id = int(uuid)).find_by_id_all(session)
                     if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
                         if 'date_register' in psql_user['indirect_data'] and psql_user['indirect_data']['date_register'] != "":
                             convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
@@ -914,7 +914,7 @@ async def update_inf_from_b24(user_id):
 
                             if file_data is not False:
                                 # обновить данные в pSQL
-                                await UserModel(id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
+                                await UserModel(Id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
                     await self.update_user_elastic(session)
 

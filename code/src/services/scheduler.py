@@ -799,7 +799,13 @@ class AioSchedulerManager:
                     "scheduler:queue", 0, now, withscores=True
                 )
                 if raw_tasks:
-                    task_ids = [t[0].decode() for t in raw_tasks]
+                    task_ids = []
+                    for member, score in raw_tasks:
+                        # member может быть bytes или str
+                        if isinstance(member, bytes):
+                            task_ids.append(member.decode())
+                        else:
+                            task_ids.append(member)
                     logger.info_message(f"Найдено {len(task_ids)} готовых задач в Redis")
                     for task_id in task_ids:
                         await self._execute_redis_task(task_id)
@@ -828,14 +834,22 @@ class AioSchedulerManager:
             return
 
         # Декодируем байтовые ключи/значения
-        task_data = {k.decode(): v.decode() for k, v in task_data_raw.items()}
-        task_name = task_data["task_name"]
+        task_data = {}
+        for k, v in task_data_raw.items():
+            key = k.decode() if isinstance(k, bytes) else k
+            value = v.decode() if isinstance(v, bytes) else v
+            task_data[key] = value
+
+        task_name = task_data.get("task_name")
+        if not task_name:
+            logger.error_message(f"Нет task_name в задаче {task_id}")
+            return
         args = json.loads(task_data["args"])
         kwargs = json.loads(task_data["kwargs"])
 
         handler = TASK_HANDLERS.get(task_name)
         if not handler:
-            logger.error(f"Неизвестная задача: {task_name}")
+            logger.error_message(f"Неизвестная задача: {task_name}")
             return
 
         # Запускаем обработчик в фоне (чтобы не блокировать воркер)

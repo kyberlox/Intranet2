@@ -425,7 +425,7 @@ class User:
     async def find_by_email(self, email, session):
         return await self.UserModel.find_by_email(email, session)
 
-    async def check_fields_to_update(self, session, b24_data):
+    async def check_fields_to_update(self, psql_data, session, b24_data):
         fields = [
             'ACTIVE', 'NAME', 'LAST_NAME', 'EMAIL', 'UF_DEPARTMENT', 'WORK_PHONE', 'WORK_POSITION', 'SECOND_NAME',
             'UF_PHONE_INNER', 'UF_USR_DEPARTMENT_MAIN', 'UF_USR_1586854037086',
@@ -445,8 +445,8 @@ class User:
                 pass
             else:
                 B24_data = res
-                self.UserModel.id = int(self.id)
-                psql_data = await self.UserModel.find_by_id_all(session)
+                # self.UserModel.id = int(self.id)
+                # psql_data = await self.UserModel.find_by_id_all(session)
                 psql_data['indirect_data']['uf_department'] = psql_data['indirect_data']['uf_department_id']
                 if psql_data and psql_data != []:
                     for field in fields:
@@ -878,57 +878,51 @@ async def update_inf_from_b24(user_id):
 
     from ..base.Elastic.UserSearchModel import UserSearchModel
     try:
-        print(user_id, type(user_id))
         async with AsyncSessionLocal() as session:
             # await asyncio.sleep(60)
+            
             res = await B24().getUser(user_id)
             user_class = User(id=user_id)
-            if res:
-                usr_data = res[0]
-                # смотрим логи 
-                if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
-                    usr_data["ACTIVE"] = False
-                
-                need_update_fv = await user_class.check_fields_to_update(session=session, b24_data=usr_data)
-            
-                await UserModel().upsert_user(user_data=usr_data, session=session)
-                await session.commit()
-                # usr_data["ACTIVE"] = False
-                if "ACTIVE" in usr_data and usr_data["ACTIVE"] == True:
-                    # загружаем фотку:
-                    uuid = user_id
-                    # есть ли у пользователя есть фото в битре? есть ли пользователь в БД?
-                    psql_user = await UserModel(Id = int(uuid)).find_by_id_all(session)
-                    if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
-                        if 'date_register' in psql_user['indirect_data'] and psql_user['indirect_data']['date_register'] != "":
-                            convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
-                            date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
-                            usr_data['date_of_employment'] = date_of_employment
-                            await UserModel().upsert_user(user_data=usr_data, session=session)
-                            await session.commit()
-                    if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
-
-                        b24_url = usr_data['PERSONAL_PHOTO']
-
-                        if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
-                            file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
-
-                            if file_data is not False:
-                                # обновить данные в pSQL
-                                await UserModel(Id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
-                    # обновляем эластик
-                    await user_class.update_user_elastic(session)
-
-                    # закидываем в ОВ
-                    if need_update_fv:
-                        await user_class.put_user_to_vis(session, psql_user)
-                else:
-                    await UserSearchModel().delete_user_from_el_index(user_id=user_id)
-                return None
-            else:
-                # не скачиваем фотку у неактивных пользователей
+            if not res:
                 await UserSearchModel().delete_user_from_el_index(user_id=user_id)
+                return None
+            usr_data = res[0]
+            if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
+                usr_data["ACTIVE"] = False
+
+            psql_user = await UserModel().upsert_user(user_data=usr_data, session=session)
+            await session.commit()
+            await session.refresh(psql_user)
+
+            if psql_user.indirect_data['uf_department'] != usr_data['UF_DEPARTMENT']:
+                await user_class.put_user_to_vis(session, psql_user)
+            
+            if "ACTIVE" in usr_data and usr_data["ACTIVE"] == False:
+                await UserSearchModel().delete_user_from_el_index(user_id=user_id)
+                return None
+            
+            if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
+                if 'date_register' in psql_user['indirect_data'] and psql_user['indirect_data']['date_register'] != "":
+                    convert_date = make_date_valid(psql_user['indirect_data']['date_register'])
+                    date_of_employment = datetime.strftime(convert_date, '%d.%m.%Y')
+                    usr_data['date_of_employment'] = date_of_employment
+                    await UserModel().upsert_user(user_data=usr_data, session=session)
+                    await session.commit()
+            
+            if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
+                b24_url = usr_data['PERSONAL_PHOTO']
+                if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
+                    file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
+                    if file_data is not False:
+                        # обновить данные в pSQL
+                        await UserModel(Id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
+                    # обновляем эластик
+
+            # обновляем эластик
+            await user_class.update_user_elastic(session)
+
             return LogsMaker().ready_status_message(f"Обновлена информация о пользователе с ID = {user_id}")
+
     except Exception as e:
         await session.rollback()
         return LogsMaker().error_message(
@@ -1090,7 +1084,7 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
     """
     from ..services.scheduler import get_scheduler_manager
     manager = get_scheduler_manager()
-    await manager.add_redis_task("update_inf_from_b24", 10, user_id)
+    await manager.add_redis_task("update_inf_from_b24", 60, user_id)
     return {"status": "ok"}
     # return await User(id=user_id).update_inf_from_b24(session)
 

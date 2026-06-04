@@ -164,7 +164,7 @@ class UserModel:
                     user.indirect_data = current_indirect_data
                     # await session.commit()
                     LogsMaker().info_message(f"Обновлены дополнительные данные пользователя с id = {user.id}")
-                return True
+                return user
             # Если пользователя нет - создаем нового
             else:
                 # Подготавливаем данные для вставки
@@ -193,7 +193,7 @@ class UserModel:
                 # await session.commit()
                 
                 LogsMaker().info_message(f"Создан пользователь с id = {user_data['id']}")
-                return True
+                return new_user
         except Exception as e:
             await session.rollback()
             LogsMaker().error_message(f"Ошибка в upsert_user для пользователя {user_data.get('id')}: {e}")

@@ -16,6 +16,16 @@ import asyncio
 
 users_router = APIRouter(prefix="/users")
 
+TASK_HANDLERS: Dict[str, Callable[..., Coroutine]] = {}
+
+def register_task(name: str):
+    """Декоратор для регистрации async-функций как обработчиков отложенных задач."""
+    def decorator(func):
+        TASK_HANDLERS[name] = func
+        LogsMaker().info(f"Задача '{name}' зарегистрирована (функция {func.__module__}.{func.__name__})")
+        return func
+    return decorator
+
 def make_date_valid(date):
     from datetime import datetime
     if date is not None:
@@ -394,6 +404,7 @@ class User:
         from ..base.pSQL.objects.LikesModel import LikesModel
         return LikesModel(user_id=self.id).get_user_likes()
 
+    @register_task("update_inf_from_b24")
     # Обновляет данные конкретного пользователя
     async def update_inf_from_b24(self, session):
         from datetime import datetime
@@ -1086,9 +1097,12 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
     ```
 
     """
-    return await User(id=user_id).update_inf_from_b24(session)
-    # return await User(id=user_id).check_fields_to_update(session)
-    # return True
+    from ..services.scheduler import get_scheduler_manager
+    manager = get_scheduler_manager()
+    await manager.add_redis_task("update_inf_from_b24", 60, user_id)
+    return {"status": "ok"}
+    # return await User(id=user_id).update_inf_from_b24(session)
+
 
 
 # Пользователя можно выгрузить

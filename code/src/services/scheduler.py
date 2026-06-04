@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 from contextlib import asynccontextmanager
 from sqlalchemy.future import select
 from sqlalchemy import extract
-
+from ..model.User import TASK_HANDLERS
 # Импорт aioscheduler
 from aioscheduler import TimedScheduler
 
@@ -15,6 +15,9 @@ from ..base.pSQL.objects.App import get_async_db, AsyncSessionLocal
 from .MerchStore import MerchStore
 from .Peer import Peer
 from .SendMail import SendEmail
+
+from ..base.RedisStorage import RedisStorage
+import json, time
 # ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
 
 # Глобальный экземпляр планировщика
@@ -394,6 +397,7 @@ class AioSchedulerManager:
         self.scheduler_task = None
         self.is_running = False
         self.jobs = {}  # Словарь для хранения задач: job_id -> task
+        self.redis = RedisStorage()
     
     async def init_scheduler(self):
         """
@@ -596,6 +600,8 @@ class AioSchedulerManager:
 
                 # 2. Раз в неделю скачиваем подразделения и связь подразделений и пользователей
                 weekly_job = self.schedule_weekly_at_time(weekly_check, days=6)
+
+            self.redis_worker_task = asyncio.create_task(self._redis_worker())
             
             # 3. Тестовая задача каждую минуту (для мониторинга)
             # test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)
@@ -622,7 +628,9 @@ class AioSchedulerManager:
         finally:
             self.is_running = False
             if self.scheduler:
-                self.scheduler.shutdown()
+                self.scheduler.stop()
+                if hasattr(self, 'redis_worker_task'):
+                    self.redis_worker_task.cancel()
     
     async def start(self):
         """
@@ -654,7 +662,7 @@ class AioSchedulerManager:
             
             # Останавливаем планировщик
             if self.scheduler:
-                self.scheduler.shutdown()
+                self.scheduler.stop() 
             
             # Отменяем задачу планировщика
             if self.scheduler_task and not self.scheduler_task.done():
@@ -727,6 +735,90 @@ class AioSchedulerManager:
         logger.info_message(f"Задача '{func_name}' добавлена с интервалом {interval_seconds} секунд")
         
         return job_id
+
+    async def add_redis_task(self, task_name: str, delay_seconds: float, *args, **kwargs):
+        """
+        Поставить задачу в Redis с отложенным выполнением.
+        task_name – имя функции-обработчика, зарегистрированной в TASK_HANDLERS.
+        """
+        logger = LogsMaker()
+        if not self.redis:
+            raise RuntimeError("Redis не инициализирован")
+        
+        task_id = f"{int(time.time() * 1000)}-{id(args)}"
+        execute_at = time.time() + delay_seconds
+
+        # Сериализуем данные
+        task_data = {
+            "task_name": task_name,
+            "args": json.dumps(args),
+            "kwargs": json.dumps(kwargs)
+        }
+
+        async with self.redis.pipeline() as pipe:
+            # Сохраняем детали задачи в Hash
+            await pipe.hset(f"scheduler:task:{task_id}", mapping=task_data)
+            # Добавляем в очередь с временем выполнения
+            await pipe.zadd("scheduler:queue", {task_id: execute_at})
+            await pipe.execute()
+
+        logger.info_message(f"Задача '{task_name}' (ID: {task_id}) запланирована через {delay_seconds} сек в Redis")
+        return task_id
+    
+    async def _redis_worker(self):
+        """Фоновый воркер, обрабатывающий задачи из Redis."""
+        logger = LogsMaker()
+        logger.info_message("Redis worker запущен")
+        while self.is_running:
+            try:
+                now = time.time()
+                # Получаем все task_id, готовые к выполнению (score <= now)
+                raw_tasks = await self.redis.zrangebyscore(
+                    "scheduler:queue", 0, now, withscores=True
+                )
+                if raw_tasks:
+                    task_ids = [t[0].decode() for t in raw_tasks]
+                    logger.info_message(f"Найдено {len(task_ids)} готовых задач в Redis")
+                    for task_id in task_ids:
+                        await self._execute_redis_task(task_id)
+
+                await asyncio.sleep(1)  # опрос раз в секунду
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.error_message(f"Ошибка в Redis worker: {e}")
+                await asyncio.sleep(5)
+
+    async def _execute_redis_task(self, task_id: str):
+        """Выполнить одну задачу из Redis по её ID."""
+        logger = LogsMaker()
+        task_key = f"scheduler:task:{task_id}"
+        # Атомарно получаем данные и удаляем из очереди и хранилища
+        async with self.redis.pipeline() as pipe:
+            pipe.hgetall(task_key)
+            pipe.zrem("scheduler:queue", task_id)
+            pipe.delete(task_key)
+            results = await pipe.execute()
+
+        task_data_raw = results[0]
+        if not task_data_raw:
+            logger.warning(f"Задача {task_id} не найдена в Redis (возможно, уже выполнена)")
+            return
+
+        # Декодируем байтовые ключи/значения
+        task_data = {k.decode(): v.decode() for k, v in task_data_raw.items()}
+        task_name = task_data["task_name"]
+        args = json.loads(task_data["args"])
+        kwargs = json.loads(task_data["kwargs"])
+
+        handler = TASK_HANDLERS.get(task_name)
+        if not handler:
+            logger.error(f"Неизвестная задача: {task_name}")
+            return
+
+        # Запускаем обработчик в фоне (чтобы не блокировать воркер)
+        asyncio.create_task(handler(*args, **kwargs))
+        logger.info_message(f"Задача {task_id} ('{task_name}') запущена из Redis")
 
 # ==================== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ ИМПОРТА ====================
 

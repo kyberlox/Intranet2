@@ -141,7 +141,6 @@ export default defineComponent({
         }
 
         const acceptBuy = async (quantity: number, customPrice: boolean = false) => {
-            isLoading.value = true;
             const routes = [
                 {
                     route: 'store/create_purchase',
@@ -162,6 +161,7 @@ export default defineComponent({
             } else {
                 const needRoute = quantity > 0 && !customPrice ? routes[0] : routes[1]
                 try {
+                    isLoading.value = true;
                     const data = await Api.put(needRoute.route, needRoute.body)
                     if (isResponseObject(data) && 'not_enough' in data) {
                         toast.showCustomToast('warn', 'К сожалению такого количества нет в наличии')

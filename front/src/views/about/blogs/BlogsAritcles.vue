@@ -22,7 +22,7 @@
                                    :date="article.date_creation"
                                    :type="'blog'" />
                     </div>
-                    <div v-if="'company' in article.indirect_data && article.indirect_data.company && 'fio' in article.indirect_data"
+                    <div v-if="'fio' in article.indirect_data.users && 'manufacture_id' in article.indirect_data"
                          class="news__detail__date">
                         <span> Автор: </span><span class="underline">{{ article.indirect_data.users.fio }}</span>
                     </div>

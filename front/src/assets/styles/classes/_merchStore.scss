@@ -511,6 +511,8 @@
             max-width: 100%;
             align-items: center;
 
+
+
             @include md {
                 max-width: 350px;
                 padding: 1.5rem;
@@ -601,6 +603,10 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease;
+
+            &:hover {
+                background: #000;
+            }
 
             &--loading {
                 background: #aba7a5;

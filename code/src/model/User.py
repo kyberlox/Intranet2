@@ -911,11 +911,10 @@ async def update_inf_from_b24(user_id):
             
             if 'PERSONAL_PHOTO' in usr_data and 'id' in psql_user.keys():
                 b24_url = usr_data['PERSONAL_PHOTO']
-                if psql_user['photo_file_id'] is None or psql_user['photo_file_b24_url'] != b24_url:
-                    file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
-                    if file_data is not False:
-                        # обновить данные в pSQL
-                        await UserModel(Id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
+                file_data = await File().add_user_img(b24_url=b24_url, uuid=uuid, session=session)
+                if file_data is not False:
+                    # обновить данные в pSQL
+                    await UserModel(Id=int(uuid)).set_user_photo(file_id=file_data['id'], session=session)
                     # обновляем эластик
 
             # обновляем эластик

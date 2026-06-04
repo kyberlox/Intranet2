@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import TrainingTable from "../components/TrainingTable.vue";
-import { defineComponent, onMounted, ref, type Ref } from "vue";
+import { defineComponent, onMounted, ref, type Ref, onUnmounted } from "vue";
 import Api from "@/utils/Api";
 import FeedBackModalInner from "@/views/about/trainingCenter/conductedTrainings/FeedBackModalInner.vue";
 import { sectionTips } from "@/assets/static/sectionTips";
@@ -28,13 +28,14 @@ export default defineComponent({
         FeedBackModalInner
     },
     setup() {
+        const abortController = new AbortController();
         const trainings: Ref<IConductedTrainings[]> = ref([]);
         const trainingInModal: Ref<IConductedTrainings> = ref({} as IConductedTrainings);
         const modalIsVisible = ref(false);
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`/article/find_by/${sectionTips['проведенныеТренинги']}`)
+                const data = await Api.get(`/article/find_by/${sectionTips['проведенныеТренинги']}`, null, abortController.signal)
                 trainings.value = data;
             } catch (error) {
                 console.error(error)
@@ -50,6 +51,9 @@ export default defineComponent({
                 modalIsVisible.value = false
             }
         }
+
+        onUnmounted(() => abortController.abort())
+
         return {
             trainings,
             trainingInModal,

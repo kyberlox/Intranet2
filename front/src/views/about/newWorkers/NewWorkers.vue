@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from "vue";
+import { ref, defineComponent, onMounted, onUnmounted } from "vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import Api from "@/utils/Api";
 import UserSlide from "@/components/layout/UserSlide.vue";
@@ -44,6 +44,7 @@ export default defineComponent({
         const slidesForBirthday = ref([]);
         const imageInModal = ref();
         const hiddenModal = ref(true);
+        const abortController = new AbortController();
 
         const openModal = (url: [string]) => {
             imageInModal.value = url;
@@ -52,12 +53,14 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['НовыеСотрудники']}`, null, abortController.signal)
                 slidesForBirthday.value = data
             } finally {
                 isLoading.value = false
             }
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             slidesForBirthday,

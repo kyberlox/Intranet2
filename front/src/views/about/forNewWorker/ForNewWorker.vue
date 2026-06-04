@@ -48,7 +48,7 @@
 <script lang="ts">
 import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, onUnmounted } from "vue";
 import type { IForNewWorker } from '@/interfaces/IEntities'
 import CustomFilter from "@/components/tools/common/CustomFilter.vue";
 import ForNewWorkerCard from "./ForNewWorkerCard.vue";
@@ -66,10 +66,11 @@ export default defineComponent({
         const showLocations = ref(false);
         const locations = ref<string[]>([]);
         const cardKey = ref(0);
+        const abortController = new AbortController();
 
         onMounted(async () => {
             try {
-                const res = await Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`)
+                const res = await Api.get(`article/find_by/${sectionTips['НовомуСотруднику']}`, null, abortController.signal)
                 res.forEach((e: IForNewWorker) => {
                     if (e.indirect_data && 'module' in e.indirect_data && e.indirect_data.module && !locations.value.includes(e.indirect_data.module) && e.indirect_data.module !== 'Заключение') {
                         locations.value.push(e.indirect_data.module)
@@ -93,6 +94,8 @@ export default defineComponent({
         const filterContent = (pageContent: IForNewWorker[]) => {
             return pageContent?.filter(e => e.indirect_data?.module !== 'Заключение' && (!activeLocation.value ? !e.indirect_data?.module : e.indirect_data?.module == activeLocation.value))
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             pageContent,

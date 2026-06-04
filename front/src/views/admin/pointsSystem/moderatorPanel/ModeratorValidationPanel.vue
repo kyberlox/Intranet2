@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch, onUnmounted } from 'vue';
 import Api from '@/utils/Api';
 import { usePointsData } from '@/stores/pointsData';
 import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
@@ -30,6 +30,7 @@ export default defineComponent({
         ModeratorSidebarSlot
     },
     setup() {
+        const abortController = new AbortController();
         const activeId = ref<number>();
         const activitiesToConfirm = computed(() => usePointsData().getActivitiesToConfirm);
         const activitiesInTable = ref<IActivityToConfirm[]>();
@@ -40,7 +41,7 @@ export default defineComponent({
 
         const tableInit = async () => {
             try {
-                const data = await Api.get(`peer/points_to_confirm/${activeId.value}`)
+                const data = await Api.get(`peer/points_to_confirm/${activeId.value}`, null, abortController.signal)
                 activitiesInTable.value = data
             } catch (error) {
                 console.error(error)
@@ -60,6 +61,8 @@ export default defineComponent({
                 console.error(error)
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             activitiesToConfirm,

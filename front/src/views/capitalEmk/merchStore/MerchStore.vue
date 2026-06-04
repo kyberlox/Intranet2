@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from 'vue';
+import { defineComponent, onMounted, ref, computed, onUnmounted } from 'vue';
 import HoverGallery from './components/HoverGallery.vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
@@ -77,6 +77,7 @@ export default defineComponent({
         PointsInfoTable,
     },
     setup() {
+        const abortController = new AbortController();
         const allActivities = computed(() => usePointsData().getActivities);
         const pointsAboutOpen = ref(false);
         const purchaseHistoryOpen = ref(false);
@@ -104,12 +105,14 @@ export default defineComponent({
         onMounted(async () => {
             isLoading.value = true;
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['МагазинМерча']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['МагазинМерча']}`, null, abortController.signal)
                 merchItems.value = data
             } finally {
                 isLoading.value = false
             }
         })
+
+        onUnmounted(() => abortController.abort());
 
         return {
             merchItems,

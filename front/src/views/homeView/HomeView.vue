@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, type ComputedRef, ref } from "vue";
+import { computed, defineComponent, onBeforeMount, onUnmounted, type ComputedRef, ref } from "vue";
 import HomeViewSwiperBlock from "./components/HomeViewSwiperBlock.vue";
 import HomeViewSectionBlock from "./components/HomeViewSectionBlock.vue";
 import type { MainPageCards } from "@/interfaces/IMainPage";
@@ -46,16 +46,18 @@ export default defineComponent({
         SampleGallerySkeleton
     },
     setup() {
+        const abortController = new AbortController();
         const useViewsData = useViewsDataStore();
         const key = ref(0);
         const mainPageCards: ComputedRef<MainPageCards> = computed(() => {
             const data = useViewsData.getData('homeData') as MainPageCards;
             return Array.isArray(data) ? data : [];
         });
+
         onBeforeMount(async () => {
             if (mainPageCards.value.length) return;
             try {
-                const data: MainPageCards = await Api.get(`article/find_by/${sectionTips['Главная']}`)
+                const data: MainPageCards = await Api.get(`article/find_by/${sectionTips['Главная']}`, null, abortController.signal)
                 const result = data;
                 if (!result) return;
                 useViewsData.setData(result, 'homeData');
@@ -63,7 +65,7 @@ export default defineComponent({
         })
 
         setInterval(() => {
-            Api.get(`article/find_by/${sectionTips['Главная']}`)
+            Api.get(`article/find_by/${sectionTips['Главная']}`, null, abortController.signal)
                 .then((data: MainPageCards) => {
                     const result = data;
                     if (!result) return;
@@ -89,6 +91,8 @@ export default defineComponent({
             })
             return needUpdate;
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             mainPageCards,

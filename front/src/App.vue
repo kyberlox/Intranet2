@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
+import { defineComponent, computed, watch, onBeforeMount, ref, onUnmounted } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
@@ -50,7 +50,6 @@ import VCard from "./views/vcard/VCard.vue";
 import Api from "./utils/Api";
 import InService from "./views/errors/InService.vue";
 import PullToRefresh from "./components/tools/pullToRefresh/PullToRefresh.vue";
-import { onUnmounted } from "vue";
 
 export default defineComponent({
     name: "app-layout",
@@ -143,8 +142,6 @@ export default defineComponent({
 
             }
         })
-
-        onUnmounted(() => console.log('ger'))
 
         return {
             isLogin,

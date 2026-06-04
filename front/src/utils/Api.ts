@@ -9,8 +9,8 @@ import type { IPostInner } from '@/components/tools/common/PostInner.vue';
 import { type ISortItems } from '@/interfaces/IEntities';
 
 const defaultUrl = (import.meta.env.VITE_API_URL).replace('/api', '');
-
 const VITE_API_URL = import.meta.env.VITE_API_URL
+
 const api = axios.create({
     baseURL: VITE_API_URL,
     withCredentials: true,
@@ -34,9 +34,11 @@ vendorApi.interceptors.request.use((config) => {
     return config
 })
 
+
 export default class Api {
-    static async get(url: string, config?: AxiosRequestConfig) {
-        return await api.get(url, config)
+    static async get(url: string, config?: AxiosRequestConfig | null, signal?: AbortSignal) {
+        const mergedConfig: AxiosRequestConfig = { ...config, signal: signal ?? config?.signal }
+        return await api.get(url, mergedConfig)
             .then(resp => resp.data)
             .catch(e => {
                 if (e.status == 502) {

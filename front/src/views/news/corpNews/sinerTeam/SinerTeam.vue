@@ -1,69 +1,61 @@
 <template>
-    <div>
-        <h1 class="page__title mt20">Организационное Развитие</h1>
+<div>
+    <h1 class="page__title mt20">Организационное Развитие</h1>
 
-        <SinerTable
-            :rows="tableRows"
-            :columns="tableColumns"
-            :loading="loading"
-            :show-more="true"
-            :rows-per-page="10"
-            @row-click="handleRowClick"
-        >
-            <template #column-implementer="{ value }">
-                <div class="person-cell">
-                    <img
-                        v-if="value && value[0]?.photo_file_url"
-                        :src="value[0].photo_file_url"
-                        :alt="value[0]?.fio || 'Фото'"
-                        class="person-avatar"
-                    />
-                    <span>{{ value?.[0]?.fio || '' }}</span>
-                </div>
-            </template>
+    <SinerTable :rows="tableRows"
+                :columns="tableColumns"
+                :loading="loading"
+                :show-more="true"
+                :rows-per-page="10"
+                @row-click="handleRowClick">
+        <template #column-implementer="{ value }">
+            <div class="person-cell">
+                <img v-if="value && value[0]?.photo_file_url"
+                     :src="value[0].photo_file_url"
+                     :alt="value[0]?.fio || 'Фото'"
+                     class="person-avatar" />
+                <span>{{ value?.[0]?.fio || '' }}</span>
+            </div>
+        </template>
 
-            <template #column-integrator="{ value }">
-                <div class="person-cell">
-                    <img
-                        v-if="value && value[0]?.photo_file_url"
-                        :src="value[0].photo_file_url"
-                        :alt="value[0]?.fio || 'Фото'"
-                        class="person-avatar"
-                    />
-                    <span>{{ value?.[0]?.fio || 'Работа без интегратора' }}</span>
-                </div>
-            </template>
+        <template #column-integrator="{ value }">
+            <div class="person-cell">
+                <img v-if="value && value[0]?.photo_file_url"
+                     :src="value[0].photo_file_url"
+                     :alt="value[0]?.fio || 'Фото'"
+                     class="person-avatar" />
+                <span>{{ value?.[0]?.fio || 'Работа без интегратора' }}</span>
+            </div>
+        </template>
 
-            <template #column-status="{ value }">
-                <span
-                    :class="[
-                        'status-badge',
-                        value === 'Запущен'
-                            ? 'status-active'
-                            : value === 'Закрыт' || value === 'Не запущен'
-                              ? 'status-closed'
-                              : '',
-                    ]"
-                >
-                    {{ value }}
-                </span>
-            </template>
+        <template #column-status="{ value }">
+            <span :class="[
+                'status-badge',
+                value === 'Запущен'
+                    ? 'status-active'
+                    : value === 'Закрыт' || value === 'Не запущен'
+                        ? 'status-closed'
+                        : '',
+            ]">
+                {{ value }}
+            </span>
+        </template>
 
-            <template #column-date_status="{ value }">
-                {{ formatDate(value as string) }}
-            </template>
+        <template #column-date_status="{ value }">
+            {{ formatDate(value as string) }}
+        </template>
 
-            <template #column-note_status="{ value }">
-                <div class="note-cell">
-                    {{ value || '—' }}
-                </div>
-            </template>
-        </SinerTable>
-    </div>
+        <template #column-note_status="{ value }">
+            <div class="note-cell">
+                {{ value || '—' }}
+            </div>
+        </template>
+    </SinerTable>
+</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted, computed } from 'vue'
 import type { ColumnDefinition, TableRow } from '@/components/layout/SinerTable.vue'
 import type { ISinerTableData } from '@/interfaces/entities/ISinerteam'
 import Api from '@/utils/Api'
@@ -78,6 +70,7 @@ export default defineComponent({
     },
 
     setup() {
+        const abortController = new AbortController();
         const loading = ref(false)
         const tableData = ref<ISinerTableData[]>([])
 
@@ -165,7 +158,7 @@ export default defineComponent({
         const loadData = async () => {
             loading.value = true
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['синертим']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['синертим']}`, null, abortController.signal)
                 // console.log(data)
                 tableData.value = Array.isArray(data) ? data : []
             } catch {
@@ -178,6 +171,8 @@ export default defineComponent({
         onMounted(() => {
             loadData()
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             tableRows,

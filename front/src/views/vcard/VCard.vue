@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch, defineComponent, type Ref } from 'vue';
+import { ref, watch, defineComponent, onUnmounted, type Ref } from 'vue';
 import Api from '@/utils/Api';
 import download from 'downloadjs';
 import VCardSkeleton from './VCardSkeleton.vue';
@@ -99,6 +99,7 @@ export default defineComponent({
         Loader
     },
     setup() {
+        const abortController = new AbortController();
         const isLoading: Ref<boolean> = ref(true);
         const route = useRoute();
         const user = ref();
@@ -110,7 +111,7 @@ export default defineComponent({
         watch((uid), async () => {
             if (!uid.value) return;
             try {
-                const res: IUser = await Api.get(`vcard/by_uuid/${uid.value}`)
+                const res: IUser = await Api.get(`vcard/by_uuid/${uid.value}`, null, abortController.signal)
                 if (res) {
                     user.value = res
                 } else
@@ -135,6 +136,8 @@ export default defineComponent({
                 isLoading.value = false
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             user,

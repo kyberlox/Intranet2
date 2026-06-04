@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch, onUnmounted } from 'vue';
 import { useUserData } from '@/stores/userData';
 import { staticAdminSections } from '@/assets/static/adminSections';
 import Api from '@/utils/Api';
@@ -82,6 +82,7 @@ export default defineComponent({
         NavArrow
     },
     setup(props) {
+        const abortController = new AbortController();
         const myId = computed(() => useUserData().getMyId);
         const sections = computed(() => useAdminData().getSections);
         const PeerAdmin = computed(() => useUserData().getUserRoots.PeerAdmin);
@@ -110,7 +111,7 @@ export default defineComponent({
         watch(([sections, () => props.needDefaultNav]), async () => {
             if (!sections.value.length) {
                 try {
-                    const res = await Api.get(`editor/get_sections_list`)
+                    const res = await Api.get(`editor/get_sections_list`, null, abortController.signal)
                     useAdminData().setSections(res);
                 } catch (error) {
                     console.error(error);
@@ -139,6 +140,8 @@ export default defineComponent({
                     name: String(section.id)
                 }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             myId,

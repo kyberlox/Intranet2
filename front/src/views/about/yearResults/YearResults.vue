@@ -47,7 +47,7 @@
 </div>
 </template>
 <script lang="ts">
-import { onMounted, ref, watch, type Ref } from "vue";
+import { onMounted, onUnmounted, ref, watch, type Ref } from "vue";
 import { defineComponent } from "vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
@@ -61,6 +61,7 @@ export default defineComponent({
         Loader
     },
     setup() {
+        const abortController = new AbortController();
         const currentYear = ref();
         const isLoading = ref(false);
         const workersLocations = ref<string[]>([]);
@@ -74,7 +75,7 @@ export default defineComponent({
         onMounted(async () => {
             isLoading.value = true;
             try {
-                const res = await Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`)
+                const res = await Api.get(`article/find_by/${sectionTips["ДоскаПочета"]}`, null, abortController.signal)
                 allTimeAwards.value.length = 0;
                 actualYears.value.length = 0;
                 allTimeAwards.value = res;
@@ -128,6 +129,8 @@ export default defineComponent({
         watch((currentYear), () => {
             initWorkers(true);
         }, { immediate: true, deep: true })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             currentYear,

@@ -26,11 +26,12 @@
     </div>
 </SlotModal>
 </template>
+
 <script lang='ts'>
 import Loader from '@/components/layout/Loader.vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import { type ISortItems } from '@/interfaces/IEntities';
 
 export default defineComponent({
@@ -40,13 +41,14 @@ export default defineComponent({
     },
     props: {},
     setup(_, { emit }) {
+        const abortController = new AbortController();
         const sortData = ref<ISortItems[]>([]);
         const isLoading = ref(true);
 
         onMounted(async () => {
             sortData.value.length = 0;
             try {
-                sortData.value = await Api.get('article/sort_and_blogs')
+                sortData.value = await Api.get('article/sort_and_blogs', null, abortController.signal)
             } catch (error) {
                 console.error(error)
             } finally {
@@ -68,6 +70,8 @@ export default defineComponent({
                 emit('close')
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             sortData,

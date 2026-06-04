@@ -7,7 +7,7 @@
 </template>
 <script lang="ts">
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { computed, defineComponent, onMounted, type ComputedRef } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, type ComputedRef } from "vue";
 import { sectionTips } from "@/assets/static/sectionTips";
 import Api from "@/utils/Api";
 import { useViewsDataStore } from "@/stores/viewsData";
@@ -18,16 +18,20 @@ export default defineComponent({
         ComplexGallery
     },
     setup() {
+        const abortController = new AbortController();
         const bonusesSlides: ComputedRef<IBaseEntity[]> = computed(() => useViewsDataStore().getData('partnerBonusData') as IBaseEntity[]);
         onMounted(async () => {
             if (bonusesSlides.value.length) return;
             try {
-                const res = await Api.get(`article/find_by/${sectionTips['БонусыПартнеров']}`)
+                const res = await Api.get(`article/find_by/${sectionTips['БонусыПартнеров']}`, null, abortController.signal)
                 useViewsDataStore().setData(res, "partnerBonusData")
             } catch (error) {
                 console.error(error)
             }
         })
+
+        onUnmounted(() => abortController.abort())
+
         return {
             page: 'officialEvents',
             bonusesSlides

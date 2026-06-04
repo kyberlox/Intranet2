@@ -22,7 +22,7 @@ def register_task(name: str):
     """Декоратор для регистрации async-функций как обработчиков отложенных задач."""
     def decorator(func):
         TASK_HANDLERS[name] = func
-        LogsMaker().info(f"Задача '{name}' зарегистрирована (функция {func.__module__}.{func.__name__})")
+        LogsMaker().info_message(f"Задача '{name}' зарегистрирована (функция {func.__module__}.{func.__name__})")
         return func
     return decorator
 

@@ -878,6 +878,7 @@ async def update_inf_from_b24(user_id):
 
     from ..base.Elastic.UserSearchModel import UserSearchModel
     try:
+        print(user_id, type(user_id))
         async with AsyncSessionLocal() as session:
             # await asyncio.sleep(60)
             res = await B24().getUser(user_id)

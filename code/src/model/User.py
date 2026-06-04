@@ -411,7 +411,7 @@ class User:
         from .App import AsyncSessionLocal
         try:
             async with AsyncSessionLocal() as session:
-                await asyncio.sleep(60)
+                # await asyncio.sleep(60)
                 res = await B24().getUser(self.id)
                 if res:
                     usr_data = res[0]
@@ -1101,7 +1101,7 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
     """
     from ..services.scheduler import get_scheduler_manager
     manager = get_scheduler_manager()
-    await manager.add_redis_task("update_inf_from_b24", 60, user_id)
+    await manager.add_redis_task("update_inf_from_b24", 10, user_id)
     return {"status": "ok"}
     # return await User(id=user_id).update_inf_from_b24(session)
 

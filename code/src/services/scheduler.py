@@ -397,7 +397,7 @@ class AioSchedulerManager:
         self.scheduler_task = None
         self.is_running = False
         self.jobs = {}  # Словарь для хранения задач: job_id -> task
-        self.redis = RedisStorage()
+        self.redis = RedisStorage().client
     
     async def init_scheduler(self):
         """
@@ -671,7 +671,7 @@ class AioSchedulerManager:
                     await self.scheduler_task
                 except asyncio.CancelledError:
                     pass
-                    
+
             if hasattr(self, 'redis_worker_task'):
                 self.redis_worker_task.cancel()
 

@@ -894,8 +894,7 @@ async def update_inf_from_b24(user_id):
             await session.commit()
             await session.refresh(user_db)
             psql_user = user_db.__dict__
-            print(psql_user)
-            if psql_user.indirect_data['uf_department'] != usr_data['UF_DEPARTMENT']:
+            if psql_user['indirect_data']['uf_department'] != usr_data['UF_DEPARTMENT']:
                 await user_class.put_user_to_vis(session, psql_user)
             
             if "ACTIVE" in usr_data and usr_data["ACTIVE"] == False:

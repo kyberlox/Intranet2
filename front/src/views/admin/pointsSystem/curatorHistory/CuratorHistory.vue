@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, onUnmounted } from 'vue';
 import PointsHistoryActionTable from '../PointsHistoryActionTable.vue';
 import type { ICuratorActivityHistory } from '@/interfaces/IEntities';
 import Api from '@/utils/Api';
@@ -52,6 +52,7 @@ export default defineComponent({
         }
     },
     setup() {
+        const abortController = new AbortController();
         const activitiesInTable = ref<ICuratorActivityHistory[]>([]);
         const showFilter = ref<string[]>([]);
         const dateFilter = ref();
@@ -78,7 +79,7 @@ export default defineComponent({
 
         const tableInit = async () => {
             try {
-                const data: ICuratorActivityHistory[] = await Api.get('peer/get_curators_history')
+                const data: ICuratorActivityHistory[] = await Api.get('peer/get_curators_history', null, abortController.signal)
                 activitiesInTable.value = data
                 filters.value = getFilterTypes(activitiesInTable.value)
             } catch (error) {
@@ -161,6 +162,8 @@ export default defineComponent({
                     return 'Фильтр';
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             activitiesInTable,

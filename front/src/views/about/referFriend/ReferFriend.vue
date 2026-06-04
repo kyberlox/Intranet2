@@ -41,17 +41,18 @@
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, onUnmounted } from 'vue';
 import { type IOpenVacancy } from '@/interfaces/IEntities';
 
 export default defineComponent({
     setup() {
+        const abortController = new AbortController();
         const jobList = ref<IOpenVacancy[]>();
         const noVac = ref(false);
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by/${sectionTips["ОткрытыеВакансии"]}`)
+                const data = await Api.get(`article/find_by/${sectionTips["ОткрытыеВакансии"]}`, null, abortController.signal)
                 if (data.length) {
                     jobList.value = data;
                 }
@@ -60,6 +61,8 @@ export default defineComponent({
                 console.error(error)
             }
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             jobList,

@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, onUnmounted } from "vue";
 import ContentGallery from "@/components/tools/gallery/ContentGallery.vue";
 import Api from "@/utils/Api";
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
@@ -36,6 +36,7 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const abortController = new AbortController();
         const slide = ref<IContentGallerySlide>();
         const formattedSlides = ref({ images: [], id: '', videos_embed: [], videos_native: [] });
         const activeIndex = ref<number>();
@@ -48,7 +49,7 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by_ID/${props.id}`)
+                const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
                 slide.value = data;
                 formattedSlides.value.images = data.images;
                 formattedSlides.value.videos_embed = data.videos_embed;
@@ -58,6 +59,8 @@ export default defineComponent({
                 console.error(error)
             }
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             title: slide.value?.name,

@@ -130,7 +130,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onUnmounted } from 'vue';
 import Api from '@/utils/Api';
 import ZoomModal from "@/components/tools/modal/ZoomModal.vue";
 import { watch } from 'vue';
@@ -159,6 +159,7 @@ export default defineComponent({
         Loader
     },
     setup(props) {
+        const abortController = new AbortController();
         const userData = useUserData();
         const user = ref();
         const modalIsOpen = ref(false);
@@ -170,7 +171,7 @@ export default defineComponent({
             if (newVal) {
                 user.value = '';
                 try {
-                    const res = await Api.get(`users/find_by/${newVal.id}`)
+                    const res = await Api.get(`users/find_by/${newVal.id}`, null, abortController.signal)
                     user.value = res;
                     if (user.value && user.value.last_name && user.value.name && user.value.second_name) {
                         user.value.fio = user.value.last_name + " " + user.value.name + " " + user.value.second_name
@@ -232,6 +233,8 @@ export default defineComponent({
             }
             else return date.replaceAll('.', '-')
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             user,

@@ -144,7 +144,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Api from '@/utils/Api';
 import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
@@ -197,6 +197,7 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const abortController = new AbortController();
     const route = useRoute();
     const items = ref<SectionItem[]>([]);
     const searchQuery = ref('');
@@ -231,7 +232,7 @@ export default defineComponent({
       if (sectionId.value == 'gpt') return
       const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
       try {
-        const data = await Api.get(`/editor/section_rendering/${sectionId.value}${paginationQuery}`)
+        const data = await Api.get(`/editor/section_rendering/${sectionId.value}${paginationQuery}`, null, abortController.signal)
         items.value = data
       } finally {
         isLoading.value = false
@@ -270,6 +271,8 @@ export default defineComponent({
         itemsInit()
       }
     }
+
+    onUnmounted(() => abortController.abort())
 
     return {
       items,

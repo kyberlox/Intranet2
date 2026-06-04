@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from 'vue';
+import { defineComponent, ref, watch, computed, onUnmounted } from 'vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import AdminEditInput from '@/views/admin/components/inputFields/AdminEditInput.vue';
 import AdminEditSelect from '@/views/admin/components/inputFields/AdminEditSelect.vue';
@@ -85,6 +85,7 @@ export default defineComponent({
     },
     emits: ['addNew'],
     setup(props, { emit }) {
+        const abortController = new AbortController();
         const newActivity = ref<INewActivityData>({});
         const usersActivities = computed(() => usePointsData().getActivities);
 
@@ -104,7 +105,7 @@ export default defineComponent({
         watchDebounced((searchQuery), async () => {
             if (!searchQuery.value) return;
             try {
-                const data = await Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/10`)
+                const data = await Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/10`, null, abortController.signal)
                 usersList.value = data[0].content;
             } catch (error: unknown) {
                 handleApiError(error as AxiosError, toast)
@@ -130,6 +131,8 @@ export default defineComponent({
         const addActivity = () => {
             emit('addNew', newActivity.value);
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             searchQuery,

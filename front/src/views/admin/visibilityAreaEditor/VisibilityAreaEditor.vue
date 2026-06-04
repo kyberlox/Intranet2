@@ -57,7 +57,7 @@
 
 <script lang="ts">
 import Api from '@/utils/Api';
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
 import VisibilityAreaEditorTree from './components/VisibilityAreaEditorTree.vue';
 import VisibilityRightSidebar from './components/VisibilityRightSidebar.vue';
@@ -87,6 +87,7 @@ export default defineComponent({
         Loader
     },
     setup() {
+        const abortController = new AbortController();
         const allAreas = ref<{ id: number, vision_name: string }[]>([]);
         const activeArea = ref<number>();
         const activeAreaUsers = ref<IVisionUser[]>([]);
@@ -127,7 +128,7 @@ export default defineComponent({
 
         const getAllVisions = async () => {
             try {
-                const data = await Api.get(`fields_visions/get_all_visions`)
+                const data = await Api.get(`fields_visions/get_all_visions`, null, abortController.signal)
                 allAreas.value = data
             } catch (error) {
                 handleApiError((error as AxiosError), toast)
@@ -137,7 +138,7 @@ export default defineComponent({
         const getVisionUser = async (visionId: number) => {
             isLoading.value = true
             try {
-                const data = await Api.get(`fields_visions/get_users_in_vision/${visionId}`)
+                const data = await Api.get(`fields_visions/get_users_in_vision/${visionId}`, null, abortController.signal)
                 if ('msg' in data) return;
                 activeAreaUsers.value = data;
                 changeEditMode(false);
@@ -152,7 +153,7 @@ export default defineComponent({
 
         const getDepStructureAll = async () => {
             try {
-                const data = await Api.get(`fields_visions/get_full_structure`)
+                const data = await Api.get(`fields_visions/get_full_structure`, null, abortController.signal)
                 createDepartmentTree(data);
             } catch (error) {
                 handleApiError((error as AxiosError), toast)
@@ -376,7 +377,7 @@ export default defineComponent({
         const getDepStructureByName = async (word: string) => {
             if (!editGroupMode.value) return
             try {
-                const data = await Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                const data = await Api.get(`fields_visions/get_dep_structure_by_name/${word}`, null, abortController.signal)
                 filteredUsers.value = [];
                 filteredDepartments.value = data;
             } catch (error) {
@@ -386,13 +387,15 @@ export default defineComponent({
 
         const getUserByName = async (word: string) => {
             try {
-                const data = await Api.get(`users/search/full_search_users_for_editor/${word}/10`)
+                const data = await Api.get(`users/search/full_search_users_for_editor/${word}/10`, null, abortController.signal)
                 filteredDepartments.value.length = 0;
                 filteredUsers.value = data[0].content;
             } catch (error) {
                 handleApiError(error as AxiosError, toast)
             }
         }
+
+        onUnmounted(() => abortController.abort());
 
         return {
             allAreas,

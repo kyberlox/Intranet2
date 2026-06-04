@@ -25,7 +25,7 @@
 <script lang="ts">
 import Api from "@/utils/Api";
 import TrainingTable from "../components/TrainingTable.vue";
-import { defineComponent, onMounted, ref, type Ref } from "vue";
+import { defineComponent, onMounted, ref, type Ref, onUnmounted } from "vue";
 import { sectionTips } from "@/assets/static/sectionTips";
 import DateFilter from "@/components/tools/common/DateFilter.vue";
 import type { ItableItem } from "@/interfaces/IEntities";
@@ -36,6 +36,7 @@ export default defineComponent({
         DateFilter
     },
     setup() {
+        const abortController = new AbortController();
         const literature = ref();
         const renderedLiterature = ref();
         const showparams = ref(false);
@@ -58,7 +59,7 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['УчЛитература']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['УчЛитература']}`, null, abortController.signal)
                 setFilterData(data);
                 literature.value = data;
                 renderedLiterature.value = data;
@@ -90,6 +91,8 @@ export default defineComponent({
                     showThis.value = name;
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             literature,

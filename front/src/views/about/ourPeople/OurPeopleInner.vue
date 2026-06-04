@@ -4,7 +4,7 @@
 </template>
 <script lang="ts">
 import Interview from "./components/Interview.vue";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import Api from "@/utils/Api";
 
 export default defineComponent({
@@ -18,15 +18,19 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const abortController = new AbortController();
         const interviewFromOurPeople = ref();
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by_ID/${props.id}`)
+                const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
                 interviewFromOurPeople.value = data
             } catch (error) {
                 console.error(error)
             }
         })
+
+        onUnmounted(() => abortController.abort())
+
         return {
             interviewFromOurPeople
         };

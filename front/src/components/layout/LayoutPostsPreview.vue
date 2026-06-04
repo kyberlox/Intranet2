@@ -44,7 +44,7 @@
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
 import Api from '@/utils/Api';
-import { defineComponent, onMounted, type Ref, ref, computed, type ComputedRef, watch, type PropType } from 'vue';
+import { defineComponent, onMounted, onUnmounted, type Ref, ref, computed, type ComputedRef, watch, type PropType } from 'vue';
 import type { IBaseEntity, INews } from '@/interfaces/IEntities';
 import { extractYears } from '@/utils/extractYearsFromPosts';
 import { showEventsByYear } from '@/utils/showEventsByYear';
@@ -59,7 +59,6 @@ import ContentPlug from "./ContentPlug.vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { featureFlags } from "@/assets/static/featureFlags";
 import PageSelector from "@/components/tools/common/PageSelector.vue";
-
 export default defineComponent({
     components: {
         SampleGallery,
@@ -123,12 +122,14 @@ export default defineComponent({
         const page = ref(0);
         const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
 
+        const abortController = new AbortController();
+
         const fetchNews = async () => {
             isLoading.value = true;
             const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
 
             try {
-                const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`)
+                const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`, null, abortController.signal)
                 viewsData.setData(res, props.storeItemsName);
                 if (!props.tagId) visibleNews.value = res;
             } catch (error) {
@@ -168,6 +169,10 @@ export default defineComponent({
             } else
                 isLoading.value = true;
             await fetchNews();
+        })
+
+        onUnmounted(() => {
+            abortController?.abort();
         })
 
 

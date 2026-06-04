@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onUnmounted } from 'vue'
 import AdminEditInput from './AdminEditInput.vue'
 import type { IUserSearch } from '@/interfaces/IEntities'
 import { watchDebounced } from '@vueuse/core'
@@ -53,6 +53,7 @@ export default defineComponent({
     name: 'adminEditUserSearch',
     emits: ['handleDepartmentPick'],
     setup(props, { emit }) {
+        const abortController = new AbortController();
         const pickedId = ref('')
         const departmentList = ref<IAreaDepartment[]>([])
         const searchQuery = ref<string>()
@@ -79,7 +80,7 @@ export default defineComponent({
 
         const getDepStructureByName = async (word: string) => {
             try {
-                const data = await Api.get(`fields_visions/get_dep_structure_by_name/${word}`)
+                const data = await Api.get(`fields_visions/get_dep_structure_by_name/${word}`, null, abortController.signal)
                 departmentList.value = data;
             }
             catch (error: unknown) {
@@ -88,6 +89,8 @@ export default defineComponent({
                 }
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             searchQuery,

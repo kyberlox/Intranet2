@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch, nextTick, defineComponent } from "vue";
+import { ref, watch, nextTick, defineComponent, onUnmounted } from "vue";
 import "@vuepic/vue-datepicker/dist/main.css";
 import DatePicker from "@/components/tools/common/DatePicker.vue";
 import Api from "@/utils/Api";
@@ -74,6 +74,7 @@ export default defineComponent({
     ContentPlug,
   },
   setup() {
+    const abortController = new AbortController();
     const isLoading = ref(false);
     const today = new Date();
     const yesterday = new Date(today);
@@ -133,7 +134,7 @@ export default defineComponent({
         isLoading.value = true;
       }
       try {
-        const data = await Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`)
+        const data = await Api.get(`users/get_birthday_celebrants/${String(searchValue.value)}`, null, abortController.signal)
         slidesForBirthday.value = data.sort((x: { id: number }, y: { id: number }) => x.id - y.id) || []
       } catch (error) {
         console.error(error)
@@ -159,6 +160,8 @@ export default defineComponent({
 
     const dateFromDatepicker = ref();
     const nullifyDateInput = ref(false);
+
+    onUnmounted(() => abortController.abort())
 
     return {
       slidesForBirthday,

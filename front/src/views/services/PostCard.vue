@@ -89,7 +89,7 @@
 
 <script lang="ts">
 import { textAreaRowsToContent } from "@/utils/stringUtils.js";
-import { ref, defineComponent, onMounted, watch, computed, nextTick } from "vue";
+import { ref, defineComponent, onMounted, onUnmounted, watch, computed, nextTick } from "vue";
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
@@ -113,6 +113,7 @@ export default defineComponent({
         Loader
     },
     setup() {
+        const abortController = new AbortController();
         const greetingsText = ref("");
         const postCards = ref<IPostCard[]>([]);
         const currentSlides = ref();
@@ -132,7 +133,7 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data: IPostCard[] = await Api.get(`article/find_by/${sectionTips['открытки']}`)
+                const data: IPostCard[] = await Api.get(`article/find_by/${sectionTips['открытки']}`, null, abortController.signal)
                 postCards.value = data
             } catch (error) {
                 console.error(error)
@@ -147,7 +148,7 @@ export default defineComponent({
             if (!newVal) { return }
             currentSlides.value = [];
             try {
-                const data = await Api.get(`article/find_by_ID/${newVal}`)
+                const data = await Api.get(`article/find_by_ID/${newVal}`, null, abortController.signal)
                 currentSlides.value = data.images;
                 changeMsgCardIndex(0);
             } catch (error) {
@@ -193,6 +194,8 @@ export default defineComponent({
 
             return true;
         };
+
+        onUnmounted(() => abortController.abort())
 
         return {
             currentSlides,

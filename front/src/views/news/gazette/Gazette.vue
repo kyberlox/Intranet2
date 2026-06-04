@@ -9,7 +9,9 @@
             <div class="gazette-image img-fluid img-thumbnail"
                  :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
         </figure>
-        <div><span>{{ gazette.name }}</span></div>
+        <div>
+            <span>{{ gazette.name }}</span>
+        </div>
     </div>
 </div>
 <Transition name="modal">
@@ -21,7 +23,7 @@
 
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, type Ref } from "vue";
+import { ref, defineComponent, onMounted, onUnmounted, type Ref } from "vue";
 // import { gazettes } from "@/assets/static/gazettes";
 // import type { IGazette } from "@/interfaces/IGazettes";
 import PdfViewerModal from "@/components/tools/modal/PdfViewerModal.vue";
@@ -45,6 +47,7 @@ export default defineComponent({
         PdfViewerModal
     },
     setup() {
+        const abortController = new AbortController();
         const modalActive = ref(false);
         const gazettes: Ref<IGazette[]> = ref([]);
         const activeGazete = ref();
@@ -56,12 +59,14 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['газетта']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['газетта']}`, null, abortController.signal)
                 gazettes.value = data;
             } catch (error) {
                 console.error(error)
             }
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             gazettes,

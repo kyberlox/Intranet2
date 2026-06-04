@@ -46,7 +46,7 @@
 </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed, type Ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref, computed, type Ref } from 'vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
 import { useUserData } from '@/stores/userData';
@@ -63,6 +63,7 @@ export default defineComponent({
         Loader
     },
     setup() {
+        const abortController = new AbortController();
         const currentUser = computed(() => useUserData().getUser)
         const isLoading = ref(true);
         const ideas: Ref<IIdeaData[]> = ref([]);
@@ -76,12 +77,14 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['ЕстьИдея']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['ЕстьИдея']}`, null, abortController.signal)
                 ideas.value = data;
             } finally {
                 isLoading.value = false
             }
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             ideas,

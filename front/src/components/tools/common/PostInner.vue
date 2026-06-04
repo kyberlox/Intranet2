@@ -109,7 +109,7 @@
 <script lang="ts">
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
 import DocIcon from "@/assets/icons/posts/DocIcon.svg?component";
-import { defineComponent, type Ref, ref, type PropType, watch } from "vue";
+import { defineComponent, type Ref, ref, type PropType, watch, onUnmounted } from "vue";
 import type { IBaseEntity, IReportage } from "@/interfaces/IEntities";
 import Api from "@/utils/Api";
 import Reactions from "./Reactions.vue";
@@ -185,6 +185,8 @@ export default defineComponent({
   },
   setup(props) {
     const currentPost = ref<IPostInner>();
+    const abortController = new AbortController();
+
     watch((props), async () => {
       if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
         if (props.previewElement == null) {
@@ -195,7 +197,7 @@ export default defineComponent({
       else
         if (props.id && typeof props.id == 'string')
           try {
-            const res = await Api.get(`article/find_by_ID/${props.id}`)
+            const res = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
             currentPost.value = res;
             if (!currentPost.value) return;
             changeToPostStandart(currentPost as Ref<IPostInner>);
@@ -211,6 +213,8 @@ export default defineComponent({
 
       return target
     }
+
+    onUnmounted(() => abortController.abort())
 
     return {
       currentPost,

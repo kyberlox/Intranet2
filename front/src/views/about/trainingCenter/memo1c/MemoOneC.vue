@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import Api from "@/utils/Api";
 import { capitalize } from "vue";
 
@@ -51,6 +51,7 @@ interface IMemo {
 
 export default defineComponent({
     setup() {
+        const abortController = new AbortController();
         const navigation = ref<string[]>([]);
         const memoData = ref();
         const currentContent = ref<IMemo[]>([]);
@@ -58,7 +59,7 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get('1c-help/menu_plus')
+                const data = await Api.get('1c-help/menu_plus', null, abortController.signal)
                 memoData.value = data;
                 navigation.value = Object.keys(data);
                 showContent(navigation.value[0]);
@@ -75,6 +76,8 @@ export default defineComponent({
             currentNav.value = nav;
             currentContent.value = memoData.value[nav];
         };
+
+        onUnmounted(() => abortController.abort())
 
         return {
             navigation,

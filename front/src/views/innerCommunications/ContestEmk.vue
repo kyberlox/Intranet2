@@ -44,7 +44,7 @@
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
 import Api from '@/utils/Api';
-import { onMounted, defineComponent, ref } from 'vue';
+import { onMounted, defineComponent, ref, onUnmounted } from 'vue';
 import ContentGallery from '@/components/tools/gallery/ContentGallery.vue';
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
 import { type IContentGallerySlide } from '@/components/tools/gallery/ContentGallery.vue';
@@ -65,6 +65,7 @@ export default defineComponent({
         ContentPlug
     },
     setup() {
+        const abortController = new AbortController();
         const slides = ref<IContentGallerySlide>({ name: '', images: [] });
         const title = ref();
         const modalIsOpen = ref(false);
@@ -80,7 +81,7 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by/${sectionTips['Конкурсы']}`)
+                const data = await Api.get(`article/find_by/${sectionTips['Конкурсы']}`, null, abortController.signal)
                 slides.value.images = data.filter((e: IContest) => e.indirect_data.nomination);
                 if (!slides.value.images) return
                 slides.value.images.map((e) => {
@@ -97,6 +98,8 @@ export default defineComponent({
         const pickSection = (nav: string) => {
             activeNav.value = nav;
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             slides,

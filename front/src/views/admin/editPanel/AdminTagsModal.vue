@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, onUnmounted } from 'vue';
 import type { ITag } from '@/interfaces/entities/ITag';
 import AdminEditInput from '../components/inputFields/AdminEditInput.vue';
 import RemoveIcon from '@/assets/icons/admin/RemoveIcon.svg?component';
@@ -65,13 +65,14 @@ export default defineComponent({
     },
 
     setup() {
+        const abortController = new AbortController();
         const tags = ref<ITag[]>([]);
         const isLoading = ref<boolean>(true);
         const newTagName = ref<string>();
 
         const tagsInit = async () => {
             try {
-                const data = await Api.get('tags/get_tags')
+                const data = await Api.get('tags/get_tags', null, abortController.signal)
                 tags.value = data
             } finally {
                 isLoading.value = false
@@ -101,6 +102,8 @@ export default defineComponent({
         onMounted(() => {
             tagsInit();
         })
+
+        onUnmounted(() => abortController.abort())
 
         return {
             tags,

@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from 'vue';
+import { defineComponent, computed, ref, watch, onUnmounted } from 'vue';
 import { useAdminData } from '@/stores/adminData';
 import AdminSidebar from '../components/AdminSidebar.vue';
 import NavArrow from '@/assets/icons/admin/NavArrow.svg?component'
@@ -63,6 +63,7 @@ export default defineComponent({
         Loader
     },
     setup() {
+        const abortController = new AbortController();
         const sections = computed(() => useAdminData().getSections)
         const activeSection = ref();
         const activeSectionEditors = ref<IUserList[]>([]);
@@ -98,7 +99,7 @@ export default defineComponent({
             }
             else
                 try {
-                    const data = await Api.get(`roots/get_editors_list/${activeSection.value.id}`)
+                    const data = await Api.get(`roots/get_editors_list/${activeSection.value.id}`, null, abortController.signal)
                     activeSectionEditors.value = Array.isArray(data) ? data : []
                 } finally {
                     isLoading.value = false
@@ -134,6 +135,8 @@ export default defineComponent({
                 console.error(error)
             }
         }
+
+        onUnmounted(() => abortController.abort());
 
         return {
             newSections,

@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onUnmounted } from 'vue'
 import SearchList, { type IUserList } from '@/components/tools/common/SearchList.vue'
 import AdminEditInput from './AdminEditInput.vue'
 import type { IUserSearch } from '@/interfaces/IEntities'
@@ -81,6 +81,7 @@ export default defineComponent({
     name: 'adminEditUserSearch',
     emits: ['handleUserPick', 'handleUsersPick'],
     setup(props, { emit }) {
+        const abortController = new AbortController();
         const pickedUser = ref()
         const usersList = ref([])
         const searchQuery = ref<string>()
@@ -109,7 +110,7 @@ export default defineComponent({
             async () => {
                 if (!searchQuery.value) return
                 try {
-                    const data = await Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/5`)
+                    const data = await Api.get(`users/search/full_search_users_for_editor/${searchQuery.value}/5`, null, abortController.signal)
                     usersList.value = data[0].content
                 } catch (error) {
                     if ((error as AxiosError).response?.status == 500) {
@@ -119,6 +120,8 @@ export default defineComponent({
             },
             { debounce: 500, maxWait: 1500 },
         )
+
+        onUnmounted(() => abortController.abort())
 
         return {
             pickedUser,

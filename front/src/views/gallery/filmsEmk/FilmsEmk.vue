@@ -18,7 +18,7 @@
 <script lang="ts">
 import DateFilter from '@/components/tools/common/DateFilter.vue';
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
-import { computed, defineComponent, onMounted, ref, type Ref } from 'vue';
+import { computed, defineComponent, onMounted, ref, type Ref, onUnmounted } from 'vue';
 import Api from '@/utils/Api';
 import { sectionTips } from '@/assets/static/sectionTips';
 import { extractYears } from '@/utils/extractYearsFromPosts';
@@ -32,15 +32,17 @@ export default defineComponent({
         ComplexGallery
     },
     setup() {
+        const abortController = new AbortController();
         const offEventKey = ref(0);
         const allSlides = computed((): IBaseEntity[] => useViewsDataStore().getData('filmsEmk') as IBaseEntity[]);
         const visibleEvents: Ref<IBaseEntity[]> = ref(allSlides.value);
         const buttonText: Ref<string> = ref('Год публикации');
         const showFilter = ref(false);
+
         onMounted(async () => {
             if (allSlides.value.length) return;
             try {
-                const res = await Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`)
+                const res = await Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`, null, abortController.signal)
                 useViewsDataStore().setData(res, 'filmsEmk');
                 visibleEvents.value = res;
             } catch (error) {
@@ -60,6 +62,9 @@ export default defineComponent({
             offEventKey.value++;
             showFilter.value = false;
         }
+
+        onUnmounted(() => abortController.abort())
+
         return {
             allSlides,
             page: 'filmsEmk',

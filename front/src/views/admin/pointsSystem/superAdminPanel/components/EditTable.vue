@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from 'vue';
+import { defineComponent, computed, ref, watch, onUnmounted } from 'vue';
 import CuratorTable from './tableEntities/CuratorTable.vue';
 import ActivityTable from './tableEntities/ActivityTable.vue';
 import ModeratorTable from './tableEntities/ModeratorTable.vue';
@@ -82,6 +82,7 @@ export default defineComponent({
         Loader
     },
     setup(props) {
+        const abortController = new AbortController();
         const addNewModalVisible = ref(false);
         const curators = ref<ICurator[]>([]);
         const moders = ref<IPointsModer[]>([]);
@@ -153,7 +154,7 @@ export default defineComponent({
             const route = cases.find(e => e.name == table)?.route
             if (!route) return
             try {
-                const data = await Api.get(route)
+                const data = await Api.get(route, null, abortController.signal)
                 if (table == 'activity') usePointsData().setAllActivities(data)
                 else if (table == 'curator') curators.value = data
                 else if (table == 'moder') moders.value = data
@@ -175,6 +176,8 @@ export default defineComponent({
                 console.error(error)
             }
         }
+
+        onUnmounted(() => abortController.abort())
 
         return {
             entitiesHeaders,

@@ -89,7 +89,7 @@
 
 <script lang="ts">
 import ZoomModal from '@/components/tools/modal/ZoomModal.vue';
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import ZoomInIcon from "@/assets/icons/merchstore/ZoomInIcon.svg?component"
 import AcceptBuyModal from './components/AcceptBuyModal.vue';
 import PurchaseSuccessModal from './components/PurchaseSuccessModal.vue';
@@ -118,6 +118,7 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const abortController = new AbortController();
         const activeImage = ref();
         const modalIsOpen = ref(false);
         const currentSize = ref<'s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'>();
@@ -207,7 +208,7 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
-                const data = await Api.get(`article/find_by_ID/${props.id}`)
+                const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
                 currentItem.value = data
             } catch (error) {
                 console.error(error)
@@ -219,6 +220,8 @@ export default defineComponent({
                 acceptBuyModalOpen.value = status;
             } else toast.showCustomToast('info', 'Выберите размер')
         }
+
+        onUnmounted(() => abortController.abort());
 
         return {
             activeImage,

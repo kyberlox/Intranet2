@@ -671,7 +671,10 @@ class AioSchedulerManager:
                     await self.scheduler_task
                 except asyncio.CancelledError:
                     pass
-            
+                    
+            if hasattr(self, 'redis_worker_task'):
+                self.redis_worker_task.cancel()
+
             logger.info_message("Планировщик aioscheduler остановлен")
     
     def get_status(self) -> Dict[str, Any]:

@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..base.pSQL.objects.App import get_async_db
 from fastapi.responses import StreamingResponse
 import asyncio
-
+from typing import Callable, Dict, Any, Coroutine
 # templates = Jinja2Templates(directory="./front_jinja")
 
 users_router = APIRouter(prefix="/users")

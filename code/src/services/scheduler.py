@@ -16,8 +16,13 @@ from .MerchStore import MerchStore
 from .Peer import Peer
 from .SendMail import SendEmail
 
-from ..base.RedisStorage import RedisStorage
+import redis.asyncio as redis
 import json, time
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 # ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
 
 # Глобальный экземпляр планировщика
@@ -397,7 +402,21 @@ class AioSchedulerManager:
         self.scheduler_task = None
         self.is_running = False
         self.jobs = {}  # Словарь для хранения задач: job_id -> task
-        self.redis = RedisStorage().client
+        # self.redis = RedisStorage().client
+        redis_host = "redis"
+        redis_port = 6379
+        redis_db = 0
+        redis_password = os.getenv("pswd")
+
+        self.redis = redis.Redis(
+            host=redis_host,
+            port=redis_port,
+            db=redis_db,
+            password=redis_password,
+            decode_responses=True,
+            socket_connect_timeout=5,
+            retry_on_timeout=True
+        )
     
     async def init_scheduler(self):
         """

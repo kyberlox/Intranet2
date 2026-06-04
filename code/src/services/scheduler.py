@@ -776,7 +776,7 @@ class AioSchedulerManager:
             "args": json.dumps(args),
             "kwargs": json.dumps(kwargs)
         }
-
+        print("ДОБАВИЛИ В ЗАДАЧУ")
         async with self.redis.pipeline() as pipe:
             # Сохраняем детали задачи в Hash
             await pipe.hset(f"scheduler:task:{task_id}", mapping=task_data)

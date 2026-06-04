@@ -890,9 +890,10 @@ async def update_inf_from_b24(user_id):
             if 'UF_DEPARTMENT' in usr_data and 112 in usr_data['UF_DEPARTMENT']:
                 usr_data["ACTIVE"] = False
 
-            psql_user = await UserModel().upsert_user(user_data=usr_data, session=session)
+            user_db = await UserModel().upsert_user(user_data=usr_data, session=session)
             await session.commit()
-            await session.refresh(psql_user)
+            await session.refresh(user_db)
+            psql_user = user_db.__dict__
             print(psql_user)
             if psql_user.indirect_data['uf_department'] != usr_data['UF_DEPARTMENT']:
                 await user_class.put_user_to_vis(session, psql_user)

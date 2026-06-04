@@ -894,12 +894,15 @@ async def update_inf_from_b24(user_id):
             await session.commit()
             await session.refresh(user_db)
             psql_user = user_db.__dict__
-            if psql_user['indirect_data']['uf_department'] != usr_data['UF_DEPARTMENT']:
-                await user_class.put_user_to_vis(session, psql_user)
             
             if "ACTIVE" in usr_data and usr_data["ACTIVE"] == False:
                 await UserSearchModel().delete_user_from_el_index(user_id=user_id)
                 return None
+
+            if psql_user['indirect_data']['uf_department'] != usr_data['UF_DEPARTMENT']:
+                await user_class.put_user_to_vis(session, psql_user)
+            
+            
             
             if ('indirect_data' in psql_user and 'date_of_employment' not in psql_user['indirect_data']) or ('indirect_data' in psql_user and psql_user['indirect_data']['date_of_employment'] is None):
                 if 'date_register' in psql_user['indirect_data'] and psql_user['indirect_data']['date_register'] != "":

@@ -2162,6 +2162,7 @@ class Article:
                 return second_page
             images = []
             for art in articles_in_section:
+                print(art)
                 if art["active"] is not False:
                     self.id = art["id"]
 

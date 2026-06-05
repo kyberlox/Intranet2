@@ -204,7 +204,7 @@ class ArticleModel:
         # data = result.scalars().all()
         data = result.mappings().all()
         # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
-
+        articles = [dict(row) for row in data] 
         
         # try:
         #     new_data = []
@@ -221,7 +221,7 @@ class ArticleModel:
         
         # print(f"КОНЕЦ ВЫПОЛНЕНИЯ ЗАПРОСА В БД НА РАЗДЕЛ {self.section_id} = {fin - start}")
         # return new_data
-        return data
+        return articles
     
 
     async def all(self, session):

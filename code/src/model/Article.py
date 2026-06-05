@@ -2096,6 +2096,7 @@ class Article:
             current_datetime = datetime.datetime.now()
             result = []
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
+            print(len(articles_in_section))
             for values in articles_in_section:
                 if 'indirect_data' not in values:
                     continue

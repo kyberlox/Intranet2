@@ -2095,8 +2095,16 @@ class Article:
         elif section_id == 32:
             current_datetime = datetime.datetime.now()
             result = []
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
-            print(len(articles_in_section))
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session, org_art=True)
+            if not articles_in_section:
+                second_page = {
+                    'id': section_id,
+                    'type': 'swiper',
+                    'title': 'Организационное развитие',
+                    "href": "corpNews",
+                    'images': []
+                }
+                return second_page
             for values in articles_in_section:
                 if 'indirect_data' not in values:
                     continue

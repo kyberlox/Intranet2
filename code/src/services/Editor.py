@@ -483,7 +483,8 @@ class Editor:
         result = await Article(section_id=self.section_id).all_serch_by_date(self.session)
         for art in result:
             self.id = art["id"]
-            art["preview_file_url"] = await Article(id=int(self.id)).get_preview(self.session)
+            preview_file_url = await Article(id=int(self.id)).get_preview(self.session)
+            art["preview_file_url"] = preview_file_url
         return result
 
     async def rendering(self):

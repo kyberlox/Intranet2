@@ -7,7 +7,7 @@ from psycopg2 import errors
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, Boolean, cast
 
 from .App import update, select, delete
 
@@ -200,7 +200,7 @@ class ArticleModel:
             current_day = datetime.now()
             stmt = stmt.where(self.article.active == True)
         if org_art:
-            stmt = stmt.where(self.article.indirect_data['active_main_page'] == True)
+            stmt = stmt.where(cast(self.article.indirect_data['active_main_page'].astext, Boolean) == True)
         if sorted_arts:  
             stmt = stmt.where(self.article.date_publiction <= current_day)
             stmt = stmt.order_by(desc(self.article.date_publiction))

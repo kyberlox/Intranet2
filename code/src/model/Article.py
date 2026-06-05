@@ -2189,8 +2189,9 @@ class Article:
             current_datetime = datetime.datetime.now()
             
             date_list = []  # список для сортировки по дате
-            # articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, limit=5, main=True)
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True)
+            # articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session)
+            print(articles_in_section, 'Получили 5 новостей')
             for values in articles_in_section:
                 #смотрим есть ли пользователь в этой группе ОВ статьи
                 # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)

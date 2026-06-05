@@ -2368,7 +2368,7 @@ class Article:
         elif section_id == 53:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['id'], reverse=True)
-
+            print(sorted_data)
             afisha = {
                 "id": 53,
                 'type': "swiper",

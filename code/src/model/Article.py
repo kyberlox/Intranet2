@@ -2097,7 +2097,6 @@ class Article:
             result = []
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
             for values in articles_in_section:
-                print(values, 'Орг развитие')
                 if 'indirect_data' not in values:
                     continue
                 if values['indirect_data'] is not None and "active_main_page" in values['indirect_data'].keys() and values['indirect_data']['active_main_page'] == False:
@@ -2163,7 +2162,6 @@ class Article:
                 return second_page
             images = []
             for art in articles_in_section:
-                print(art, 'конкурсы')
                 if art["active"] is not False:
                     self.id = art["id"]
 

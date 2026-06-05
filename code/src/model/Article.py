@@ -2058,7 +2058,6 @@ class Article:
             img_new_workers = []
             users = await User().get_new_workers(session)
             for user in users:
-                print(user)
                 user.pop('position')
                 user.pop('department')
                 user.pop('user_fio')
@@ -2077,7 +2076,11 @@ class Article:
             images_for_bday = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
             users = await User().get_birthday_celebrants(date_bday, session)
+            print(users)
             for user in users:
+                user.pop('position')
+                user.pop('department')
+                user.pop('user_fio')
                 images_for_bday.append(user['image'])
 
             birthday = {

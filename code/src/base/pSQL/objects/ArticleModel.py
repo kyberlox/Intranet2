@@ -193,7 +193,7 @@ class ArticleModel:
         # async with AsyncSessionLocal() as session:
         # start = time.time()
         stmt = select(self.article.__table__).where(self.article.section_id == self.section_id)
-        if skip and limit:
+        if skip is not None and limit is not None:
             stmt = stmt.offset(skip).limit(limit)
         if main:
             from datetime import datetime

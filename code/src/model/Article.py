@@ -2097,6 +2097,7 @@ class Article:
             result = []
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session, org_art=True)
             if not articles_in_section:
+                print('тут?')
                 second_page = {
                     'id': section_id,
                     'type': 'swiper',

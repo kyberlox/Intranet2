@@ -2152,6 +2152,14 @@ class Article:
         # конкурсы
         elif section_id == 7:
             articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session)
+            if not articles_in_section:
+                second_page = {
+                    "id": 7, 
+                    "type": "swiper", 
+                    "title": "Важное",
+                    "images": []
+                }
+                return second_page
             images = []
             for art in articles_in_section:
                 if art["active"] is not False:

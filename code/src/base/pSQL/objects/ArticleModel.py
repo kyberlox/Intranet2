@@ -187,7 +187,7 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None, main=False):
+    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None, main=False, sorted_arts=False):
         # import time
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
@@ -199,7 +199,8 @@ class ArticleModel:
             from datetime import datetime
             current_day = datetime.now()
             stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
-            stmt = stmt.order_by(desc(func.coalesce(self.article.date_publiction, self.article.date_creation)))
+        if sorted_arts:  
+            stmt = stmt.order_by(desc(self.article.date_publiction))
         result = await session.execute(stmt) 
         # data = result.scalars().all()
         data = result.mappings().all()

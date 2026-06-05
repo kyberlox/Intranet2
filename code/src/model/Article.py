@@ -2267,7 +2267,7 @@ class Article:
                 news = {
                     'id': row['id'],
                     'title': row['name'],
-                    'description': row['preview_text']
+                    'description': row['preview_text'],
                     'date': row['date_publiction'],
                     'image': image_url
                 }
@@ -2309,7 +2309,7 @@ class Article:
                 news = {
                     'id': row['id'],
                     'title': row['name'],
-                    'description': row['preview_text']
+                    'description': row['preview_text'],
                     'date': row['date_publiction'],
                     'image': image_url
                 }
@@ -2351,7 +2351,7 @@ class Article:
                 news = {
                     'id': row['id'],
                     'title': row['name'],
-                    'description': row['preview_text']
+                    'description': row['preview_text'],
                     'date': row['date_publiction'],
                     'image': image_url
                 }
@@ -2440,7 +2440,7 @@ class Article:
                 news = {
                     'id': row['id'],
                     'title': row['name'],
-                    'description': row['preview_text']
+                    'description': row['preview_text'],
                     'date': row['date_publiction'],
                     'image': image_url
                 }

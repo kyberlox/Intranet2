@@ -484,8 +484,8 @@ class Editor:
         for art in result:
             self.id = art["id"]
             # preview_file_url = await Article(id=int(self.id)).get_preview(self.session)
-            # art["preview_file_url"] = preview_file_url
-            art.preview_file_url = await Article(id=int(self.id)).get_preview(self.session)
+            art["preview_file_url"] = await Article(id=int(self.id)).get_preview(self.session)
+            # art.preview_file_url = await Article(id=int(self.id)).get_preview(self.session)
         return result
 
     async def rendering(self):

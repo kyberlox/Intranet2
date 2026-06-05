@@ -192,7 +192,7 @@ class ArticleModel:
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
         # start = time.time()
-        stmt = select(self.article).where(self.article.section_id == self.section_id)
+        stmt = select(self.article.__table__).where(self.article.section_id == self.section_id)
         if skip and limit:
             stmt = stmt.offset(skip).limit(limit)
         if main:

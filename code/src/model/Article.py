@@ -2076,6 +2076,7 @@ class Article:
             images_for_bday = []
             date_bday = datetime.datetime.now().strftime("%d.%m")
             users = await User().get_birthday_celebrants(date_bday, session)
+            print(users)
             for user in users:
                 user.pop('position')
                 user.pop('department')
@@ -2095,30 +2096,17 @@ class Article:
         elif section_id == 32:
             current_datetime = datetime.datetime.now()
             result = []
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session, org_art=True)
-            if not articles_in_section:
-                print('тут?')
-                second_page = {
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session, org_art=True, main=True)
+            second_page = {
                     'id': section_id,
                     'type': 'swiper',
                     'title': 'Организационное развитие',
                     "href": "corpNews",
                     'images': []
                 }
+            if not articles_in_section:
                 return second_page
             for values in articles_in_section:
-                if 'indirect_data' not in values:
-                    continue
-                if values['indirect_data'] is not None and "active_main_page" in values['indirect_data'].keys() and values['indirect_data']['active_main_page'] == False:
-                    continue
-
-                if values["active"] == False:
-                    continue
-                
-                #смотрим есть ли пользователь в этой группе ОВ статьи
-                # user_access = await Visions(art_id=values["id"], user_id=user_id).check_user_root(session=session)
-                # if not user_access:
-                #     continue
 
                 self.id = values["id"]
 
@@ -2134,13 +2122,7 @@ class Article:
                 node = {"id": self.id, "image": image_URL}
                 result.append(node)
 
-            second_page = {
-                'id': section_id,
-                'type': 'swiper',
-                'title': 'Организационное развитие',
-                "href": "corpNews",
-                'images': result
-            }
+            second_page['images'] = result
             return second_page
 
         # предложить идею

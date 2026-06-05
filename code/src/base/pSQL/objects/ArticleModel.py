@@ -192,12 +192,12 @@ class ArticleModel:
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
         # start = time.time()
+        from datetime import datetime
+        current_day = datetime.now()
         stmt = select(self.article.__table__).where(self.article.section_id == self.section_id)
         if skip is not None and limit is not None:
             stmt = stmt.offset(skip).limit(limit)
         if main:
-            from datetime import datetime
-            current_day = datetime.now()
             stmt = stmt.where(self.article.active == True)
         if org_art:
             stmt = stmt.where(cast(self.article.indirect_data['active_main_page'].astext, Boolean) == True)

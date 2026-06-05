@@ -7,7 +7,7 @@ from psycopg2 import errors
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-
+from sqlalchemy import desc
 
 from .App import update, select, delete
 

@@ -7,8 +7,7 @@ from psycopg2 import errors
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import desc
-from sqlalchemy.sql import coalesce
+from sqlalchemy import desc, func
 
 from .App import update, select, delete
 
@@ -200,7 +199,7 @@ class ArticleModel:
             from datetime import datetime
             current_day = datetime.now()
             stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
-            stmt = stmt.order_by(desc(coalesce(self.article.date_publiction, self.article.date_creation)))
+            stmt = stmt.order_by(desc(func.coalesce(self.article.date_publiction, self.article.date_creation)))
         result = await session.execute(stmt) 
         # data = result.scalars().all()
         data = result.mappings().all()

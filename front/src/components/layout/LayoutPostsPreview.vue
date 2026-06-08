@@ -164,7 +164,14 @@ export default defineComponent({
         }
 
         const refreshNews = () => {
-
+            if (currentTag.value || currentYear.value) {
+                offset.value = 0;
+                visibleNews.value.length = 0;
+                if (allNews.value) {
+                    allNews.value.length = 0;
+                }
+                viewsData.setData(allNews.value, props.storeItemsName);
+            }
         }
 
         onMounted(async () => {
@@ -176,14 +183,6 @@ export default defineComponent({
         })
 
         onUnmounted(() => {
-            if (currentTag.value || currentYear.value) {
-                offset.value = 0;
-                visibleNews.value.length = 0;
-                if (allNews.value) {
-                    allNews.value.length = 0;
-                }
-                viewsData.setData(allNews.value, props.storeItemsName);
-            }
             abortController?.abort();
         })
 

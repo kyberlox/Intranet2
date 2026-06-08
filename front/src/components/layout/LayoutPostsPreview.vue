@@ -37,9 +37,8 @@
        class="mt20">Нет новостей в этой категории</p>
 </div>
 <PageSelector v-if="paginationEnabled"
-              :page="page"
               :isLoading="isLoading"
-              @changePage="setPage" />
+              @loadMore="fetchNews" />
 </template>
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
@@ -110,6 +109,7 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const abortController = new AbortController();
         const viewsData = useViewsDataStore();
         const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData(props.storeItemsName) as INews[]);
         const visibleNews: Ref<INews[]> = ref([]);
@@ -119,19 +119,19 @@ export default defineComponent({
         const emptyTag: Ref<boolean> = ref(false);
         const showFilter = ref(false);
         const isLoading = ref(true);
-        const page = ref(0);
+        const offset = ref(0);
         const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
 
-        const abortController = new AbortController();
 
-        const fetchNews = async () => {
+        const fetchNews = async (tag?: number, year?: number) => {
             isLoading.value = true;
-            const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
+            const paginationQuery = paginationEnabled.value ? `?offset=${offset.value}&limit=15${year ? `&year=${year}` : ''}${tag ? `&tag=${tag}` : ''}` : '';
 
             try {
                 const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`, null, abortController.signal)
-                viewsData.setData(res, props.storeItemsName);
-                if (!props.tagId) visibleNews.value = res;
+                if (offset.value == 0) { viewsData.setData(res, props.storeItemsName) }
+                offset.value += 15;
+                visibleNews.value = visibleNews.value.concat(res);
             } catch (error) {
                 console.error(error)
             }
@@ -143,32 +143,28 @@ export default defineComponent({
             }
         }
 
-        const setPage = (newPage: number) => {
-            const normalizedPage = Math.max(1, Number(newPage) || 1);
-            page.value = normalizedPage - 1;
-        }
-
         watch(([currentTag, currentYear]), async () => {
-            const { newVisibleNews, newEmptyTag, newFilterYears } =
-                await useNewsFilterWatch(currentTag, currentYear, allNews, String(props.sectionId));
+            offset.value = 0;
+            visibleNews.value.length = 0;
+            allNews.value.length = 0;
+            viewsData.setData(allNews.value, props.storeItemsName);
+            // const { newVisibleNews, newEmptyTag, newFilterYears } =
+            //     await useNewsFilterWatch(currentTag, currentYear, allNews, String(props.sectionId));
 
-            visibleNews.value = newVisibleNews.value;
-            emptyTag.value = newEmptyTag.value;
-            filterYears.value = newFilterYears.value;
+            // visibleNews.value = newVisibleNews.value;
+            // emptyTag.value = newEmptyTag.value;
+            // filterYears.value = newFilterYears.value;
             showFilter.value = false;
-        })
 
-        watch(page, () => {
-            if (paginationEnabled.value) fetchNews();
+            fetchNews(Number(currentTag.value), Number(currentYear.value))
         })
 
         onMounted(async () => {
-            if (!paginationEnabled.value && allNews.value && allNews.value.length && !props.tagId) {
+            if (allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
                 filterYears.value = extractYears(allNews.value);
             } else
-                isLoading.value = true;
-            await fetchNews();
+                await fetchNews();
         })
 
         onUnmounted(() => {
@@ -187,11 +183,10 @@ export default defineComponent({
             emptyPlug,
             showFilter,
             isLoading,
+            paginationEnabled,
             extractYears,
             showEventsByYear,
-            page,
-            paginationEnabled,
-            setPage,
+            fetchNews,
         };
     },
 });

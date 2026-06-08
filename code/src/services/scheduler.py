@@ -65,6 +65,7 @@ async def get_today_birthdays() -> List[int]:
     """
     Найти всех пользователей, у которых сегодня день рождения
     Возвращает список ID пользователей
+    Удаляет поздравления за прошлый месяц
     """
     from ..base.pSQL.models.User import User
     async with AsyncSessionLocal() as db:

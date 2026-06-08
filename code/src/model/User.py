@@ -1304,12 +1304,12 @@ async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
 
     #отсчитываем месяц чтобы почистить поздравления
     month_ago = datetime.strptime("15.05.2026", "%d.%m.%Y")
-    # query = select(User.id, User.indirect_data).where(
-    #     (extract('month', User.personal_birthday) == month_ago.month) &
-    #     (extract('day', User.personal_birthday) == month_ago.day)
-    # )
-    # result = await db.execute(query)
-    # last_birthdays = result.mappings().all()
+    query = select(User.id, User.indirect_data).where(
+        (extract('month', User.personal_birthday) == month_ago.month) &
+        (extract('day', User.personal_birthday) == month_ago.day)
+    )
+    result = await db.execute(query)
+    last_birthdays = result.mappings().all()
 
     # for user in last_birthdays:
     #     user['indirect_data']['congratulations'] = []
@@ -1317,4 +1317,4 @@ async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
     #     # Обновляем только переданные поля
     #     setattr(user_bd, 'indirect_data', user['indirect_data'])
     # await session.commit()
-    return month_ago
+    return last_birthdays

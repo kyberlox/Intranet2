@@ -1969,7 +1969,12 @@ class Article:
         else:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 35, 52, 54, 55, 56, 53, 7, 34, 42]  # список секций где нет лайков
             active_articles = []
-            result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, sorted_arts=True, offset=offset, limit=limit, year=year, is_active=True)
+
+            SECTIONS_WITH_DATE_PUBLICTION = [16, 161, 31, 32, 33, 42, 43, 51 , 52]
+            if int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
+                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, sorted_arts=True, offset=offset, limit=limit, year=year, is_active=True)
+            else:
+                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, offset=offset, limit=limit, year=year, is_active=True)
             current_datetime = datetime.datetime.now()
             for res in result:
 
@@ -2021,7 +2026,7 @@ class Article:
                     #         continue
                 active_articles.append(res)
 
-            SECTIONS_WITH_DATE_PUBLICTION = [16, 161, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42 18, 
+             # 51 , 52, 42 18, 
             if not active_articles:
                 return active_articles
             if self.section_id == "111" or self.section_id == "14":

@@ -4,7 +4,7 @@ from ..models.Tags import Tags
 from ..models.Article import Article
 
 from .App import flag_modified, select, delete
-
+from sqlalchemy import extract, desc
 import asyncio
 
 from src.services.LogsMaker import LogsMaker
@@ -122,17 +122,22 @@ class TagsModel:
             return LogsMaker().error_message(f"Ошибка создания тегов B24: {str(e)}")
             # return {"msg": f"Ошибка: {str(e)}"}
 
-    async def find_articles_by_tag_id(self, section_id: int, session):
+    async def find_articles_by_tag_id(self, section_id: int, session, year: int = None):
         """Поиск статей по ID тега и section_id"""
         try:
-            stmt = select(self.Article).where(
+            from datetime import datetime
+            current_day = datetime.now()
+            stmt = select(self.Article.__table__).where(
                 self.Article.indirect_data["tags"].contains([self.id]),
                 self.Article.active == True,
-                self.Article.section_id == section_id
-            )
+                self.Article.section_id == section_id,
+                self.Article.date_publiction <= current_day
+            ).order_by(desc(self.Article.date_publiction))
+            if year:
+                stmt = stmt.where(extract('year', self.Article.date_publiction) == year)
             result = await session.execute(stmt)
-            articles = result.scalars().all()
-            res = articles if articles else []
+            articles = result.mappings().all()
+            res = [dict(row) for row in articles] 
             return res
             
         except Exception as e:

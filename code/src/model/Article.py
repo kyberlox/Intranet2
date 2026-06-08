@@ -1831,7 +1831,7 @@ class Article:
 
         return True
 
-    async def search_by_section_id(self, session, user_id: int = None):
+    async def search_by_section_id(self, session, offset, limit, year, user_id: int = None):
         if self.section_id == "0":
             # import time
             main_page = [112, 19, 32, 4, 7, 31, 16, 161, 33, 53, 51]  # 111
@@ -1969,49 +1969,54 @@ class Article:
         else:
             null_list = [17, 19, 22, 111, 112, 14, 18, 25, 35, 52, 54, 55, 56, 53, 7, 34, 42]  # список секций где нет лайков
             active_articles = []
-            result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session)
+
+            SECTIONS_WITH_DATE_PUBLICTION = [16, 161, 31, 32, 33, 42, 43, 51 , 52]
+            if int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
+                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, sorted_arts=True, offset=offset, limit=limit, year=year, is_active=True)
+            else:
+                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, offset=offset, limit=limit, year=year, is_active=True)
             current_datetime = datetime.datetime.now()
             for res in result:
 
-                if res['active']:
-                    if int(self.section_id) in [31, 16, 161, 33]:
-                        # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
-                        if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
+                # if res['active']:
+                #     if int(self.section_id) in [31, 16, 161, 33]:
+                #         # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
+                #         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
 
-                            self.id = res["id"]
+                #             self.id = res["id"]
 
-                            # res["preview_file_url"] = await self.get_preview(session)
-                            prev = await self.get_preview(session)
-                            res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                            # сюда лайки и просмотры
-                            # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
-                            if user_id is not None:
-                                has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
-                                res['reactions'] = has_user_liked
-                        else:
-                            continue
+                #             # res["preview_file_url"] = await self.get_preview(session)
+                #             prev = await self.get_preview(session)
+                #             res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                #             # сюда лайки и просмотры
+                #             # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
+                #             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+                #             if user_id is not None:
+                #                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
+                #                 res['reactions'] = has_user_liked
+                #         else:
+                #             continue
+                #     else:
+                self.id = res["id"]
+                prev = await self.get_preview(session)
+                # res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+
+                if prev is None:
+                    if int(self.section_id) == 32:
+                        res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
+                    elif int(self.section_id) == 15:
+                        res["preview_file_url"] = prev
                     else:
-                        self.id = res["id"]
-                        prev = await self.get_preview(session)
-                        # res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                        res["preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+                else:
+                    res["preview_file_url"] = prev
 
-                        if prev is None:
-                            if int(self.section_id) == 32:
-                                res["preview_file_url"] = res['indirect_data']['users'][0]['photo_file_url']
-                            elif int(self.section_id) == 15:
-                                res["preview_file_url"] = prev
-                            else:
-                                res["preview_file_url"] = "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                        else:
-                            res["preview_file_url"] = prev
-
-                        # сюда лайки и просмотры
-                        if int(self.section_id) not in null_list:  # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                            # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
-                            if user_id is not None:
-                                has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
-                                res['reactions'] = has_user_liked
+                # сюда лайки и просмотры
+                if int(self.section_id) not in null_list:  # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
+                    # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
+                    if user_id is not None:
+                        has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
+                        res['reactions'] = has_user_liked
 
                         
                     #сюда накинуть ограничение на афишу и корп события
@@ -2019,9 +2024,9 @@ class Article:
                     #     user_access = await Visions(art_id=int(res["id"]), user_id=user_id).check_user_root(session=session)
                     #     if not user_access:
                     #         continue
-                    active_articles.append(res)
+                active_articles.append(res)
 
-            SECTIONS_WITH_DATE_PUBLICTION = [16, 161, 31, 32, 33, 42, 43, 51 , 52] # 51 , 52, 42 18, 
+             # 51 , 52, 42 18, 
             if not active_articles:
                 return active_articles
             if self.section_id == "111" or self.section_id == "14":
@@ -2095,7 +2100,7 @@ class Article:
         elif section_id == 32:
             current_datetime = datetime.datetime.now()
             result = []
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session, org_art=True, main=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session, org_art=True, is_active=True)
             second_page = {
                     'id': section_id,
                     'type': 'swiper',
@@ -2188,7 +2193,7 @@ class Article:
             current_datetime = datetime.datetime.now()
             
             date_list = []  # список для сортировки по дате
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
             # sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
 
@@ -2231,7 +2236,7 @@ class Article:
         # Видеоитервью
         elif section_id == 16:
 
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
     
 
@@ -2273,7 +2278,7 @@ class Article:
 
         # Видеоитервью с руководством
         elif section_id == 161:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
 
 
@@ -2315,7 +2320,7 @@ class Article:
 
         # Видеорепортажи
         elif section_id == 33:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
 
 
@@ -2357,7 +2362,7 @@ class Article:
 
         # Афиша
         elif section_id == 53:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['id'], reverse=True)
             afisha = {
                 "id": 53,
@@ -2406,7 +2411,7 @@ class Article:
 
         # Корпоративные события
         elif section_id == 51:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, main=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
 
             corpevents = {
@@ -2560,29 +2565,26 @@ class Article:
                 return user_inf["id"]
         return None
 
-    async def search_articles_by_tags(self, tag_id, session, user_id: int = None):
+    async def search_articles_by_tags(self, tag_id, session, year, user_id: int = None):
         #user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
-        result = await Tag(id=tag_id).get_articles_by_tag_id(self.section_id, session=session)
-        if result != []:
-            sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
-            res = []
-            for art in sorted_active_articles:
-                self.id = art.id
-                art = art.__dict__
+        result = await Tag(id=tag_id).get_articles_by_tag_id(self.section_id, session=session, year=year)
+        if not result:
+            return []
+        res = list()
+        for art in result:
+            self.id = art['id']
 
-                prev = await self.get_preview(session)
-                art[
-                    'preview_file_url'] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+            prev = await self.get_preview(session)
+            art['preview_file_url'] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
-                if user_id is not None:
-                    has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
+            if user_id is not None:
+                has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
 
-                    art['reactions'] = has_user_liked
-                res.append(art)
+                art['reactions'] = has_user_liked
+            res.append(art)
 
-            return res
-        else:
-            return result
+        return res
+        
 
     async def set_tag_to_art_id(self, tag_id, session):
         return await Tag(id=tag_id, art_id=self.id).set_tag_to_art_id(session=session)
@@ -2881,7 +2883,14 @@ async def get_article(ID: int, user_id: int = Depends(get_user_id_by_session_id)
 
 # найти статьи раздела
 @article_router.get("/find_by/{section_id}", tags=["Статьи"])
-async def get_articles(section_id, user_id: int = Depends(get_user_id_by_session_id), session: AsyncSession = Depends(get_async_db)):
+async def get_articles(
+    section_id,
+    offset: int = None, 
+    limit: int = None, 
+    year: int = None,
+    user_id: int = Depends(get_user_id_by_session_id), 
+    session: AsyncSession = Depends(get_async_db)
+):
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -2889,7 +2898,7 @@ async def get_articles(section_id, user_id: int = Depends(get_user_id_by_session
         )
     art = Article()
     art.section_id = section_id
-    return await art.search_by_section_id(user_id=user_id, session=session)
+    return await art.search_by_section_id(user_id=user_id, session=session, offset=offset, limit=limit, year=year)
 
 
 @article_router.put("/add_or_remove_like/{article_id}", tags=["Статьи"])
@@ -3025,8 +3034,13 @@ async def get_recent_popular_articles(days: int, limit: int, session: AsyncSessi
 
 
 @article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}", tags=["Статьи"])
-async def get_articles_by_tag_id(section_id: int, tag_id: int, user_id: int = Depends(get_user_id_by_session_id),
-                                 session: AsyncSession = Depends(get_async_db)):
+async def get_articles_by_tag_id(
+    section_id: int, 
+    tag_id: int, 
+    year: int = None,
+    user_id: int = Depends(get_user_id_by_session_id),
+    session: AsyncSession = Depends(get_async_db)
+):
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -3034,7 +3048,7 @@ async def get_articles_by_tag_id(section_id: int, tag_id: int, user_id: int = De
         )
     art = Article()
     art.section_id = section_id
-    return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session)
+    return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session, year=year)
 
 
 @article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}", tags=["Статьи"])

@@ -121,7 +121,7 @@ export default defineComponent({
         const isLoading = ref(true);
         const offset = ref(0);
         const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
-
+        const isLimit = ref(true);
 
         const fetchNews = async (tag?: number, year?: number) => {
             isLoading.value = true;
@@ -136,9 +136,6 @@ export default defineComponent({
                 console.error(error)
             }
             finally {
-                if (visibleNews.value && visibleNews.value.length) {
-                    filterYears.value = extractYears(visibleNews.value);
-                }
                 isLoading.value = false;
             }
         }
@@ -159,10 +156,18 @@ export default defineComponent({
             fetchNews(Number(currentTag.value), Number(currentYear.value))
         })
 
+        const yearsInit = () => {
+            const yearStart = new Date().getFullYear();
+            const yearEnd = 2018;
+            for (let index = yearStart; index > yearEnd; index -= 1) {
+                filterYears.value.push(String(index))
+            }
+        }
+
         onMounted(async () => {
+            yearsInit();
             if (allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
-                filterYears.value = extractYears(allNews.value);
             } else
                 await fetchNews();
         })
@@ -184,6 +189,7 @@ export default defineComponent({
             showFilter,
             isLoading,
             paginationEnabled,
+            isLimit,
             extractYears,
             showEventsByYear,
             fetchNews,

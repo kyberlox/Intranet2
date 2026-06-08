@@ -127,8 +127,6 @@ export default defineComponent({
 
         const fetchNews = async () => {
             if (abortController) {
-                console.log(abortController);
-
                 abortController?.abort();
             }
             abortController = new AbortController();
@@ -181,7 +179,6 @@ export default defineComponent({
         onUnmounted(() => {
             abortController?.abort();
         })
-
 
         return {
             allNews,

@@ -205,7 +205,7 @@ class ArticleModel:
             stmt = stmt.where(self.article.date_publiction <= current_day)
             stmt = stmt.order_by(desc(self.article.date_publiction))
         if year:
-            stmt = stmt.where(func.year(self.article.date_publication) == year)
+            stmt = stmt.where(func.year(self.article.date_publiction) == year)
 
         result = await session.execute(stmt) 
         # data = result.scalars().all()

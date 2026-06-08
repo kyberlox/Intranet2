@@ -620,7 +620,7 @@ class AioSchedulerManager:
                 # 2. Раз в неделю скачиваем подразделения и связь подразделений и пользователей
                 weekly_job = self.schedule_weekly_at_time(weekly_check, days=6)
 
-            self.redis_worker_task = asyncio.create_task(self._redis_worker())
+                self.redis_worker_task = asyncio.create_task(self._redis_worker())
             
             # 3. Тестовая задача каждую минуту (для мониторинга)
             # test_job_id = self.schedule_periodic_task(test_task, interval_seconds=60)

@@ -7,7 +7,7 @@ from psycopg2 import errors
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-
+from sqlalchemy import desc, func, Boolean, cast, extract
 
 from .App import update, select, delete
 
@@ -187,40 +187,33 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None, main=False):
+    async def find_by_section_id(self, session, offset: Optional[int] = None, limit: Optional[int] = None, is_active=False, sorted_arts=False, org_art=False, year: Optional[int] = None):
         # import time
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
         # start = time.time()
-        stmt = select(self.article).where(self.article.section_id == self.section_id)
-        # if skip and limit:
-        #     stmt = stmt.offset(skip).limit(limit)
-        # if main:
-        #     from datetime import datetime
-        #     current_day = datetime.now()
-        #     stmt = stmt.where(self.article.active == True, self.article.date_publiction <= current_day)
-        result = await session.execute(stmt)
-        data = result.scalars().all()
-        # data = result.mappings().all()
-        # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
+        from datetime import datetime
+        current_day = datetime.now()
+        stmt = select(self.article.__table__).where(self.article.section_id == self.section_id)
+        if offset is not None and limit is not None:
+            stmt = stmt.offset(offset).limit(limit)
+        if is_active:
+            stmt = stmt.where(self.article.active == True)
+        if org_art:
+            stmt = stmt.where(cast(self.article.indirect_data['active_main_page'].astext, Boolean) == True)
+        if sorted_arts:  
+            stmt = stmt.where(self.article.date_publiction <= current_day)
+            stmt = stmt.order_by(desc(self.article.date_publiction))
+        if year:
+            stmt = stmt.where(extract('year', self.article.date_publiction) == year)
 
+        result = await session.execute(stmt) 
+        # data = result.scalars().all()
+        data = result.mappings().all()
+        # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
+        articles = [dict(row) for row in data] 
         
-        try:
-            new_data = []
-            for art in data:
-                art.__dict__["indirect_data"] = json.loads(art.indirect_data)
-                new_data.append(art.__dict__)
-        except:
-            new_data = []
-            for art in data:
-                if art is not None:
-                    art.__dict__["indirect_data"] = art.indirect_data
-                    new_data.append(art.__dict__)
-        # fin = time.time()
-        
-        # print(f"КОНЕЦ ВЫПОЛНЕНИЯ ЗАПРОСА В БД НА РАЗДЕЛ {self.section_id} = {fin - start}")
-        return new_data
-        # return data
+        return articles
     
 
     async def all(self, session):

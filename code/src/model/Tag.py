@@ -38,9 +38,9 @@ class Tag:
         await self.TagsModel.create_b24_tag(session)
         return {"status": True}
 
-    async def get_articles_by_tag_id(self, section_id, session):
+    async def get_articles_by_tag_id(self, section_id, session, year):
         self.TagsModel.id = self.id
-        return await self.TagsModel.find_articles_by_tag_id(section_id=section_id, session=session)
+        return await self.TagsModel.find_articles_by_tag_id(section_id=section_id, session=session, year=year)
 
     async def get_all_tags(self, session):
         return await self.TagsModel.all_tags(session)

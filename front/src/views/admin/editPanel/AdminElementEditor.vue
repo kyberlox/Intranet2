@@ -164,8 +164,11 @@ export default defineComponent({
             isCreateNew.value = false;
             newElementSkeleton.value = data.fields;
           }
-          users.value = (findValInObject(data, 'users') as IUserList[])?.map((e: IUserList) => String(e.id)) || [];
 
+          const usersVal = findValInObject(data, 'users') as IUserList[] || [];
+          if (usersVal.length) {
+            users.value = usersVal.map((e: IUserList) => String((e && 'id' in e) ? e.id : null)) || [];
+          }
           newData.value.implementer = findValInObject(data, 'implementer') as string[] || [];
           newData.value.integrator = findValInObject(data, 'integrator') as string[] || [];
           // для файлов

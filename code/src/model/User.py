@@ -1300,6 +1300,7 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
 async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
     from datetime import datetime, timedelta
     from ..base.pSQL.models.User import User
+    from sqlalchemy import select, extract
     today = datetime.now()
 
     #отсчитываем месяц чтобы почистить поздравления
@@ -1308,7 +1309,7 @@ async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
         (extract('month', User.personal_birthday) == month_ago.month) &
         (extract('day', User.personal_birthday) == month_ago.day)
     )
-    result = await db.execute(query)
+    result = await session.execute(query)
     last_birthdays = result.mappings().all()
 
     # for user in last_birthdays:

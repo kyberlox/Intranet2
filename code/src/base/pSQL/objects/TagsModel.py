@@ -4,7 +4,7 @@ from ..models.Tags import Tags
 from ..models.Article import Article
 
 from .App import flag_modified, select, delete
-from sqlalchemy import extract
+from sqlalchemy import extract, desc
 import asyncio
 
 from src.services.LogsMaker import LogsMaker

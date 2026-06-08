@@ -1296,34 +1296,3 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     #     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 
 
-@users_router.put("/delete_last_try", tags=['Пользователь'])
-async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
-    from datetime import datetime, timedelta
-    from ..base.pSQL.models.User import User
-    from sqlalchemy import select, extract
-    today = datetime.now()
-
-    #отсчитываем месяц чтобы почистить поздравления
-    month_ago = datetime.strptime("15.05.2026", "%d.%m.%Y")
-    query = select(User.id, User.indirect_data).where(
-        (extract('month', User.personal_birthday) == month_ago.month) &
-        (extract('day', User.personal_birthday) == month_ago.day)
-    )
-    result = await session.execute(query)
-    last_birthdays = result.mappings().all()
-
-    for user in last_birthdays:
-        user['indirect_data']['congratulations'] = []
-        user_bd = await session.get(User, user['id'])
-        # Обновляем только переданные поля
-        setattr(user_bd, 'indirect_data', user['indirect_data'])
-    await session.commit()
-
-    query = select(User.id, User.indirect_data).where(
-        (extract('month', User.personal_birthday) == month_ago.month) &
-        (extract('day', User.personal_birthday) == month_ago.day)
-    )
-    result = await session.execute(query)
-    new_birthdays = result.mappings().all()
-
-    return [last_birthdays, new_birthdays]

@@ -2572,6 +2572,7 @@ class Article:
             return []
         res = list()
         for art in result:
+            print(art)
             self.id = art['id']
 
             prev = await self.get_preview(session)

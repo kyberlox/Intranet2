@@ -187,7 +187,7 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session, skip: Optional[int] = None, limit: Optional[int] = None, main=False, sorted_arts=False, org_art=False):
+    async def find_by_section_id(self, session, offset: Optional[int] = None, limit: Optional[int] = None, is_active=False, sorted_arts=False, org_art=False, year: Optional[int] = None):
         # import time
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
@@ -195,36 +195,24 @@ class ArticleModel:
         from datetime import datetime
         current_day = datetime.now()
         stmt = select(self.article.__table__).where(self.article.section_id == self.section_id)
-        if skip is not None and limit is not None:
-            stmt = stmt.offset(skip).limit(limit)
-        if main:
+        if offset is not None and limit is not None:
+            stmt = stmt.offset(offset).limit(limit)
+        if is_active:
             stmt = stmt.where(self.article.active == True)
         if org_art:
             stmt = stmt.where(cast(self.article.indirect_data['active_main_page'].astext, Boolean) == True)
         if sorted_arts:  
             stmt = stmt.where(self.article.date_publiction <= current_day)
             stmt = stmt.order_by(desc(self.article.date_publiction))
+        if year:
+            stmt = stmt.where(func.year(self.article.date_publication) == year)
+
         result = await session.execute(stmt) 
         # data = result.scalars().all()
         data = result.mappings().all()
         # data = database.query(self.article).filter(self.article.section_id == self.section_id).all()
         articles = [dict(row) for row in data] 
         
-        # try:
-        #     new_data = []
-        #     for art in data:
-        #         art.__dict__["indirect_data"] = json.loads(art.indirect_data)
-        #         new_data.append(art.__dict__)
-        # except:
-        #     new_data = []
-        #     for art in data:
-        #         if art is not None:
-        #             art.__dict__["indirect_data"] = art.indirect_data
-        #             new_data.append(art.__dict__)
-        # fin = time.time()
-        
-        # print(f"КОНЕЦ ВЫПОЛНЕНИЯ ЗАПРОСА В БД НА РАЗДЕЛ {self.section_id} = {fin - start}")
-        # return new_data
         return articles
     
 

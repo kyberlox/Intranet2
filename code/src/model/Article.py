@@ -1974,7 +1974,7 @@ class Article:
             if int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
                 result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, sorted_arts=True, offset=offset, limit=limit, year=year, tag=tag, is_active=True)
             else:
-                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, offset=offset, limit=limit, year=year, is_active=True)
+                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, is_active=True) # , offset=offset, limit=limit, year=year, 
             current_datetime = datetime.datetime.now()
             for res in result:
                 self.id = res["id"]

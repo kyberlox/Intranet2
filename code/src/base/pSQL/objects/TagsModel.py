@@ -134,7 +134,7 @@ class TagsModel:
                 self.Article.date_publiction <= current_day
             ).order_by(desc(self.Article.date_publiction))
             if year:
-                stmt = stmt.where(extract('year', self.article.date_publiction) == year)
+                stmt = stmt.where(extract('year', self.Article.date_publiction) == year)
             result = await session.execute(stmt)
             articles = result.mappings().all()
             res = [dict(row) for row in articles] 

@@ -1831,7 +1831,7 @@ class Article:
 
         return True
 
-    async def search_by_section_id(self, session, offset, limit, year, user_id: int = None):
+    async def search_by_section_id(self, session, offset, limit, year, tag, user_id: int = None):
         if self.section_id == "0":
             # import time
             main_page = [112, 19, 32, 4, 7, 31, 16, 161, 33, 53, 51]  # 111
@@ -1974,29 +1974,9 @@ class Article:
             if int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
                 result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, sorted_arts=True, offset=offset, limit=limit, year=year, is_active=True)
             else:
-                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, offset=offset, limit=limit, year=year, is_active=True)
+                result = await ArticleModel(section_id=int(self.section_id)).find_by_section_id(session, offset=offset, limit=limit, year=year, tag=tag, is_active=True)
             current_datetime = datetime.datetime.now()
             for res in result:
-
-                # if res['active']:
-                #     if int(self.section_id) in [31, 16, 161, 33]:
-                #         # print(res["date_publiction"] <= current_datetime, 'ДАТЫ', res["id"])
-                #         if res["date_publiction"] is None or ("date_publiction" in res and res["date_publiction"] <= current_datetime):
-
-                #             self.id = res["id"]
-
-                #             # res["preview_file_url"] = await self.get_preview(session)
-                #             prev = await self.get_preview(session)
-                #             res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
-                #             # сюда лайки и просмотры
-                #             # добавляем лайки и просмотры к статьям раздела. Внимательно добавить в список разделы без лайков
-                #             # user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
-                #             if user_id is not None:
-                #                 has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
-                #                 res['reactions'] = has_user_liked
-                #         else:
-                #             continue
-                #     else:
                 self.id = res["id"]
                 prev = await self.get_preview(session)
                 # res["preview_file_url"] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
@@ -2888,6 +2868,7 @@ async def get_articles(
     offset: int = None, 
     limit: int = None, 
     year: int = None,
+    tag: int = None,
     user_id: int = Depends(get_user_id_by_session_id), 
     session: AsyncSession = Depends(get_async_db)
 ):
@@ -2898,7 +2879,7 @@ async def get_articles(
         )
     art = Article()
     art.section_id = section_id
-    return await art.search_by_section_id(user_id=user_id, session=session, offset=offset, limit=limit, year=year)
+    return await art.search_by_section_id(user_id=user_id, session=session, offset=offset, limit=limit, year=year, tag=tag)
 
 
 @article_router.put("/add_or_remove_like/{article_id}", tags=["Статьи"])

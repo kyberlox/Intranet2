@@ -187,7 +187,7 @@ class ArticleModel:
         return res
 
 
-    async def find_by_section_id(self, session, offset: Optional[int] = None, limit: Optional[int] = None, is_active=False, sorted_arts=False, org_art=False, year: Optional[int] = None):
+    async def find_by_section_id(self, session, offset: Optional[int] = None, limit: Optional[int] = None, is_active=False, sorted_arts=False, org_art=False, year: Optional[int] = None, tag: Optional[int] = None):
         # import time
         # print(f"НАЧИНАЕМ ЗАМЕРЯТЬ СКОРОСТЬ ВЫПОЛНЕНИЯ ЗАПРОСА НА ПОЛУЧЕНИЕ {self.section_id} РАЗДЕЛА")
         # async with AsyncSessionLocal() as session:
@@ -205,6 +205,8 @@ class ArticleModel:
             stmt = stmt.order_by(desc(self.article.date_publiction))
         if year:
             stmt = stmt.where(extract('year', self.article.date_publiction) == year)
+        if tag:
+            stmt = stmt.where(self.article.indirect_data["tags"].contains([self.id]))
         if offset is not None and limit is not None:
             stmt = stmt.offset(offset).limit(limit)
 

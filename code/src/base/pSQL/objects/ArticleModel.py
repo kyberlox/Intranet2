@@ -7,7 +7,7 @@ from psycopg2 import errors
 import json
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import desc, func, Boolean, cast
+from sqlalchemy import desc, func, Boolean, cast, extract
 
 from .App import update, select, delete
 
@@ -205,7 +205,7 @@ class ArticleModel:
             stmt = stmt.where(self.article.date_publiction <= current_day)
             stmt = stmt.order_by(desc(self.article.date_publiction))
         if year:
-            stmt = stmt.where(func.year(self.article.date_publiction) == year)
+            stmt = stmt.where(extract('year', self.article.date_publiction) == year)
 
         result = await session.execute(stmt) 
         # data = result.scalars().all()

@@ -36,7 +36,8 @@
     <p v-else
        class="mt20">Нет новостей в этой категории</p>
 </div>
-<PageSelector v-if="paginationEnabled"
+<PageSelector v-if="paginationEnabled && visibleNews && visibleNews.length"
+              :isLimit="isLimit"
               :isLoading="isLoading"
               @loadMore="fetchNews" />
 </template>
@@ -58,6 +59,7 @@ import ContentPlug from "./ContentPlug.vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { featureFlags } from "@/assets/static/featureFlags";
 import PageSelector from "@/components/tools/common/PageSelector.vue";
+
 export default defineComponent({
     components: {
         SampleGallery,
@@ -105,11 +107,11 @@ export default defineComponent({
         },
         needPagination: {
             type: Boolean,
-            default: false
+            default: true
         }
     },
     setup(props) {
-        const abortController = new AbortController();
+        let abortController: null | AbortController = null;
         const viewsData = useViewsDataStore();
         const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData(props.storeItemsName) as INews[]);
         const visibleNews: Ref<INews[]> = ref([]);
@@ -118,18 +120,27 @@ export default defineComponent({
         const filterYears: Ref<string[]> = ref([]);
         const emptyTag: Ref<boolean> = ref(false);
         const showFilter = ref(false);
-        const isLoading = ref(true);
+        const isLoading = ref(false);
         const offset = ref(0);
         const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
-        const isLimit = ref(true);
+        const isLimit = ref(false);
 
-        const fetchNews = async (tag?: number, year?: number) => {
+        const fetchNews = async () => {
+            if (abortController) {
+                console.log(abortController);
+
+                abortController?.abort();
+            }
+            abortController = new AbortController();
+            isLimit.value = false;
             isLoading.value = true;
-            const paginationQuery = paginationEnabled.value ? `?offset=${offset.value}&limit=15${year ? `&year=${year}` : ''}${tag ? `&tag=${tag}` : ''}` : '';
-
+            const paginationQuery = paginationEnabled.value ? `?offset=${offset.value}&limit=15${currentYear.value ? `&year=${currentYear.value}` : ''}${currentTag.value ? `&tag=${currentTag.value}` : ''}` : '';
             try {
                 const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`, null, abortController.signal)
                 if (offset.value == 0) { viewsData.setData(res, props.storeItemsName) }
+                if (res.length == 0) {
+                    isLimit.value = true;
+                }
                 offset.value += 15;
                 visibleNews.value = visibleNews.value.concat(res);
             } catch (error) {
@@ -143,23 +154,18 @@ export default defineComponent({
         watch(([currentTag, currentYear]), async () => {
             offset.value = 0;
             visibleNews.value.length = 0;
-            allNews.value.length = 0;
-            viewsData.setData(allNews.value, props.storeItemsName);
-            // const { newVisibleNews, newEmptyTag, newFilterYears } =
-            //     await useNewsFilterWatch(currentTag, currentYear, allNews, String(props.sectionId));
-
-            // visibleNews.value = newVisibleNews.value;
-            // emptyTag.value = newEmptyTag.value;
-            // filterYears.value = newFilterYears.value;
+            if (allNews.value) {
+                allNews.value.length = 0;
+            }
             showFilter.value = false;
-
-            fetchNews(Number(currentTag.value), Number(currentYear.value))
+            viewsData.setData(allNews.value, props.storeItemsName);
+            fetchNews();
         })
 
         const yearsInit = () => {
             const yearStart = new Date().getFullYear();
             const yearEnd = 2018;
-            for (let index = yearStart; index > yearEnd; index -= 1) {
+            for (let index = yearStart; index >= yearEnd; index -= 1) {
                 filterYears.value.push(String(index))
             }
         }

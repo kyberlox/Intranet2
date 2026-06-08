@@ -1,10 +1,11 @@
 <template>
 <div class="page-selector">
-    <button type="button"
-            :class="[buttonClass, 'page-selector__button primary-button']"
+    <button class='primary-button'
+            :class="{ 'page-selector__button--disabled': isLimit }"
             :disabled="isLoading"
             @click="emitPageChange">
-        Посмотреть еще
+        <span v-if="!isLimit || isLoading">Посмотреть еще</span>
+        <span v-else>Вы посмотрели все статьи</span>
     </button>
 </div>
 </template>
@@ -21,13 +22,18 @@ export default defineComponent({
         buttonClass: {
             type: String,
             default: 'btn'
+        },
+        isLimit: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['loadMore'],
-    setup(_, { emit }) {
+    setup(props, { emit }) {
 
         const emitPageChange = () => {
-            emit('loadMore');
+            if (!props.isLimit)
+                emit('loadMore');
         }
 
         return {
@@ -46,12 +52,15 @@ export default defineComponent({
     margin: 28px 0 8px;
 }
 
+.page-selector__button--disabled {
+    background: rgb(193 193 193 / 39%) !important;
+    border: 1px solid #bdbdbd;
 
-
-.page-selector__field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
+    &:hover {
+        background: rgb(193 193 193 / 39%) !important;
+        border: 1px solid #bdbdbd;
+        color: black;
+        cursor: not-allowed;
+    }
 }
 </style>

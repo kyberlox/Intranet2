@@ -6,7 +6,8 @@
                     :needTags="false"
                     :routeTo="'eventAnnounce'"
                     :needYears="false"
-                    :galleryType="'complex'" />
+                    :galleryType="'complex'"
+                    :needPagination="false" />
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue';

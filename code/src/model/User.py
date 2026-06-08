@@ -1312,10 +1312,18 @@ async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
     result = await session.execute(query)
     last_birthdays = result.mappings().all()
 
-    # for user in last_birthdays:
-    #     user['indirect_data']['congratulations'] = []
-    #     user_bd = await db.get(User, user['id'])
-    #     # Обновляем только переданные поля
-    #     setattr(user_bd, 'indirect_data', user['indirect_data'])
-    # await session.commit()
-    return last_birthdays
+    for user in last_birthdays:
+        user['indirect_data']['congratulations'] = []
+        user_bd = await db.get(User, user['id'])
+        # Обновляем только переданные поля
+        setattr(user_bd, 'indirect_data', user['indirect_data'])
+    await session.commit()
+
+    query = select(User.id, User.indirect_data).where(
+        (extract('month', User.personal_birthday) == month_ago.month) &
+        (extract('day', User.personal_birthday) == month_ago.day)
+    )
+    result = await session.execute(query)
+    new_birthdays = result.mappings().all()
+
+    return [last_birthdays, new_birthdays]

@@ -1303,7 +1303,7 @@ async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
     today = datetime.now()
 
     #отсчитываем месяц чтобы почистить поздравления
-    month_ago = datetime.strptime("15.05.2026", "%d:%m:%Y")
+    month_ago = datetime.strptime("15.05.2026", "%d.%m.%Y")
     # query = select(User.id, User.indirect_data).where(
     #     (extract('month', User.personal_birthday) == month_ago.month) &
     #     (extract('day', User.personal_birthday) == month_ago.day)

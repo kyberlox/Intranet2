@@ -207,7 +207,7 @@ class ArticleModel:
             stmt = stmt.where(extract('year', self.article.date_publiction) == year)
         if tag:
             print('тут срабатывает?')
-            stmt = stmt.where(self.article.indirect_data["tags"].contains(tag))
+            stmt = stmt.where(self.article.indirect_data["tags"].contains([tag]))
         if offset is not None and limit is not None:
             stmt = stmt.offset(offset).limit(limit)
 

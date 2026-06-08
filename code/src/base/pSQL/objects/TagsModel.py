@@ -127,7 +127,7 @@ class TagsModel:
         try:
             from datetime import datetime
             current_day = datetime.now()
-            stmt = select(self.Article).where(
+            stmt = select(self.Article.__table__).where(
                 self.Article.indirect_data["tags"].contains([self.id]),
                 self.Article.active == True,
                 self.Article.section_id == section_id,

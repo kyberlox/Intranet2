@@ -167,7 +167,7 @@ export default defineComponent({
 
           const usersVal = findValInObject(data, 'users') as IUserList[] || [];
           if (usersVal.length) {
-            users.value = usersVal.map((e: IUserList) => String(e.id)) || [];
+            users.value = usersVal.map((e: IUserList) => String((e && 'id' in e) ? e.id : null)) || [];
           }
           newData.value.implementer = findValInObject(data, 'implementer') as string[] || [];
           newData.value.integrator = findValInObject(data, 'integrator') as string[] || [];

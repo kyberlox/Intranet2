@@ -2571,7 +2571,7 @@ class Article:
         if not result:
             return []
         res = list()
-        for art in sorted_active_articles:
+        for art in result:
             self.id = art['id']
 
             prev = await self.get_preview(session)

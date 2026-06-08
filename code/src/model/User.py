@@ -1314,7 +1314,7 @@ async def delete_last_try(session: AsyncSession = Depends(get_async_db)):
 
     for user in last_birthdays:
         user['indirect_data']['congratulations'] = []
-        user_bd = await db.get(User, user['id'])
+        user_bd = await session.get(User, user['id'])
         # Обновляем только переданные поля
         setattr(user_bd, 'indirect_data', user['indirect_data'])
     await session.commit()

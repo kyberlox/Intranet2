@@ -2565,29 +2565,26 @@ class Article:
                 return user_inf["id"]
         return None
 
-    async def search_articles_by_tags(self, tag_id, session, user_id: int = None):
+    async def search_articles_by_tags(self, tag_id, session, year, user_id: int = None):
         #user_id = await self.get_user_by_session_id(session_id=session_id, session=session)
-        result = await Tag(id=tag_id).get_articles_by_tag_id(self.section_id, session=session)
-        if result != []:
-            sorted_active_articles = sorted(result, key=lambda x: x.date_publiction, reverse=True)
-            res = []
-            for art in sorted_active_articles:
-                self.id = art.id
-                art = art.__dict__
+        result = await Tag(id=tag_id).get_articles_by_tag_id(self.section_id, session=session, year=year)
+        if not result:
+            return []
+        res = list()
+        for art in sorted_active_articles:
+            self.id = art['id']
 
-                prev = await self.get_preview(session)
-                art[
-                    'preview_file_url'] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
+            prev = await self.get_preview(session)
+            art['preview_file_url'] = prev if prev else "https://portal.emk.ru/local/templates/intranet/img/no-user-photo.png"
 
-                if user_id is not None:
-                    has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
+            if user_id is not None:
+                has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
 
-                    art['reactions'] = has_user_liked
-                res.append(art)
+                art['reactions'] = has_user_liked
+            res.append(art)
 
-            return res
-        else:
-            return result
+        return res
+        
 
     async def set_tag_to_art_id(self, tag_id, session):
         return await Tag(id=tag_id, art_id=self.id).set_tag_to_art_id(session=session)
@@ -3037,8 +3034,13 @@ async def get_recent_popular_articles(days: int, limit: int, session: AsyncSessi
 
 
 @article_router.get("/get_articles_by_tag_id/{section_id}/{tag_id}", tags=["Статьи"])
-async def get_articles_by_tag_id(section_id: int, tag_id: int, user_id: int = Depends(get_user_id_by_session_id),
-                                 session: AsyncSession = Depends(get_async_db)):
+async def get_articles_by_tag_id(
+    section_id: int, 
+    tag_id: int, 
+    year: int = None,
+    user_id: int = Depends(get_user_id_by_session_id),
+    session: AsyncSession = Depends(get_async_db)
+):
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -3046,7 +3048,7 @@ async def get_articles_by_tag_id(section_id: int, tag_id: int, user_id: int = De
         )
     art = Article()
     art.section_id = section_id
-    return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session)
+    return await art.search_articles_by_tags(tag_id=tag_id, user_id=user_id, session=session, year=year)
 
 
 @article_router.put("/set_tag_to_art_id/{tag_id}/{art_id}", tags=["Статьи"])

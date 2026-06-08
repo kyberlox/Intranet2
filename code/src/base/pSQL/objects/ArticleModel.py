@@ -195,8 +195,7 @@ class ArticleModel:
         from datetime import datetime
         current_day = datetime.now()
         stmt = select(self.article.__table__).where(self.article.section_id == self.section_id)
-        if offset is not None and limit is not None:
-            stmt = stmt.offset(offset).limit(limit)
+        
         if is_active:
             stmt = stmt.where(self.article.active == True)
         if org_art:
@@ -206,6 +205,8 @@ class ArticleModel:
             stmt = stmt.order_by(desc(self.article.date_publiction))
         if year:
             stmt = stmt.where(extract('year', self.article.date_publiction) == year)
+        if offset is not None and limit is not None:
+            stmt = stmt.offset(offset).limit(limit)
 
         result = await session.execute(stmt) 
         # data = result.scalars().all()

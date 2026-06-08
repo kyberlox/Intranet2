@@ -2193,7 +2193,7 @@ class Article:
             current_datetime = datetime.datetime.now()
             
             date_list = []  # список для сортировки по дате
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, offset=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
             # sorted_data = sorted(date_list, key=lambda x: x[3], reverse=True)
 
@@ -2236,7 +2236,7 @@ class Article:
         # Видеоитервью
         elif section_id == 16:
 
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, offset=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
     
 
@@ -2278,7 +2278,7 @@ class Article:
 
         # Видеоитервью с руководством
         elif section_id == 161:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, offset=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
 
 
@@ -2320,7 +2320,7 @@ class Article:
 
         # Видеорепортажи
         elif section_id == 33:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, offset=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
 
 
@@ -2362,7 +2362,7 @@ class Article:
 
         # Афиша
         elif section_id == 53:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, offset=0, limit=5, is_active=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['id'], reverse=True)
             afisha = {
                 "id": 53,
@@ -2411,7 +2411,7 @@ class Article:
 
         # Корпоративные события
         elif section_id == 51:
-            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, skip=0, limit=5, is_active=True, sorted_arts=True)
+            articles_in_section = await ArticleModel(section_id=section_id).find_by_section_id(session=session, offset=0, limit=5, is_active=True, sorted_arts=True)
             sorted_data = sorted(articles_in_section, key=lambda x: x['date_publiction'], reverse=True)
 
             corpevents = {

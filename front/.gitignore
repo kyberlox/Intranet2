@@ -35,3 +35,10 @@ coverage
 push.sh
 pull.shs
 /code/files_db
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

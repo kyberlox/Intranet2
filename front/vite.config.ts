@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url';
 
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import svgLoader from 'vite-svg-loader';
@@ -8,7 +8,6 @@ import svgLoader from 'vite-svg-loader';
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
-
   plugins: [
     vue(),
     vueDevTools(),
@@ -23,7 +22,21 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-
+  test: {
+    environment: 'jsdom',
+    coverage: {
+      exclude: [
+        '**/*.svg',
+        '**/assets/icons/**',
+        '**/*.d.ts',
+        '**/index.ts',
+        '**/*.config.{js,ts}',
+        'assets/**',
+        'public/**',
+        'dist/**',
+      ]
+    }
+  },
   css: {
     preprocessorOptions: {
       scss: {

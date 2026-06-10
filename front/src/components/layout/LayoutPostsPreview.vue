@@ -136,7 +136,7 @@ export default defineComponent({
             try {
                 const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`, null, abortController.signal)
                 if (offset.value == 0) { viewsData.setData(res, props.storeItemsName) }
-                if (res.length == 0) {
+                if (res.length == 0 || res.length < 15) {
                     isLimit.value = true;
                 }
                 offset.value += 15;

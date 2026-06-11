@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import BlogAvatar from "./components/BlogAvatar.vue";
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref, watch } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import { parseMarkdown } from "@/utils/parseMarkdown";
 import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
@@ -56,7 +56,12 @@ export default defineComponent({
 		const blogData = useblogDataStore();
 		const currentArticle = computed(() => props.id ? blogData.getBlogById(props.id) : props.previewPost);
 		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId));
-		const renderedAuthor = targetAuthor.value?.users ? targetAuthor.value.users : targetAuthor.value;
+		const renderedAuthor = ref();
+
+		watch((targetAuthor), () => {
+			renderedAuthor.value = targetAuthor.value?.users ? targetAuthor.value.users : targetAuthor.value;
+		}, { deep: true, immediate: true })
+
 
 		return {
 			renderedAuthor,

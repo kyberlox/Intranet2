@@ -8,7 +8,7 @@
         </div>
         <div class="blog-list__item-wrapper col-sm-9">
             <div class="blog-list__item"
-                 v-for="article in blogsArticles.sort((a, b) => b.id - a.id)"
+                 v-for="article in sortBlog(blogsArticles)"
                  :key="'article' + article.id">
                 <div v-if="article.indirect_data">
                     <RouterLink :to="{ name: 'certainBlog', params: { id: article.id, authorId: targetAuthor?.authorId } }"
@@ -44,6 +44,7 @@ import { defineComponent, ref, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import { dateConvert } from "@/utils/dateConvert";
 import { parseMarkdown } from "@/utils/parseMarkdown";
+import type { IBlog } from "@/interfaces/IEntities"
 
 export default defineComponent({
     components: { Reactions, BlogAvatar },
@@ -61,6 +62,10 @@ export default defineComponent({
         const targetAuthor = computed(() => blogData.getCurrentAuthor(props.id));
         const blogsArticles = computed(() => blogData.getCurrentArticles(Number(props.id)));
 
+        const sortBlog = (array: IBlog[]) => {
+            return array.sort((a, b) => new Date((b.date_publiction || b.date_creation) as string).getHours() - new Date((a.date_publiction || a.date_creation) as string).getHours())
+        }
+
         return {
             blogsArticles,
             blogName: targetAuthor.value?.title,
@@ -68,6 +73,7 @@ export default defineComponent({
             targetBlog,
             targetAuthor,
             dateConvert,
+            sortBlog,
             parseMarkdown,
         };
     }

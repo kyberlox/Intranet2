@@ -88,11 +88,11 @@ export default defineComponent({
             try {
                 const data = await Api.put(`article/add_or_remove_like/${id}`)
                 newTypeReaction.value = data
+                emit('reactAdded')
             }
             catch (error) {
                 console.error(error)
             }
-            emit('reactAdded')
         }
 
         return {

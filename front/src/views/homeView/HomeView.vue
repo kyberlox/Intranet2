@@ -66,7 +66,6 @@ export default defineComponent({
         })
 
         const updateHomeStore = (id: number, res: ImageWithHref[]) => {
-            console.log(res)
             useViewsData.setHomeImages(id, res)
         }
 

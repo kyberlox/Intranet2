@@ -16,7 +16,7 @@
                                       :card="block"
                                       :href="item.href"
                                       :key="index + 'section'"
-                                      @reactAdded="updateHomeStore(item.id, item.images)">
+                                      @reactAdded="(id: number, newReaction: IReaction) => updateHomeStore(item.id, id, newReaction)">
                     <RouterLink :to="{ name: item.sectionId }"
                                 class="homeview__grid__card__group-title">
                         {{ item.title }}
@@ -33,11 +33,12 @@
 import { computed, defineComponent, onBeforeMount, onUnmounted, type ComputedRef, ref } from "vue";
 import HomeViewSwiperBlock from "./components/HomeViewSwiperBlock.vue";
 import HomeViewSectionBlock from "./components/HomeViewSectionBlock.vue";
-import type { ImageWithHref, MainPageCards } from "@/interfaces/IMainPage";
+import type { MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
 import SampleGallerySkeleton from "@/components/tools/gallery/sample/SampleGallerySkeleton.vue";
+import type { IReaction } from "@/interfaces/IEntities";
 
 export default defineComponent({
     name: "main-page",
@@ -65,8 +66,8 @@ export default defineComponent({
             } catch (error) { console.error(error) }
         })
 
-        const updateHomeStore = (id: number, res: ImageWithHref[]) => {
-            useViewsData.setHomeImages(id, res)
+        const updateHomeStore = (blockId: number, elementId: number, newReactions: IReaction) => {
+            useViewsData.setHomeNewReactions(blockId, elementId, newReactions)
         }
 
         setInterval(() => {

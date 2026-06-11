@@ -39,7 +39,7 @@
 <script lang="ts">
 import ViewsIcon from "@/assets/icons/posts/ViewsIcon.svg?component";
 import LikeIcon from "@/assets/icons/posts/LikeIcon.svg?component";
-import { defineComponent, ref, type Ref, type PropType, onMounted } from "vue";
+import { defineComponent, ref, type Ref, type PropType } from "vue";
 import Api from "@/utils/Api";
 import type { IReaction } from "@/interfaces/IEntities";
 import { dateConvert } from "@/utils/dateConvert";
@@ -49,6 +49,7 @@ export default defineComponent({
         LikeIcon,
         ViewsIcon,
     },
+    emits: ['reactAdded'],
     props: {
         id: {
             type: Number,
@@ -74,7 +75,7 @@ export default defineComponent({
             type: String
         }
     },
-    setup(props) {
+    setup(props, { emit }) {
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
         const usersLikesVisible = ref<boolean>(false);
 
@@ -91,6 +92,7 @@ export default defineComponent({
             catch (error) {
                 console.error(error)
             }
+            emit('reactAdded')
         }
 
         return {

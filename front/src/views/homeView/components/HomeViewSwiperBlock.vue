@@ -54,9 +54,6 @@
 
 <script lang="ts">
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import { repairVideoUrl } from "@/utils/embedVideoUtil";
 import { defineComponent, type PropType } from "vue";
 import { RouterLink } from "vue-router";
@@ -86,7 +83,6 @@ export default defineComponent({
         }
     },
     setup() {
-
         const duplicateIfImageIsArray = (imagesArr: { id: number, image: string | string[] }[]) => {
             const newSlidesArr: { id: number, image: string | string[] }[] = [];
             imagesArr.map((e) => {

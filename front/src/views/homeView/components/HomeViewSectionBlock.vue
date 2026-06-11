@@ -17,7 +17,8 @@
                    :reactions="card.reactions"
                    :id="card.id"
                    :date="card.date"
-                   :type="'interview'" />
+                   :type="'interview'"
+                   @react-added="$emit('reactAdded')" />
     </RouterLink>
 </div>
 </template>

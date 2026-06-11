@@ -10,6 +10,9 @@
 		<div v-if="currentArticle && 'name' in currentArticle"
 			 class="col-sm-8">
 			<h2>{{ currentArticle.name }}</h2>
+			<div v-if="currentArticle.images?.length">
+				<SwiperBlank :images="currentArticle.images" />
+			</div>
 			<div v-if="currentArticle.content_text"
 				 class="mt20 blog__article__content blog__content"
 				 v-html="parseMarkdown(currentArticle.content_text).replaceAll('&nbsp', ' ')">
@@ -33,8 +36,10 @@ import BlogAvatar from "./components/BlogAvatar.vue";
 import { defineComponent, computed } from "vue";
 import { useblogDataStore } from "@/stores/blogData";
 import { parseMarkdown } from "@/utils/parseMarkdown";
+import SwiperBlank from "@/components/tools/swiper/SwiperBlank.vue";
+
 export default defineComponent({
-	components: { BlogAvatar },
+	components: { BlogAvatar, SwiperBlank },
 	props: {
 		id: {
 			type: String,

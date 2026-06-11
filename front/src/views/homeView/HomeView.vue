@@ -15,7 +15,8 @@
                 <HomeViewSectionBlock v-for="(block, index) in item.images"
                                       :card="block"
                                       :href="item.href"
-                                      :key="index + 'section'">
+                                      :key="index + 'section'"
+                                      @reactAdded="updateHomeStore(item.id, item.images)">
                     <RouterLink :to="{ name: item.sectionId }"
                                 class="homeview__grid__card__group-title">
                         {{ item.title }}
@@ -32,7 +33,7 @@
 import { computed, defineComponent, onBeforeMount, onUnmounted, type ComputedRef, ref } from "vue";
 import HomeViewSwiperBlock from "./components/HomeViewSwiperBlock.vue";
 import HomeViewSectionBlock from "./components/HomeViewSectionBlock.vue";
-import type { MainPageCards } from "@/interfaces/IMainPage";
+import type { ImageWithHref, MainPageCards } from "@/interfaces/IMainPage";
 import Api from "@/utils/Api";
 import { sectionTips } from "@/assets/static/sectionTips";
 import { useViewsDataStore } from "@/stores/viewsData";
@@ -63,6 +64,11 @@ export default defineComponent({
                 useViewsData.setData(result, 'homeData');
             } catch (error) { console.error(error) }
         })
+
+        const updateHomeStore = (id: number, res: ImageWithHref[]) => {
+            console.log(res)
+            useViewsData.setHomeImages(id, res)
+        }
 
         setInterval(() => {
             Api.get(`article/find_by/${sectionTips['Главная']}`, null, abortController.signal)
@@ -98,6 +104,7 @@ export default defineComponent({
             mainPageCards,
             key,
             checkUpdates,
+            updateHomeStore
         };
     },
 });

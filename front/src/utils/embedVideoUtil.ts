@@ -2,7 +2,7 @@ export const repairVideoUrl = (url: string): string | false => {
     if (!url) return '/';
     let cleanUrl = url;
 
-    const youtubePatterns = ["youtu.be/", "watch?v=", "/shorts/", "youtube.com/embed/"];
+    const youtubePatterns = ["youtu.be/", "watch?v=/", "/shorts/", "youtube.com/embed/"];
 
     const rutubePattern = "https://rutube.ru/video/";
 

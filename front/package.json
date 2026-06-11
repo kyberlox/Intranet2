@@ -10,11 +10,14 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "test": "vitest",
+    "coverage": "vitest --coverage"
   },
   "dependencies": {
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.15.1",
+    "@vue/test-utils": "^2.4.11",
     "@vuepic/vue-datepicker": "^11.0.2",
     "@vueuse/core": "^13.5.0",
     "axios": "^1.9.0",
@@ -34,6 +37,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/downloadjs": "^1.4.6",
     "@types/js-cookie": "^3.0.6",
@@ -41,12 +45,14 @@
     "@types/node": "^22.13.9",
     "@types/sanitize-html": "^2.16.0",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/coverage-v8": "^4.1.8",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/tsconfig": "^0.7.0",
     "eslint": "^9.21.0",
     "eslint-plugin-vue": "~10.0.0",
     "jiti": "^2.4.2",
+    "jsdom": "^29.1.1",
     "npm-run-all2": "^7.0.2",
     "prettier": "3.5.3",
     "sass": "^1.92.0",
@@ -55,6 +61,7 @@
     "vite": "^6.2.1",
     "vite-plugin-vue-devtools": "^7.7.7",
     "vite-svg-loader": "^5.1.0",
+    "vitest": "^4.1.8",
     "vue-tsc": "^2.2.8"
   }
 }

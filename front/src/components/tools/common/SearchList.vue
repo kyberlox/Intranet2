@@ -1,6 +1,6 @@
 <template>
-<div class="visibility-editor__area-users"
-     v-if="searchList">
+<ul class="visibility-editor__area-users"
+    v-if="searchList">
     <li v-for="element in formatElements(searchList)"
         :key="element.id"
         class="visibility-editor__area-user"
@@ -17,11 +17,10 @@
         <div v-if="needDeleteButton"
              class="visibility-editor__user__remove-btn"
              @click.prevent.stop="$emit('remove', element.id)">
-
             <Cancel />
         </div>
     </li>
-</div>
+</ul>
 </template>
 
 <script lang="ts">

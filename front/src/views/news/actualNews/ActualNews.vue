@@ -5,7 +5,8 @@
                     :storeItemsName="storeItemsName"
                     :sectionId="Number(sectionId)"
                     :type="'postPreview'"
-                    :routeTo="'actualArticle'" />
+                    :routeTo="'actualArticle'"
+                    :needPagination="true" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';

@@ -36,10 +36,10 @@
     <p v-else
        class="mt20">Нет новостей в этой категории</p>
 </div>
-<PageSelector v-if="paginationEnabled"
-              :page="page"
+<PageSelector v-if="paginationEnabled && visibleNews && visibleNews.length"
+              :isLimit="isLimit"
               :isLoading="isLoading"
-              @changePage="setPage" />
+              @loadMore="fetchNews" />
 </template>
 <script lang="ts">
 import SampleGallery from "@/components/tools/gallery/sample/SampleGallery.vue";
@@ -59,6 +59,7 @@ import ContentPlug from "./ContentPlug.vue";
 import ComplexGallery from "@/components/tools/gallery/complex/ComplexGallery.vue";
 import { featureFlags } from "@/assets/static/featureFlags";
 import PageSelector from "@/components/tools/common/PageSelector.vue";
+
 export default defineComponent({
     components: {
         SampleGallery,
@@ -106,10 +107,11 @@ export default defineComponent({
         },
         needPagination: {
             type: Boolean,
-            default: false
+            default: true
         }
     },
     setup(props) {
+        let abortController: null | AbortController = null;
         const viewsData = useViewsDataStore();
         const allNews: ComputedRef<INews[]> = computed(() => viewsData.getData(props.storeItemsName) as INews[]);
         const visibleNews: Ref<INews[]> = ref([]);
@@ -118,63 +120,71 @@ export default defineComponent({
         const filterYears: Ref<string[]> = ref([]);
         const emptyTag: Ref<boolean> = ref(false);
         const showFilter = ref(false);
-        const isLoading = ref(true);
-        const page = ref(0);
+        const isLoading = ref(false);
+        const offset = ref(0);
         const paginationEnabled = computed(() => featureFlags.pagination && props.needPagination);
-
-        const abortController = new AbortController();
+        const isLimit = ref(false);
 
         const fetchNews = async () => {
+            if (abortController) {
+                abortController?.abort();
+            }
+            abortController = new AbortController();
+            isLimit.value = false;
             isLoading.value = true;
-            const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
-
+            const paginationQuery = paginationEnabled.value ? `?offset=${offset.value}&limit=15${currentYear.value ? `&year=${currentYear.value}` : ''}${currentTag.value ? `&tag=${currentTag.value}` : ''}` : '';
             try {
                 const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`, null, abortController.signal)
-                viewsData.setData(res, props.storeItemsName);
-                if (!props.tagId) visibleNews.value = res;
+                if (offset.value == 0) { viewsData.setData(res, props.storeItemsName) }
+                if (res.length == 0 || res.length < 15) {
+                    isLimit.value = true;
+                }
+                offset.value += 15;
+                visibleNews.value = visibleNews.value.concat(res);
             } catch (error) {
                 console.error(error)
             }
             finally {
-                if (visibleNews.value && visibleNews.value.length) {
-                    filterYears.value = extractYears(visibleNews.value);
-                }
                 isLoading.value = false;
             }
         }
 
-        const setPage = (newPage: number) => {
-            const normalizedPage = Math.max(1, Number(newPage) || 1);
-            page.value = normalizedPage - 1;
+        watch(([currentTag, currentYear]), async () => {
+            showFilter.value = false;
+            refreshNews();
+            fetchNews();
+        })
+
+        const yearsInit = () => {
+            const yearStart = new Date().getFullYear();
+            const yearEnd = 2018;
+            for (let index = yearStart; index >= yearEnd; index -= 1) {
+                filterYears.value.push(String(index))
+            }
         }
 
-        watch(([currentTag, currentYear]), async () => {
-            const { newVisibleNews, newEmptyTag, newFilterYears } =
-                await useNewsFilterWatch(currentTag, currentYear, allNews, String(props.sectionId));
-
-            visibleNews.value = newVisibleNews.value;
-            emptyTag.value = newEmptyTag.value;
-            filterYears.value = newFilterYears.value;
-            showFilter.value = false;
-        })
-
-        watch(page, () => {
-            if (paginationEnabled.value) fetchNews();
-        })
+        const refreshNews = () => {
+            if (currentTag.value || currentYear.value) {
+                offset.value = 0;
+                visibleNews.value.length = 0;
+                if (allNews.value) {
+                    allNews.value.length = 0;
+                }
+                viewsData.setData(allNews.value, props.storeItemsName);
+            }
+        }
 
         onMounted(async () => {
-            if (!paginationEnabled.value && allNews.value && allNews.value.length && !props.tagId) {
+            yearsInit();
+            if (allNews.value && allNews.value.length && !props.tagId) {
                 visibleNews.value = allNews.value;
-                filterYears.value = extractYears(allNews.value);
             } else
-                isLoading.value = true;
-            await fetchNews();
+                await fetchNews();
         })
 
         onUnmounted(() => {
             abortController?.abort();
         })
-
 
         return {
             allNews,
@@ -187,11 +197,11 @@ export default defineComponent({
             emptyPlug,
             showFilter,
             isLoading,
+            paginationEnabled,
+            isLimit,
             extractYears,
             showEventsByYear,
-            page,
-            paginationEnabled,
-            setPage,
+            fetchNews,
         };
     },
 });

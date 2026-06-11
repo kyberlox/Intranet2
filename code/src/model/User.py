@@ -1295,3 +1295,4 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     # elif int(user_id) != data['commentator_id']:
     #     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 
+

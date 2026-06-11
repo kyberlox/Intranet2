@@ -65,10 +65,30 @@ async def get_today_birthdays() -> List[int]:
     """
     Найти всех пользователей, у которых сегодня день рождения
     Возвращает список ID пользователей
+    Удаляет поздравления за прошлый месяц
     """
     from ..base.pSQL.models.User import User
+    from ..base.pSQL.objects.UserModel import UserModel
     async with AsyncSessionLocal() as db:
         today = datetime.now()
+
+        #отсчитываем месяц чтобы почистить поздравления
+        month_ago = today - timedelta(days=30)
+        query = select(User.id, User.indirect_data).where(
+            (extract('month', User.personal_birthday) == month_ago.month) &
+            (extract('day', User.personal_birthday) == month_ago.day)
+        )
+        result = await db.execute(query)
+        last_birthdays = result.mappings().all()
+
+        for user in last_birthdays:
+            user['indirect_data']['congratulations'] = []
+            user_bd = await db.get(User, user['id'])
+            # Обновляем только переданные поля
+            setattr(user_bd, 'indirect_data', user['indirect_data'])
+        await session.commit()
+
+
         # today = datetime.strptime('22.03.2026', '%d.%m.%Y')
         query = select(User.id).where(
             (extract('month', User.personal_birthday) == today.month) &

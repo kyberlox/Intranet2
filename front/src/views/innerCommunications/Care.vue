@@ -6,7 +6,8 @@
                     :storeItemsName="storeItemsName"
                     :sectionId="Number(sectionId)"
                     :type="'postPreview'"
-                    :routeTo="'carePost'" />
+                    :routeTo="'carePost'"
+                    :needPagination="false" />
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';

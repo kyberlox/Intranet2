@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type { INews, ICalendar, IAfishaItem, ICareSlide, IOurPeople, IVideoInterview, IFactoryGuidSlides, IBaseEntity } from "@/interfaces/IEntities";
-import type { MainPageCards, ImageWithHref } from "@/interfaces/IMainPage";
+import type { MainPageCards } from "@/interfaces/IMainPage";
+import type { IReaction } from "@/interfaces/IEntities";
 
 export interface DataState {
     homeData: MainPageCards,
@@ -53,9 +54,12 @@ export const useViewsDataStore = defineStore('viewsData', {
                 (this[dataType] as DataState[T]) = fetchedData;
             }
         },
-        setHomeImages(id: number, images: ImageWithHref[]) {
-            const targetBlock = this.homeData.find(e => e.id == id)
-            if (targetBlock) targetBlock.images = images
+        setHomeNewReactions(BlockId: number, elementId: number, newReaction: IReaction) {
+            const targetBlock = this.homeData.find(e => e.id == BlockId)?.images
+            if (!targetBlock) return
+            const targetElement = targetBlock.find(e => e.id == elementId)
+            if (!targetElement) return
+            targetElement.reactions = newReaction
         }
     },
 

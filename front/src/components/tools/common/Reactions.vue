@@ -49,7 +49,6 @@ export default defineComponent({
         LikeIcon,
         ViewsIcon,
     },
-    emits: ['reactAdded'],
     props: {
         id: {
             type: Number,
@@ -75,6 +74,7 @@ export default defineComponent({
             type: String
         }
     },
+    emits: ['reactAdded'],
     setup(props, { emit }) {
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
         const usersLikesVisible = ref<boolean>(false);
@@ -88,7 +88,7 @@ export default defineComponent({
             try {
                 const data = await Api.put(`article/add_or_remove_like/${id}`)
                 newTypeReaction.value = data
-                emit('reactAdded')
+                emit('reactAdded', id, newTypeReaction.value)
             }
             catch (error) {
                 console.error(error)

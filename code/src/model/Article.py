@@ -1997,7 +1997,20 @@ class Article:
                     if user_id is not None:
                         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                         res['reactions'] = has_user_liked
-
+                if int(self.section_id) == 15:
+                    files = await File(art_id=int(self.id)).get_files_by_art_id(session)
+                    images = list()
+                    #Для блогов собираем фотки
+                    if files:
+                        for file in files:
+                            # файлы делятся по категориям
+                            if "image" in file["content_type"] or "jpg" in file["original_name"] or "jpeg" in file["original_name"] or "png" in file["original_name"]:
+                                url = file["file_url"]
+                                file["file_url"] = f"{DOMAIN}{url}"
+                                images.append(file)
+                    # сортируем фотки по айдишникам
+                    sorted_images = sorted(images, key=lambda x: int(x['id']), reverse=False)
+                    res['images'] = sorted_images
                         
                     #сюда накинуть ограничение на афишу и корп события
                     # if int(self.section_id) in [51, 53, 31, 32, 33, 16, 161, 14, 35]:

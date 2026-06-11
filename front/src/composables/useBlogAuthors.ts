@@ -4,17 +4,6 @@ import type { IBlogAuthors, IBlog } from "@/interfaces/IEntities"
 import { useblogDataStore } from "@/stores/blogData"
 import avatarPlug from '@/assets/imgs/plugs/userplug.jpg'
 
-const createAuthor = (isCompany: boolean, inner: boolean) => {
-    return {
-        title: isCompany ? 'Компания' : 'Пользователь',
-        authorId: isCompany ? null : 1,
-        authorAvatar: avatarPlug,
-        authorTitle: isCompany ? 'Компания' : 'Пользователь',
-        isCompany: isCompany,
-        companyId: isCompany ? 1 : null,
-    }
-}
-
 export const getBlogAuthorsToStore = async () => {
     const blogsData = useblogDataStore();
     const uniqAuthors: IBlogAuthors[] = [];

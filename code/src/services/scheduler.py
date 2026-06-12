@@ -86,7 +86,7 @@ async def get_today_birthdays() -> List[int]:
             user_bd = await db.get(User, user['id'])
             # Обновляем только переданные поля
             setattr(user_bd, 'indirect_data', user['indirect_data'])
-        await session.commit()
+        await db.commit()
 
 
         # today = datetime.strptime('22.03.2026', '%d.%m.%Y')

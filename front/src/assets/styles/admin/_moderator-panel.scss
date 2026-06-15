@@ -3,6 +3,7 @@
     flex-direction: row;
 
     &__content {
+        max-height: 100vh;
         overflow-x: auto;
         flex-grow: 1;
     }
@@ -15,7 +16,7 @@
         padding: 3%;
         border-radius: 46px;
         border: 1px solid #c4c4c4;
-        max-height: 80vh;
+        max-height: 80%;
         overflow-y: auto;
         margin-top: 10px;
 

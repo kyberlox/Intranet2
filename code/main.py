@@ -304,7 +304,7 @@ async def run_scheduler_now():
     Ручной запуск задач планировщика
     (только для администраторов в продакшене!)
     """
-    from app.core.scheduler import daily_check
+    from src.services.scheduler import daily_check
     await daily_check()
     return {"message": "Задачи выполнены"}
 

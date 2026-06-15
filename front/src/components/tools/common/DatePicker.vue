@@ -33,12 +33,13 @@ import { type ICalendarMarker } from '@/components/layout/sidebars/RightSidebarC
 import { useStyleModeStore } from '@/stores/styleMode';
 import type { IAdminListItem } from '@/interfaces/IEntities';
 import { dateConvert } from '@/utils/dateConvert';
+import { calendarTypeFormat } from '@/utils/calendarTypeFormat';
 
 export default defineComponent({
     name: 'DatePicker',
     props: {
         calendarType: {
-            type: String,
+            type: String as PropType<'dayAndMonth' | 'monthAndYear' | 'month' | 'fullNoYear' | 'full'>,
             default: 'dayAndMonth'
         },
         nullifyDateInput: {
@@ -100,36 +101,13 @@ export default defineComponent({
 
         const date = ref(new Date());
         const format = (date: Array<Date> | Date = new Date()) => {
-            const formatDate = (newDate: Date) => {
-                const day = newDate.getDate();
-                const month = newDate.getMonth() + 1;
-                const year = newDate.getFullYear();
-                const time = newDate.getHours() + ':' + (newDate.getMinutes() > 9 ? newDate.getMinutes() : "0" + newDate.getMinutes());
-
-                if (props.calendarType == 'dayAndMonth') {
-                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}`;
-                }
-                else if (props.calendarType == 'monthAndYear') {
-                    return `${month > 9 ? month : "0" + month}.${year}`;
-                }
-                else if (props.calendarType == 'month') {
-                    const formatMonth = newDate.toLocaleString('ru', { 'month': 'long' })
-                    return formatMonth.charAt(0).toUpperCase() + formatMonth.slice(1);
-                }
-                else if (props.calendarType == 'fullNoYear') {
-                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year}`
-                }
-                else if (props.calendarType == 'full') {
-                    return `${day > 9 ? day : "0" + day}.${month > 9 ? month : "0" + month}.${year} ${time ?? '00:00'}`
-                }
-            }
             if (props.range && Array.isArray(date)) {
-                const from = formatDate(date[0]);
-                const to = formatDate(date[1]);
+                const from = calendarTypeFormat(props.calendarType, date[0]);
+                const to = calendarTypeFormat(props.calendarType, date[1]);
                 return from == to ? from : `${from}-${to}`
             }
             else
-                return formatDate(date as Date)
+                return calendarTypeFormat(props.calendarType, date as Date)
         }
 
         return {

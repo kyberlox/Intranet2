@@ -49,9 +49,9 @@ export default defineComponent({
     setup(props, { emit }) {
         const chosenTags = ref<(string | number)[]>([]);
 
-        watch((props), () => {
+        watch(() => props.currentTags, () => {
             if (props.currentTags)
-                chosenTags.value = props.currentTags.map(e => String(e));
+                chosenTags.value = props.currentTags.map(String);
             emit('tagsChanged', chosenTags.value)
         }, { immediate: true, deep: true })
 
@@ -62,8 +62,8 @@ export default defineComponent({
             else if (!chosenTags.value.includes('1') && id == '1') {
                 chosenTags.value = chosenTags.value.filter(e => e !== '1')
             }
-            if (chosenTags.value.find((e) => e == String(id))) {
-                chosenTags.value = chosenTags.value.filter((e) => String(e) !== String(id)).map(e => String(e))
+            if (chosenTags.value.some((e) => e == String(id))) {
+                chosenTags.value = chosenTags.value.filter((e) => String(e) !== String(id)).map(String)
             }
             else {
                 chosenTags.value.push(String(id))

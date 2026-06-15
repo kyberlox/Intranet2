@@ -3,17 +3,6 @@
      v-if="currentEvents?.length">
     <div class="page__title mt20">Календарь событий</div>
     <div class="calendar-container">
-        <!-- <div class="calendar__meanings">
-                <div class="calendar_meaning">Основные события
-                    <div class="square-mark"
-                         style="background-color: #f36509"></div>
-                </div>
-                <div class="calendar_meaning">ОВК
-                    <div class="square-mark"
-                         style="background-color: #00b38c">
-                    </div>
-                </div>
-            </div> -->
         <div class="dp__wrapper">
             <DatePicker month-picker
                         :calendarType="'month'"
@@ -151,10 +140,10 @@ export default defineComponent({
             })
         }
 
-        watch((props), () => {
+        watch(() => props.targetId, () => {
             visibleMonthes.value = monthesInit;
             scrollToNode(props.targetId, props.targetId.length <= 2 ? monthNodes : eventNodes, props.targetId.length <= 2 ? 'data-month-num' : 'data-event-id')
-        }, { immediate: true, deep: true })
+        }, { immediate: true })
 
         const getEventFromMonth = (monthNum: string) => {
             const monthEvents = currentEvents.value.filter((e) => {

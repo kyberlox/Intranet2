@@ -90,16 +90,20 @@ export default defineComponent({
         const userDisplayMode = ref(false);
         const departmentsToShow = ref();
 
-        watch((props), () => {
+        watch(() => props.filteredUsers, () => {
             if (props.filteredUsers?.length) {
                 userDisplayMode.value = true
             } else userDisplayMode.value = false;
 
+
+        }, { immediate: true })
+
+        watch(() => props.filteredDepartments, () => {
             if (props.filteredDepartments?.length) {
                 departmentsToShow.value = props.filteredDepartments;
             }
             else departmentsToShow.value = props.departments;
-        }, { immediate: true, deep: true })
+        }, { immediate: true })
 
         const changeVisibility = (id: number) => {
             const target = showingDeps.value.findIndex((e) => e == id);

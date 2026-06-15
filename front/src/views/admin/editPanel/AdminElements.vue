@@ -157,8 +157,7 @@ import StatusIcon from "@/assets/icons/admin/StatusIcon.svg?component"
 
 import { useToast } from 'primevue/usetoast';
 import { useToastCompose } from '@/composables/useToastСompose';
-import { handleApiResponse } from '@/utils/apiResponseCheck';
-import { handleApiError } from '@/utils/apiResponseCheck';
+import { handleApiResponse, handleApiError } from '@/utils/apiResponseCheck';
 import AdminTagsModal from './AdminTagsModal.vue';
 import { useUserData } from '@/stores/userData';
 import { featureFlags } from '@/assets/static/featureFlags';
@@ -193,7 +192,8 @@ export default defineComponent({
   },
   props: {
     id: {
-      type: String
+      type: String,
+      required: true
     }
   },
   setup(props) {
@@ -245,10 +245,10 @@ export default defineComponent({
       itemsInit();
     }
 
-    watch((props), () => {
+    watch(() => props.id, () => {
       page.value = 0;
       itemsInit();
-    }, { immediate: true, deep: true });
+    }, { immediate: true });
 
     const removeItem = async (id: number) => {
       try {

@@ -187,7 +187,7 @@ export default defineComponent({
     const currentPost = ref<IPostInner>();
     const abortController = new AbortController();
 
-    watch((props), async () => {
+    watch(() => props.id, async () => {
       if ((props.type == 'adminPreview' && props.previewElement) || !props.id) {
         if (props.previewElement == null) {
           currentPost.value = undefined;

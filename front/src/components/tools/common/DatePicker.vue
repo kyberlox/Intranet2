@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch, computed, type PropType, watchEffect } from 'vue';
+import { defineComponent, ref, watch, computed, type PropType } from 'vue';
 import { type ICalendarMarker } from '@/components/layout/sidebars/RightSidebarCalendar.vue';
 import { useStyleModeStore } from '@/stores/styleMode';
 import type { IAdminListItem } from '@/interfaces/IEntities';
@@ -78,7 +78,7 @@ export default defineComponent({
             emit('pickDate', date)
         }
 
-        watch((props), () => {
+        watch(() => props.defaultData, () => {
             if (props.defaultData) {
                 if (props.defaultData.includes(":")) {
                     const formattedPropsData = props.defaultData.split(props.defaultData.includes('T') ? 'T' : ' ')[0];
@@ -89,7 +89,7 @@ export default defineComponent({
                 }
                 handleDate(dateInput.value);
             }
-        }, { immediate: true, deep: true })
+        }, { immediate: true })
 
         const openDatePicker = () => {
             if (!dateInput.value) return;

@@ -93,6 +93,7 @@ export default defineComponent({
         const years: Ref<string[]> = ref([]);
         const route = useRoute();
         const showFilter = ref(false);
+
         const takeStarClass = (reviews: { stars?: string }[]) => {
             if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
                 return 'score-stars__0';
@@ -122,10 +123,10 @@ export default defineComponent({
         const openModal = (training: ItableItem) => {
             emit('openModal', training);
         };
-        watch((props), (newVal) => {
-            if (!newVal.tableElements) return
+        watch(() => props.tableElements, () => {
+            if (!props.tableElements) return
             if (route.name !== 'literature') {
-                newVal.tableElements.forEach((e) => {
+                props.tableElements.forEach((e) => {
                     if (!e.indirect_data) return;
                     const target = e.indirect_data.event_date;
                     if (!target) return;
@@ -136,7 +137,7 @@ export default defineComponent({
                 })
                 years.value.sort((b: string, a: string) => { return Number(a) - Number(b) })
             }
-            visibleTrainings.value = newVal.tableElements
+            visibleTrainings.value = props.tableElements
         }, { immediate: true, deep: true })
 
         const filterBy = (param: string) => {

@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, type PropType, ref, computed, watch } from 'vue';
+import { defineComponent, type PropType, ref, computed, watch } from 'vue';
 import type { IAdminListItem, ICalendar } from '@/interfaces/IEntities';
 import { useViewsDataStore } from '@/stores/viewsData';
 import Loader from '@/components/layout/Loader.vue';

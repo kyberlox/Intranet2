@@ -93,7 +93,7 @@ export default defineComponent({
             type: Number,
         },
         activeIndexInModal: {
-            type: Number
+            type: Number,
         },
         videosNative: {
             type: Array<IBXFileType>
@@ -108,13 +108,12 @@ export default defineComponent({
     setup(props) {
         const modalIsVisible = ref(false);
         const activeIndex = ref();
-
-        watch((props), (newVal) => {
-            if (newVal.activeIndexInModal && newVal.activeIndexInModal !== null || newVal.activeIndexInModal == 0) {
-                activeIndex.value = newVal.activeIndexInModal;
+        watch(() => props.activeIndexInModal, () => {
+            if (props.activeIndexInModal || props.activeIndexInModal == 0) {
+                activeIndex.value = props.activeIndexInModal;
                 modalIsVisible.value = true;
             }
-        }, { deep: true, immediate: true })
+        }, { immediate: true })
 
         const {
             swiperOn,

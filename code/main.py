@@ -298,13 +298,13 @@ async def scheduler_status():
         "tasks_scheduled": len(schedule.jobs) if 'schedule' in globals() else 0
     }
 
-@app.post("/scheduler/run-now")
+@app.post("/scheduler/run-now", tags=['Пользователь'])
 async def run_scheduler_now():
     """
     Ручной запуск задач планировщика
     (только для администраторов в продакшене!)
     """
-    from app.core.scheduler import daily_check
+    from src.services.scheduler import daily_check
     await daily_check()
     return {"message": "Задачи выполнены"}
 

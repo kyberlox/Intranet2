@@ -70,8 +70,8 @@ async def get_today_birthdays() -> List[int]:
     from ..base.pSQL.models.User import User
     from ..base.pSQL.objects.UserModel import UserModel
     async with AsyncSessionLocal() as db:
-        # today = datetime.now()
-        today = datetime.strptime('15.06.2026', '%d.%m.%Y')
+        today = datetime.now()
+        # today = datetime.strptime('15.06.2026', '%d.%m.%Y')
         #отсчитываем месяц чтобы почистить поздравления
         month_ago = today - timedelta(days=30)
         query = select(User.id, User.indirect_data).where(

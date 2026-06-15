@@ -298,7 +298,7 @@ async def scheduler_status():
         "tasks_scheduled": len(schedule.jobs) if 'schedule' in globals() else 0
     }
 
-@app.post("/scheduler/run-now")
+@app.post("/scheduler/run-now", tags=['Пользователь'])
 async def run_scheduler_now():
     """
     Ручной запуск задач планировщика

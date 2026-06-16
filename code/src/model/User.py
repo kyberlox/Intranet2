@@ -24,7 +24,7 @@ def register_task(name: str):
         TASK_HANDLERS[name] = func
         LogsMaker().info_message(f"Задача '{name}' зарегистрирована (функция {func.__module__}.{func.__name__})")
         return func
-    return decoratorredirect_uri
+    return decorator
 
 def make_date_valid(date):
     from datetime import datetime

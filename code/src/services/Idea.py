@@ -148,8 +148,7 @@ class Idea:
         return res
 
 
-@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"],
-description="""
+@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"], description="""
 ## Метод `lists.element.add`
 
 Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/113/

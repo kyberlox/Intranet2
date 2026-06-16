@@ -1,4 +1,4 @@
-from ..base.B24 import B24
+description = """description = """from ..base.B24 import B24
 from ..model.File import File
 from ..services.LogsMaker import LogsMaker
 from ..services.SendMail import SendEmail
@@ -24,7 +24,7 @@ def register_task(name: str):
         TASK_HANDLERS[name] = func
         LogsMaker().info_message(f"Задача '{name}' зарегистрирована (функция {func.__module__}.{func.__name__})")
         return func
-    return decorator
+    return decoratorredirect_uri
 
 def make_date_valid(date):
     from datetime import datetime
@@ -1043,6 +1043,7 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
         ## Метод `user.get?ID={ID}`
 
     Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/220/
+    
 
     Получает данные конкретного пользователя из Битрикс24 по его ID через API метод `user.get`.
 

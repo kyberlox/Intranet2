@@ -148,7 +148,8 @@ class Idea:
         return res
 
 
-@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"], description="""
+@idea_router.post("/new/", tags=["Есть Идея!", "Битрикс24"],
+description="""
 ## Метод `lists.element.add`
 
 Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/113/
@@ -177,7 +178,6 @@ class Idea:
     - `DOCUMENT_ID` (list) — сущность в которой запускается БП (всегда будет иметь значение 'lists')
     - `DOCUMENT_ID` (list) — путь, где храниться БП в корне ( всегда будет иметь значение 'Bitrix\Lists\BizprocDocumentLists')
     - `DOCUMENT_ID` (list) — ID элемента списка есть идея (сюда подставляется значение, которое возвращается после выполнения метода `lists.element.add`.)
-
 
 """)
 async def calendar_event(data = Body()):

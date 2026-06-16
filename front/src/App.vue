@@ -90,7 +90,7 @@ export default defineComponent({
         };
 
         // предзагрузка данных в стор
-        watch((isLogin), async () => {
+        watch(([isLogin, route]), async () => {
             if (route && route.query && route.query.reroute && isLogin.value) {
                 useRouter().push(String(route.query.reroute).replace('?reroute=', ''));
             }
@@ -98,31 +98,26 @@ export default defineComponent({
             if (userData.getIsLogin && userData.getMyId == 0) {
                 userData.setLogin(false);
             }
-            if (isLogin.value) {
-                prefetchSection('score');
-                prefetchSection('calendar');
-                if (userData.getAuthKey) {
-                    prefetchSection('user');
-                }
+            if (!isLogin.value) return
+            await prefetchSection('score');
+            await prefetchSection('calendar');
+            await prefetchSection('user');
 
-                try {
-                    const res = await Api.getVendor('https://gpt.emk.ru/check_count')
-                    useUserData().setGenCount(res);
-                }
-                catch (error) { console.error(error) }
-            }
-        }, { deep: true, immediate: true })
-
-        watch([route, isLogin], () => {
-            if (!isLogin.value) return;
             const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
             const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
             if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
-                prefetchSection('blogs')
+                await prefetchSection('blogs')
             } else if (factoryGuidRoutes.includes(String(route.name))) {
-                prefetchSection('factoryGuid')
+                await prefetchSection('factoryGuid')
             }
-        }, { immediate: true, deep: true })
+
+            try {
+                const res = await Api.getVendor('https://gpt.emk.ru/check_count')
+                useUserData().setGenCount(res);
+            }
+            catch (error) { console.error(error) }
+
+        }, { deep: true, immediate: true })
 
         onBeforeMount(async () => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');

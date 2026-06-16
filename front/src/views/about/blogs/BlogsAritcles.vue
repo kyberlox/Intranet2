@@ -29,7 +29,6 @@
                     </div>
                     <div class="blog__short__desc"
                          v-if="article?.content_text?.length"
-                         @click="console.log((sanitizeValue(article.content_text, true).split('&nbsp', 50)))"
                          v-html="(sanitizeValue(article.content_text, true).split(article.content_text.includes('&nbsp') ? '&nbsp' : ' ', 50).join(' ') + '...')">
                     </div>
                 </div>

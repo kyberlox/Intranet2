@@ -33,8 +33,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onBeforeMount, ref, onUnmounted } from "vue";
-import { RouterView, useRoute } from "vue-router";
+import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
+import { RouterView, useRoute, useRouter } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
@@ -92,7 +92,7 @@ export default defineComponent({
         // предзагрузка данных в стор
         watch((isLogin), async () => {
             if (route && route.query && route.query.reroute && isLogin.value) {
-                window.location.href = String(route.query.reroute).replace('?reroute=', '');
+                useRouter().push(String(route.query.reroute).replace('?reroute=', ''));
             }
 
             if (userData.getIsLogin && userData.getMyId == 0) {

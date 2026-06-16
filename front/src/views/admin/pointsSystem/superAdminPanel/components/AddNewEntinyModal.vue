@@ -112,7 +112,7 @@ export default defineComponent({
             }
         }, { debounce: 500, maxWait: 1500 })
 
-        watch((props), () => {
+        watch(() => props.currentEntity, () => {
             if (props.currentEntity) {
                 usersList.value.length = 0
                 searchQuery.value = ''

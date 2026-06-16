@@ -100,11 +100,11 @@ export default defineComponent({
             }
         })
 
-        watch((props), () => {
+        watch(() => props.newFileData, () => {
             previewImages.value.length = 0;
 
             if (props.newFileData?.images?.length) {
-                props.newFileData?.images?.map((e) => {
+                props.newFileData?.images?.forEach((e) => {
                     if (!e.file_url) return
                     previewImages.value.push(e.file_url)
                 })

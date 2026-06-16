@@ -30,15 +30,14 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const value = ref(props.item?.value);
-        const handleValuePick = () => {
-            emit('pick', value.value);
-        }
-        watch((props), () => {
-            if (props.item?.value) value.value = props.item.value
-        }, { deep: true, immediate: true })
+
         onMounted(() => {
             handleValuePick();
         })
+
+        const handleValuePick = () => {
+            emit('pick', value.value);
+        }
 
         return {
             value,

@@ -25,11 +25,9 @@
                         <div v-if="chat.role == 'assistant' && chatType == 'createImg' && chat.type == 'img'"
                              class="neuroChat__messages">
                             <div class="neuroChat__message neuroChat__message--neuro">
-                                <img :src="chat.content" />
+                                <img :src="chat.content"
+                                     alt="Изображение в чате" />
                             </div>
-                            <!-- <div class="neuroChat__message neuroChat__message--link neuroChat__message--neuro">
-                                <a :href="chat.content">Открыть в новом окне</a>
-                            </div> -->
                         </div>
                         <div v-else-if="chat.role == 'assistant'"
                              class="neuroChat__message neuroChat__message--neuro"
@@ -45,8 +43,9 @@
             <div v-if="imageGenerationOn || chatType == 'textChat'"
                  class="neuroChat__input-textarea__wrapper">
                 <div class="neuroChat__input-textarea">
-                    <label v-if="!(genUsed >= (genLimitNumber) && chatType == 'createImg' && !unlimitedGen)">Введите
-                        сообщение</label>
+                    <div v-if="!(genUsed >= (genLimitNumber) && chatType == 'createImg' && !unlimitedGen)">
+                        Введите сообщение
+                    </div>
                     <div class="neuroChat__input-container">
                         <div v-if="!(genUsed >= (genLimitNumber) && chatType == 'createImg' && !unlimitedGen)"
                              class="neuroChat__textarea__wrapper">
@@ -124,8 +123,8 @@ import ContentPlug from '@/components/layout/ContentPlug.vue';
 import genOffPlug from '@/assets/imgs/plugs/contentPlugGenOff.jpg';
 import { imageGenerationOff } from '@/assets/static/contentPlugs';
 import { useUserData } from '@/stores/userData';
-export type IChatType = "textChat" | "createImg";
 
+export type IChatType = "textChat" | "createImg";
 interface IUploadFile {
     file: File;
     name: string;
@@ -178,8 +177,8 @@ export default defineComponent({
             const selectedFiles = target.files;
 
             if (selectedFiles?.length) {
-                for (let i = 0; i < selectedFiles.length; i++) {
-                    const file = selectedFiles[i];
+                for (const item of Array.from(selectedFiles)) {
+                    const file = item;
                     filesToUpload.value.push({
                         file: file,
                         name: file.name
@@ -207,7 +206,7 @@ export default defineComponent({
         const chatWindowUpdate = () => {
             isLoading.value = true;
             if (chatType.value == 'textChat') {
-                if (!chatDataToSend.value.find((e) => e.role == 'system')) {
+                if (!chatDataToSend.value.some((e) => e.role == 'system')) {
                     chatDataToSend.value.push({ 'role': 'system', content: 'Определи из контекста, отвечай на русском' });
                 }
                 if (analyzeMessage.value) {
@@ -233,7 +232,7 @@ export default defineComponent({
                 if (analyzeMessage.value) {
                     const formData = new FormData();
 
-                    filesToUpload.value.forEach((fileObj, index) => {
+                    filesToUpload.value.forEach((fileObj) => {
                         formData.append(`files`, fileObj.file);
                     });
 
@@ -335,7 +334,7 @@ export default defineComponent({
             genUsed,
             genLimitNumber,
             unlimitedGen: unlimitedUids.includes(userId.value),
-            limitText: computed(() => (genLimitNumber - genUsed.value < 0 ? 0 : genLimitNumber - genUsed.value)),
+            limitText: computed(() => (Math.max(genLimitNumber - genUsed.value, genLimitNumber - genUsed.value))),
             handleChatTypeChange,
             parseMarkdown,
             sendMsg,

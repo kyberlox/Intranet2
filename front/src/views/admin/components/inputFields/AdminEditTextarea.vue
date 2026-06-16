@@ -29,8 +29,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const value = ref<string>();
 
-        watch((props), () => {
-            if (!props.item?.value) return
+        watch(() => props.item?.value, () => {
             value.value = String(props.item?.value).replaceAll('&nbsp;', ' ')
         }, { immediate: true, deep: true })
 

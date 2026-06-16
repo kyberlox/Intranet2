@@ -45,7 +45,6 @@ export default defineComponent({
 
     setup(props) {
         const router = useRouter();
-
         const currentPage = ref(props.id ?? 0);
         const pages = shallowRef<PagesRecord>({});
 
@@ -58,10 +57,10 @@ export default defineComponent({
             window.scrollTo(0, 0);
         };
 
-        watch((props), (newVal) => {
-            if (!newVal.id) return;
+        watch(() => props.id, () => {
+            if (!props.id) return;
             currentPage.value = props.id;
-        }, { deep: true, immediate: true })
+        }, { immediate: true })
 
         return {
             navigate,

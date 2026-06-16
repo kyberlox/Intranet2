@@ -167,18 +167,6 @@ description="""
 | | | - `base` (string) — содержимое файла в base64 (опционально) | |
 | | | - `base_name` (string) — имя файла (опционально) | |
 
-## Метод `bizproc.workflow.start`
-
-Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/103/?categoryId=76
-
-Метод создаёт запись в инфоблок есть идея и запускает БП
-
-Запрос принимает параметры:
-    - `TEMPLATE_ID` (int) — Id БП (всегда имеет значение 2216)
-    - `DOCUMENT_ID` (list) — сущность в которой запускается БП (всегда будет иметь значение 'lists')
-    - `DOCUMENT_ID` (list) — путь, где храниться БП в корне ( всегда будет иметь значение 'Bitrix\Lists\BizprocDocumentLists')
-    - `DOCUMENT_ID` (list) — ID элемента списка есть идея (сюда подставляется значение, которое возвращается после выполнения метода `lists.element.add`.)
-
 """)
 async def calendar_event(data = Body()):
     send_idea =  await Idea().add(dict(data))

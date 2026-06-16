@@ -70,6 +70,7 @@ export default defineComponent({
 
     setup() {
         const route = useRoute();
+        const router = useRouter();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
         const isLoading = ref(true);
@@ -91,8 +92,12 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch(([isLogin, route]), async () => {
+            console.log(route.query)
+            // Если приходит reroute(пр. контакты с выставок), то переадресую на reroute
             if (route && route.query && route.query.reroute && isLogin.value) {
-                useRouter().push(String(route.query.reroute).replace('?reroute=', ''));
+                if (!route.query.reroute.includes('https://intranet.emk.ru')) return
+                globalThis.location.href = String(route.query.reroute)
+                return
             }
 
             if (userData.getIsLogin && userData.getMyId == 0) {

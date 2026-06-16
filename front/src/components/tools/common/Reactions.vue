@@ -28,7 +28,8 @@
                  v-for="user in newTypeReaction.likes.users"
                  :key="user.id">
                 <img class="homeview__grid__card__group-buttons__reaction__likes-list__item__photo"
-                     :src=user.photo_file_url />
+                     :src=user.photo_file_url
+                     alt="'изображение пользователя'" />
                 <div class="homeview__grid__card__group-buttons__reaction__likes-list__item__name">{{ user.name }}</div>
             </div>
         </div>
@@ -78,11 +79,6 @@ export default defineComponent({
     setup(props, { emit }) {
         const newTypeReaction: Ref<IReaction> = ref(props.reactions);
         const usersLikesVisible = ref<boolean>(false);
-
-        // onMounted(async () => {
-        //     const data = await Api.get(`article/has_user_liked/${props.id}`)
-        //     newTypeReaction.value = data
-        // })
 
         const setLike = async (id: number) => {
             try {

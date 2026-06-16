@@ -17,6 +17,7 @@
                     </RouterLink>
                     <div class="news-like news-like--blog">
                         <Reactions v-if="article.reactions"
+                                   :modifiers="['noViews']"
                                    :id="article.id"
                                    :reactions="article.reactions"
                                    :date="article.date_creation"
@@ -27,8 +28,8 @@
                         <span> Автор: </span><span class="underline">{{ article.indirect_data?.users?.fio }}</span>
                     </div>
                     <div class="blog__short__desc"
-                         v-if="article?.preview_text"
-                         v-html="parseMarkdown(article.preview_text)">
+                         v-if="article?.content_text?.length"
+                         v-html="sanitizeValue(article.content_text.split(' ', 50).join(' ') + ' ...', true).replaceAll('&nbsp', ' ')">
                     </div>
                 </div>
             </div>
@@ -45,6 +46,7 @@ import { useblogDataStore } from "@/stores/blogData";
 import { dateConvert } from "@/utils/dateConvert";
 import { parseMarkdown } from "@/utils/parseMarkdown";
 import type { IBlog } from "@/interfaces/IEntities"
+import { sanitizeValue } from "@/utils/sanitizeHtml.ts";
 
 export default defineComponent({
     components: { Reactions, BlogAvatar },
@@ -74,6 +76,7 @@ export default defineComponent({
             targetAuthor,
             dateConvert,
             sortBlog,
+            sanitizeValue,
             parseMarkdown,
         };
     }

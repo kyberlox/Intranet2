@@ -111,7 +111,7 @@ export default defineComponent({
                 }
                 catch (error) { console.error(error) }
             }
-        }, { deep: true })
+        }, { deep: true, immediate: true })
 
         watch([route, isLogin], () => {
             if (!isLogin.value) return;

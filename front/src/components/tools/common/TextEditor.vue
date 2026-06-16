@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
 import Editor from 'primevue/editor';
-import sanitizeHtml from 'sanitize-html';
+import { sanitizeValue } from '@/utils/sanitizeHtml';
 
 export default defineComponent({
     name: 'TextEditor',
@@ -34,30 +34,6 @@ export default defineComponent({
                 content.value = sanitizeValue(newValue);
             }
         }, { immediate: true, deep: true });
-
-        const sanitizeValue = (html: string): string => {
-            if (!html) return '';
-
-            let cleanHtml = sanitizeHtml(html, {
-                allowedTags: ['b', 'i', 'u', 'strong', 'em', 'a', 'p', 'br', 'li', 'ol', 'ul', 'img'],
-                allowedAttributes: {
-                    'a': ['href', 'target', 'rel'],
-                    'img': ['src']
-                },
-                allowedStyles: {},
-                transformTags: {
-                    'div': 'p',
-                    'span': () => ({ tagName: '', attribs: {} })
-                },
-                disallowedTagsMode: 'discard'
-            }).replaceAll('&nbsp;', ' ');
-
-            cleanHtml = cleanHtml.replace(/<li>\s*<ul/g, '<ul');
-            cleanHtml = cleanHtml.replace(/<li>\s*<ol/g, '<ol');
-            cleanHtml = cleanHtml.replace(/<\/ol>\s*<\/li>/g, '</ol>');
-
-            return cleanHtml;
-        };
 
         const handleTextChange = ({ htmlValue }: { htmlValue: string }) => {
             if (htmlValue !== undefined) {

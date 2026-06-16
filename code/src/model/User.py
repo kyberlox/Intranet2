@@ -1,4 +1,4 @@
-description = """description = """from ..base.B24 import B24
+from ..base.B24 import B24
 from ..model.File import File
 from ..services.LogsMaker import LogsMaker
 from ..services.SendMail import SendEmail

@@ -2618,8 +2618,8 @@ class Article:
                 if not user_inf:
                     continue
                 indirect_data = user_inf.get("indirect_data", {})
-                if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: ws[
-                    f'A{i}'] = f'{user_inf["name"]} {user_inf["last_name"]} {user_inf["second_name"]}'
+                if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: 
+                    ws[f'A{i}'] = f'{user_inf["last_name"]} {user_inf["name"]} {user_inf["second_name"]}'
 
                 if "email" in user_inf: ws[f'B{i}'] = f'{user_inf["email"]}'
                 if "personal_mobile" in user_inf: ws[f'C{i}'] = f'{user_inf["personal_mobile"]}'

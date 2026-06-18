@@ -118,7 +118,7 @@ export default defineComponent({
 
             try {
                 const res = await Api.getVendor('https://gpt.emk.ru/check_count')
-                useUserData().setGenCount(res);
+                useUserData().setGenCount(res.count);
             }
             catch (error) { console.error(error) }
 

@@ -142,7 +142,6 @@ export default defineComponent({
         const imageGenerationOn = ref(true);
         const unlimitedUids = [174, 157];
         const genUsed = computed(() => useUserData().genCount || 0);
-        debugger
         const userId = computed(() => useUserData().getMyId);
         const toastInstance = useToast();
         const toast = useToastCompose(toastInstance);

@@ -1,9 +1,9 @@
 export const dateConvert = (dateString: string, convertType: 'toStringType' | 'toDateType') => {
     if (convertType == 'toDateType') {
-
         const [day, month, year] = dateString.replaceAll('-', '.').split('.');
+        const dateIsReversed = day.length == 4;
+        const date = new Date(Number(dateIsReversed ? day : year), Number(month) - 1, Number(dateIsReversed ? year : day), 11, 35, 26);
 
-        const date = new Date(Number(year), Number(month) - 1, Number(day), 11, 35, 26);
         return date;
     }
     else if (convertType == 'toStringType') {

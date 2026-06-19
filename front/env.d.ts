@@ -7,12 +7,16 @@ interface ImportMetaEnv {
     readonly VITE_OAUTH_CLIENT_ID: string;
     readonly VITE_OAUTH_DOMEN: string;
     readonly VITE_YMETRIKA_KEY: string;
+    readonly VITE_LOGIN: string;
+    readonly VITE_PASSWORD: string;
 }
 
 interface ImportMeta {
     readonly env: ImportMetaEnv;
 }
 declare const VITE_API_URL: string;
+declare const VITE_LOGIN: string;
+declare const VITE_PASSWORD: string;
 declare const VITE_TEST_MODE: string;
 declare const VITE_OAUTH_CLIENT_ID: string;
 declare const VITE_OAUTH_DOMEN: string;

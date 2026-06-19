@@ -70,7 +70,7 @@ export default defineComponent({
 
         watch(() => props.nullifyDateInput, (newVal) => {
             if (newVal) {
-                dateInput.value = null;
+                dateInput.value = '';
             }
         }, { deep: true, immediate: true })
 
@@ -98,16 +98,18 @@ export default defineComponent({
         };
 
         const imageInModal = ref();
-
         const date = ref(new Date());
-        const format = (date: Array<Date> | Date = new Date()) => {
-            if (props.range && Array.isArray(date)) {
-                const from = calendarTypeFormat(props.calendarType, date[0]);
-                const to = calendarTypeFormat(props.calendarType, date[1]);
+
+        const format = (dateToFormat: Array<Date> | Date) => {
+            console.log(dateToFormat);
+
+            if (props.range && Array.isArray(dateToFormat)) {
+                const from = calendarTypeFormat(props.calendarType, dateToFormat[0]);
+                const to = calendarTypeFormat(props.calendarType, dateToFormat[1]);
                 return from == to ? from : `${from}-${to}`
             }
             else
-                return calendarTypeFormat(props.calendarType, date as Date)
+                return calendarTypeFormat(props.calendarType, dateToFormat as Date)
         }
 
         return {

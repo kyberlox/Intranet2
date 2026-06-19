@@ -45,7 +45,7 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
             const currentYear = new Date().getFullYear();
             try {
                 const data = await Api.get(`b24/calendar/${currentYear}-01-01/${currentYear}-12-31`)
-                useViewsDataStore().setData(data.result, 'calendarData');
+                useViewsDataStore().setData(data?.result, 'calendarData');
             } catch (error) {
                 console.error(error)
             }

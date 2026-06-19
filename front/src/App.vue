@@ -92,7 +92,6 @@ export default defineComponent({
 
         // предзагрузка данных в стор
         watch(([isLogin, route]), async () => {
-            console.log(route.query)
             // Если приходит reroute(пр. контакты с выставок), то переадресую на reroute
             if (route && route.query && route.query.reroute && isLogin.value) {
                 if (!route.query.reroute.includes('https://intranet.emk.ru')) return

@@ -9,7 +9,6 @@ export const calendarTypeFormat = (type: calendarType, newDate: Date) => {
     const month = newDate.getMonth() + 1;
     const year = newDate.getFullYear();
     const time = newDate.getHours() + ':' + addZeroBeforeDigit(newDate.getMinutes());
-
     switch (type) {
         case 'dayAndMonth':
             return `${addZeroBeforeDigit(day)}.${addZeroBeforeDigit(month)}`;

@@ -38,8 +38,8 @@ export default defineComponent({
         const router = useRouter();
         const route = useRoute();
         const isLoading = ref(false);
-        const login = ref();
-        const pass = ref();
+        const login = ref(import.meta.env.VITE_LOGIN);
+        const pass = ref(import.meta.env.VITE_PASSWORD);
         const userData = useUserData();
 
         const tryLogin = () => {

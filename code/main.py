@@ -132,7 +132,7 @@ if 'intranet.emk.ru' in main_redirect:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
-        allow_credentials=True,
+        allow_credentials=False,
         allow_methods=["GET", "POST", "DELETE", "PUT", "OPTIONS", "PATH"],
         # allow_headers=["*"]
         allow_headers=["Content-Type", "Accept", "Authorization", "Location", "Allow", "Content-Disposition", "Sec-Fetch-Dest", "Access-Control-Allow-Credentials", "session_id"]

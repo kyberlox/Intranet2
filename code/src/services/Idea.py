@@ -120,9 +120,10 @@ class Idea:
                         
                         if 'SRC' not in file_info:
                             file_url = file_info['DOWNLOAD_URL']
+                            idea['files'] = {'original_name': file_info['NAME'], 'file_url': file_url}
                         else:
                             file_url = "https://portal.emk.ru" + file_info["SRC"] # Возникает ошибка KeyError 279970
-                        idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
+                            idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
                     else:
                         idea.pop("document_id")
                         idea['files'] = dict()

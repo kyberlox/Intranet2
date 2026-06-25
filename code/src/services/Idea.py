@@ -117,7 +117,8 @@ class Idea:
                             file_info = await B24().get_file(id=file_id, inf_id=121)
                         except:
                             file_info = await B24().get_all_files(id=file_id)
-                        file_url = "https://portal.emk.ru" + file_info["SRC"]
+                        print(file_info, 'где возникает ошибка')
+                        file_url = "https://portal.emk.ru" + file_info["SRC"] # Возникает ошибка KeyError
                         idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
                     else:
                         idea.pop("document_id")

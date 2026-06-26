@@ -37,7 +37,8 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
                 }
             break;
         case 'blogs':
-            if (blogStore.getAllAuthors.length) return;
+            console.log(blogStore.getAllAuthors.length)
+            if (blogStore.getAllAuthors.length) break;
                 getBlogAuthorsToStore();
             break;
         case 'calendar':

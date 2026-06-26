@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
 import Sidebar from "./components/layout/sidebars/RightSidebar.vue";
@@ -70,7 +70,6 @@ export default defineComponent({
 
     setup() {
         const route = useRoute();
-        const router = useRouter();
         const userData = useUserData();
         const isLogin = computed(() => userData.getIsLogin);
         const isLoading = ref(true);

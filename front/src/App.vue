@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onBeforeMount, ref } from "vue";
+import { defineComponent, computed, watch, onBeforeMount, ref, nextTick } from "vue";
 import { RouterView, useRoute } from "vue-router";
 import Toast from 'primevue/toast';
 import LayoutHeader from "./components/layout/header/LayoutHeader.vue";
@@ -110,8 +110,9 @@ export default defineComponent({
             const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
             const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
             if (!blogLoaded.value && blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
-                await prefetchSection('blogs')
                 blogLoaded.value = true;
+                await nextTick();
+                await prefetchSection('blogs')
             } else if (factoryGuidRoutes.includes(String(route.name))) {
                 await prefetchSection('factoryGuid')
             }

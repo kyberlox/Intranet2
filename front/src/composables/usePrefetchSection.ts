@@ -39,7 +39,7 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
         case 'blogs':
             console.log(blogStore.getAllAuthors.length)
             if (blogStore.getAllAuthors.length) break;
-                getBlogAuthorsToStore();
+               await getBlogAuthorsToStore();
             break;
         case 'calendar':
             const currentYear = new Date().getFullYear();

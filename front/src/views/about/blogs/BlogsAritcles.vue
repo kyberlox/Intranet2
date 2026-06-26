@@ -65,7 +65,7 @@ export default defineComponent({
         const blogsArticles = computed(() => blogData.getCurrentArticles(Number(props.id)));
 
         const sortBlog = (array: IBlog[]) => {
-            return array.sort((a, b) => new Date((b.date_publiction || b.date_creation) as string).getHours() - new Date((a.date_publiction || a.date_creation) as string).getHours())
+            return array.sort((a, b) => new Date((b.date_publiction || b.date_creation) as string).getTime() - new Date((a.date_publiction || a.date_creation) as string).getTime())
         }
 
         return {

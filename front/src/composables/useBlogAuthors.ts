@@ -15,7 +15,7 @@ export const getBlogAuthorsToStore = async () => {
                     const isUser = 'users' in e.indirect_data && !(('company' in e.indirect_data) && e.indirect_data.company);
                     const newAuthor: IBlogAuthors = {
                         title: isUser ? e.indirect_data.users.TITLE : e.indirect_data.company,
-                        authorId: e.indirect_data.users?.id ?? e.indirect_data.manufacture_id,
+                        authorId: isUser ?  e.indirect_data.users?.id : e.indirect_data.manufacture_id,
                         authorAvatar: isUser ? e.indirect_data.users.photo_file_url : e.preview_file_url ? e.preview_file_url : avatarPlug,
                         authorTitle: isUser ? String(e.indirect_data.users.TITLE) : String(e.indirect_data.company),
                         isCompany: !isUser,

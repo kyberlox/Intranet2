@@ -29,6 +29,9 @@ export const getBlogAuthorsToStore = async () => {
                     if (!uniqAuthors.length || !uniqAuthors.some((e) =>( e.title == newAuthor.title || e.authorId == newAuthor.authorId))) {
                         uniqAuthors.push(newAuthor)
                     }
+                    if(newAuthor.authorAvatar && uniqAuthors.some((e) => e.authorId == newAuthor.authorId)) {
+                        uniqAuthors.find((e) => e.authorId == newAuthor.authorId)!.authorAvatar = newAuthor.authorAvatar
+                    }
                 }
             })
             blogsData.setAllBlogs(res);

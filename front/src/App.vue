@@ -90,7 +90,8 @@ export default defineComponent({
         };
 
         // предзагрузка данных в стор
-        watch(([isLogin, route]), async () => {
+        const blogLoaded = ref(false);
+        watch(([isLogin, ()=> route.name]), async () => {
             // Если приходит reroute(пр. контакты с выставок), то переадресую на reroute
             if (route && route.query && route.query.reroute && isLogin.value) {
                 if (!route.query.reroute.includes('https://intranet.emk.ru')) return
@@ -108,8 +109,9 @@ export default defineComponent({
 
             const factoryGuidRoutes = ['factories', 'factoryReports', 'factoryTours', 'factoryTour'];
             const blogsRoutes = ['blogs', 'blogOf', 'certainBlog', 'adminElementInnerEdit'];
-            if (blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
+            if (!blogLoaded.value && blogsRoutes.includes(String(route.name)) || (route.name == 'adminElementInnerEdit' && route.params.id == '15')) {
                 await prefetchSection('blogs')
+                blogLoaded.value = true;
             } else if (factoryGuidRoutes.includes(String(route.name))) {
                 await prefetchSection('factoryGuid')
             }
@@ -120,7 +122,7 @@ export default defineComponent({
             }
             catch (error) { console.error(error) }
 
-        }, { deep: true, immediate: true })
+        }, { deep: true })
 
         onBeforeMount(async () => {
             const cookieKey = document?.cookie?.split(';')?.find((e) => e.includes('session_id'))?.replace(' session_id=', '');

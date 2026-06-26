@@ -14,7 +14,6 @@ export const prefetchSection = async (dataType: 'factoryGuid' | 'blogs' | 'calen
     const factoryGuidData = useFactoryGuidDataStore();
     const blogStore = useblogDataStore();
     switch (dataType) {
-
         case 'user':
             try {
                 const res = await Api.get(`users/find_by/${useUserData().getMyId}`)

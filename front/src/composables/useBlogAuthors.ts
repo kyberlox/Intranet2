@@ -6,8 +6,9 @@ import avatarPlug from '@/assets/imgs/plugs/userplug.jpg'
 
 export const getBlogAuthorsToStore = async () => {
     const blogsData = useblogDataStore();
+    const shouldRecomputeAuthors = blogsData.getAllAuthors.length === 0;
+    if (!shouldRecomputeAuthors) return;
     const uniqAuthors: IBlogAuthors[] = [];
-    if (!blogsData.getAllAuthors.length)
         try {
             const res = await Api.get(`article/find_by/${sectionTips['Блоги']}`)
             res.map((e: IBlog) => {

@@ -9,6 +9,7 @@ export const useblogDataStore = defineStore('blogData', {
 
     actions: {
         setAuthors(authors: IBlogAuthors[]) {
+            this.allAuthors.length = 0;
             this.allAuthors = authors;
         },
         setAllBlogs(blogs: IBlog[]) {

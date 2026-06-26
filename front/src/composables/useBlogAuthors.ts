@@ -26,7 +26,7 @@ export const getBlogAuthorsToStore = async () => {
                         // !!! Сечас в preview_file_url приходят заводы, а в photo_file_url - фото людей, у земской приходит и preview, в нем QR !!!
                         // telegramQr: e.preview_file_url && e.indirect_data.photo_file_url ? e.preview_file_url : ''
                     }
-                    if (!uniqAuthors.length || !uniqAuthors.find((e) => e.title == newAuthor.title)) {
+                    if (!uniqAuthors.length || !uniqAuthors.some((e) =>( e.title == newAuthor.title || e.authorId == newAuthor.authorId))) {
                         uniqAuthors.push(newAuthor)
                     }
                 }

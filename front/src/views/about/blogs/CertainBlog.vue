@@ -58,8 +58,8 @@ export default defineComponent({
 		const targetAuthor = computed(() => blogData.getCurrentAuthor(props.authorId));
 		const renderedAuthor = ref();
 
-		watch((targetAuthor), () => {
-			renderedAuthor.value = targetAuthor.value?.users ? targetAuthor.value.users : targetAuthor.value;
+		watch((() => props.id), () => {
+			renderedAuthor.value = currentArticle.value?.indirect_data.users ? currentArticle.value?.indirect_data.users : targetAuthor.value;
 		}, { deep: true, immediate: true })
 
 

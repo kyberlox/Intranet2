@@ -146,7 +146,7 @@ export default defineComponent({
 
             const formData: IPostIdea = {};
             formData.NAME = values.themeField;
-            formData.DETAIL_TEXT = `Ожидаемый результат: ${messageExpected.value}. Описание: ${values.textField}`;
+            formData.DETAIL_TEXT = `Описание: ${values.textField} Ожидаемый результат: ${messageExpected.value} `;
             formData.CREATED_BY = String(userUid.value);
             formData.base_name = messageFileName.value;
 

@@ -77,7 +77,7 @@
                                 }}
                             </b>
                         </span>
-                        <div class="neuroChat__file-upload"
+                        <!-- <div class="neuroChat__file-upload"
                              v-if="chatType == 'textChat'">
                             <input type="file"
                                    ref="fileInputNode"
@@ -98,7 +98,7 @@
                                           @click="removeFile(index)">×</span>
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

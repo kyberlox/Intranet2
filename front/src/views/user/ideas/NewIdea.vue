@@ -40,13 +40,33 @@
                                placeholder=" "
                                v-model="messageText" />
                         <label for="textField"
-                               class="idea-new__input__label">Сообщение</label>
+                               class="idea-new__input__label">Описание идеи</label>
+                    </div>
+                </div>
+
+                <div class="idea-new__field-group">
+                    <div class="idea-new__error-wrapper">
+                        <ErrorMessage name="textFieldExpected"
+                                      class="idea-new__error-message" />
+                    </div>
+                    <div class="idea-new__input-group">
+                        <Field as="textarea"
+                               class="idea-new__input idea-new__textarea"
+                               name="textFieldExpected"
+                               :rules="isRequired"
+                               rows="8"
+                               placeholder=" "
+                               v-model="messageExpected" />
+                        <label for="textFieldExpected"
+                               class="idea-new__input__label">Ожидаемый результат</label>
                     </div>
                 </div>
 
                 <div class="idea-new__file-group">
                     <label for="formFile"
-                           class="idea-new__file-label"><span>Добавить файл</span></label>
+                           class="idea-new__file-label">
+                        <span>Добавить файл</span>
+                    </label>
                     <input class="idea-new__file-input"
                            name="attachments-files"
                            ref="fileInput"
@@ -100,6 +120,8 @@ export default defineComponent({
     setup(props, { emit }) {
         const messageText: Ref<string> = ref('');
         const messageTheme: Ref<string> = ref('');
+        const messageExpected = ref('');
+
         const messageFile = shallowRef<File>();
         const messageFileName = ref("");
         const fileInput = ref();
@@ -124,7 +146,7 @@ export default defineComponent({
 
             const formData: IPostIdea = {};
             formData.NAME = values.themeField;
-            formData.DETAIL_TEXT = values.textField;
+            formData.DETAIL_TEXT = `Ожидаемый результат: ${messageExpected.value}. Описание: ${values.textField}`;
             formData.CREATED_BY = String(userUid.value);
             formData.base_name = messageFileName.value;
 
@@ -164,6 +186,7 @@ export default defineComponent({
             buttonsIsDisabled,
             formRef,
             userUid,
+            messageExpected,
             handleMessageFileLoad,
             sendIdea,
             isRequired,

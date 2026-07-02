@@ -3121,5 +3121,6 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
         response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
         res = response.text
         articles = json.loads(res)
+        # убрать preview_file_url, id, в indirect_data оставить только sort
         return articles
     return None

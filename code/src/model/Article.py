@@ -2030,7 +2030,7 @@ class Article:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=False)
                 except:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=False)
-            # elif self.section_id == "18":
+            # elif self.section_id == "18"
                 # sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             elif int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
                 try:
@@ -3109,3 +3109,17 @@ async def upload_sort_to_blogs(data: list = Body(), session: AsyncSession = Depe
 async def rebuild_blogs_all(session: AsyncSession = Depends(get_async_db)):
     return await Article().rebuild_blogs(session)
 
+
+@article_router.put("/get_pan_from_test")
+async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
+    import httpx 
+    from ..base.pSQL.models.Article import Article
+    from sqlalchemy import insert 
+    session_id_test = "a175d186-9042-49d7-a4ae-dc68478f2e09"
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        token = {"session_id": session_id_test}
+        responce = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
+        res = response.text
+        articles = json.loads(res)
+        return articles
+    return None

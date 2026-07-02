@@ -3118,7 +3118,7 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     session_id_test = "a175d186-9042-49d7-a4ae-dc68478f2e09"
     async with httpx.AsyncClient(timeout=30.0) as client:
         token = {"session_id": session_id_test}
-        responce = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
+        response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
         res = response.text
         articles = json.loads(res)
         return articles

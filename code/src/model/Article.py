@@ -3110,7 +3110,7 @@ async def rebuild_blogs_all(session: AsyncSession = Depends(get_async_db)):
     return await Article().rebuild_blogs(session)
 
 
-@article_router.put("/get_pan_from_test")
+@article_router.put("/get_pan_from_test", tags=["Статьи"])
 async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     import httpx 
     from ..base.pSQL.models.Article import Article

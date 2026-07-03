@@ -2007,7 +2007,7 @@ class Article:
                     if user_id is not None:
                         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                         res['reactions'] = has_user_liked
-                if int(self.section_id) == 15:
+                if int(self.section_id) == 15 or int(self.section_id) == 18:
                     files = await File(art_id=int(self.id)).get_files_by_art_id(session)
                     images = list()
                     #Для блогов собираем фотки
@@ -3119,43 +3119,3 @@ async def upload_sort_to_blogs(data: list = Body(), session: AsyncSession = Depe
 async def rebuild_blogs_all(session: AsyncSession = Depends(get_async_db)):
     return await Article().rebuild_blogs(session)
 
-
-@article_router.put("/get_pan_from_test", tags=["Статьи"])
-async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
-    import httpx 
-    from copy import deepcopy
-    from ..base.pSQL.models.Article import Article
-    from sqlalchemy import insert 
-    session_id_test = "a175d186-9042-49d7-a4ae-dc68478f2e09"
-    new_art = dict()
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            token = {"session_id": session_id_test}
-            response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
-            res = response.text
-            articles = json.loads(res)
-            new_art = deepcopy(articles)
-            # убрать preview_file_url, id, в indirect_data оставить только sort
-        if not new_art:
-            return None
-        count = 0
-        for art in new_art:
-            if not art['active']:
-                continue
-            art.pop('id')
-            art.pop('preview_file_url')
-            art['indirect_data'] = dict()
-            art['date_creation'] = make_date_valid(art['date_creation'])
-            art['date_publiction'] = make_date_valid(art.get('date_publiction'))
-            print(art)
-            new_art = Article(**art)
-            session.add(new_art)
-            print(123)
-            count += 1
-        await session.commit()
-            
-
-        return {'msg': f"Загружено {count} статей"}
-    except Exception as e:
-        await session.rollback()
-        return {"msg": str(e)}

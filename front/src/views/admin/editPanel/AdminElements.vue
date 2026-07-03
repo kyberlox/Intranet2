@@ -128,11 +128,11 @@
             <Loader />
           </div>
         </div>
-        <PageSelector v-if="paginationEnabled"
+        <!-- <PageSelector v-if="paginationEnabled"
                       :page="page"
                       :isLoading="isLoading"
                       buttonClass="admin-block-inner__btn"
-                      @changePage="setPage" />
+                      @changePage="setPage" /> -->
       </div>
     </div>
   </div>

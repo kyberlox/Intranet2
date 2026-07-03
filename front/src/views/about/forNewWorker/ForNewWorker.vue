@@ -16,7 +16,7 @@
             <div class="memo__item__group"
                  id="memo__items__">
                 <div class="memo__item"
-                     v-for="(item, index) in filterContent(pageContent)"
+                     v-for="(item, index) in sortBlog(filterContent(pageContent)).reverse()"
                      :key="index"
                      :id="`memo__item${item.id}`">
                     <ForNewWorkerCard :item="item"
@@ -100,10 +100,15 @@ export default defineComponent({
 
         onUnmounted(() => abortController.abort())
 
+        const sortBlog = (array: IForNewWorker[]) => {
+            return array.sort((a, b) => new Date((b.date_publiction || b.date_creation) as string).getTime() - new Date((a.date_publiction || a.date_creation) as string).getTime())
+        }
+
         return {
             pageContent,
             navigate,
             filterContent,
+            sortBlog,
             activeLocation,
             showLocations,
             locations,

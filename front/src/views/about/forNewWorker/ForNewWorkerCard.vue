@@ -4,6 +4,7 @@
          v-if="item.preview_file_url && !(item.preview_file_url.includes('no-user'))">
         <div class="memo__item__main__img__wrapper">
             <div class="memo__item__main__img"
+                 :class="{ 'memo__item__main__img--mini': item.preview_file_url.includes('342530_76536_1') }"
                  :key="getPreviewPhoto(item)"
                  v-lazy-load="getPreviewPhoto(item)"
                  alt="изображение с памятки">

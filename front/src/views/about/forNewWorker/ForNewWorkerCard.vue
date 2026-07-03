@@ -58,7 +58,6 @@ export default defineComponent({
 
         const getPreviewPhoto = (item: IForNewWorker) => {
             if (props.type == 'ending') {
-                console.log(item.images)
                 return props.officeEnding ? (item.images as IBXFileType[])[0].file_url : (item.images as IBXFileType[])[1].file_url
             } else return item.preview_file_url
         }
@@ -72,7 +71,7 @@ export default defineComponent({
 
 <style lang="css">
 .news__detail__discr__image__wrapper {
-    text-align: right;
+    text-align: left;
 }
 
 .news__detail__discr__image {

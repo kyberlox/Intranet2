@@ -24,7 +24,10 @@
                 </div>
                 <div class="memo__item"
                      v-if="endingSlide(pageContent)">
-                    <ForNewWorkerCard :item="(endingSlide(pageContent) as IForNewWorker)" />
+                    <ForNewWorkerCard :type="'ending'"
+                                      :officeEnding="activeLocation.includes('37/45')"
+                                      :activeLocation="activeLocation"
+                                      :item="(endingSlide(pageContent) as IForNewWorker)" />
                 </div>
             </div>
         </div>

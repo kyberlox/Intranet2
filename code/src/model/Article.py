@@ -3113,14 +3113,25 @@ async def rebuild_blogs_all(session: AsyncSession = Depends(get_async_db)):
 @article_router.put("/get_pan_from_test", tags=["Статьи"])
 async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     import httpx 
+    from copy import deepcopy
     from ..base.pSQL.models.Article import Article
     from sqlalchemy import insert 
     session_id_test = "a175d186-9042-49d7-a4ae-dc68478f2e09"
+    new_art = dict()
     async with httpx.AsyncClient(timeout=30.0) as client:
         token = {"session_id": session_id_test}
         response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
         res = response.text
         articles = json.loads(res)
+        new_art = deepcopy(articles)
         # убрать preview_file_url, id, в indirect_data оставить только sort
-        return articles
+    if not new_art:
+        return None
+    for art in new_art:
+        art.pop('id')
+        art.pop('preview_file_url')
+        art['indirect_data'] = art['indirect_data'].get('sort')
+        
+        
+
     return None

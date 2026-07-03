@@ -2007,7 +2007,7 @@ class Article:
                     if user_id is not None:
                         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                         res['reactions'] = has_user_liked
-                if int(self.section_id) == 15:
+                if int(self.section_id) == 15 or int(self.section_id) == 18:
                     files = await File(art_id=int(self.id)).get_files_by_art_id(session)
                     images = list()
                     #Для блогов собираем фотки

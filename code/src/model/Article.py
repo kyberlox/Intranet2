@@ -40,14 +40,23 @@ article_router = APIRouter(prefix="/article")
 def make_date_valid(date):
     if date is not None:
         if isinstance(date, str):
-            if '-' in date:  
-                try:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                except:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d')
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
             elif '.' in date:
                 try:
                     return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
@@ -59,6 +68,7 @@ def make_date_valid(date):
 
     else:
         return None
+        
 
 
 def take_value(PROPERTY: dict | list | str):
@@ -3135,6 +3145,7 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
             art.pop('id')
             art.pop('preview_file_url')
             art['indirect_data'] = dict()
+            art['date_creation'] = make_date_valid(art['date_creation'])
             new_art = Article(**art)
             session.add(new_art)
             count += 1

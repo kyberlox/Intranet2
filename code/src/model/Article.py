@@ -3119,7 +3119,6 @@ async def upload_sort_to_blogs(data: list = Body(), session: AsyncSession = Depe
 async def rebuild_blogs_all(session: AsyncSession = Depends(get_async_db)):
     return await Article().rebuild_blogs(session)
 
-
 @article_router.put("/get_pan_from_test", tags=["Статьи"])
 async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     import httpx 
@@ -3144,13 +3143,10 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
                 continue
             art.pop('id')
             art.pop('preview_file_url')
-            art['indirect_data'] = dict()
             art['date_creation'] = make_date_valid(art['date_creation'])
-            art['date_publiction'] = make_date_valid(art.get('date_publiction'))
-            print(art)
+            art['date_publiction'] = make_date_valid(art['date_publiction'])
             new_art = Article(**art)
             session.add(new_art)
-            print(123)
             count += 1
         await session.commit()
             

@@ -3148,6 +3148,7 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
             art['date_creation'] = make_date_valid(art['date_creation'])
             print(art)
             new_art = Article(**art)
+            print(123)
             session.add(new_art)
             count += 1
         await session.commit()

@@ -3146,6 +3146,7 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
             art.pop('preview_file_url')
             art['indirect_data'] = dict()
             art['date_creation'] = make_date_valid(art['date_creation'])
+            art['date_publiction'] = make_date_valid(art.get('date_publiction'))
             print(art)
             new_art = Article(**art)
             session.add(new_art)

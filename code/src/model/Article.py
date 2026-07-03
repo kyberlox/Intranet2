@@ -3128,10 +3128,12 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     if not new_art:
         return None
     for art in new_art:
+        if not art['active']:
+            continue
         art.pop('id')
         art.pop('preview_file_url')
         art['indirect_data'] = art['indirect_data'].get('sort')
-        
+        return art
         
 
     return None

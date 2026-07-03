@@ -40,14 +40,23 @@ article_router = APIRouter(prefix="/article")
 def make_date_valid(date):
     if date is not None:
         if isinstance(date, str):
-            if '-' in date:  
-                try:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                except:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d')
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
             elif '.' in date:
                 try:
                     return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
@@ -59,6 +68,7 @@ def make_date_valid(date):
 
     else:
         return None
+        
 
 
 def take_value(PROPERTY: dict | list | str):
@@ -3118,20 +3128,34 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     from sqlalchemy import insert 
     session_id_test = "a175d186-9042-49d7-a4ae-dc68478f2e09"
     new_art = dict()
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        token = {"session_id": session_id_test}
-        response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
-        res = response.text
-        articles = json.loads(res)
-        new_art = deepcopy(articles)
-        # убрать preview_file_url, id, в indirect_data оставить только sort
-    if not new_art:
-        return None
-    for art in new_art:
-        art.pop('id')
-        art.pop('preview_file_url')
-        art['indirect_data'] = art['indirect_data'].get('sort')
-        
-        
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            token = {"session_id": session_id_test}
+            response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
+            res = response.text
+            articles = json.loads(res)
+            new_art = deepcopy(articles)
+            # убрать preview_file_url, id, в indirect_data оставить только sort
+        if not new_art:
+            return None
+        count = 0
+        for art in new_art:
+            if not art['active']:
+                continue
+            art.pop('id')
+            art.pop('preview_file_url')
+            art['indirect_data'] = dict()
+            art['date_creation'] = make_date_valid(art['date_creation'])
+            art['date_publiction'] = make_date_valid(art.get('date_publiction'))
+            print(art)
+            new_art = Article(**art)
+            session.add(new_art)
+            print(123)
+            count += 1
+        await session.commit()
+            
 
-    return None
+        return {'msg': f"Загружено {count} статей"}
+    except Exception as e:
+        await session.rollback()
+        return {"msg": str(e)}

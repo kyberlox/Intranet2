@@ -3118,24 +3118,30 @@ async def get_pan_from_test(session: AsyncSession = Depends(get_async_db)):
     from sqlalchemy import insert 
     session_id_test = "a175d186-9042-49d7-a4ae-dc68478f2e09"
     new_art = dict()
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        token = {"session_id": session_id_test}
-        response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
-        res = response.text
-        articles = json.loads(res)
-        new_art = deepcopy(articles)
-        # убрать preview_file_url, id, в indirect_data оставить только sort
-    if not new_art:
-        return None
-    for art in new_art:
-        if not art['active']:
-            continue
-        art.pop('id')
-        art.pop('preview_file_url')
-        art['indirect_data'] = dict()
-        new_art = Article(**art)
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            token = {"session_id": session_id_test}
+            response = await client.get(f"http://intranet.emk.org.ru/api/article/find_by/18", cookies=token)
+            res = response.text
+            articles = json.loads(res)
+            new_art = deepcopy(articles)
+            # убрать preview_file_url, id, в indirect_data оставить только sort
+        if not new_art:
+            return None
+        count = 0
+        for art in new_art:
+            if not art['active']:
+                continue
+            art.pop('id')
+            art.pop('preview_file_url')
+            art['indirect_data'] = dict()
+            new_art = Article(**art)
+            session.add(new_art)
+            count += 1
+        await session.commit()
+            
 
-        return new_art
-        
-
-    return None
+        return {'msg': f"Загружено {count} статей"}
+    except Exception as e:
+        await session.rollback()
+        return {"msg": str(e)}

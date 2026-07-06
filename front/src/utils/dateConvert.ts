@@ -28,7 +28,7 @@ export const dateConvert = (dateString: string, convertType: 'toStringType' | 't
 
 const parseTimePart = (timePart?: string) => {
     if (!timePart) {
-        return { hours: 11, minutes: 35, seconds: 26 };
+        return { hours: 0, minutes: 0, seconds: 0 };
     }
 
     const [hours = '0', minutes = '0', seconds = '0'] = timePart.replace('Z', '').split(/[+-]/)[0].split(':');

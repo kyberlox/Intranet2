@@ -16,11 +16,13 @@
             <div class="memo__item__group"
                  id="memo__items__">
                 <div class="memo__item"
+                     :class="{ 'memo__item__scroll-envent-target': item.id == 342530 }"
                      v-for="(item, index) in sortBlog(filterContent(pageContent)).reverse()"
                      :key="index"
                      :id="`memo__item${item.id}`">
                     <ForNewWorkerCard :item="item"
-                                      :key="cardKey" />
+                                      :key="cardKey"
+                                      @click="item.id == 342530 ? scrollToTop() : ''" />
                 </div>
                 <div class="memo__item"
                      v-if="endingSlide(pageContent)">
@@ -104,6 +106,13 @@ export default defineComponent({
             return array.sort((a, b) => new Date((b.date_publiction || b.date_creation) as string).getTime() - new Date((a.date_publiction || a.date_creation) as string).getTime())
         }
 
+        const scrollToTop = () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        }
+
         return {
             pageContent,
             navigate,
@@ -114,7 +123,8 @@ export default defineComponent({
             locations,
             endingSlide: (pageContent: IForNewWorker[]) => pageContent.find((e: IForNewWorker) => activeLocation.value && e.indirect_data && e.indirect_data.module == 'Заключение') || undefined,
             newMemo: featureFlags.newWorkerMemo,
-            cardKey
+            cardKey,
+            scrollToTop
         };
     },
 });

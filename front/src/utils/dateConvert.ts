@@ -1,8 +1,17 @@
 export const dateConvert = (dateString: string, convertType: 'toStringType' | 'toDateType') => {
     if (convertType == 'toDateType') {
-        const [day, month, year] = dateString.replaceAll('-', '.').split('.');
+        const [datePart, timePart] = dateString.trim().split(/[T\s]/);
+        const [day, month, year] = datePart.replaceAll('-', '.').split('.');
         const dateIsReversed = day.length == 4;
-        const date = new Date(Number(dateIsReversed ? day : year), Number(month) - 1, Number(dateIsReversed ? year : day), 11, 35, 26);
+        const time = parseTimePart(timePart);
+        const date = new Date(
+            Number(dateIsReversed ? day : year),
+            Number(month) - 1,
+            Number(dateIsReversed ? year : day),
+            time.hours,
+            time.minutes,
+            time.seconds
+        );
 
         return date;
     }
@@ -15,6 +24,20 @@ export const dateConvert = (dateString: string, convertType: 'toStringType' | 't
         return `${day}.${month}.${year}`;
     }
     else return ''
+}
+
+const parseTimePart = (timePart?: string) => {
+    if (!timePart) {
+        return { hours: 11, minutes: 35, seconds: 26 };
+    }
+
+    const [hours = '0', minutes = '0', seconds = '0'] = timePart.replace('Z', '').split(/[+-]/)[0].split(':');
+
+    return {
+        hours: Number(hours),
+        minutes: Number(minutes),
+        seconds: Number(seconds)
+    };
 }
 
 export const getMonth = (date: string) => {

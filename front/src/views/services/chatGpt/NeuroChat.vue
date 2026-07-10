@@ -136,7 +136,7 @@ export default defineComponent({
         NeuroChatSidebar,
         Loader,
         ContentPlug,
-        AddFileIcon
+        // AddFileIcon
     },
     setup() {
         const imageGenerationOn = ref(true);

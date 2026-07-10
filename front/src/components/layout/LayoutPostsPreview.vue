@@ -135,17 +135,16 @@ export default defineComponent({
             const paginationQuery = paginationEnabled.value ? `?offset=${offset.value}&limit=15${currentYear.value ? `&year=${currentYear.value}` : ''}${currentTag.value ? `&tag=${currentTag.value}` : ''}` : '';
             try {
                 const res = await Api.get(`article/find_by/${props.sectionId}${paginationQuery}`, null, abortController.signal)
-                if (offset.value == 0) {
-                    viewsData.setData(res, props.storeItemsName)
-                }
-                else {
-                    viewsData.setData(allNews.value.concat(res), props.storeItemsName)
-                }
-                if (res.length == 0 || res.length < 15) {
+                if (res.length < 15) {
                     isLimit.value = true;
                 }
+                if (offset.value == 0) {
+                    viewsData.setData(res, props.storeItemsName)
+                    visibleNews.value = res;
+                } else {
+                    visibleNews.value = visibleNews.value.concat(res);
+                }
                 offset.value += 15;
-                visibleNews.value = allNews.value
             } catch (error) {
                 console.error(error)
             }

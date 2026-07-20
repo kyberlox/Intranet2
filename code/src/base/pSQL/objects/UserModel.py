@@ -693,7 +693,7 @@ class UserModel:
         for res in result:
             user = list(res)
 
-            if not isinstance(user[6]['uf_department'], list) or 112 in user[6]['uf_department']:
+            if 'uf_department' in user[6] and not isinstance(user[6]['uf_department'], list) or 112 in user[6]['uf_department']:
             # if type(user[6]['uf_department']) != type(bool()) and 112 in user[6]['uf_department']:
                 pass
             else:

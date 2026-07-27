@@ -16,6 +16,7 @@
       />
     </div>
     <div class="col-12 col-lg-12 col-xl-9 col-xxl-9">
+
       <div class="memo__items">
         <div class="memo__item__group" id="memo__items__">
           <div

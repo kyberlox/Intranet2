@@ -162,6 +162,13 @@
             @changePage="setPage"
           />
         </div>
+
+        <!-- <PageSelector v-if="paginationEnabled"
+                      :page="page"
+                      :isLoading="isLoading"
+                      buttonClass="admin-block-inner__btn"
+                      @changePage="setPage" /> -->
+
       </div>
     </div>
     <AdminTagsModal v-if="showTagsModal" @close="showTagsModal = false" />

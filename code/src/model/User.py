@@ -271,9 +271,9 @@ class User:
                             continue
 
                         # print(convert_date_reg, 'где то тут ошибка', user.id, user.indirect_data)
-                        test_today = datetime.strptime('12.06.2026', '%d.%m.%Y')
-                        # if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
-                        if test_today.day == convert_date_reg.day and test_today.month == convert_date_reg.month:
+                        # test_today = datetime.strptime('15.06.2026', '%d.%m.%Y')
+                        if datetime.today().day == convert_date_reg.day and datetime.today().month == convert_date_reg.month:
+                        # if test_today.day == convert_date_reg.day and test_today.month == convert_date_reg.month:
                             # СРАНИВАЕМ ДАТЫ И БЕРЕМ СТРОГО ДАТУ ЗАПУСКА КАПИТАЛА ЭМК
 
                             # ставим для теста текущий год - 2027
@@ -1043,6 +1043,7 @@ async def update_user_info(user_id: int, session: AsyncSession = Depends(get_asy
         ## Метод `user.get?ID={ID}`
 
     Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/220/
+    
 
     Получает данные конкретного пользователя из Битрикс24 по его ID через API метод `user.get`.
 

@@ -30,7 +30,8 @@ export default defineComponent({
         const value = ref<string>();
 
         watch(() => props.item?.value, () => {
-            value.value = String(props.item?.value).replaceAll('&nbsp;', ' ')
+            if (props.item?.value)
+                value.value = String(props.item?.value).replaceAll('&nbsp;', ' ')
         }, { immediate: true, deep: true })
 
         return {

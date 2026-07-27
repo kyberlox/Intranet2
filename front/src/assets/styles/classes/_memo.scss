@@ -5,6 +5,17 @@
         margin-top: 5px;
     }
 
+    &__item {
+        &__scroll-envent-target {
+            border: 1px solid transparent;
+            cursor: pointer;
+
+            &:hover p {
+                color: var(--emk-brand-color);
+            }
+        }
+    }
+
     &__item__main__img__wrapper {
         border: 1px solid rgba(0, 0, 0, 0.12);
         box-sizing: border-box;
@@ -22,7 +33,11 @@
         background-position: center;
         overflow: hidden;
         background-repeat: no-repeat;
-        aspect-ratio: 16/10;
+        aspect-ratio: 3/3;
+
+        &--mini {
+            height: 250px;
+        }
     }
 
 

@@ -98,8 +98,6 @@ export default defineComponent({
             try {
                 const data = await Api.get(`/idea_pdf/generate_pdf/${id}`, { responseType: 'blob' })
                 download(new Blob([data]), props.textContent?.name.replaceAll('&quot;', '"') + '.pdf', 'application/pdf')
-            } catch (error) {
-                console.error(error)
             } finally {
                 isLoading.value = false
             }

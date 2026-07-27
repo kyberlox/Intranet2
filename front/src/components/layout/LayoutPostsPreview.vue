@@ -141,8 +141,6 @@ export default defineComponent({
                 }
                 offset.value += 15;
                 visibleNews.value = visibleNews.value.concat(res);
-            } catch (error) {
-                console.error(error)
             }
             finally {
                 isLoading.value = false;

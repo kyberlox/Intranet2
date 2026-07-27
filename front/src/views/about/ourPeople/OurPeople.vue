@@ -1,9 +1,11 @@
 <template>
-<h2 class="page__title mt20">Наши люди</h2>
-<GridGallery v-if="ourPeople"
-             :gallery="ourPeople"
-             :type="'ourPeople'"
-             :routeTo="'ourPeopleInner'" />
+  <h2 class="page__title mt20">Наши люди</h2>
+  <GridGallery
+    v-if="ourPeople"
+    :gallery="ourPeople"
+    :type="'ourPeople'"
+    :routeTo="'ourPeopleInner'"
+  />
 </template>
 
 <script lang="ts">
@@ -15,29 +17,30 @@ import { useViewsDataStore } from "@/stores/viewsData";
 import type { IOurPeople } from "@/interfaces/IEntities";
 
 export default defineComponent({
-    components: { GridGallery },
-    setup() {
-        const ViewsDataStore = useViewsDataStore();
+  components: { GridGallery },
+  setup() {
+    const ViewsDataStore = useViewsDataStore();
 
-        const ourPeople = computed((): IOurPeople[] => ViewsDataStore.getData('ourPeopleData') as IOurPeople[])
-        const abortController = new AbortController();
+    const ourPeople = computed(
+      (): IOurPeople[] => ViewsDataStore.getData("ourPeopleData") as IOurPeople[]
+    );
+    const abortController = new AbortController();
 
-        onMounted(async () => {
-            if (ourPeople.value.length) return;
-            try {
-                const data = await Api.get(`article/find_by/${sectionTips['НашиЛюди']}`, null, abortController.signal)
-                ViewsDataStore.setData(data, 'ourPeopleData');
-            }
-            catch (error) {
-                console.error(error)
-            }
-        })
+    onMounted(async () => {
+      if (ourPeople.value.length) return;
+      const data = await Api.get(
+        `article/find_by/${sectionTips["НашиЛюди"]}`,
+        null,
+        abortController.signal
+      );
+      ViewsDataStore.setData(data, "ourPeopleData");
+    });
 
-        onUnmounted(() => abortController.abort())
+    onUnmounted(() => abortController.abort());
 
-        return {
-            ourPeople
-        };
-    },
+    return {
+      ourPeople,
+    };
+  },
 });
 </script>

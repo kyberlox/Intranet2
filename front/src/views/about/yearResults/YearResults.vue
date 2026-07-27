@@ -90,8 +90,6 @@ export default defineComponent({
                 })
                 currentYear.value = actualYears.value.sort((a, b) => Number(b) - Number(a))[0];
                 initWorkers();
-            } catch (error) {
-                console.error(error);
             } finally {
                 isLoading.value = false;
             }

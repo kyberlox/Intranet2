@@ -1,77 +1,85 @@
 <template>
-<div class="moderator-panel">
+  <div class="moderator-panel">
     <AdminSidebar :needDefaultNav="false">
-        <ModeratorSidebarSlot @areaClicked="changeActive"
-                              :activeId="activeId"
-                              :moderatorsActivities="activitiesToConfirm" />
+      <ModeratorSidebarSlot
+        @areaClicked="changeActive"
+        :activeId="activeId"
+        :moderatorsActivities="activitiesToConfirm"
+      />
     </AdminSidebar>
 
-    <PointsHistoryActionTable v-if="activeId"
-                              @moderate="moderate"
-                              :activitiesInTable="activitiesInTable" />
-</div>
+    <PointsHistoryActionTable
+      v-if="activeId"
+      @moderate="moderate"
+      :activitiesInTable="activitiesInTable"
+    />
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch, onUnmounted } from 'vue';
-import Api from '@/utils/Api';
-import { usePointsData } from '@/stores/pointsData';
-import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
-import { dateConvert } from '@/utils/dateConvert';
-import ModeratorSidebarSlot from './ModeratorSidebarSlot.vue';
-import PointsHistoryActionTable from '../PointsHistoryActionTable.vue';
-import type { IActivityToConfirm } from '@/interfaces/IEntities';
+import { computed, defineComponent, ref, watch, onUnmounted } from "vue";
+import Api from "@/utils/Api";
+import { usePointsData } from "@/stores/pointsData";
+import AdminSidebar from "@/views/admin/components/AdminSidebar.vue";
+import { dateConvert } from "@/utils/dateConvert";
+import ModeratorSidebarSlot from "./ModeratorSidebarSlot.vue";
+import PointsHistoryActionTable from "../PointsHistoryActionTable.vue";
+import type { IActivityToConfirm } from "@/interfaces/IEntities";
 
 export default defineComponent({
-    name: 'moderatorValidationPanel',
-    components: {
-        PointsHistoryActionTable,
-        AdminSidebar,
-        ModeratorSidebarSlot
-    },
-    setup() {
-        const abortController = new AbortController();
-        const activeId = ref<number>();
-        const activitiesToConfirm = computed(() => usePointsData().getActivitiesToConfirm);
-        const activitiesInTable = ref<IActivityToConfirm[]>();
+  name: "moderatorValidationPanel",
+  components: {
+    PointsHistoryActionTable,
+    AdminSidebar,
+    ModeratorSidebarSlot,
+  },
+  setup() {
+    const abortController = new AbortController();
+    const activeId = ref<number>();
+    const activitiesToConfirm = computed(() => usePointsData().getActivitiesToConfirm);
+    const activitiesInTable = ref<IActivityToConfirm[]>();
 
-        const changeActive = (id: number) => {
-            activeId.value = id;
-        }
+    const changeActive = (id: number) => {
+      activeId.value = id;
+    };
 
-        const tableInit = async () => {
-            try {
-                const data = await Api.get(`peer/points_to_confirm/${activeId.value}`, null, abortController.signal)
-                activitiesInTable.value = data
-            } catch (error) {
-                console.error(error)
-            }
-        }
+    const tableInit = async () => {
+      const data = await Api.get(
+        `peer/points_to_confirm/${activeId.value}`,
+        null,
+        abortController.signal
+      );
+      activitiesInTable.value = data;
+    };
 
-        watch((activeId), () => {
-            if (!activeId.value) return
-            tableInit();
-        }, { immediate: true, deep: true });
+    watch(
+      activeId,
+      () => {
+        if (!activeId.value) return;
+        tableInit();
+      },
+      { immediate: true, deep: true }
+    );
 
-        const moderate = async (type: 'accept' | 'cancel', rowId: number, uuidTo: number) => {
-            try {
-                await Api.post(`/peer/${type == 'accept' ? 'do_valid' : 'do_not_valid'}/${rowId}${type == 'accept' ? '/' + uuidTo : ''}`)
-                tableInit()
-            } catch (error) {
-                console.error(error)
-            }
-        }
+    const moderate = async (type: "accept" | "cancel", rowId: number, uuidTo: number) => {
+      await Api.post(
+        `/peer/${type == "accept" ? "do_valid" : "do_not_valid"}/${rowId}${
+          type == "accept" ? "/" + uuidTo : ""
+        }`
+      );
+      tableInit();
+    };
 
-        onUnmounted(() => abortController.abort())
+    onUnmounted(() => abortController.abort());
 
-        return {
-            activitiesToConfirm,
-            activitiesInTable,
-            activeId,
-            dateConvert,
-            changeActive,
-            moderate
-        }
-    }
-})
+    return {
+      activitiesToConfirm,
+      activitiesInTable,
+      activeId,
+      dateConvert,
+      changeActive,
+      moderate,
+    };
+  },
+});
 </script>

@@ -1,90 +1,79 @@
 <template>
-<div class="merch-store-item__wrapper">
-    <div class="merch-store-item mt20">
-        <div class="merch-store-item__images__wrapper">
-            <div v-if="currentItem?.indirect_data && currentItem.indirect_data.images"
-                 class="merch-store-item__images__flex-gallery">
-                <div v-for="(card, index) in currentItem?.indirect_data?.images"
-                     :key="index"
-                     class="merch-store-item__images__flex-gallery__card__wrapper">
-                    <div v-if="(typeof card !== 'string' && card.file_url)"
-                         @click="setZoomImg(card.file_url)"
-                         class="merch-store-item__images__flex-gallery__card">
-                        <img class="pos-rel"
-                             :class="{ 'merch-store-item__images__flex-gallery__card--cover': !card.file_url.includes('.png') }"
-                             :src="(card.file_url)" />
-                        <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
+    <div class="merch-store-item__wrapper">
+        <div class="merch-store-item mt20">
+            <div class="merch-store-item__images__wrapper">
+                <div v-if="currentItem?.indirect_data && currentItem.indirect_data.images"
+                    class="merch-store-item__images__flex-gallery">
+                    <div v-for="(card, index) in currentItem?.indirect_data?.images" :key="index"
+                        class="merch-store-item__images__flex-gallery__card__wrapper">
+                        <div v-if="(typeof card !== 'string' && card.file_url)" @click="setZoomImg(card.file_url)"
+                            class="merch-store-item__images__flex-gallery__card">
+                            <img class="pos-rel"
+                                :class="{ 'merch-store-item__images__flex-gallery__card--cover': !card.file_url.includes('.png') }"
+                                :src="(card.file_url)" />
+                            <ZoomInIcon class="merch-store-item__images__flex-gallery__card__zoom-icon" />
+                        </div>
+                    </div>
+                </div>
+                <HoverGallerySkeleton v-else />
+            </div>
+            <div class="merch-store-item__info" v-if="currentItem">
+                <div class="merch-store-item__info__category" v-if="currentItem.indirect_data?.category">{{
+                    currentItem.indirect_data?.category }}</div>
+                <h4 class="merch-store-item__info__title">
+                    {{ currentItem.name }}
+                </h4>
+                <div v-if="currentItem.content_text" class="merch-store-item__info__description"
+                    v-html="currentItem.content_text.replaceAll('&nbsp;', ' ')"></div>
+                <div v-if="checkSizes(currentItem as IMerchItem).length !== 0"
+                    class="merch-store-item__info__sizes__title">
+                    <!-- <span>Размер</span> -->
+                    <div class="merch-store-item__info__sizes">
+                        <div class="merch-store-item__info__size"
+                            :class="{ 'merch-store-item__info__size--active': item == currentSize }"
+                            v-for="item in checkSizes(currentItem as IMerchItem).filter((e) => e !== 'no_size')"
+                            :key="'size' + item"
+                            @click="setCurrentSize(item as ('s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'))">
+                            {{ item }}
+                        </div>
+                    </div>
+                </div>
+
+                <h3 v-if="currentItem?.indirect_data?.price" class="merch-store-item__info__price">
+                    <span class="merch-store-item__info__count-text">
+                        {{ String(currentItem?.indirect_data?.price).replace(/(\d)(?=(\d{3})+([^\d]|$))/g, "$1 ") }}
+                    </span>
+                    баллов
+                </h3>
+
+                <div v-if="currentSize && false" class="merch-store-item__info__count">
+                    <span class="merch-store-item__info__count-text">
+                        {{
+                            currentItem?.indirect_data?.sizes_left[currentSize as ("s" | "m" | "l" | "xl" | "xxl" |
+                                "no_size"
+                            )]
+                        }}
+                    </span> шт. осталось
+                </div>
+                <div class="merch-store-item__action__wrapper">
+                    <div @click="callModal(true)" class="merch-store-item__action__button">
+                        <span> Оформить</span>
                     </div>
                 </div>
             </div>
-            <HoverGallerySkeleton v-else />
         </div>
-        <div class="merch-store-item__info"
-             v-if="currentItem">
-            <div class="merch-store-item__info__category"
-                 v-if="currentItem.indirect_data?.category">{{ currentItem.indirect_data?.category }}</div>
-            <h4 class="merch-store-item__info__title">
-                {{ currentItem.name }}
-            </h4>
-            <div v-if="currentItem.content_text"
-                 class="merch-store-item__info__description"
-                 v-html="currentItem.content_text.replaceAll('&nbsp;', ' ')"></div>
-            <div v-if="checkSizes(currentItem as IMerchItem).length !== 0"
-                 class="merch-store-item__info__sizes__title">
-                <!-- <span>Размер</span> -->
-                <div class="merch-store-item__info__sizes">
-                    <div class="merch-store-item__info__size"
-                         :class="{ 'merch-store-item__info__size--active': item == currentSize }"
-                         v-for="item in checkSizes(currentItem as IMerchItem).filter((e) => e !== 'no_size')"
-                         :key="'size' + item"
-                         @click="setCurrentSize(item as ('s' | 'm' | 'l' | 'xl' | 'xxl' | 'no_size'))">
-                        {{ item }}
-                    </div>
-                </div>
-            </div>
+        <ZoomModal v-if="modalIsOpen == true" :whiteBackground="true" :image="[activeImage]"
+            @close="modalIsOpen = false" />
 
-            <h3 v-if="currentItem?.indirect_data?.price"
-                class="merch-store-item__info__price">
-                <span class="merch-store-item__info__count-text">
-                    {{ String(currentItem?.indirect_data?.price).replace(/(\d)(?=(\d{3})+([^\d]|$))/g, "$1 ") }}
-                </span>
-                баллов
-            </h3>
-
-            <div v-if="currentSize && false"
-                 class="merch-store-item__info__count">
-                <span class="merch-store-item__info__count-text">
-                    {{
-                        currentItem?.indirect_data?.sizes_left[currentSize as ("s" | "m" | "l" | "xl" | "xxl" | "no_size"
-                        )]
-                    }}
-                </span> шт. осталось
-            </div>
-            <div class="merch-store-item__action__wrapper">
-                <div @click="callModal(true)"
-                     class="merch-store-item__action__button">
-                    <span> Оформить</span>
-                </div>
-            </div>
-        </div>
+        <!-- Подтверждение + кол-во -->
+        <AcceptBuyModal v-if="acceptBuyModalOpen" @closeModal="callModal(false)"
+            :price="currentItem?.indirect_data?.price" :isLoading="isLoading"
+            :customPrice="currentItem?.indirect_data?.price ? false : true"
+            @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
+        <!-- Уведомление об успешной покупке -->
+        <PurchaseSuccessModal v-if="purchaseSuccessModalOpen" :itemName="currentItem?.name"
+            @close="purchaseSuccessModalOpen = false" />
     </div>
-    <ZoomModal v-if="modalIsOpen == true"
-               :whiteBackground="true"
-               :image="[activeImage]"
-               @close="modalIsOpen = false" />
-
-    <!-- Подтверждение + кол-во -->
-    <AcceptBuyModal v-if="acceptBuyModalOpen"
-                    @closeModal="callModal(false)"
-                    :price="currentItem?.indirect_data?.price"
-                    :isLoading="isLoading"
-                    :customPrice="currentItem?.indirect_data?.price ? false : true"
-                    @acceptBuy="(quantity: number, customPrice: boolean) => acceptBuy(quantity, customPrice)" />
-    <!-- Уведомление об успешной покупке -->
-    <PurchaseSuccessModal v-if="purchaseSuccessModalOpen"
-                          :itemName="currentItem?.name"
-                          @close="purchaseSuccessModalOpen = false" />
-</div>
 </template>
 
 <script lang="ts">
@@ -176,14 +165,10 @@ export default defineComponent({
                     else {
                         purchaseSuccessModalOpen.value = true;
                     }
-                    try {
-                        const points = await Api.get('/peer/user_history')
-                        useUserScore().setStatistics(points)
-                    } catch (error) {
-                        console.error(error)
-                    }
-                } catch (error) {
-                    console.error(error)
+
+                    const points = await Api.get('/peer/user_history')
+                    useUserScore().setStatistics(points)
+
                 } finally {
                     isLoading.value = false;
                     callModal(false);
@@ -207,12 +192,8 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-            try {
-                const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
-                currentItem.value = data
-            } catch (error) {
-                console.error(error)
-            }
+            const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
+            currentItem.value = data
         })
 
         const callModal = (status: boolean) => {

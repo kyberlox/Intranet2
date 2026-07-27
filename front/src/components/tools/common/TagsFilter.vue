@@ -44,10 +44,9 @@ export default defineComponent({
         const activeTag: Ref<ITag | undefined> = ref();
 
         onMounted(async () => {
-            try {
-                const data = await Api.get('/tags/get_tags')
-                tags.value = data
-            } catch (error) { console.error(error) }
+            const data = await Api.get('/tags/get_tags')
+            tags.value = data
+
         })
 
         const setActiveTag = (tag: ITag) => {

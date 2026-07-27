@@ -161,8 +161,6 @@ export default defineComponent({
                 const data = await Api.get(`article/find_by/${sectionTips['синертим']}`, null, abortController.signal)
                 // console.log(data)
                 tableData.value = Array.isArray(data) ? data : []
-            } catch {
-                tableData.value = []
             } finally {
                 loading.value = false
             }

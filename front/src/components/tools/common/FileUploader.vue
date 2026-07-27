@@ -1,97 +1,124 @@
 <template>
-<div class="file-uploader">
-    <div class="file-uploader__drop-zone"
-         :class="{ 'file-uploader__drop-zone--dragover': isDragOver }"
-         @drop="handleDrop"
-         @dragover.prevent="handleDragOver"
-         @dragleave="handleDragLeave"
-         @click="triggerFileInput">
+  <div class="file-uploader">
+    <div
+      class="file-uploader__drop-zone"
+      :class="{ 'file-uploader__drop-zone--dragover': isDragOver }"
+      @drop="handleDrop"
+      @dragover.prevent="handleDragOver"
+      @dragleave="handleDragLeave"
+      @click="triggerFileInput"
+    >
+      <input
+        ref="fileInput"
+        type="file"
+        class="file-uploader__input"
+        @change="handleFormFileSelect"
+        :multiple="quantity === 'many'"
+      />
 
-        <input ref="fileInput"
-               type="file"
-               class="file-uploader__input"
-               @change="handleFormFileSelect"
-               :multiple="quantity === 'many'" />
+      <div
+        v-if="!existFiles?.length && !uploadedFiles.length"
+        class="file-uploader__placeholder"
+      >
+        <p class="file-uploader__text">
+          {{
+            quantity === "many"
+              ? "Перетащите файлы сюда или нажмите для выбора"
+              : "Перетащите файл сюда или нажмите для выбора"
+          }}
+        </p>
+      </div>
 
-        <div v-if="!existFiles?.length && !uploadedFiles.length"
-             class="file-uploader__placeholder">
-            <p class="file-uploader__text">
-                {{ quantity === 'many' ? 'Перетащите файлы сюда или нажмите для выбора'
-                    : 'Перетащите файл сюда или нажмите для выбора' }}
-            </p>
+      <div
+        class="file-uploader__preview-list"
+        :class="{ 'file-uploader__preview-list--video': uploadType == 'videos_native' }"
+      >
+        <!-- Существующие файлы -->
+        <div
+          v-for="(item, index) in existFiles"
+          :key="'exist-' + index"
+          class="file-uploader__preview-item"
+        >
+          <video
+            v-if="uploadType == 'videos_native' && item.file_url"
+            class="file-uploader__preview-video"
+            :src="item.file_url"
+            @click.stop.prevent="openFile(item.file_url)"
+            controls
+          >
+            Ваш браузер не поддерживает видео.
+          </video>
+          <img
+            v-if="uploadType == 'images' && item.file_url"
+            class="file-uploader__preview-img"
+            :src="item.file_url"
+            @click.stop.prevent="openFile(item.file_url)"
+          />
+          <div
+            v-if="uploadType == 'documentation' && item.file_url"
+            class="file-uploader__preview-doc"
+          >
+            <span @click.stop.prevent="openFile(item.file_url)" v-if="item.original_name">
+              {{ item.original_name }}
+            </span>
+            <DocIcon />
+          </div>
+
+          <button
+            class="file-uploader__remove-btn"
+            @click.stop="removeItem(String(item.id))"
+          >
+            <RemoveIcon />
+          </button>
         </div>
 
-        <div class="file-uploader__preview-list"
-             :class="{ 'file-uploader__preview-list--video': uploadType == 'videos_native' }">
-            <!-- Существующие файлы -->
-            <div v-for="(item, index) in existFiles"
-                 :key="'exist-' + index"
-                 class="file-uploader__preview-item">
-                <video v-if="uploadType == 'videos_native' && item.file_url"
-                       class="file-uploader__preview-video"
-                       :src="item.file_url"
-                       @click.stop.prevent="openFile(item.file_url)"
-                       controls>
-                    Ваш браузер не поддерживает видео.
-                </video>
-                <img v-if="uploadType == 'images' && item.file_url"
-                     class="file-uploader__preview-img"
-                     :src="item.file_url"
-                     @click.stop.prevent="openFile(item.file_url)" />
-                <div v-if="uploadType == 'documentation' && item.file_url"
-                     class="file-uploader__preview-doc">
-                    <span @click.stop.prevent="openFile(item.file_url)"
-                          v-if="item.original_name">
-                        {{ item.original_name }}
-                    </span>
-                    <DocIcon />
-                </div>
-
-                <button class="file-uploader__remove-btn"
-                        @click.stop="removeItem(String(item.id))">
-                    <RemoveIcon />
-                </button>
-            </div>
-
-            <!-- Новые  файлы -->
-            <div v-for="(file, index) in uploadedFiles"
-                 :key="'uploading-' + index"
-                 class="file-uploader__preview-item">
-                <div v-if="uploadType === 'images'"
-                     class="file-uploader__preview-img">
-                    <img :src="file.url"
-                         :alt="file.name" />
-                </div>
-                <div v-else-if="uploadType === 'videos_native'"
-                     class="file-uploader__preview-video">
-                    <video :src="file.url"
-                           controls></video>
-                </div>
-                <div v-else
-                     class="file-uploader__preview-doc">
-                    <span>{{ file.name }}</span>
-                    <DocIcon />
-                </div>
-                <div class="file-uploader__uploading-overlay"
-                     v-if="isUploading">
-                    <Loader>
-                        <span v-if="uploadProgress && uploadProgress > 0"
-                              class="file-uploader__uploading-overlay__upload-progress"> {{ uploadProgress + '%'
-                            }}</span>
-                    </Loader>
-                </div>
-            </div>
-
-            <div class="file-uploader__preview-item"
-                 v-if="isUploading && !uploadedFiles.length">
-                <Loader>
-                    <span v-if="uploadProgress && uploadProgress > 0"
-                          class="file-uploader__uploading-overlay__upload-progress"> {{ uploadProgress + '%' }}</span>
-                </Loader>
-            </div>
+        <!-- Новые  файлы -->
+        <div
+          v-for="(file, index) in uploadedFiles"
+          :key="'uploading-' + index"
+          class="file-uploader__preview-item"
+        >
+          <div v-if="uploadType === 'images'" class="file-uploader__preview-img">
+            <img :src="file.url" :alt="file.name" />
+          </div>
+          <div
+            v-else-if="uploadType === 'videos_native'"
+            class="file-uploader__preview-video"
+          >
+            <video :src="file.url" controls></video>
+          </div>
+          <div v-else class="file-uploader__preview-doc">
+            <span>{{ file.name }}</span>
+            <DocIcon />
+          </div>
+          <div class="file-uploader__uploading-overlay" v-if="isUploading">
+            <Loader>
+              <span
+                v-if="uploadProgress && uploadProgress > 0"
+                class="file-uploader__uploading-overlay__upload-progress"
+              >
+                {{ uploadProgress + "%" }}</span
+              >
+            </Loader>
+          </div>
         </div>
+
+        <div
+          class="file-uploader__preview-item"
+          v-if="isUploading && !uploadedFiles.length"
+        >
+          <Loader>
+            <span
+              v-if="uploadProgress && uploadProgress > 0"
+              class="file-uploader__uploading-overlay__upload-progress"
+            >
+              {{ uploadProgress + "%" }}</span
+            >
+          </Loader>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -187,9 +214,6 @@ export default defineComponent({
         const removeItem = async (id: string) => {
             try {
                 await Api.delete(`editor/delete_file/${id}`)
-            }
-            catch (error) {
-                console.error(error)
             }
             finally {
                 emit('reloadData');

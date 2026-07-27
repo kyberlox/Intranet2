@@ -115,8 +115,6 @@ export default defineComponent({
                     await Api.put(`roots/create_editor_moder/${id}/${activeSection.value.id}`)
                 }
                 editorsInit()
-            } catch (error) {
-                console.error(error)
             } finally {
                 isLoading.value = false
             }

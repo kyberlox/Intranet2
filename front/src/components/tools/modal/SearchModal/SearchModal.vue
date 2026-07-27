@@ -115,9 +115,6 @@ export default defineComponent({
                 const data = await Api.get(`/${selectedSearchType.value}/${searchTargetText.value}`)
                 searchResult.value = data
             }
-            catch (error) {
-                console.error(error)
-            }
             finally { isLoading.value = false }
         }
 

@@ -1,40 +1,65 @@
 <template>
-<div class="homeview__grid__card__group-buttons"
-     :class="[{ 'homeview__grid__card__group--blog': type == 'blog' }, { 'homeview__grid__card__group-buttons--between': type == 'interview' }]">
-    <div v-if="date"
-         class="news__detail__date">
-        {{ dateConvert(date, 'toStringType') }}
+  <div
+    class="homeview__grid__card__group-buttons"
+    :class="[
+      { 'homeview__grid__card__group--blog': type == 'blog' },
+      { 'homeview__grid__card__group-buttons--between': type == 'interview' },
+    ]"
+  >
+    <div v-if="date" class="news__detail__date">
+      {{ dateConvert(date, "toStringType") }}
     </div>
-    <div v-if="newTypeReaction"
-         class="homeview__grid__card__group-buttons__reaction-buttons"
-         @mouseleave="usersLikesVisible = false">
-        <div v-if="!modifiers.includes('noViews')"
-             class="homeview__grid__card__group-buttons__reaction-buttons--views">
-            <ViewsIcon />
-            {{ newTypeReaction.views }}
+    <div
+      v-if="newTypeReaction"
+      class="homeview__grid__card__group-buttons__reaction-buttons"
+      @mouseleave="usersLikesVisible = false"
+    >
+      <div
+        v-if="!modifiers.includes('noViews')"
+        class="homeview__grid__card__group-buttons__reaction-buttons--views"
+      >
+        <ViewsIcon />
+        {{ newTypeReaction.views }}
+      </div>
+      <div
+        v-if="newTypeReaction.likes && !modifiers.includes('noLikes')"
+        @mouseenter="usersLikesVisible = true"
+        @click.stop.prevent="setLike(id)"
+        class="homeview__grid__card__group-buttons__reaction-buttons--like"
+        :class="{
+          'homeview__grid__card__group-buttons__reaction-buttons--like_active':
+            newTypeReaction.likes.likedByMe,
+        }"
+      >
+        <LikeIcon />
+        {{ newTypeReaction.likes.count }}
+      </div>
+      <div
+        v-if="newTypeReaction.likes.users.length && usersLikesVisible"
+        class="homeview__grid__card__group-buttons__reaction__likes-list"
+      >
+        <div
+          @click.stop.prevent="
+            user.id ? $router.push({ name: 'userPage', params: { id: user.id } }) : ''
+          "
+          class="homeview__grid__card__group-buttons__reaction__likes-list__item"
+          v-for="user in newTypeReaction.likes.users"
+          :key="user.id"
+        >
+          <img
+            class="homeview__grid__card__group-buttons__reaction__likes-list__item__photo"
+            :src="user.photo_file_url"
+            alt="'изображение пользователя'"
+          />
+          <div
+            class="homeview__grid__card__group-buttons__reaction__likes-list__item__name"
+          >
+            {{ user.name }}
+          </div>
         </div>
-        <div v-if="newTypeReaction.likes && !modifiers.includes('noLikes')"
-             @mouseenter="usersLikesVisible = true"
-             @click.stop.prevent="setLike(id)"
-             class="homeview__grid__card__group-buttons__reaction-buttons--like"
-             :class="{ 'homeview__grid__card__group-buttons__reaction-buttons--like_active': newTypeReaction.likes.likedByMe }">
-            <LikeIcon />
-            {{ newTypeReaction.likes.count }}
-        </div>
-        <div v-if="newTypeReaction.likes.users.length && usersLikesVisible"
-             class="homeview__grid__card__group-buttons__reaction__likes-list">
-            <div @click.stop.prevent="user.id ? $router.push({ name: 'userPage', params: { id: user.id } }) : ''"
-                 class="homeview__grid__card__group-buttons__reaction__likes-list__item"
-                 v-for="user in newTypeReaction.likes.users"
-                 :key="user.id">
-                <img class="homeview__grid__card__group-buttons__reaction__likes-list__item__photo"
-                     :src=user.photo_file_url
-                     alt="'изображение пользователя'" />
-                <div class="homeview__grid__card__group-buttons__reaction__likes-list__item__name">{{ user.name }}</div>
-            </div>
-        </div>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -81,14 +106,10 @@ export default defineComponent({
         const usersLikesVisible = ref<boolean>(false);
 
         const setLike = async (id: number) => {
-            try {
                 const data = await Api.put(`article/add_or_remove_like/${id}`)
                 newTypeReaction.value = data
                 emit('reactAdded', id, newTypeReaction.value)
-            }
-            catch (error) {
-                console.error(error)
-            }
+
         }
 
         return {

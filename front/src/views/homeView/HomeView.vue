@@ -58,12 +58,10 @@ export default defineComponent({
 
         onBeforeMount(async () => {
             if (mainPageCards.value.length) return;
-            try {
-                const data: MainPageCards = await Api.get(`article/find_by/${sectionTips['Главная']}`, null, abortController.signal)
-                const result = data;
-                if (!result) return;
-                useViewsData.setData(result, 'homeData');
-            } catch (error) { console.error(error) }
+            const data: MainPageCards = await Api.get(`article/find_by/${sectionTips['Главная']}`, null, abortController.signal)
+            const result = data;
+            if (!result) return;
+            useViewsData.setData(result, 'homeData');
         })
 
         const updateHomeStore = (blockId: number, elementId: number, newReactions: IReaction) => {

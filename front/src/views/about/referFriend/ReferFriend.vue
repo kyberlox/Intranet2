@@ -1,42 +1,49 @@
 <template>
-<div class="refer-page mt20">
+  <div class="refer-page mt20">
     <div class="refer-page__wrapper">
-        <div class="refer-page__img"
-             :style="{ 'background': `url(https://portal.emk.ru/intranet/personal/vacancies/referPage.jpg) no-repeat` }">
-        </div>
+      <div
+        class="refer-page__img"
+        :style="{
+          background: `url(https://portal.emk.ru/intranet/personal/vacancies/referPage.jpg) no-repeat`,
+        }"
+      ></div>
     </div>
 
     <div class="refer-page__jobs__wrapper">
-        <div class="refer-page__jobs-header">
-            <h2>Открытые вакансии</h2>
-        </div>
+      <div class="refer-page__jobs-header">
+        <h2>Открытые вакансии</h2>
+      </div>
 
-        <ul v-if="jobList !== undefined && jobList.length > 0"
-            class="refer-page__jobs-list">
-            <li v-for="job in jobList"
-                :key="job.id">
-                <a :href="job?.indirect_data?.link"
-                   target="_blank"
-                   class="refer-page__jobs-link">
-                    {{ job.name }}
-                </a>
-            </li>
-        </ul>
+      <ul
+        v-if="jobList !== undefined && jobList.length > 0"
+        class="refer-page__jobs-list"
+      >
+        <li v-for="job in jobList" :key="job.id">
+          <a
+            :href="job?.indirect_data?.link"
+            target="_blank"
+            class="refer-page__jobs-link"
+          >
+            {{ job.name }}
+          </a>
+        </li>
+      </ul>
 
-        <ul v-else-if="noVac">
-            <li class="refer-page__jobs-link refer-page__jobs-link--nohover">
-                В настоящее время открытых вакансий нет
-            </li>
-        </ul>
+      <ul v-else-if="noVac">
+        <li class="refer-page__jobs-link refer-page__jobs-link--nohover">
+          В настоящее время открытых вакансий нет
+        </li>
+      </ul>
 
-        <ul v-else>
-            <li v-for="i in 1"
-                :key="'jobSkelet' + i"
-                class="refer-page__jobs-link refer-page__jobs-link--nohover skeleton-refer-page__jobs-link">
-            </li>
-        </ul>
+      <ul v-else>
+        <li
+          v-for="i in 1"
+          :key="'jobSkelet' + i"
+          class="refer-page__jobs-link refer-page__jobs-link--nohover skeleton-refer-page__jobs-link"
+        ></li>
+      </ul>
     </div>
-</div>
+  </div>
 </template>
 <script lang="ts">
 import { sectionTips } from '@/assets/static/sectionTips';
@@ -51,15 +58,12 @@ export default defineComponent({
         const noVac = ref(false);
 
         onMounted(async () => {
-            try {
                 const data = await Api.get(`article/find_by/${sectionTips["ОткрытыеВакансии"]}`, null, abortController.signal)
                 if (data.length) {
                     jobList.value = data;
                 }
                 else noVac.value = true;
-            } catch (error) {
-                console.error(error)
-            }
+
         })
 
         onUnmounted(() => abortController.abort())

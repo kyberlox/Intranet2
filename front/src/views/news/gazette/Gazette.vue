@@ -1,24 +1,19 @@
 <template>
-<div class="page__title mt20">Корпоративная газета ЭМК</div>
-<div class="row gazettes-list">
-    <div class="col-sm-3"
-         @click="openModal(gazette)"
-         v-for="gazette in gazettes"
-         :key="gazette.id">
-        <figure>
-            <div class="gazette-image img-fluid img-thumbnail"
-                 :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
-        </figure>
-        <div>
-            <span>{{ gazette.name }}</span>
+    <div class="page__title mt20">Корпоративная газета ЭМК</div>
+    <div class="row gazettes-list">
+        <div class="col-sm-3" @click="openModal(gazette)" v-for="gazette in gazettes" :key="gazette.id">
+            <figure>
+                <div class="gazette-image img-fluid img-thumbnail"
+                    :style="{ 'background-image': `url(${gazette.indirect_data.photo_file_url})` }"></div>
+            </figure>
+            <div>
+                <span>{{ gazette.name }}</span>
+            </div>
         </div>
     </div>
-</div>
-<Transition name="modal">
-    <PdfViewerModal v-if="modalActive"
-                    :activeGazete="activeGazete"
-                    @closeModal="modalActive = false" />
-</Transition>
+    <Transition name="modal">
+        <PdfViewerModal v-if="modalActive" :activeGazete="activeGazete" @closeModal="modalActive = false" />
+    </Transition>
 </template>
 
 
@@ -58,12 +53,9 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-            try {
-                const data = await Api.get(`article/find_by/${sectionTips['газетта']}`, null, abortController.signal)
-                gazettes.value = data;
-            } catch (error) {
-                console.error(error)
-            }
+            const data = await Api.get(`article/find_by/${sectionTips['газетта']}`, null, abortController.signal)
+            gazettes.value = data;
+
         })
 
         onUnmounted(() => abortController.abort())

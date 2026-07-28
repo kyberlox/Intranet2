@@ -58,14 +58,10 @@ export default defineComponent({
         const currentNav = ref<string>();
 
         onMounted(async () => {
-            try {
                 const data = await Api.get('1c-help/menu_plus', null, abortController.signal)
                 memoData.value = data;
                 navigation.value = Object.keys(data);
                 showContent(navigation.value[0]);
-            } catch (error) {
-                console.error(error);
-            }
         });
 
         const showContent = (nav: string) => {

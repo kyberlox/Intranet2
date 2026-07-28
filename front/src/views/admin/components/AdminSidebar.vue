@@ -110,12 +110,8 @@ export default defineComponent({
 
         watch(([sections, () => props.needDefaultNav]), async () => {
             if (!sections.value.length) {
-                try {
                     const res = await Api.get(`editor/get_sections_list`, null, abortController.signal)
                     useAdminData().setSections(res);
-                } catch (error) {
-                    console.error(error);
-                }
             }
             fullNavigation.value =
                 staticAdminSections.map((g) => ({

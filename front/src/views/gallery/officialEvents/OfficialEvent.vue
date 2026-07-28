@@ -1,19 +1,12 @@
 <template>
-<div class="experience__page mt20">
-    <div class="page__title">Фотоотчеты</div>
-    <div class="page__title__details"
-         v-if="title">{{ title }}</div>
-    <ContentGallery v-if="formattedSlides"
-                    class="mt20"
-                    :page=page
-                    :modifiers="modifiers"
-                    :slide="slide"
-                    @callModal="callModal" />
-</div>
-<ZoomModal v-if="slide && slide.images?.length && modalIsOpen == true"
-           :activeIndex="activeIndex"
-           :image="slide.images"
-           @close="modalIsOpen = false" />
+    <div class="experience__page mt20">
+        <div class="page__title">Фотоотчеты</div>
+        <div class="page__title__details" v-if="title">{{ title }}</div>
+        <ContentGallery v-if="formattedSlides" class="mt20" :page=page :modifiers="modifiers" :slide="slide"
+            @callModal="callModal" />
+    </div>
+    <ZoomModal v-if="slide && slide.images?.length && modalIsOpen == true" :activeIndex="activeIndex"
+        :image="slide.images" @close="modalIsOpen = false" />
 </template>
 
 <script lang="ts">
@@ -47,16 +40,13 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-            try {
-                const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
-                slide.value = data;
-                formattedSlides.value.images = data.images;
-                formattedSlides.value.videos_embed = data.videos_embed;
-                formattedSlides.value.videos_native = data.videos_native;
-                formattedSlides.value.id = data.id
-            } catch (error) {
-                console.error(error)
-            }
+            const data = await Api.get(`article/find_by_ID/${props.id}`, null, abortController.signal)
+            slide.value = data;
+            formattedSlides.value.images = data.images;
+            formattedSlides.value.videos_embed = data.videos_embed;
+            formattedSlides.value.videos_native = data.videos_native;
+            formattedSlides.value.id = data.id
+
         })
 
         onUnmounted(() => abortController.abort())

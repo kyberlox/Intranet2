@@ -1,53 +1,65 @@
 <template>
-<div class="admin-element-inner">
-  <div class="admin-element-inner__wrapper mt20"
-       :class="{
+  <div class="admin-element-inner">
+    <div
+      class="admin-element-inner__wrapper mt20"
+      :class="{
         'admin-element-inner__wrapper--preview-full-width':
           previewFullWidth || isMobileScreen,
-      }">
-    <AdminElementEditorFieldRenderer :isMobileScreen="isMobileScreen"
-                                     :previewFullWidth="previewFullWidth"
-                                     :activeType="activeType"
-                                     :newElementSkeleton="newElementSkeleton"
-                                     :newData="newData"
-                                     :newFileData="newFileData"
-                                     :uploadProgress="uploadProgress"
-                                     @handleUserPick="handleUserPick"
-                                     @handleUsersPick="handleUsersPick"
-                                     @handleEmitValueChange="handleEmitValueChange"
-                                     @reportageChanged="(e) => {
-                                      newData.reports = e;
-                                    }"
-                                     @tagsChanged="(e: number[]) => newData.tags = e"
-                                     @reloadElementData="(e: boolean) => reloadElementData(e)"
-                                     @handleUpload="handleUpload"
-                                     @uploadMany="(e) => uploadMany(e)"
-                                     @visibilityChanged="(newVision) => (artVision = newVision)"
-                                     @saveEmbed="(e: string[]) => handleUpload(e, true)" />
+      }"
+    >
+      <AdminElementEditorFieldRenderer
+        :isMobileScreen="isMobileScreen"
+        :previewFullWidth="previewFullWidth"
+        :activeType="activeType"
+        :newElementSkeleton="newElementSkeleton"
+        :newData="newData"
+        :newFileData="newFileData"
+        :uploadProgress="uploadProgress"
+        @handleUserPick="handleUserPick"
+        @handleUsersPick="handleUsersPick"
+        @handleEmitValueChange="handleEmitValueChange"
+        @reportageChanged="
+          (e) => {
+            newData.reports = e;
+          }
+        "
+        @tagsChanged="(e: number[]) => newData.tags = e"
+        @reloadElementData="(e: boolean) => reloadElementData(e)"
+        @handleUpload="handleUpload"
+        @uploadMany="(e) => uploadMany(e)"
+        @visibilityChanged="(newVision) => (artVision = newVision)"
+        @saveEmbed="(e: string[]) => handleUpload(e, true)"
+      />
 
-    <AdminPostPreview :previewFullWidth="previewFullWidth"
-                      :isMobileScreen="isMobileScreen"
-                      :newFileData="newFileData"
-                      :newData="newData"
-                      :activeType="activeType"
-                      :sectionId="id"
-                      :newId="String(newId)"
-                      :currentItem="currentItem"
-                      @noPreview="previewFullWidth = true"
-                      @changePreviewWidth="previewFullWidth = !previewFullWidth" />
-  </div>
+      <AdminPostPreview
+        :previewFullWidth="previewFullWidth"
+        :isMobileScreen="isMobileScreen"
+        :newFileData="newFileData"
+        :newData="newData"
+        :activeType="activeType"
+        :sectionId="id"
+        :newId="String(newId)"
+        :currentItem="currentItem"
+        @noPreview="previewFullWidth = true"
+        @changePreviewWidth="previewFullWidth = !previewFullWidth"
+      />
+    </div>
 
-  <div class="admin-element-inner__actions">
-    <button class="primary-button"
-            @click="router.push({ name: 'adminBlockInner', params: { id: id } })">
-      <span class="admin-element-inner__action-text">Назад</span>
-    </button>
-    <button @click="applyNewData"
-            class="admin-element-inner__action-button admin-element-inner__action-button--save">
-      <span class="admin-element-inner__action-text">Сохранить</span>
-    </button>
+    <div class="admin-element-inner__actions">
+      <button
+        class="primary-button"
+        @click="router.push({ name: 'adminBlockInner', params: { id: id } })"
+      >
+        <span class="admin-element-inner__action-text">Назад</span>
+      </button>
+      <button
+        @click="applyNewData"
+        class="admin-element-inner__action-button admin-element-inner__action-button--save"
+      >
+        <span class="admin-element-inner__action-text">Сохранить</span>
+      </button>
+    </div>
   </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -126,7 +138,6 @@ export default defineComponent({
 
     onMounted(async () => {
       if (props.type == 'new') {
-        try {
           const data = await Api.get(`/editor/add/${props.id}`)
           isCreateNew.value = true;
           newElementSkeleton.value = data.fields;
@@ -145,16 +156,11 @@ export default defineComponent({
           // newData.value.images = data.files.images;
           newData.value.videos_native = data.files.videos_native || [];
           newData.value.documentation = data.files.documentation || [];
-        }
-        catch (error) {
-          console.error(error);
-        }
       }
       else reloadElementData(false);
     })
 
     const reloadElementData = async (onlyFiles: boolean = false) => {
-      try {
         const data = await Api.get(`/editor/rendering/${newId.value}`)
         if (typeof data == 'object' && 'status' in data && data.status) {
           router.push({ name: 'admin' })
@@ -187,9 +193,6 @@ export default defineComponent({
             }
           })
         }
-      } catch (error) {
-        console.error(error);
-      }
     }
 
     const applyNewData = async () => {
@@ -255,8 +258,6 @@ export default defineComponent({
       try {
         await Api.post(`/editor/upload_files/${idToUpload}`, formData, { onUploadProgress: checkUploadProgress })
 
-      } catch (error) {
-        console.error(error)
       } finally {
         uploadProgress.value = 0;
         reloadElementData(true);
@@ -278,28 +279,19 @@ export default defineComponent({
     };
 
     const handleUserPick = async (userId: number, field: string) => {
-      try {
         const data = await Api.get(`editor/get_user_info/${props.id}/${newId.value}/${userId}${`?field=${field}`}`)
         if (data) {
           reloadElementData(false)
         }
-      } catch (error) {
-        console.error(error)
-      }
     }
 
     const handleUsersPick = async (uuid: string | number, type: ('add' | 'remove' | 'fetchRemove') = 'add') => {
       const updateUsersInfo = async () => {
         const usersBody: IUsersLoad = { art_id: newId.value, users_id: users.value }
-        try {
           const data = await Api.post(`editor/get_users_info`, usersBody)
           if (data) {
             reloadElementData(false)
           }
-        }
-        catch (error) {
-          console.error(error)
-        }
       }
 
       if (type == 'add') {
@@ -313,14 +305,10 @@ export default defineComponent({
         updateUsersInfo();
       }
       else if (type == 'fetchRemove') {
-        try {
           const data = await Api.get(`editor/get_user_info/${props.id}/${newId.value}/null`)
           if (data) {
             reloadElementData(false)
           }
-        } catch (error) {
-          console.error(error)
-        }
       }
 
 

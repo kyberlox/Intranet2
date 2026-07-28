@@ -1,19 +1,12 @@
 <template>
-<div class="page__title mt20">Фильмы творческого объединения ЭМК</div>
-<button @click="showFilter = !showFilter"
-        class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
-    Год публикации
-</button>
-<DateFilter v-if="allSlides && showFilter"
-            :buttonText="buttonText"
-            :params="extractYears(allSlides)"
-            @pickFilter="(year: string) => filterYear(year)" />
-<ComplexGallery v-if="visibleEvents"
-                :key="offEventKey"
-                class="mt20"
-                :page=page
-                :slides="visibleEvents"
-                :routeTo="'filmEmk'" />
+    <div class="page__title mt20">Фильмы творческого объединения ЭМК</div>
+    <button @click="showFilter = !showFilter" class="btn dropdown-toggle tagDateNavBar__dropdown-toggle">
+        Год публикации
+    </button>
+    <DateFilter v-if="allSlides && showFilter" :buttonText="buttonText" :params="extractYears(allSlides)"
+        @pickFilter="(year: string) => filterYear(year)" />
+    <ComplexGallery v-if="visibleEvents" :key="offEventKey" class="mt20" :page=page :slides="visibleEvents"
+        :routeTo="'filmEmk'" />
 </template>
 <script lang="ts">
 import DateFilter from '@/components/tools/common/DateFilter.vue';
@@ -41,13 +34,10 @@ export default defineComponent({
 
         onMounted(async () => {
             if (allSlides.value.length) return;
-            try {
-                const res = await Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`, null, abortController.signal)
-                useViewsDataStore().setData(res, 'filmsEmk');
-                visibleEvents.value = res;
-            } catch (error) {
-                console.error(error)
-            }
+            const res = await Api.get(`article/find_by/${sectionTips['фильмыЕмк']}`, null, abortController.signal)
+            useViewsDataStore().setData(res, 'filmsEmk');
+            visibleEvents.value = res;
+
         })
 
         const filterYear = (year: string) => {

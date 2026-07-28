@@ -1,15 +1,16 @@
 <template>
-<div class="conducted-training__page mt20">
+  <div class="conducted-training__page mt20">
     <div class="page__title">Проведённые тренинги</div>
-    <TrainingTable :tableElements="trainings"
-                   :page="'conductedTrainings'"
-                   @openModal="(item: IConductedTrainings) => handleModal('open', item)" />
+    <TrainingTable
+      :tableElements="trainings"
+      :page="'conductedTrainings'"
+      @openModal="(item: IConductedTrainings) => handleModal('open', item)"
+    />
 
-    <SlotModal v-if="modalIsVisible"
-               @close="handleModal('close', null)">
-        <FeedBackModalInner :trainingInModal="trainingInModal" />
+    <SlotModal v-if="modalIsVisible" @close="handleModal('close', null)">
+      <FeedBackModalInner :trainingInModal="trainingInModal" />
     </SlotModal>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -34,12 +35,8 @@ export default defineComponent({
         const modalIsVisible = ref(false);
 
         onMounted(async () => {
-            try {
                 const data = await Api.get(`/article/find_by/${sectionTips['проведенныеТренинги']}`, null, abortController.signal)
                 trainings.value = data;
-            } catch (error) {
-                console.error(error)
-            }
         })
 
         const handleModal = (type: string, item: IConductedTrainings | null) => {

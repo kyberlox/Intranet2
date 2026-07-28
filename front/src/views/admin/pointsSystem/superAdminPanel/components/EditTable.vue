@@ -1,55 +1,44 @@
 <template>
-<div class="activity-edit">
-    <div class="activity-edit__table-wrapper">
-        <table class="activity-edit__table">
-            <thead class="activity-edit__thead">
-                <tr class="activity-edit__row activity-edit__row--head">
-                    <th class="activity-edit__cell activity-edit__cell--head"
-                        v-for="(head, index) in currentEntity?.keys"
-                        :key="'head' + index">
-                        <span> {{ head }}</span>
-                    </th>
-                </tr>
-            </thead>
-            <!--расскидываю типы табличек -->
-            <div v-if="isLoading"
-                 class="activity-edit__tbody">
-                <div class="activity-edit__table__loader">
-                    <Loader />
+    <div class="activity-edit">
+        <div class="activity-edit__table-wrapper">
+            <table class="activity-edit__table">
+                <thead class="activity-edit__thead">
+                    <tr class="activity-edit__row activity-edit__row--head">
+                        <th class="activity-edit__cell activity-edit__cell--head"
+                            v-for="(head, index) in currentEntity?.keys" :key="'head' + index">
+                            <span> {{ head }}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <!--расскидываю типы табличек -->
+                <div v-if="isLoading" class="activity-edit__tbody">
+                    <div class="activity-edit__table__loader">
+                        <Loader />
+                    </div>
                 </div>
-            </div>
-            <tbody v-else
-                   class="activity-edit__tbody">
-                <ActivityTable v-if="currentEntity?.name == 'activity'"
-                               @editActivity="editActivity"
-                               @deleteItem="deleteItem" />
-                <ModeratorTable v-else-if="currentEntity?.name == 'moder'"
-                                :moders="moders"
-                                @deleteItem="deleteItem" />
-                <CuratorTable v-else-if="currentEntity?.name == 'curator'"
-                              :curators="curators"
-                              @deleteItem="deleteItem" />
-                <AdministratorTable v-else-if="currentEntity?.name == 'admin'"
-                                    :admins="admins"
-                                    @deleteItem="deleteItem" />
-            </tbody>
+                <tbody v-else class="activity-edit__tbody">
+                    <ActivityTable v-if="currentEntity?.name == 'activity'" @editActivity="editActivity"
+                        @deleteItem="deleteItem" />
+                    <ModeratorTable v-else-if="currentEntity?.name == 'moder'" :moders="moders"
+                        @deleteItem="deleteItem" />
+                    <CuratorTable v-else-if="currentEntity?.name == 'curator'" :curators="curators"
+                        @deleteItem="deleteItem" />
+                    <AdministratorTable v-else-if="currentEntity?.name == 'admin'" :admins="admins"
+                        @deleteItem="deleteItem" />
+                </tbody>
 
-            <tfoot class="activity-edit__tfoot"></tfoot>
-        </table>
-        <div class="activity-edit__add">
-            <a class="activity-edit__add-btn primary-button"
-               role="button"
-               tabindex="0"
-               @click="addNewModalVisible = true">
-                Добавить
-            </a>
+                <tfoot class="activity-edit__tfoot"></tfoot>
+            </table>
+            <div class="activity-edit__add">
+                <a class="activity-edit__add-btn primary-button" role="button" tabindex="0"
+                    @click="addNewModalVisible = true">
+                    Добавить
+                </a>
+            </div>
         </div>
+        <AddNewEntinyModal v-if="addNewModalVisible" :currentEntity="currentEntity?.name" @addNew="addNewHandle"
+            @close="addNewModalVisible = false" />
     </div>
-    <AddNewEntinyModal v-if="addNewModalVisible"
-                       :currentEntity="currentEntity?.name"
-                       @addNew="addNewHandle"
-                       @close="addNewModalVisible = false" />
-</div>
 </template>
 
 <script lang="ts">
@@ -121,27 +110,20 @@ export default defineComponent({
             const name = cases.find(e => e.name == currentEntity?.value?.name)?.name
             const route = cases.find(e => e.name == currentEntity?.value?.name)?.route
             if (!route) return
-
-            try {
-                await Api.put(route, newEntity)
-                setTimeout(() => {
-                    reloadTable(name as "activity" | "curator" | "moder" | "admin")
-                }, 1000);
-            } catch (error) {
-                console.error(error);
-            }
+            await Api.put(route, newEntity)
+            setTimeout(() => {
+                reloadTable(name as "activity" | "curator" | "moder" | "admin")
+            }, 1000);
         }
 
         const deleteItem = async (type: 'activity' | 'admin' | 'moder' | 'curator', uid: number, activity_uid?: number) => {
             const prefixes = { activity: 'remove_activity', admin: 'delete_admin', moder: 'delete_peer_moder', curator: `delete_curator` }
-            try {
-                await Api.delete(`peer/${prefixes[type]}/${uid}` + (activity_uid ? '/' + activity_uid : ''))
-                setTimeout(() => {
-                    reloadTable((type))
-                }, 1000);
-            } catch (error) {
-                console.error(error)
-            }
+
+            await Api.delete(`peer/${prefixes[type]}/${uid}` + (activity_uid ? '/' + activity_uid : ''))
+            setTimeout(() => {
+                reloadTable((type))
+            }, 1000);
+
         }
 
         const reloadTable = async (table: 'curator' | 'moder' | 'admin' | 'activity') => {
@@ -170,11 +152,7 @@ export default defineComponent({
         }, { deep: true, immediate: true })
 
         const editActivity = async (active: INewActivityData) => {
-            try {
-                await Api.post('peer/edit_activity', active)
-            } catch (error) {
-                console.error(error)
-            }
+            await Api.post('peer/edit_activity', active)
         }
 
         onUnmounted(() => abortController.abort())

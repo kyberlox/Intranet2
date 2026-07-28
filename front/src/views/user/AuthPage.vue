@@ -1,23 +1,17 @@
 <template>
-<div class="portal__auth"
-     @keyup.enter="tryLogin"
-     tabindex="0">
-    <div class="portal__auth__bg"></div>
-    <div class="portal__auth__content">
-        <div class="portal__auth__form__auth">
-            <button @click="tryLogin"
-                    class="btn btn-primary portal__auth__form__auth__submit">
-                <span v-if="!isLoading">Войти</span>
-                <Loader v-else
-                        class="pos-rel" />
-            </button>
+    <div class="portal__auth" @keyup.enter="tryLogin" tabindex="0">
+        <div class="portal__auth__bg"></div>
+        <div class="portal__auth__content">
+            <div class="portal__auth__form__auth">
+                <button @click="tryLogin" class="btn btn-primary portal__auth__form__auth__submit">
+                    <span v-if="!isLoading">Войти</span>
+                    <Loader v-else class="pos-rel" />
+                </button>
+            </div>
+            <input v-if="testMode" v-model="login" />
+            <input v-if="testMode" v-model="pass" />
         </div>
-        <input v-if="testMode"
-               v-model="login" />
-        <input v-if="testMode"
-               v-model="pass" />
     </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -55,13 +49,9 @@ export default defineComponent({
         }
 
         const testLogin = async () => {
-            try {
-                const data: { session_id: string } = await Api.post("auth_router/root_auth", { login: login.value, password: pass.value })
-                userData.initLogin(data.session_id, 2366);
-                userData.setLogin(true);
-            } catch (error) {
-                console.error(error)
-            }
+            const data: { session_id: string } = await Api.post("auth_router/root_auth", { login: login.value, password: pass.value })
+            userData.initLogin(data.session_id, 2366);
+            userData.setLogin(true);
         }
 
         watch((route), () => {

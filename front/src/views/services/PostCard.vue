@@ -1,90 +1,66 @@
 <template>
-<div class="postcard">
-    <h1 class="page__title">Сервис отправки поздравительных открыток</h1>
-    <div class="postcard__container">
-        <div class="postcard__form-wrapper">
-
-            <div class="postcard__form-group">
-                <label>Выберите праздник</label>
-                <select class="postcard__select"
-                        v-model="activeHoliday">
-                    <option v-for="holiday in postCards"
-                            :key="holiday.id"
-                            :value="holiday.id">
-                        {{ holiday.name }}
-                    </option>
-                </select>
-            </div>
-
-            <VForm @submit="''"
-                   class="postcard__form">
-                <div class="postcard__form-group">
-                    <label>От</label>
-                    <input type="email"
-                           class="disabled"
-                           disabled
-                           :placeholder="msgSender" />
-                </div>
+    <div class="postcard">
+        <h1 class="page__title">Сервис отправки поздравительных открыток</h1>
+        <div class="postcard__container">
+            <div class="postcard__form-wrapper">
 
                 <div class="postcard__form-group">
-                    <label for="msgRecieverTextField">Кому</label>
-                    <ErrorMessage name="msgRecieverTextField"
-                                  class="invalid-feedback" />
-                    <Field as="input"
-                           type="email"
-                           name="msgRecieverTextField"
-                           :rules="validateEmail"
-                           rows="1"
-                           placeholder="recipient@email.com"
-                           v-model="msgReciever" />
+                    <label>Выберите праздник</label>
+                    <select class="postcard__select" v-model="activeHoliday">
+                        <option v-for="holiday in postCards" :key="holiday.id" :value="holiday.id">
+                            {{ holiday.name }}
+                        </option>
+                    </select>
                 </div>
 
-                <div class="postcard__form-group">
-                    <label for="textField">Тема</label>
-                    <Field as="textarea"
-                           name="msgThemeTextField"
-                           rows="1"
-                           placeholder="Поздравление"
-                           v-model="msgTheme" />
-                </div>
-
-                <div class="postcard__form-group postcard__swiper-wrapper">
-                    <SwiperBlank :type="'postInner'"
-                                 @indexChanged="changeMsgCardIndex"
-                                 :needEmitIndex="true"
-                                 :images="currentSlides" />
-                </div>
-
-                <div class="postcard__form-group">
-                    <label for="textField">Текст письма</label>
-                    <Field as="textarea"
-                           name="msgTextField"
-                           rows="8"
-                           placeholder="Введите текст поздравления..."
-                           v-model="msgText" />
-                </div>
-
-                <div class="postcard__form-group">
-                    <label>Подпись</label>
-                    <textarea v-model="signature"
-                              :rows="textAreaRowsToContent(signature)"
-                              class="postcard__signature"></textarea>
-                </div>
-            </VForm>
-
-            <div class="postcard__form-group">
-                <button @click="sendMsg"
-                        class="submit-button postcard__form-group__submit-button">
-                    <div class="neuroChat__send-button__loader"
-                         v-if="isLoading">
-                        <Loader />
+                <VForm @submit="''" class="postcard__form">
+                    <div class="postcard__form-group">
+                        <label>От</label>
+                        <input type="email" class="disabled" disabled :placeholder="msgSender" />
                     </div>
-                    Отправить
-                </button>
+
+                    <div class="postcard__form-group">
+                        <label for="msgRecieverTextField">Кому</label>
+                        <ErrorMessage name="msgRecieverTextField" class="invalid-feedback" />
+                        <Field as="input" type="email" name="msgRecieverTextField" :rules="validateEmail" rows="1"
+                            placeholder="recipient@email.com" v-model="msgReciever" />
+                    </div>
+
+                    <div class="postcard__form-group">
+                        <label for="textField">Тема</label>
+                        <Field as="textarea" name="msgThemeTextField" rows="1" placeholder="Поздравление"
+                            v-model="msgTheme" />
+                    </div>
+
+                    <div class="postcard__form-group postcard__swiper-wrapper">
+                        <SwiperBlank :type="'postInner'" @indexChanged="changeMsgCardIndex" :needEmitIndex="true"
+                            :images="currentSlides" />
+                    </div>
+
+                    <div class="postcard__form-group">
+                        <label for="textField">Текст письма</label>
+                        <Field as="textarea" name="msgTextField" rows="8" placeholder="Введите текст поздравления..."
+                            v-model="msgText" />
+                    </div>
+
+                    <div class="postcard__form-group">
+                        <label>Подпись</label>
+                        <textarea v-model="signature" :rows="textAreaRowsToContent(signature)"
+                            class="postcard__signature"></textarea>
+                    </div>
+                </VForm>
+
+                <div class="postcard__form-group">
+                    <button @click="sendMsg" class="submit-button postcard__form-group__submit-button">
+                        <div class="neuroChat__send-button__loader" v-if="isLoading">
+                            <Loader />
+                        </div>
+                        Отправить
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -132,12 +108,8 @@ export default defineComponent({
         const apiUrl = import.meta.env.VITE_API_URL;
 
         onMounted(async () => {
-            try {
-                const data: IPostCard[] = await Api.get(`article/find_by/${sectionTips['открытки']}`, null, abortController.signal)
-                postCards.value = data
-            } catch (error) {
-                console.error(error)
-            }
+            const data: IPostCard[] = await Api.get(`article/find_by/${sectionTips['открытки']}`, null, abortController.signal)
+            postCards.value = data
         })
 
         const changeActiveHoliday = (id: number) => {
@@ -147,13 +119,9 @@ export default defineComponent({
         watch((activeHoliday), async (newVal) => {
             if (!newVal) { return }
             currentSlides.value = [];
-            try {
-                const data = await Api.get(`article/find_by_ID/${newVal}`, null, abortController.signal)
-                currentSlides.value = data.images;
-                changeMsgCardIndex(0);
-            } catch (error) {
-                console.error(error)
-            }
+            const data = await Api.get(`article/find_by_ID/${newVal}`, null, abortController.signal)
+            currentSlides.value = data.images;
+            changeMsgCardIndex(0);
         })
 
         const changeMsgCardIndex = async (newIndex: number) => {

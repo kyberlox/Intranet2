@@ -1,181 +1,214 @@
 <template>
-<div class="admin-block__page__wrapper">
-  <AdminSidebar :needDefaultNav="true" />
-  <div class="admin-block-inner"
-       v-if="items">
-    <div class="admin-block-inner__content">
-      <div class="admin-block-inner__toolbar">
-        <div class="admin-block-inner__toolbar-left">
-          <div>
-            <RouterLink :to="{ name: 'adminElementInnerAdd', params: { id: sectionId } }"
-                        class="admin-block-inner__btn admin-block-inner__btn--primary">
-              <svg width="16"
-                   height="16"
-                   viewBox="0 0 24 24"
-                   fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-              </svg>
-              Добавить элемент
-            </RouterLink>
-          </div>
-
-          <!-- редактирование тегов сверху перед 31(актуальными новостями), 33(видеорепортажи) и 51(корп события) -->
+  <div class="admin-block__page__wrapper">
+    <AdminSidebar :needDefaultNav="true" />
+    <div class="admin-block-inner" v-if="items">
+      <div class="admin-block-inner__content">
+        <div class="admin-block-inner__toolbar">
           <div class="admin-block-inner__toolbar-left">
-            <button v-if="id == '31' || id == '33' || id == '51'"
-                    @click="showTagsModal = true"
-                    class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">
-              # Список тэгов
-            </button>
-            <!-- Заификсировать баллы за новости  -->
-            <button class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--green"
-                    v-else-if="id == '14' && PeerAdmin && featureFlags.pointsSystem">
-              Зафиксировать баллы
-            </button>
-            <!--  Кнопка сортировки блогов -->
-            <button v-else-if="id == '15'"
-                    @click="showBlogSortModal = true"
-                    class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue">
-              Сортировка блогов
-            </button>
-          </div>
-        </div>
-        <div class="admin-block-inner__toolbar-right">
-          <div class="admin-block-inner__search">
-            <SearchIcon class="admin-block-inner__search-icon" />
-            <input type="text"
-                   placeholder="Поиск..."
-                   class="admin-block-inner__search-input"
-                   v-model="searchQuery">
-          </div>
-        </div>
-      </div>
+            <div>
+              <RouterLink
+                :to="{ name: 'adminElementInnerAdd', params: { id: sectionId } }"
+                class="admin-block-inner__btn admin-block-inner__btn--primary"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                </svg>
+                Добавить элемент
+              </RouterLink>
+            </div>
 
-      <div class="admin-block-inner__main">
-        <div class="admin-block-inner__cards">
-          <div v-for="item in filteredItems"
-               :key="item.id"
-               class="admin-block-inner__card">
-            <RouterLink :to="{ name: 'adminElementInnerEdit', params: { elementId: item.id } }"
-                        class="admin-block-inner__card__wrapper">
-              <div v-if="item.preview_file_url"
-                   class="admin-block-inner__card__side-img"
-                   :class="{ 'bg-contain': sectionId == '41' }"
-                   v-lazy-load="item.preview_file_url"></div>
-              <div class="flex-grow">
-                <div class="admin-block-inner__card-header">
-                  <h3 class="admin-block-inner__card-title">{{ item.name }}</h3>
-                  <div class="admin-block-inner__card-actions">
-                    <button class="admin-block-inner__card-btn"
-                            title="Редактировать">
-                      <EditIcon />
-                    </button>
-                    <button @click.stop.prevent="changeActive(item.id, Boolean(item.active))"
-                            class="admin-block-inner__card-btn admin-block-inner__card-btn--danger"
-                            title="Отключить">
-                      <StatusIcon />
-                    </button>
-                    <button @click.stop.prevent="removeItem(item.id)"
-                            class="admin-block-inner__card-btn admin-block-inner__card-btn--danger"
-                            title="Удалить">
-                      <RemoveIcon />
-                    </button>
+            <!-- редактирование тегов сверху перед 31(актуальными новостями), 33(видеорепортажи) и 51(корп события) -->
+            <div class="admin-block-inner__toolbar-left">
+              <button
+                v-if="id == '31' || id == '33' || id == '51'"
+                @click="showTagsModal = true"
+                class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue"
+              >
+                # Список тэгов
+              </button>
+              <!-- Заификсировать баллы за новости  -->
+              <button
+                class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--green"
+                v-else-if="id == '14' && PeerAdmin && featureFlags.pointsSystem"
+              >
+                Зафиксировать баллы
+              </button>
+              <!--  Кнопка сортировки блогов -->
+              <button
+                v-else-if="id == '15'"
+                @click="showBlogSortModal = true"
+                class="admin-block-inner__btn admin-block-inner__btn--primary admin-block-inner__btn--primary--blue"
+              >
+                Сортировка блогов
+              </button>
+            </div>
+          </div>
+          <div class="admin-block-inner__toolbar-right">
+            <div class="admin-block-inner__search">
+              <SearchIcon class="admin-block-inner__search-icon" />
+              <input
+                type="text"
+                placeholder="Поиск..."
+                class="admin-block-inner__search-input"
+                v-model="searchQuery"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-block-inner__main">
+          <div class="admin-block-inner__cards">
+            <div
+              v-for="item in filteredItems"
+              :key="item.id"
+              class="admin-block-inner__card"
+            >
+              <RouterLink
+                :to="{ name: 'adminElementInnerEdit', params: { elementId: item.id } }"
+                class="admin-block-inner__card__wrapper"
+              >
+                <div
+                  v-if="item.preview_file_url"
+                  class="admin-block-inner__card__side-img"
+                  :class="{ 'bg-contain': sectionId == '41' }"
+                  v-lazy-load="item.preview_file_url"
+                ></div>
+                <div class="flex-grow">
+                  <div class="admin-block-inner__card-header">
+                    <h3 class="admin-block-inner__card-title">{{ item.name }}</h3>
+                    <div class="admin-block-inner__card-actions">
+                      <button class="admin-block-inner__card-btn" title="Редактировать">
+                        <EditIcon />
+                      </button>
+                      <button
+                        @click.stop.prevent="changeActive(item.id, Boolean(item.active))"
+                        class="admin-block-inner__card-btn admin-block-inner__card-btn--danger"
+                        title="Отключить"
+                      >
+                        <StatusIcon />
+                      </button>
+                      <button
+                        @click.stop.prevent="removeItem(item.id)"
+                        class="admin-block-inner__card-btn admin-block-inner__card-btn--danger"
+                        title="Удалить"
+                      >
+                        <RemoveIcon />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div class="admin-block-inner__card-content">
-                  <p v-if="item.content_text"
-                     class="admin-block-inner__card-description"
-                     v-html="item.content_text"></p>
-                  <div class="admin-block-inner__card-meta">
-                    <span class="admin-block-inner__card-status"
-                          :class="`admin-block-inner__card-status--${item.active}`">
-                      {{ getStatusText(Boolean(item.active)) }}
-                    </span>
-                    <div class="d-flex flex-column mt20">
-                      <span v-if="item.indirect_data && 'module' in item.indirect_data"
-                            class="admin-block-inner__card-date">
-                        {{ item.indirect_data.module }}
+                  <div class="admin-block-inner__card-content">
+                    <p
+                      v-if="item.content_text"
+                      class="admin-block-inner__card-description"
+                      v-html="item.content_text"
+                    ></p>
+                    <div class="admin-block-inner__card-meta">
+                      <span
+                        class="admin-block-inner__card-status"
+                        :class="`admin-block-inner__card-status--${item.active}`"
+                      >
+                        {{ getStatusText(Boolean(item.active)) }}
                       </span>
-                      <span v-if="item.indirect_data?.TITLE"
-                            class="admin-block-inner__card-date">
-                        {{ item.indirect_data?.TITLE }}
-                      </span>
-                      <span v-if="item.date_publiction"
-                            class="admin-block-inner__card-date">
-                        {{ useDateFormat(item.date_publiction, 'DD.MM.YYYY HH:mm:ss') }}
-                      </span>
-                      <span v-else-if="item.date_creation"
-                            class="admin-block-inner__card-date">
-                        {{ useDateFormat(item.date_creation, 'DD.MM.YYYY HH:mm:ss') }}
-                      </span>
+                      <div class="d-flex flex-column mt20">
+                        <span
+                          v-if="item.indirect_data && 'module' in item.indirect_data"
+                          class="admin-block-inner__card-date"
+                        >
+                          {{ item.indirect_data.module }}
+                        </span>
+                        <span
+                          v-if="item.indirect_data?.TITLE"
+                          class="admin-block-inner__card-date"
+                        >
+                          {{ item.indirect_data?.TITLE }}
+                        </span>
+                        <span
+                          v-if="item.date_publiction"
+                          class="admin-block-inner__card-date"
+                        >
+                          {{ useDateFormat(item.date_publiction, "DD.MM.YYYY HH:mm:ss") }}
+                        </span>
+                        <span
+                          v-else-if="item.date_creation"
+                          class="admin-block-inner__card-date"
+                        >
+                          {{ useDateFormat(item.date_creation, "DD.MM.YYYY HH:mm:ss") }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </RouterLink>
+              </RouterLink>
+            </div>
           </div>
+
+          <div v-if="filteredItems.length === 0" class="admin-block-inner__empty">
+            <div v-if="!isLoading">
+              <h3 class="admin-block-inner__empty-title">Элементы не найдены</h3>
+              <p class="admin-block-inner__empty-description">
+                В этом разделе пока нет элементов или они не соответствуют критериям
+                поиска
+              </p>
+            </div>
+            <div v-else class="admin-block-inner__loader">
+              <Loader />
+            </div>
+          </div>
+          <PageSelector
+            v-if="paginationEnabled"
+            :page="page"
+            :isLoading="isLoading"
+            buttonClass="admin-block-inner__btn"
+            @changePage="setPage"
+          />
         </div>
 
-        <div v-if="filteredItems.length === 0"
-             class="admin-block-inner__empty">
-          <div v-if="!isLoading">
-            <h3 class="admin-block-inner__empty-title">Элементы не найдены</h3>
-            <p class="admin-block-inner__empty-description">
-              В этом разделе пока нет элементов или они не соответствуют критериям поиска
-            </p>
-          </div>
-          <div v-else
-               class="admin-block-inner__loader">
-            <Loader />
-          </div>
-        </div>
-        <PageSelector v-if="paginationEnabled"
+        <!-- <PageSelector v-if="paginationEnabled"
                       :page="page"
                       :isLoading="isLoading"
                       buttonClass="admin-block-inner__btn"
-                      @changePage="setPage" />
+                      @changePage="setPage" /> -->
+
       </div>
     </div>
+    <AdminTagsModal v-if="showTagsModal" @close="showTagsModal = false" />
+    <AdminBlogSortModal v-if="showBlogSortModal" @close="showBlogSortModal = false" />
   </div>
-  <AdminTagsModal v-if="showTagsModal"
-                  @close="showTagsModal = false" />
-  <AdminBlogSortModal v-if="showBlogSortModal"
-                      @close="showBlogSortModal = false" />
-</div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onUnmounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import Api from '@/utils/Api';
-import AdminSidebar from '@/views/admin/components/AdminSidebar.vue';
-import Loader from '@/components/layout/Loader.vue';
-import { useDateFormat } from '@vueuse/core';
+import { computed, defineComponent, onUnmounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+import Api from "@/utils/Api";
+import AdminSidebar from "@/views/admin/components/AdminSidebar.vue";
+import Loader from "@/components/layout/Loader.vue";
+import { useDateFormat } from "@vueuse/core";
 import SearchIcon from "@/assets/icons/layout/SearchIcon.svg?component";
-import EditIcon from "@/assets/icons/admin/EditIcon.svg?component"
-import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component"
-import StatusIcon from "@/assets/icons/admin/StatusIcon.svg?component"
+import EditIcon from "@/assets/icons/admin/EditIcon.svg?component";
+import RemoveIcon from "@/assets/icons/admin/RemoveIcon.svg?component";
+import StatusIcon from "@/assets/icons/admin/StatusIcon.svg?component";
 
-import { useToast } from 'primevue/usetoast';
-import { useToastCompose } from '@/composables/useToastСompose';
-import { handleApiResponse, handleApiError } from '@/utils/apiResponseCheck';
-import AdminTagsModal from './AdminTagsModal.vue';
-import { useUserData } from '@/stores/userData';
-import { featureFlags } from '@/assets/static/featureFlags';
-import type { AxiosError } from 'axios';
-import AdminBlogSortModal from './AdminBlogSortModal.vue';
+import { useToast } from "primevue/usetoast";
+import { useToastCompose } from "@/composables/useToastСompose";
+import { handleApiResponse, handleApiError } from "@/utils/apiResponseCheck";
+import AdminTagsModal from "./AdminTagsModal.vue";
+import { useUserData } from "@/stores/userData";
+import { featureFlags } from "@/assets/static/featureFlags";
+import type { AxiosError } from "axios";
+import AdminBlogSortModal from "./AdminBlogSortModal.vue";
 import PageSelector from "@/components/tools/common/PageSelector.vue";
 
 interface SectionItem {
   id: number;
-  preview_file_url?: string,
-  name?: string,
-  content_text: string,
-  active?: string,
-  date_publiction?: string,
-  date_creation?: string,
+  preview_file_url?: string;
+  name?: string;
+  content_text: string;
+  active?: string;
+  date_publiction?: string;
+  date_creation?: string;
   indirect_data?: {
-    TITLE?: string
-  }
+    TITLE?: string;
+  };
 }
 
 export default defineComponent({
@@ -188,19 +221,19 @@ export default defineComponent({
     EditIcon,
     RemoveIcon,
     StatusIcon,
-    PageSelector
+    PageSelector,
   },
   props: {
     id: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props) {
     const abortController = new AbortController();
     const route = useRoute();
     const items = ref<SectionItem[]>([]);
-    const searchQuery = ref('');
+    const searchQuery = ref("");
     const isLoading = ref(false);
     const sectionId = ref();
     const showBlogSortModal = ref(false);
@@ -214,65 +247,80 @@ export default defineComponent({
 
     const filteredItems = computed(() => {
       if (!searchQuery.value) return items.value;
-      return items.value.filter(item =>
-        item.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        item.content_text?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        item.indirect_data && 'module' in item.indirect_data && (item.indirect_data.module as string).toLowerCase().includes(searchQuery.value.toLowerCase())
+      return items.value.filter(
+        (item) =>
+          item.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          item.content_text?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          (item.indirect_data &&
+            "module" in item.indirect_data &&
+            (item.indirect_data.module as string)
+              .toLowerCase()
+              .includes(searchQuery.value.toLowerCase()))
       );
     });
 
     const getStatusText = (status: boolean) => {
-      return status ? 'Активен' : 'В архиве'
+      return status ? "Активен" : "В архиве";
     };
 
     const itemsInit = async () => {
       items.value.length = 0;
       isLoading.value = true;
       sectionId.value = route.params.id;
-      if (sectionId.value == 'gpt') return
-      const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : '';
+      if (sectionId.value == "gpt") return;
+      const paginationQuery = paginationEnabled.value ? `?page=${page.value}` : "";
       try {
-        const data = await Api.get(`/editor/section_rendering/${sectionId.value}${paginationQuery}`, null, abortController.signal)
-        items.value = data
+        const data = await Api.get(
+          `/editor/section_rendering/${sectionId.value}${paginationQuery}`,
+          null,
+          abortController.signal
+        );
+        items.value = data;
       } finally {
-        isLoading.value = false
+        isLoading.value = false;
       }
-    }
+    };
 
     const setPage = (newPage: number) => {
       const normalizedPage = Math.max(1, Number(newPage) || 1);
       page.value = normalizedPage - 1;
       itemsInit();
-    }
+    };
 
-    watch(() => props.id, () => {
-      page.value = 0;
-      itemsInit();
-    }, { immediate: true });
+    watch(
+      () => props.id,
+      () => {
+        page.value = 0;
+        itemsInit();
+      },
+      { immediate: true }
+    );
 
     const removeItem = async (id: number) => {
       try {
-        const data = await Api.delete(`editor/del/${id}`)
-        handleApiResponse(data, toast, 'trySupportError', 'adminDeleteSuccess')
+        const data = await Api.delete(`editor/del/${id}`);
+        handleApiResponse(data, toast, "trySupportError", "adminDeleteSuccess");
       } catch (error) {
-        handleApiError((error as AxiosError), toast)
+        handleApiError(error as AxiosError, toast);
       } finally {
         itemsInit();
       }
-    }
+    };
 
     const changeActive = async (id: number, currentStatus: boolean) => {
       try {
-        const res = await Api.post(`editor/update/${id}`, { active: !currentStatus, id: id, section_id: Number(props.id) })
-        handleApiError(res, toast)
-      } catch (error) {
-        console.error(error)
+        const res = await Api.post(`editor/update/${id}`, {
+          active: !currentStatus,
+          id: id,
+          section_id: Number(props.id),
+        });
+        handleApiError(res, toast);
       } finally {
-        itemsInit()
+        itemsInit();
       }
-    }
+    };
 
-    onUnmounted(() => abortController.abort())
+    onUnmounted(() => abortController.abort());
 
     return {
       items,
@@ -290,8 +338,8 @@ export default defineComponent({
       changeActive,
       setPage,
       showBlogSortModal,
-      PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin)
+      PeerAdmin: computed(() => userData.getUserRoots.PeerAdmin),
     };
-  }
+  },
 });
 </script>

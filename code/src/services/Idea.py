@@ -117,8 +117,13 @@ class Idea:
                             file_info = await B24().get_file(id=file_id, inf_id=121)
                         except:
                             file_info = await B24().get_all_files(id=file_id)
-                        file_url = "https://portal.emk.ru" + file_info["SRC"]
-                        idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
+                        
+                        if 'SRC' not in file_info:
+                            file_url = file_info['DOWNLOAD_URL']
+                            idea['files'] = {'original_name': file_info['NAME'], 'file_url': file_url}
+                        else:
+                            file_url = "https://portal.emk.ru" + file_info["SRC"] # Возникает ошибка KeyError 279970
+                            idea['files'] = {'original_name': file_info['ORIGINAL_NAME'], 'file_url': file_url}
                     else:
                         idea.pop("document_id")
                         idea['files'] = dict()
@@ -154,7 +159,7 @@ description="""
 
 Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/113/
 
-Создает новую идею в информационном блоке Битрикс24 и запускает бизнес-процесс. Метод поддерживает два варианта: с прикрепленным файлом и без него.
+Создает новую идею в информационном блоке Битрикс24. Метод поддерживает два варианта: с прикрепленным файлом и без него.
 
 ### Входные параметры
 | Параметр | Тип | Описание | Обязательный |
@@ -166,6 +171,19 @@ description="""
 | | | - `CREATED_BY` (string) — ID автора идеи | |
 | | | - `base` (string) — содержимое файла в base64 (опционально) | |
 | | | - `base_name` (string) — имя файла (опционально) | |
+
+
+## Метод `bizproc.workflow.start`
+
+Сcылка на документацию Битрикс24 - https://portal.emk.ru/crm/type/1074/details/103/?categoryId=76
+
+Метод запускает БП
+
+Запрос принимает параметры:
+    - `TEMPLATE_ID` (int) — Id БП (всегда имеет значение 2216)
+    - `DOCUMENT_ID` (list) — сущность в которой запускается БП (всегда будет иметь значение 'lists')
+    - `DOCUMENT_ID` (list) — путь, где храниться БП в корне ( всегда будет иметь значение 'Bitrix/Lists/BizprocDocumentLists')
+    - `DOCUMENT_ID` (list) — ID элемента списка есть идея (сюда подставляется значение, которое возвращается после выполнения метода `lists.element.add`.)
 
 """)
 async def calendar_event(data = Body()):

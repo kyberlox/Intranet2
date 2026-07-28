@@ -40,14 +40,23 @@ article_router = APIRouter(prefix="/article")
 def make_date_valid(date):
     if date is not None:
         if isinstance(date, str):
-            if '-' in date:  
-                try:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                except:
-                    # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
-                    # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    return datetime.datetime.strptime(date, '%Y-%m-%d')
+            if '-' in date:
+                if 'T' in date:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
+                else:
+                    try:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except:
+                        # return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
+                        # return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                        return datetime.datetime.strptime(date, '%Y-%m-%d')
             elif '.' in date:
                 try:
                     return datetime.datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
@@ -59,6 +68,7 @@ def make_date_valid(date):
 
     else:
         return None
+        
 
 
 def take_value(PROPERTY: dict | list | str):
@@ -1997,7 +2007,7 @@ class Article:
                     if user_id is not None:
                         has_user_liked = await User(id=user_id).has_liked(art_id=self.id, session=session)
                         res['reactions'] = has_user_liked
-                if int(self.section_id) == 15:
+                if int(self.section_id) == 15 or int(self.section_id) == 18:
                     files = await File(art_id=int(self.id)).get_files_by_art_id(session)
                     images = list()
                     #Для блогов собираем фотки
@@ -2030,7 +2040,7 @@ class Article:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_publiction'], reverse=False)
                 except:
                     sorted_active_articles = sorted(active_articles, key=lambda x: x['date_creation'], reverse=False)
-            # elif self.section_id == "18":
+            # elif self.section_id == "18"
                 # sorted_active_articles = sorted(active_articles, key=lambda x: int(x['indirect_data']["sort"]), reverse=False)
             elif int(self.section_id) in SECTIONS_WITH_DATE_PUBLICTION:
                 try:
@@ -2618,8 +2628,8 @@ class Article:
                 if not user_inf:
                     continue
                 indirect_data = user_inf.get("indirect_data", {})
-                if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: ws[
-                    f'A{i}'] = f'{user_inf["name"]} {user_inf["last_name"]} {user_inf["second_name"]}'
+                if "name" in user_inf and "last_name" in user_inf and "second_name" in user_inf: 
+                    ws[f'A{i}'] = f'{user_inf["last_name"]} {user_inf["name"]} {user_inf["second_name"]}'
 
                 if "email" in user_inf: ws[f'B{i}'] = f'{user_inf["email"]}'
                 if "personal_mobile" in user_inf: ws[f'C{i}'] = f'{user_inf["personal_mobile"]}'

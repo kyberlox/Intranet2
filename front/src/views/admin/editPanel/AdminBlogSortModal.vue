@@ -1,33 +1,32 @@
 <template>
-<SlotModal>
-    <div v-if="!isLoading"
-         class="blog__sort__wrapper">
-        <div v-for="item in sortData?.sort((a, b) => a.user_fio.localeCompare(b.user_fio))"
-             :key="item.user_id"
-             class="blog__sort">
-            <div class="blog__sort__user">
-                <img :src="item.user_photo" />
-                <div>{{ item.user_fio }}</div>
-            </div>
-            <div class="blog__sort__input">
-                <input class="admin-element-inner__input fs-m"
-                       :min="0"
-                       v-model="item.sort" />
-            </div>
+  <SlotModal>
+    <div v-if="!isLoading" class="blog__sort__wrapper">
+      <div
+        v-for="item in sortData?.sort((a, b) => a.user_fio.localeCompare(b.user_fio))"
+        :key="item.user_id"
+        class="blog__sort"
+      >
+        <div class="blog__sort__user">
+          <img :src="item.user_photo" />
+          <div>{{ item.user_fio }}</div>
         </div>
-        <div class="blog__sort__button__wrapper">
-            <button class="blog__sort__button primary-button"
-                    @click="handleSortChanged">Сохранить</button>
+        <div class="blog__sort__input">
+          <input class="admin-element-inner__input fs-m" :min="0" v-model="item.sort" />
         </div>
+      </div>
+      <div class="blog__sort__button__wrapper">
+        <button class="blog__sort__button primary-button" @click="handleSortChanged">
+          Сохранить
+        </button>
+      </div>
     </div>
-    <div class="blog__sort__loader"
-         v-else>
-        <Loader />
+    <div class="blog__sort__loader" v-else>
+      <Loader />
     </div>
-</SlotModal>
+  </SlotModal>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import Loader from '@/components/layout/Loader.vue';
 import SlotModal from '@/components/tools/modal/SlotModal.vue';
 import Api from '@/utils/Api';
@@ -49,8 +48,6 @@ export default defineComponent({
             sortData.value.length = 0;
             try {
                 sortData.value = await Api.get('article/sort_and_blogs', null, abortController.signal)
-            } catch (error) {
-                console.error(error)
             } finally {
                 isLoading.value = false
             }
@@ -64,8 +61,6 @@ export default defineComponent({
         const handleSortChanged = async () => {
             try {
                 Api.put('article/sort_to_blogs', sortData.value)
-            } catch (error) {
-                console.error(error)
             } finally {
                 emit('close')
             }

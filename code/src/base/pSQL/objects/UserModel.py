@@ -26,12 +26,12 @@ LogsMaker().ready_status_message("Успешная инициализация т
 #!!!!!!!!!!!!!!!
 
 MANUFACTURES_IDS = {
-    96: 'ЗАО «Саратовский арматурный завод»', 
+    96: 'АО «Саратовский арматурный завод»', 
     208: 'ООО «Пульсатор»', 
     193: 'ООО «Техно-Сфера»', 
     114: 'ООО «АРМАТОМ»', 
     # 125: 'ООО «ТехПромАрма»', 
-    69: 'ЗАО «Курганспецарматура»', 
+    69: 'АО «Курганспецарматура»', 
     121: "ВАЗ", 
     74: 'АО «НПО Регулятор»', 
     206: 'АО «Тулаэлектропривод»'
@@ -693,7 +693,7 @@ class UserModel:
         for res in result:
             user = list(res)
 
-            if not isinstance(user[6]['uf_department'], list) or 112 in user[6]['uf_department']:
+            if ('uf_department' in user[6] and not isinstance(user[6]['uf_department'], list)) or ('uf_department' in user[6] and 112 in user[6]['uf_department']):
             # if type(user[6]['uf_department']) != type(bool()) and 112 in user[6]['uf_department']:
                 pass
             else:

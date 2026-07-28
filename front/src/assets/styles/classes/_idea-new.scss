@@ -54,8 +54,8 @@
 
     &__error {
         &-wrapper {
-            min-height: 1.5rem;
-            margin-bottom: 0.5rem;
+            // min-height: 1.5rem;
+            margin-bottom: 10px;
         }
 
         &-message {
@@ -154,15 +154,18 @@
         margin-top: 10px;
 
         &__loader {
-
             width: 20px !important;
             height: 20px !important;
-
         }
 
         &>.primary-button {
             margin: auto;
             font-size: medium;
+
+            &>.loader {
+                width: 20px !important;
+                height: 20px !important;
+            }
 
             @include sm {
                 font-size: 14px;

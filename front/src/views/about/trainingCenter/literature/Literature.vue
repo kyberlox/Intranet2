@@ -1,25 +1,30 @@
 <template>
-<div class="literature__training__page mt20">
+  <div class="literature__training__page mt20">
     <div class="page__title">Учебные пособия и литература ЭМК</div>
     <div class="conducted-training-table__navigation-header">
-        <div v-for="(name, index) in ['Автор', 'Раздел']"
-             :key="index + 'filter'"
-             class="dropdown-wrapper tagDateNavBar__dropdown-wrapper tagDateNavBar__dropdown-wrapper--long">
-            <button @click="handleButtonClick(name)"
-                    class="btn  dropdown-toggle tagDateNavBar__dropdown-toggle">
-                {{ name }}
-            </button>
-            <DateFilter v-if="showThis == name"
-                        :modifiers="'noTag'"
-                        :buttonText="name"
-                        :params="name == 'Автор' ? authors : sections"
-                        :needButton="false"
-                        @pickFilter="(e) => pickFilter(e, name)" />
-        </div>
+      <div
+        v-for="(name, index) in ['Автор', 'Раздел']"
+        :key="index + 'filter'"
+        class="dropdown-wrapper tagDateNavBar__dropdown-wrapper tagDateNavBar__dropdown-wrapper--long"
+      >
+        <button
+          @click="handleButtonClick(name)"
+          class="btn dropdown-toggle tagDateNavBar__dropdown-toggle"
+        >
+          {{ name }}
+        </button>
+        <DateFilter
+          v-if="showThis == name"
+          :modifiers="'noTag'"
+          :buttonText="name"
+          :params="name == 'Автор' ? authors : sections"
+          :needButton="false"
+          @pickFilter="(e) => pickFilter(e, name)"
+        />
+      </div>
     </div>
-    <TrainingTable :page="'literature'"
-                   :tableElements="renderedLiterature" />
-</div>
+    <TrainingTable :page="'literature'" :tableElements="renderedLiterature" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -58,14 +63,10 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-            try {
                 const data = await Api.get(`article/find_by/${sectionTips['УчЛитература']}`, null, abortController.signal)
                 setFilterData(data);
                 literature.value = data;
                 renderedLiterature.value = data;
-            } catch (error) {
-                console.error(error)
-            }
         })
 
         const pickFilter = (param: string, type: string) => {

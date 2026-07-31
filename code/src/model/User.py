@@ -1351,6 +1351,7 @@ async def process_excel_file(
             """
             Поиск пользователя в БД по ФИО
             """
+            print(last_name, first_name, middle_name)
             # Вариант 1: Точное совпадение
             stmt = select(User.id).where(
                 User.last_name == last_name,

@@ -1373,7 +1373,7 @@ async def process_excel_file(
             
             return user_id
 
-        def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
+        def get_user_from_bitrix(user_id: int) -> Optional[Dict]:
             """
             Получение информации о пользователе из Битрикс24
             """

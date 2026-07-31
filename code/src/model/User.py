@@ -1503,6 +1503,8 @@ async def process_excel_file(
                         last_login = convert_bitrix_date(last_login_raw)
                         print(last_login)
                     print(last_login_raw, 'до')
+            else:
+                print('с битрика ничо не пришло', bitrix_data)
             
             df.iloc[index, 7] = last_login
         

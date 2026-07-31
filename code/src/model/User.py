@@ -1386,7 +1386,7 @@ async def process_excel_file(
             # 
             # Для теста возвращаем заглушку
             response = B24().getUser(user_id)
-            return response.get('result', {})
+            return response
             # return {
             #     'result': {
             #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'

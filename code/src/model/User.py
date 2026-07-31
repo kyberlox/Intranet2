@@ -1406,24 +1406,34 @@ async def process_excel_file(
          # Читаем файл
         contents = await file.read()
         
-        # Определяем формат
+        # Читаем файл
         if file.filename.endswith('.xls'):
-            df = pd.read_excel(io.BytesIO(contents), engine='xlrd')
+            df = pd.read_excel(io.BytesIO(contents), engine='xlrd', dtype=str)
         else:
-            df = pd.read_excel(io.BytesIO(contents), engine='openpyxl')
+            df = pd.read_excel(io.BytesIO(contents), engine='openpyxl', dtype=str)
         
-        # Создаем новые колонки, если их нет
-        if 'G' not in df.columns or df.columns.get_loc('G') >= len(df.columns):
-            df['G'] = ''
-        if 'H' not in df.columns or df.columns.get_loc('H') >= len(df.columns):
-            df['H'] = ''
+        # Убеждаемся, что все колонки - строки
+        df = df.astype(str)
+        
+        # Проверяем наличие колонок
+        if len(df.columns) < 4:
+            raise HTTPException(400, "Файл должен содержать минимум 4 колонки (A, B, C, D)")
+        
+        # Добавляем колонки G и H, если их нет
+        while len(df.columns) < 7:
+            df[f'col_{len(df.columns)}'] = ""
+        
+        # Переименовываем колонки для удобства
+        # (опционально, если нужны понятные названия)
+        df.columns = [f'col_{i}' for i in range(len(df.columns))]
         
         # Обрабатываем строки начиная с 4 (индекс 3)
         for index in range(3, len(df)):
             # Получаем значение из колонки D (индекс 3)
-            fio_cell = df.iloc[index, 3] if len(df.columns) > 3 else None
+            fio_cell = df.iloc[index, 3] if len(df.columns) > 3 else ""
             
-            if pd.isna(fio_cell):
+            # Проверяем на NaN или пустую строку
+            if pd.isna(fio_cell) or fio_cell == 'nan' or not fio_cell.strip():
                 continue
             
             # Разбиваем ФИО
@@ -1440,11 +1450,11 @@ async def process_excel_file(
             
             if user_id is None:
                 # Пользователь не найден
-                df.iloc[index, 6] = "Нет"  # колонка G
-                df.iloc[index, 7] = ""      # колонка H
+                df.iloc[index, 6] = "Нет"  # колонка G (индекс 6)
+                df.iloc[index, 7] = ""     # колонка H (индекс 7)
                 continue
             
-            # Пользователь найден - ставим "Да"
+            # Пользователь найден
             df.iloc[index, 6] = "Да"
             
             # Получаем данные из Битрикс
@@ -1457,23 +1467,25 @@ async def process_excel_file(
                 if last_login_raw:
                     last_login = convert_bitrix_date(last_login_raw)
             
-            # Записываем в колонку H
             df.iloc[index, 7] = last_login
         
-        # Сохраняем в буфер
+        # Убеждаемся, что колонки G и H - строковые
+        if len(df.columns) >= 8:
+            df.iloc[:, 6] = df.iloc[:, 6].astype(str)
+            df.iloc[:, 7] = df.iloc[:, 7].astype(str)
+        
+        # Сохраняем результат
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Sheet1')
+            df.to_excel(writer, index=False, sheet_name='Sheet1', header=True)
         
         output.seek(0)
         
-        # Возвращаем файл
-        filename = f"processed_{file.filename}"
         return StreamingResponse(
             output,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={
-                "Content-Disposition": f"attachment; filename={filename}"
+                "Content-Disposition": f"attachment; filename=processed_{file.filename}"
             }
         )
     

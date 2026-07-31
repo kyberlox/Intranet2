@@ -1351,7 +1351,7 @@ async def process_excel_file(
             """
             Поиск пользователя в БД по ФИО
             """
-            print(last_name, first_name, middle_name)
+            # print(last_name, first_name, middle_name)
             # Вариант 1: Точное совпадение
             stmt = select(User.id).where(
                 User.last_name == last_name,
@@ -1373,26 +1373,26 @@ async def process_excel_file(
             
             return user_id
 
-        # def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
-        #     """
-        #     Получение информации о пользователе из Битрикс24
-        #     """
-        #     # ===== ВСТАВЬТЕ ВАШ ЗАПРОС К БИТРИКС =====
-        #     # Пример:
-        #     # response = await bitrix_client.call(
-        #     #     'user.get',
-        #     #     {'ID': user_id}
-        #     # )
-        #     # return response.get('result', {})
-        #     # 
-        #     # Для теста возвращаем заглушку
-        #     response = B24().getUser(user_id)
-        #     return response
-        #     # return {
-        #     #     'result': {
-        #     #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'
-        #     #     }
-        #     # }
+        def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
+            """
+            Получение информации о пользователе из Битрикс24
+            """
+            # ===== ВСТАВЬТЕ ВАШ ЗАПРОС К БИТРИКС =====
+            # Пример:
+            # response = await bitrix_client.call(
+            #     'user.get',
+            #     {'ID': user_id}
+            # )
+            # return response.get('result', {})
+            # 
+            # Для теста возвращаем заглушку
+            response = B24().getUser(user_id)
+            return response
+            # return {
+            #     'result': {
+            #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'
+            #     }
+            # }
 
         # def convert_bitrix_date(date_str: str) -> str:
         #     """
@@ -1434,14 +1434,6 @@ async def process_excel_file(
         #     # Заглушка для теста
         #     return 123
 
-        async def get_user_from_bitrix(user_id: int) -> Optional[dict]:
-            """Получение информации о пользователе из Битрикс24"""
-            # ===== ВАШ ЗАПРОС К БИТРИКС =====
-            # response = await bitrix_client.call('user.get', {'ID': user_id})
-            # return response.get('result', {})
-            
-            # Заглушка
-            return {'result': {'LAST_LOGIN': '2026-07-31T14:35:09+04:00'}}
 
         def convert_bitrix_date(date_str: str) -> str:
             """Конвертирует дату из формата ISO в DD.MM.YYYY"""
@@ -1499,7 +1491,7 @@ async def process_excel_file(
             df.iloc[index, 6] = "Да"
             
             # Получаем данные из Битрикс (используем await)
-            bitrix_data = await get_user_from_bitrix(user_id)
+            bitrix_data = get_user_from_bitrix(user_id)
             
             # Извлекаем LAST_LOGIN
             last_login = ""

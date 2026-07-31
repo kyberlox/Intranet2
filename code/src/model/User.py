@@ -1405,7 +1405,7 @@ async def process_excel_file(
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(executor, _sync_bitrix_call)
             
-            return result
+            return result[0]
 
         # def convert_bitrix_date(date_str: str) -> str:
         #     """
@@ -1509,15 +1509,9 @@ async def process_excel_file(
             # Извлекаем LAST_LOGIN
             last_login = ""
             if bitrix_data and isinstance(bitrix_data, dict):
-                result = bitrix_data.get('result', {})
-                if isinstance(result, dict):
-                    last_login_raw = result.get('LAST_LOGIN', '')
-                    if last_login_raw:
-                        last_login = convert_bitrix_date(last_login_raw)
-                        print(last_login)
-                    print(last_login_raw, 'до')
-            else:
-                print('с битрика ничо не пришло', bitrix_data)
+                last_login_raw = bitrix_data.get('LAST_LOGIN', '')
+                if last_login_raw:
+                    last_login = convert_bitrix_date(last_login_raw)
             
             df.iloc[index, 7] = last_login
         

@@ -1347,30 +1347,30 @@ async def process_excel_file(
             
         #     return parts
 
-        # async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
-        #     """
-        #     Поиск пользователя в БД по ФИО
-        #     """
-        #     # Вариант 1: Точное совпадение
-        #     stmt = select(User.id).where(
-        #         User.last_name == last_name,
-        #         User.name == first_name,
-        #         User.second_name == middle_name
-        #     )
-        #     result = await db.execute(stmt)
-        #     user_id = result.scalar_one_or_none()
+        async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
+            """
+            Поиск пользователя в БД по ФИО
+            """
+            # Вариант 1: Точное совпадение
+            stmt = select(User.id).where(
+                User.last_name == last_name,
+                User.name == first_name,
+                User.second_name == middle_name
+            )
+            result = await db.execute(stmt)
+            user_id = result.scalar_one_or_none()
             
-        #     # Вариант 2: Поиск по частичному совпадению (если нужно)
-        #     if user_id is None:
-        #         # Поиск по фамилии и имени (более гибкий вариант)
-        #         stmt = select(User.id).where(
-        #             User.last_name.ilike(f"%{last_name}%"),
-        #             User.name.ilike(f"%{first_name}%")
-        #         )
-        #         result = await db.execute(stmt)
-        #         user_id = result.scalar_one_or_none()
+            # Вариант 2: Поиск по частичному совпадению (если нужно)
+            if user_id is None:
+                # Поиск по фамилии и имени (более гибкий вариант)
+                stmt = select(User.id).where(
+                    User.last_name.ilike(f"%{last_name}%"),
+                    User.name.ilike(f"%{first_name}%")
+                )
+                result = await db.execute(stmt)
+                user_id = result.scalar_one_or_none()
             
-        #     return user_id
+            return user_id
 
         # def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
         #     """
@@ -1418,20 +1418,20 @@ async def process_excel_file(
             
             return parts
 
-        async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
-            """Поиск пользователя в БД по ФИО"""
-            # Ваш запрос к БД
-            # from your_models import User
-            # stmt = select(User.id).where(
-            #     User.last_name == last_name,
-            #     User.first_name == first_name,
-            #     User.middle_name == middle_name
-            # )
-            # result = await db.execute(stmt)
-            # return result.scalar_one_or_none()
+        # async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
+        #     """Поиск пользователя в БД по ФИО"""
+        #     # Ваш запрос к БД
+        #     # from your_models import User
+        #     # stmt = select(User.id).where(
+        #     #     User.last_name == last_name,
+        #     #     User.first_name == first_name,
+        #     #     User.middle_name == middle_name
+        #     # )
+        #     # result = await db.execute(stmt)
+        #     # return result.scalar_one_or_none()
             
-            # Заглушка для теста
-            return 123
+        #     # Заглушка для теста
+        #     return 123
 
         async def get_user_from_bitrix(user_id: int) -> Optional[dict]:
             """Получение информации о пользователе из Битрикс24"""

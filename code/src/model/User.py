@@ -1526,7 +1526,7 @@ async def process_excel_file(
             output,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={
-                "Content-Disposition": f"attachment; filename=processed_{file.filename}"
+                "Content-Disposition": f"attachment; filename=processed_123"
             }
         )
     

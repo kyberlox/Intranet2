@@ -1320,7 +1320,8 @@ async def process_excel_file(
     from datetime import datetime
     from typing import Optional, Dict, List
     import asyncio
-
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
     from ..base.pSQL.models.User import User
     # Проверяем расширение файла
     if not file.filename.endswith(('.xls', '.xlsx')):
@@ -1373,7 +1374,7 @@ async def process_excel_file(
             
             return user_id
 
-        def get_user_from_bitrix(user_id: int) -> Optional[Dict]:
+        async def get_user_from_bitrix(user_id: int) -> Optional[Dict]:
             """
             Получение информации о пользователе из Битрикс24
             """
@@ -1386,13 +1387,25 @@ async def process_excel_file(
             # return response.get('result', {})
             # 
             # Для теста возвращаем заглушку
-            response = B24().getUser(user_id)
-            return response
-            # return {
-            #     'result': {
-            #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'
-            #     }
-            # }
+            
+            def _sync_bitrix_call():
+                # Ваш синхронный код для Битрикс
+                # from bitrix24 import Bitrix24
+                
+                # Пример:
+                # bx24 = Bitrix24()
+                # bx24.method('user.get', {'ID': user_id})
+                # return bx24.result
+                
+                # Заглушка для теста
+                response = B24().getUser(user_id)
+                return response
+            
+            # Выполняем синхронную функцию в отдельном потоке
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(executor, _sync_bitrix_call)
+            
+            return result
 
         # def convert_bitrix_date(date_str: str) -> str:
         #     """
@@ -1491,7 +1504,7 @@ async def process_excel_file(
             df.iloc[index, 6] = "Да"
             
             # Получаем данные из Битрикс (используем await)
-            bitrix_data = get_user_from_bitrix(user_id)
+            bitrix_data = await get_user_from_bitrix(user_id)
             
             # Извлекаем LAST_LOGIN
             last_login = ""

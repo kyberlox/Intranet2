@@ -1297,3 +1297,183 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     #     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 
 
+@app.post("/process-files")
+async def process_excel_file(
+    file: UploadFile = File(..., description="XLS файл с данными"),
+    db: AsyncSession = Depends(get_async_db)  # замените на вашу зависимость
+):
+    """
+    Обрабатывает XLS файл:
+    - Парсит ФИО из колонки D (начиная с 4 строки)
+    - Ищет пользователей в БД
+    - Получает данные из Битрикс
+    - Добавляет результат в колонки G и H
+    - Возвращает обновленный файл
+    """
+    from fastapi.responses import StreamingResponse
+    from sqlalchemy import select
+    import pandas as pd
+    import io
+    import re
+    from datetime import datetime
+    from typing import Optional, Dict, List
+    import asyncio
+
+    from ..base.pSQL.models.User import User
+    # Проверяем расширение файла
+    if not file.filename.endswith(('.xls', '.xlsx')):
+        raise HTTPException(400, "Файл должен быть в формате XLS или XLSX")
+    
+    try:
+        def parse_fio(fio: str) -> Optional[List[str]]:
+            """
+            Разбивает ФИО по пробелам
+            Возвращает список [фамилия, имя, отчество] или None если строка объединена
+            """
+            if not isinstance(fio, str):
+                return None
+            
+            # Очищаем от лишних пробелов
+            fio = ' '.join(fio.split())
+            
+            # Разбиваем по пробелам
+            parts = fio.split()
+            
+            # Если больше или меньше 3 частей - скорее всего объединенная ячейка
+            if len(parts) != 3:
+                return None
+            
+            return parts
+
+        async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
+            """
+            Поиск пользователя в БД по ФИО
+            """
+            # Вариант 1: Точное совпадение
+            stmt = select(User.id).where(
+                User.last_name == last_name,
+                User.name == first_name,
+                User.second_name == middle_name
+            )
+            result = await db.execute(stmt)
+            user_id = result.scalar_one_or_none()
+            
+            # Вариант 2: Поиск по частичному совпадению (если нужно)
+            if user_id is None:
+                # Поиск по фамилии и имени (более гибкий вариант)
+                stmt = select(User.id).where(
+                    User.last_name.ilike(f"%{last_name}%"),
+                    User.name.ilike(f"%{first_name}%")
+                )
+                result = await db.execute(stmt)
+                user_id = result.scalar_one_or_none()
+            
+            return user_id
+
+        async def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
+            """
+            Получение информации о пользователе из Битрикс24
+            """
+            # ===== ВСТАВЬТЕ ВАШ ЗАПРОС К БИТРИКС =====
+            # Пример:
+            # response = await bitrix_client.call(
+            #     'user.get',
+            #     {'ID': user_id}
+            # )
+            # return response.get('result', {})
+            # 
+            # Для теста возвращаем заглушку
+            response = B24().getUser(user_id)
+            return response.get('result', {})
+            # return {
+            #     'result': {
+            #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'
+            #     }
+            # }
+
+        def convert_bitrix_date(date_str: str) -> str:
+            """
+            Конвертирует дату из формата "2026-07-31T14:35:09+04:00" в "31.07.2026"
+            """
+            try:
+                # Парсим ISO формат
+                dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                return dt.strftime('%d.%m.%Y')
+            except:
+                return ""
+         # Читаем файл
+        contents = await file.read()
+        
+        # Определяем формат
+        if file.filename.endswith('.xls'):
+            df = pd.read_excel(io.BytesIO(contents), engine='xlrd')
+        else:
+            df = pd.read_excel(io.BytesIO(contents), engine='openpyxl')
+        
+        # Создаем новые колонки, если их нет
+        if 'G' not in df.columns or df.columns.get_loc('G') >= len(df.columns):
+            df['G'] = ''
+        if 'H' not in df.columns or df.columns.get_loc('H') >= len(df.columns):
+            df['H'] = ''
+        
+        # Обрабатываем строки начиная с 4 (индекс 3)
+        for index in range(3, len(df)):
+            # Получаем значение из колонки D (индекс 3)
+            fio_cell = df.iloc[index, 3] if len(df.columns) > 3 else None
+            
+            if pd.isna(fio_cell):
+                continue
+            
+            # Разбиваем ФИО
+            fio_parts = parse_fio(str(fio_cell))
+            
+            if fio_parts is None:
+                # Объединенная ячейка - пропускаем
+                continue
+            
+            last_name, first_name, middle_name = fio_parts
+            
+            # Ищем пользователя в БД
+            user_id = await get_user_id(db, last_name, first_name, middle_name)
+            
+            if user_id is None:
+                # Пользователь не найден
+                df.iloc[index, 6] = "Нет"  # колонка G
+                df.iloc[index, 7] = ""      # колонка H
+                continue
+            
+            # Пользователь найден - ставим "Да"
+            df.iloc[index, 6] = "Да"
+            
+            # Получаем данные из Битрикс
+            bitrix_data = await get_user_from_bitrix(user_id, db)
+            
+            # Извлекаем LAST_LOGIN
+            last_login = ""
+            if bitrix_data and 'result' in bitrix_data:
+                last_login_raw = bitrix_data['result'].get('LAST_LOGIN', '')
+                if last_login_raw:
+                    last_login = convert_bitrix_date(last_login_raw)
+            
+            # Записываем в колонку H
+            df.iloc[index, 7] = last_login
+        
+        # Сохраняем в буфер
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Sheet1')
+        
+        output.seek(0)
+        
+        # Возвращаем файл
+        filename = f"processed_{file.filename}"
+        return StreamingResponse(
+            output,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    
+    except Exception as e:
+        raise HTTPException(500, f"Ошибка обработки файла: {str(e)}")

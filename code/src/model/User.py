@@ -1297,7 +1297,7 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     #     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий')
     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 
 
-@app.post("/process-files")
+@users_router.post("/process-files")
 async def process_excel_file(
     file: UploadFile = File(..., description="XLS файл с данными"),
     db: AsyncSession = Depends(get_async_db)  # замените на вашу зависимость

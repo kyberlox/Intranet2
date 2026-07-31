@@ -1372,7 +1372,7 @@ async def process_excel_file(
             
             return user_id
 
-        async def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
+        def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
             """
             Получение информации о пользователе из Битрикс24
             """
@@ -1458,7 +1458,7 @@ async def process_excel_file(
             df.iloc[index, 6] = "Да"
             
             # Получаем данные из Битрикс
-            bitrix_data = await get_user_from_bitrix(user_id, db)
+            bitrix_data = get_user_from_bitrix(user_id, db)
             
             # Извлекаем LAST_LOGIN
             last_login = ""

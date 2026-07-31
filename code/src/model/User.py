@@ -1326,7 +1326,7 @@ async def process_excel_file(
     # Проверяем расширение файла
     if not file.filename.endswith(('.xls', '.xlsx')):
         raise HTTPException(400, "Файл должен быть в формате XLS или XLSX")
-    
+    executor = ThreadPoolExecutor(max_workers=10)
     try:
         # def parse_fio(fio: str) -> Optional[List[str]]:
         #     """

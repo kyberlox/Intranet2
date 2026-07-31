@@ -1327,83 +1327,129 @@ async def process_excel_file(
         raise HTTPException(400, "Файл должен быть в формате XLS или XLSX")
     
     try:
+        # def parse_fio(fio: str) -> Optional[List[str]]:
+        #     """
+        #     Разбивает ФИО по пробелам
+        #     Возвращает список [фамилия, имя, отчество] или None если строка объединена
+        #     """
+        #     if not isinstance(fio, str):
+        #         return None
+            
+        #     # Очищаем от лишних пробелов
+        #     fio = ' '.join(fio.split())
+            
+        #     # Разбиваем по пробелам
+        #     parts = fio.split()
+            
+        #     # Если больше или меньше 3 частей - скорее всего объединенная ячейка
+        #     if len(parts) != 3:
+        #         return None
+            
+        #     return parts
+
+        # async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
+        #     """
+        #     Поиск пользователя в БД по ФИО
+        #     """
+        #     # Вариант 1: Точное совпадение
+        #     stmt = select(User.id).where(
+        #         User.last_name == last_name,
+        #         User.name == first_name,
+        #         User.second_name == middle_name
+        #     )
+        #     result = await db.execute(stmt)
+        #     user_id = result.scalar_one_or_none()
+            
+        #     # Вариант 2: Поиск по частичному совпадению (если нужно)
+        #     if user_id is None:
+        #         # Поиск по фамилии и имени (более гибкий вариант)
+        #         stmt = select(User.id).where(
+        #             User.last_name.ilike(f"%{last_name}%"),
+        #             User.name.ilike(f"%{first_name}%")
+        #         )
+        #         result = await db.execute(stmt)
+        #         user_id = result.scalar_one_or_none()
+            
+        #     return user_id
+
+        # def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
+        #     """
+        #     Получение информации о пользователе из Битрикс24
+        #     """
+        #     # ===== ВСТАВЬТЕ ВАШ ЗАПРОС К БИТРИКС =====
+        #     # Пример:
+        #     # response = await bitrix_client.call(
+        #     #     'user.get',
+        #     #     {'ID': user_id}
+        #     # )
+        #     # return response.get('result', {})
+        #     # 
+        #     # Для теста возвращаем заглушку
+        #     response = B24().getUser(user_id)
+        #     return response
+        #     # return {
+        #     #     'result': {
+        #     #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'
+        #     #     }
+        #     # }
+
+        # def convert_bitrix_date(date_str: str) -> str:
+        #     """
+        #     Конвертирует дату из формата "2026-07-31T14:35:09+04:00" в "31.07.2026"
+        #     """
+        #     try:
+        #         # Парсим ISO формат
+        #         dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        #         return dt.strftime('%d.%m.%Y')
+        #     except:
+        #         return ""
+        #  # Читаем файл
+        
         def parse_fio(fio: str) -> Optional[List[str]]:
-            """
-            Разбивает ФИО по пробелам
-            Возвращает список [фамилия, имя, отчество] или None если строка объединена
-            """
+            """Разбивает ФИО по пробелам"""
             if not isinstance(fio, str):
                 return None
             
-            # Очищаем от лишних пробелов
             fio = ' '.join(fio.split())
-            
-            # Разбиваем по пробелам
             parts = fio.split()
             
-            # Если больше или меньше 3 частей - скорее всего объединенная ячейка
             if len(parts) != 3:
                 return None
             
             return parts
 
         async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
-            """
-            Поиск пользователя в БД по ФИО
-            """
-            # Вариант 1: Точное совпадение
-            stmt = select(User.id).where(
-                User.last_name == last_name,
-                User.name == first_name,
-                User.second_name == middle_name
-            )
-            result = await db.execute(stmt)
-            user_id = result.scalar_one_or_none()
-            
-            # Вариант 2: Поиск по частичному совпадению (если нужно)
-            if user_id is None:
-                # Поиск по фамилии и имени (более гибкий вариант)
-                stmt = select(User.id).where(
-                    User.last_name.ilike(f"%{last_name}%"),
-                    User.name.ilike(f"%{first_name}%")
-                )
-                result = await db.execute(stmt)
-                user_id = result.scalar_one_or_none()
-            
-            return user_id
-
-        def get_user_from_bitrix(user_id: int, db: AsyncSession) -> Optional[Dict]:
-            """
-            Получение информации о пользователе из Битрикс24
-            """
-            # ===== ВСТАВЬТЕ ВАШ ЗАПРОС К БИТРИКС =====
-            # Пример:
-            # response = await bitrix_client.call(
-            #     'user.get',
-            #     {'ID': user_id}
+            """Поиск пользователя в БД по ФИО"""
+            # Ваш запрос к БД
+            # from your_models import User
+            # stmt = select(User.id).where(
+            #     User.last_name == last_name,
+            #     User.first_name == first_name,
+            #     User.middle_name == middle_name
             # )
+            # result = await db.execute(stmt)
+            # return result.scalar_one_or_none()
+            
+            # Заглушка для теста
+            return 123
+
+        async def get_user_from_bitrix(user_id: int) -> Optional[dict]:
+            """Получение информации о пользователе из Битрикс24"""
+            # ===== ВАШ ЗАПРОС К БИТРИКС =====
+            # response = await bitrix_client.call('user.get', {'ID': user_id})
             # return response.get('result', {})
-            # 
-            # Для теста возвращаем заглушку
-            response = B24().getUser(user_id)
-            return response
-            # return {
-            #     'result': {
-            #         'LAST_LOGIN': '2026-07-31T14:35:09+04:00'
-            #     }
-            # }
+            
+            # Заглушка
+            return {'result': {'LAST_LOGIN': '2026-07-31T14:35:09+04:00'}}
 
         def convert_bitrix_date(date_str: str) -> str:
-            """
-            Конвертирует дату из формата "2026-07-31T14:35:09+04:00" в "31.07.2026"
-            """
+            """Конвертирует дату из формата ISO в DD.MM.YYYY"""
             try:
-                # Парсим ISO формат
                 dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
                 return dt.strftime('%d.%m.%Y')
             except:
                 return ""
-         # Читаем файл
+        
         contents = await file.read()
         
         # Читаем файл
@@ -1412,28 +1458,21 @@ async def process_excel_file(
         else:
             df = pd.read_excel(io.BytesIO(contents), engine='openpyxl', dtype=str)
         
-        # Убеждаемся, что все колонки - строки
-        df = df.astype(str)
-        
-        # Проверяем наличие колонок
-        if len(df.columns) < 4:
-            raise HTTPException(400, "Файл должен содержать минимум 4 колонки (A, B, C, D)")
+        # Заменяем NaN на пустые строки
+        df = df.fillna('')
         
         # Добавляем колонки G и H, если их нет
-        while len(df.columns) < 7:
-            df[f'col_{len(df.columns)}'] = ""
+        while len(df.columns) < 8:
+            df[f'col_{len(df.columns)}'] = ''
         
-        # Переименовываем колонки для удобства
-        # (опционально, если нужны понятные названия)
-        df.columns = [f'col_{i}' for i in range(len(df.columns))]
-        
-        # Обрабатываем строки начиная с 4 (индекс 3)
+        # ===== ОСНОВНАЯ ОБРАБОТКА (с await в цикле) =====
         for index in range(3, len(df)):
-            # Получаем значение из колонки D (индекс 3)
+            # Получаем ФИО из колонки D (индекс 3)
             fio_cell = df.iloc[index, 3] if len(df.columns) > 3 else ""
             
-            # Проверяем на NaN или пустую строку
-            if pd.isna(fio_cell) or fio_cell == 'nan' or not fio_cell.strip():
+            if not fio_cell or fio_cell == 'nan' or not str(fio_cell).strip():
+                df.iloc[index, 6] = "Нет"
+                df.iloc[index, 7] = ""
                 continue
             
             # Разбиваем ФИО
@@ -1441,43 +1480,45 @@ async def process_excel_file(
             
             if fio_parts is None:
                 # Объединенная ячейка - пропускаем
+                df.iloc[index, 6] = "Нет"
+                df.iloc[index, 7] = ""
                 continue
             
             last_name, first_name, middle_name = fio_parts
             
-            # Ищем пользователя в БД
+            # Ищем пользователя в БД (используем await)
             user_id = await get_user_id(db, last_name, first_name, middle_name)
             
             if user_id is None:
-                # Пользователь не найден
-                df.iloc[index, 6] = "Нет"  # колонка G (индекс 6)
-                df.iloc[index, 7] = ""     # колонка H (индекс 7)
+                df.iloc[index, 6] = "Нет"
+                df.iloc[index, 7] = ""
                 continue
             
             # Пользователь найден
             df.iloc[index, 6] = "Да"
             
-            # Получаем данные из Битрикс
-            bitrix_data = get_user_from_bitrix(user_id, db)
+            # Получаем данные из Битрикс (используем await)
+            bitrix_data = await get_user_from_bitrix(user_id)
             
             # Извлекаем LAST_LOGIN
             last_login = ""
-            if bitrix_data and 'result' in bitrix_data:
-                last_login_raw = bitrix_data['result'].get('LAST_LOGIN', '')
-                if last_login_raw:
-                    last_login = convert_bitrix_date(last_login_raw)
+            if bitrix_data and isinstance(bitrix_data, dict):
+                result = bitrix_data.get('result', {})
+                if isinstance(result, dict):
+                    last_login_raw = result.get('LAST_LOGIN', '')
+                    if last_login_raw:
+                        last_login = convert_bitrix_date(last_login_raw)
             
             df.iloc[index, 7] = last_login
         
-        # Убеждаемся, что колонки G и H - строковые
-        if len(df.columns) >= 8:
-            df.iloc[:, 6] = df.iloc[:, 6].astype(str)
-            df.iloc[:, 7] = df.iloc[:, 7].astype(str)
+        # Преобразуем все в строки
+        df = df.astype(str)
+        df = df.replace('nan', '')
         
         # Сохраняем результат
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Sheet1', header=True)
+            df.to_excel(writer, index=False, sheet_name='Sheet1')
         
         output.seek(0)
         

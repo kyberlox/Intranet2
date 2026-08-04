@@ -1323,6 +1323,7 @@ async def process_excel_file(
     import asyncio
     from concurrent.futures import ThreadPoolExecutor
     from ..base.pSQL.models.User import User
+    from ..base.pSQL.models.Roots import Roots
     # Проверяем расширение файла
     if not file.filename.endswith(('.xls', '.xlsx')):
         raise HTTPException(400, "Файл должен быть в формате XLS или XLSX")
@@ -1347,6 +1348,14 @@ async def process_excel_file(
         #         return None
             
         #     return parts
+        async def get_user_points(user_id: int, db: AsyncSession) -> int:
+            """
+            Выводит баллы пользователя
+            """
+            stmt = select(Roots.user_points).where(Roots.user_uuid == user_id)
+            result = await db.execute(stmt)
+            user_points = result.scalar_one_or_none()
+            return user_points if user_points else 0
 
         async def get_user_id(db: AsyncSession, last_name: str, first_name: str, middle_name: str) -> Optional[int]:
             """
@@ -1493,7 +1502,10 @@ async def process_excel_file(
             last_name, first_name, middle_name = fio_parts
             
             # Ищем пользователя в БД (используем await)
-            user_id = await get_user_id(db, last_name, first_name, middle_name)
+            try:
+                user_id = await get_user_id(db, last_name, first_name, middle_name)
+            except Exception as e:
+                continue
             
             if user_id is None:
                 df.iloc[index, 6] = "Нет"
@@ -1504,16 +1516,18 @@ async def process_excel_file(
             df.iloc[index, 6] = "Да"
             
             # Получаем данные из Битрикс (используем await)
-            bitrix_data = await get_user_from_bitrix(user_id)
+            # bitrix_data = await get_user_from_bitrix(user_id)
             
             # Извлекаем LAST_LOGIN
-            last_login = ""
-            if bitrix_data and isinstance(bitrix_data, dict):
-                last_login_raw = bitrix_data.get('LAST_LOGIN', '')
-                if last_login_raw:
-                    last_login = convert_bitrix_date(last_login_raw)
+            # last_login = ""
+            # if bitrix_data and isinstance(bitrix_data, dict):
+            #     last_login_raw = bitrix_data.get('LAST_LOGIN', '')
+            #     if last_login_raw:
+            #         last_login = convert_bitrix_date(last_login_raw)
+            #Получаем баллы пользователя
+            user_points = await get_user_points(user_id, db)
             
-            df.iloc[index, 7] = last_login
+            df.iloc[index, 7] = user_points
         
         # Преобразуем все в строки
         df = df.astype(str)

@@ -1527,7 +1527,7 @@ async def process_excel_file(
             #Получаем баллы пользователя
             user_points = await get_user_points(user_id, db)
             
-            df.iloc[index, 7] = user_points
+            df.iloc[index, 7] = str(user_points)
         
         # Преобразуем все в строки
         df = df.astype(str)

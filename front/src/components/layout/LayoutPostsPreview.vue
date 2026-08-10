@@ -51,7 +51,6 @@ import { showEventsByYear } from '@/utils/showEventsByYear';
 import { useViewsDataStore } from "@/stores/viewsData";
 import DateFilter from '@/components/tools/common/DateFilter.vue';
 import TagsFilter from '@/components/tools/common/TagsFilter.vue';
-import { useNewsFilterWatch } from '@/composables/useNewsFilterWatch';
 import { type DataStateKey } from "@/stores/viewsData";
 import { emptyPageHtml } from '@/assets/static/contentPlugs';
 import emptyPlug from '@/assets/imgs/plugs/contentPlugEmpty.jpg';
@@ -145,9 +144,6 @@ export default defineComponent({
                     visibleNews.value = visibleNews.value.concat(res);
                 }
                 offset.value += 15;
-
-                visibleNews.value = visibleNews.value.concat(res);
-
             }
             finally {
                 isLoading.value = false;

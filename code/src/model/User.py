@@ -1298,12 +1298,12 @@ async def delete_congratulation_from_celeba(data = Body(), session: AsyncSession
     return LogsMaker().warning_message(f'Нельзя удалить чужой комментарий') 
 
 
-from fastapi import UploadFile, File
-@users_router.post("/process-files", tags=["Пользователь"])
-async def process_excel_file(
-    file: UploadFile = File(...),
-    db: AsyncSession = Depends(get_async_db)  # замените на вашу зависимость
-):
+# from fastapi import UploadFile, File
+# @users_router.post("/process-files", tags=["Пользователь"])
+# async def process_excel_file(
+#     file: UploadFile = File(...),
+#     db: AsyncSession = Depends(get_async_db)  # замените на вашу зависимость
+# ):
     """
     Обрабатывает XLS файл:
     - Парсит ФИО из колонки D (начиная с 4 строки)

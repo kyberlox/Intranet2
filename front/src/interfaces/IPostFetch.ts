@@ -22,6 +22,13 @@ export interface IValidatePoints {
     uuid_to: number
 }
 
+export interface IPeerTransaction {
+    user_from: number
+    user_to: number
+    message: string
+    how_match: number
+}
+
 export interface IUsersLoad {
     art_id: string | null
     users_id: string[]
